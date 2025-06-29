@@ -183,10 +183,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const losingTrades = trades.filter(trade => trade.pnl < 0);
       const winRate = trades.length > 0 ? (winningTrades.length / trades.length) * 100 : 0;
       
-      const bestTrade = trades.reduce((best, trade) => 
-        trade.pnl > (best?.pnl || 0) ? trade : best, null);
-      const worstTrade = trades.reduce((worst, trade) => 
-        trade.pnl < (worst?.pnl || 0) ? trade : worst, null);
+      let bestTrade = null;
+      let worstTrade = null;
+      
+      if (trades.length > 0) {
+        bestTrade = trades[0];
+        worstTrade = trades[0];
+        
+        for (const trade of trades) {
+          if (trade.pnl > bestTrade.pnl) bestTrade = trade;
+          if (trade.pnl < worstTrade.pnl) worstTrade = trade;
+        }
+      }
 
       const analytics = {
         account,
@@ -297,7 +305,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           recordsImported++;
 
         } catch (error) {
-          errors.push(`Row ${i}: ${error.message}`);
+          errors.push(`Row ${i}: ${error instanceof Error ? error.message : 'Unknown error'}`);
         }
       }
 
@@ -323,7 +331,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ 
         success: false,
         message: "CSV import failed",
-        errors: [error.message]
+        errors: [error instanceof Error ? error.message : 'Unknown error']
       });
     }
   });
