@@ -11,6 +11,7 @@ import { EquityChart, MonthlyPerformanceChart } from "@/components/chart-compone
 import { formatCurrency, formatPercentage, formatDate } from "@/lib/utils";
 import { calculateDisciplinedScore, getScoreColor, getGradeColor } from "@/lib/disciplined-score";
 import TradeCalendar from "@/components/trade-calendar";
+import TradeEntry from "@/components/trade-entry";
 import { 
   Wallet, 
   TrendingDown, 
@@ -243,10 +244,7 @@ export default function Dashboard() {
               </div>
             )}
             
-            <Button className="bg-primary hover:bg-blue-700">
-              <Plus className="mr-2 h-4 w-4" />
-              Add Trade
-            </Button>
+            <TradeEntry accounts={accounts || []} />
             <div className="relative">
               <Bell className="h-5 w-5 text-gray-400" />
               <span className="absolute -top-1 -right-1 bg-error-red text-xs rounded-full w-4 h-4 flex items-center justify-center text-white">
