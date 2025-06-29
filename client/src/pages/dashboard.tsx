@@ -14,6 +14,7 @@ import TradeCalendar from "@/components/trade-calendar";
 import { 
   Wallet, 
   TrendingDown, 
+  TrendingUp,
   Target, 
   Shield, 
   Plus, 
@@ -257,6 +258,116 @@ export default function Dashboard() {
       </header>
 
       <div className="p-6">
+        {/* Financial Tracking Summary */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+          <Card className="bg-dark-card border-green-600">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-gray-400 text-sm mb-1">Total Spent on Accounts</p>
+                  <p className="text-2xl font-bold text-white">
+                    {formatCurrency(accounts?.reduce((sum, acc) => sum + (acc.accountCost || 0), 0) || 0)}
+                  </p>
+                  <p className="text-xs text-gray-400 mt-1">
+                    Purchase costs for all accounts
+                  </p>
+                </div>
+                <div className="bg-green-600 bg-opacity-20 p-3 rounded-lg">
+                  <DollarSign className="text-green-400 h-6 w-6" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-dark-card border-blue-600">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-gray-400 text-sm mb-1">Total Activation Costs</p>
+                  <p className="text-2xl font-bold text-white">
+                    {formatCurrency(accounts?.reduce((sum, acc) => sum + (acc.activationCost || 0), 0) || 0)}
+                  </p>
+                  <p className="text-xs text-gray-400 mt-1">
+                    Activation fees paid/required
+                  </p>
+                </div>
+                <div className="bg-blue-600 bg-opacity-20 p-3 rounded-lg">
+                  <Shield className="text-blue-400 h-6 w-6" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-dark-card border-orange-600">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-gray-400 text-sm mb-1">Combined Total</p>
+                  <p className="text-2xl font-bold text-white">
+                    {formatCurrency(
+                      (accounts?.reduce((sum, acc) => sum + (acc.accountCost || 0), 0) || 0) +
+                      (accounts?.reduce((sum, acc) => sum + (acc.activationCost || 0), 0) || 0)
+                    )}
+                  </p>
+                  <p className="text-xs text-gray-400 mt-1">
+                    Total investment in trading
+                  </p>
+                </div>
+                <div className="bg-orange-600 bg-opacity-20 p-3 rounded-lg">
+                  <TrendingUp className="text-orange-400 h-6 w-6" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Account Type Counters */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+          <Card className="bg-dark-card border-yellow-600">
+            <CardContent className="p-4">
+              <div className="text-center">
+                <p className="text-3xl font-bold text-yellow-400">
+                  {accounts?.filter(acc => acc.type === 'challenge').length || 0}
+                </p>
+                <p className="text-sm text-gray-400 mt-1">Challenge</p>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-dark-card border-red-600">
+            <CardContent className="p-4">
+              <div className="text-center">
+                <p className="text-3xl font-bold text-red-400">
+                  {accounts?.filter(acc => acc.status === 'failed').length || 0}
+                </p>
+                <p className="text-sm text-gray-400 mt-1">Failed</p>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-dark-card border-green-600">
+            <CardContent className="p-4">
+              <div className="text-center">
+                <p className="text-3xl font-bold text-green-400">
+                  {accounts?.filter(acc => acc.type === 'live').length || 0}
+                </p>
+                <p className="text-sm text-gray-400 mt-1">Live</p>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-dark-card border-blue-600">
+            <CardContent className="p-4">
+              <div className="text-center">
+                <p className="text-3xl font-bold text-blue-400">
+                  {accounts?.filter(acc => acc.type === 'funded').length || 0}
+                </p>
+                <p className="text-sm text-gray-400 mt-1">Funded</p>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
         {/* Key Metrics Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           <Card className="bg-dark-card border-dark-border">
@@ -642,98 +753,7 @@ export default function Dashboard() {
           </CardContent>
         </Card>
 
-        {/* Trader Profile & Subscription Section */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-          {/* Trader Profile */}
-          <Card className="bg-dark-card border-dark-border">
-            <CardHeader>
-              <CardTitle className="flex items-center">
-                <div className="bg-blue-600 bg-opacity-20 p-2 rounded-lg mr-3">
-                  <Target className="text-blue-400 h-5 w-5" />
-                </div>
-                Trader Profile
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex items-center space-x-4">
-                <div className="w-16 h-16 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full flex items-center justify-center">
-                  <span className="text-white text-xl font-bold">MM</span>
-                </div>
-                <div>
-                  <h3 className="text-lg font-semibold text-white">Max Maserati</h3>
-                  <p className="text-gray-400">Professional Trader</p>
-                  <Badge className="bg-green-600 text-white mt-1">Verified</Badge>
-                </div>
-              </div>
-              
-              <div className="space-y-3">
-                <div className="flex justify-between">
-                  <span className="text-gray-400">Trading Experience:</span>
-                  <span className="text-white font-medium">5+ Years</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-400">Specialization:</span>
-                  <span className="text-white font-medium">Futures/Forex</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-400">Risk Style:</span>
-                  <span className="text-blue-400 font-medium">Conservative</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-400">Total Accounts:</span>
-                  <span className="text-white font-medium">{accounts?.length || 0}</span>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
 
-          {/* Subscription Status */}
-          <Card className="bg-dark-card border-dark-border">
-            <CardHeader>
-              <CardTitle className="flex items-center">
-                <div className="bg-purple-600 bg-opacity-20 p-2 rounded-lg mr-3">
-                  <Shield className="text-purple-400 h-5 w-5" />
-                </div>
-                MMM Stats Subscription
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h3 className="text-lg font-semibold text-white">Pro Plan</h3>
-                  <p className="text-gray-400">Premium trading analytics</p>
-                </div>
-                <Badge className="bg-purple-600 text-white">Active</Badge>
-              </div>
-              
-              <div className="space-y-3">
-                <div className="flex justify-between">
-                  <span className="text-gray-400">Plan Type:</span>
-                  <span className="text-white font-medium">Monthly Pro</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-400">Next Billing:</span>
-                  <span className="text-white font-medium">Jan 15, 2025</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-400">Features:</span>
-                  <span className="text-green-400 font-medium">All Access</span>
-                </div>
-              </div>
-              
-              <div className="pt-4 border-t border-dark-border">
-                <div className="grid grid-cols-2 gap-2">
-                  <Button className="bg-purple-600 hover:bg-purple-700 text-sm">
-                    Manage Plan
-                  </Button>
-                  <Button variant="outline" className="border-gray-600 text-gray-300 text-sm">
-                    View Features
-                  </Button>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
 
         {/* Compact Trading Calendar */}
         <Card className="bg-dark-card border-dark-border mb-8">

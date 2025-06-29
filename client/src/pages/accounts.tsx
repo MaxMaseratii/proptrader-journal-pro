@@ -366,6 +366,185 @@ export default function Accounts() {
                         </div>
                       </TabsContent>
 
+                      <TabsContent value="financial" className="space-y-6 mt-6">
+                        <div className="bg-gray-800 p-4 rounded-lg">
+                          <h3 className="text-lg font-semibold text-white mb-4 flex items-center">
+                            <DollarSign className="mr-2 h-5 w-5" />
+                            Financial Tracking & Purchase Details
+                          </h3>
+                          
+                          <div className="grid grid-cols-2 gap-4">
+                            <FormField
+                              control={form.control}
+                              name="accountCost"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel className="text-white font-medium">Account Purchase Cost ($)</FormLabel>
+                                  <FormControl>
+                                    <Input 
+                                      type="number" 
+                                      step="0.01"
+                                      {...field} 
+                                      onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                                      className="bg-gray-700 border-gray-600 text-white placeholder-gray-400"
+                                      placeholder="e.g., 299.00"
+                                    />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+
+                            <FormField
+                              control={form.control}
+                              name="purchaseMethod"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel className="text-white font-medium">Purchase Method</FormLabel>
+                                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                    <FormControl>
+                                      <SelectTrigger className="bg-gray-700 border-gray-600 text-white">
+                                        <SelectValue placeholder="How was this account purchased?" />
+                                      </SelectTrigger>
+                                    </FormControl>
+                                    <SelectContent className="bg-gray-700 border-gray-600">
+                                      <SelectItem value="credit_card" className="text-white hover:bg-gray-600">Credit Card</SelectItem>
+                                      <SelectItem value="paypal" className="text-white hover:bg-gray-600">PayPal</SelectItem>
+                                      <SelectItem value="crypto" className="text-white hover:bg-gray-600">Cryptocurrency</SelectItem>
+                                      <SelectItem value="bank_transfer" className="text-white hover:bg-gray-600">Bank Transfer</SelectItem>
+                                      <SelectItem value="other" className="text-white hover:bg-gray-600">Other</SelectItem>
+                                    </SelectContent>
+                                  </Select>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+
+                            <FormField
+                              control={form.control}
+                              name="includesActivationFee"
+                              render={({ field }) => (
+                                <FormItem className="flex flex-row items-center space-x-3 space-y-0">
+                                  <FormControl>
+                                    <Checkbox 
+                                      checked={field.value}
+                                      onCheckedChange={field.onChange}
+                                      className="border-gray-600 data-[state=checked]:bg-blue-600"
+                                    />
+                                  </FormControl>
+                                  <div className="space-y-1 leading-none">
+                                    <FormLabel className="text-white font-medium">
+                                      Account cost includes activation fee
+                                    </FormLabel>
+                                    <p className="text-sm text-gray-400">
+                                      Check if the purchase price includes the activation fee for when you pass
+                                    </p>
+                                  </div>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+
+                            <FormField
+                              control={form.control}
+                              name="activationCost"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel className="text-white font-medium">Activation Fee ($)</FormLabel>
+                                  <FormControl>
+                                    <Input 
+                                      type="number" 
+                                      step="0.01"
+                                      {...field} 
+                                      onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                                      className="bg-gray-700 border-gray-600 text-white placeholder-gray-400"
+                                      placeholder="e.g., 99.00"
+                                    />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                          </div>
+
+                          <div className="mt-6 bg-gray-700 p-4 rounded-lg">
+                            <h4 className="text-md font-semibold text-white mb-3">Reset & Failure Tracking</h4>
+                            <div className="grid grid-cols-2 gap-4">
+                              <FormField
+                                control={form.control}
+                                name="resetCount"
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormLabel className="text-white font-medium">Number of Resets</FormLabel>
+                                    <FormControl>
+                                      <Input 
+                                        type="number" 
+                                        {...field} 
+                                        onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
+                                        className="bg-gray-600 border-gray-500 text-white placeholder-gray-400"
+                                        placeholder="0"
+                                      />
+                                    </FormControl>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+
+                              <FormField
+                                control={form.control}
+                                name="totalResetsCost"
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormLabel className="text-white font-medium">Total Reset Costs ($)</FormLabel>
+                                    <FormControl>
+                                      <Input 
+                                        type="number" 
+                                        step="0.01"
+                                        {...field} 
+                                        onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                                        className="bg-gray-600 border-gray-500 text-white placeholder-gray-400"
+                                        placeholder="0.00"
+                                      />
+                                    </FormControl>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+                            </div>
+                          </div>
+
+                          <div className="mt-4 bg-blue-900 bg-opacity-30 p-4 rounded-lg">
+                            <h4 className="text-md font-semibold text-white mb-3">Activation Status (For Passed Accounts)</h4>
+                            <div className="space-y-4">
+                              <FormField
+                                control={form.control}
+                                name="activationPaid"
+                                render={({ field }) => (
+                                  <FormItem className="flex flex-row items-center space-x-3 space-y-0">
+                                    <FormControl>
+                                      <Checkbox 
+                                        checked={field.value}
+                                        onCheckedChange={field.onChange}
+                                        className="border-blue-400 data-[state=checked]:bg-blue-600"
+                                      />
+                                    </FormControl>
+                                    <div className="space-y-1 leading-none">
+                                      <FormLabel className="text-white font-medium">
+                                        Activation fee has been paid
+                                      </FormLabel>
+                                      <p className="text-sm text-blue-200">
+                                        Check this when you've paid the activation fee for a passed challenge
+                                      </p>
+                                    </div>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      </TabsContent>
+
                       <TabsContent value="payout" className="space-y-6 mt-6">
                         <div className="bg-gray-800 p-4 rounded-lg">
                           <h3 className="text-lg font-semibold text-white mb-4 flex items-center">
