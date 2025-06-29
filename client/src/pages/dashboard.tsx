@@ -24,7 +24,8 @@ import {
   AlertTriangle,
   DollarSign,
   Crosshair,
-  Filter
+  Filter,
+  Brain
 } from "lucide-react";
 import type { Account, Trade } from "@shared/schema";
 
@@ -259,79 +260,13 @@ export default function Dashboard() {
         </div>
       </header>
 
-      <div className="p-8 space-y-8">
-        {/* Financial Tracking Summary - Enhanced with gradients */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <Card className="bg-gradient-to-br from-green-900/40 to-green-800/20 border-green-600/50 shadow-lg hover:shadow-xl transition-all duration-300 hover:border-green-500">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-gray-300 text-sm mb-2 font-medium">Total Investment</p>
-                  <p className="text-3xl font-bold text-white bg-gradient-to-r from-green-400 to-green-300 bg-clip-text text-transparent">
-                    {formatCurrency(accounts?.reduce((sum, acc) => sum + (acc.accountCost || 0), 0) || 0)}
-                  </p>
-                  <p className="text-xs text-green-300 mt-2 flex items-center">
-                    <TrendingUp className="h-3 w-3 mr-1" />
-                    Purchase costs for all accounts
-                  </p>
-                </div>
-                <div className="bg-gradient-to-br from-green-600 to-green-500 bg-opacity-20 p-4 rounded-xl shadow-lg">
-                  <DollarSign className="text-green-400 h-7 w-7" />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-gradient-to-br from-blue-900/40 to-blue-800/20 border-blue-600/50 shadow-lg hover:shadow-xl transition-all duration-300 hover:border-blue-500">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-gray-300 text-sm mb-2 font-medium">Activation Costs</p>
-                  <p className="text-3xl font-bold text-white bg-gradient-to-r from-blue-400 to-blue-300 bg-clip-text text-transparent">
-                    {formatCurrency(accounts?.reduce((sum, acc) => sum + (acc.activationCost || 0), 0) || 0)}
-                  </p>
-                  <p className="text-xs text-blue-300 mt-2 flex items-center">
-                    <Shield className="h-3 w-3 mr-1" />
-                    Activation fees paid/required
-                  </p>
-                </div>
-                <div className="bg-gradient-to-br from-blue-600 to-blue-500 bg-opacity-20 p-4 rounded-xl shadow-lg">
-                  <Shield className="text-blue-400 h-7 w-7" />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-gradient-to-br from-orange-900/40 to-orange-800/20 border-orange-600/50 shadow-lg hover:shadow-xl transition-all duration-300 hover:border-orange-500">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-gray-300 text-sm mb-2 font-medium">Total Investment</p>
-                  <p className="text-3xl font-bold text-white bg-gradient-to-r from-orange-400 to-orange-300 bg-clip-text text-transparent">
-                    {formatCurrency(
-                      (accounts?.reduce((sum, acc) => sum + (acc.accountCost || 0), 0) || 0) +
-                      (accounts?.reduce((sum, acc) => sum + (acc.activationCost || 0), 0) || 0)
-                    )}
-                  </p>
-                  <p className="text-xs text-orange-300 mt-2 flex items-center">
-                    <TrendingUp className="h-3 w-3 mr-1" />
-                    Complete trading capital deployed
-                  </p>
-                </div>
-                <div className="bg-gradient-to-br from-orange-600 to-orange-500 bg-opacity-20 p-4 rounded-xl shadow-lg">
-                  <TrendingUp className="text-orange-400 h-7 w-7" />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Account Type Counters */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+      <div className="p-6 space-y-6">
+        {/* Account Type Counters - First Row (Smaller) */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <Card className="bg-dark-card border-yellow-600">
             <CardContent className="p-4">
               <div className="text-center">
-                <p className="text-3xl font-bold text-yellow-400">
+                <p className="text-2xl font-bold text-yellow-400">
                   {accounts?.filter(acc => acc.type === 'challenge').length || 0}
                 </p>
                 <p className="text-sm text-gray-400 mt-1">Challenge</p>
@@ -342,7 +277,7 @@ export default function Dashboard() {
           <Card className="bg-dark-card border-red-600">
             <CardContent className="p-4">
               <div className="text-center">
-                <p className="text-3xl font-bold text-red-400">
+                <p className="text-2xl font-bold text-red-400">
                   {accounts?.filter(acc => acc.status === 'failed').length || 0}
                 </p>
                 <p className="text-sm text-gray-400 mt-1">Failed</p>
@@ -353,8 +288,8 @@ export default function Dashboard() {
           <Card className="bg-dark-card border-green-600">
             <CardContent className="p-4">
               <div className="text-center">
-                <p className="text-3xl font-bold text-green-400">
-                  {accounts?.filter(acc => acc.type === 'live').length || 0}
+                <p className="text-2xl font-bold text-green-400">
+                  {accounts?.filter(acc => acc.status === 'active').length || 0}
                 </p>
                 <p className="text-sm text-gray-400 mt-1">Live</p>
               </div>
@@ -364,10 +299,140 @@ export default function Dashboard() {
           <Card className="bg-dark-card border-blue-600">
             <CardContent className="p-4">
               <div className="text-center">
-                <p className="text-3xl font-bold text-blue-400">
-                  {accounts?.filter(acc => acc.type === 'funded').length || 0}
+                <p className="text-2xl font-bold text-blue-400">
+                  {accounts?.filter(acc => acc.status === 'funded').length || 0}
                 </p>
                 <p className="text-sm text-gray-400 mt-1">Funded</p>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Total Balance Row - Larger */}
+        <div className="grid grid-cols-1 gap-6">
+          <Card className="bg-dark-card border-purple-600">
+            <CardContent className="p-8">
+              <div className="text-center">
+                <p className="text-gray-400 text-sm mb-2">Combined Account Balance</p>
+                <p className="text-5xl font-bold text-white mb-2">
+                  {formatCurrency(accounts?.reduce((sum, acc) => sum + acc.currentBalance, 0) || 0)}
+                </p>
+                <div className="flex justify-center items-center text-sm text-gray-400">
+                  <span>Starting Balance: {formatCurrency(accounts?.reduce((sum, acc) => sum + acc.startingBalance, 0) || 0)}</span>
+                  <span className="mx-2">•</span>
+                  <span className={`${
+                    (accounts?.reduce((sum, acc) => sum + acc.currentBalance, 0) || 0) >= 
+                    (accounts?.reduce((sum, acc) => sum + acc.startingBalance, 0) || 0) 
+                    ? 'text-green-400' : 'text-red-400'
+                  }`}>
+                    {((accounts?.reduce((sum, acc) => sum + acc.currentBalance, 0) || 0) - 
+                     (accounts?.reduce((sum, acc) => sum + acc.startingBalance, 0) || 0) >= 0 ? '+' : '') +
+                    formatCurrency((accounts?.reduce((sum, acc) => sum + acc.currentBalance, 0) || 0) - 
+                                  (accounts?.reduce((sum, acc) => sum + acc.startingBalance, 0) || 0))}
+                  </span>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Disciplined Score Row */}
+        <div className="grid grid-cols-1 gap-6">
+          <Card className="bg-dark-card border-indigo-600">
+            <CardContent className="p-6">
+              <div className="text-center">
+                <div className="flex items-center justify-center mb-4">
+                  <Brain className="h-6 w-6 text-indigo-400 mr-2" />
+                  <h3 className="text-lg font-semibold text-white">Disciplined Trading Score</h3>
+                </div>
+                {accounts && accounts.length > 0 && trades && trades.length > 0 ? (
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    {accounts.map(account => {
+                      const accountTrades = trades.filter(t => t.accountId === account.id);
+                      const disciplinedAnalysis = calculateDisciplinedScore(account, accountTrades);
+                      
+                      return (
+                        <div key={account.id} className="text-center p-4 bg-gray-800 rounded-lg">
+                          <p className="text-xs text-gray-400 mb-1">{account.name}</p>
+                          <p className={`text-2xl font-bold mb-1 ${getGradeColor(disciplinedAnalysis.scoreGrade)}`}>
+                            {disciplinedAnalysis.disciplinedScore.toFixed(0)}%
+                          </p>
+                          <p className={`text-sm font-semibold ${getGradeColor(disciplinedAnalysis.scoreGrade)}`}>
+                            Grade {disciplinedAnalysis.scoreGrade}
+                          </p>
+                          <p className="text-xs text-gray-400 mt-1">
+                            {disciplinedAnalysis.totalTrades} trades • {disciplinedAnalysis.violationsCount} violations
+                          </p>
+                        </div>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <p className="text-gray-400">No trading data available for disciplined score analysis</p>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Financial Tracking Summary */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <Card className="bg-dark-card border-green-600">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-gray-400 text-sm mb-1">Total Spent on Accounts</p>
+                  <p className="text-2xl font-bold text-white">
+                    {formatCurrency(accounts?.reduce((sum, acc) => sum + (acc.accountCost || 0), 0) || 0)}
+                  </p>
+                  <p className="text-xs text-gray-400 mt-1">
+                    Purchase costs for all accounts
+                  </p>
+                </div>
+                <div className="bg-green-600 bg-opacity-20 p-3 rounded-lg">
+                  <DollarSign className="text-green-400 h-6 w-6" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-dark-card border-blue-600">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-gray-400 text-sm mb-1">Total Activation Costs</p>
+                  <p className="text-2xl font-bold text-white">
+                    {formatCurrency(accounts?.reduce((sum, acc) => sum + (acc.activationCost || 0), 0) || 0)}
+                  </p>
+                  <p className="text-xs text-gray-400 mt-1">
+                    Activation fees paid/required
+                  </p>
+                </div>
+                <div className="bg-blue-600 bg-opacity-20 p-3 rounded-lg">
+                  <Shield className="text-blue-400 h-6 w-6" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-dark-card border-orange-600">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-gray-400 text-sm mb-1">Combined Total</p>
+                  <p className="text-2xl font-bold text-white">
+                    {formatCurrency(
+                      (accounts?.reduce((sum, acc) => sum + (acc.accountCost || 0), 0) || 0) +
+                      (accounts?.reduce((sum, acc) => sum + (acc.activationCost || 0), 0) || 0)
+                    )}
+                  </p>
+                  <p className="text-xs text-gray-400 mt-1">
+                    Total investment in trading
+                  </p>
+                </div>
+                <div className="bg-orange-600 bg-opacity-20 p-3 rounded-lg">
+                  <TrendingUp className="text-orange-400 h-6 w-6" />
+                </div>
               </div>
             </CardContent>
           </Card>
