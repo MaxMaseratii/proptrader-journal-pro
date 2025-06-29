@@ -226,7 +226,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Parse CSV data
       const lines = csvData.split('\n');
-      const headers = lines[0].split(',').map(h => h.trim());
+      const headers = lines[0].split(',').map((h: string) => h.trim());
       
       let recordsProcessed = 0;
       let recordsImported = 0;
@@ -241,10 +241,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         recordsProcessed++;
         
         try {
-          const values = line.split(',').map(v => v.trim());
+          const values = line.split(',').map((v: string) => v.trim());
           const row: any = {};
           
-          headers.forEach((header, index) => {
+          headers.forEach((header: string, index: number) => {
             row[header] = values[index] || '';
           });
 
@@ -285,7 +285,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
             pnl,
             status: 'closed',
             orderId: row.orderId || row['Order ID'] || '',
-            fillTime: new Date(fillTime).toISOString(),
             orderType: row.Type || 'Market',
             originalQuantity: quantity,
             riskAmount,

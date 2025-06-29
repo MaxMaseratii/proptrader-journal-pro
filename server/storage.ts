@@ -34,6 +34,10 @@ export interface IStorage {
   getDailyStatsForDateRange(accountId: number, startDate: string, endDate: string): Promise<DailyStats[]>;
   createDailyStats(stats: InsertDailyStats): Promise<DailyStats>;
   updateDailyStats(id: number, stats: Partial<InsertDailyStats>): Promise<DailyStats | undefined>;
+
+  // CSV Import operations
+  getCsvImports(accountId?: number): Promise<CsvImport[]>;
+  createCsvImport(csvImport: InsertCsvImport): Promise<CsvImport>;
 }
 
 export class MemStorage implements IStorage {
@@ -41,6 +45,7 @@ export class MemStorage implements IStorage {
   private trades: Map<number, Trade> = new Map();
   private journalEntries: Map<number, JournalEntry> = new Map();
   private dailyStats: Map<number, DailyStats> = new Map();
+  private csvImports: Map<number, CsvImport> = new Map();
   private currentId = 1;
 
   constructor() {
@@ -61,6 +66,10 @@ export class MemStorage implements IStorage {
       dailyLossLimit: 150,
       profitTarget: 15000,
       status: "active",
+      riskPerTrade: 100,
+      riskPercentage: 1.0,
+      maxPositionSize: 10000,
+      preferredAssets: "SPY,QQQ,TSLA",
       createdAt: new Date(),
     };
 
@@ -75,6 +84,10 @@ export class MemStorage implements IStorage {
       dailyLossLimit: 300,
       profitTarget: 0,
       status: "active",
+      riskPerTrade: 200,
+      riskPercentage: 0.5,
+      maxPositionSize: 25000,
+      preferredAssets: "ES,NQ,RTY",
       createdAt: new Date(),
     };
 
@@ -89,6 +102,10 @@ export class MemStorage implements IStorage {
       dailyLossLimit: 100,
       profitTarget: 5000,
       status: "active",
+      riskPerTrade: 50,
+      riskPercentage: 2.0,
+      maxPositionSize: 5000,
+      preferredAssets: "AAPL,MSFT,GOOGL",
       createdAt: new Date(),
     };
 
@@ -307,6 +324,23 @@ export class MemStorage implements IStorage {
     const updated = { ...existing, ...stats };
     this.dailyStats.set(id, updated);
     return updated;
+  }
+
+  // CSV Import operations
+  async getCsvImports(accountId?: number): Promise<CsvImport[]> {
+    const allImports = Array.from(this.csvImports.values());
+    return accountId ? allImports.filter(csvImport => csvImport.accountId === accountId) : allImports;
+  }
+
+  async createCsvImport(csvImport: InsertCsvImport): Promise<CsvImport> {
+    const id = this.currentId++;
+    const newImport: CsvImport = { 
+      ...csvImport, 
+      id,
+      createdAt: new Date()
+    };
+    this.csvImports.set(id, newImport);
+    return newImport;
   }
 }
 
