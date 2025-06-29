@@ -1,0 +1,452 @@
+import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { formatCurrency, formatDate } from "@/lib/utils";
+import { 
+  DollarSign, 
+  Calendar, 
+  CheckCircle, 
+  XCircle, 
+  Clock,
+  TrendingUp,
+  AlertCircle,
+  Download
+} from "lucide-react";
+import type { Account, Trade } from "@shared/schema";
+
+interface PayoutMetrics {
+  availablePayout: number;
+  totalEarnings: number;
+  totalPayouts: number;
+  fiveDayEligible: boolean;
+  twentyPercentRule: boolean;
+  consistencyProgress: number;
+  daysTraded: number;
+  requiredTradingDays: number;
+  nextPayoutDate: string | null;
+}
+
+interface PayoutHistory {
+  id: number;
+  date: string;
+  amount: number;
+  status: 'pending' | 'approved' | 'paid' | 'rejected';
+  type: '5-day' | '10-day';
+}
+
+export default function Payouts() {
+  const [selectedAccountId, setSelectedAccountId] = useState<string>("");
+  const [showRequestDialog, setShowRequestDialog] = useState(false);
+
+  const { data: accounts } = useQuery<Account[]>({
+    queryKey: ["/api/accounts"],
+  });
+
+  const { data: trades } = useQuery<Trade[]>({
+    queryKey: ["/api/trades", selectedAccountId],
+    enabled: !!selectedAccountId,
+  });
+
+  const selectedAccount = accounts?.find(acc => acc.id.toString() === selectedAccountId);
+
+  // Mock payout history for demonstration
+  const payoutHistory: PayoutHistory[] = [
+    {
+      id: 1,
+      date: "2024-10-15",
+      amount: 1200,
+      status: 'paid',
+      type: '5-day'
+    },
+    {
+      id: 2,
+      date: "2024-09-28",
+      amount: 800,
+      status: 'paid',
+      type: '5-day'
+    },
+    {
+      id: 3,
+      date: "2024-09-10",
+      amount: 600,
+      status: 'paid',
+      type: '5-day'
+    }
+  ];
+
+  const calculatePayoutMetrics = (): PayoutMetrics | null => {
+    if (!selectedAccount || !trades) return null;
+
+    const totalProfit = Math.max(0, selectedAccount.currentBalance - selectedAccount.startingBalance);
+    const profitableTrades = trades.filter(trade => trade.pnl > 0);
+    const totalPnL = trades.reduce((sum, trade) => sum + trade.pnl, 0);
+
+    // Calculate highest profit day for 20% rule
+    const dailyPnL = trades.reduce((acc, trade) => {
+      acc[trade.date] = (acc[trade.date] || 0) + trade.pnl;
+      return acc;
+    }, {} as Record<string, number>);
+
+    const dailyPnLValues = Object.values(dailyPnL);
+    const highestDayProfit = Math.max(...dailyPnLValues, 0);
+    const twentyPercentThreshold = highestDayProfit * 0.2;
+
+    // Check if any single day exceeds 20% of total profit
+    const twentyPercentRule = dailyPnLValues.every(dayPnL => dayPnL <= twentyPercentThreshold || totalPnL <= 0);
+
+    // 5-day trading requirement
+    const tradingDays = Object.keys(dailyPnL).length;
+    const fiveDayEligible = tradingDays >= 5;
+
+    // Calculate available payout (80% of profit for funded accounts)
+    const payoutPercentage = selectedAccount.type === 'funded' ? 0.8 : 0;
+    const availablePayout = Math.max(0, totalProfit * payoutPercentage);
+
+    // Next payout date (assuming weekly payouts)
+    const nextPayoutDate = new Date();
+    nextPayoutDate.setDate(nextPayoutDate.getDate() + (7 - nextPayoutDate.getDay()));
+
+    return {
+      availablePayout,
+      totalEarnings: totalProfit,
+      totalPayouts: payoutHistory.filter(p => p.status === 'paid').reduce((sum, p) => sum + p.amount, 0),
+      fiveDayEligible,
+      twentyPercentRule,
+      consistencyProgress: twentyPercentRule ? 100 : (twentyPercentThreshold / Math.max(dailyPnLValues) * 100),
+      daysTraded: tradingDays,
+      requiredTradingDays: 5,
+      nextPayoutDate: fiveDayEligible && twentyPercentRule ? nextPayoutDate.toISOString().split('T')[0] : null,
+    };
+  };
+
+  const getStatusIcon = (status: string) => {
+    switch (status) {
+      case 'paid': return <CheckCircle className="h-4 w-4 text-success-green" />;
+      case 'approved': return <Clock className="h-4 w-4 text-primary" />;
+      case 'pending': return <Clock className="h-4 w-4 text-warning-orange" />;
+      case 'rejected': return <XCircle className="h-4 w-4 text-error-red" />;
+      default: return <Clock className="h-4 w-4 text-gray-400" />;
+    }
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'paid': return 'bg-success-green text-white';
+      case 'approved': return 'bg-primary text-white';
+      case 'pending': return 'bg-warning-orange text-white';
+      case 'rejected': return 'bg-error-red text-white';
+      default: return 'bg-gray-500 text-white';
+    }
+  };
+
+  const metrics = calculatePayoutMetrics();
+
+  return (
+    <>
+      <header className="bg-dark-surface border-b border-dark-border px-6 py-4">
+        <div className="flex justify-between items-center">
+          <div>
+            <h2 className="text-2xl font-bold">Payout Management</h2>
+            <p className="text-gray-400 text-sm mt-1">Track your earnings and manage payout requests</p>
+          </div>
+          <div className="flex items-center space-x-4">
+            <Select value={selectedAccountId} onValueChange={setSelectedAccountId}>
+              <SelectTrigger className="w-48">
+                <SelectValue placeholder="Select account" />
+              </SelectTrigger>
+              <SelectContent>
+                {accounts?.filter(acc => acc.type === 'funded').map((account) => (
+                  <SelectItem key={account.id} value={account.id.toString()}>
+                    {account.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <Dialog open={showRequestDialog} onOpenChange={setShowRequestDialog}>
+              <DialogTrigger asChild>
+                <Button 
+                  className="bg-success-green hover:bg-green-600"
+                  disabled={!metrics?.fiveDayEligible || !metrics?.twentyPercentRule || !metrics?.availablePayout}
+                >
+                  <DollarSign className="mr-2 h-4 w-4" />
+                  Request Payout
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="bg-dark-surface border-dark-border">
+                <DialogHeader>
+                  <DialogTitle>Request Payout</DialogTitle>
+                </DialogHeader>
+                <div className="space-y-4">
+                  <div className="bg-dark-card p-4 rounded-lg">
+                    <h4 className="font-medium mb-2">Payout Summary</h4>
+                    <div className="space-y-2 text-sm">
+                      <div className="flex justify-between">
+                        <span className="text-gray-400">Available Amount:</span>
+                        <span className="font-medium text-success-green">{formatCurrency(metrics?.availablePayout || 0)}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-400">Processing Time:</span>
+                        <span>2-3 business days</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex justify-end space-x-2">
+                    <Button variant="outline" onClick={() => setShowRequestDialog(false)}>
+                      Cancel
+                    </Button>
+                    <Button className="bg-success-green hover:bg-green-600">
+                      Confirm Request
+                    </Button>
+                  </div>
+                </div>
+              </DialogContent>
+            </Dialog>
+          </div>
+        </div>
+      </header>
+
+      <div className="p-6">
+        {!selectedAccount ? (
+          <div className="text-center py-12">
+            <DollarSign className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+            <h3 className="text-lg font-medium text-gray-300 mb-2">Select a funded account</h3>
+            <p className="text-gray-400">Payouts are only available for funded accounts</p>
+          </div>
+        ) : selectedAccount.type !== 'funded' ? (
+          <div className="text-center py-12">
+            <AlertCircle className="h-12 w-12 text-warning-orange mx-auto mb-4" />
+            <h3 className="text-lg font-medium text-gray-300 mb-2">Challenge Account</h3>
+            <p className="text-gray-400">Complete your challenge to unlock payout features</p>
+          </div>
+        ) : (
+          <div className="space-y-6">
+            {/* Payout Overview */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              <Card className="bg-dark-card border-dark-border">
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-gray-400 text-sm mb-1">Available Payout</p>
+                      <p className="text-2xl font-bold text-success-green">
+                        {formatCurrency(metrics?.availablePayout || 0)}
+                      </p>
+                      <p className="text-xs text-gray-400 mt-1">Ready to withdraw</p>
+                    </div>
+                    <div className="bg-success-green bg-opacity-20 p-3 rounded-lg">
+                      <DollarSign className="text-success-green h-6 w-6" />
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-dark-card border-dark-border">
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-gray-400 text-sm mb-1">Total Earnings</p>
+                      <p className="text-2xl font-bold text-primary">
+                        {formatCurrency(metrics?.totalEarnings || 0)}
+                      </p>
+                      <p className="text-xs text-gray-400 mt-1">Account profit</p>
+                    </div>
+                    <div className="bg-primary bg-opacity-20 p-3 rounded-lg">
+                      <TrendingUp className="text-primary h-6 w-6" />
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-dark-card border-dark-border">
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-gray-400 text-sm mb-1">Total Payouts</p>
+                      <p className="text-2xl font-bold text-warning-orange">
+                        {formatCurrency(metrics?.totalPayouts || 0)}
+                      </p>
+                      <p className="text-xs text-gray-400 mt-1">All time received</p>
+                    </div>
+                    <div className="bg-warning-orange bg-opacity-20 p-3 rounded-lg">
+                      <Download className="text-warning-orange h-6 w-6" />
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-dark-card border-dark-border">
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-gray-400 text-sm mb-1">Next Payout</p>
+                      <p className="text-lg font-bold">
+                        {metrics?.nextPayoutDate ? formatDate(metrics.nextPayoutDate) : "N/A"}
+                      </p>
+                      <p className="text-xs text-gray-400 mt-1">Estimated date</p>
+                    </div>
+                    <div className="bg-accent-orange bg-opacity-20 p-3 rounded-lg">
+                      <Calendar className="text-accent-orange h-6 w-6" />
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Payout Eligibility */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <Card className="bg-dark-card border-dark-border">
+                <CardHeader>
+                  <CardTitle>Payout Eligibility</CardTitle>
+                  <p className="text-gray-400 text-sm">Requirements for payout requests</p>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center">
+                      {metrics?.fiveDayEligible ? (
+                        <CheckCircle className="h-5 w-5 text-success-green mr-3" />
+                      ) : (
+                        <XCircle className="h-5 w-5 text-error-red mr-3" />
+                      )}
+                      <span className="text-sm">5 Trading Days</span>
+                    </div>
+                    <Badge className={metrics?.fiveDayEligible ? 'bg-success-green text-white' : 'bg-error-red text-white'}>
+                      {metrics?.daysTraded || 0}/5
+                    </Badge>
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center">
+                      {metrics?.twentyPercentRule ? (
+                        <CheckCircle className="h-5 w-5 text-success-green mr-3" />
+                      ) : (
+                        <XCircle className="h-5 w-5 text-error-red mr-3" />
+                      )}
+                      <span className="text-sm">20% Consistency Rule</span>
+                    </div>
+                    <Badge className={metrics?.twentyPercentRule ? 'bg-success-green text-white' : 'bg-error-red text-white'}>
+                      {metrics?.twentyPercentRule ? 'Met' : 'Not Met'}
+                    </Badge>
+                  </div>
+
+                  <div className="space-y-2">
+                    <div className="flex justify-between text-sm">
+                      <span>Consistency Progress</span>
+                      <span>{metrics?.consistencyProgress.toFixed(0) || 0}%</span>
+                    </div>
+                    <Progress value={metrics?.consistencyProgress || 0} className="h-2" />
+                    <p className="text-xs text-gray-400">
+                      No single trading day should exceed 20% of total profit
+                    </p>
+                  </div>
+
+                  {(!metrics?.fiveDayEligible || !metrics?.twentyPercentRule) && (
+                    <div className="mt-4 p-3 bg-warning-orange bg-opacity-20 rounded-lg border border-warning-orange">
+                      <div className="flex items-center">
+                        <AlertCircle className="h-4 w-4 text-warning-orange mr-2" />
+                        <p className="text-sm text-warning-orange">
+                          Complete all requirements to unlock payouts
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+
+              <Card className="bg-dark-card border-dark-border">
+                <CardHeader>
+                  <CardTitle>Payout Schedule</CardTitle>
+                  <p className="text-gray-400 text-sm">Payment options and processing times</p>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="border border-dark-border rounded-lg p-4">
+                    <div className="flex items-center justify-between mb-2">
+                      <h4 className="font-medium">5-Day Payout</h4>
+                      <Badge className="bg-primary text-white">Standard</Badge>
+                    </div>
+                    <div className="text-sm text-gray-400 space-y-1">
+                      <p>• Available after 5 trading days</p>
+                      <p>• Up to {formatCurrency(1500)} maximum</p>
+                      <p>• 2-3 business days processing</p>
+                    </div>
+                  </div>
+
+                  <div className="border border-dark-border rounded-lg p-4">
+                    <div className="flex items-center justify-between mb-2">
+                      <h4 className="font-medium">10-Day Payout</h4>
+                      <Badge className="bg-success-green text-white">Premium</Badge>
+                    </div>
+                    <div className="text-sm text-gray-400 space-y-1">
+                      <p>• Available after 10 trading days</p>
+                      <p>• Up to {formatCurrency(3000)} maximum</p>
+                      <p>• 1-2 business days processing</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Payout History */}
+            <Card className="bg-dark-card border-dark-border">
+              <CardHeader>
+                <CardTitle>Payout History</CardTitle>
+                <p className="text-gray-400 text-sm">Previous payout requests and payments</p>
+              </CardHeader>
+              <CardContent>
+                {payoutHistory.length > 0 ? (
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-sm">
+                      <thead className="bg-dark-surface">
+                        <tr>
+                          <th className="px-6 py-3 text-left font-medium text-gray-400">Date</th>
+                          <th className="px-6 py-3 text-left font-medium text-gray-400">Amount</th>
+                          <th className="px-6 py-3 text-left font-medium text-gray-400">Type</th>
+                          <th className="px-6 py-3 text-left font-medium text-gray-400">Status</th>
+                          <th className="px-6 py-3 text-left font-medium text-gray-400">Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-dark-border">
+                        {payoutHistory.map((payout) => (
+                          <tr key={payout.id} className="hover:bg-dark-surface transition-colors">
+                            <td className="px-6 py-4">{formatDate(payout.date)}</td>
+                            <td className="px-6 py-4 font-medium">{formatCurrency(payout.amount)}</td>
+                            <td className="px-6 py-4">
+                              <Badge variant="outline" className="border-gray-600">
+                                {payout.type}
+                              </Badge>
+                            </td>
+                            <td className="px-6 py-4">
+                              <div className="flex items-center">
+                                {getStatusIcon(payout.status)}
+                                <Badge className={`ml-2 ${getStatusColor(payout.status)}`}>
+                                  {payout.status.charAt(0).toUpperCase() + payout.status.slice(1)}
+                                </Badge>
+                              </div>
+                            </td>
+                            <td className="px-6 py-4">
+                              <Button variant="ghost" size="sm" className="text-primary hover:text-blue-400">
+                                View Details
+                              </Button>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                ) : (
+                  <div className="text-center py-8">
+                    <Download className="h-8 w-8 text-gray-400 mx-auto mb-4" />
+                    <p className="text-gray-400">No payout history available</p>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </div>
+        )}
+      </div>
+    </>
+  );
+}
