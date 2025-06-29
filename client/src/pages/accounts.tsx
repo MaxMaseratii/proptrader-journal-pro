@@ -25,14 +25,14 @@ import { z } from "zod";
 const formSchema = insertAccountSchema.extend({
   startingBalance: z.number().min(1000, "Starting balance must be at least $1,000"),
   maxDrawdown: z.number().min(100, "Max drawdown must be at least $100"),
-  dailyLossLimit: z.number().min(50, "Daily loss limit must be at least $50"),
   profitTarget: z.number().min(0, "Profit target must be positive"),
-  riskPerTrade: z.number().optional(),
-  riskPercentage: z.number().min(0).max(10).optional(),
-  maxPositionSize: z.number().min(1).optional(),
-  preferredAssets: z.string().optional(),
   
-  // Challenge/Evaluation Settings
+  // Daily Loss Limit (optional)
+  hasDailyLossLimit: z.boolean().optional(),
+  dailyLossLimit: z.number().min(50, "Daily loss limit must be at least $50").optional(),
+  dailyLossLimitType: z.enum(['soft', 'hard']).optional(),
+  
+  // Challenge/Account Settings
   accountCost: z.number().optional(),
   numberOfPhases: z.number().min(1).max(2).optional(),
   phase1Target: z.number().optional(),
@@ -40,32 +40,26 @@ const formSchema = insertAccountSchema.extend({
   minimumTradingDays: z.number().optional(),
   timeLimit: z.number().optional(),
   
-  // Drawdown Rules
-  drawdownType: z.string().optional(),
-  maxTotalLoss: z.number().optional(),
-  trailingThreshold: z.number().optional(),
-  
-  // Trading Rules
-  consistencyRule: z.boolean().optional(),
-  consistencyPercentage: z.number().optional(),
-  copyTradingAllowed: z.boolean().optional(),
-  newsTradingAllowed: z.boolean().optional(),
-  
   // Payout Settings
   daysRequiredForPayout: z.number().optional(),
   winningDayMinimum: z.number().optional(),
   minimumPayoutAmount: z.number().optional(),
   payoutFrequency: z.string().optional(),
   maximumPayoutPercentage: z.number().optional(),
-  accountBufferRequired: z.boolean().optional(),
-  bufferAmount: z.number().optional(),
   profitSplit: z.number().optional(),
-  enhancedPayoutsAvailable: z.boolean().optional(),
+  bufferPercentage: z.number().min(0).max(100).optional(),
   
-  // Live Account Settings
-  liveAccountAvailable: z.boolean().optional(),
-  transitionTrigger: z.string().optional(),
-  activationCost: z.number().optional(),
+  // Smart Position Sizing Calculator Settings
+  tradingCapital: z.number().optional(),
+  riskCalculationPeriod: z.enum(['weekly', 'bi_weekly', 'monthly', 'custom']).optional(),
+  customRiskAmount: z.number().optional(),
+  useRiskPercentage: z.boolean().optional(),
+  riskPercentage: z.number().min(0).max(10).optional(),
+  riskRewardRatio: z.number().min(0.1).max(10).optional(),
+  primaryAsset: z.string().optional(),
+  useIntradayMargins: z.boolean().optional(),
+  marginSafetyBuffer: z.number().min(10).max(90).optional(),
+  stopLossPoints: z.number().min(1).max(500).optional(),
 });
 
 export default function Accounts() {
@@ -84,11 +78,33 @@ export default function Accounts() {
       startingBalance: 50000,
       currentBalance: 50000,
       maxDrawdown: 2500,
-      dailyLossLimit: 100,
       profitTarget: 5000,
       status: "active",
+      hasDailyLossLimit: false,
+      dailyLossLimit: 0,
+      dailyLossLimitType: "soft",
+      // Smart Position Sizing defaults
+      tradingCapital: 50000,
+      riskCalculationPeriod: "bi_weekly",
+      useRiskPercentage: false,
+      riskPercentage: 1.0,
+      riskRewardRatio: 2.0,
+      primaryAsset: "MES",
+      useIntradayMargins: true,
+      marginSafetyBuffer: 50.0,
+      stopLossPoints: 10,
     },
   });
+
+  // Calculate risk suggestions when form values change
+  const formValues = form.watch();
+  const riskSuggestion = useMemo(() => {
+    try {
+      return calculateRiskSuggestions(formValues);
+    } catch (error) {
+      return null;
+    }
+  }, [formValues]);
 
   const createAccountMutation = useMutation({
     mutationFn: async (data: InsertAccount) => {
@@ -134,35 +150,45 @@ export default function Accounts() {
                   Add Account
                 </Button>
               </DialogTrigger>
-              <DialogContent className="bg-dark-surface border-dark-border max-w-4xl max-h-[90vh] overflow-hidden">
+              <DialogContent className="bg-gray-900 border-gray-700 max-w-5xl max-h-[90vh] overflow-hidden text-white">
                 <DialogHeader>
-                  <DialogTitle>Add New Account</DialogTitle>
+                  <DialogTitle className="text-xl font-bold text-white">Add New Trading Account</DialogTitle>
                 </DialogHeader>
                 <ScrollArea className="h-[80vh] pr-4">
                   <Form {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                      <Tabs defaultValue="basic" className="w-full">
-                        <TabsList className="grid w-full grid-cols-4">
-                          <TabsTrigger value="basic">Basic Info</TabsTrigger>
-                          <TabsTrigger value="challenge">Challenge</TabsTrigger>
-                          <TabsTrigger value="payout">Payout Rules</TabsTrigger>
-                          <TabsTrigger value="risk">Risk Settings</TabsTrigger>
+                      <Tabs defaultValue="account-info" className="w-full">
+                        <TabsList className="grid w-full grid-cols-3 bg-gray-800 text-gray-200">
+                          <TabsTrigger value="account-info" className="data-[state=active]:bg-blue-600 data-[state=active]:text-white">Account Info & Rules</TabsTrigger>
+                          <TabsTrigger value="payout" className="data-[state=active]:bg-blue-600 data-[state=active]:text-white">Payout Rules</TabsTrigger>
+                          <TabsTrigger value="risk" className="data-[state=active]:bg-blue-600 data-[state=active]:text-white">Risk Settings</TabsTrigger>
                         </TabsList>
                         
-                        <TabsContent value="basic" className="space-y-4 mt-6">
-                          <FormField
-                            control={form.control}
-                            name="name"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel>Account Name</FormLabel>
-                                <FormControl>
-                                  <Input placeholder="e.g., GT Account #1234" {...field} />
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
+                        <TabsContent value="account-info" className="space-y-6 mt-6">
+                          {/* Basic Account Information */}
+                          <div className="bg-gray-800 p-4 rounded-lg">
+                            <h3 className="text-lg font-semibold text-white mb-4 flex items-center">
+                              <Target className="mr-2 h-5 w-5" />
+                              Basic Account Information
+                            </h3>
+                            
+                            <FormField
+                              control={form.control}
+                              name="name"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel className="text-white font-medium">Account Name</FormLabel>
+                                  <FormControl>
+                                    <Input 
+                                      placeholder="e.g., GT Account #1234" 
+                                      {...field} 
+                                      className="bg-gray-700 border-gray-600 text-white placeholder-gray-400"
+                                    />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
                           
                           <div className="grid grid-cols-3 gap-4">
                             <FormField
