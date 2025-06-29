@@ -1,12 +1,13 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Calendar } from "@/components/ui/calendar";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { formatCurrency, formatDate, formatPercentage } from "@/lib/utils";
+import ReportGenerator from "@/components/report-generator";
+import { EquityChart, MonthlyPerformanceChart } from "@/components/chart-components";
 import { 
   FileText, 
   Download, 
@@ -16,7 +17,11 @@ import {
   TrendingDown,
   Target,
   Activity,
-  Filter
+  Filter,
+  Brain,
+  PieChart,
+  Users,
+  DollarSign
 } from "lucide-react";
 import { format, startOfMonth, endOfMonth, startOfWeek, endOfWeek, subDays } from "date-fns";
 import type { Account, Trade, JournalEntry } from "@shared/schema";
