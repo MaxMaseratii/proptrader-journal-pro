@@ -342,17 +342,17 @@ export default function Dashboard() {
                       {Math.round(combinedAnalytics?.disciplinedScore || 100)}
                     </p>
                     <Badge className={`${getGradeColor(
-                      combinedAnalytics?.disciplinedScore >= 95 ? 'A+' :
-                      combinedAnalytics?.disciplinedScore >= 90 ? 'A' :
-                      combinedAnalytics?.disciplinedScore >= 80 ? 'B' :
-                      combinedAnalytics?.disciplinedScore >= 70 ? 'C' :
-                      combinedAnalytics?.disciplinedScore >= 60 ? 'D' : 'F'
+                      (combinedAnalytics?.disciplinedScore || 100) >= 95 ? 'A+' :
+                      (combinedAnalytics?.disciplinedScore || 100) >= 90 ? 'A' :
+                      (combinedAnalytics?.disciplinedScore || 100) >= 80 ? 'B' :
+                      (combinedAnalytics?.disciplinedScore || 100) >= 70 ? 'C' :
+                      (combinedAnalytics?.disciplinedScore || 100) >= 60 ? 'D' : 'F'
                     )} text-white`}>
-                      {combinedAnalytics?.disciplinedScore >= 95 ? 'A+' :
-                       combinedAnalytics?.disciplinedScore >= 90 ? 'A' :
-                       combinedAnalytics?.disciplinedScore >= 80 ? 'B' :
-                       combinedAnalytics?.disciplinedScore >= 70 ? 'C' :
-                       combinedAnalytics?.disciplinedScore >= 60 ? 'D' : 'F'}
+                      {(combinedAnalytics?.disciplinedScore || 100) >= 95 ? 'A+' :
+                       (combinedAnalytics?.disciplinedScore || 100) >= 90 ? 'A' :
+                       (combinedAnalytics?.disciplinedScore || 100) >= 80 ? 'B' :
+                       (combinedAnalytics?.disciplinedScore || 100) >= 70 ? 'C' :
+                       (combinedAnalytics?.disciplinedScore || 100) >= 60 ? 'D' : 'F'}
                     </Badge>
                   </div>
                   <p className="text-xs text-gray-400 mt-1">Risk compliance</p>
@@ -389,11 +389,6 @@ export default function Dashboard() {
               </div>
             </CardContent>
           </Card>
-        </div>
-
-        {/* Trading Calendar */}
-        <div className="mb-8">
-          <TradeCalendar trades={trades || []} />
         </div>
 
         {/* Charts Section */}
@@ -643,6 +638,116 @@ export default function Dashboard() {
               <Button className="bg-accent-orange hover:bg-orange-600">
                 Save Journal Entry
               </Button>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Trader Profile & Subscription Section */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+          {/* Trader Profile */}
+          <Card className="bg-dark-card border-dark-border">
+            <CardHeader>
+              <CardTitle className="flex items-center">
+                <div className="bg-blue-600 bg-opacity-20 p-2 rounded-lg mr-3">
+                  <Target className="text-blue-400 h-5 w-5" />
+                </div>
+                Trader Profile
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="flex items-center space-x-4">
+                <div className="w-16 h-16 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full flex items-center justify-center">
+                  <span className="text-white text-xl font-bold">MM</span>
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold text-white">Max Maserati</h3>
+                  <p className="text-gray-400">Professional Trader</p>
+                  <Badge className="bg-green-600 text-white mt-1">Verified</Badge>
+                </div>
+              </div>
+              
+              <div className="space-y-3">
+                <div className="flex justify-between">
+                  <span className="text-gray-400">Trading Experience:</span>
+                  <span className="text-white font-medium">5+ Years</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-400">Specialization:</span>
+                  <span className="text-white font-medium">Futures/Forex</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-400">Risk Style:</span>
+                  <span className="text-blue-400 font-medium">Conservative</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-400">Total Accounts:</span>
+                  <span className="text-white font-medium">{accounts?.length || 0}</span>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Subscription Status */}
+          <Card className="bg-dark-card border-dark-border">
+            <CardHeader>
+              <CardTitle className="flex items-center">
+                <div className="bg-purple-600 bg-opacity-20 p-2 rounded-lg mr-3">
+                  <Shield className="text-purple-400 h-5 w-5" />
+                </div>
+                MMM Stats Subscription
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="text-lg font-semibold text-white">Pro Plan</h3>
+                  <p className="text-gray-400">Premium trading analytics</p>
+                </div>
+                <Badge className="bg-purple-600 text-white">Active</Badge>
+              </div>
+              
+              <div className="space-y-3">
+                <div className="flex justify-between">
+                  <span className="text-gray-400">Plan Type:</span>
+                  <span className="text-white font-medium">Monthly Pro</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-400">Next Billing:</span>
+                  <span className="text-white font-medium">Jan 15, 2025</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-400">Features:</span>
+                  <span className="text-green-400 font-medium">All Access</span>
+                </div>
+              </div>
+              
+              <div className="pt-4 border-t border-dark-border">
+                <div className="grid grid-cols-2 gap-2">
+                  <Button className="bg-purple-600 hover:bg-purple-700 text-sm">
+                    Manage Plan
+                  </Button>
+                  <Button variant="outline" className="border-gray-600 text-gray-300 text-sm">
+                    View Features
+                  </Button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Compact Trading Calendar */}
+        <Card className="bg-dark-card border-dark-border mb-8">
+          <CardHeader>
+            <CardTitle className="flex items-center">
+              <div className="bg-green-600 bg-opacity-20 p-2 rounded-lg mr-3">
+                <Target className="text-green-400 h-5 w-5" />
+              </div>
+              Trading Calendar
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="max-w-4xl">
+              <TradeCalendar trades={trades || []} />
             </div>
           </CardContent>
         </Card>

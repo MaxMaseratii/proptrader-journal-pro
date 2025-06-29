@@ -779,12 +779,13 @@ export default function Accounts() {
 
         {/* Create Account Button - Bottom Center */}
         <div className="flex justify-center mt-8">
-          <DialogTrigger asChild>
-            <Button className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3">
-              <Plus className="mr-2 h-4 w-4" />
-              Create Account
-            </Button>
-          </DialogTrigger>
+          <Button 
+            onClick={() => setIsDialogOpen(true)}
+            className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3"
+          >
+            <Plus className="mr-2 h-4 w-4" />
+            Create Account
+          </Button>
         </div>
       </div>
     </>
