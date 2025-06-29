@@ -10,6 +10,7 @@ import RiskManagement from "@/pages/risk-management";
 import Performance from "@/pages/performance";
 import Payouts from "@/pages/payouts";
 import Reports from "@/pages/reports";
+import Trades from "@/pages/trades";
 import Sidebar from "@/components/sidebar";
 import NotFound from "@/pages/not-found";
 
@@ -26,6 +27,7 @@ function Router() {
           <Route path="/performance" component={Performance} />
           <Route path="/payouts" component={Payouts} />
           <Route path="/reports" component={Reports} />
+          <Route path="/trades" component={Trades} />
           <Route component={NotFound} />
         </Switch>
       </main>

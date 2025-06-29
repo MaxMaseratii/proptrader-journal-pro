@@ -215,7 +215,7 @@ export default function Dashboard() {
             
             <Button className="bg-primary hover:bg-blue-700">
               <Plus className="mr-2 h-4 w-4" />
-              New Trade
+              Add Trade
             </Button>
             <div className="relative">
               <Bell className="h-5 w-5 text-gray-400" />

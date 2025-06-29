@@ -8,6 +8,7 @@ import {
   BarChart3, 
   DollarSign, 
   Calendar,
+  TrendingUp,
   User
 } from "lucide-react";
 
@@ -15,6 +16,7 @@ const navItems = [
   { href: "/", label: "Dashboard", icon: ChartLine, section: "main" },
   { href: "/journal", label: "Trading Journal", icon: Book, section: "main" },
   { href: "/accounts", label: "Accounts", icon: Wallet, section: "main" },
+  { href: "/trades", label: "Trades", icon: TrendingUp, section: "main" },
   { href: "/risk-management", label: "Risk Management", icon: Shield, section: "main" },
   { href: "/performance", label: "Performance", icon: BarChart3, section: "analytics" },
   { href: "/payouts", label: "Payouts", icon: DollarSign, section: "analytics" },
