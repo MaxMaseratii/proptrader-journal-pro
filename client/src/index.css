@@ -87,3 +87,42 @@
   .bg-error-red { background-color: var(--error-red); }
   .bg-accent-orange { background-color: var(--accent-orange); }
 }
+
+/* Fix Select component visibility */
+@layer components {
+  [data-radix-select-content] {
+    background-color: hsl(0, 0%, 7.1%) !important;
+    border: 1px solid hsl(0, 0%, 25.1%) !important;
+  }
+  
+  [data-radix-select-item] {
+    color: hsl(0, 0%, 98%) !important;
+    background-color: transparent !important;
+  }
+  
+  [data-radix-select-item][data-highlighted] {
+    background-color: hsl(0, 0%, 15.9%) !important;
+    color: hsl(0, 0%, 98%) !important;
+  }
+  
+  [data-radix-select-item][data-state="checked"] {
+    background-color: hsl(207, 90%, 54%) !important;
+    color: hsl(211, 100%, 99%) !important;
+  }
+  
+  /* Select trigger styling */
+  [data-radix-select-trigger] {
+    background-color: hsl(0, 0%, 17.6%) !important;
+    border-color: hsl(0, 0%, 25.1%) !important;
+    color: hsl(0, 0%, 98%) !important;
+  }
+  
+  [data-radix-select-trigger]:focus {
+    border-color: hsl(207, 90%, 54%) !important;
+    box-shadow: 0 0 0 2px hsla(207, 90%, 54%, 0.2) !important;
+  }
+  
+  [data-radix-select-value] {
+    color: hsl(0, 0%, 98%) !important;
+  }
+}

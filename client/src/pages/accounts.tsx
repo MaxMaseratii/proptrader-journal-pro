@@ -17,6 +17,7 @@ import { apiRequest, queryClient } from "@/lib/queryClient";
 import { Plus, Calculator, TrendingUp, DollarSign, Lightbulb, RotateCcw, LogOut, Trash2, AlertTriangle } from "lucide-react";
 import { useState, useEffect, useMemo } from "react";
 import { calculateRiskSuggestions, TRADING_ASSETS, type AssetSymbol } from "@/lib/risk-calculator";
+import AccountManagement from "@/components/account-management";
 
 export default function Accounts() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -36,32 +37,7 @@ export default function Accounts() {
     },
   });
 
-  const resetAccountMutation = useMutation({
-    mutationFn: async ({ id, resetCost }: { id: number; resetCost: number }) => {
-      return apiRequest("POST", `/api/accounts/${id}/reset`, { resetCost });
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/accounts'] });
-    },
-  });
 
-  const withdrawAccountMutation = useMutation({
-    mutationFn: async (id: number) => {
-      return apiRequest("POST", `/api/accounts/${id}/withdraw`, {});
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/accounts'] });
-    },
-  });
-
-  const deleteAccountMutation = useMutation({
-    mutationFn: async (id: number) => {
-      return apiRequest("DELETE", `/api/accounts/${id}`, {});
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/accounts'] });
-    },
-  });
 
   const form = useForm<InsertAccount>({
     resolver: zodResolver(insertAccountSchema),
@@ -964,59 +940,7 @@ export default function Accounts() {
         {/* Account List */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {accounts?.map((account) => (
-            <Card key={account.id} className="bg-dark-card border-dark-border">
-              <CardHeader>
-                <div className="flex justify-between items-start">
-                  <div>
-                    <CardTitle className="text-lg">{account.name}</CardTitle>
-                    <p className="text-sm text-gray-400 mt-1">{account.firm}</p>
-                  </div>
-                  <Badge 
-                    variant={account.status === 'active' ? 'default' : 'secondary'}
-                    className={
-                      account.status === 'active' ? 'bg-success-green text-white' :
-                      account.status === 'passed' ? 'bg-blue-600 text-white' :
-                      account.status === 'failed' ? 'bg-error-red text-white' :
-                      'bg-gray-600 text-white'
-                    }
-                  >
-                    {account.status}
-                  </Badge>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  <div className="flex justify-between">
-                    <span className="text-gray-400">Type:</span>
-                    <span className="capitalize font-medium">{account.type}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-400">Balance:</span>
-                    <span className="font-medium text-success-green">
-                      {formatCurrency(account.currentBalance)}
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-400">Profit Target:</span>
-                    <span className="font-medium">{formatCurrency(account.profitTarget)}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-400">Max Drawdown:</span>
-                    <span className="font-medium text-error-red">
-                      {formatCurrency(account.maxDrawdown)}
-                    </span>
-                  </div>
-                  {account.hasDailyLossLimit && (
-                    <div className="flex justify-between">
-                      <span className="text-gray-400">Daily Loss Limit:</span>
-                      <span className={`font-medium ${account.dailyLossLimitType === 'hard' ? 'text-error-red' : 'text-yellow-500'}`}>
-                        {formatCurrency(account.dailyLossLimit || 0)} ({account.dailyLossLimitType})
-                      </span>
-                    </div>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
+            <AccountManagement key={account.id} account={account} />
           ))}
         </div>
 
