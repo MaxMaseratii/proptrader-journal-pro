@@ -83,7 +83,7 @@ export default function Dashboard() {
     const worstTrade = Math.min(...tradesToAnalyze.map(t => t.pnl), 0);
     
     const totalMaxDrawdown = accountsToAnalyze.reduce((sum, acc) => sum + acc.maxDrawdown, 0);
-    const totalDailyLossLimit = accountsToAnalyze.reduce((sum, acc) => sum + acc.dailyLossLimit, 0);
+    const totalDailyLossLimit = accountsToAnalyze.reduce((sum, acc) => sum + (acc.dailyLossLimit || 0), 0);
     const totalProfitTarget = accountsToAnalyze.reduce((sum, acc) => sum + acc.profitTarget, 0);
 
     return {
@@ -146,8 +146,8 @@ export default function Dashboard() {
             <h2 className="text-2xl font-bold">Trading Dashboard</h2>
             <p className="text-gray-400 text-sm mt-1">
               {viewMode === 'all' 
-                ? `Viewing all ${accounts?.length || 0} accounts` 
-                : `Viewing ${selectedAccountIds.length || (accounts?.length > 0 ? 1 : 0)} selected account(s)`}
+                ? `Viewing all ${accounts?.length ?? 0} accounts` 
+                : `Viewing ${selectedAccountIds.length || (accounts && accounts.length > 0 ? 1 : 0)} selected account(s)`}
             </p>
           </div>
           <div className="flex items-center space-x-4">

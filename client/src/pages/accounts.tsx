@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -10,12 +10,14 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Checkbox } from "@/components/ui/checkbox";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Textarea } from "@/components/ui/textarea";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { insertAccountSchema } from "@shared/schema";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { formatCurrency, formatPercentage } from "@/lib/utils";
-import { Plus, Settings, TrendingUp, TrendingDown, Target, Shield } from "lucide-react";
+import { calculateRiskSuggestions, formatRiskSuggestion, TRADING_ASSETS, type AssetSymbol } from "@/lib/risk-calculator";
+import { Plus, Settings, TrendingUp, TrendingDown, Target, Shield, Calculator, AlertTriangle, Lightbulb } from "lucide-react";
 import CsvImport from "@/components/csv-import";
 import type { Account, InsertAccount } from "@shared/schema";
 import { z } from "zod";

@@ -10,7 +10,9 @@ export const accounts = pgTable("accounts", {
   startingBalance: real("starting_balance").notNull(),
   currentBalance: real("current_balance").notNull(),
   maxDrawdown: real("max_drawdown").notNull(),
-  dailyLossLimit: real("daily_loss_limit").notNull(),
+  dailyLossLimit: real("daily_loss_limit"),
+  hasDailyLossLimit: boolean("has_daily_loss_limit").default(false),
+  dailyLossLimitType: text("daily_loss_limit_type"), // 'soft', 'hard'
   profitTarget: real("profit_target").notNull(),
   status: text("status").notNull().default('active'), // 'active', 'passed', 'failed', 'withdrawn'
   
@@ -47,7 +49,21 @@ export const accounts = pgTable("accounts", {
   maximumPayoutPercentage: real("maximum_payout_percentage"),
   accountBufferRequired: boolean("account_buffer_required").default(false),
   bufferAmount: real("buffer_amount"),
+  bufferPercentage: real("buffer_percentage"), // New field for percentage buffer
   profitSplit: real("profit_split"),
+  
+  // Smart Position Sizing Calculator Settings
+  tradingCapital: real("trading_capital"), // Trading capital for risk calculations
+  riskCalculationPeriod: text("risk_calculation_period"), // 'weekly', 'bi_weekly', 'monthly', 'custom'
+  customRiskAmount: real("custom_risk_amount"), // Fixed dollar amount to risk per trade
+  useRiskPercentage: boolean("use_risk_percentage").default(false),
+  riskRewardRatio: real("risk_reward_ratio").default(2.0),
+  primaryAsset: text("primary_asset"), // 'ES', 'MES', 'NQ', 'MNQ', etc.
+  secondaryAsset: text("secondary_asset"),
+  tertiaryAsset: text("tertiary_asset"),
+  useIntradayMargins: boolean("use_intraday_margins").default(true),
+  marginSafetyBuffer: real("margin_safety_buffer").default(50.0), // Percentage
+  stopLossPoints: integer("stop_loss_points").default(10), // Typical stop loss in points
   enhancedPayoutsAvailable: boolean("enhanced_payouts_available").default(false),
   
   // Live Account Settings
