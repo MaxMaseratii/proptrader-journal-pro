@@ -287,9 +287,337 @@ export default function Accounts() {
                               )}
                             />
                           </div>
+                          
+                          {/* Daily Loss Limit Section */}
+                          <div className="bg-gray-800 p-4 rounded-lg">
+                            <h3 className="text-lg font-semibold text-white mb-4 flex items-center">
+                              <AlertTriangle className="mr-2 h-5 w-5" />
+                              Daily Loss Limit Settings
+                            </h3>
+                            
+                            <FormField
+                              control={form.control}
+                              name="hasDailyLossLimit"
+                              render={({ field }) => (
+                                <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                                  <FormControl>
+                                    <Checkbox
+                                      checked={field.value}
+                                      onCheckedChange={field.onChange}
+                                      className="data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600"
+                                    />
+                                  </FormControl>
+                                  <div className="space-y-1 leading-none">
+                                    <FormLabel className="text-white font-medium">
+                                      Enable Daily Loss Limit
+                                    </FormLabel>
+                                    <p className="text-xs text-gray-400">
+                                      Some prop firms have daily loss limits, others don't
+                                    </p>
+                                  </div>
+                                </FormItem>
+                              )}
+                            />
+                            
+                            {form.watch('hasDailyLossLimit') && (
+                              <div className="grid grid-cols-2 gap-4 mt-4">
+                                <FormField
+                                  control={form.control}
+                                  name="dailyLossLimit"
+                                  render={({ field }) => (
+                                    <FormItem>
+                                      <FormLabel className="text-white font-medium">Daily Loss Limit ($)</FormLabel>
+                                      <FormControl>
+                                        <Input 
+                                          type="number" 
+                                          {...field} 
+                                          onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                                          className="bg-gray-700 border-gray-600 text-white placeholder-gray-400"
+                                          placeholder="e.g., 1000"
+                                        />
+                                      </FormControl>
+                                      <FormMessage />
+                                    </FormItem>
+                                  )}
+                                />
+                                
+                                <FormField
+                                  control={form.control}
+                                  name="dailyLossLimitType"
+                                  render={({ field }) => (
+                                    <FormItem>
+                                      <FormLabel className="text-white font-medium">Daily Loss Limit Type</FormLabel>
+                                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                        <FormControl>
+                                          <SelectTrigger className="bg-gray-700 border-gray-600 text-white">
+                                            <SelectValue placeholder="Select type" />
+                                          </SelectTrigger>
+                                        </FormControl>
+                                        <SelectContent className="bg-gray-700 border-gray-600">
+                                          <SelectItem value="soft" className="text-white hover:bg-gray-600">
+                                            Soft (Trading stopped for day)
+                                          </SelectItem>
+                                          <SelectItem value="hard" className="text-white hover:bg-gray-600">
+                                            Hard (Account fails)
+                                          </SelectItem>
+                                        </SelectContent>
+                                      </Select>
+                                      <p className="text-xs text-gray-400 mt-1">
+                                        Soft: Trading stopped but account safe | Hard: Account fails if exceeded
+                                      </p>
+                                      <FormMessage />
+                                    </FormItem>
+                                  )}
+                                />
+                              </div>
+                            )}
+                          </div>
+                          
+                          {/* Challenge Rules Section */}
+                          <div className="bg-gray-800 p-4 rounded-lg">
+                            <h3 className="text-lg font-semibold text-white mb-4 flex items-center">
+                              <Shield className="mr-2 h-5 w-5" />
+                              Challenge & Account Rules
+                            </h3>
+                            
+                            <div className="grid grid-cols-2 gap-4">
+                              <FormField
+                                control={form.control}
+                                name="profitTarget"
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormLabel className="text-white font-medium">Profit Target ($)</FormLabel>
+                                    <FormControl>
+                                      <Input 
+                                        type="number" 
+                                        {...field} 
+                                        onChange={(e) => field.onChange(parseFloat(e.target.value))}
+                                        className="bg-gray-700 border-gray-600 text-white placeholder-gray-400"
+                                        placeholder="e.g., 5000"
+                                      />
+                                    </FormControl>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+                              
+                              <FormField
+                                control={form.control}
+                                name="maxDrawdown"
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormLabel className="text-white font-medium">Max Drawdown ($)</FormLabel>
+                                    <FormControl>
+                                      <Input 
+                                        type="number" 
+                                        {...field} 
+                                        onChange={(e) => field.onChange(parseFloat(e.target.value))}
+                                        className="bg-gray-700 border-gray-600 text-white placeholder-gray-400"
+                                        placeholder="e.g., 2500"
+                                      />
+                                    </FormControl>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+                              
+                              <FormField
+                                control={form.control}
+                                name="minimumTradingDays"
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormLabel className="text-white font-medium">Minimum Trading Days</FormLabel>
+                                    <FormControl>
+                                      <Input 
+                                        type="number" 
+                                        {...field} 
+                                        onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
+                                        className="bg-gray-700 border-gray-600 text-white placeholder-gray-400"
+                                        placeholder="e.g., 5"
+                                      />
+                                    </FormControl>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+                              
+                              <FormField
+                                control={form.control}
+                                name="timeLimit"
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormLabel className="text-white font-medium">Time Limit (Days)</FormLabel>
+                                    <FormControl>
+                                      <Input 
+                                        type="number" 
+                                        {...field} 
+                                        onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
+                                        className="bg-gray-700 border-gray-600 text-white placeholder-gray-400"
+                                        placeholder="e.g., 30 (0 = unlimited)"
+                                      />
+                                    </FormControl>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+                            </div>
+                          </div>
+                          </div>
                         </TabsContent>
                         
-                        <TabsContent value="challenge" className="space-y-4 mt-6">
+                        <TabsContent value="payout" className="space-y-6 mt-6">
+                          <div className="bg-gray-800 p-4 rounded-lg">
+                            <h3 className="text-lg font-semibold text-white mb-4 flex items-center">
+                              <DollarSign className="mr-2 h-5 w-5" />
+                              Payout Configuration
+                            </h3>
+                            
+                            <div className="grid grid-cols-2 gap-4">
+                              <FormField
+                                control={form.control}
+                                name="payoutFrequency"
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormLabel className="text-white font-medium">Payout Frequency</FormLabel>
+                                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                      <FormControl>
+                                        <SelectTrigger className="bg-gray-700 border-gray-600 text-white">
+                                          <SelectValue placeholder="Select frequency" />
+                                        </SelectTrigger>
+                                      </FormControl>
+                                      <SelectContent className="bg-gray-700 border-gray-600">
+                                        <SelectItem value="weekly" className="text-white hover:bg-gray-600">Weekly</SelectItem>
+                                        <SelectItem value="bi-weekly" className="text-white hover:bg-gray-600">Bi-weekly</SelectItem>
+                                        <SelectItem value="monthly" className="text-white hover:bg-gray-600">Monthly</SelectItem>
+                                        <SelectItem value="on-demand" className="text-white hover:bg-gray-600">On-demand</SelectItem>
+                                      </SelectContent>
+                                    </Select>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+                              
+                              <FormField
+                                control={form.control}
+                                name="minimumPayoutAmount"
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormLabel className="text-white font-medium">Minimum Payout Amount ($)</FormLabel>
+                                    <FormControl>
+                                      <Input 
+                                        type="number" 
+                                        {...field} 
+                                        onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                                        className="bg-gray-700 border-gray-600 text-white placeholder-gray-400"
+                                        placeholder="e.g., 100"
+                                      />
+                                    </FormControl>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+                              
+                              <FormField
+                                control={form.control}
+                                name="profitSplit"
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormLabel className="text-white font-medium">Profit Split (%)</FormLabel>
+                                    <FormControl>
+                                      <Input 
+                                        type="number" 
+                                        min="0"
+                                        max="100"
+                                        {...field} 
+                                        onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                                        className="bg-gray-700 border-gray-600 text-white placeholder-gray-400"
+                                        placeholder="e.g., 80"
+                                      />
+                                    </FormControl>
+                                    <p className="text-xs text-gray-400 mt-1">
+                                      Your percentage of profits (e.g., 80% = you keep 80%)
+                                    </p>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+                              
+                              <FormField
+                                control={form.control}
+                                name="bufferPercentage"
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormLabel className="text-white font-medium">Account Buffer (%)</FormLabel>
+                                    <FormControl>
+                                      <Input 
+                                        type="number" 
+                                        min="0"
+                                        max="100"
+                                        step="0.1"
+                                        {...field} 
+                                        onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                                        className="bg-gray-700 border-gray-600 text-white placeholder-gray-400"
+                                        placeholder="e.g., 5.0"
+                                      />
+                                    </FormControl>
+                                    <p className="text-xs text-gray-400 mt-1">
+                                      Buffer percentage to maintain in account for payouts
+                                    </p>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+                              
+                              <FormField
+                                control={form.control}
+                                name="daysRequiredForPayout"
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormLabel className="text-white font-medium">Required Trading Days</FormLabel>
+                                    <FormControl>
+                                      <Input 
+                                        type="number" 
+                                        {...field} 
+                                        onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
+                                        className="bg-gray-700 border-gray-600 text-white placeholder-gray-400"
+                                        placeholder="e.g., 5"
+                                      />
+                                    </FormControl>
+                                    <p className="text-xs text-gray-400 mt-1">
+                                      Minimum trading days required before payout eligibility
+                                    </p>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+                              
+                              <FormField
+                                control={form.control}
+                                name="maximumPayoutPercentage"
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormLabel className="text-white font-medium">Maximum Payout (%)</FormLabel>
+                                    <FormControl>
+                                      <Input 
+                                        type="number" 
+                                        min="0"
+                                        max="100"
+                                        {...field} 
+                                        onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                                        className="bg-gray-700 border-gray-600 text-white placeholder-gray-400"
+                                        placeholder="e.g., 90"
+                                      />
+                                    </FormControl>
+                                    <p className="text-xs text-gray-400 mt-1">
+                                      Maximum percentage of profits that can be withdrawn
+                                    </p>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+                            </div>
+                          </div>
+                        </TabsContent>
                           <div className="grid grid-cols-2 gap-4">
                             <FormField
                               control={form.control}
@@ -652,7 +980,356 @@ export default function Accounts() {
                           </div>
                         </TabsContent>
                         
-                        <TabsContent value="risk" className="space-y-4 mt-6">
+                        <TabsContent value="risk" className="space-y-6 mt-6">
+                          {/* Risk Suggestions Display */}
+                          {riskSuggestion && (
+                            <div className="bg-blue-900/20 border border-blue-600/30 p-4 rounded-lg">
+                              <h3 className="text-lg font-semibold text-white mb-3 flex items-center">
+                                <Lightbulb className="mr-2 h-5 w-5 text-yellow-400" />
+                                Smart Risk Suggestions
+                              </h3>
+                              <div className="grid grid-cols-2 gap-4 mb-4">
+                                <div className="bg-gray-800 p-3 rounded">
+                                  <p className="text-xs text-gray-400 mb-1">Suggested Risk Per Trade</p>
+                                  <p className="text-lg font-bold text-green-400">
+                                    ${riskSuggestion.suggestedRiskPerTrade.toLocaleString()}
+                                  </p>
+                                </div>
+                                <div className="bg-gray-800 p-3 rounded">
+                                  <p className="text-xs text-gray-400 mb-1">Max Position Size</p>
+                                  <p className="text-lg font-bold text-blue-400">
+                                    {riskSuggestion.maxPositionSize} contracts
+                                  </p>
+                                </div>
+                                <div className="bg-gray-800 p-3 rounded">
+                                  <p className="text-xs text-gray-400 mb-1">Risk Level</p>
+                                  <p className={`text-lg font-bold ${
+                                    riskSuggestion.riskScore === 'Conservative' ? 'text-green-400' :
+                                    riskSuggestion.riskScore === 'Moderate' ? 'text-yellow-400' :
+                                    riskSuggestion.riskScore === 'Aggressive' ? 'text-orange-400' : 'text-red-400'
+                                  }`}>
+                                    {riskSuggestion.riskScore}
+                                  </p>
+                                </div>
+                                <div className="bg-gray-800 p-3 rounded">
+                                  <p className="text-xs text-gray-400 mb-1">Margin Required</p>
+                                  <p className="text-lg font-bold text-purple-400">
+                                    ${riskSuggestion.marginRequired.toLocaleString()}
+                                  </p>
+                                </div>
+                              </div>
+                              
+                              {riskSuggestion.warnings.length > 0 && (
+                                <div className="bg-red-900/20 border border-red-600/30 p-3 rounded mb-3">
+                                  <h4 className="text-red-400 font-medium mb-2">⚠️ Risk Warnings:</h4>
+                                  <ul className="text-xs text-red-200 space-y-1">
+                                    {riskSuggestion.warnings.map((warning, index) => (
+                                      <li key={index}>• {warning}</li>
+                                    ))}
+                                  </ul>
+                                </div>
+                              )}
+                              
+                              <div className="text-xs text-gray-400">
+                                <p className="mb-1">💡 Analysis based on account parameters:</p>
+                                <ul className="space-y-1">
+                                  {riskSuggestion.reasoning.slice(0, 3).map((reason, index) => (
+                                    <li key={index}>• {reason}</li>
+                                  ))}
+                                </ul>
+                              </div>
+                            </div>
+                          )}
+                          
+                          {/* Trading Capital Settings */}
+                          <div className="bg-gray-800 p-4 rounded-lg">
+                            <h3 className="text-lg font-semibold text-white mb-4 flex items-center">
+                              <Calculator className="mr-2 h-5 w-5" />
+                              Trading Capital & Risk Method
+                            </h3>
+                            
+                            <div className="grid grid-cols-2 gap-4">
+                              <FormField
+                                control={form.control}
+                                name="tradingCapital"
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormLabel className="text-white font-medium">Trading Capital ($)</FormLabel>
+                                    <FormControl>
+                                      <Input 
+                                        type="number" 
+                                        {...field} 
+                                        onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                                        className="bg-gray-700 border-gray-600 text-white placeholder-gray-400"
+                                        placeholder="e.g., 50000"
+                                      />
+                                    </FormControl>
+                                    <p className="text-xs text-gray-400 mt-1">
+                                      Total capital or max acceptable drawdown amount
+                                    </p>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+                              
+                              <FormField
+                                control={form.control}
+                                name="riskCalculationPeriod"
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormLabel className="text-white font-medium">Risk Calculation Period</FormLabel>
+                                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                      <FormControl>
+                                        <SelectTrigger className="bg-gray-700 border-gray-600 text-white">
+                                          <SelectValue placeholder="Select period" />
+                                        </SelectTrigger>
+                                      </FormControl>
+                                      <SelectContent className="bg-gray-700 border-gray-600">
+                                        <SelectItem value="weekly" className="text-white hover:bg-gray-600">
+                                          Weekly (5 days)
+                                        </SelectItem>
+                                        <SelectItem value="bi_weekly" className="text-white hover:bg-gray-600">
+                                          BiWeekly (10 days)
+                                        </SelectItem>
+                                        <SelectItem value="monthly" className="text-white hover:bg-gray-600">
+                                          Monthly (20 days)
+                                        </SelectItem>
+                                        <SelectItem value="custom" className="text-white hover:bg-gray-600">
+                                          Custom Risk Amount
+                                        </SelectItem>
+                                      </SelectContent>
+                                    </Select>
+                                    <p className="text-xs text-gray-400 mt-1">
+                                      How to calculate your risk per trade
+                                    </p>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+                            </div>
+                            
+                            {/* Risk Percentage Toggle */}
+                            <div className="mt-4">
+                              <FormField
+                                control={form.control}
+                                name="useRiskPercentage"
+                                render={({ field }) => (
+                                  <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                                    <FormControl>
+                                      <Checkbox
+                                        checked={field.value}
+                                        onCheckedChange={field.onChange}
+                                        className="data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600"
+                                      />
+                                    </FormControl>
+                                    <div className="space-y-1 leading-none">
+                                      <FormLabel className="text-white font-medium">
+                                        Use Percentage Risk Mode
+                                      </FormLabel>
+                                      <p className="text-xs text-gray-400">
+                                        Use percentage of capital instead of period-based risk
+                                      </p>
+                                    </div>
+                                  </FormItem>
+                                )}
+                              />
+                            </div>
+                            
+                            {/* Conditional Risk Fields */}
+                            <div className="grid grid-cols-2 gap-4 mt-4">
+                              {form.watch('useRiskPercentage') ? (
+                                <FormField
+                                  control={form.control}
+                                  name="riskPercentage"
+                                  render={({ field }) => (
+                                    <FormItem>
+                                      <FormLabel className="text-white font-medium">Risk Percentage (%)</FormLabel>
+                                      <FormControl>
+                                        <Input 
+                                          type="number" 
+                                          step="0.01"
+                                          min="0.01"
+                                          max="10"
+                                          {...field} 
+                                          onChange={(e) => field.onChange(parseFloat(e.target.value) || 1.0)}
+                                          className="bg-gray-700 border-gray-600 text-white placeholder-gray-400"
+                                          placeholder="e.g., 1.0"
+                                        />
+                                      </FormControl>
+                                      <p className="text-xs text-gray-400 mt-1">
+                                        Percentage of total capital to risk per trade
+                                      </p>
+                                      <FormMessage />
+                                    </FormItem>
+                                  )}
+                                />
+                              ) : (
+                                form.watch('riskCalculationPeriod') === 'custom' && (
+                                  <FormField
+                                    control={form.control}
+                                    name="customRiskAmount"
+                                    render={({ field }) => (
+                                      <FormItem>
+                                        <FormLabel className="text-white font-medium">Custom Risk Amount ($)</FormLabel>
+                                        <FormControl>
+                                          <Input 
+                                            type="number" 
+                                            {...field} 
+                                            onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                                            className="bg-gray-700 border-gray-600 text-white placeholder-gray-400"
+                                            placeholder="e.g., 500"
+                                          />
+                                        </FormControl>
+                                        <p className="text-xs text-gray-400 mt-1">
+                                          Fixed dollar amount to risk per trade
+                                        </p>
+                                        <FormMessage />
+                                      </FormItem>
+                                    )}
+                                  />
+                                )
+                              )}
+                              
+                              <FormField
+                                control={form.control}
+                                name="riskRewardRatio"
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormLabel className="text-white font-medium">Risk:Reward Ratio</FormLabel>
+                                    <FormControl>
+                                      <Input 
+                                        type="number" 
+                                        step="0.1"
+                                        min="0.1"
+                                        max="10"
+                                        {...field} 
+                                        onChange={(e) => field.onChange(parseFloat(e.target.value) || 2.0)}
+                                        className="bg-gray-700 border-gray-600 text-white placeholder-gray-400"
+                                        placeholder="e.g., 2.0"
+                                      />
+                                    </FormControl>
+                                    <p className="text-xs text-gray-400 mt-1">
+                                      Risk $100 to make $200 = 2.0 ratio
+                                    </p>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+                            </div>
+                          </div>
+                          
+                          {/* Asset Selection */}
+                          <div className="bg-gray-800 p-4 rounded-lg">
+                            <h3 className="text-lg font-semibold text-white mb-4 flex items-center">
+                              <TrendingUp className="mr-2 h-5 w-5" />
+                              Asset Selection & Position Sizing
+                            </h3>
+                            
+                            <div className="grid grid-cols-3 gap-4">
+                              <FormField
+                                control={form.control}
+                                name="primaryAsset"
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormLabel className="text-white font-medium">Primary Trading Asset</FormLabel>
+                                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                      <FormControl>
+                                        <SelectTrigger className="bg-gray-700 border-gray-600 text-white">
+                                          <SelectValue placeholder="Select asset" />
+                                        </SelectTrigger>
+                                      </FormControl>
+                                      <SelectContent className="bg-gray-700 border-gray-600 max-h-48">
+                                        {Object.entries(TRADING_ASSETS).map(([symbol, asset]) => (
+                                          <SelectItem key={symbol} value={symbol} className="text-white hover:bg-gray-600">
+                                            {symbol} - {asset.name}
+                                          </SelectItem>
+                                        ))}
+                                      </SelectContent>
+                                    </Select>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+                              
+                              <FormField
+                                control={form.control}
+                                name="stopLossPoints"
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormLabel className="text-white font-medium">Stop Loss (Points)</FormLabel>
+                                    <FormControl>
+                                      <Input 
+                                        type="number" 
+                                        min="1"
+                                        max="500"
+                                        {...field} 
+                                        onChange={(e) => field.onChange(parseInt(e.target.value) || 10)}
+                                        className="bg-gray-700 border-gray-600 text-white placeholder-gray-400"
+                                        placeholder="e.g., 10"
+                                      />
+                                    </FormControl>
+                                    <p className="text-xs text-gray-400 mt-1">
+                                      Typical stop loss in points for position sizing
+                                    </p>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+                              
+                              <FormField
+                                control={form.control}
+                                name="marginSafetyBuffer"
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormLabel className="text-white font-medium">Margin Safety Buffer (%)</FormLabel>
+                                    <FormControl>
+                                      <Input 
+                                        type="number" 
+                                        min="10"
+                                        max="90"
+                                        step="5"
+                                        {...field} 
+                                        onChange={(e) => field.onChange(parseFloat(e.target.value) || 50.0)}
+                                        className="bg-gray-700 border-gray-600 text-white placeholder-gray-400"
+                                        placeholder="e.g., 50"
+                                      />
+                                    </FormControl>
+                                    <p className="text-xs text-gray-400 mt-1">
+                                      Percentage of capital to keep as safety buffer
+                                    </p>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+                            </div>
+                            
+                            <div className="mt-4">
+                              <FormField
+                                control={form.control}
+                                name="useIntradayMargins"
+                                render={({ field }) => (
+                                  <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                                    <FormControl>
+                                      <Checkbox
+                                        checked={field.value}
+                                        onCheckedChange={field.onChange}
+                                        className="data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600"
+                                      />
+                                    </FormControl>
+                                    <div className="space-y-1 leading-none">
+                                      <FormLabel className="text-white font-medium">
+                                        Use Intraday Margins
+                                      </FormLabel>
+                                      <p className="text-xs text-gray-400">
+                                        Use intraday margin requirements (lower) vs overnight margins (higher)
+                                      </p>
+                                    </div>
+                                  </FormItem>
+                                )}
+                              />
+                            </div>
+                          </div>
+                        </TabsContent>
                           <FormField
                             control={form.control}
                             name="profitTarget"
