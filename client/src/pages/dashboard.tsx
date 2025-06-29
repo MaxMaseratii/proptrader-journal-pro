@@ -40,6 +40,9 @@ interface DashboardAnalytics {
 }
 
 export default function Dashboard() {
+  const [selectedAccountIds, setSelectedAccountIds] = useState<number[]>([]);
+  const [viewMode, setViewMode] = useState<'single' | 'multiple' | 'all'>('all');
+
   const { data: accounts, isLoading: accountsLoading } = useQuery<Account[]>({
     queryKey: ["/api/accounts"],
   });
@@ -48,10 +51,59 @@ export default function Dashboard() {
     queryKey: ["/api/trades"],
   });
 
-  const { data: analytics, isLoading: analyticsLoading } = useQuery<DashboardAnalytics>({
-    queryKey: ["/api/analytics/dashboard/1"],
-    enabled: !!accounts?.length,
-  });
+  // Calculate combined combinedAnalytics for selected accounts
+  const combinedAnalytics = useMemo(() => {
+    if (!accounts || !trades) return null;
+
+    let accountsToAnalyze: Account[] = [];
+    let tradesToAnalyze: Trade[] = [];
+
+    if (viewMode === 'all') {
+      accountsToAnalyze = accounts;
+      tradesToAnalyze = trades;
+    } else {
+      const accountIdsToUse = selectedAccountIds.length > 0 ? selectedAccountIds : (accounts.length > 0 ? [accounts[0].id] : []);
+      accountsToAnalyze = accounts.filter(acc => accountIdsToUse.includes(acc.id));
+      tradesToAnalyze = trades.filter(trade => accountIdsToUse.includes(trade.accountId));
+    }
+
+    if (accountsToAnalyze.length === 0) return null;
+
+    // Calculate combined combinedAnalytics
+    const totalStartingBalance = accountsToAnalyze.reduce((sum, acc) => sum + acc.startingBalance, 0);
+    const totalCurrentBalance = accountsToAnalyze.reduce((sum, acc) => sum + acc.currentBalance, 0);
+    const totalPnl = totalCurrentBalance - totalStartingBalance;
+    
+    const winningTrades = tradesToAnalyze.filter(trade => trade.pnl > 0).length;
+    const losingTrades = tradesToAnalyze.filter(trade => trade.pnl < 0).length;
+    const totalTrades = tradesToAnalyze.length;
+    const winRate = totalTrades > 0 ? (winningTrades / totalTrades) * 100 : 0;
+    
+    const bestTrade = Math.max(...tradesToAnalyze.map(t => t.pnl), 0);
+    const worstTrade = Math.min(...tradesToAnalyze.map(t => t.pnl), 0);
+    
+    const totalMaxDrawdown = accountsToAnalyze.reduce((sum, acc) => sum + acc.maxDrawdown, 0);
+    const totalDailyLossLimit = accountsToAnalyze.reduce((sum, acc) => sum + acc.dailyLossLimit, 0);
+    const totalProfitTarget = accountsToAnalyze.reduce((sum, acc) => sum + acc.profitTarget, 0);
+
+    return {
+      accounts: accountsToAnalyze,
+      totalPnl,
+      winRate,
+      totalTrades,
+      winningTrades,
+      losingTrades,
+      bestTrade,
+      worstTrade,
+      currentBalance: totalCurrentBalance,
+      startingBalance: totalStartingBalance,
+      drawdown: totalStartingBalance - totalCurrentBalance,
+      profitTarget: totalProfitTarget,
+      dailyLossLimit: totalDailyLossLimit,
+      maxDrawdown: totalMaxDrawdown,
+      riskLimitUsed: 0, // Could be calculated based on recent trades
+    };
+  }, [accounts, trades, selectedAccountIds, viewMode]);
 
   const primaryAccount = accounts?.[0];
   const recentTrades = trades?.slice(0, 4) || [];
@@ -74,7 +126,7 @@ export default function Dashboard() {
     { month: "Oct", pnl: -2775 },
   ];
 
-  if (accountsLoading || tradesLoading || analyticsLoading) {
+  if (accountsLoading || tradesLoading) {
     return (
       <div className="flex items-center justify-center h-full">
         <div className="text-center">
@@ -92,9 +144,75 @@ export default function Dashboard() {
         <div className="flex justify-between items-center">
           <div>
             <h2 className="text-2xl font-bold">Trading Dashboard</h2>
-            <p className="text-gray-400 text-sm mt-1">Monitor your prop firm challenges and funded accounts</p>
+            <p className="text-gray-400 text-sm mt-1">
+              {viewMode === 'all' 
+                ? `Viewing all ${accounts?.length || 0} accounts` 
+                : `Viewing ${selectedAccountIds.length || (accounts?.length > 0 ? 1 : 0)} selected account(s)`}
+            </p>
           </div>
           <div className="flex items-center space-x-4">
+            {/* Account Selection */}
+            <div className="flex items-center space-x-2">
+              <Filter className="h-4 w-4 text-gray-400" />
+              <Select value={viewMode} onValueChange={(value: any) => setViewMode(value)}>
+                <SelectTrigger className="w-40">
+                  <SelectValue placeholder="View mode" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Accounts</SelectItem>
+                  <SelectItem value="single">Single Account</SelectItem>
+                  <SelectItem value="multiple">Multiple Accounts</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            
+            {/* Account Selection Dropdown */}
+            {viewMode !== 'all' && accounts && (
+              <div className="flex items-center space-x-2">
+                {viewMode === 'single' ? (
+                  <Select 
+                    value={selectedAccountIds[0]?.toString() || ''} 
+                    onValueChange={(value) => setSelectedAccountIds([parseInt(value)])}
+                  >
+                    <SelectTrigger className="w-48">
+                      <SelectValue placeholder="Select account" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {accounts.map((account) => (
+                        <SelectItem key={account.id} value={account.id.toString()}>
+                          {account.name} ({account.firm})
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                ) : (
+                  <div className="bg-dark-card border border-dark-border rounded-md p-2 max-w-sm">
+                    <p className="text-xs text-gray-400 mb-2">Select accounts:</p>
+                    <div className="space-y-1 max-h-32 overflow-y-auto">
+                      {accounts.map((account) => (
+                        <div key={account.id} className="flex items-center space-x-2">
+                          <Checkbox
+                            id={`account-${account.id}`}
+                            checked={selectedAccountIds.includes(account.id)}
+                            onCheckedChange={(checked) => {
+                              if (checked) {
+                                setSelectedAccountIds([...selectedAccountIds, account.id]);
+                              } else {
+                                setSelectedAccountIds(selectedAccountIds.filter(id => id !== account.id));
+                              }
+                            }}
+                          />
+                          <label htmlFor={`account-${account.id}`} className="text-xs cursor-pointer">
+                            {account.name}
+                          </label>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+            
             <Button className="bg-primary hover:bg-blue-700">
               <Plus className="mr-2 h-4 w-4" />
               New Trade
@@ -118,7 +236,7 @@ export default function Dashboard() {
                 <div>
                   <p className="text-gray-400 text-sm mb-1">Total Balance</p>
                   <p className="text-2xl font-bold text-success-green">
-                    {formatCurrency(analytics?.currentBalance || 0)}
+                    {formatCurrency(combinedAnalytics?.currentBalance || 0)}
                   </p>
                   <p className="text-xs text-success-green mt-1">
                     +2.4% this month
@@ -137,7 +255,7 @@ export default function Dashboard() {
                 <div>
                   <p className="text-gray-400 text-sm mb-1">Daily P&L</p>
                   <p className="text-2xl font-bold text-error-red">
-                    {formatCurrency(analytics?.worstTrade || 0)}
+                    {formatCurrency(combinedAnalytics?.worstTrade || 0)}
                   </p>
                   <p className="text-xs text-error-red mt-1">
                     Worst day: Oct 7
@@ -155,9 +273,9 @@ export default function Dashboard() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-gray-400 text-sm mb-1">Win Rate</p>
-                  <p className="text-2xl font-bold">{analytics?.winRate.toFixed(0) || 0}%</p>
+                  <p className="text-2xl font-bold">{combinedAnalytics?.winRate.toFixed(0) || 0}%</p>
                   <p className="text-xs text-gray-400 mt-1">
-                    {analytics?.winningTrades || 0} wins, {analytics?.losingTrades || 0} losses
+                    {combinedAnalytics?.winningTrades || 0} wins, {combinedAnalytics?.losingTrades || 0} losses
                   </p>
                 </div>
                 <div className="bg-primary bg-opacity-20 p-3 rounded-lg">
@@ -173,7 +291,7 @@ export default function Dashboard() {
                 <div>
                   <p className="text-gray-400 text-sm mb-1">Risk Limit</p>
                   <p className="text-2xl font-bold text-warning-orange">
-                    {formatCurrency(analytics?.dailyLossLimit || 0)}
+                    {formatCurrency(combinedAnalytics?.dailyLossLimit || 0)}
                   </p>
                   <p className="text-xs text-gray-400 mt-1">Max daily loss</p>
                 </div>
@@ -313,14 +431,14 @@ export default function Dashboard() {
               <div className="bg-dark-surface rounded-lg p-4">
                 <div className="flex justify-between text-sm mb-2">
                   <span>Daily Loss Used</span>
-                  <span className="text-warning-orange">{analytics?.riskLimitUsed.toFixed(1) || 0}%</span>
+                  <span className="text-warning-orange">{combinedAnalytics?.riskLimitUsed.toFixed(1) || 0}%</span>
                 </div>
                 <Progress 
-                  value={analytics?.riskLimitUsed || 0} 
+                  value={combinedAnalytics?.riskLimitUsed || 0} 
                   className="w-full h-2 bg-dark-border"
                 />
                 <p className="text-xs text-gray-400 mt-2">
-                  {formatCurrency(Math.abs(analytics?.worstTrade || 0))} of {formatCurrency(analytics?.dailyLossLimit || 0)} daily limit used
+                  {formatCurrency(Math.abs(combinedAnalytics?.worstTrade || 0))} of {formatCurrency(combinedAnalytics?.dailyLossLimit || 0)} daily limit used
                 </p>
               </div>
             </CardContent>
@@ -366,15 +484,15 @@ export default function Dashboard() {
                   <div className="flex justify-between text-sm mb-2">
                     <span>Challenge Progress</span>
                     <span className="text-error-red">
-                      {formatPercentage((analytics?.totalPnl || 0) / (analytics?.profitTarget || 1) * 100)}
+                      {formatPercentage((combinedAnalytics?.totalPnl || 0) / (combinedAnalytics?.profitTarget || 1) * 100)}
                     </span>
                   </div>
                   <Progress 
-                    value={Math.max(0, ((analytics?.totalPnl || 0) / (analytics?.profitTarget || 1)) * 100)} 
+                    value={Math.max(0, ((combinedAnalytics?.totalPnl || 0) / (combinedAnalytics?.profitTarget || 1)) * 100)} 
                     className="w-full h-2 bg-dark-border"
                   />
                   <p className="text-xs text-gray-400 mt-2">
-                    Need {formatCurrency((analytics?.profitTarget || 0) - (analytics?.totalPnl || 0))} to reach 10% target
+                    Need {formatCurrency((combinedAnalytics?.profitTarget || 0) - (combinedAnalytics?.totalPnl || 0))} to reach 10% target
                   </p>
                 </div>
                 <Button className="w-full bg-primary hover:bg-blue-700">
