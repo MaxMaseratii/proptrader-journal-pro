@@ -41,16 +41,14 @@ export default function Sidebar() {
         <ul className="space-y-1 px-4">
           {mainItems.map(({ href, label, icon: Icon }) => (
             <li key={href}>
-              <Link href={href}>
-                <a className={cn(
-                  "flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-colors",
-                  location === href 
-                    ? "bg-primary text-white" 
-                    : "text-gray-300 hover:bg-dark-card"
-                )}>
-                  <Icon className="mr-3 h-4 w-4" />
-                  {label}
-                </a>
+              <Link href={href} className={cn(
+                "flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer",
+                location === href 
+                  ? "bg-primary text-white" 
+                  : "text-gray-300 hover:bg-dark-card"
+              )}>
+                <Icon className="mr-3 h-4 w-4" />
+                {label}
               </Link>
             </li>
           ))}
@@ -62,16 +60,14 @@ export default function Sidebar() {
         <ul className="space-y-1 px-4">
           {analyticsItems.map(({ href, label, icon: Icon }) => (
             <li key={href}>
-              <Link href={href}>
-                <a className={cn(
-                  "flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-colors",
-                  location === href 
-                    ? "bg-primary text-white" 
-                    : "text-gray-300 hover:bg-dark-card"
-                )}>
-                  <Icon className="mr-3 h-4 w-4" />
-                  {label}
-                </a>
+              <Link href={href} className={cn(
+                "flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer",
+                location === href 
+                  ? "bg-primary text-white" 
+                  : "text-gray-300 hover:bg-dark-card"
+              )}>
+                <Icon className="mr-3 h-4 w-4" />
+                {label}
               </Link>
             </li>
           ))}

@@ -6,10 +6,10 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export function formatCurrency(amount: number): string {
-  return new Intl.NumberFormat('en-US', {
+  return amount.toLocaleString('en-US', {
     style: 'currency',
     currency: 'USD',
-  }).format(amount);
+  });
 }
 
 export function formatPercentage(value: number): string {
@@ -17,10 +17,11 @@ export function formatPercentage(value: number): string {
 }
 
 export function formatDate(date: string | Date): string {
-  return new Intl.DateFormat('en-US', {
+  const dateObj = new Date(date);
+  return dateObj.toLocaleDateString('en-US', {
     month: 'short',
     day: 'numeric',
-  }).format(new Date(date));
+  });
 }
 
 export function calculateWinRate(wins: number, total: number): number {
