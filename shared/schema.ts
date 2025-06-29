@@ -20,6 +20,7 @@ export const accounts = pgTable("accounts", {
   riskPerTrade: real("risk_per_trade"), // Dollar amount to risk per trade
   riskPercentage: real("risk_percentage"), // Percentage of account to risk
   maxPositionSize: integer("max_position_size"), // Maximum contracts per trade
+  maxTradesPerDay: integer("max_trades_per_day").default(0), // Maximum trades allowed per day (0 = unlimited)
   preferredAssets: text("preferred_assets"), // JSON array of preferred trading instruments
   
   // Financial Tracking
