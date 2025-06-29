@@ -58,6 +58,50 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Reset account (restart PnL from 0)
+  app.post("/api/accounts/:id/reset", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const { resetCost } = req.body;
+      
+      const account = await storage.getAccount(id);
+      if (!account) {
+        return res.status(404).json({ message: "Account not found" });
+      }
+
+      // Update account with reset data
+      const updatedAccount = await storage.updateAccount(id, {
+        currentBalance: account.startingBalance,
+        status: 'active',
+        resetCount: (account.resetCount || 0) + 1,
+        totalResetsCost: (account.totalResetsCost || 0) + (resetCost || 0)
+      });
+
+      res.json(updatedAccount);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to reset account" });
+    }
+  });
+
+  // Withdraw account (mark as withdrawn)
+  app.post("/api/accounts/:id/withdraw", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      
+      const updatedAccount = await storage.updateAccount(id, {
+        status: 'withdrawn'
+      });
+
+      if (!updatedAccount) {
+        return res.status(404).json({ message: "Account not found" });
+      }
+
+      res.json(updatedAccount);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to withdraw account" });
+    }
+  });
+
   app.delete("/api/accounts/:id", async (req, res) => {
     try {
       const id = parseInt(req.params.id);

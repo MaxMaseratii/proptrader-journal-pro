@@ -14,7 +14,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { insertAccountSchema, type Account, type InsertAccount } from "@shared/schema";
 import { formatCurrency } from "@/lib/utils";
 import { apiRequest, queryClient } from "@/lib/queryClient";
-import { Plus, Calculator, TrendingUp, DollarSign, Lightbulb } from "lucide-react";
+import { Plus, Calculator, TrendingUp, DollarSign, Lightbulb, RotateCcw, LogOut, Trash2, AlertTriangle } from "lucide-react";
 import { useState, useEffect, useMemo } from "react";
 import { calculateRiskSuggestions, TRADING_ASSETS, type AssetSymbol } from "@/lib/risk-calculator";
 
@@ -33,6 +33,33 @@ export default function Accounts() {
       queryClient.invalidateQueries({ queryKey: ['/api/accounts'] });
       setIsDialogOpen(false);
       form.reset();
+    },
+  });
+
+  const resetAccountMutation = useMutation({
+    mutationFn: async ({ id, resetCost }: { id: number; resetCost: number }) => {
+      return apiRequest("POST", `/api/accounts/${id}/reset`, { resetCost });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/accounts'] });
+    },
+  });
+
+  const withdrawAccountMutation = useMutation({
+    mutationFn: async (id: number) => {
+      return apiRequest("POST", `/api/accounts/${id}/withdraw`, {});
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/accounts'] });
+    },
+  });
+
+  const deleteAccountMutation = useMutation({
+    mutationFn: async (id: number) => {
+      return apiRequest("DELETE", `/api/accounts/${id}`, {});
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/accounts'] });
     },
   });
 
@@ -860,6 +887,31 @@ export default function Accounts() {
                                 />
                               )
                             )}
+                            
+                            <FormField
+                              control={form.control}
+                              name="maxTradesPerDay"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel className="text-white font-medium">Max Trades Per Day</FormLabel>
+                                  <FormControl>
+                                    <Input 
+                                      type="number"
+                                      min="0"
+                                      max="50"
+                                      {...field}
+                                      onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
+                                      className="bg-gray-700 border-gray-600 text-white placeholder-gray-400"
+                                      placeholder="0 = unlimited"
+                                    />
+                                  </FormControl>
+                                  <p className="text-xs text-gray-400 mt-1">
+                                    Maximum number of trades allowed per day (0 = unlimited)
+                                  </p>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
                             
                             <FormField
                               control={form.control}
