@@ -109,6 +109,21 @@ The application uses PostgreSQL with four main tables:
 ```
 Changelog:
 - June 29, 2025. Initial setup
+- June 29, 2025. Enhanced account creation with financial tracking:
+  * Added purchase method tracking (credit card, PayPal, crypto, etc.)
+  * Added reset count and cost tracking for failed accounts
+  * Added activation cost and payment status tracking
+  * Added option to specify if activation fee is included in purchase price
+- June 29, 2025. Enhanced dashboard with financial analytics:
+  * Added financial tracking summary showing total spent on accounts
+  * Added total activation costs and combined investment totals
+  * Added account type counters (Challenge, Failed, Live, Funded)
+  * Moved Create Account button to top-right of accounts page
+  * Moved trader profile and subscription info to sidebar
+  * Moved trading calendar to bottom of dashboard in compact format
+- June 29, 2025. Updated database schema:
+  * Added financial tracking fields: accountCost, purchaseMethod, resetCount, totalResetsCost
+  * Added activation tracking: activationCost, activationPaid, includesActivationFee
 ```
 
 ## User Preferences

@@ -1,7 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { insertAccountSchema, insertTradeSchema, insertJournalEntrySchema } from "@shared/schema";
+import { insertAccountSchema, insertTradeSchema, insertJournalEntrySchema, type InsertTrade } from "@shared/schema";
 import { z } from "zod";
 
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -122,6 +122,66 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(204).send();
     } catch (error) {
       res.status(500).json({ message: "Failed to delete trade" });
+    }
+  });
+
+  app.post("/api/trades/import-csv", async (req, res) => {
+    try {
+      const { accountId, csvContent } = req.body;
+      
+      if (!accountId || !csvContent) {
+        return res.status(400).json({ message: "Account ID and CSV content are required" });
+      }
+
+      // Parse CSV content
+      const lines = csvContent.split('\n').filter((line: string) => line.trim());
+      const headers = lines[0].split(',').map((h: string) => h.trim().toLowerCase());
+      
+      let recordsProcessed = 0;
+      let recordsImported = 0;
+      const errors: string[] = [];
+
+      for (let i = 1; i < lines.length; i++) {
+        const values = lines[i].split(',').map((v: string) => v.trim());
+        recordsProcessed++;
+
+        try {
+          // Map CSV columns to trade data
+          const tradeData: InsertTrade = {
+            accountId: parseInt(accountId),
+            symbol: values[headers.indexOf('symbol')] || '',
+            date: values[headers.indexOf('date')] || new Date().toISOString().split('T')[0],
+            side: (values[headers.indexOf('side')] || 'long') as 'long' | 'short',
+            quantity: parseInt(values[headers.indexOf('quantity')] || '1'),
+            entryPrice: parseFloat(values[headers.indexOf('entryprice')] || '0'),
+            exitPrice: values[headers.indexOf('exitprice')] ? parseFloat(values[headers.indexOf('exitprice')]) : null,
+            pnl: parseFloat(values[headers.indexOf('pnl')] || '0'),
+            status: (values[headers.indexOf('status')] || 'closed') as 'open' | 'closed' | 'cancelled',
+            notes: values[headers.indexOf('notes')] || null,
+            orderId: values[headers.indexOf('orderid')] || null,
+            initialStopLoss: values[headers.indexOf('initialstoploss')] ? parseFloat(values[headers.indexOf('initialstoploss')]) : null,
+            initialTakeProfit: values[headers.indexOf('initialtakeprofit')] ? parseFloat(values[headers.indexOf('initialtakeprofit')]) : null,
+            finalStopLoss: values[headers.indexOf('finalstoploss')] ? parseFloat(values[headers.indexOf('finalstoploss')]) : null,
+            finalTakeProfit: values[headers.indexOf('finaltakeprofit')] ? parseFloat(values[headers.indexOf('finaltakeprofit')]) : null,
+          };
+
+          // Validate the trade data
+          const validatedData = insertTradeSchema.parse(tradeData);
+          await storage.createTrade(validatedData);
+          recordsImported++;
+        } catch (error) {
+          errors.push(`Row ${i + 1}: ${error instanceof Error ? error.message : 'Invalid data'}`);
+        }
+      }
+
+      res.json({
+        success: true,
+        recordsProcessed,
+        recordsImported,
+        errors,
+      });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to import CSV", error: error instanceof Error ? error.message : 'Unknown error' });
     }
   });
 

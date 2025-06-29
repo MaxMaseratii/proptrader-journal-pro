@@ -76,14 +76,40 @@ export default function Sidebar() {
         </ul>
       </nav>
       
-      <div className="absolute bottom-0 w-64 p-6 border-t border-dark-border">
-        <div className="flex items-center">
-          <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
-            <User className="h-4 w-4 text-white" />
+      <div className="absolute bottom-0 w-64 p-4 border-t border-dark-border bg-dark-surface">
+        <div className="space-y-4">
+          {/* Trader Profile */}
+          <div className="flex items-center">
+            <div className="w-10 h-10 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full flex items-center justify-center">
+              <span className="text-white text-sm font-bold">MM</span>
+            </div>
+            <div className="ml-3 flex-1">
+              <p className="text-sm font-medium text-white">Max Maserati</p>
+              <p className="text-xs text-gray-400">Professional Trader</p>
+            </div>
           </div>
-          <div className="ml-3">
-            <p className="text-sm font-medium">Max Trader</p>
-            <p className="text-xs text-gray-400">Pro Account</p>
+
+          {/* MMM Stats Subscription */}
+          <div className="bg-purple-900 bg-opacity-30 p-3 rounded-lg border border-purple-600 border-opacity-30">
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center">
+                <div className="w-6 h-6 bg-purple-600 bg-opacity-40 rounded flex items-center justify-center mr-2">
+                  <Shield className="h-3 w-3 text-purple-400" />
+                </div>
+                <span className="text-xs font-medium text-white">MMM Stats</span>
+              </div>
+              <span className="text-xs bg-purple-600 text-white px-2 py-1 rounded">Pro</span>
+            </div>
+            <div className="space-y-1">
+              <div className="flex justify-between text-xs">
+                <span className="text-gray-400">Plan:</span>
+                <span className="text-white">Monthly Pro</span>
+              </div>
+              <div className="flex justify-between text-xs">
+                <span className="text-gray-400">Next billing:</span>
+                <span className="text-white">Jan 15</span>
+              </div>
+            </div>
           </div>
         </div>
       </div>
