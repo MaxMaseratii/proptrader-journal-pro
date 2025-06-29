@@ -88,19 +88,13 @@ export default function Accounts() {
   return (
     <>
       <header className="border-b border-gray-800 bg-dark-bg sticky top-0 z-50">
-        <div className="flex items-center justify-between p-6">
+        <div className="p-6">
           <div>
             <h1 className="text-2xl font-bold text-white">Trading Accounts</h1>
             <p className="text-gray-400">Manage your prop trading accounts</p>
           </div>
 
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-            <DialogTrigger asChild>
-              <Button className="bg-blue-600 hover:bg-blue-700 text-white">
-                <Plus className="mr-2 h-4 w-4" />
-                Add Account
-              </Button>
-            </DialogTrigger>
             <DialogContent className="max-w-4xl max-h-[90vh] bg-dark-bg border-gray-700">
               <DialogHeader>
                 <DialogTitle className="text-white text-xl">Create New Trading Account</DialogTitle>
@@ -781,6 +775,16 @@ export default function Accounts() {
               </CardContent>
             </Card>
           ))}
+        </div>
+
+        {/* Create Account Button - Bottom Center */}
+        <div className="flex justify-center mt-8">
+          <DialogTrigger asChild>
+            <Button className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3">
+              <Plus className="mr-2 h-4 w-4" />
+              Create Account
+            </Button>
+          </DialogTrigger>
         </div>
       </div>
     </>

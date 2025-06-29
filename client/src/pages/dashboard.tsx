@@ -88,6 +88,28 @@ export default function Dashboard() {
     const totalDailyLossLimit = accountsToAnalyze.reduce((sum, acc) => sum + (acc.dailyLossLimit || 0), 0);
     const totalProfitTarget = accountsToAnalyze.reduce((sum, acc) => sum + acc.profitTarget, 0);
 
+    // Calculate disciplined scores for each account
+    const disciplinedScores = accountsToAnalyze.map(account => 
+      calculateDisciplinedScore(account, tradesToAnalyze.filter(t => t.accountId === account.id))
+    );
+    
+    // Get average disciplined score
+    const avgDisciplinedScore = disciplinedScores.length > 0 ? 
+      disciplinedScores.reduce((sum, score) => sum + score.disciplinedScore, 0) / disciplinedScores.length : 100;
+    
+    // Calculate average win/loss and profit factor
+    const winningTradeAmounts = tradesToAnalyze.filter(t => t.pnl > 0).map(t => t.pnl);
+    const losingTradeAmounts = tradesToAnalyze.filter(t => t.pnl < 0).map(t => Math.abs(t.pnl));
+    
+    const averageWin = winningTradeAmounts.length > 0 ? 
+      winningTradeAmounts.reduce((sum, pnl) => sum + pnl, 0) / winningTradeAmounts.length : 0;
+    const averageLoss = losingTradeAmounts.length > 0 ? 
+      losingTradeAmounts.reduce((sum, pnl) => sum + pnl, 0) / losingTradeAmounts.length : 0;
+    
+    const grossProfit = winningTradeAmounts.reduce((sum, pnl) => sum + pnl, 0);
+    const grossLoss = losingTradeAmounts.reduce((sum, pnl) => sum + pnl, 0);
+    const profitFactor = grossLoss > 0 ? grossProfit / grossLoss : grossProfit > 0 ? 999 : 0;
+
     return {
       accounts: accountsToAnalyze,
       totalPnl,
@@ -103,7 +125,12 @@ export default function Dashboard() {
       profitTarget: totalProfitTarget,
       dailyLossLimit: totalDailyLossLimit,
       maxDrawdown: totalMaxDrawdown,
-      riskLimitUsed: 0, // Could be calculated based on recent trades
+      riskLimitUsed: 0,
+      disciplinedScore: avgDisciplinedScore,
+      disciplinedScores,
+      averageWin,
+      averageLoss,
+      profitFactor
     };
   }, [accounts, trades, selectedAccountIds, viewMode]);
 
@@ -303,6 +330,70 @@ export default function Dashboard() {
               </div>
             </CardContent>
           </Card>
+
+          {/* Disciplined Score Card */}
+          <Card className="bg-dark-card border-dark-border">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-gray-400 text-sm mb-1">Disciplined Score</p>
+                  <div className="flex items-center space-x-2">
+                    <p className={`text-2xl font-bold ${getScoreColor(combinedAnalytics?.disciplinedScore || 100)}`}>
+                      {Math.round(combinedAnalytics?.disciplinedScore || 100)}
+                    </p>
+                    <Badge className={`${getGradeColor(
+                      combinedAnalytics?.disciplinedScore >= 95 ? 'A+' :
+                      combinedAnalytics?.disciplinedScore >= 90 ? 'A' :
+                      combinedAnalytics?.disciplinedScore >= 80 ? 'B' :
+                      combinedAnalytics?.disciplinedScore >= 70 ? 'C' :
+                      combinedAnalytics?.disciplinedScore >= 60 ? 'D' : 'F'
+                    )} text-white`}>
+                      {combinedAnalytics?.disciplinedScore >= 95 ? 'A+' :
+                       combinedAnalytics?.disciplinedScore >= 90 ? 'A' :
+                       combinedAnalytics?.disciplinedScore >= 80 ? 'B' :
+                       combinedAnalytics?.disciplinedScore >= 70 ? 'C' :
+                       combinedAnalytics?.disciplinedScore >= 60 ? 'D' : 'F'}
+                    </Badge>
+                  </div>
+                  <p className="text-xs text-gray-400 mt-1">Risk compliance</p>
+                </div>
+                <div className="bg-blue-600 bg-opacity-20 p-3 rounded-lg">
+                  <Crosshair className="text-blue-400 h-6 w-6" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Average Win/Loss Card */}
+          <Card className="bg-dark-card border-dark-border">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-gray-400 text-sm mb-1">Avg Win/Loss</p>
+                  <div className="flex items-center space-x-2 text-sm">
+                    <span className="text-green-400">
+                      {formatCurrency(combinedAnalytics?.averageWin || 0)}
+                    </span>
+                    <span className="text-gray-400">/</span>
+                    <span className="text-red-400">
+                      {formatCurrency(combinedAnalytics?.averageLoss || 0)}
+                    </span>
+                  </div>
+                  <p className="text-xs text-gray-400 mt-1">
+                    Profit Factor: {(combinedAnalytics?.profitFactor || 0).toFixed(2)}
+                  </p>
+                </div>
+                <div className="bg-purple-600 bg-opacity-20 p-3 rounded-lg">
+                  <DollarSign className="text-purple-400 h-6 w-6" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Trading Calendar */}
+        <div className="mb-8">
+          <TradeCalendar trades={trades || []} />
         </div>
 
         {/* Charts Section */}
