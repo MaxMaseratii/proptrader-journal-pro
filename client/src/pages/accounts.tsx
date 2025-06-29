@@ -12,7 +12,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { insertAccountSchema } from "@shared/schema";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { formatCurrency, formatPercentage } from "@/lib/utils";
-import { Plus, Settings, TrendingUp, TrendingDown, Target } from "lucide-react";
+import { Plus, Settings, TrendingUp, TrendingDown, Target, Shield } from "lucide-react";
+import CsvImport from "@/components/csv-import";
 import type { Account, InsertAccount } from "@shared/schema";
 import { z } from "zod";
 
@@ -21,6 +22,10 @@ const formSchema = insertAccountSchema.extend({
   maxDrawdown: z.number().min(100, "Max drawdown must be at least $100"),
   dailyLossLimit: z.number().min(50, "Daily loss limit must be at least $50"),
   profitTarget: z.number().min(0, "Profit target must be positive"),
+  riskPerTrade: z.number().optional(),
+  riskPercentage: z.number().min(0).max(10).optional(),
+  maxPositionSize: z.number().min(1).optional(),
+  preferredAssets: z.string().optional(),
 });
 
 export default function Accounts() {
