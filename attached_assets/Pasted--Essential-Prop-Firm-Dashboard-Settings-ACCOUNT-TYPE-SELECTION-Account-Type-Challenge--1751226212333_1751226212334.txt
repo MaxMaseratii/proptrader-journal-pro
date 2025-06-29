@@ -1,0 +1,134 @@
+# Essential Prop Firm Dashboard Settings
+
+## ACCOUNT TYPE SELECTION
+- **Account Type**: [Challenge] | [Funded Account] | [Live Account]
+
+---
+
+## CHALLENGE/EVALUATION SETTINGS
+
+### Basic Info
+- **Firm Name**: Text field
+- **Account Size**: Dropdown ($10K, $25K, $50K, $100K, $150K, $200K, $250K, $300K)
+- **Account Cost**: Currency field
+- **Number of Phases**: [1] | [2]
+
+### Targets & Time
+- **Phase 1 Target**: Percentage OR Fixed Amount
+- **Phase 2 Target**: Percentage OR Fixed Amount *(if 2-phase)*
+- **Minimum Trading Days**: Number field
+- **Time Limit**: Days (0 = unlimited)
+
+### Drawdown Rules *(Critical)*
+- **Drawdown Type**: 
+  - Daily Drawdown (realized losses only)
+  - Unrealized Drawdown (includes open positions)
+  - End of Day Trailing
+  - Account Balance Based
+- **Daily Loss Limit**: Percentage OR Fixed Amount
+- **Max Total Loss**: Percentage OR Fixed Amount
+- **Trailing Threshold**: Fixed Amount *(if applicable)*
+
+### Key Restrictions
+- **Consistency Rule**: [YES] | [NO]
+- **Consistency %**: Percentage *(if YES)*
+- **Copy Trading**: [Allowed] | [Not Allowed]
+- **News Trading**: [Allowed] | [Not Allowed]
+
+---
+
+## FUNDED ACCOUNT SETTINGS
+
+### Payout Requirements *(Essential)*
+- **Days Required for Payout**: Number field
+- **Winning Day Minimum**: Currency amount *(if applicable)*
+- **Minimum Payout Amount**: Currency field
+- **Payout Frequency**: [Daily] | [Weekly] | [Bi-weekly] | [Monthly] | [On-demand]
+
+### Payout Rules
+- **Maximum Payout %**: Percentage of balance
+- **Account Buffer Required**: [YES] | [NO]
+- **Buffer Amount**: Currency *(if YES)*
+- **Profit Split**: Percentage to trader
+
+### Funded Drawdown *(Critical)*
+- **Drawdown Type**: 
+  - Daily Drawdown (realized losses only)
+  - Unrealized Drawdown (includes open positions) 
+  - End of Day Trailing
+  - No Drawdown Limits
+- **Daily Loss Limit**: Percentage OR Fixed Amount
+- **Max Loss Limit**: Fixed Amount (often $0)
+
+### Key Rules
+- **Consistency Rule**: [YES] | [NO]
+- **Copy Trading**: [Allowed] | [Not Allowed]
+- **Enhanced Payouts Available**: [YES] | [NO] *(e.g., daily payouts, 100% withdrawals)*
+
+---
+
+## LIVE ACCOUNT SETTINGS *(If Available)*
+
+### Live Transition
+- **Live Account Available**: [YES] | [NO]
+- **Transition Trigger**: Text field *(e.g., "After 5 payouts")*
+- **Activation Cost**: Currency field
+
+### Live Rules
+- **Drawdown Type**: Same options as funded
+- **Payout Benefits**: Text field *(e.g., "Daily payouts, 100% withdrawals")*
+- **Starting Balance**: [Funded Balance] | [Capped Amount]
+
+---
+
+## RISK MANAGEMENT *(Universal)*
+
+### Risk Per Trade
+- **Risk Method**: 
+  - Percentage of Account Balance
+  - Fixed Dollar Amount
+  - Percentage of Daily Limit
+- **Risk Amount**: Percentage OR Currency
+- **Max Daily Risk**: Percentage OR Currency
+
+### Risk Controls
+- **Stop Loss Required**: [YES] | [NO]
+- **Max Risk/Reward Ratio**: Ratio field *(e.g., 1:1, 1:2)*
+
+---
+
+## QUICK SETUP TEMPLATES
+
+### Popular Firms
+- **TopstepTrader**: Pre-filled settings button
+- **Apex 3.0**: Pre-filled settings button  
+- **My Funded Futures**: Pre-filled settings button
+- **Take Profit Trader**: Pre-filled settings button
+- **Custom Setup**: Manual entry
+
+---
+
+## DASHBOARD DISPLAY
+
+### Real-Time Tracking
+- **Current Balance**: Auto-updated
+- **Profit/Loss Today**: Auto-calculated
+- **Drawdown Status**: Auto-monitored with alerts
+- **Days Traded**: Auto-count
+- **Target Progress**: Visual progress bar
+- **Payout Eligibility**: [Eligible] | [Not Eligible] | [X days remaining]
+
+### Risk Monitor
+- **Risk Used Today**: Percentage of daily limit
+- **Current Position Risk**: Live calculation
+- **Drawdown Warning**: Alert system at 80% of limit
+
+### Quick Actions
+- **New Trade Entry**: Risk calculator
+- **Close All Positions**: Emergency button
+- **Request Payout**: If eligible
+- **View Progress**: Detailed stats
+
+---
+
+This streamlined version focuses only on the **essential settings that actually differ between prop firms** and directly impact trading decisions.

@@ -7,6 +7,9 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { insertAccountSchema } from "@shared/schema";
@@ -26,6 +29,41 @@ const formSchema = insertAccountSchema.extend({
   riskPercentage: z.number().min(0).max(10).optional(),
   maxPositionSize: z.number().min(1).optional(),
   preferredAssets: z.string().optional(),
+  
+  // Challenge/Evaluation Settings
+  accountCost: z.number().optional(),
+  numberOfPhases: z.number().min(1).max(2).optional(),
+  phase1Target: z.number().optional(),
+  phase2Target: z.number().optional(),
+  minimumTradingDays: z.number().optional(),
+  timeLimit: z.number().optional(),
+  
+  // Drawdown Rules
+  drawdownType: z.string().optional(),
+  maxTotalLoss: z.number().optional(),
+  trailingThreshold: z.number().optional(),
+  
+  // Trading Rules
+  consistencyRule: z.boolean().optional(),
+  consistencyPercentage: z.number().optional(),
+  copyTradingAllowed: z.boolean().optional(),
+  newsTradingAllowed: z.boolean().optional(),
+  
+  // Payout Settings
+  daysRequiredForPayout: z.number().optional(),
+  winningDayMinimum: z.number().optional(),
+  minimumPayoutAmount: z.number().optional(),
+  payoutFrequency: z.string().optional(),
+  maximumPayoutPercentage: z.number().optional(),
+  accountBufferRequired: z.boolean().optional(),
+  bufferAmount: z.number().optional(),
+  profitSplit: z.number().optional(),
+  enhancedPayoutsAvailable: z.boolean().optional(),
+  
+  // Live Account Settings
+  liveAccountAvailable: z.boolean().optional(),
+  transitionTrigger: z.string().optional(),
+  activationCost: z.number().optional(),
 });
 
 export default function Accounts() {
@@ -94,144 +132,643 @@ export default function Accounts() {
                   Add Account
                 </Button>
               </DialogTrigger>
-              <DialogContent className="bg-dark-surface border-dark-border">
-              <DialogHeader>
-                <DialogTitle>Add New Account</DialogTitle>
-              </DialogHeader>
-              <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                  <FormField
-                    control={form.control}
-                    name="name"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Account Name</FormLabel>
-                        <FormControl>
-                          <Input placeholder="e.g., GT Account #1234" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <div className="grid grid-cols-2 gap-4">
-                    <FormField
-                      control={form.control}
-                      name="type"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Account Type</FormLabel>
-                          <Select onValueChange={field.onChange} defaultValue={field.value}>
-                            <FormControl>
-                              <SelectTrigger>
-                                <SelectValue placeholder="Select type" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              <SelectItem value="challenge">Challenge</SelectItem>
-                              <SelectItem value="funded">Funded</SelectItem>
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="firm"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Prop Firm</FormLabel>
-                          <FormControl>
-                            <Input placeholder="e.g., PropFirm Pro" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <FormField
-                      control={form.control}
-                      name="startingBalance"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Starting Balance</FormLabel>
-                          <FormControl>
-                            <Input 
-                              type="number" 
-                              {...field} 
-                              onChange={(e) => field.onChange(parseFloat(e.target.value))}
+              <DialogContent className="bg-dark-surface border-dark-border max-w-4xl max-h-[90vh] overflow-hidden">
+                <DialogHeader>
+                  <DialogTitle>Add New Account</DialogTitle>
+                </DialogHeader>
+                <ScrollArea className="h-[80vh] pr-4">
+                  <Form {...form}>
+                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                      <Tabs defaultValue="basic" className="w-full">
+                        <TabsList className="grid w-full grid-cols-4">
+                          <TabsTrigger value="basic">Basic Info</TabsTrigger>
+                          <TabsTrigger value="challenge">Challenge</TabsTrigger>
+                          <TabsTrigger value="payout">Payout Rules</TabsTrigger>
+                          <TabsTrigger value="risk">Risk Settings</TabsTrigger>
+                        </TabsList>
+                        
+                        <TabsContent value="basic" className="space-y-4 mt-6">
+                          <FormField
+                            control={form.control}
+                            name="name"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Account Name</FormLabel>
+                                <FormControl>
+                                  <Input placeholder="e.g., GT Account #1234" {...field} />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                          
+                          <div className="grid grid-cols-3 gap-4">
+                            <FormField
+                              control={form.control}
+                              name="type"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Account Type</FormLabel>
+                                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                    <FormControl>
+                                      <SelectTrigger>
+                                        <SelectValue placeholder="Select type" />
+                                      </SelectTrigger>
+                                    </FormControl>
+                                    <SelectContent>
+                                      <SelectItem value="challenge">Challenge</SelectItem>
+                                      <SelectItem value="funded">Funded</SelectItem>
+                                      <SelectItem value="live">Live</SelectItem>
+                                    </SelectContent>
+                                  </Select>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
                             />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="profitTarget"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Profit Target</FormLabel>
-                          <FormControl>
-                            <Input 
-                              type="number" 
-                              {...field} 
-                              onChange={(e) => field.onChange(parseFloat(e.target.value))}
+                            <FormField
+                              control={form.control}
+                              name="firm"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Prop Firm</FormLabel>
+                                  <FormControl>
+                                    <Input placeholder="e.g., TopstepTrader" {...field} />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
                             />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <FormField
-                      control={form.control}
-                      name="maxDrawdown"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Max Drawdown</FormLabel>
-                          <FormControl>
-                            <Input 
-                              type="number" 
-                              {...field} 
-                              onChange={(e) => field.onChange(parseFloat(e.target.value))}
+                            <FormField
+                              control={form.control}
+                              name="status"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Status</FormLabel>
+                                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                    <FormControl>
+                                      <SelectTrigger>
+                                        <SelectValue placeholder="Select status" />
+                                      </SelectTrigger>
+                                    </FormControl>
+                                    <SelectContent>
+                                      <SelectItem value="active">Active</SelectItem>
+                                      <SelectItem value="passed">Passed</SelectItem>
+                                      <SelectItem value="failed">Failed</SelectItem>
+                                      <SelectItem value="withdrawn">Withdrawn</SelectItem>
+                                    </SelectContent>
+                                  </Select>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
                             />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="dailyLossLimit"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Daily Loss Limit</FormLabel>
-                          <FormControl>
-                            <Input 
-                              type="number" 
-                              {...field} 
-                              onChange={(e) => field.onChange(parseFloat(e.target.value))}
+                          </div>
+                          
+                          <div className="grid grid-cols-2 gap-4">
+                            <FormField
+                              control={form.control}
+                              name="startingBalance"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Starting Balance ($)</FormLabel>
+                                  <FormControl>
+                                    <Input 
+                                      type="number" 
+                                      {...field} 
+                                      onChange={(e) => field.onChange(parseFloat(e.target.value))}
+                                    />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
                             />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-                  <div className="flex justify-end space-x-2">
-                    <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>
-                      Cancel
-                    </Button>
-                    <Button type="submit" disabled={createAccountMutation.isPending}>
-                      {createAccountMutation.isPending ? "Creating..." : "Create Account"}
-                    </Button>
-                  </div>
-                </form>
-              </Form>
-            </DialogContent>
+                            <FormField
+                              control={form.control}
+                              name="currentBalance"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Current Balance ($)</FormLabel>
+                                  <FormControl>
+                                    <Input 
+                                      type="number" 
+                                      {...field} 
+                                      onChange={(e) => field.onChange(parseFloat(e.target.value))}
+                                    />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                          </div>
+                        </TabsContent>
+                        
+                        <TabsContent value="challenge" className="space-y-4 mt-6">
+                          <div className="grid grid-cols-2 gap-4">
+                            <FormField
+                              control={form.control}
+                              name="accountCost"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Account Cost ($)</FormLabel>
+                                  <FormControl>
+                                    <Input 
+                                      type="number" 
+                                      {...field} 
+                                      onChange={(e) => field.onChange(parseFloat(e.target.value) || undefined)}
+                                    />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                            <FormField
+                              control={form.control}
+                              name="numberOfPhases"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Number of Phases</FormLabel>
+                                  <Select onValueChange={(value) => field.onChange(parseInt(value))} defaultValue={field.value?.toString()}>
+                                    <FormControl>
+                                      <SelectTrigger>
+                                        <SelectValue placeholder="Select phases" />
+                                      </SelectTrigger>
+                                    </FormControl>
+                                    <SelectContent>
+                                      <SelectItem value="1">1 Phase</SelectItem>
+                                      <SelectItem value="2">2 Phase</SelectItem>
+                                    </SelectContent>
+                                  </Select>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                          </div>
+                          
+                          <div className="grid grid-cols-2 gap-4">
+                            <FormField
+                              control={form.control}
+                              name="phase1Target"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Phase 1 Target ($)</FormLabel>
+                                  <FormControl>
+                                    <Input 
+                                      type="number" 
+                                      {...field} 
+                                      onChange={(e) => field.onChange(parseFloat(e.target.value) || undefined)}
+                                    />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                            <FormField
+                              control={form.control}
+                              name="phase2Target"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Phase 2 Target ($)</FormLabel>
+                                  <FormControl>
+                                    <Input 
+                                      type="number" 
+                                      {...field} 
+                                      onChange={(e) => field.onChange(parseFloat(e.target.value) || undefined)}
+                                    />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                          </div>
+                          
+                          <div className="grid grid-cols-2 gap-4">
+                            <FormField
+                              control={form.control}
+                              name="minimumTradingDays"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Minimum Trading Days</FormLabel>
+                                  <FormControl>
+                                    <Input 
+                                      type="number" 
+                                      {...field} 
+                                      onChange={(e) => field.onChange(parseInt(e.target.value) || undefined)}
+                                    />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                            <FormField
+                              control={form.control}
+                              name="timeLimit"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Time Limit (days, 0 = unlimited)</FormLabel>
+                                  <FormControl>
+                                    <Input 
+                                      type="number" 
+                                      {...field} 
+                                      onChange={(e) => field.onChange(parseInt(e.target.value) || undefined)}
+                                    />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                          </div>
+                          
+                          <div className="grid grid-cols-2 gap-4">
+                            <FormField
+                              control={form.control}
+                              name="maxDrawdown"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Max Drawdown ($)</FormLabel>
+                                  <FormControl>
+                                    <Input 
+                                      type="number" 
+                                      {...field} 
+                                      onChange={(e) => field.onChange(parseFloat(e.target.value))}
+                                    />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                            <FormField
+                              control={form.control}
+                              name="dailyLossLimit"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Daily Loss Limit ($)</FormLabel>
+                                  <FormControl>
+                                    <Input 
+                                      type="number" 
+                                      {...field} 
+                                      onChange={(e) => field.onChange(parseFloat(e.target.value))}
+                                    />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                          </div>
+                          
+                          <FormField
+                            control={form.control}
+                            name="drawdownType"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Drawdown Type</FormLabel>
+                                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                  <FormControl>
+                                    <SelectTrigger>
+                                      <SelectValue placeholder="Select drawdown type" />
+                                    </SelectTrigger>
+                                  </FormControl>
+                                  <SelectContent>
+                                    <SelectItem value="daily">Daily Drawdown (realized losses only)</SelectItem>
+                                    <SelectItem value="unrealized">Unrealized Drawdown (includes open positions)</SelectItem>
+                                    <SelectItem value="trailing">End of Day Trailing</SelectItem>
+                                    <SelectItem value="balance_based">Account Balance Based</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                          
+                          <div className="space-y-4">
+                            <FormField
+                              control={form.control}
+                              name="consistencyRule"
+                              render={({ field }) => (
+                                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                                  <div className="space-y-0.5">
+                                    <FormLabel className="text-base">Consistency Rule</FormLabel>
+                                    <div className="text-sm text-muted-foreground">Enable consistency requirements</div>
+                                  </div>
+                                  <FormControl>
+                                    <Checkbox
+                                      checked={field.value}
+                                      onCheckedChange={field.onChange}
+                                    />
+                                  </FormControl>
+                                </FormItem>
+                              )}
+                            />
+                            
+                            <div className="grid grid-cols-2 gap-4">
+                              <FormField
+                                control={form.control}
+                                name="copyTradingAllowed"
+                                render={({ field }) => (
+                                  <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                                    <div className="space-y-0.5">
+                                      <FormLabel className="text-base">Copy Trading</FormLabel>
+                                      <div className="text-sm text-muted-foreground">Allow copy trading</div>
+                                    </div>
+                                    <FormControl>
+                                      <Checkbox
+                                        checked={field.value}
+                                        onCheckedChange={field.onChange}
+                                      />
+                                    </FormControl>
+                                  </FormItem>
+                                )}
+                              />
+                              
+                              <FormField
+                                control={form.control}
+                                name="newsTradingAllowed"
+                                render={({ field }) => (
+                                  <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                                    <div className="space-y-0.5">
+                                      <FormLabel className="text-base">News Trading</FormLabel>
+                                      <div className="text-sm text-muted-foreground">Allow news trading</div>
+                                    </div>
+                                    <FormControl>
+                                      <Checkbox
+                                        checked={field.value}
+                                        onCheckedChange={field.onChange}
+                                      />
+                                    </FormControl>
+                                  </FormItem>
+                                )}
+                              />
+                            </div>
+                          </div>
+                        </TabsContent>
+                        
+                        <TabsContent value="payout" className="space-y-4 mt-6">
+                          <div className="grid grid-cols-2 gap-4">
+                            <FormField
+                              control={form.control}
+                              name="daysRequiredForPayout"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Days Required for Payout</FormLabel>
+                                  <FormControl>
+                                    <Input 
+                                      type="number" 
+                                      {...field} 
+                                      onChange={(e) => field.onChange(parseInt(e.target.value) || undefined)}
+                                    />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                            <FormField
+                              control={form.control}
+                              name="minimumPayoutAmount"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Minimum Payout Amount ($)</FormLabel>
+                                  <FormControl>
+                                    <Input 
+                                      type="number" 
+                                      {...field} 
+                                      onChange={(e) => field.onChange(parseFloat(e.target.value) || undefined)}
+                                    />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                          </div>
+                          
+                          <div className="grid grid-cols-2 gap-4">
+                            <FormField
+                              control={form.control}
+                              name="payoutFrequency"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Payout Frequency</FormLabel>
+                                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                    <FormControl>
+                                      <SelectTrigger>
+                                        <SelectValue placeholder="Select frequency" />
+                                      </SelectTrigger>
+                                    </FormControl>
+                                    <SelectContent>
+                                      <SelectItem value="daily">Daily</SelectItem>
+                                      <SelectItem value="weekly">Weekly</SelectItem>
+                                      <SelectItem value="bi-weekly">Bi-weekly</SelectItem>
+                                      <SelectItem value="monthly">Monthly</SelectItem>
+                                      <SelectItem value="on-demand">On-demand</SelectItem>
+                                    </SelectContent>
+                                  </Select>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                            <FormField
+                              control={form.control}
+                              name="profitSplit"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Profit Split (%)</FormLabel>
+                                  <FormControl>
+                                    <Input 
+                                      type="number" 
+                                      max="100"
+                                      {...field} 
+                                      onChange={(e) => field.onChange(parseFloat(e.target.value) || undefined)}
+                                    />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                          </div>
+                          
+                          <div className="space-y-4">
+                            <FormField
+                              control={form.control}
+                              name="accountBufferRequired"
+                              render={({ field }) => (
+                                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                                  <div className="space-y-0.5">
+                                    <FormLabel className="text-base">Account Buffer Required</FormLabel>
+                                    <div className="text-sm text-muted-foreground">Require buffer amount for payouts</div>
+                                  </div>
+                                  <FormControl>
+                                    <Checkbox
+                                      checked={field.value}
+                                      onCheckedChange={field.onChange}
+                                    />
+                                  </FormControl>
+                                </FormItem>
+                              )}
+                            />
+                            
+                            <FormField
+                              control={form.control}
+                              name="enhancedPayoutsAvailable"
+                              render={({ field }) => (
+                                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                                  <div className="space-y-0.5">
+                                    <FormLabel className="text-base">Enhanced Payouts Available</FormLabel>
+                                    <div className="text-sm text-muted-foreground">Daily payouts, 100% withdrawals available</div>
+                                  </div>
+                                  <FormControl>
+                                    <Checkbox
+                                      checked={field.value}
+                                      onCheckedChange={field.onChange}
+                                    />
+                                  </FormControl>
+                                </FormItem>
+                              )}
+                            />
+                          </div>
+                        </TabsContent>
+                        
+                        <TabsContent value="risk" className="space-y-4 mt-6">
+                          <FormField
+                            control={form.control}
+                            name="profitTarget"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Profit Target ($)</FormLabel>
+                                <FormControl>
+                                  <Input 
+                                    type="number" 
+                                    {...field} 
+                                    onChange={(e) => field.onChange(parseFloat(e.target.value))}
+                                  />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                          
+                          <div className="grid grid-cols-2 gap-4">
+                            <FormField
+                              control={form.control}
+                              name="riskPerTrade"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Risk Per Trade ($)</FormLabel>
+                                  <FormControl>
+                                    <Input 
+                                      type="number" 
+                                      {...field} 
+                                      onChange={(e) => field.onChange(parseFloat(e.target.value) || undefined)}
+                                    />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                            <FormField
+                              control={form.control}
+                              name="riskPercentage"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Risk Percentage (%)</FormLabel>
+                                  <FormControl>
+                                    <Input 
+                                      type="number" 
+                                      max="10"
+                                      step="0.1"
+                                      {...field} 
+                                      onChange={(e) => field.onChange(parseFloat(e.target.value) || undefined)}
+                                    />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                          </div>
+                          
+                          <FormField
+                            control={form.control}
+                            name="maxPositionSize"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Max Position Size (contracts)</FormLabel>
+                                <FormControl>
+                                  <Input 
+                                    type="number" 
+                                    {...field} 
+                                    onChange={(e) => field.onChange(parseInt(e.target.value) || undefined)}
+                                  />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                          
+                          <FormField
+                            control={form.control}
+                            name="preferredAssets"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Preferred Assets</FormLabel>
+                                <FormControl>
+                                  <Input 
+                                    placeholder="e.g., ES, NQ, YM"
+                                    {...field} 
+                                  />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                          
+                          <div className="space-y-4">
+                            <FormField
+                              control={form.control}
+                              name="liveAccountAvailable"
+                              render={({ field }) => (
+                                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                                  <div className="space-y-0.5">
+                                    <FormLabel className="text-base">Live Account Available</FormLabel>
+                                    <div className="text-sm text-muted-foreground">Transition to live account available</div>
+                                  </div>
+                                  <FormControl>
+                                    <Checkbox
+                                      checked={field.value}
+                                      onCheckedChange={field.onChange}
+                                    />
+                                  </FormControl>
+                                </FormItem>
+                              )}
+                            />
+                            
+                            <FormField
+                              control={form.control}
+                              name="transitionTrigger"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Transition Trigger</FormLabel>
+                                  <FormControl>
+                                    <Input 
+                                      placeholder="e.g., After 5 payouts"
+                                      {...field} 
+                                    />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                          </div>
+                        </TabsContent>
+                      </Tabs>
+                      
+                      <div className="flex justify-end space-x-2 pt-4 border-t">
+                        <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>
+                          Cancel
+                        </Button>
+                        <Button type="submit" disabled={createAccountMutation.isPending}>
+                          {createAccountMutation.isPending ? "Creating..." : "Create Account"}
+                        </Button>
+                      </div>
+                    </form>
+                  </Form>
+                </ScrollArea>
+              </DialogContent>
           </Dialog>
           </div>
         </div>

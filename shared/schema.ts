@@ -5,7 +5,7 @@ import { z } from "zod";
 export const accounts = pgTable("accounts", {
   id: serial("id").primaryKey(),
   name: text("name").notNull(),
-  type: text("type").notNull(), // 'challenge', 'funded'
+  type: text("type").notNull(), // 'challenge', 'funded', 'live'
   firm: text("firm").notNull(),
   startingBalance: real("starting_balance").notNull(),
   currentBalance: real("current_balance").notNull(),
@@ -13,11 +13,48 @@ export const accounts = pgTable("accounts", {
   dailyLossLimit: real("daily_loss_limit").notNull(),
   profitTarget: real("profit_target").notNull(),
   status: text("status").notNull().default('active'), // 'active', 'passed', 'failed', 'withdrawn'
+  
   // Risk Management Settings
   riskPerTrade: real("risk_per_trade"), // Dollar amount to risk per trade
   riskPercentage: real("risk_percentage"), // Percentage of account to risk
   maxPositionSize: integer("max_position_size"), // Maximum contracts per trade
   preferredAssets: text("preferred_assets"), // JSON array of preferred trading instruments
+  
+  // Challenge/Evaluation Settings
+  accountCost: real("account_cost"),
+  numberOfPhases: integer("number_of_phases").default(1),
+  phase1Target: real("phase1_target"),
+  phase2Target: real("phase2_target"),
+  minimumTradingDays: integer("minimum_trading_days"),
+  timeLimit: integer("time_limit"), // days, 0 = unlimited
+  
+  // Drawdown Rules
+  drawdownType: text("drawdown_type"), // 'daily', 'unrealized', 'trailing', 'balance_based'
+  maxTotalLoss: real("max_total_loss"),
+  trailingThreshold: real("trailing_threshold"),
+  
+  // Trading Rules
+  consistencyRule: boolean("consistency_rule").default(false),
+  consistencyPercentage: real("consistency_percentage"),
+  copyTradingAllowed: boolean("copy_trading_allowed").default(true),
+  newsTradingAllowed: boolean("news_trading_allowed").default(true),
+  
+  // Payout Settings (for funded accounts)
+  daysRequiredForPayout: integer("days_required_for_payout"),
+  winningDayMinimum: real("winning_day_minimum"),
+  minimumPayoutAmount: real("minimum_payout_amount"),
+  payoutFrequency: text("payout_frequency"), // 'daily', 'weekly', 'bi-weekly', 'monthly', 'on-demand'
+  maximumPayoutPercentage: real("maximum_payout_percentage"),
+  accountBufferRequired: boolean("account_buffer_required").default(false),
+  bufferAmount: real("buffer_amount"),
+  profitSplit: real("profit_split"),
+  enhancedPayoutsAvailable: boolean("enhanced_payouts_available").default(false),
+  
+  // Live Account Settings
+  liveAccountAvailable: boolean("live_account_available").default(false),
+  transitionTrigger: text("transition_trigger"),
+  activationCost: real("activation_cost"),
+  
   createdAt: timestamp("created_at").defaultNow(),
 });
 
