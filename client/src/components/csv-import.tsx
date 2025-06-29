@@ -44,17 +44,19 @@ export default function CsvImport({ accounts }: CsvImportProps) {
       setUploadProgress(25);
 
       // Send to backend
-      const response = await apiRequest({
-        method: "POST",
-        url: "/api/csv-import",
-        data: {
+      const res = await apiRequest(
+        "POST",
+        "/api/csv-import",
+        {
           accountId: parseInt(selectedAccountId),
           csvData: fileContent,
           fileName: selectedFile.name
         }
-      });
+      );
 
       setUploadProgress(75);
+      
+      const response = await res.json();
 
       if (response.success) {
         setImportResult(response);
