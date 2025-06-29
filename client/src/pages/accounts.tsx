@@ -27,11 +27,7 @@ export default function Accounts() {
 
   const createAccountMutation = useMutation({
     mutationFn: async (data: InsertAccount) => {
-      return apiRequest("/api/accounts", {
-        method: "POST",
-        body: JSON.stringify(data),
-        headers: { "Content-Type": "application/json" },
-      });
+      return apiRequest("POST", "/api/accounts", data);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/accounts'] });

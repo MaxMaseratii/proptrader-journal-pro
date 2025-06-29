@@ -94,6 +94,10 @@ export const trades = pgTable("trades", {
   commission: real("commission"), // Trading fees
   riskAmount: real("risk_amount"), // Planned risk for this trade
   riskCompliance: boolean("risk_compliance").default(true), // Whether trade followed risk rules
+  initialStopLoss: real("initial_stop_loss"), // Initial stop loss amount set at entry
+  initialTakeProfit: real("initial_take_profit"), // Initial take profit amount set at entry
+  finalStopLoss: real("final_stop_loss"), // Final stop loss amount when closed
+  finalTakeProfit: real("final_take_profit"), // Final take profit amount when closed
 });
 
 export const journalEntries = pgTable("journal_entries", {

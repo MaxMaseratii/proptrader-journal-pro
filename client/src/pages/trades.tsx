@@ -255,7 +255,11 @@ export default function Trades() {
                   <th className="text-right py-3 px-4 text-gray-400 font-medium">Entry</th>
                   <th className="text-right py-3 px-4 text-gray-400 font-medium">Exit</th>
                   <th className="text-right py-3 px-4 text-gray-400 font-medium">P&L</th>
-                  <th className="text-center py-3 px-4 text-gray-400 font-medium">Status</th>
+                  <th className="text-center py-3 px-4 text-gray-400 font-medium">Result</th>
+                  <th className="text-right py-3 px-4 text-gray-400 font-medium">Initial SL</th>
+                  <th className="text-right py-3 px-4 text-gray-400 font-medium">Initial TP</th>
+                  <th className="text-right py-3 px-4 text-gray-400 font-medium">Final SL</th>
+                  <th className="text-right py-3 px-4 text-gray-400 font-medium">Final TP</th>
                 </tr>
               </thead>
               <tbody>
@@ -284,15 +288,27 @@ export default function Trades() {
                     </td>
                     <td className="py-3 px-4 text-center">
                       <Badge 
-                        variant={trade.status === 'win' ? 'default' : trade.status === 'loss' ? 'destructive' : 'secondary'}
+                        variant={trade.pnl > 0 ? 'default' : trade.pnl < 0 ? 'destructive' : 'secondary'}
                         className={
-                          trade.status === 'win' ? 'bg-green-600 text-white' :
-                          trade.status === 'loss' ? 'bg-red-600 text-white' :
+                          trade.pnl > 0 ? 'bg-green-600 text-white' :
+                          trade.pnl < 0 ? 'bg-red-600 text-white' :
                           'bg-gray-600 text-white'
                         }
                       >
-                        {trade.status.toUpperCase()}
+                        {trade.pnl > 0 ? 'WIN' : trade.pnl < 0 ? 'LOSS' : 'BREAKEVEN'}
                       </Badge>
+                    </td>
+                    <td className="py-3 px-4 text-right text-gray-300">
+                      {trade.initialStopLoss ? formatCurrency(trade.initialStopLoss) : 'Not placed'}
+                    </td>
+                    <td className="py-3 px-4 text-right text-gray-300">
+                      {trade.initialTakeProfit ? formatCurrency(trade.initialTakeProfit) : 'Not placed'}
+                    </td>
+                    <td className="py-3 px-4 text-right text-gray-300">
+                      {trade.finalStopLoss ? formatCurrency(trade.finalStopLoss) : 'Not placed'}
+                    </td>
+                    <td className="py-3 px-4 text-right text-gray-300">
+                      {trade.finalTakeProfit ? formatCurrency(trade.finalTakeProfit) : 'Not placed'}
                     </td>
                   </tr>
                 ))}

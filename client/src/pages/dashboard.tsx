@@ -9,6 +9,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Checkbox } from "@/components/ui/checkbox";
 import { EquityChart, MonthlyPerformanceChart } from "@/components/chart-components";
 import { formatCurrency, formatPercentage, formatDate } from "@/lib/utils";
+import { calculateDisciplinedScore, getScoreColor, getGradeColor } from "@/lib/disciplined-score";
+import TradeCalendar from "@/components/trade-calendar";
 import { 
   Wallet, 
   TrendingDown, 

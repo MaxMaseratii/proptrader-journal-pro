@@ -112,9 +112,9 @@ export class MemStorage implements IStorage {
 
     const account3: Account = {
       id: 3,
-      name: "Daytona #2155",
-      type: "challenge",
-      firm: "PropFirm Pro",
+      name: "Apex 50K",
+      type: "challenge", 
+      firm: "Apex Trader Funding",
       startingBalance: 50000,
       currentBalance: 47850,
       maxDrawdown: 2500,
