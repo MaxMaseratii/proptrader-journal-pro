@@ -177,44 +177,139 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Account ID and CSV content are required" });
       }
 
+      const account = await storage.getAccount(parseInt(accountId));
+      if (!account) {
+        return res.status(404).json({ message: "Account not found" });
+      }
+
       // Parse CSV content
       const lines = csvContent.split('\n').filter((line: string) => line.trim());
-      const headers = lines[0].split(',').map((h: string) => h.trim().toLowerCase());
+      const headers = lines[0].split(',').map((h: string) => h.trim());
       
       let recordsProcessed = 0;
       let recordsImported = 0;
       const errors: string[] = [];
 
+      // First pass: collect all filled orders
+      const filledOrders: any[] = [];
+      
       for (let i = 1; i < lines.length; i++) {
-        const values = lines[i].split(',').map((v: string) => v.trim());
+        const line = lines[i].trim();
+        if (!line) continue;
+        
         recordsProcessed++;
-
+        
         try {
-          // Map CSV columns to trade data
-          const tradeData: InsertTrade = {
-            accountId: parseInt(accountId),
-            symbol: values[headers.indexOf('symbol')] || '',
-            date: values[headers.indexOf('date')] || new Date().toISOString().split('T')[0],
-            side: (values[headers.indexOf('side')] || 'long') as 'long' | 'short',
-            quantity: parseInt(values[headers.indexOf('quantity')] || '1'),
-            entryPrice: parseFloat(values[headers.indexOf('entryprice')] || '0'),
-            exitPrice: values[headers.indexOf('exitprice')] ? parseFloat(values[headers.indexOf('exitprice')]) : null,
-            pnl: parseFloat(values[headers.indexOf('pnl')] || '0'),
-            status: (values[headers.indexOf('status')] || 'closed') as 'open' | 'closed' | 'cancelled',
-            notes: values[headers.indexOf('notes')] || null,
-            orderId: values[headers.indexOf('orderid')] || null,
-            initialStopLoss: values[headers.indexOf('initialstoploss')] ? parseFloat(values[headers.indexOf('initialstoploss')]) : null,
-            initialTakeProfit: values[headers.indexOf('initialtakeprofit')] ? parseFloat(values[headers.indexOf('initialtakeprofit')]) : null,
-            finalStopLoss: values[headers.indexOf('finalstoploss')] ? parseFloat(values[headers.indexOf('finalstoploss')]) : null,
-            finalTakeProfit: values[headers.indexOf('finaltakeprofit')] ? parseFloat(values[headers.indexOf('finaltakeprofit')]) : null,
-          };
+          const values = line.split(',').map((v: string) => v.trim());
+          const row: any = {};
+          
+          headers.forEach((header: string, index: number) => {
+            row[header] = values[index] || '';
+          });
 
-          // Validate the trade data
-          const validatedData = insertTradeSchema.parse(tradeData);
-          await storage.createTrade(validatedData);
-          recordsImported++;
+          // Only process filled orders
+          if (row.Status?.trim() !== 'Filled') {
+            continue;
+          }
+
+          // Parse order data from TakeProfit format
+          const symbol = row.Product || row.Contract || '';
+          const side = row['B/S']?.trim() === 'Buy' ? 'buy' : 'sell';
+          const quantity = parseFloat(row['Filled Qty']) || parseFloat(row.filledQty) || 0;
+          const price = parseFloat(row['Avg Fill Price']) || parseFloat(row.avgPrice) || 0;
+          const fillTime = row['Fill Time'] || row.Timestamp || '';
+          
+          // Parse date from format like "6/27/25"
+          let date = new Date().toISOString().split('T')[0];
+          if (row.Date) {
+            const dateParts = row.Date.split('/');
+            if (dateParts.length === 3) {
+              const month = dateParts[0].padStart(2, '0');
+              const day = dateParts[1].padStart(2, '0');
+              const year = '20' + dateParts[2];
+              date = `${year}-${month}-${day}`;
+            }
+          }
+
+          if (symbol && quantity && price) {
+            filledOrders.push({
+              symbol: symbol.replace(/[^A-Z]/g, ''),
+              side,
+              quantity,
+              price,
+              date,
+              fillTime,
+              orderId: row.orderId || row['Order ID'] || '',
+              orderType: row.Type || 'Market',
+              row: i
+            });
+          }
+
         } catch (error) {
-          errors.push(`Row ${i + 1}: ${error instanceof Error ? error.message : 'Invalid data'}`);
+          errors.push(`Row ${i}: ${error instanceof Error ? error.message : 'Unknown error'}`);
+        }
+      }
+
+      // Second pass: match orders to create trades
+      const processedOrders = new Set();
+      
+      for (let i = 0; i < filledOrders.length; i++) {
+        if (processedOrders.has(i)) continue;
+        
+        const order1 = filledOrders[i];
+        
+        // Look for matching opposing order (same symbol, different side, same quantity, same date)
+        for (let j = i + 1; j < filledOrders.length; j++) {
+          if (processedOrders.has(j)) continue;
+          
+          const order2 = filledOrders[j];
+          
+          if (order1.symbol === order2.symbol && 
+              order1.side !== order2.side && 
+              order1.quantity === order2.quantity &&
+              order1.date === order2.date) {
+            
+            // Found a matching pair - create a complete trade
+            const buyOrder = order1.side === 'buy' ? order1 : order2;
+            const sellOrder = order1.side === 'sell' ? order1 : order2;
+            
+            // Calculate actual P&L for ES futures ($50 per point)
+            const pointValue = 50;
+            const priceDifference = sellOrder.price - buyOrder.price;
+            const pnl = priceDifference * order1.quantity * pointValue;
+            
+            // Check risk compliance
+            const riskAmount = account.riskPerTrade || 100;
+            const actualRisk = Math.abs(pnl);
+            const riskCompliance = actualRisk <= riskAmount;
+
+            const tradeData: InsertTrade = {
+              accountId: parseInt(accountId),
+              date: order1.date,
+              symbol: order1.symbol,
+              side: 'long', // Complete round trip trade
+              quantity: order1.quantity,
+              entryPrice: buyOrder.price,
+              exitPrice: sellOrder.price,
+              pnl,
+              status: 'closed',
+              orderId: `${buyOrder.orderId}-${sellOrder.orderId}`,
+              orderType: 'Matched Orders',
+              originalQuantity: order1.quantity,
+              riskAmount,
+              riskCompliance,
+              notes: `Imported - Buy: ${buyOrder.price}, Sell: ${sellOrder.price}`
+            };
+
+            const validatedData = insertTradeSchema.parse(tradeData);
+            await storage.createTrade(validatedData);
+            recordsImported++;
+            
+            // Mark both orders as processed
+            processedOrders.add(i);
+            processedOrders.add(j);
+            break;
+          }
         }
       }
 
