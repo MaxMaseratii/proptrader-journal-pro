@@ -13,6 +13,11 @@ export const accounts = pgTable("accounts", {
   dailyLossLimit: real("daily_loss_limit").notNull(),
   profitTarget: real("profit_target").notNull(),
   status: text("status").notNull().default('active'), // 'active', 'passed', 'failed', 'withdrawn'
+  // Risk Management Settings
+  riskPerTrade: real("risk_per_trade"), // Dollar amount to risk per trade
+  riskPercentage: real("risk_percentage"), // Percentage of account to risk
+  maxPositionSize: integer("max_position_size"), // Maximum contracts per trade
+  preferredAssets: text("preferred_assets"), // JSON array of preferred trading instruments
   createdAt: timestamp("created_at").defaultNow(),
 });
 
@@ -28,6 +33,14 @@ export const trades = pgTable("trades", {
   pnl: real("pnl").notNull(),
   status: text("status").notNull().default('closed'), // 'open', 'closed'
   notes: text("notes"),
+  // Additional fields for order tracking
+  orderId: text("order_id"), // External order ID from CSV
+  fillTime: timestamp("fill_time"), // Exact fill timestamp
+  orderType: text("order_type"), // 'Market', 'Limit', 'Stop'
+  originalQuantity: real("original_quantity"), // Original order quantity
+  commission: real("commission"), // Trading fees
+  riskAmount: real("risk_amount"), // Planned risk for this trade
+  riskCompliance: boolean("risk_compliance").default(true), // Whether trade followed risk rules
 });
 
 export const journalEntries = pgTable("journal_entries", {
@@ -51,6 +64,17 @@ export const dailyStats = pgTable("daily_stats", {
   maxDailyLoss: real("max_daily_loss").notNull(),
 });
 
+export const csvImports = pgTable("csv_imports", {
+  id: serial("id").primaryKey(),
+  accountId: integer("account_id").references(() => accounts.id).notNull(),
+  fileName: text("file_name").notNull(),
+  importDate: timestamp("import_date").defaultNow(),
+  recordsProcessed: integer("records_processed").notNull(),
+  recordsImported: integer("records_imported").notNull(),
+  status: text("status").notNull().default('completed'), // 'processing', 'completed', 'failed'
+  errors: text("errors"), // JSON array of import errors
+});
+
 export const insertAccountSchema = createInsertSchema(accounts).omit({
   id: true,
   createdAt: true,
@@ -68,6 +92,11 @@ export const insertDailyStatsSchema = createInsertSchema(dailyStats).omit({
   id: true,
 });
 
+export const insertCsvImportSchema = createInsertSchema(csvImports).omit({
+  id: true,
+  importDate: true,
+});
+
 export type Account = typeof accounts.$inferSelect;
 export type InsertAccount = z.infer<typeof insertAccountSchema>;
 export type Trade = typeof trades.$inferSelect;
@@ -76,3 +105,5 @@ export type JournalEntry = typeof journalEntries.$inferSelect;
 export type InsertJournalEntry = z.infer<typeof insertJournalEntrySchema>;
 export type DailyStats = typeof dailyStats.$inferSelect;
 export type InsertDailyStats = z.infer<typeof insertDailyStatsSchema>;
+export type CsvImport = typeof csvImports.$inferSelect;
+export type InsertCsvImport = z.infer<typeof insertCsvImportSchema>;

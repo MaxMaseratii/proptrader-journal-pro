@@ -1,0 +1,356 @@
+//@version=6
+indicator('Smart Position Sizing Calculator Pro @MaxMaserati', 'Smart PS Pro @MaxMaserati ', overlay = true)
+
+// ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════
+// 💰 CAPITAL & TARGET SETTINGS
+// ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+amount_of_money = input.float(1000, title = '💰 Trading Capital ($)', minval = 0.01, tooltip = 'Your total trading capital or maximum acceptable drawdown amount', group = '💰 Capital & Targets')
+target_amount = input.float(2000, title = '🎯 Profit Target ($)', minval = 0.01, tooltip = 'Your desired profit target to achieve', group = '💰 Capital & Targets')
+trading_days = input.int(5, title = '📅 Trading Days', minval = 1, maxval = 30, tooltip = 'Number of trading days to reach your target', group = '💰 Capital & Targets')
+risk_reward_ratio = input.float(2.0, title = '⚖️ Risk:Reward Ratio', minval = 0.1, maxval = 10.0, step = 0.1, tooltip = 'Your average risk to reward ratio (e.g., 2 = risk $100 to make $200)', group = '💰 Capital & Targets')
+
+// ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════
+// 🛡️ RISK MANAGEMENT
+// ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+risk_period = input.string('BiWeekly (10 days)', title = '📊 Risk Calculation Period', options = ['Weekly (5 days)', 'BiWeekly (10 days)', 'Weekdays (20 days)', 'Calendar Month (30 days)', 'Custom Risk Amount'], tooltip = 'How to calculate your risk per trade', group = '🛡️ Risk Management')
+specific_risk = input.float(500, title = '💸 Custom Risk Amount ($)', minval = 0.01, tooltip = 'Fixed dollar amount to risk per trade (only used if Custom Risk Amount selected)', group = '🛡️ Risk Management')
+use_risk_percentage = input.bool(false, title = '📊 Enable Percentage Risk Mode', tooltip = 'Use percentage of capital instead of period-based risk', group = '🛡️ Risk Management')
+risk_percentage = input.float(1.0, title = '🔴 Risk Percentage (%)', minval = 0.01, maxval = 10.0, step = 0.01, tooltip = 'Percentage of total capital to risk per trade', group = '🛡️ Risk Management')
+point_stop_loss = input.int(10, title = '🛑 Stop Loss (Points)', minval = 1, maxval = 500, tooltip = 'Your typical stop loss in points for position sizing calculations', group = '🛡️ Risk Management')
+use_intraday = input.bool(true, title = '⏰ Use Intraday Margins', tooltip = 'Use intraday margin requirements (lower) vs overnight margins (higher)', group = '🛡️ Risk Management')
+margin_buffer_pct = input.float(50.0, title = '🛡️ Margin Safety Buffer (%)', minval = 10.0, maxval = 90.0, step = 5.0, tooltip = 'Percentage of capital to keep as safety buffer', group = '🛡️ Risk Management')
+
+// ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════
+// 📊 DISPLAY CONTROLS & TOGGLES
+// ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+show_main_table = input.bool(true, title = '📊 Show Main Calculator Table', group = '👁️ Display Controls')
+show_capital_section = input.bool(true, title = '💰 Show Capital & Target Section', group = '👁️ Display Controls')
+show_projection_row = input.bool(true, title = '📈 Show Projection Row', group = '👁️ Display Controls')
+show_risk_score = input.bool(true, title = '🔥 Show Risk Score Analysis', group = '👁️ Display Controls')
+show_asset_details = input.bool(true, title = '📋 Show Asset Details', group = '👁️ Display Controls')
+show_smart_suggestions = input.bool(true, title = '💡 Show Smart Suggestions', group = '👁️ Display Controls')
+show_performance_metrics = input.bool(true, title = '📊 Show Performance Metrics', group = '👁️ Display Controls')
+
+// ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════
+// 🎨 TABLE STYLING & APPEARANCE
+// ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+table_position = input.string('Top Right', title='📍 Table Position', options=['Top Right', 'Top Left', 'Top Center', 'Middle Right', 'Middle Left', 'Middle Center', 'Bottom Right', 'Bottom Left', 'Bottom Center'], group='🎨 Table Styling')
+table_bg_color = input.color(#000000, title = '🎨 Header Background Color', group = '🎨 Table Styling')
+table_border_color = input.color(color.new(color.blue, 50), title = '🔲 Table Border Color', group = '🎨 Table Styling')
+table_border_width = input.int(2, title = '📏 Table Border Width', minval = 0, maxval = 5, group = '🎨 Table Styling')
+primary_row_color = input.color(color.new(#3b82f6, 0), title = '🟦 Primary Row Color', group = '🎨 Table Styling')
+success_color_custom = input.color(color.new(color.green, 0), title = '🟢 Success Color', group = '🎨 Table Styling')
+warning_color_custom = input.color(color.new(color.orange, 0), title = '🟡 Warning Color', group = '🎨 Table Styling')
+danger_color_custom = input.color(color.new(color.red, 0), title = '🔴 Danger Color', group = '🎨 Table Styling')
+use_dynamic_colors = input.bool(true, title = '🌈 Enable Dynamic Risk Colors', tooltip = 'Automatically change colors based on risk levels', group = '🎨 Table Styling')
+
+// ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════
+// ⚙️ ADVANCED SETTINGS
+// ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+display_points = input.int(10, title = '📊 Point Value Display', minval = 1, maxval = 1000, tooltip = 'Number of points to show potential profit/loss for', group = '⚙️ Advanced Settings')
+use_abbreviations = input.bool(false, title = '📝 Use Short Asset Names', tooltip = 'Show abbreviated names (ES) instead of full names (E-mini S&P 500)', group = '⚙️ Advanced Settings')
+table_text_size = input.string('Normal', title = '📏 Table Text Size', options = ['Tiny', 'Small', 'Normal', 'Large', 'Huge'], group = '⚙️ Advanced Settings')
+decimal_places = input.int(2, title = '🔢 Decimal Places', minval = 0, maxval = 4, tooltip = 'Number of decimal places for dollar amounts', group = '⚙️ Advanced Settings')
+
+// ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════
+// 🏆 ASSET SELECTION
+// ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+asset1 = input.string(title = '🥇 Primary Asset', defval = 'MNQ', options = ['ES', 'MES', 'NQ', 'MNQ', 'YM', 'MYM', 'RTY', 'M2K', 'CL', 'MCL', 'GC', 'MGC', 'SI', 'SIL', 'EUR', 'GBP', 'JPY'], group = '🏆 Asset Selection')
+asset2 = input.string(title = '🥈 Secondary Asset', defval = 'MES', options = ['ES', 'MES', 'NQ', 'MNQ', 'YM', 'MYM', 'RTY', 'M2K', 'CL', 'MCL', 'GC', 'MGC', 'SI', 'SIL', 'EUR', 'GBP', 'JPY'], group = '🏆 Asset Selection')
+asset3 = input.string(title = '🥉 Tertiary Asset', defval = 'NQ', options = ['ES', 'MES', 'NQ', 'MNQ', 'YM', 'MYM', 'RTY', 'M2K', 'CL', 'MCL', 'GC', 'MGC', 'SI', 'SIL', 'EUR', 'GBP', 'JPY'], group = '🏆 Asset Selection')
+
+// ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════
+// 🧠 HELPER FUNCTIONS
+// ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+get_asset_name(abbreviated_name) =>
+    switch abbreviated_name
+        'ES' => 'E-mini S&P 500'
+        'MES' => 'Micro E-mini S&P 500'
+        'NQ' => 'E-mini Nasdaq 100'
+        'MNQ' => 'Micro E-mini Nasdaq 100'
+        'YM' => 'E-mini Dow'
+        'MYM' => 'Micro E-mini Dow'
+        'RTY' => 'E-mini Russell 2000'
+        'M2K' => 'Micro E-mini Russell 2000'
+        'CL' => 'Crude Oil'
+        'MCL' => 'Micro Crude Oil'
+        'GC' => 'Gold'
+        'MGC' => 'Micro Gold'
+        'SI' => 'Silver'
+        'SIL' => 'Micro Silver'
+        'EUR' => 'Euro FX'
+        'GBP' => 'British Pound'
+        'JPY' => 'Japanese Yen'
+        => abbreviated_name
+
+get_point_value(asset) =>
+    switch asset
+        'ES' => 50.0
+        'MES' => 5.0
+        'NQ' => 40.0
+        'MNQ' => 8.0
+        'YM' => 5.0
+        'MYM' => 0.5
+        'RTY' => 20.0
+        'M2K' => 2.0
+        'CL' => 1000.0
+        'MCL' => 100.0
+        'GC' => 100.0
+        'MGC' => 10.0
+        'SI' => 5000.0
+        'SIL' => 50.0
+        'EUR' => 1250.0
+        'GBP' => 625.0
+        'JPY' => 1250.0
+        => na
+
+get_margin(asset, is_intraday) =>
+    switch asset
+        'ES' => is_intraday ? 500.0 : 12100.0
+        'MES' => is_intraday ? 50.0 : 1210.0
+        'NQ' => is_intraday ? 500.0 : 15400.0
+        'MNQ' => is_intraday ? 100.0 : 2442.0
+        'YM' => is_intraday ? 500.0 : 11000.0
+        'MYM' => is_intraday ? 50.0 : 1100.0
+        'RTY' => is_intraday ? 300.0 : 7700.0
+        'M2K' => is_intraday ? 50.0 : 770.0
+        'CL' => is_intraday ? 1000.0 : 8000.0
+        'MCL' => is_intraday ? 100.0 : 800.0
+        'GC' => is_intraday ? 1000.0 : 9900.0
+        'MGC' => is_intraday ? 100.0 : 990.0
+        'SI' => is_intraday ? 1500.0 : 14500.0
+        'SIL' => is_intraday ? 150.0 : 1450.0
+        'EUR' => is_intraday ? 2000.0 : 3300.0
+        'GBP' => is_intraday ? 2000.0 : 3300.0
+        'JPY' => is_intraday ? 1500.0 : 1980.0
+        => na
+
+get_period_risk(capital, period, custom_risk) =>
+    period_days = switch period
+        'Weekly (5 days)' => 5.0
+        'BiWeekly (10 days)' => 10.0
+        'Weekdays (20 days)' => 20.0
+        'Calendar Month (30 days)' => 30.0
+        'Custom Risk Amount' => 1.0
+        => 10.0
+    
+    period == 'Custom Risk Amount' ? custom_risk : capital / period_days
+
+calculate_risk_score(capital, total_risk, risk_pct) =>
+    base_score = math.min(risk_pct * 10, 50)
+    capital_factor = capital < 5000 ? 20 : (capital < 25000 ? 10 : 0)
+    risk_ratio = total_risk / capital * 100
+    risk_factor = risk_ratio > 5 ? 30 : (risk_ratio > 2 ? 15 : 0)
+    score = base_score + capital_factor + risk_factor
+    math.min(math.round(score), 100)
+
+get_risk_color(risk_score) =>
+    if not use_dynamic_colors
+        primary_row_color
+    else
+        if risk_score <= 30
+            success_color_custom
+        else if risk_score <= 60
+            warning_color_custom
+        else
+            danger_color_custom
+
+get_text_size(size_str) =>
+    switch size_str
+        'Tiny' => size.tiny
+        'Small' => size.small
+        'Normal' => size.normal
+        'Large' => size.large
+        'Huge' => size.huge
+        => size.normal
+
+// ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════
+// 🧮 CORE CALCULATIONS
+// ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+calculate_max_size(margin_req, capital) =>
+    if margin_req <= 0
+        0
+    else 
+        available_capital = capital * (1 - margin_buffer_pct / 100)
+        math.floor(available_capital / margin_req)
+
+calculate_safe_size(lots, capital, point_sl, point_value, use_risk_pct, risk_pct) =>
+    if point_value <= 0
+        0
+    else 
+        risk_per_contract = point_sl * point_value
+        max_risk = use_risk_pct ? capital * (risk_pct / 100) : capital * 0.02
+        positions_by_risk = math.floor(max_risk / risk_per_contract)
+        math.min(lots, positions_by_risk)
+
+calculate_position_risk(contracts, point_sl, point_value) =>
+    contracts * point_sl * point_value
+
+format_currency(value) =>
+    '$' + str.tostring(value, '#,##0.' + str.repeat('#', decimal_places))
+
+// Asset data calculations
+point_value1 = get_point_value(asset1)
+point_value2 = get_point_value(asset2)
+point_value3 = get_point_value(asset3)
+
+margin1 = get_margin(asset1, use_intraday)
+margin2 = get_margin(asset2, use_intraday)
+margin3 = get_margin(asset3, use_intraday)
+
+lots1 = calculate_max_size(margin1, amount_of_money)
+lots2 = calculate_max_size(margin2, amount_of_money)
+lots3 = calculate_max_size(margin3, amount_of_money)
+
+safe_lots1 = calculate_safe_size(lots1, amount_of_money, point_stop_loss, point_value1, use_risk_percentage, risk_percentage)
+safe_lots2 = calculate_safe_size(lots2, amount_of_money, point_stop_loss, point_value2, use_risk_percentage, risk_percentage)
+safe_lots3 = calculate_safe_size(lots3, amount_of_money, point_stop_loss, point_value3, use_risk_percentage, risk_percentage)
+
+safe_risk1 = calculate_position_risk(safe_lots1, point_stop_loss, point_value1)
+safe_risk2 = calculate_position_risk(safe_lots2, point_stop_loss, point_value2)
+safe_risk3 = calculate_position_risk(safe_lots3, point_stop_loss, point_value3)
+
+// ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════
+// 📊 TABLE CREATION AND DISPLAY
+// ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+get_table_position(pos) =>
+    switch pos
+        'Top Left' => position.top_left
+        'Top Center' => position.top_center
+        'Middle Right' => position.middle_right
+        'Middle Left' => position.middle_left
+        'Middle Center' => position.middle_center
+        'Bottom Right' => position.bottom_right
+        'Bottom Left' => position.bottom_left
+        'Bottom Center' => position.bottom_center
+        => position.top_right
+
+// Calculate total rows needed
+total_rows = 1  // Headers always shown
+if show_capital_section
+    total_rows += 1
+if show_projection_row
+    total_rows += 1
+if show_risk_score
+    total_rows += 1
+if show_asset_details
+    total_rows += 4  // Header + 3 assets
+if show_smart_suggestions
+    total_rows += 1
+if show_performance_metrics
+    total_rows += 1
+
+var table_pos = get_table_position(table_position)
+var table smart_table = na
+
+if barstate.islast and show_main_table
+    // Create fresh table each time
+    smart_table := table.new(table_pos, 4, total_rows, border_width = table_border_width, border_color = table_border_color)
+    
+    // Calculate all values
+    period_risk = get_period_risk(amount_of_money, risk_period, specific_risk)
+    daily_reward = period_risk * risk_reward_ratio
+    total_projected = daily_reward * trading_days
+    total_risk = safe_risk1 + safe_risk2 + safe_risk3
+    risk_score = calculate_risk_score(amount_of_money, total_risk, risk_percentage)
+    
+    // Determine colors
+    success_color = total_projected >= target_amount ? success_color_custom : danger_color_custom
+    risk_color = get_risk_color(risk_score)
+    text_size = get_text_size(table_text_size)
+    current_row = 0
+    
+    // HEADER SECTION (Always shown)
+    table.cell(smart_table, 0, current_row, 'Capital', bgcolor = table_bg_color, text_color = color.white, text_size = text_size)
+    table.cell(smart_table, 1, current_row, risk_period + ' (1:' + str.tostring(risk_reward_ratio, '#.#') + ')', bgcolor = table_bg_color, text_color = color.white, text_size = text_size)
+    table.cell(smart_table, 2, current_row, str.tostring(risk_percentage, '#.##') + '% Risk', bgcolor = table_bg_color, text_color = color.white, text_size = text_size)
+    table.cell(smart_table, 3, current_row, 'Target', bgcolor = table_bg_color, text_color = color.white, text_size = text_size)
+    current_row += 1
+    
+    // CAPITAL & TARGET ROW
+    if show_capital_section
+        trades_to_zero = math.floor(amount_of_money / period_risk)
+        trades_to_target = math.ceil(target_amount / daily_reward)
+        
+        table.cell(smart_table, 0, current_row, format_currency(amount_of_money) + ' (' + str.tostring(trades_to_zero) + ' trades max)', bgcolor = primary_row_color, text_color = color.white, text_size = text_size)
+        table.cell(smart_table, 1, current_row, format_currency(period_risk) + ' risk to make ' + format_currency(daily_reward), bgcolor = primary_row_color, text_color = color.white, text_size = text_size)
+        table.cell(smart_table, 2, current_row, format_currency(amount_of_money * (risk_percentage / 100)), bgcolor = primary_row_color, text_color = color.white, text_size = text_size)
+        table.cell(smart_table, 3, current_row, format_currency(target_amount) + ' (' + str.tostring(trades_to_target) + ' trades)', bgcolor = success_color, text_color = color.white, text_size = text_size)
+        current_row += 1
+    
+    // PROJECTION ROW
+    if show_projection_row
+        progress_pct = math.round((total_projected/target_amount) * 100, 1)
+        table.cell(smart_table, 0, current_row, 'Projection', bgcolor = primary_row_color, text_color = color.white, text_size = text_size)
+        table.cell(smart_table, 1, current_row, str.tostring(trading_days) + ' days x 1:' + str.tostring(risk_reward_ratio, '#.#'), bgcolor = primary_row_color, text_color = color.white, text_size = text_size)
+        table.cell(smart_table, 2, current_row, '= ' + format_currency(total_projected), bgcolor = primary_row_color, text_color = color.white, text_size = text_size)
+        table.cell(smart_table, 3, current_row, str.tostring(progress_pct) + '% of target', bgcolor = success_color, text_color = color.white, text_size = text_size)
+        current_row += 1
+    
+    // RISK SCORE ROW
+    if show_risk_score
+        risk_emoji = risk_score <= 30 ? 'LOW' : (risk_score <= 60 ? 'MED' : 'HIGH')
+        table.cell(smart_table, 0, current_row, 'Risk Score', bgcolor = color.new(color.gray, 20), text_color = color.white, text_size = text_size)
+        table.cell(smart_table, 1, current_row, risk_emoji + ' ' + str.tostring(risk_score) + '/100', bgcolor = risk_color, text_color = color.white, text_size = text_size)
+        table.cell(smart_table, 2, current_row, 'Total Risk: ' + format_currency(total_risk), bgcolor = risk_color, text_color = color.white, text_size = text_size)
+        table.cell(smart_table, 3, current_row, str.tostring(math.round((total_risk/amount_of_money)*100, 2)) + '% of capital', bgcolor = risk_color, text_color = color.white, text_size = text_size)
+        current_row += 1
+    
+    // ASSET DETAILS SECTION
+    if show_asset_details
+        // Asset Headers
+        table.cell(smart_table, 0, current_row, 'Assets', bgcolor = table_bg_color, text_color = color.rgb(255, 255, 255), text_size = text_size)
+        table.cell(smart_table, 1, current_row, 'Max Lots (' + str.tostring(display_points) + 'pts)', bgcolor = table_bg_color, text_color = color.rgb(255, 255, 255), text_size = text_size)
+        table.cell(smart_table, 2, current_row, 'Safe Lots (' + str.tostring(point_stop_loss) + 'pts SL)', bgcolor = table_bg_color, text_color = color.rgb(255, 255, 255), text_size = text_size)
+        table.cell(smart_table, 3, current_row, 'Margin Req.', bgcolor = table_bg_color, text_color = color.rgb(255, 255, 255), text_size = text_size)
+        current_row += 1
+        
+        // Asset rows - individual handling
+        for i = 0 to 2
+            asset = i == 0 ? asset1 : (i == 1 ? asset2 : asset3)
+            lots = i == 0 ? lots1 : (i == 1 ? lots2 : lots3)
+            safe_lots = i == 0 ? safe_lots1 : (i == 1 ? safe_lots2 : safe_lots3)
+            margin = i == 0 ? margin1 : (i == 1 ? margin2 : margin3)
+            safe_risk = i == 0 ? safe_risk1 : (i == 1 ? safe_risk2 : safe_risk3)
+            point_val = i == 0 ? point_value1 : (i == 1 ? point_value2 : point_value3)
+            
+            asset_name = use_abbreviations ? asset : get_asset_name(asset)
+            max_value = lots * display_points * point_val
+            
+            row_color = use_dynamic_colors ? (safe_lots > 0 ? color.new(color.blue, 85) : color.new(color.red, 85)) : color.new(color.blue, 85)
+            
+            table.cell(smart_table, 0, current_row, asset_name, bgcolor = color.new(color.blue, 60), text_color = #6a6969, text_size = text_size)
+            table.cell(smart_table, 1, current_row, str.tostring(lots) + ' (' + format_currency(max_value) + ')', bgcolor = row_color, text_color = #6a6969, text_size = text_size)
+            table.cell(smart_table, 2, current_row, str.tostring(safe_lots) + ' (' + format_currency(safe_risk) + ')', bgcolor = row_color, text_color = #6a6969, text_size = text_size)
+            table.cell(smart_table, 3, current_row, format_currency(margin), bgcolor = row_color, text_color = #6a6969, text_size = text_size)
+            current_row += 1
+    
+    // SMART SUGGESTIONS ROW
+    if show_smart_suggestions
+        suggested_risk = amount_of_money * (math.min(risk_percentage, 2.0) / 100)
+        
+        table.cell(smart_table, 0, current_row, 'Smart Suggestion', bgcolor = color.new(color.teal, 0), text_color = color.white, text_size = text_size)
+        table.cell(smart_table, 1, current_row, format_currency(suggested_risk) + ' per trade', bgcolor = color.new(color.teal, 20), text_color = color.white, text_size = text_size)
+        table.cell(smart_table, 2, current_row, 'Max ' + str.tostring(math.min(risk_percentage, 2.0), '#.##') + '% risk', bgcolor = color.new(color.teal, 20), text_color = color.white, text_size = text_size)
+        table.cell(smart_table, 3, current_row, 'Optimal allocation', bgcolor = color.new(color.teal, 0), text_color = color.white, text_size = text_size)
+        current_row += 1
+    
+    // PERFORMANCE METRICS
+    if show_performance_metrics
+        win_rate_needed = 100 / (1 + risk_reward_ratio)
+        max_consecutive_losses = math.floor(math.log(0.2) / math.log(1 - (period_risk / amount_of_money)))
+        portfolio_heat = (total_risk / amount_of_money) * 100
+        
+        table.cell(smart_table, 0, current_row, 'Performance', bgcolor = color.new(color.purple, 0), text_color = color.white, text_size = text_size)
+        table.cell(smart_table, 1, current_row, 'Min Win Rate: ' + str.tostring(win_rate_needed, '#.#') + '%', bgcolor = color.new(color.purple, 20), text_color = color.white, text_size = text_size)
+        table.cell(smart_table, 2, current_row, 'Portfolio Heat: ' + str.tostring(portfolio_heat, '#.#') + '%', bgcolor = color.new(color.purple, 20), text_color = color.white, text_size = text_size)
+        table.cell(smart_table, 3, current_row, 'Max Losses: ' + str.tostring(max_consecutive_losses), bgcolor = color.new(color.purple, 0), text_color = color.white, text_size = text_size)
