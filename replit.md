@@ -124,6 +124,17 @@ Changelog:
 - June 29, 2025. Updated database schema:
   * Added financial tracking fields: accountCost, purchaseMethod, resetCount, totalResetsCost
   * Added activation tracking: activationCost, activationPaid, includesActivationFee
+- June 29, 2025. Implemented advanced analytics and reporting system:
+  * Created comprehensive Analytics page with advanced performance metrics
+  * Added Sharpe ratio, profit factor, expectancy, and Kelly criterion calculations
+  * Implemented disciplined trading score analysis with risk violation tracking
+  * Created tabbed interface with Overview, Detailed Analysis, and Comparison views
+  * Added time-based performance analysis (daily, weekly, monthly breakdowns)
+  * Enhanced Reports page with integrated report generator and export capabilities
+  * Added customizable report generation with multiple export formats (JSON, CSV, Excel, PDF)
+  * Implemented quick export functionality and report templates
+  * Added "Advanced Analytics" navigation item with Brain icon to sidebar
+  * Integrated comprehensive chart visualizations for performance tracking
 ```
 
 ## User Preferences

@@ -195,7 +195,7 @@ export default function ReportGenerator({ accounts }: ReportGeneratorProps) {
       csvContent += 'Date,What Went Wrong,What Went Right,Improvement Plan,Account\n';
       data.journal.forEach((entry: JournalEntry) => {
         const account = data.accounts.find((acc: Account) => acc.id === entry.accountId);
-        csvContent += `${entry.date},"${entry.whatWentWrong || ''}","${entry.whatWentRight || ''}","${entry.improvementPlan || '"}",${account?.name || 'Unknown'}\n`;
+        csvContent += `${entry.date},"${entry.whatWentWrong || ''}","${entry.whatWentRight || ''}","${entry.improvementPlan || ''}",${account?.name || 'Unknown'}\n`;
       });
     }
 
