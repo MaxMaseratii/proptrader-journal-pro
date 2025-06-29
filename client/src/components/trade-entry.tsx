@@ -1,18 +1,16 @@
 import { useState } from "react";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { Badge } from "@/components/ui/badge";
 import { insertTradeSchema, type Account, type InsertTrade } from "@shared/schema";
-import { apiRequest, queryClient } from "@/lib/queryClient";
-import { Plus, Upload, FileText, TrendingUp } from "lucide-react";
+import { queryClient } from "@/lib/queryClient";
+import { Plus, Upload, FileText, TrendingUp, DollarSign, Target, Calendar, Hash } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 interface TradeEntryProps {
@@ -21,27 +19,67 @@ interface TradeEntryProps {
 
 export default function TradeEntry({ accounts }: TradeEntryProps) {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState<'manual' | 'csv'>('manual');
   const [csvFile, setCsvFile] = useState<File | null>(null);
   const [csvData, setCsvData] = useState<string>("");
   const { toast } = useToast();
 
+  // Manual trade form state
+  const [formData, setFormData] = useState<Partial<InsertTrade>>({
+    symbol: "",
+    date: new Date().toISOString().split('T')[0],
+    side: "long",
+    quantity: 1,
+    entryPrice: 0,
+    exitPrice: null,
+    pnl: 0,
+    status: "closed",
+    notes: "",
+    orderId: "",
+    initialStopLoss: null,
+    initialTakeProfit: null,
+    finalStopLoss: null,
+    finalTakeProfit: null,
+  });
+
   const createTradeMutation = useMutation({
     mutationFn: async (data: InsertTrade) => {
-      return apiRequest("POST", "/api/trades", data);
+      const response = await fetch("/api/trades", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+      if (!response.ok) throw new Error("Failed to create trade");
+      return response.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/trades'] });
       setIsDialogOpen(false);
-      form.reset();
+      setFormData({
+        symbol: "",
+        date: new Date().toISOString().split('T')[0],
+        side: "long",
+        quantity: 1,
+        entryPrice: 0,
+        exitPrice: null,
+        pnl: 0,
+        status: "closed",
+        notes: "",
+        orderId: "",
+        initialStopLoss: null,
+        initialTakeProfit: null,
+        finalStopLoss: null,
+        finalTakeProfit: null,
+      });
       toast({
-        title: "Trade Added",
-        description: "Trade has been successfully recorded.",
+        title: "Trade Added Successfully",
+        description: "Your trade has been recorded and added to the system.",
       });
     },
-    onError: (error) => {
+    onError: () => {
       toast({
-        title: "Error",
-        description: "Failed to add trade. Please try again.",
+        title: "Error Adding Trade",
+        description: "Failed to add trade. Please check your inputs and try again.",
         variant: "destructive",
       });
     }
@@ -51,16 +89,10 @@ export default function TradeEntry({ accounts }: TradeEntryProps) {
     mutationFn: async (data: { accountId: number; csvContent: string }) => {
       const response = await fetch("/api/trades/import-csv", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
       });
-      
-      if (!response.ok) {
-        throw new Error("Failed to import CSV");
-      }
-      
+      if (!response.ok) throw new Error("Failed to import CSV");
       return response.json();
     },
     onSuccess: (data) => {
@@ -73,7 +105,7 @@ export default function TradeEntry({ accounts }: TradeEntryProps) {
         description: `Successfully imported ${data.recordsImported} out of ${data.recordsProcessed} trades.`,
       });
     },
-    onError: (error) => {
+    onError: () => {
       toast({
         title: "Import Failed",
         description: "Failed to import CSV. Please check the format and try again.",
@@ -82,25 +114,29 @@ export default function TradeEntry({ accounts }: TradeEntryProps) {
     }
   });
 
-  const form = useForm<InsertTrade>({
-    resolver: zodResolver(insertTradeSchema),
-    defaultValues: {
-      symbol: "",
-      date: new Date().toISOString().split('T')[0],
-      side: "long",
-      quantity: 1,
-      entryPrice: 0,
-      exitPrice: null,
-      pnl: 0,
-      status: "closed",
-      notes: "",
-      orderId: "",
-      initialStopLoss: null,
-      initialTakeProfit: null,
-      finalStopLoss: null,
-      finalTakeProfit: null,
-    },
-  });
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!formData.accountId) {
+      toast({
+        title: "Account Required",
+        description: "Please select a trading account.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      const validatedData = insertTradeSchema.parse(formData);
+      createTradeMutation.mutate(validatedData);
+    } catch (error) {
+      toast({
+        title: "Validation Error",
+        description: "Please check all required fields are filled correctly.",
+        variant: "destructive",
+      });
+    }
+  };
 
   const handleCsvFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -122,8 +158,7 @@ export default function TradeEntry({ accounts }: TradeEntryProps) {
   };
 
   const handleCsvImport = () => {
-    const accountId = form.watch("accountId");
-    if (!accountId || !csvData) {
+    if (!formData.accountId || !csvData) {
       toast({
         title: "Missing Information",
         description: "Please select an account and upload a CSV file.",
@@ -133,7 +168,7 @@ export default function TradeEntry({ accounts }: TradeEntryProps) {
     }
 
     csvImportMutation.mutate({
-      accountId,
+      accountId: formData.accountId,
       csvContent: csvData,
     });
   };
@@ -141,447 +176,447 @@ export default function TradeEntry({ accounts }: TradeEntryProps) {
   return (
     <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
       <DialogTrigger asChild>
-        <Button className="bg-green-600 hover:bg-green-700 text-white">
+        <Button className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105">
           <Plus className="mr-2 h-4 w-4" />
           Add Trade
         </Button>
       </DialogTrigger>
       
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto bg-dark-surface border-dark-border">
-        <DialogHeader>
-          <DialogTitle className="text-white text-xl">Add New Trade</DialogTitle>
+      <DialogContent className="max-w-6xl max-h-[95vh] overflow-hidden bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 border border-gray-700 shadow-2xl">
+        <DialogHeader className="pb-6 border-b border-gray-700">
+          <DialogTitle className="text-2xl font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
+            Add New Trade
+          </DialogTitle>
+          <p className="text-gray-400 text-sm mt-1">Record your trading activity manually or import from CSV</p>
         </DialogHeader>
         
-        <Tabs defaultValue="manual" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-2 bg-gray-800">
-            <TabsTrigger value="manual" className="text-white data-[state=active]:bg-green-600">
-              <FileText className="mr-2 h-4 w-4" />
-              Manual Entry
-            </TabsTrigger>
-            <TabsTrigger value="csv" className="text-white data-[state=active]:bg-blue-600">
-              <Upload className="mr-2 h-4 w-4" />
-              CSV Import
-            </TabsTrigger>
-          </TabsList>
+        {/* Tab Navigation */}
+        <div className="flex space-x-1 bg-gray-800 rounded-xl p-1 mb-6">
+          <button
+            onClick={() => setActiveTab('manual')}
+            className={`flex-1 flex items-center justify-center px-4 py-3 rounded-lg font-medium transition-all duration-200 ${
+              activeTab === 'manual' 
+                ? 'bg-gradient-to-r from-green-600 to-emerald-600 text-white shadow-lg' 
+                : 'text-gray-400 hover:text-white hover:bg-gray-700'
+            }`}
+          >
+            <FileText className="mr-2 h-4 w-4" />
+            Manual Entry
+          </button>
+          <button
+            onClick={() => setActiveTab('csv')}
+            className={`flex-1 flex items-center justify-center px-4 py-3 rounded-lg font-medium transition-all duration-200 ${
+              activeTab === 'csv' 
+                ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg' 
+                : 'text-gray-400 hover:text-white hover:bg-gray-700'
+            }`}
+          >
+            <Upload className="mr-2 h-4 w-4" />
+            CSV Import
+          </button>
+        </div>
 
-          <TabsContent value="manual" className="space-y-6">
-            <Form {...form}>
-              <form onSubmit={form.handleSubmit((data) => createTradeMutation.mutate(data))} className="space-y-6">
-                <div className="grid grid-cols-2 gap-6">
-                  <div className="space-y-4">
-                    <FormField
-                      control={form.control}
-                      name="accountId"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-white font-medium">Trading Account</FormLabel>
-                          <Select onValueChange={(value) => field.onChange(parseInt(value))} value={field.value?.toString()}>
-                            <FormControl>
-                              <SelectTrigger className="bg-gray-700 border-gray-600 text-white">
-                                <SelectValue placeholder="Select account" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent className="bg-gray-700 border-gray-600">
-                              {accounts.map((account) => (
-                                <SelectItem key={account.id} value={account.id.toString()} className="text-white hover:bg-gray-600">
-                                  {account.name}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={form.control}
-                      name="symbol"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-white font-medium">Symbol</FormLabel>
-                          <FormControl>
-                            <Input 
-                              {...field}
-                              className="bg-gray-700 border-gray-600 text-white placeholder-gray-400"
-                              placeholder="e.g., NQ, ES, EURUSD"
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={form.control}
-                      name="date"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-white font-medium">Trade Date</FormLabel>
-                          <FormControl>
-                            <Input 
-                              {...field}
-                              type="date"
-                              className="bg-gray-700 border-gray-600 text-white"
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={form.control}
-                      name="side"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-white font-medium">Side</FormLabel>
-                          <Select onValueChange={field.onChange} defaultValue={field.value}>
-                            <FormControl>
-                              <SelectTrigger className="bg-gray-700 border-gray-600 text-white">
-                                <SelectValue placeholder="Select side" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent className="bg-gray-700 border-gray-600">
-                              <SelectItem value="long" className="text-white hover:bg-gray-600">Long</SelectItem>
-                              <SelectItem value="short" className="text-white hover:bg-gray-600">Short</SelectItem>
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={form.control}
-                      name="quantity"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-white font-medium">Quantity</FormLabel>
-                          <FormControl>
-                            <Input 
-                              type="number"
-                              {...field}
-                              onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
-                              className="bg-gray-700 border-gray-600 text-white placeholder-gray-400"
-                              placeholder="Number of contracts/units"
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-
-                  <div className="space-y-4">
-                    <FormField
-                      control={form.control}
-                      name="entryPrice"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-white font-medium">Entry Price</FormLabel>
-                          <FormControl>
-                            <Input 
-                              type="number"
-                              step="0.01"
-                              {...field}
-                              onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
-                              className="bg-gray-700 border-gray-600 text-white placeholder-gray-400"
-                              placeholder="Entry price"
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={form.control}
-                      name="exitPrice"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-white font-medium">Exit Price (Optional)</FormLabel>
-                          <FormControl>
-                            <Input 
-                              type="number"
-                              step="0.01"
-                              {...field}
-                              value={field.value || ""}
-                              onChange={(e) => field.onChange(e.target.value ? parseFloat(e.target.value) : null)}
-                              className="bg-gray-700 border-gray-600 text-white placeholder-gray-400"
-                              placeholder="Exit price (if closed)"
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={form.control}
-                      name="pnl"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-white font-medium">P&L ($)</FormLabel>
-                          <FormControl>
-                            <Input 
-                              type="number"
-                              step="0.01"
-                              {...field}
-                              onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
-                              className="bg-gray-700 border-gray-600 text-white placeholder-gray-400"
-                              placeholder="Profit/Loss amount"
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={form.control}
-                      name="status"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-white font-medium">Status</FormLabel>
-                          <Select onValueChange={field.onChange} defaultValue={field.value}>
-                            <FormControl>
-                              <SelectTrigger className="bg-gray-700 border-gray-600 text-white">
-                                <SelectValue placeholder="Select status" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent className="bg-gray-700 border-gray-600">
-                              <SelectItem value="open" className="text-white hover:bg-gray-600">Open</SelectItem>
-                              <SelectItem value="closed" className="text-white hover:bg-gray-600">Closed</SelectItem>
-                              <SelectItem value="cancelled" className="text-white hover:bg-gray-600">Cancelled</SelectItem>
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={form.control}
-                      name="orderId"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-white font-medium">Order ID (Optional)</FormLabel>
-                          <FormControl>
-                            <Input 
-                              {...field}
-                              value={field.value || ""}
-                              className="bg-gray-700 border-gray-600 text-white placeholder-gray-400"
-                              placeholder="Broker order ID"
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-2 gap-6">
-                  <div className="space-y-4">
-                    <h3 className="text-md font-semibold text-white">Initial Stop Loss & Take Profit</h3>
-                    <FormField
-                      control={form.control}
-                      name="initialStopLoss"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-white font-medium">Initial Stop Loss</FormLabel>
-                          <FormControl>
-                            <Input 
-                              type="number"
-                              step="0.01"
-                              {...field}
-                              value={field.value || ""}
-                              onChange={(e) => field.onChange(e.target.value ? parseFloat(e.target.value) : null)}
-                              className="bg-gray-700 border-gray-600 text-white placeholder-gray-400"
-                              placeholder="Initial SL price"
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={form.control}
-                      name="initialTakeProfit"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-white font-medium">Initial Take Profit</FormLabel>
-                          <FormControl>
-                            <Input 
-                              type="number"
-                              step="0.01"
-                              {...field}
-                              value={field.value || ""}
-                              onChange={(e) => field.onChange(e.target.value ? parseFloat(e.target.value) : null)}
-                              className="bg-gray-700 border-gray-600 text-white placeholder-gray-400"
-                              placeholder="Initial TP price"
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-
-                  <div className="space-y-4">
-                    <h3 className="text-md font-semibold text-white">Final Stop Loss & Take Profit</h3>
-                    <FormField
-                      control={form.control}
-                      name="finalStopLoss"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-white font-medium">Final Stop Loss</FormLabel>
-                          <FormControl>
-                            <Input 
-                              type="number"
-                              step="0.01"
-                              {...field}
-                              value={field.value || ""}
-                              onChange={(e) => field.onChange(e.target.value ? parseFloat(e.target.value) : null)}
-                              className="bg-gray-700 border-gray-600 text-white placeholder-gray-400"
-                              placeholder="Final SL price"
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={form.control}
-                      name="finalTakeProfit"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-white font-medium">Final Take Profit</FormLabel>
-                          <FormControl>
-                            <Input 
-                              type="number"
-                              step="0.01"
-                              {...field}
-                              value={field.value || ""}
-                              onChange={(e) => field.onChange(e.target.value ? parseFloat(e.target.value) : null)}
-                              className="bg-gray-700 border-gray-600 text-white placeholder-gray-400"
-                              placeholder="Final TP price"
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-                </div>
-
-                <FormField
-                  control={form.control}
-                  name="notes"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-white font-medium">Notes (Optional)</FormLabel>
-                      <FormControl>
-                        <Textarea 
-                          {...field}
-                          value={field.value || ""}
-                          className="bg-gray-700 border-gray-600 text-white placeholder-gray-400 resize-none"
-                          rows={3}
-                          placeholder="Trade notes, strategy, or observations..."
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <div className="flex justify-end space-x-4">
-                  <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>
-                    Cancel
-                  </Button>
-                  <Button 
-                    type="submit" 
-                    className="bg-green-600 hover:bg-green-700"
-                    disabled={createTradeMutation.isPending}
-                  >
-                    {createTradeMutation.isPending ? "Adding..." : "Add Trade"}
-                  </Button>
-                </div>
-              </form>
-            </Form>
-          </TabsContent>
-
-          <TabsContent value="csv" className="space-y-6">
-            <div className="space-y-4">
-              <div className="bg-blue-900 bg-opacity-30 p-4 rounded-lg border border-blue-600 border-opacity-30">
-                <h3 className="text-white font-medium mb-2">CSV Format Requirements</h3>
-                <p className="text-sm text-gray-300 mb-2">Your CSV file should include the following columns:</p>
-                <code className="text-xs bg-gray-800 p-2 rounded block text-green-400">
-                  Symbol, Date, Side, Quantity, EntryPrice, ExitPrice, PnL, Status, Notes
-                </code>
-                <p className="text-xs text-gray-400 mt-2">
-                  Date format: YYYY-MM-DD | Side: long/short | Status: open/closed/cancelled
-                </p>
-              </div>
-
-              <FormField
-                control={form.control}
-                name="accountId"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-white font-medium">Trading Account</FormLabel>
-                    <Select onValueChange={(value) => field.onChange(parseInt(value))} value={field.value?.toString()}>
-                      <FormControl>
-                        <SelectTrigger className="bg-gray-700 border-gray-600 text-white">
-                          <SelectValue placeholder="Select account for import" />
-                        </SelectTrigger>
-                      </FormControl>
+        <div className="max-h-[calc(95vh-200px)] overflow-y-auto">
+          {activeTab === 'manual' ? (
+            <form onSubmit={handleSubmit} className="space-y-8">
+              {/* Account Selection */}
+              <Card className="bg-gray-800 border-gray-700">
+                <CardHeader className="pb-4">
+                  <CardTitle className="text-lg text-white flex items-center">
+                    <Target className="mr-2 h-5 w-5 text-blue-400" />
+                    Account Selection
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-2">
+                    <Label className="text-gray-300 font-medium">Trading Account</Label>
+                    <Select 
+                      value={formData.accountId?.toString() || ""} 
+                      onValueChange={(value) => setFormData(prev => ({ ...prev, accountId: parseInt(value) }))}
+                    >
+                      <SelectTrigger className="bg-gray-700 border-gray-600 text-white focus:border-blue-400">
+                        <SelectValue placeholder="Select your trading account" />
+                      </SelectTrigger>
                       <SelectContent className="bg-gray-700 border-gray-600">
                         {accounts.map((account) => (
                           <SelectItem key={account.id} value={account.id.toString()} className="text-white hover:bg-gray-600">
-                            {account.name}
+                            <div className="flex items-center justify-between w-full">
+                              <span>{account.name}</span>
+                              <Badge variant="outline" className="ml-2 text-xs">
+                                {account.firm}
+                              </Badge>
+                            </div>
                           </SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+                  </div>
+                </CardContent>
+              </Card>
 
-              <div className="space-y-2">
-                <label className="text-white font-medium">Upload CSV File</label>
-                <Input 
-                  type="file"
-                  accept=".csv"
-                  onChange={handleCsvFileChange}
-                  className="bg-gray-700 border-gray-600 text-white file:bg-blue-600 file:text-white file:border-0"
-                />
-                {csvFile && (
-                  <p className="text-sm text-green-400">
-                    File selected: {csvFile.name} ({Math.round(csvFile.size / 1024)} KB)
-                  </p>
-                )}
+              {/* Trade Details */}
+              <Card className="bg-gray-800 border-gray-700">
+                <CardHeader className="pb-4">
+                  <CardTitle className="text-lg text-white flex items-center">
+                    <TrendingUp className="mr-2 h-5 w-5 text-green-400" />
+                    Trade Information
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div className="space-y-2">
+                      <Label className="text-gray-300 font-medium flex items-center">
+                        <Hash className="mr-1 h-4 w-4" />
+                        Symbol
+                      </Label>
+                      <Input 
+                        value={formData.symbol || ""}
+                        onChange={(e) => setFormData(prev => ({ ...prev, symbol: e.target.value }))}
+                        className="bg-gray-700 border-gray-600 text-white focus:border-green-400"
+                        placeholder="e.g., NQ, ES, EURUSD"
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label className="text-gray-300 font-medium flex items-center">
+                        <Calendar className="mr-1 h-4 w-4" />
+                        Date
+                      </Label>
+                      <Input 
+                        type="date"
+                        value={formData.date || ""}
+                        onChange={(e) => setFormData(prev => ({ ...prev, date: e.target.value }))}
+                        className="bg-gray-700 border-gray-600 text-white focus:border-green-400"
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label className="text-gray-300 font-medium">Side</Label>
+                      <Select 
+                        value={formData.side || "long"} 
+                        onValueChange={(value: 'long' | 'short') => setFormData(prev => ({ ...prev, side: value }))}
+                      >
+                        <SelectTrigger className="bg-gray-700 border-gray-600 text-white focus:border-green-400">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent className="bg-gray-700 border-gray-600">
+                          <SelectItem value="long" className="text-white hover:bg-gray-600">
+                            <div className="flex items-center">
+                              <div className="w-2 h-2 bg-green-400 rounded-full mr-2"></div>
+                              Long
+                            </div>
+                          </SelectItem>
+                          <SelectItem value="short" className="text-white hover:bg-gray-600">
+                            <div className="flex items-center">
+                              <div className="w-2 h-2 bg-red-400 rounded-full mr-2"></div>
+                              Short
+                            </div>
+                          </SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label className="text-gray-300 font-medium">Quantity</Label>
+                      <Input 
+                        type="number"
+                        value={formData.quantity || ""}
+                        onChange={(e) => setFormData(prev => ({ ...prev, quantity: parseInt(e.target.value) || 0 }))}
+                        className="bg-gray-700 border-gray-600 text-white focus:border-green-400"
+                        placeholder="Contracts/Units"
+                        min="1"
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label className="text-gray-300 font-medium">Entry Price</Label>
+                      <Input 
+                        type="number"
+                        step="0.01"
+                        value={formData.entryPrice || ""}
+                        onChange={(e) => setFormData(prev => ({ ...prev, entryPrice: parseFloat(e.target.value) || 0 }))}
+                        className="bg-gray-700 border-gray-600 text-white focus:border-green-400"
+                        placeholder="0.00"
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label className="text-gray-300 font-medium">Exit Price</Label>
+                      <Input 
+                        type="number"
+                        step="0.01"
+                        value={formData.exitPrice || ""}
+                        onChange={(e) => setFormData(prev => ({ ...prev, exitPrice: e.target.value ? parseFloat(e.target.value) : null }))}
+                        className="bg-gray-700 border-gray-600 text-white focus:border-green-400"
+                        placeholder="0.00 (optional)"
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label className="text-gray-300 font-medium flex items-center">
+                        <DollarSign className="mr-1 h-4 w-4" />
+                        P&L
+                      </Label>
+                      <Input 
+                        type="number"
+                        step="0.01"
+                        value={formData.pnl || ""}
+                        onChange={(e) => setFormData(prev => ({ ...prev, pnl: parseFloat(e.target.value) || 0 }))}
+                        className="bg-gray-700 border-gray-600 text-white focus:border-green-400"
+                        placeholder="0.00"
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label className="text-gray-300 font-medium">Status</Label>
+                      <Select 
+                        value={formData.status || "closed"} 
+                        onValueChange={(value: 'open' | 'closed' | 'cancelled') => setFormData(prev => ({ ...prev, status: value }))}
+                      >
+                        <SelectTrigger className="bg-gray-700 border-gray-600 text-white focus:border-green-400">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent className="bg-gray-700 border-gray-600">
+                          <SelectItem value="closed" className="text-white hover:bg-gray-600">Closed</SelectItem>
+                          <SelectItem value="open" className="text-white hover:bg-gray-600">Open</SelectItem>
+                          <SelectItem value="cancelled" className="text-white hover:bg-gray-600">Cancelled</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label className="text-gray-300 font-medium">Order ID</Label>
+                      <Input 
+                        value={formData.orderId || ""}
+                        onChange={(e) => setFormData(prev => ({ ...prev, orderId: e.target.value }))}
+                        className="bg-gray-700 border-gray-600 text-white focus:border-green-400"
+                        placeholder="Broker order ID (optional)"
+                      />
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Stop Loss & Take Profit */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <Card className="bg-gray-800 border-gray-700">
+                  <CardHeader className="pb-4">
+                    <CardTitle className="text-lg text-white">Initial Levels</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="space-y-2">
+                      <Label className="text-gray-300 font-medium">Initial Stop Loss</Label>
+                      <Input 
+                        type="number"
+                        step="0.01"
+                        value={formData.initialStopLoss || ""}
+                        onChange={(e) => setFormData(prev => ({ ...prev, initialStopLoss: e.target.value ? parseFloat(e.target.value) : null }))}
+                        className="bg-gray-700 border-gray-600 text-white focus:border-red-400"
+                        placeholder="0.00"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="text-gray-300 font-medium">Initial Take Profit</Label>
+                      <Input 
+                        type="number"
+                        step="0.01"
+                        value={formData.initialTakeProfit || ""}
+                        onChange={(e) => setFormData(prev => ({ ...prev, initialTakeProfit: e.target.value ? parseFloat(e.target.value) : null }))}
+                        className="bg-gray-700 border-gray-600 text-white focus:border-green-400"
+                        placeholder="0.00"
+                      />
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card className="bg-gray-800 border-gray-700">
+                  <CardHeader className="pb-4">
+                    <CardTitle className="text-lg text-white">Final Levels</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="space-y-2">
+                      <Label className="text-gray-300 font-medium">Final Stop Loss</Label>
+                      <Input 
+                        type="number"
+                        step="0.01"
+                        value={formData.finalStopLoss || ""}
+                        onChange={(e) => setFormData(prev => ({ ...prev, finalStopLoss: e.target.value ? parseFloat(e.target.value) : null }))}
+                        className="bg-gray-700 border-gray-600 text-white focus:border-red-400"
+                        placeholder="0.00"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="text-gray-300 font-medium">Final Take Profit</Label>
+                      <Input 
+                        type="number"
+                        step="0.01"
+                        value={formData.finalTakeProfit || ""}
+                        onChange={(e) => setFormData(prev => ({ ...prev, finalTakeProfit: e.target.value ? parseFloat(e.target.value) : null }))}
+                        className="bg-gray-700 border-gray-600 text-white focus:border-green-400"
+                        placeholder="0.00"
+                      />
+                    </div>
+                  </CardContent>
+                </Card>
               </div>
 
-              <div className="flex justify-end space-x-4">
-                <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>
+              {/* Notes */}
+              <Card className="bg-gray-800 border-gray-700">
+                <CardHeader className="pb-4">
+                  <CardTitle className="text-lg text-white">Additional Notes</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-2">
+                    <Label className="text-gray-300 font-medium">Trade Notes</Label>
+                    <Textarea 
+                      value={formData.notes || ""}
+                      onChange={(e) => setFormData(prev => ({ ...prev, notes: e.target.value }))}
+                      className="bg-gray-700 border-gray-600 text-white focus:border-blue-400 resize-none"
+                      rows={3}
+                      placeholder="Add any observations, strategy details, or lessons learned..."
+                    />
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Action Buttons */}
+              <div className="flex justify-end space-x-4 pt-6 border-t border-gray-700">
+                <Button 
+                  type="button" 
+                  variant="outline" 
+                  onClick={() => setIsDialogOpen(false)}
+                  className="border-gray-600 text-gray-300 hover:bg-gray-700"
+                >
+                  Cancel
+                </Button>
+                <Button 
+                  type="submit" 
+                  disabled={createTradeMutation.isPending}
+                  className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white shadow-lg"
+                >
+                  {createTradeMutation.isPending ? "Adding Trade..." : "Add Trade"}
+                </Button>
+              </div>
+            </form>
+          ) : (
+            <div className="space-y-6">
+              {/* CSV Import Instructions */}
+              <Card className="bg-gradient-to-r from-blue-900/30 to-indigo-900/30 border border-blue-600/30">
+                <CardHeader>
+                  <CardTitle className="text-white flex items-center">
+                    <FileText className="mr-2 h-5 w-5 text-blue-400" />
+                    CSV Format Requirements
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <p className="text-gray-300">Your CSV file should include the following columns:</p>
+                  <div className="bg-gray-800 p-4 rounded-lg">
+                    <code className="text-green-400 text-sm font-mono">
+                      Symbol, Date, Side, Quantity, EntryPrice, ExitPrice, PnL, Status, Notes
+                    </code>
+                  </div>
+                  <div className="text-sm text-gray-400 space-y-1">
+                    <p>• Date format: YYYY-MM-DD</p>
+                    <p>• Side: long or short</p>
+                    <p>• Status: open, closed, or cancelled</p>
+                    <p>• Optional columns: OrderId, InitialStopLoss, InitialTakeProfit, FinalStopLoss, FinalTakeProfit</p>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Account Selection for CSV */}
+              <Card className="bg-gray-800 border-gray-700">
+                <CardHeader>
+                  <CardTitle className="text-white">Account Selection</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-2">
+                    <Label className="text-gray-300 font-medium">Trading Account</Label>
+                    <Select 
+                      value={formData.accountId?.toString() || ""} 
+                      onValueChange={(value) => setFormData(prev => ({ ...prev, accountId: parseInt(value) }))}
+                    >
+                      <SelectTrigger className="bg-gray-700 border-gray-600 text-white focus:border-blue-400">
+                        <SelectValue placeholder="Select account for import" />
+                      </SelectTrigger>
+                      <SelectContent className="bg-gray-700 border-gray-600">
+                        {accounts.map((account) => (
+                          <SelectItem key={account.id} value={account.id.toString()} className="text-white hover:bg-gray-600">
+                            <div className="flex items-center justify-between w-full">
+                              <span>{account.name}</span>
+                              <Badge variant="outline" className="ml-2 text-xs">
+                                {account.firm}
+                              </Badge>
+                            </div>
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* File Upload */}
+              <Card className="bg-gray-800 border-gray-700">
+                <CardHeader>
+                  <CardTitle className="text-white">Upload CSV File</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-center w-full">
+                      <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-600 border-dashed rounded-lg cursor-pointer bg-gray-700 hover:bg-gray-600 transition-colors">
+                        <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                          <Upload className="w-8 h-8 mb-4 text-gray-400" />
+                          <p className="mb-2 text-sm text-gray-400">
+                            <span className="font-semibold">Click to upload</span> or drag and drop
+                          </p>
+                          <p className="text-xs text-gray-400">CSV files only</p>
+                        </div>
+                        <Input 
+                          type="file"
+                          accept=".csv"
+                          onChange={handleCsvFileChange}
+                          className="hidden"
+                        />
+                      </label>
+                    </div>
+                    
+                    {csvFile && (
+                      <div className="bg-green-900/30 border border-green-600/30 rounded-lg p-4">
+                        <div className="flex items-center">
+                          <FileText className="h-5 w-5 text-green-400 mr-2" />
+                          <span className="text-green-300 font-medium">{csvFile.name}</span>
+                          <span className="text-green-400 text-sm ml-2">
+                            ({Math.round(csvFile.size / 1024)} KB)
+                          </span>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Action Buttons */}
+              <div className="flex justify-end space-x-4 pt-6 border-t border-gray-700">
+                <Button 
+                  type="button" 
+                  variant="outline" 
+                  onClick={() => setIsDialogOpen(false)}
+                  className="border-gray-600 text-gray-300 hover:bg-gray-700"
+                >
                   Cancel
                 </Button>
                 <Button 
                   onClick={handleCsvImport}
-                  className="bg-blue-600 hover:bg-blue-700"
-                  disabled={csvImportMutation.isPending || !csvFile || !form.watch("accountId")}
+                  disabled={csvImportMutation.isPending || !csvFile || !formData.accountId}
+                  className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-lg"
                 >
                   {csvImportMutation.isPending ? "Importing..." : "Import CSV"}
                 </Button>
               </div>
             </div>
-          </TabsContent>
-        </Tabs>
+          )}
+        </div>
       </DialogContent>
     </Dialog>
   );
