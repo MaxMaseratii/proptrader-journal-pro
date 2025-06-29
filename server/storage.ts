@@ -1,9 +1,10 @@
 import { 
-  accounts, trades, journalEntries, dailyStats,
+  accounts, trades, journalEntries, dailyStats, csvImports,
   type Account, type InsertAccount,
   type Trade, type InsertTrade, 
   type JournalEntry, type InsertJournalEntry,
-  type DailyStats, type InsertDailyStats
+  type DailyStats, type InsertDailyStats,
+  type CsvImport, type InsertCsvImport
 } from "@shared/schema";
 
 export interface IStorage {

@@ -210,6 +210,125 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // CSV Import endpoint
+  app.post("/api/csv-import", async (req, res) => {
+    try {
+      const { accountId, csvData, fileName } = req.body;
+      
+      if (!accountId || !csvData || !fileName) {
+        return res.status(400).json({ message: "Missing required fields" });
+      }
+
+      const account = await storage.getAccount(accountId);
+      if (!account) {
+        return res.status(404).json({ message: "Account not found" });
+      }
+
+      // Parse CSV data
+      const lines = csvData.split('\n');
+      const headers = lines[0].split(',').map(h => h.trim());
+      
+      let recordsProcessed = 0;
+      let recordsImported = 0;
+      const errors: string[] = [];
+      const importedTrades = [];
+
+      // Process each row (skip header)
+      for (let i = 1; i < lines.length; i++) {
+        const line = lines[i].trim();
+        if (!line) continue;
+        
+        recordsProcessed++;
+        
+        try {
+          const values = line.split(',').map(v => v.trim());
+          const row: any = {};
+          
+          headers.forEach((header, index) => {
+            row[header] = values[index] || '';
+          });
+
+          // Only import filled orders
+          if (row.Status !== ' Filled') {
+            continue;
+          }
+
+          // Parse trade data
+          const symbol = row.Product || row.Contract || '';
+          const side = row['B/S'] === ' Buy' ? 'buy' : 'sell';
+          const quantity = parseFloat(row.filledQty) || parseFloat(row['Filled Qty']) || 0;
+          const price = parseFloat(row.avgPrice) || parseFloat(row['Avg Fill Price']) || 0;
+          const fillTime = row['Fill Time'] || row.Timestamp || '';
+          const date = row.Date || new Date().toISOString().split('T')[0];
+
+          if (!symbol || !quantity || !price) {
+            errors.push(`Row ${i}: Missing required trade data`);
+            continue;
+          }
+
+          // Calculate P&L (simplified - would need entry/exit pair logic for real implementation)
+          const pnl = side === 'buy' ? quantity * price * 0.001 : quantity * price * -0.001;
+
+          // Check risk compliance
+          const riskAmount = account.riskPerTrade || 100;
+          const actualRisk = Math.abs(pnl);
+          const riskCompliance = actualRisk <= riskAmount;
+
+          const trade = {
+            accountId,
+            date,
+            symbol: symbol.replace(/[^A-Z]/g, ''), // Clean symbol
+            side,
+            quantity,
+            entryPrice: price,
+            exitPrice: price,
+            pnl,
+            status: 'closed',
+            orderId: row.orderId || row['Order ID'] || '',
+            fillTime: new Date(fillTime).toISOString(),
+            orderType: row.Type || 'Market',
+            originalQuantity: quantity,
+            riskAmount,
+            riskCompliance,
+            notes: `Imported from ${fileName}`
+          };
+
+          const createdTrade = await storage.createTrade(trade);
+          importedTrades.push(createdTrade);
+          recordsImported++;
+
+        } catch (error) {
+          errors.push(`Row ${i}: ${error.message}`);
+        }
+      }
+
+      // Create import record
+      await storage.createCsvImport({
+        accountId,
+        fileName,
+        recordsProcessed,
+        recordsImported,
+        status: 'completed',
+        errors: JSON.stringify(errors)
+      });
+
+      res.json({
+        success: true,
+        recordsProcessed,
+        recordsImported,
+        errors,
+        importId: Date.now() // Simple ID for now
+      });
+
+    } catch (error) {
+      res.status(500).json({ 
+        success: false,
+        message: "CSV import failed",
+        errors: [error.message]
+      });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

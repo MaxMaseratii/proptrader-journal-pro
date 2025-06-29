@@ -85,14 +85,16 @@ export default function Accounts() {
             <h2 className="text-2xl font-bold">Account Management</h2>
             <p className="text-gray-400 text-sm mt-1">Manage your prop firm accounts and challenges</p>
           </div>
-          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-            <DialogTrigger asChild>
-              <Button className="bg-primary hover:bg-blue-700">
-                <Plus className="mr-2 h-4 w-4" />
-                Add Account
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="bg-dark-surface border-dark-border">
+          <div className="flex items-center space-x-3">
+            <CsvImport accounts={accounts || []} />
+            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+              <DialogTrigger asChild>
+                <Button className="bg-primary hover:bg-blue-700">
+                  <Plus className="mr-2 h-4 w-4" />
+                  Add Account
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="bg-dark-surface border-dark-border">
               <DialogHeader>
                 <DialogTitle>Add New Account</DialogTitle>
               </DialogHeader>
@@ -231,6 +233,7 @@ export default function Accounts() {
               </Form>
             </DialogContent>
           </Dialog>
+          </div>
         </div>
       </header>
 
