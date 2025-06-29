@@ -282,42 +282,44 @@ export default function Dashboard() {
             </CardContent>
           </Card>
 
-          <Card className="bg-dark-card border-blue-600">
+          <Card className="bg-gradient-to-br from-blue-900/40 to-blue-800/20 border-blue-600/50 shadow-lg hover:shadow-xl transition-all duration-300 hover:border-blue-500">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-gray-400 text-sm mb-1">Total Activation Costs</p>
-                  <p className="text-2xl font-bold text-white">
+                  <p className="text-gray-300 text-sm mb-2 font-medium">Activation Costs</p>
+                  <p className="text-3xl font-bold text-white bg-gradient-to-r from-blue-400 to-blue-300 bg-clip-text text-transparent">
                     {formatCurrency(accounts?.reduce((sum, acc) => sum + (acc.activationCost || 0), 0) || 0)}
                   </p>
-                  <p className="text-xs text-gray-400 mt-1">
+                  <p className="text-xs text-blue-300 mt-2 flex items-center">
+                    <Shield className="h-3 w-3 mr-1" />
                     Activation fees paid/required
                   </p>
                 </div>
-                <div className="bg-blue-600 bg-opacity-20 p-3 rounded-lg">
-                  <Shield className="text-blue-400 h-6 w-6" />
+                <div className="bg-gradient-to-br from-blue-600 to-blue-500 bg-opacity-20 p-4 rounded-xl shadow-lg">
+                  <Shield className="text-blue-400 h-7 w-7" />
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="bg-dark-card border-orange-600">
+          <Card className="bg-gradient-to-br from-orange-900/40 to-orange-800/20 border-orange-600/50 shadow-lg hover:shadow-xl transition-all duration-300 hover:border-orange-500">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-gray-400 text-sm mb-1">Combined Total</p>
-                  <p className="text-2xl font-bold text-white">
+                  <p className="text-gray-300 text-sm mb-2 font-medium">Total Investment</p>
+                  <p className="text-3xl font-bold text-white bg-gradient-to-r from-orange-400 to-orange-300 bg-clip-text text-transparent">
                     {formatCurrency(
                       (accounts?.reduce((sum, acc) => sum + (acc.accountCost || 0), 0) || 0) +
                       (accounts?.reduce((sum, acc) => sum + (acc.activationCost || 0), 0) || 0)
                     )}
                   </p>
-                  <p className="text-xs text-gray-400 mt-1">
-                    Total investment in trading
+                  <p className="text-xs text-orange-300 mt-2 flex items-center">
+                    <TrendingUp className="h-3 w-3 mr-1" />
+                    Complete trading capital deployed
                   </p>
                 </div>
-                <div className="bg-orange-600 bg-opacity-20 p-3 rounded-lg">
-                  <TrendingUp className="text-orange-400 h-6 w-6" />
+                <div className="bg-gradient-to-br from-orange-600 to-orange-500 bg-opacity-20 p-4 rounded-xl shadow-lg">
+                  <TrendingUp className="text-orange-400 h-7 w-7" />
                 </div>
               </div>
             </CardContent>
