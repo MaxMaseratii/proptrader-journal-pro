@@ -345,7 +345,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const errors: string[] = [];
       const importedTrades = [];
 
-      // Process each row (skip header)
+      // First pass: collect all filled orders
+      const filledOrders: any[] = [];
+      
       for (let i = 1; i < lines.length; i++) {
         const line = lines[i].trim();
         if (!line) continue;
@@ -360,12 +362,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
             row[header] = values[index] || '';
           });
 
-          // Only import filled orders
+          // Only process filled orders
           if (row.Status?.trim() !== 'Filled') {
             continue;
           }
 
-          // Parse trade data from actual CSV format
+          // Parse order data
           const symbol = row.Product || row.Contract || '';
           const side = row['B/S']?.trim() === 'Buy' ? 'buy' : 'sell';
           const quantity = parseFloat(row['Filled Qty']) || parseFloat(row.filledQty) || 0;
@@ -384,49 +386,115 @@ export async function registerRoutes(app: Express): Promise<Server> {
             }
           }
 
-          if (!symbol || !quantity || !price) {
-            errors.push(`Row ${i}: Missing required trade data`);
-            continue;
+          if (symbol && quantity && price) {
+            filledOrders.push({
+              symbol: symbol.replace(/[^A-Z]/g, ''),
+              side,
+              quantity,
+              price,
+              date,
+              fillTime,
+              orderId: row.orderId || row['Order ID'] || '',
+              orderType: row.Type || 'Market',
+              row: i
+            });
           }
-
-          // Calculate P&L for ES futures ($50 per point)
-          // For this simplified version, we'll use a base price to calculate P&L
-          const basePrice = 6000; // Approximate baseline
-          const pointValue = 50; // ES point value
-          const pnl = side === 'buy' 
-            ? (price - basePrice) * quantity * pointValue * 0.01 // Convert to reasonable P&L
-            : (basePrice - price) * quantity * pointValue * 0.01;
-
-          // Check risk compliance
-          const riskAmount = account.riskPerTrade || 100;
-          const actualRisk = Math.abs(pnl);
-          const riskCompliance = actualRisk <= riskAmount;
-
-          const trade = {
-            accountId,
-            date,
-            symbol: symbol.replace(/[^A-Z]/g, ''), // Clean symbol
-            side,
-            quantity,
-            entryPrice: price,
-            exitPrice: price,
-            pnl,
-            status: 'closed',
-            orderId: row.orderId || row['Order ID'] || '',
-            orderType: row.Type || 'Market',
-            originalQuantity: quantity,
-            riskAmount,
-            riskCompliance,
-            notes: `Imported from ${fileName}`
-          };
-
-          const createdTrade = await storage.createTrade(trade);
-          importedTrades.push(createdTrade);
-          recordsImported++;
 
         } catch (error) {
           errors.push(`Row ${i}: ${error instanceof Error ? error.message : 'Unknown error'}`);
         }
+      }
+
+      // Second pass: match orders to create trades
+      const processedOrders = new Set();
+      
+      for (let i = 0; i < filledOrders.length; i++) {
+        if (processedOrders.has(i)) continue;
+        
+        const order1 = filledOrders[i];
+        
+        // Look for matching opposing order (same symbol, different side, same quantity)
+        for (let j = i + 1; j < filledOrders.length; j++) {
+          if (processedOrders.has(j)) continue;
+          
+          const order2 = filledOrders[j];
+          
+          if (order1.symbol === order2.symbol && 
+              order1.side !== order2.side && 
+              order1.quantity === order2.quantity &&
+              order1.date === order2.date) {
+            
+            // Found a matching pair - create a complete trade
+            const buyOrder = order1.side === 'buy' ? order1 : order2;
+            const sellOrder = order1.side === 'sell' ? order1 : order2;
+            
+            // Calculate actual P&L for ES futures ($50 per point)
+            const pointValue = 50;
+            const priceDifference = sellOrder.price - buyOrder.price;
+            const pnl = priceDifference * order1.quantity * pointValue;
+            
+            // Check risk compliance
+            const riskAmount = account.riskPerTrade || 100;
+            const actualRisk = Math.abs(pnl);
+            const riskCompliance = actualRisk <= riskAmount;
+
+            const trade = {
+              accountId,
+              date: order1.date,
+              symbol: order1.symbol,
+              side: 'round_trip', // Complete round trip trade
+              quantity: order1.quantity,
+              entryPrice: buyOrder.price,
+              exitPrice: sellOrder.price,
+              pnl,
+              status: 'closed',
+              orderId: `${buyOrder.orderId}-${sellOrder.orderId}`,
+              orderType: 'Matched Orders',
+              originalQuantity: order1.quantity,
+              riskAmount,
+              riskCompliance,
+              notes: `Imported from ${fileName} - Buy: ${buyOrder.price}, Sell: ${sellOrder.price}`
+            };
+
+            const createdTrade = await storage.createTrade(trade);
+            importedTrades.push(createdTrade);
+            recordsImported++;
+            
+            // Mark both orders as processed
+            processedOrders.add(i);
+            processedOrders.add(j);
+            break;
+          }
+        }
+      }
+
+      // Handle any unmatched orders as individual trades with zero P&L
+      for (let i = 0; i < filledOrders.length; i++) {
+        if (processedOrders.has(i)) continue;
+        
+        const order = filledOrders[i];
+        
+        const trade = {
+          accountId,
+          date: order.date,
+          symbol: order.symbol,
+          side: order.side,
+          quantity: order.quantity,
+          entryPrice: order.price,
+          exitPrice: order.price,
+          pnl: 0, // Unmatched order - no P&L calculation possible
+          status: 'open',
+          orderId: order.orderId,
+          orderType: order.orderType,
+          originalQuantity: order.quantity,
+          riskAmount: account.riskPerTrade || 100,
+          riskCompliance: true,
+          notes: `Imported from ${fileName} - Unmatched ${order.side} order`
+        };
+
+        const createdTrade = await storage.createTrade(trade);
+        importedTrades.push(createdTrade);
+        recordsImported++;
       }
 
       // Create import record
