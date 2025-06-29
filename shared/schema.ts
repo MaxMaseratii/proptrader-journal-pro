@@ -22,8 +22,16 @@ export const accounts = pgTable("accounts", {
   maxPositionSize: integer("max_position_size"), // Maximum contracts per trade
   preferredAssets: text("preferred_assets"), // JSON array of preferred trading instruments
   
+  // Financial Tracking
+  accountCost: real("account_cost"), // Cost to purchase the account
+  purchaseMethod: text("purchase_method"), // 'credit_card', 'paypal', 'crypto', 'bank_transfer', 'other'
+  resetCount: integer("reset_count").default(0), // Number of times account was reset
+  totalResetsCost: real("total_resets_cost").default(0), // Total cost of all resets
+  activationCost: real("activation_cost"), // Cost to activate after passing challenge
+  activationPaid: boolean("activation_paid").default(false), // Whether activation fee was paid
+  includesActivationFee: boolean("includes_activation_fee").default(false), // If account cost includes activation
+  
   // Challenge/Evaluation Settings
-  accountCost: real("account_cost"),
   numberOfPhases: integer("number_of_phases").default(1),
   phase1Target: real("phase1_target"),
   phase2Target: real("phase2_target"),
@@ -69,7 +77,6 @@ export const accounts = pgTable("accounts", {
   // Live Account Settings
   liveAccountAvailable: boolean("live_account_available").default(false),
   transitionTrigger: text("transition_trigger"),
-  activationCost: real("activation_cost"),
   
   createdAt: timestamp("created_at").defaultNow(),
 });

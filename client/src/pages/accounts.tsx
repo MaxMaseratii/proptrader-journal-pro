@@ -89,9 +89,18 @@ export default function Accounts() {
     <>
       <header className="border-b border-gray-800 bg-dark-bg sticky top-0 z-50">
         <div className="p-6">
-          <div>
-            <h1 className="text-2xl font-bold text-white">Trading Accounts</h1>
-            <p className="text-gray-400">Manage your prop trading accounts</p>
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-2xl font-bold text-white">Trading Accounts</h1>
+              <p className="text-gray-400">Manage your prop trading accounts</p>
+            </div>
+            <Button 
+              onClick={() => setIsDialogOpen(true)}
+              className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2"
+            >
+              <Plus className="mr-2 h-4 w-4" />
+              Create Account
+            </Button>
           </div>
 
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
@@ -103,9 +112,12 @@ export default function Accounts() {
                 <Form {...form}>
                   <form onSubmit={form.handleSubmit((data) => createAccountMutation.mutate(data))} className="space-y-6">
                     <Tabs defaultValue="account" className="space-y-6">
-                      <TabsList className="grid w-full grid-cols-3 bg-gray-800">
+                      <TabsList className="grid w-full grid-cols-4 bg-gray-800">
                         <TabsTrigger value="account" className="text-white data-[state=active]:bg-blue-600">
                           Account Info & Rules
+                        </TabsTrigger>
+                        <TabsTrigger value="financial" className="text-white data-[state=active]:bg-blue-600">
+                          Financial Tracking
                         </TabsTrigger>
                         <TabsTrigger value="payout" className="text-white data-[state=active]:bg-blue-600">
                           Payout Rules
@@ -777,16 +789,7 @@ export default function Accounts() {
           ))}
         </div>
 
-        {/* Create Account Button - Bottom Center */}
-        <div className="flex justify-center mt-8">
-          <Button 
-            onClick={() => setIsDialogOpen(true)}
-            className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3"
-          >
-            <Plus className="mr-2 h-4 w-4" />
-            Create Account
-          </Button>
-        </div>
+
       </div>
     </>
   );
