@@ -1,5 +1,6 @@
 import { useState, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { Link } from "wouter";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -170,15 +171,18 @@ export default function Dashboard() {
 
   return (
     <>
-      {/* Header */}
-      <header className="bg-dark-surface border-b border-dark-border px-6 py-4">
+      {/* Enhanced Header */}
+      <header className="bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 border-b border-gray-700 px-8 py-6">
         <div className="flex justify-between items-center">
           <div>
-            <h2 className="text-2xl font-bold">Trading Dashboard</h2>
-            <p className="text-gray-400 text-sm mt-1">
+            <h2 className="text-3xl font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
+              Trading Dashboard
+            </h2>
+            <p className="text-gray-400 text-base mt-2 flex items-center">
+              <Target className="h-4 w-4 mr-2 text-orange-400" />
               {viewMode === 'all' 
-                ? `Viewing all ${accounts?.length ?? 0} accounts` 
-                : `Viewing ${selectedAccountIds.length || (accounts && accounts.length > 0 ? 1 : 0)} selected account(s)`}
+                ? `Monitoring all ${accounts?.length ?? 0} trading accounts` 
+                : `Analyzing ${selectedAccountIds.length || (accounts && accounts.length > 0 ? 1 : 0)} selected account(s)`}
             </p>
           </div>
           <div className="flex items-center space-x-4">
@@ -255,23 +259,24 @@ export default function Dashboard() {
         </div>
       </header>
 
-      <div className="p-6">
-        {/* Financial Tracking Summary */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-          <Card className="bg-dark-card border-green-600">
+      <div className="p-8 space-y-8">
+        {/* Financial Tracking Summary - Enhanced with gradients */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <Card className="bg-gradient-to-br from-green-900/40 to-green-800/20 border-green-600/50 shadow-lg hover:shadow-xl transition-all duration-300 hover:border-green-500">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-gray-400 text-sm mb-1">Total Spent on Accounts</p>
-                  <p className="text-2xl font-bold text-white">
+                  <p className="text-gray-300 text-sm mb-2 font-medium">Total Investment</p>
+                  <p className="text-3xl font-bold text-white bg-gradient-to-r from-green-400 to-green-300 bg-clip-text text-transparent">
                     {formatCurrency(accounts?.reduce((sum, acc) => sum + (acc.accountCost || 0), 0) || 0)}
                   </p>
-                  <p className="text-xs text-gray-400 mt-1">
+                  <p className="text-xs text-green-300 mt-2 flex items-center">
+                    <TrendingUp className="h-3 w-3 mr-1" />
                     Purchase costs for all accounts
                   </p>
                 </div>
-                <div className="bg-green-600 bg-opacity-20 p-3 rounded-lg">
-                  <DollarSign className="text-green-400 h-6 w-6" />
+                <div className="bg-gradient-to-br from-green-600 to-green-500 bg-opacity-20 p-4 rounded-xl shadow-lg">
+                  <DollarSign className="text-green-400 h-7 w-7" />
                 </div>
               </div>
             </CardContent>
@@ -692,9 +697,11 @@ export default function Dashboard() {
                     Need {formatCurrency((combinedAnalytics?.profitTarget || 0) - (combinedAnalytics?.totalPnl || 0))} to reach 10% target
                   </p>
                 </div>
-                <Button className="w-full bg-primary hover:bg-blue-700">
-                  View Challenge Details
-                </Button>
+                <Link href="/accounts">
+                  <Button className="w-full bg-primary hover:bg-blue-700">
+                    View Challenge Details
+                  </Button>
+                </Link>
               </div>
             </CardContent>
           </Card>
@@ -710,9 +717,11 @@ export default function Dashboard() {
                 </div>
                 <CardTitle>Daily Trading Journal</CardTitle>
               </div>
-              <Button variant="ghost" className="text-primary hover:text-blue-400">
-                View Full Journal
-              </Button>
+              <Link href="/journal">
+                <Button variant="ghost" className="text-primary hover:text-blue-400">
+                  View Full Journal
+                </Button>
+              </Link>
             </div>
           </CardHeader>
           <CardContent>
