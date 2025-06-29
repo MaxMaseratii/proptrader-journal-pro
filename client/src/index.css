@@ -88,21 +88,32 @@
   .bg-accent-orange { background-color: var(--accent-orange); }
 }
 
-/* Fix Select component visibility */
+/* Fix Select component visibility - comprehensive styling */
 @layer components {
+  /* Select Content (dropdown) */
   [data-radix-select-content] {
-    background-color: hsl(0, 0%, 7.1%) !important;
+    background-color: hsl(0, 0%, 11.8%) !important;
     border: 1px solid hsl(0, 0%, 25.1%) !important;
+    border-radius: 6px !important;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5) !important;
+    z-index: 50 !important;
   }
   
+  /* Select Items */
   [data-radix-select-item] {
     color: hsl(0, 0%, 98%) !important;
     background-color: transparent !important;
+    padding: 8px 12px !important;
+    cursor: pointer !important;
+    border-radius: 4px !important;
+    font-size: 14px !important;
   }
   
+  [data-radix-select-item]:hover,
   [data-radix-select-item][data-highlighted] {
-    background-color: hsl(0, 0%, 15.9%) !important;
+    background-color: hsl(0, 0%, 17.6%) !important;
     color: hsl(0, 0%, 98%) !important;
+    outline: none !important;
   }
   
   [data-radix-select-item][data-state="checked"] {
@@ -110,19 +121,62 @@
     color: hsl(211, 100%, 99%) !important;
   }
   
-  /* Select trigger styling */
+  /* Select Trigger (the button that opens dropdown) */
   [data-radix-select-trigger] {
     background-color: hsl(0, 0%, 17.6%) !important;
-    border-color: hsl(0, 0%, 25.1%) !important;
+    border: 1px solid hsl(0, 0%, 25.1%) !important;
+    color: hsl(0, 0%, 98%) !important;
+    border-radius: 6px !important;
+    padding: 8px 12px !important;
+    min-height: 36px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+  }
+  
+  [data-radix-select-trigger]:hover {
+    border-color: hsl(0, 0%, 35%) !important;
+    background-color: hsl(0, 0%, 20%) !important;
+  }
+  
+  [data-radix-select-trigger]:focus,
+  [data-radix-select-trigger][data-state="open"] {
+    border-color: hsl(207, 90%, 54%) !important;
+    box-shadow: 0 0 0 2px hsla(207, 90%, 54%, 0.2) !important;
+    outline: none !important;
+  }
+  
+  /* Select Value (the selected text) */
+  [data-radix-select-value] {
+    color: hsl(0, 0%, 98%) !important;
+    font-size: 14px !important;
+    flex: 1 !important;
+    text-align: left !important;
+  }
+  
+  /* Select Icon */
+  [data-radix-select-icon] {
+    color: hsl(0, 0%, 64.9%) !important;
+    width: 16px !important;
+    height: 16px !important;
+  }
+  
+  /* Additional specific selectors for stubborn elements */
+  .select-trigger,
+  button[role="combobox"] {
+    background-color: hsl(0, 0%, 17.6%) !important;
+    border: 1px solid hsl(0, 0%, 25.1%) !important;
     color: hsl(0, 0%, 98%) !important;
   }
   
-  [data-radix-select-trigger]:focus {
-    border-color: hsl(207, 90%, 54%) !important;
-    box-shadow: 0 0 0 2px hsla(207, 90%, 54%, 0.2) !important;
+  .select-content,
+  [role="listbox"] {
+    background-color: hsl(0, 0%, 11.8%) !important;
+    border: 1px solid hsl(0, 0%, 25.1%) !important;
   }
   
-  [data-radix-select-value] {
+  .select-item,
+  [role="option"] {
     color: hsl(0, 0%, 98%) !important;
   }
 }

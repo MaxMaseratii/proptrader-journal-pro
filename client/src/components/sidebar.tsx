@@ -81,15 +81,15 @@ export default function Sidebar() {
       <div className="absolute bottom-0 w-64 p-4 border-t border-dark-border bg-dark-surface">
         <div className="space-y-4">
           {/* Trader Profile */}
-          <div className="flex items-center">
+          <Link href="/profile" className="flex items-center hover:bg-gray-700 p-2 rounded-lg transition-colors -m-2">
             <div className="w-10 h-10 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full flex items-center justify-center">
               <span className="text-white text-sm font-bold">MM</span>
             </div>
             <div className="ml-3 flex-1">
-              <p className="text-sm font-medium text-white">Max Maserati</p>
+              <p className="text-sm font-medium text-white hover:text-blue-400 cursor-pointer">Max Maserati</p>
               <p className="text-xs text-gray-400">Professional Trader</p>
             </div>
-          </div>
+          </Link>
 
           {/* MMM Stats Subscription */}
           <div className="bg-purple-900 bg-opacity-30 p-3 rounded-lg border border-purple-600 border-opacity-30">
