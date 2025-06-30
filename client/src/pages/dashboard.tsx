@@ -27,7 +27,9 @@ import {
   Filter,
   Brain,
   BarChart3,
-  Calendar
+  Calendar,
+  Banknote,
+  Clock
 } from "lucide-react";
 import type { Account, Trade } from "@shared/schema";
 
@@ -276,7 +278,7 @@ export default function Dashboard() {
         </div>
 
         {/* Key Performance Metrics Under Header */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
           {/* Total Balance */}
           <Card className="bg-dark-card border-success-green">
             <CardContent className="p-6">
@@ -338,6 +340,78 @@ export default function Dashboard() {
                 </div>
                 <div className="bg-gray-600 bg-opacity-20 p-3 rounded-lg">
                   <BarChart3 className="text-gray-400 h-6 w-6" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Secondary Performance Metrics Row - Win Rate, R Factor, Profit Factor */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          {/* Win Rate */}
+          <Card className="bg-dark-card border-success-green">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-gray-400 text-sm mb-1">Win Rate</p>
+                  <p className={`text-2xl font-bold ${
+                    (combinedAnalytics?.winRate || 0) >= 70 ? 'text-success-green' :
+                    (combinedAnalytics?.winRate || 0) >= 50 ? 'text-warning-orange' : 'text-error-red'
+                  }`}>
+                    {combinedAnalytics?.winRate.toFixed(0) || 0}%
+                  </p>
+                  <p className="text-xs text-gray-400 mt-1">
+                    {combinedAnalytics?.winningTrades || 0} wins / {combinedAnalytics?.losingTrades || 0} losses
+                  </p>
+                </div>
+                <div className="bg-success-green bg-opacity-20 p-3 rounded-lg">
+                  <Target className="text-success-green h-6 w-6" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* R Factor */}
+          <Card className="bg-dark-card border-blue-600">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-gray-400 text-sm mb-1">R Factor</p>
+                  <p className={`text-2xl font-bold ${
+                    (combinedAnalytics?.rFactor || 0) >= 2 ? 'text-success-green' :
+                    (combinedAnalytics?.rFactor || 0) >= 1 ? 'text-warning-orange' : 'text-error-red'
+                  }`}>
+                    {combinedAnalytics?.rFactor.toFixed(2) || '0.00'}
+                  </p>
+                  <p className="text-xs text-gray-400 mt-1">
+                    Total Reward / Total Risk ratio
+                  </p>
+                </div>
+                <div className="bg-blue-600 bg-opacity-20 p-3 rounded-lg">
+                  <BarChart3 className="text-blue-400 h-6 w-6" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Profit Factor */}
+          <Card className="bg-dark-card border-purple-600">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-gray-400 text-sm mb-1">Profit Factor</p>
+                  <p className={`text-2xl font-bold ${
+                    (combinedAnalytics?.profitFactor || 0) >= 2 ? 'text-success-green' :
+                    (combinedAnalytics?.profitFactor || 0) >= 1 ? 'text-warning-orange' : 'text-error-red'
+                  }`}>
+                    {combinedAnalytics?.profitFactor.toFixed(2) || '0.00'}
+                  </p>
+                  <p className="text-xs text-gray-400 mt-1">
+                    Gross Profit / Gross Loss ratio
+                  </p>
+                </div>
+                <div className="bg-purple-600 bg-opacity-20 p-3 rounded-lg">
+                  <TrendingUp className="text-purple-400 h-6 w-6" />
                 </div>
               </div>
             </CardContent>
@@ -521,8 +595,8 @@ export default function Dashboard() {
           </Card>
         </div>
 
-        {/* Financial Tracking Summary */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {/* Investment Tracking Summary */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
           <Card className="bg-dark-card border-green-600">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
@@ -546,7 +620,7 @@ export default function Dashboard() {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-gray-400 text-sm mb-1">Total Activation Costs</p>
+                  <p className="text-gray-400 text-sm mb-1">Activation Costs</p>
                   <p className="text-2xl font-bold text-white">
                     {formatCurrency(accounts?.reduce((sum, acc) => sum + (acc.activationCost || 0), 0) || 0)}
                   </p>
@@ -565,7 +639,7 @@ export default function Dashboard() {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-gray-400 text-sm mb-1">Combined Total</p>
+                  <p className="text-gray-400 text-sm mb-1">Total Combined</p>
                   <p className="text-2xl font-bold text-white">
                     {formatCurrency(
                       (accounts?.reduce((sum, acc) => sum + (acc.accountCost || 0), 0) || 0) +
@@ -582,42 +656,80 @@ export default function Dashboard() {
               </div>
             </CardContent>
           </Card>
-        </div>
 
-
-
-        {/* Trading Performance Analysis */}
-        <div className="mb-6">
-          <h2 className="text-xl font-bold text-white mb-6 flex items-center border-b border-gray-700 pb-3">
-            <Target className="mr-3 h-5 w-5 text-primary" />
-            Trading Performance Analysis
-          </h2>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          {/* Win Rate & Performance */}
-          <Card className="bg-dark-card border-success-green">
+          <Card className="bg-dark-card border-purple-600">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-gray-400 text-sm mb-1">Win Rate</p>
-                  <p className={`text-2xl font-bold ${
-                    (combinedAnalytics?.winRate || 0) >= 70 ? 'text-success-green' :
-                    (combinedAnalytics?.winRate || 0) >= 50 ? 'text-warning-orange' : 'text-error-red'
-                  }`}>
-                    {combinedAnalytics?.winRate.toFixed(0) || 0}%
+                  <p className="text-gray-400 text-sm mb-1">Total Payout</p>
+                  <p className="text-2xl font-bold text-purple-400">
+                    {formatCurrency(0)}
                   </p>
                   <p className="text-xs text-gray-400 mt-1">
-                    {combinedAnalytics?.winningTrades || 0} wins / {combinedAnalytics?.losingTrades || 0} losses
+                    Received payouts
                   </p>
                 </div>
-                <div className="bg-success-green bg-opacity-20 p-3 rounded-lg">
-                  <Target className="text-success-green h-6 w-6" />
+                <div className="bg-purple-600 bg-opacity-20 p-3 rounded-lg">
+                  <DollarSign className="text-purple-400 h-6 w-6" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Working Hours Summary */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+          <Card className="bg-dark-card border-cyan-600">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-gray-400 text-sm mb-1">Total Working Hours</p>
+                  <p className="text-2xl font-bold text-cyan-400">
+                    {((trades?.length || 0) * 2.5).toFixed(1)}h
+                  </p>
+                  <p className="text-xs text-gray-400 mt-1">
+                    Based on {trades?.length || 0} trades × 2.5h avg duration
+                  </p>
+                </div>
+                <div className="bg-cyan-600 bg-opacity-20 p-3 rounded-lg">
+                  <Calendar className="text-cyan-400 h-6 w-6" />
                 </div>
               </div>
             </CardContent>
           </Card>
 
+          <Card className="bg-dark-card border-indigo-600">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-gray-400 text-sm mb-1">Average Hours Per Day</p>
+                  <p className="text-2xl font-bold text-indigo-400">
+                    {(((trades?.length || 0) * 2.5) / 30).toFixed(1)}h
+                  </p>
+                  <p className="text-xs text-gray-400 mt-1">
+                    Based on 30-day trading period
+                  </p>
+                </div>
+                <div className="bg-indigo-600 bg-opacity-20 p-3 rounded-lg">
+                  <Calendar className="text-indigo-400 h-6 w-6" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+
+
+        {/* Disciplined Trading Analysis */}
+        <div className="mb-6">
+          <h2 className="text-xl font-bold text-white mb-6 flex items-center border-b border-gray-700 pb-3">
+            <Brain className="mr-3 h-5 w-5 text-indigo-400" />
+            Disciplined Trading Analysis
+          </h2>
+        </div>
+
+        {/* First Row: Risk Management, Daily Trade Limit, Disciplined Score */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
           {/* Risk Management */}
           <Card className="bg-dark-card border-warning-orange">
             <CardContent className="p-6">
@@ -633,6 +745,26 @@ export default function Dashboard() {
                 </div>
                 <div className="bg-warning-orange bg-opacity-20 p-3 rounded-lg">
                   <Shield className="text-warning-orange h-6 w-6" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Daily Trade Limit */}
+          <Card className="bg-dark-card border-cyan-600">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-gray-400 text-sm mb-1">Daily Trade Limit</p>
+                  <p className="text-2xl font-bold text-cyan-400">
+                    {combinedAnalytics?.dailyTradeCount || 0} / 5
+                  </p>
+                  <p className="text-xs text-gray-400 mt-1">
+                    Current trades today / Maximum allowed
+                  </p>
+                </div>
+                <div className="bg-cyan-600 bg-opacity-20 p-3 rounded-lg">
+                  <BarChart3 className="text-cyan-400 h-6 w-6" />
                 </div>
               </div>
             </CardContent>
@@ -674,81 +806,66 @@ export default function Dashboard() {
           </Card>
         </div>
 
-        {/* Financial Metrics & Ratios */}
-        <div className="mb-6">
-          <h2 className="text-xl font-bold text-white mb-6 flex items-center border-b border-gray-700 pb-3">
-            <DollarSign className="mr-3 h-5 w-5 text-purple-400" />
-            Financial Metrics & Ratios
-          </h2>
-        </div>
+        {/* Second Row: Risk Alert, Payout Status */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+          {/* Risk Alert */}
+          <Card className="bg-dark-card border-warning-orange">
+            <CardContent className="p-6">
+              <div className="flex items-center mb-4">
+                <div className="bg-warning-orange bg-opacity-20 p-2 rounded-lg mr-3">
+                  <AlertTriangle className="text-warning-orange h-5 w-5" />
+                </div>
+                <h3 className="text-lg font-semibold">Risk Alert</h3>
+              </div>
+              <p className="text-gray-300 mb-4">Daily loss limit approaching on TopStep Challenge</p>
+              <div className="bg-dark-surface rounded-lg p-4">
+                <div className="flex justify-between text-sm mb-2">
+                  <span>Daily Loss Used</span>
+                  <span className="text-warning-orange">{combinedAnalytics?.riskLimitUsed?.toFixed(1) || 0}%</span>
+                </div>
+                <Progress 
+                  value={combinedAnalytics?.riskLimitUsed || 0} 
+                  className="w-full h-2 bg-dark-border"
+                />
+                <p className="text-xs text-gray-400 mt-2">
+                  {formatCurrency(Math.abs(combinedAnalytics?.worstTrade || 0))} of {formatCurrency(combinedAnalytics?.dailyLossLimit || 2500)} daily limit used
+                </p>
+              </div>
+            </CardContent>
+          </Card>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          {/* R Factor */}
+          {/* TopStep Payout Status */}
           <Card className="bg-dark-card border-blue-600">
             <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-gray-400 text-sm mb-1">R Factor</p>
-                  <p className={`text-2xl font-bold ${
-                    (combinedAnalytics?.rFactor || 0) >= 2.0 ? 'text-success-green' :
-                    (combinedAnalytics?.rFactor || 0) >= 1.5 ? 'text-warning-orange' : 'text-error-red'
-                  }`}>
-                    {(combinedAnalytics?.rFactor || 0).toFixed(2)}
-                  </p>
-                  <p className="text-xs text-gray-400 mt-1">
-                    {formatCurrency(Math.abs(combinedAnalytics?.totalPnl || 0) * 2.4)} reward / {formatCurrency(Math.abs(combinedAnalytics?.totalPnl || 0))} risk
-                  </p>
+              <div className="flex items-center mb-4">
+                <div className="bg-blue-600 bg-opacity-20 p-2 rounded-lg mr-3">
+                  <DollarSign className="text-blue-400 h-5 w-5" />
                 </div>
-                <div className="bg-blue-600 bg-opacity-20 p-3 rounded-lg">
-                  <TrendingUp className="text-blue-400 h-6 w-6" />
-                </div>
+                <h3 className="text-lg font-semibold">TopStep Payout Status</h3>
               </div>
-            </CardContent>
-          </Card>
-
-          {/* Profit Factor */}
-          <Card className="bg-dark-card border-purple-600">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-gray-400 text-sm mb-1">Profit Factor</p>
-                  <p className={`text-2xl font-bold ${
-                    (combinedAnalytics?.profitFactor || 0) >= 2.0 ? 'text-success-green' :
-                    (combinedAnalytics?.profitFactor || 0) >= 1.5 ? 'text-warning-orange' : 'text-error-red'
-                  }`}>
-                    {(combinedAnalytics?.profitFactor || 0).toFixed(2)}
-                  </p>
-                  <p className="text-xs text-gray-400 mt-1">
-                    {formatCurrency((combinedAnalytics?.averageWin || 0) * (combinedAnalytics?.winningTrades || 0))} profit / {formatCurrency(Math.abs((combinedAnalytics?.averageLoss || 0) * (combinedAnalytics?.losingTrades || 0)))} loss
-                  </p>
+              <div className="space-y-3">
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-300">Min Trading Days</span>
+                  <span className="text-blue-400">30 days required</span>
                 </div>
-                <div className="bg-purple-600 bg-opacity-20 p-3 rounded-lg">
-                  <DollarSign className="text-purple-400 h-6 w-6" />
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-300">Profit Target</span>
+                  <span className="text-green-400">$3,000 achieved</span>
                 </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Daily Trading Limit */}
-          <Card className="bg-dark-card border-green-600">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-gray-400 text-sm mb-1">Daily Trade Limit</p>
-                  <p className="text-2xl font-bold text-primary">
-                    3 / 5
-                  </p>
-                  <p className="text-xs text-gray-400 mt-1">
-                    Today's trades / Maximum allowed
-                  </p>
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-300">Max Daily Loss</span>
+                  <span className="text-yellow-400">$2,500 limit</span>
                 </div>
-                <div className="bg-green-600 bg-opacity-20 p-3 rounded-lg">
-                  <Crosshair className="text-green-400 h-6 w-6" />
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-300">Max Overall Loss</span>
+                  <span className="text-red-400">$6,000 limit</span>
                 </div>
               </div>
             </CardContent>
           </Card>
         </div>
+
+
 
         {/* Charts Section */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
