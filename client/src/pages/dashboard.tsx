@@ -266,9 +266,53 @@ export default function Dashboard() {
         </div>
       </header>
 
-      <div className="p-6 space-y-6">
-        {/* Account Type Counters - First Row (Smaller) */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div className="p-6 space-y-8">
+        {/* TOP PRIORITY: Current Performance Overview */}
+        <div className="mb-6">
+          <h2 className="text-2xl font-bold text-white mb-6 flex items-center border-b border-gray-700 pb-3">
+            <TrendingUp className="mr-3 h-6 w-6 text-success-green" />
+            Current Performance Overview
+          </h2>
+        </div>
+
+        {/* Total Balance Row - Larger */}
+        <div className="grid grid-cols-1 gap-6">
+          <Card className="bg-dark-card border-purple-600">
+            <CardContent className="p-8">
+              <div className="text-center">
+                <p className="text-gray-400 text-sm mb-2">Combined Account Balance</p>
+                <p className="text-5xl font-bold text-white mb-2">
+                  {formatCurrency(accounts?.reduce((sum, acc) => sum + acc.currentBalance, 0) || 0)}
+                </p>
+                <div className="flex justify-center items-center text-sm text-gray-400">
+                  <span>Starting Balance: {formatCurrency(accounts?.reduce((sum, acc) => sum + acc.startingBalance, 0) || 0)}</span>
+                  <span className="mx-2">•</span>
+                  <span className={`${
+                    (accounts?.reduce((sum, acc) => sum + acc.currentBalance, 0) || 0) >= 
+                    (accounts?.reduce((sum, acc) => sum + acc.startingBalance, 0) || 0) 
+                    ? 'text-green-400' : 'text-red-400'
+                  }`}>
+                    {((accounts?.reduce((sum, acc) => sum + acc.currentBalance, 0) || 0) - 
+                     (accounts?.reduce((sum, acc) => sum + acc.startingBalance, 0) || 0) >= 0 ? '+' : '') +
+                    formatCurrency((accounts?.reduce((sum, acc) => sum + acc.currentBalance, 0) || 0) - 
+                                  (accounts?.reduce((sum, acc) => sum + acc.startingBalance, 0) || 0))}
+                  </span>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Account Portfolio Overview */}
+        <div className="mb-6 mt-12">
+          <h2 className="text-xl font-bold text-white mb-6 flex items-center border-b border-gray-700 pb-3">
+            <Wallet className="mr-3 h-5 w-5 text-blue-400" />
+            Account Portfolio Overview
+          </h2>
+        </div>
+
+        {/* Account Type Summary */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
           <Card className="bg-dark-card border-yellow-600">
             <CardContent className="p-4">
               <div className="text-center">
@@ -314,43 +358,26 @@ export default function Dashboard() {
           </Card>
         </div>
 
-        {/* Total Balance Row - Larger */}
-        <div className="grid grid-cols-1 gap-6">
-          <Card className="bg-dark-card border-purple-600">
-            <CardContent className="p-8">
-              <div className="text-center">
-                <p className="text-gray-400 text-sm mb-2">Combined Account Balance</p>
-                <p className="text-5xl font-bold text-white mb-2">
-                  {formatCurrency(accounts?.reduce((sum, acc) => sum + acc.currentBalance, 0) || 0)}
-                </p>
-                <div className="flex justify-center items-center text-sm text-gray-400">
-                  <span>Starting Balance: {formatCurrency(accounts?.reduce((sum, acc) => sum + acc.startingBalance, 0) || 0)}</span>
-                  <span className="mx-2">•</span>
-                  <span className={`${
-                    (accounts?.reduce((sum, acc) => sum + acc.currentBalance, 0) || 0) >= 
-                    (accounts?.reduce((sum, acc) => sum + acc.startingBalance, 0) || 0) 
-                    ? 'text-green-400' : 'text-red-400'
-                  }`}>
-                    {((accounts?.reduce((sum, acc) => sum + acc.currentBalance, 0) || 0) - 
-                     (accounts?.reduce((sum, acc) => sum + acc.startingBalance, 0) || 0) >= 0 ? '+' : '') +
-                    formatCurrency((accounts?.reduce((sum, acc) => sum + acc.currentBalance, 0) || 0) - 
-                                  (accounts?.reduce((sum, acc) => sum + acc.startingBalance, 0) || 0))}
-                  </span>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+        {/* Investment Tracking */}
+        <div className="mb-6">
+          <h2 className="text-xl font-bold text-white mb-6 flex items-center border-b border-gray-700 pb-3">
+            <Shield className="mr-3 h-5 w-5 text-green-400" />
+            Investment Tracking
+          </h2>
         </div>
 
-        {/* Disciplined Score Row */}
+        {/* Disciplined Trading Analysis */}
+        <div className="mb-6 mt-12">
+          <h2 className="text-xl font-bold text-white mb-6 flex items-center border-b border-gray-700 pb-3">
+            <Brain className="mr-3 h-5 w-5 text-indigo-400" />
+            Disciplined Trading Analysis
+          </h2>
+        </div>
+
         <div className="grid grid-cols-1 gap-6">
           <Card className="bg-dark-card border-indigo-600">
             <CardContent className="p-6">
               <div className="text-center">
-                <div className="flex items-center justify-center mb-4">
-                  <Brain className="h-6 w-6 text-indigo-400 mr-2" />
-                  <h3 className="text-lg font-semibold text-white">Disciplined Trading Score</h3>
-                </div>
                 {accounts && accounts.length > 0 && trades && trades.length > 0 ? (
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     {accounts.map(account => {
@@ -444,7 +471,7 @@ export default function Dashboard() {
           </Card>
         </div>
 
-        {/* Key Balance & Performance */}
+        {/* Key Performance Metrics - MOST IMPORTANT */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           {/* Total Balance */}
           <Card className="bg-dark-card border-success-green">
@@ -513,7 +540,14 @@ export default function Dashboard() {
           </Card>
         </div>
 
-        {/* Trading Performance Metrics */}
+        {/* Trading Performance Analysis */}
+        <div className="mb-6">
+          <h2 className="text-xl font-bold text-white mb-6 flex items-center border-b border-gray-700 pb-3">
+            <Target className="mr-3 h-5 w-5 text-primary" />
+            Trading Performance Analysis
+          </h2>
+        </div>
+
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           {/* Win Rate & Performance */}
           <Card className="bg-dark-card border-success-green">
@@ -594,7 +628,14 @@ export default function Dashboard() {
           </Card>
         </div>
 
-        {/* Financial Metrics */}
+        {/* Financial Metrics & Ratios */}
+        <div className="mb-6">
+          <h2 className="text-xl font-bold text-white mb-6 flex items-center border-b border-gray-700 pb-3">
+            <DollarSign className="mr-3 h-5 w-5 text-purple-400" />
+            Financial Metrics & Ratios
+          </h2>
+        </div>
+
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           {/* R Factor */}
           <Card className="bg-dark-card border-blue-600">
