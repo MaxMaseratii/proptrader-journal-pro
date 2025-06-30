@@ -1,45 +1,54 @@
-# Tradovate Setup Guide
+# TradingView API Setup Guide
 
-## Simple 3-Step Setup
+## Simple 2-Step Setup
 
-### Step 1: Get Your Login Info Ready
-You just need your normal Tradovate login:
-- Your Tradovate username
-- Your Tradovate password
-- Make up a device name (like "MyTradingApp")
+### Step 1: Get Your TradingView API Key
+1. Go to https://www.tradingview.com/
+2. Log into your TradingView account (requires paid plan with API access)
+3. Go to Settings > API Keys
+4. Generate a new API key
+5. Copy the API key (keep it safe!)
 
-### Step 2: Add Your Credentials
+### Step 2: Add Your API Key
 In the Replit environment, go to the "Secrets" tab and add:
-- `TRADOVATE_USERNAME` = your username
-- `TRADOVATE_PASSWORD` = your password  
-- `TRADOVATE_DEVICE_ID` = any name you want (like "proptracker-001")
+- `TRADINGVIEW_API_KEY` = your API key from TradingView
 
 ### Step 3: Test Connection
 1. Go to the "Live Trading" page in the app
 2. Click "Test Connection"
-3. If it works, you'll see your Tradovate accounts!
+3. If it works, you'll see live market quotes!
 
 ## What You'll Get
 
-✅ **Live Positions**: See your current open positions in real-time
-✅ **Active Orders**: Monitor your pending orders
-✅ **Account Info**: View your Tradovate account details
-✅ **Auto Refresh**: Data updates every 15-30 seconds automatically
+✅ **Real-Time Quotes**: Live market data for stocks, forex, crypto, futures
+✅ **Market Analysis**: Price data, volume, bid/ask spreads
+✅ **Symbol Search**: Access to thousands of trading instruments
+✅ **Historical Data**: Chart data for technical analysis
+✅ **Broker Integration**: Connect your broker accounts through TradingView
+✅ **Auto Refresh**: Data updates every 10 seconds automatically
 
-## Demo vs Live
+## Popular Symbols Included
 
-The app starts with Tradovate's demo environment for safety. Once you confirm everything works, we can switch to live data.
+- **Stocks**: AAPL, TSLA, MSFT, SPY, QQQ
+- **Futures**: ES (S&P 500), NQ (Nasdaq), CL (Oil)
+- **Forex**: EURUSD, GBPUSD, USDJPY
+- **Crypto**: BTCUSDT, ETHUSDT
+
+## Requirements
+
+- TradingView paid subscription with API access
+- Valid API key from TradingView portal
 
 ## Troubleshooting
 
 **Connection Failed?**
-- Double-check your username and password
-- Make sure you can log into Tradovate normally
-- Try creating a new device ID
+- Make sure you have a paid TradingView subscription with API access
+- Double-check your API key is correct
+- Verify the API key hasn't expired
 
-**No Data Showing?**
-- Make sure you have positions or orders in your Tradovate account
-- Try refreshing the page
-- Check if you're using demo vs live account
+**No Market Data?**
+- Check if you have real-time data permissions for the exchanges
+- Make sure your TradingView subscription includes the markets you want
+- Try with popular symbols first (AAPL, SPY, etc.)
 
-That's it! Much simpler than complicated API keys and developer portals.
+That's it! Much more powerful than basic broker APIs - you get access to TradingView's entire ecosystem.
