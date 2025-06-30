@@ -1,10 +1,12 @@
 import { useState } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { 
   Activity, 
   TrendingUp, 
@@ -15,71 +17,93 @@ import {
   AlertCircle,
   DollarSign,
   Target,
-  Clock
+  Clock,
+  BarChart3,
+  Plus
 } from "lucide-react";
-import { formatCurrency, formatDate } from "@/lib/utils";
-import { apiRequest } from "@/lib/queryClient";
+import { formatCurrency, formatDate, formatPercentage } from "@/lib/utils";
 
-interface TradovateTestResult {
+interface TradingViewTestResult {
   success: boolean;
   message: string;
   data?: {
-    accountCount: number;
-    accounts: any[];
+    apiKeyConfigured: boolean;
+    testQuote: any;
   };
 }
 
-interface TradovatePosition {
-  id: number;
-  accountId: number;
-  contractId: number;
-  netPos: number;
-  netPrice: number;
-  bought: number;
-  sold: number;
-  timestamp: string;
-  symbol?: string;
+interface TradingViewQuote {
+  symbol: string;
+  price: number;
+  change: number;
+  changePercent: number;
+  volume: number;
+  timestamp: number;
+  bid?: number;
+  ask?: number;
+  high?: number;
+  low?: number;
+  open?: number;
 }
 
-interface TradovateOrder {
-  id: number;
-  accountId: number;
-  orderQty: number;
-  orderType: string;
+interface TradingViewPosition {
+  symbol: string;
+  side: 'long' | 'short';
+  size: number;
+  entryPrice: number;
+  currentPrice: number;
+  unrealizedPnl: number;
+  realizedPnl: number;
+  timestamp: number;
+}
+
+interface TradingViewOrder {
+  id: string;
+  symbol: string;
+  side: 'buy' | 'sell';
+  type: 'market' | 'limit' | 'stop' | 'stop_limit';
+  quantity: number;
   price?: number;
   stopPrice?: number;
-  ordStatus: string;
-  side: string;
-  symbol: string;
-  timestamp: string;
+  status: 'pending' | 'working' | 'filled' | 'cancelled' | 'rejected';
+  timestamp: number;
+  broker?: string;
 }
 
-export default function Tradovate() {
+export default function TradingView() {
   const [isConnecting, setIsConnecting] = useState(false);
+  const [customSymbols, setCustomSymbols] = useState("");
   const queryClient = useQueryClient();
 
   // Test connection query
-  const { data: connectionTest, isLoading: testLoading, refetch: refetchTest } = useQuery<TradovateTestResult>({
-    queryKey: ["/api/tradovate/test"],
+  const { data: connectionTest, isLoading: testLoading, refetch: refetchTest } = useQuery<TradingViewTestResult>({
+    queryKey: ["/api/tradingview/test"],
     enabled: false, // Only run when explicitly called
   });
 
-  // Tradovate accounts
-  const { data: tradovateAccounts, isLoading: accountsLoading } = useQuery<any[]>({
-    queryKey: ["/api/tradovate/accounts"],
+  // Market quotes
+  const { data: quotes, isLoading: quotesLoading, refetch: refetchQuotes } = useQuery<TradingViewQuote[]>({
+    queryKey: ["/api/tradingview/quotes"],
+    enabled: connectionTest?.success === true,
+    refetchInterval: 10000, // Refresh every 10 seconds
+  });
+
+  // Broker accounts (if connected)
+  const { data: brokerAccounts, isLoading: accountsLoading } = useQuery<any[]>({
+    queryKey: ["/api/tradingview/accounts"],
     enabled: connectionTest?.success === true,
   });
 
-  // Live positions
-  const { data: positions, isLoading: positionsLoading, refetch: refetchPositions } = useQuery<TradovatePosition[]>({
-    queryKey: ["/api/tradovate/positions"],
+  // Live positions (if broker connected)
+  const { data: positions, isLoading: positionsLoading, refetch: refetchPositions } = useQuery<TradingViewPosition[]>({
+    queryKey: ["/api/tradingview/positions"],
     enabled: connectionTest?.success === true,
     refetchInterval: 30000, // Refresh every 30 seconds
   });
 
-  // Active orders
-  const { data: orders, isLoading: ordersLoading, refetch: refetchOrders } = useQuery<TradovateOrder[]>({
-    queryKey: ["/api/tradovate/orders"],
+  // Active orders (if broker connected)
+  const { data: orders, isLoading: ordersLoading, refetch: refetchOrders } = useQuery<TradingViewOrder[]>({
+    queryKey: ["/api/tradingview/orders"],
     enabled: connectionTest?.success === true,
     refetchInterval: 15000, // Refresh every 15 seconds
   });
