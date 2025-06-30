@@ -64,6 +64,7 @@ export default function Dashboard() {
     description: '',
     date: new Date().toISOString().split('T')[0]
   });
+  const [calendarDate, setCalendarDate] = useState(new Date());
 
   const { data: accounts, isLoading: accountsLoading } = useQuery<Account[]>({
     queryKey: ["/api/accounts"],
@@ -1363,7 +1364,11 @@ export default function Dashboard() {
           </CardHeader>
           <CardContent>
             <div className="max-w-4xl">
-              <TradeCalendar trades={trades || []} />
+              <TradeCalendar 
+                trades={trades || []} 
+                currentDate={calendarDate}
+                onDateChange={setCalendarDate}
+              />
             </div>
           </CardContent>
         </Card>
