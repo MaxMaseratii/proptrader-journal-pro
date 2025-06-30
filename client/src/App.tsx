@@ -13,10 +13,26 @@ import Reports from "@/pages/reports";
 import Analytics from "@/pages/analytics";
 import Trades from "@/pages/trades";
 import Profile from "@/pages/profile";
+import Welcome from "@/pages/welcome";
 import Sidebar from "@/components/sidebar";
 import NotFound from "@/pages/not-found";
+import { useAuth } from "@/hooks/useAuth";
 
 function Router() {
+  const { isAuthenticated, isLoading } = useAuth();
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gray-900 flex items-center justify-center">
+        <div className="text-white text-xl">Loading...</div>
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return <Welcome />;
+  }
+
   return (
     <div className="flex h-screen bg-dark-bg text-white">
       <Sidebar />

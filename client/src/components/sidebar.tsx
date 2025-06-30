@@ -10,8 +10,10 @@ import {
   Calendar,
   TrendingUp,
   User,
-  Brain
+  Brain,
+  LogOut
 } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 const navItems = [
   { href: "/", label: "Dashboard", icon: ChartLine, section: "main" },
@@ -113,6 +115,17 @@ export default function Sidebar() {
               </div>
             </div>
           </div>
+          
+          {/* Logout Button */}
+          <Button 
+            variant="outline" 
+            size="sm" 
+            className="w-full border-gray-600 hover:bg-gray-700"
+            onClick={() => window.location.href = '/api/logout'}
+          >
+            <LogOut className="h-4 w-4 mr-2" />
+            Sign Out
+          </Button>
         </div>
       </div>
     </aside>
