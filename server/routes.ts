@@ -218,6 +218,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
           const quantity = parseFloat(row['Filled Qty']) || parseFloat(row.filledQty) || 0;
           const price = parseFloat(row['Avg Fill Price']) || parseFloat(row.avgPrice) || 0;
           const fillTime = row['Fill Time'] || row.Timestamp || '';
+          const orderType = row.Type || 'Market';
+          
+          // Parse price levels for different order types  
+          const limitPrice = parseFloat(row['Limit Price']) || 0;
+          const stopPrice = parseFloat(row['Stop Price']) || 0;
           
           // Parse date from format like "6/27/25"
           let date = new Date().toISOString().split('T')[0];
@@ -236,11 +241,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
               symbol: symbol.replace(/[^A-Z]/g, ''),
               side,
               quantity,
-              price,
+              price, // Actual fill price
+              limitPrice, // Price level for limit orders (TP)
+              stopPrice, // Price level for stop orders (SL)
               date,
               fillTime,
               orderId: row.orderId || row['Order ID'] || '',
-              orderType: row.Type || 'Market',
+              orderType,
               text: row.Text || '',
               row: i
             });
@@ -296,12 +303,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
               const actualRisk = Math.abs(pnl);
               const riskCompliance = actualRisk <= riskAmount;
 
-              // Detect stop loss and take profit from order types
+              // Enhanced stop loss and take profit detection using price levels
               const hasStopLoss = buyOrder.orderType === 'Stop' || sellOrder.orderType === 'Stop' ||
                                  (buyOrder.text && buyOrder.text.includes('Exit')) || 
                                  (sellOrder.text && sellOrder.text.includes('Exit'));
               const hasTakeProfit = (buyOrder.orderType === 'Limit' && buyOrder.side === 'sell') || 
                                    (sellOrder.orderType === 'Limit' && sellOrder.side === 'sell');
+              
+              // Determine actual SL/TP price levels
+              const stopLossPrice = hasStopLoss ? (sellOrder.stopPrice || sellOrder.price) : null;
+              const takeProfitPrice = hasTakeProfit ? (sellOrder.limitPrice || sellOrder.price) : null;
 
               const tradeData: InsertTrade = {
                 accountId: parseInt(accountId),
@@ -318,10 +329,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
                 originalQuantity: quantityToClose,
                 riskAmount,
                 riskCompliance,
-                initialStopLoss: hasStopLoss ? sellOrder.price : null,
-                initialTakeProfit: hasTakeProfit ? sellOrder.price : null,
-                finalStopLoss: hasStopLoss ? sellOrder.price : null,
-                finalTakeProfit: hasTakeProfit ? sellOrder.price : null,
+                initialStopLoss: stopLossPrice,
+                initialTakeProfit: takeProfitPrice,
+                finalStopLoss: stopLossPrice,
+                finalTakeProfit: takeProfitPrice,
                 notes: `Imported - Entry: ${buyOrder.price}, Exit: ${sellOrder.price}, Qty: ${quantityToClose}${hasStopLoss ? ' [SL]' : ''}${hasTakeProfit ? ' [TP]' : ''}`
               };
 
