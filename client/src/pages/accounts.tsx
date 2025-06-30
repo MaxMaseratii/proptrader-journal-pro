@@ -655,66 +655,6 @@ export default function Accounts() {
                       </TabsContent>
 
                       <TabsContent value="risk" className="space-y-6 mt-6">
-                        {/* Risk Suggestions Display */}
-                        {riskSuggestion && (
-                          <div className="bg-blue-900/20 border border-blue-600/30 p-4 rounded-lg">
-                            <h3 className="text-lg font-semibold text-white mb-3 flex items-center">
-                              <Lightbulb className="mr-2 h-5 w-5 text-yellow-400" />
-                              Smart Risk Suggestions
-                            </h3>
-                            <div className="grid grid-cols-2 gap-4 mb-4">
-                              <div className="bg-gray-800 p-3 rounded">
-                                <p className="text-xs text-gray-400 mb-1">Suggested Risk Per Trade</p>
-                                <p className="text-lg font-bold text-green-400">
-                                  ${riskSuggestion.suggestedRiskPerTrade.toLocaleString()}
-                                </p>
-                              </div>
-                              <div className="bg-gray-800 p-3 rounded">
-                                <p className="text-xs text-gray-400 mb-1">Max Position Size</p>
-                                <p className="text-lg font-bold text-blue-400">
-                                  {riskSuggestion.maxPositionSize} contracts
-                                </p>
-                              </div>
-                              <div className="bg-gray-800 p-3 rounded">
-                                <p className="text-xs text-gray-400 mb-1">Risk Level</p>
-                                <p className={`text-lg font-bold ${
-                                  riskSuggestion.riskScore === 'Conservative' ? 'text-green-400' :
-                                  riskSuggestion.riskScore === 'Moderate' ? 'text-yellow-400' :
-                                  riskSuggestion.riskScore === 'Aggressive' ? 'text-orange-400' : 'text-red-400'
-                                }`}>
-                                  {riskSuggestion.riskScore}
-                                </p>
-                              </div>
-                              <div className="bg-gray-800 p-3 rounded">
-                                <p className="text-xs text-gray-400 mb-1">Margin Required</p>
-                                <p className="text-lg font-bold text-purple-400">
-                                  ${riskSuggestion.marginRequired.toLocaleString()}
-                                </p>
-                              </div>
-                            </div>
-                            
-                            {riskSuggestion.warnings.length > 0 && (
-                              <div className="bg-red-900/20 border border-red-600/30 p-3 rounded mb-3">
-                                <h4 className="text-red-400 font-medium mb-2">⚠️ Risk Warnings:</h4>
-                                <ul className="text-xs text-red-200 space-y-1">
-                                  {riskSuggestion.warnings.map((warning, index) => (
-                                    <li key={index}>• {warning}</li>
-                                  ))}
-                                </ul>
-                              </div>
-                            )}
-                            
-                            <div className="text-xs text-gray-400">
-                              <p className="mb-1">💡 Analysis based on account parameters:</p>
-                              <ul className="space-y-1">
-                                {riskSuggestion.reasoning.slice(0, 3).map((reason, index) => (
-                                  <li key={index}>• {reason}</li>
-                                ))}
-                              </ul>
-                            </div>
-                          </div>
-                        )}
-                        
                         {/* Trading Capital Settings */}
                         <div className="bg-gray-800 p-4 rounded-lg">
                           <h3 className="text-lg font-semibold text-white mb-4 flex items-center">
@@ -915,6 +855,66 @@ export default function Accounts() {
                             />
                           </div>
                         </div>
+                        
+                        {/* Risk Suggestions Display */}
+                        {riskSuggestion && (
+                          <div className="bg-blue-900/20 border border-blue-600/30 p-4 rounded-lg">
+                            <h3 className="text-lg font-semibold text-white mb-3 flex items-center">
+                              <Lightbulb className="mr-2 h-5 w-5 text-yellow-400" />
+                              Smart Risk Suggestions
+                            </h3>
+                            <div className="grid grid-cols-2 gap-4 mb-4">
+                              <div className="bg-gray-800 p-3 rounded">
+                                <p className="text-xs text-gray-400 mb-1">Suggested Risk Per Trade</p>
+                                <p className="text-lg font-bold text-green-400">
+                                  ${riskSuggestion.suggestedRiskPerTrade.toLocaleString()}
+                                </p>
+                              </div>
+                              <div className="bg-gray-800 p-3 rounded">
+                                <p className="text-xs text-gray-400 mb-1">Max Position Size</p>
+                                <p className="text-lg font-bold text-blue-400">
+                                  {riskSuggestion.maxPositionSize} contracts
+                                </p>
+                              </div>
+                              <div className="bg-gray-800 p-3 rounded">
+                                <p className="text-xs text-gray-400 mb-1">Risk Level</p>
+                                <p className={`text-lg font-bold ${
+                                  riskSuggestion.riskScore === 'Conservative' ? 'text-green-400' :
+                                  riskSuggestion.riskScore === 'Moderate' ? 'text-yellow-400' :
+                                  riskSuggestion.riskScore === 'Aggressive' ? 'text-orange-400' : 'text-red-400'
+                                }`}>
+                                  {riskSuggestion.riskScore}
+                                </p>
+                              </div>
+                              <div className="bg-gray-800 p-3 rounded">
+                                <p className="text-xs text-gray-400 mb-1">Margin Required</p>
+                                <p className="text-lg font-bold text-purple-400">
+                                  ${riskSuggestion.marginRequired.toLocaleString()}
+                                </p>
+                              </div>
+                            </div>
+                            
+                            {riskSuggestion.warnings.length > 0 && (
+                              <div className="bg-red-900/20 border border-red-600/30 p-3 rounded mb-3">
+                                <h4 className="text-red-400 font-medium mb-2">⚠️ Risk Warnings:</h4>
+                                <ul className="text-xs text-red-200 space-y-1">
+                                  {riskSuggestion.warnings.map((warning, index) => (
+                                    <li key={index}>• {warning}</li>
+                                  ))}
+                                </ul>
+                              </div>
+                            )}
+                            
+                            <div className="text-xs text-gray-400">
+                              <p className="mb-1">💡 Analysis based on account parameters:</p>
+                              <ul className="space-y-1">
+                                {riskSuggestion.reasoning.slice(0, 3).map((reason, index) => (
+                                  <li key={index}>• {reason}</li>
+                                ))}
+                              </ul>
+                            </div>
+                          </div>
+                        )}
                       </TabsContent>
 
                       {/* Submit Button */}
