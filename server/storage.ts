@@ -1,10 +1,11 @@
 import { 
-  accounts, trades, journalEntries, dailyStats, csvImports,
+  accounts, trades, journalEntries, dailyStats, csvImports, users,
   type Account, type InsertAccount,
   type Trade, type InsertTrade, 
   type JournalEntry, type InsertJournalEntry,
   type DailyStats, type InsertDailyStats,
-  type CsvImport, type InsertCsvImport
+  type CsvImport, type InsertCsvImport,
+  type User, type UpsertUser
 } from "@shared/schema";
 
 export interface IStorage {
@@ -38,6 +39,10 @@ export interface IStorage {
   // CSV Import operations
   getCsvImports(accountId?: number): Promise<CsvImport[]>;
   createCsvImport(csvImport: InsertCsvImport): Promise<CsvImport>;
+
+  // User operations for Replit Auth
+  getUser(id: string): Promise<User | undefined>;
+  upsertUser(user: UpsertUser): Promise<User>;
 }
 
 export class MemStorage implements IStorage {
