@@ -29,7 +29,8 @@ import {
   BarChart3,
   Calendar,
   Banknote,
-  Clock
+  Clock,
+  CheckCircle
 } from "lucide-react";
 import type { Account, Trade } from "@shared/schema";
 
@@ -791,6 +792,41 @@ export default function Dashboard() {
             <Brain className="mr-3 h-5 w-5 text-indigo-400" />
             Disciplined Trading Analysis
           </h2>
+        </div>
+
+        {/* Active Account Disciplined Analysis Row */}
+        <div className="grid grid-cols-1 gap-6 mb-6">
+          <Card className="bg-dark-card border-indigo-600">
+            <CardContent className="p-6">
+              <div className="text-center">
+                {accounts && accounts.length > 0 && trades && trades.length > 0 ? (
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    {accounts.map(account => {
+                      const accountTrades = trades.filter(t => t.accountId === account.id);
+                      const disciplinedAnalysis = calculateDisciplinedScore(account, accountTrades);
+                      
+                      return (
+                        <div key={account.id} className="text-center p-4 bg-gray-800 rounded-lg">
+                          <p className="text-xs text-gray-400 mb-1">{account.name}</p>
+                          <p className={`text-2xl font-bold mb-1 ${getGradeColor(disciplinedAnalysis.scoreGrade)}`}>
+                            {disciplinedAnalysis.disciplinedScore.toFixed(0)}%
+                          </p>
+                          <p className={`text-sm font-semibold ${getGradeColor(disciplinedAnalysis.scoreGrade)}`}>
+                            Grade {disciplinedAnalysis.scoreGrade}
+                          </p>
+                          <p className="text-xs text-gray-400 mt-1">
+                            {disciplinedAnalysis.totalTrades} trades • {disciplinedAnalysis.violationsCount} violations
+                          </p>
+                        </div>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <p className="text-gray-400">No trading data available for disciplined score analysis</p>
+                )}
+              </div>
+            </CardContent>
+          </Card>
         </div>
 
         {/* First Row: Risk Management, Daily Trade Limit, Disciplined Score */}
