@@ -8,6 +8,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { Progress } from "@/components/ui/progress";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { EquityChart, MonthlyPerformanceChart } from "@/components/chart-components";
 import { formatCurrency, formatPercentage, formatDate } from "@/lib/utils";
 import { calculateDisciplinedScore, getScoreColor, getGradeColor } from "@/lib/disciplined-score";
@@ -54,6 +57,13 @@ export default function Dashboard() {
   const [selectedAccountIds, setSelectedAccountIds] = useState<number[]>([]);
   const [viewMode, setViewMode] = useState<'single' | 'multiple' | 'all'>('all');
   const [selectedAccountId, setSelectedAccountId] = useState<number | null>(null);
+  const [showSpendingModal, setShowSpendingModal] = useState(false);
+  const [spendingForm, setSpendingForm] = useState({
+    type: 'spending' as 'spending' | 'payout',
+    amount: '',
+    description: '',
+    date: new Date().toISOString().split('T')[0]
+  });
 
   const { data: accounts, isLoading: accountsLoading } = useQuery<Account[]>({
     queryKey: ["/api/accounts"],
@@ -775,13 +785,92 @@ export default function Dashboard() {
 
         {/* Add Investment Tracking Controls */}
         <div className="flex justify-end mb-8">
-          <Button 
-            className="bg-blue-600 hover:bg-blue-700 text-white"
-            onClick={() => {/* TODO: Implement add spending/payout modal */}}
-          >
-            <Plus className="mr-2 h-4 w-4" />
-            Add Spending/Payout
-          </Button>
+          <Dialog open={showSpendingModal} onOpenChange={setShowSpendingModal}>
+            <DialogTrigger asChild>
+              <Button className="bg-blue-600 hover:bg-blue-700 text-white">
+                <Plus className="mr-2 h-4 w-4" />
+                Add Spending/Payout
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="bg-gray-800 border-gray-700 text-white">
+              <DialogHeader>
+                <DialogTitle>Add Spending/Payout Entry</DialogTitle>
+              </DialogHeader>
+              <div className="space-y-4">
+                <div>
+                  <Label htmlFor="type">Type</Label>
+                  <Select 
+                    value={spendingForm.type} 
+                    onValueChange={(value: 'spending' | 'payout') => setSpendingForm({...spendingForm, type: value})}
+                  >
+                    <SelectTrigger className="bg-gray-700 border-gray-600 text-white">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="bg-gray-700 border-gray-600">
+                      <SelectItem value="spending">Spending</SelectItem>
+                      <SelectItem value="payout">Payout</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label htmlFor="amount">Amount</Label>
+                  <Input
+                    id="amount"
+                    type="number"
+                    placeholder="0.00"
+                    value={spendingForm.amount}
+                    onChange={(e) => setSpendingForm({...spendingForm, amount: e.target.value})}
+                    className="bg-gray-700 border-gray-600 text-white"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="description">Description</Label>
+                  <Input
+                    id="description"
+                    placeholder="Account purchase, payout, etc."
+                    value={spendingForm.description}
+                    onChange={(e) => setSpendingForm({...spendingForm, description: e.target.value})}
+                    className="bg-gray-700 border-gray-600 text-white"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="date">Date</Label>
+                  <Input
+                    id="date"
+                    type="date"
+                    value={spendingForm.date}
+                    onChange={(e) => setSpendingForm({...spendingForm, date: e.target.value})}
+                    className="bg-gray-700 border-gray-600 text-white"
+                  />
+                </div>
+                <div className="flex gap-2 pt-4">
+                  <Button 
+                    onClick={() => {
+                      // TODO: Save spending/payout entry
+                      console.log('Saving:', spendingForm);
+                      setShowSpendingModal(false);
+                      setSpendingForm({
+                        type: 'spending',
+                        amount: '',
+                        description: '',
+                        date: new Date().toISOString().split('T')[0]
+                      });
+                    }}
+                    className="bg-blue-600 hover:bg-blue-700 flex-1"
+                  >
+                    Save Entry
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    onClick={() => setShowSpendingModal(false)}
+                    className="border-gray-600 text-white hover:bg-gray-700"
+                  >
+                    Cancel
+                  </Button>
+                </div>
+              </div>
+            </DialogContent>
+          </Dialog>
         </div>
 
 
@@ -909,7 +998,7 @@ export default function Dashboard() {
 
         {/* Second Row: Risk Alert, Payout Status */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-          {/* Risk Alert */}
+          {/* Risk Alert - Top 3 Critical Accounts */}
           <Card className="bg-dark-card border-warning-orange">
             <CardContent className="p-6">
               <div className="flex items-center mb-4">
@@ -918,19 +1007,50 @@ export default function Dashboard() {
                 </div>
                 <h3 className="text-lg font-semibold">Risk Alert</h3>
               </div>
-              <p className="text-gray-300 mb-4">Daily loss limit approaching on TopStep Challenge</p>
-              <div className="bg-dark-surface rounded-lg p-4">
-                <div className="flex justify-between text-sm mb-2">
-                  <span>Daily Loss Used</span>
-                  <span className="text-warning-orange">{combinedAnalytics?.riskLimitUsed?.toFixed(1) || 0}%</span>
-                </div>
-                <Progress 
-                  value={combinedAnalytics?.riskLimitUsed || 0} 
-                  className="w-full h-2 bg-dark-border"
-                />
-                <p className="text-xs text-gray-400 mt-2">
-                  {formatCurrency(Math.abs(combinedAnalytics?.worstTrade || 0))} of {formatCurrency(combinedAnalytics?.dailyLossLimit || 2500)} daily limit used
-                </p>
+              <p className="text-gray-300 mb-4">3 Most Critical Accounts</p>
+              <div className="space-y-3">
+                {accounts && trades ? (
+                  accounts
+                    .map(account => {
+                      const accountTrades = trades.filter(t => t.accountId === account.id);
+                      const totalPnl = accountTrades.reduce((sum, trade) => sum + (trade.pnl || 0), 0);
+                      const dailyLossLimit = account.maxDrawdown ? account.maxDrawdown * 0.05 : 2500; // 5% daily loss limit
+                      const currentDrawdown = Math.abs(Math.min(0, totalPnl));
+                      const riskPercentage = (currentDrawdown / dailyLossLimit) * 100;
+                      
+                      return {
+                        account,
+                        riskPercentage: Math.min(100, riskPercentage),
+                        currentDrawdown,
+                        dailyLossLimit
+                      };
+                    })
+                    .sort((a, b) => b.riskPercentage - a.riskPercentage)
+                    .slice(0, 3)
+                    .map(({ account, riskPercentage, currentDrawdown, dailyLossLimit }) => (
+                      <div key={account.id} className="bg-dark-surface rounded-lg p-3">
+                        <div className="flex justify-between text-sm mb-2">
+                          <span className="truncate">{account.name}</span>
+                          <span className={`font-medium ${
+                            riskPercentage > 80 ? 'text-red-400' : 
+                            riskPercentage > 60 ? 'text-warning-orange' : 
+                            'text-yellow-400'
+                          }`}>
+                            {riskPercentage.toFixed(1)}%
+                          </span>
+                        </div>
+                        <Progress 
+                          value={riskPercentage} 
+                          className="w-full h-1.5 bg-dark-border"
+                        />
+                        <p className="text-xs text-gray-400 mt-1">
+                          {formatCurrency(currentDrawdown)} / {formatCurrency(dailyLossLimit)} risk used
+                        </p>
+                      </div>
+                    ))
+                ) : (
+                  <p className="text-gray-400 text-sm">No accounts to monitor</p>
+                )}
               </div>
             </CardContent>
           </Card>
@@ -943,19 +1063,20 @@ export default function Dashboard() {
                   <div className="bg-blue-600 bg-opacity-20 p-2 rounded-lg mr-3">
                     <DollarSign className="text-blue-400 h-5 w-5" />
                   </div>
-                  <h3 className="text-lg font-semibold">TopStep Payout Status</h3>
+                  <h3 className="text-lg font-semibold">Payout Status</h3>
                 </div>
-                <select 
-                  className="bg-gray-800 text-white text-sm rounded px-3 py-1 border border-gray-600"
-                  value={selectedAccountId || ''}
-                  onChange={(e) => setSelectedAccountId(Number(e.target.value))}
-                >
-                  {accounts?.filter(acc => acc.firm === 'TopStep').map(account => (
-                    <option key={account.id} value={account.id}>
-                      {account.name}
-                    </option>
-                  ))}
-                </select>
+                <Select value={selectedAccountId?.toString() || ''} onValueChange={(value) => setSelectedAccountId(Number(value))}>
+                  <SelectTrigger className="w-48 bg-gray-800 border-gray-600 text-white text-sm">
+                    <SelectValue placeholder="Select account" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-gray-800 border-gray-600">
+                    {accounts?.map(account => (
+                      <SelectItem key={account.id} value={account.id.toString()} className="text-white">
+                        {account.name} {account.status === 'active' ? '(Active)' : ''}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
               
               {(() => {
