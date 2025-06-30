@@ -8,6 +8,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { Progress } from "@/components/ui/progress";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { EquityChart, MonthlyPerformanceChart } from "@/components/chart-components";
 import { formatCurrency, formatPercentage, formatDate } from "@/lib/utils";
 import { calculateDisciplinedScore, getScoreColor, getGradeColor } from "@/lib/disciplined-score";
@@ -54,6 +57,10 @@ export default function Dashboard() {
   const [selectedAccountIds, setSelectedAccountIds] = useState<number[]>([]);
   const [viewMode, setViewMode] = useState<'single' | 'multiple' | 'all'>('all');
   const [selectedAccountId, setSelectedAccountId] = useState<number | null>(null);
+  const [showSpendingModal, setShowSpendingModal] = useState(false);
+  const [spendingAmount, setSpendingAmount] = useState('');
+  const [payoutAmount, setPayoutAmount] = useState('');
+  const [spendingType, setSpendingType] = useState('spending');
 
   const { data: accounts, isLoading: accountsLoading } = useQuery<Account[]>({
     queryKey: ["/api/accounts"],
@@ -775,13 +782,62 @@ export default function Dashboard() {
 
         {/* Add Investment Tracking Controls */}
         <div className="flex justify-end mb-8">
-          <Button 
-            className="bg-blue-600 hover:bg-blue-700 text-white"
-            onClick={() => {/* TODO: Implement add spending/payout modal */}}
-          >
-            <Plus className="mr-2 h-4 w-4" />
-            Add Spending/Payout
-          </Button>
+          <Dialog open={showSpendingModal} onOpenChange={setShowSpendingModal}>
+            <DialogTrigger asChild>
+              <Button className="bg-blue-600 hover:bg-blue-700 text-white">
+                <Plus className="mr-2 h-4 w-4" />
+                Add Spending/Payout
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="bg-dark-card border-dark-border">
+              <DialogHeader>
+                <DialogTitle className="text-white">Add Spending or Payout</DialogTitle>
+              </DialogHeader>
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <Label className="text-gray-300">Type</Label>
+                  <Select value={spendingType} onValueChange={setSpendingType}>
+                    <SelectTrigger className="bg-gray-800 border-gray-600">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="spending">Spending</SelectItem>
+                      <SelectItem value="payout">Payout</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-gray-300">Amount</Label>
+                  <Input
+                    type="number"
+                    placeholder="Enter amount"
+                    value={spendingType === 'spending' ? spendingAmount : payoutAmount}
+                    onChange={(e) => spendingType === 'spending' 
+                      ? setSpendingAmount(e.target.value) 
+                      : setPayoutAmount(e.target.value)
+                    }
+                    className="bg-gray-800 border-gray-600 text-white"
+                  />
+                </div>
+                <div className="flex justify-end space-x-2">
+                  <Button variant="outline" onClick={() => setShowSpendingModal(false)}>
+                    Cancel
+                  </Button>
+                  <Button 
+                    className="bg-blue-600 hover:bg-blue-700"
+                    onClick={() => {
+                      // TODO: Save spending/payout to database
+                      setShowSpendingModal(false);
+                      setSpendingAmount('');
+                      setPayoutAmount('');
+                    }}
+                  >
+                    Save
+                  </Button>
+                </div>
+              </div>
+            </DialogContent>
+          </Dialog>
         </div>
 
 
@@ -907,157 +963,7 @@ export default function Dashboard() {
           </Card>
         </div>
 
-        {/* Second Row: Risk Alert, Payout Status */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-          {/* Risk Alert */}
-          <Card className="bg-dark-card border-warning-orange">
-            <CardContent className="p-6">
-              <div className="flex items-center mb-4">
-                <div className="bg-warning-orange bg-opacity-20 p-2 rounded-lg mr-3">
-                  <AlertTriangle className="text-warning-orange h-5 w-5" />
-                </div>
-                <h3 className="text-lg font-semibold">Risk Alert</h3>
-              </div>
-              <p className="text-gray-300 mb-4">Daily loss limit approaching on TopStep Challenge</p>
-              <div className="bg-dark-surface rounded-lg p-4">
-                <div className="flex justify-between text-sm mb-2">
-                  <span>Daily Loss Used</span>
-                  <span className="text-warning-orange">{combinedAnalytics?.riskLimitUsed?.toFixed(1) || 0}%</span>
-                </div>
-                <Progress 
-                  value={combinedAnalytics?.riskLimitUsed || 0} 
-                  className="w-full h-2 bg-dark-border"
-                />
-                <p className="text-xs text-gray-400 mt-2">
-                  {formatCurrency(Math.abs(combinedAnalytics?.worstTrade || 0))} of {formatCurrency(combinedAnalytics?.dailyLossLimit || 2500)} daily limit used
-                </p>
-              </div>
-            </CardContent>
-          </Card>
 
-          {/* TopStep Payout Status */}
-          <Card className="bg-dark-card border-blue-600">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center">
-                  <div className="bg-blue-600 bg-opacity-20 p-2 rounded-lg mr-3">
-                    <DollarSign className="text-blue-400 h-5 w-5" />
-                  </div>
-                  <h3 className="text-lg font-semibold">TopStep Payout Status</h3>
-                </div>
-                <select 
-                  className="bg-gray-800 text-white text-sm rounded px-3 py-1 border border-gray-600"
-                  value={selectedAccountId || ''}
-                  onChange={(e) => setSelectedAccountId(Number(e.target.value))}
-                >
-                  {accounts?.filter(acc => acc.firm === 'TopStep').map(account => (
-                    <option key={account.id} value={account.id}>
-                      {account.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              
-              {(() => {
-                const selectedAccount = accounts?.find(acc => acc.id === selectedAccountId);
-                if (!selectedAccount) return null;
-                
-                const accountTrades = trades?.filter(t => t.accountId === selectedAccount.id) || [];
-                const winningTrades = accountTrades.filter(t => (t.pnl || 0) >= 200);
-                const totalProfit = selectedAccount.currentBalance - selectedAccount.startingBalance;
-                const currentDrawdown = selectedAccount.maxDrawdown - (selectedAccount.startingBalance - selectedAccount.currentBalance);
-                const isInDrawdown = currentDrawdown < 2500 || currentDrawdown < 6000;
-                
-                const daysTraded = new Set(accountTrades.map(t => t.date)).size;
-                const winningDays = winningTrades.length;
-                const profitTargetMet = totalProfit >= 3000;
-                const daysRequirementMet = daysTraded >= 30;
-                const drawdownSafe = !isInDrawdown;
-                
-                const isReady = profitTargetMet && daysRequirementMet && drawdownSafe && winningDays >= 5;
-                
-                return (
-                  <div className="space-y-4">
-                    {/* Status Indicator */}
-                    <div className="text-center p-4 rounded-lg bg-gray-800">
-                      <p className={`text-2xl font-bold ${isReady ? 'text-green-400' : 'text-yellow-400'}`}>
-                        {isReady ? '✓ READY FOR PAYOUT' : 'IN PROGRESS'}
-                      </p>
-                      <p className="text-sm text-gray-400 mt-2">
-                        Payout Amount: {formatCurrency(Math.min(selectedAccount.currentBalance * 0.5, 5000))}
-                      </p>
-                    </div>
-                    
-                    {/* Progress Tracking */}
-                    <div className="space-y-4">
-                      {/* Profit Target Progress */}
-                      <div>
-                        <div className="flex justify-between text-sm mb-2">
-                          <span className="text-gray-300">Profit Target</span>
-                          <span className={profitTargetMet ? 'text-green-400' : 'text-yellow-400'}>
-                            {formatCurrency(totalProfit)} / {formatCurrency(3000)}
-                          </span>
-                        </div>
-                        <div className="w-full bg-gray-700 rounded-full h-3">
-                          <div 
-                            className={`h-3 rounded-full transition-all duration-300 ${
-                              profitTargetMet ? 'bg-green-400' : 'bg-yellow-400'
-                            }`}
-                            style={{ width: `${Math.min((totalProfit / 3000) * 100, 100)}%` }}
-                          ></div>
-                        </div>
-                      </div>
-                      
-                      {/* Trading Days Progress */}
-                      <div>
-                        <div className="flex justify-between text-sm mb-2">
-                          <span className="text-gray-300">Trading Days</span>
-                          <span className={daysRequirementMet ? 'text-green-400' : 'text-blue-400'}>
-                            {daysTraded} / 30 days
-                          </span>
-                        </div>
-                        <div className="w-full bg-gray-700 rounded-full h-3">
-                          <div 
-                            className={`h-3 rounded-full transition-all duration-300 ${
-                              daysRequirementMet ? 'bg-green-400' : 'bg-blue-400'
-                            }`}
-                            style={{ width: `${Math.min((daysTraded / 30) * 100, 100)}%` }}
-                          ></div>
-                        </div>
-                      </div>
-                      
-                      {/* Winning Days Progress */}
-                      <div>
-                        <div className="flex justify-between text-sm mb-2">
-                          <span className="text-gray-300">Winning Days ($200+)</span>
-                          <span className={winningDays >= 5 ? 'text-green-400' : 'text-purple-400'}>
-                            {winningDays} / 5 days
-                          </span>
-                        </div>
-                        <div className="w-full bg-gray-700 rounded-full h-3">
-                          <div 
-                            className={`h-3 rounded-full transition-all duration-300 ${
-                              winningDays >= 5 ? 'bg-green-400' : 'bg-purple-400'
-                            }`}
-                            style={{ width: `${Math.min((winningDays / 5) * 100, 100)}%` }}
-                          ></div>
-                        </div>
-                      </div>
-                      
-                      {/* Drawdown Status */}
-                      <div className="flex justify-between items-center">
-                        <span className="text-gray-300">Drawdown Status</span>
-                        <span className={drawdownSafe ? 'text-green-400' : 'text-red-400'}>
-                          {drawdownSafe ? 'Safe' : 'In Violation'}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })()}
-            </CardContent>
-          </Card>
-        </div>
 
 
 
