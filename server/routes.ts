@@ -30,7 +30,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/accounts/:id", async (req, res) => {
+  app.get("/api/accounts/:id", isAuthenticated, async (req, res) => {
     try {
       const id = parseInt(req.params.id);
       const account = await storage.getAccount(id);
@@ -43,7 +43,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/accounts", async (req, res) => {
+  app.post("/api/accounts", isAuthenticated, async (req, res) => {
     try {
       const validatedData = insertAccountSchema.parse(req.body);
       const account = await storage.createAccount(validatedData);
@@ -56,7 +56,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.put("/api/accounts/:id", async (req, res) => {
+  app.put("/api/accounts/:id", isAuthenticated, async (req, res) => {
     try {
       const id = parseInt(req.params.id);
       const validatedData = insertAccountSchema.partial().parse(req.body);
@@ -131,7 +131,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Trade routes
-  app.get("/api/trades", async (req, res) => {
+  app.get("/api/trades", isAuthenticated, async (req, res) => {
     try {
       const accountId = req.query.accountId ? parseInt(req.query.accountId as string) : undefined;
       const trades = await storage.getTrades(accountId);
@@ -141,7 +141,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/trades", async (req, res) => {
+  app.post("/api/trades", isAuthenticated, async (req, res) => {
     try {
       const validatedData = insertTradeSchema.parse(req.body);
       const trade = await storage.createTrade(validatedData);
