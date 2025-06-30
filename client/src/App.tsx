@@ -12,7 +12,6 @@ import Payouts from "@/pages/payouts";
 import Reports from "@/pages/reports";
 import Analytics from "@/pages/analytics";
 import Trades from "@/pages/trades";
-import TradingView from "@/pages/tradingview";
 import Profile from "@/pages/profile";
 import Sidebar from "@/components/sidebar";
 import NotFound from "@/pages/not-found";
@@ -32,7 +31,6 @@ function Router() {
           <Route path="/reports" component={Reports} />
           <Route path="/analytics" component={Analytics} />
           <Route path="/trades" component={Trades} />
-          <Route path="/tradovate" component={TradingView} />
           <Route path="/profile" component={Profile} />
           <Route component={NotFound} />
         </Switch>

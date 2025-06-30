@@ -10,8 +10,7 @@ import {
   Calendar,
   TrendingUp,
   User,
-  Brain,
-  Activity
+  Brain
 } from "lucide-react";
 
 const navItems = [
@@ -19,7 +18,6 @@ const navItems = [
   { href: "/journal", label: "Trading Journal", icon: Book, section: "main" },
   { href: "/accounts", label: "Accounts", icon: Wallet, section: "main" },
   { href: "/trades", label: "Trades", icon: TrendingUp, section: "main" },
-  { href: "/tradovate", label: "TradingView", icon: Activity, section: "main" },
   { href: "/risk-management", label: "Risk Management", icon: Shield, section: "main" },
   { href: "/performance", label: "Performance", icon: BarChart3, section: "analytics" },
   { href: "/analytics", label: "Advanced Analytics", icon: Brain, section: "analytics" },

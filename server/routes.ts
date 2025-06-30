@@ -2,7 +2,6 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { insertAccountSchema, insertTradeSchema, insertJournalEntrySchema, type InsertTrade } from "@shared/schema";
-import { tradingViewService } from "./tradingview";
 import { z } from "zod";
 
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -674,90 +673,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
         message: "CSV import failed",
         errors: [error instanceof Error ? error.message : 'Unknown error']
       });
-    }
-  });
-
-  // TradingView API routes
-  app.get("/api/tradingview/test", async (req, res) => {
-    try {
-      if (!tradingViewService.isConfigured()) {
-        return res.json({ 
-          success: false, 
-          message: "TradingView API key not configured. Please set TRADINGVIEW_API_KEY environment variable." 
-        });
-      }
-
-      const result = await tradingViewService.testConnection();
-      res.json(result);
-    } catch (error) {
-      res.status(500).json({ 
-        success: false, 
-        message: error instanceof Error ? error.message : 'Unknown error' 
-      });
-    }
-  });
-
-  app.get("/api/tradingview/quotes", async (req, res) => {
-    try {
-      const symbols = req.query.symbols ? (req.query.symbols as string).split(',') : tradingViewService.getPopularSymbols();
-      const quotes = await tradingViewService.getQuotes(symbols);
-      res.json(quotes);
-    } catch (error) {
-      res.status(500).json({ message: "Failed to fetch TradingView quotes" });
-    }
-  });
-
-  app.get("/api/tradingview/accounts", async (req, res) => {
-    try {
-      const accounts = await tradingViewService.getBrokerAccounts();
-      res.json(accounts);
-    } catch (error) {
-      res.status(500).json({ message: "Failed to fetch broker accounts" });
-    }
-  });
-
-  app.get("/api/tradingview/positions", async (req, res) => {
-    try {
-      const accountId = req.query.accountId ? req.query.accountId as string : undefined;
-      const positions = await tradingViewService.getPositions(accountId);
-      res.json(positions);
-    } catch (error) {
-      res.status(500).json({ message: "Failed to fetch positions" });
-    }
-  });
-
-  app.get("/api/tradingview/orders", async (req, res) => {
-    try {
-      const accountId = req.query.accountId ? req.query.accountId as string : undefined;
-      const orders = await tradingViewService.getOrders(accountId);
-      res.json(orders);
-    } catch (error) {
-      res.status(500).json({ message: "Failed to fetch orders" });
-    }
-  });
-
-  app.get("/api/tradingview/symbol/:symbol", async (req, res) => {
-    try {
-      const symbol = req.params.symbol;
-      const symbolInfo = await tradingViewService.getSymbolInfo(symbol);
-      res.json(symbolInfo);
-    } catch (error) {
-      res.status(500).json({ message: "Failed to fetch symbol info" });
-    }
-  });
-
-  app.get("/api/tradingview/history", async (req, res) => {
-    try {
-      const { symbol, resolution, from, to } = req.query;
-      const data = await tradingViewService.getHistoricalData(
-        symbol as string,
-        resolution as string,
-        parseInt(from as string),
-        parseInt(to as string)
-      );
-      res.json(data);
-    } catch (error) {
-      res.status(500).json({ message: "Failed to fetch historical data" });
     }
   });
 
