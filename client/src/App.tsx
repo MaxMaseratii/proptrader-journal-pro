@@ -4,6 +4,7 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import Dashboard from "@/pages/dashboard";
+import DashboardShowcase from "@/pages/dashboard-showcase";
 import Accounts from "@/pages/accounts";
 import Journal from "@/pages/journal";
 import RiskManagement from "@/pages/risk-management";
@@ -38,7 +39,8 @@ function Router() {
       <Sidebar />
       <main className="flex-1 overflow-y-auto">
         <Switch>
-          <Route path="/" component={Dashboard} />
+          <Route path="/" component={DashboardShowcase} />
+          <Route path="/dashboard-simple" component={Dashboard} />
           <Route path="/accounts" component={Accounts} />
           <Route path="/journal" component={Journal} />
           <Route path="/risk-management" component={RiskManagement} />
