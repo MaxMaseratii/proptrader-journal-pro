@@ -905,8 +905,6 @@ export default function Dashboard() {
           </CardContent>
         </Card>
 
-
-
         {/* Compact Trading Calendar */}
         <Card className="bg-dark-card border-dark-border mb-8">
           <CardHeader>
