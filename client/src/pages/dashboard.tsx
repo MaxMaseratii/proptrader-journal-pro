@@ -113,6 +113,9 @@ export default function Dashboard() {
     const grossProfit = winningTradeAmounts.reduce((sum, pnl) => sum + pnl, 0);
     const grossLoss = losingTradeAmounts.reduce((sum, pnl) => sum + pnl, 0);
     const profitFactor = grossLoss > 0 ? grossProfit / grossLoss : grossProfit > 0 ? 999 : 0;
+    
+    // Calculate R factor (Risk/Reward ratio) 
+    const rFactor = averageLoss > 0 ? averageWin / averageLoss : averageWin > 0 ? 999 : 0;
 
     return {
       accounts: accountsToAnalyze,
@@ -134,7 +137,8 @@ export default function Dashboard() {
       disciplinedScores,
       averageWin,
       averageLoss,
-      profitFactor
+      profitFactor,
+      rFactor
     };
   }, [accounts, trades, selectedAccountIds, viewMode]);
 
@@ -561,7 +565,7 @@ export default function Dashboard() {
                     </span>
                   </div>
                   <p className="text-xs text-gray-400 mt-1">
-                    Profit Factor: {(combinedAnalytics?.profitFactor || 0).toFixed(2)}
+                    R Factor: {(combinedAnalytics?.rFactor || 0).toFixed(2)} | Profit Factor: {(combinedAnalytics?.profitFactor || 0).toFixed(2)}
                   </p>
                 </div>
                 <div className="bg-purple-600 bg-opacity-20 p-3 rounded-lg">
