@@ -394,11 +394,193 @@ export class MemStorage implements IStorage {
     const newImport: CsvImport = { 
       ...csvImport, 
       id,
-      createdAt: new Date()
+      importDate: new Date()
     };
     this.csvImports.set(id, newImport);
     return newImport;
   }
+
+  // User operations for Replit Auth
+  async getUser(id: string): Promise<User | undefined> {
+    // For in-memory storage, users would be stored in a Map
+    // This is a placeholder implementation since we're switching to database
+    return undefined;
+  }
+
+  async upsertUser(userData: UpsertUser): Promise<User> {
+    // For in-memory storage, this would create/update a user
+    // This is a placeholder implementation since we're switching to database
+    const user: User = {
+      id: userData.id || '',
+      email: userData.email || null,
+      firstName: userData.firstName || null,
+      lastName: userData.lastName || null,
+      profileImageUrl: userData.profileImageUrl || null,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+    return user;
+  }
 }
 
-export const storage = new MemStorage();
+// Switch to DatabaseStorage for authentication support
+import { db } from "./db";
+import { eq } from "drizzle-orm";
+
+export class DatabaseStorage implements IStorage {
+  // User operations for Replit Auth
+  async getUser(id: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.id, id));
+    return user || undefined;
+  }
+
+  async upsertUser(userData: UpsertUser): Promise<User> {
+    const [user] = await db
+      .insert(users)
+      .values(userData)
+      .onConflictDoUpdate({
+        target: users.id,
+        set: {
+          ...userData,
+          updatedAt: new Date(),
+        },
+      })
+      .returning();
+    return user;
+  }
+
+  // Account operations
+  async getAccounts(): Promise<Account[]> {
+    return await db.select().from(accounts);
+  }
+
+  async getAccount(id: number): Promise<Account | undefined> {
+    const [account] = await db.select().from(accounts).where(eq(accounts.id, id));
+    return account || undefined;
+  }
+
+  async createAccount(account: InsertAccount): Promise<Account> {
+    const [newAccount] = await db.insert(accounts).values(account).returning();
+    return newAccount;
+  }
+
+  async updateAccount(id: number, account: Partial<InsertAccount>): Promise<Account | undefined> {
+    const [updatedAccount] = await db
+      .update(accounts)
+      .set(account)
+      .where(eq(accounts.id, id))
+      .returning();
+    return updatedAccount || undefined;
+  }
+
+  async deleteAccount(id: number): Promise<boolean> {
+    const result = await db.delete(accounts).where(eq(accounts.id, id));
+    return result.rowCount > 0;
+  }
+
+  // Trade operations
+  async getTrades(accountId?: number): Promise<Trade[]> {
+    if (accountId) {
+      return await db.select().from(trades).where(eq(trades.accountId, accountId));
+    }
+    return await db.select().from(trades);
+  }
+
+  async getTrade(id: number): Promise<Trade | undefined> {
+    const [trade] = await db.select().from(trades).where(eq(trades.id, id));
+    return trade || undefined;
+  }
+
+  async createTrade(trade: InsertTrade): Promise<Trade> {
+    const [newTrade] = await db.insert(trades).values(trade).returning();
+    return newTrade;
+  }
+
+  async updateTrade(id: number, trade: Partial<InsertTrade>): Promise<Trade | undefined> {
+    const [updatedTrade] = await db
+      .update(trades)
+      .set(trade)
+      .where(eq(trades.id, id))
+      .returning();
+    return updatedTrade || undefined;
+  }
+
+  async deleteTrade(id: number): Promise<boolean> {
+    const result = await db.delete(trades).where(eq(trades.id, id));
+    return result.rowCount > 0;
+  }
+
+  // Journal operations
+  async getJournalEntries(accountId?: number): Promise<JournalEntry[]> {
+    if (accountId) {
+      return await db.select().from(journalEntries).where(eq(journalEntries.accountId, accountId));
+    }
+    return await db.select().from(journalEntries);
+  }
+
+  async getJournalEntry(id: number): Promise<JournalEntry | undefined> {
+    const [entry] = await db.select().from(journalEntries).where(eq(journalEntries.id, id));
+    return entry || undefined;
+  }
+
+  async createJournalEntry(entry: InsertJournalEntry): Promise<JournalEntry> {
+    const [newEntry] = await db.insert(journalEntries).values(entry).returning();
+    return newEntry;
+  }
+
+  async updateJournalEntry(id: number, entry: Partial<InsertJournalEntry>): Promise<JournalEntry | undefined> {
+    const [updatedEntry] = await db
+      .update(journalEntries)
+      .set(entry)
+      .where(eq(journalEntries.id, id))
+      .returning();
+    return updatedEntry || undefined;
+  }
+
+  async deleteJournalEntry(id: number): Promise<boolean> {
+    const result = await db.delete(journalEntries).where(eq(journalEntries.id, id));
+    return result.rowCount > 0;
+  }
+
+  // Daily stats operations
+  async getDailyStats(accountId?: number): Promise<DailyStats[]> {
+    if (accountId) {
+      return await db.select().from(dailyStats).where(eq(dailyStats.accountId, accountId));
+    }
+    return await db.select().from(dailyStats);
+  }
+
+  async getDailyStatsForDateRange(accountId: number, startDate: string, endDate: string): Promise<DailyStats[]> {
+    // Implementation would filter by date range
+    return await db.select().from(dailyStats).where(eq(dailyStats.accountId, accountId));
+  }
+
+  async createDailyStats(stats: InsertDailyStats): Promise<DailyStats> {
+    const [newStats] = await db.insert(dailyStats).values(stats).returning();
+    return newStats;
+  }
+
+  async updateDailyStats(id: number, stats: Partial<InsertDailyStats>): Promise<DailyStats | undefined> {
+    const [updatedStats] = await db
+      .update(dailyStats)
+      .set(stats)
+      .where(eq(dailyStats.id, id))
+      .returning();
+    return updatedStats || undefined;
+  }
+
+  // CSV Import operations
+  async getCsvImports(accountId?: number): Promise<CsvImport[]> {
+    if (accountId) {
+      return await db.select().from(csvImports).where(eq(csvImports.accountId, accountId));
+    }
+    return await db.select().from(csvImports);
+  }
+
+  async createCsvImport(csvImport: InsertCsvImport): Promise<CsvImport> {
+    const [newImport] = await db.insert(csvImports).values(csvImport).returning();
+    return newImport;
+  }
+}
+
+export const storage = new DatabaseStorage();
