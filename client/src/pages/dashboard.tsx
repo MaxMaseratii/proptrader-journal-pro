@@ -8,9 +8,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { Progress } from "@/components/ui/progress";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { EquityChart, MonthlyPerformanceChart } from "@/components/chart-components";
 import { formatCurrency, formatPercentage, formatDate } from "@/lib/utils";
 import { calculateDisciplinedScore, getScoreColor, getGradeColor } from "@/lib/disciplined-score";
@@ -57,10 +54,6 @@ export default function Dashboard() {
   const [selectedAccountIds, setSelectedAccountIds] = useState<number[]>([]);
   const [viewMode, setViewMode] = useState<'single' | 'multiple' | 'all'>('all');
   const [selectedAccountId, setSelectedAccountId] = useState<number | null>(null);
-  const [showSpendingModal, setShowSpendingModal] = useState(false);
-  const [spendingAmount, setSpendingAmount] = useState('');
-  const [payoutAmount, setPayoutAmount] = useState('');
-  const [spendingType, setSpendingType] = useState('spending');
 
   const { data: accounts, isLoading: accountsLoading } = useQuery<Account[]>({
     queryKey: ["/api/accounts"],
@@ -782,62 +775,13 @@ export default function Dashboard() {
 
         {/* Add Investment Tracking Controls */}
         <div className="flex justify-end mb-8">
-          <Dialog open={showSpendingModal} onOpenChange={setShowSpendingModal}>
-            <DialogTrigger asChild>
-              <Button className="bg-blue-600 hover:bg-blue-700 text-white">
-                <Plus className="mr-2 h-4 w-4" />
-                Add Spending/Payout
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="bg-dark-card border-dark-border">
-              <DialogHeader>
-                <DialogTitle className="text-white">Add Spending or Payout</DialogTitle>
-              </DialogHeader>
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <Label className="text-gray-300">Type</Label>
-                  <Select value={spendingType} onValueChange={setSpendingType}>
-                    <SelectTrigger className="bg-gray-800 border-gray-600">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="spending">Spending</SelectItem>
-                      <SelectItem value="payout">Payout</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-2">
-                  <Label className="text-gray-300">Amount</Label>
-                  <Input
-                    type="number"
-                    placeholder="Enter amount"
-                    value={spendingType === 'spending' ? spendingAmount : payoutAmount}
-                    onChange={(e) => spendingType === 'spending' 
-                      ? setSpendingAmount(e.target.value) 
-                      : setPayoutAmount(e.target.value)
-                    }
-                    className="bg-gray-800 border-gray-600 text-white"
-                  />
-                </div>
-                <div className="flex justify-end space-x-2">
-                  <Button variant="outline" onClick={() => setShowSpendingModal(false)}>
-                    Cancel
-                  </Button>
-                  <Button 
-                    className="bg-blue-600 hover:bg-blue-700"
-                    onClick={() => {
-                      // TODO: Save spending/payout to database
-                      setShowSpendingModal(false);
-                      setSpendingAmount('');
-                      setPayoutAmount('');
-                    }}
-                  >
-                    Save
-                  </Button>
-                </div>
-              </div>
-            </DialogContent>
-          </Dialog>
+          <Button 
+            className="bg-blue-600 hover:bg-blue-700 text-white"
+            onClick={() => {/* TODO: Implement add spending/payout modal */}}
+          >
+            <Plus className="mr-2 h-4 w-4" />
+            Add Spending/Payout
+          </Button>
         </div>
 
 
@@ -885,8 +829,86 @@ export default function Dashboard() {
           </Card>
         </div>
 
-        {/* Key Status Cards Row: Risk Alert, Payout Status, Profit Target */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        {/* First Row: Risk Management, Daily Trade Limit, Disciplined Score */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+          {/* Risk Management */}
+          <Card className="bg-dark-card border-warning-orange">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-gray-400 text-sm mb-1">Risk Management</p>
+                  <p className="text-2xl font-bold text-warning-orange">
+                    {formatCurrency(500)}
+                  </p>
+                  <p className="text-xs text-gray-400 mt-1">
+                    Per trade / {formatCurrency(1500)} daily limit
+                  </p>
+                </div>
+                <div className="bg-warning-orange bg-opacity-20 p-3 rounded-lg">
+                  <Shield className="text-warning-orange h-6 w-6" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Daily Trade Limit */}
+          <Card className="bg-dark-card border-cyan-600">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-gray-400 text-sm mb-1">Daily Trade Limit</p>
+                  <p className="text-2xl font-bold text-cyan-400">
+                    {trades?.filter(t => t.date === new Date().toISOString().split('T')[0]).length || 0} / 5
+                  </p>
+                  <p className="text-xs text-gray-400 mt-1">
+                    Current trades today / Maximum allowed
+                  </p>
+                </div>
+                <div className="bg-cyan-600 bg-opacity-20 p-3 rounded-lg">
+                  <BarChart3 className="text-cyan-400 h-6 w-6" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Disciplined Score */}
+          <Card className="bg-dark-card border-primary">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-gray-400 text-sm mb-1">Disciplined Score</p>
+                  <div className="flex items-center space-x-2">
+                    <p className={`text-2xl font-bold ${getScoreColor(combinedAnalytics?.disciplinedScore || 100)}`}>
+                      {Math.round(combinedAnalytics?.disciplinedScore || 100)}
+                    </p>
+                    <Badge className={`${getGradeColor(
+                      (combinedAnalytics?.disciplinedScore || 100) >= 95 ? 'A+' :
+                      (combinedAnalytics?.disciplinedScore || 100) >= 90 ? 'A' :
+                      (combinedAnalytics?.disciplinedScore || 100) >= 80 ? 'B' :
+                      (combinedAnalytics?.disciplinedScore || 100) >= 70 ? 'C' :
+                      (combinedAnalytics?.disciplinedScore || 100) >= 60 ? 'D' : 'F'
+                    )} text-white`}>
+                      {(combinedAnalytics?.disciplinedScore || 100) >= 95 ? 'A+' :
+                       (combinedAnalytics?.disciplinedScore || 100) >= 90 ? 'A' :
+                       (combinedAnalytics?.disciplinedScore || 100) >= 80 ? 'B' :
+                       (combinedAnalytics?.disciplinedScore || 100) >= 70 ? 'C' :
+                       (combinedAnalytics?.disciplinedScore || 100) >= 60 ? 'D' : 'F'}
+                    </Badge>
+                  </div>
+                  <p className="text-xs text-gray-400 mt-1">
+                    98% risk compliance / 100% trade limits
+                  </p>
+                </div>
+                <div className="bg-primary bg-opacity-20 p-3 rounded-lg">
+                  <Brain className="text-primary h-6 w-6" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Second Row: Risk Alert, Payout Status */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
           {/* Risk Alert */}
           <Card className="bg-dark-card border-warning-orange">
             <CardContent className="p-6">
@@ -896,80 +918,146 @@ export default function Dashboard() {
                 </div>
                 <h3 className="text-lg font-semibold">Risk Alert</h3>
               </div>
-              <p className="text-sm text-gray-300 mb-3">
-                Daily loss limit approaching on TopStep Challenge #150K
-              </p>
-              <div className="space-y-2">
-                <div className="flex justify-between text-sm">
+              <p className="text-gray-300 mb-4">Daily loss limit approaching on TopStep Challenge</p>
+              <div className="bg-dark-surface rounded-lg p-4">
+                <div className="flex justify-between text-sm mb-2">
                   <span>Daily Loss Used</span>
-                  <span className="text-warning-orange">0.0%</span>
+                  <span className="text-warning-orange">{combinedAnalytics?.riskLimitUsed?.toFixed(1) || 0}%</span>
                 </div>
-                <Progress value={0} className="w-full h-2 bg-dark-border" />
-                <p className="text-xs text-gray-400">
-                  $7,000.00 of $3,600.00 daily limit used
+                <Progress 
+                  value={combinedAnalytics?.riskLimitUsed || 0} 
+                  className="w-full h-2 bg-dark-border"
+                />
+                <p className="text-xs text-gray-400 mt-2">
+                  {formatCurrency(Math.abs(combinedAnalytics?.worstTrade || 0))} of {formatCurrency(combinedAnalytics?.dailyLossLimit || 2500)} daily limit used
                 </p>
               </div>
             </CardContent>
           </Card>
 
-          {/* Payout Status */}
-          <Card className="bg-dark-card border-green-600">
-            <CardContent className="p-6">
-              <div className="flex items-center mb-4">
-                <div className="bg-green-600 bg-opacity-20 p-2 rounded-lg mr-3">
-                  <DollarSign className="text-green-400 h-5 w-5" />
-                </div>
-                <h3 className="text-lg font-semibold">Payout Status</h3>
-              </div>
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm">5-Day Eligibility</span>
-                  <div className="w-16 h-8 bg-green-500 rounded-full flex items-center justify-center">
-                    <div className="w-6 h-6 bg-white rounded-full"></div>
-                  </div>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-sm">20% Consistency</span>
-                  <div className="w-16 h-8 bg-red-500 rounded-full flex items-center justify-center">
-                    <div className="w-6 h-6 bg-white rounded-full"></div>
-                  </div>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span>Available Payout</span>
-                  <span className="text-green-400 font-bold">$1,500.00</span>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Profit Target */}
+          {/* TopStep Payout Status */}
           <Card className="bg-dark-card border-blue-600">
             <CardContent className="p-6">
-              <div className="flex items-center mb-4">
-                <div className="bg-blue-600 bg-opacity-20 p-2 rounded-lg mr-3">
-                  <Target className="text-blue-400 h-5 w-5" />
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center">
+                  <div className="bg-blue-600 bg-opacity-20 p-2 rounded-lg mr-3">
+                    <DollarSign className="text-blue-400 h-5 w-5" />
+                  </div>
+                  <h3 className="text-lg font-semibold">TopStep Payout Status</h3>
                 </div>
-                <h3 className="text-lg font-semibold">Profit Target</h3>
+                <select 
+                  className="bg-gray-800 text-white text-sm rounded px-3 py-1 border border-gray-600"
+                  value={selectedAccountId || ''}
+                  onChange={(e) => setSelectedAccountId(Number(e.target.value))}
+                >
+                  {accounts?.filter(acc => acc.firm === 'TopStep').map(account => (
+                    <option key={account.id} value={account.id}>
+                      {account.name}
+                    </option>
+                  ))}
+                </select>
               </div>
-              <p className="text-sm text-gray-300 mb-3">Challenge Progress</p>
-              <div className="space-y-2">
-                <div className="flex justify-between text-sm">
-                  <span>Progress</span>
-                  <span className="text-red-400">-2.96%</span>
-                </div>
-                <Progress value={0} className="w-full h-2 bg-dark-border" />
-                <p className="text-xs text-gray-400 mb-3">
-                  Need $19,562.50 to reach 10% target
-                </p>
-                <button className="w-full bg-blue-600 text-white py-2 rounded-lg text-sm hover:bg-blue-700">
-                  View Challenge Details
-                </button>
-              </div>
+              
+              {(() => {
+                const selectedAccount = accounts?.find(acc => acc.id === selectedAccountId);
+                if (!selectedAccount) return null;
+                
+                const accountTrades = trades?.filter(t => t.accountId === selectedAccount.id) || [];
+                const winningTrades = accountTrades.filter(t => (t.pnl || 0) >= 200);
+                const totalProfit = selectedAccount.currentBalance - selectedAccount.startingBalance;
+                const currentDrawdown = selectedAccount.maxDrawdown - (selectedAccount.startingBalance - selectedAccount.currentBalance);
+                const isInDrawdown = currentDrawdown < 2500 || currentDrawdown < 6000;
+                
+                const daysTraded = new Set(accountTrades.map(t => t.date)).size;
+                const winningDays = winningTrades.length;
+                const profitTargetMet = totalProfit >= 3000;
+                const daysRequirementMet = daysTraded >= 30;
+                const drawdownSafe = !isInDrawdown;
+                
+                const isReady = profitTargetMet && daysRequirementMet && drawdownSafe && winningDays >= 5;
+                
+                return (
+                  <div className="space-y-4">
+                    {/* Status Indicator */}
+                    <div className="text-center p-4 rounded-lg bg-gray-800">
+                      <p className={`text-2xl font-bold ${isReady ? 'text-green-400' : 'text-yellow-400'}`}>
+                        {isReady ? '✓ READY FOR PAYOUT' : 'IN PROGRESS'}
+                      </p>
+                      <p className="text-sm text-gray-400 mt-2">
+                        Payout Amount: {formatCurrency(Math.min(selectedAccount.currentBalance * 0.5, 5000))}
+                      </p>
+                    </div>
+                    
+                    {/* Progress Tracking */}
+                    <div className="space-y-4">
+                      {/* Profit Target Progress */}
+                      <div>
+                        <div className="flex justify-between text-sm mb-2">
+                          <span className="text-gray-300">Profit Target</span>
+                          <span className={profitTargetMet ? 'text-green-400' : 'text-yellow-400'}>
+                            {formatCurrency(totalProfit)} / {formatCurrency(3000)}
+                          </span>
+                        </div>
+                        <div className="w-full bg-gray-700 rounded-full h-3">
+                          <div 
+                            className={`h-3 rounded-full transition-all duration-300 ${
+                              profitTargetMet ? 'bg-green-400' : 'bg-yellow-400'
+                            }`}
+                            style={{ width: `${Math.min((totalProfit / 3000) * 100, 100)}%` }}
+                          ></div>
+                        </div>
+                      </div>
+                      
+                      {/* Trading Days Progress */}
+                      <div>
+                        <div className="flex justify-between text-sm mb-2">
+                          <span className="text-gray-300">Trading Days</span>
+                          <span className={daysRequirementMet ? 'text-green-400' : 'text-blue-400'}>
+                            {daysTraded} / 30 days
+                          </span>
+                        </div>
+                        <div className="w-full bg-gray-700 rounded-full h-3">
+                          <div 
+                            className={`h-3 rounded-full transition-all duration-300 ${
+                              daysRequirementMet ? 'bg-green-400' : 'bg-blue-400'
+                            }`}
+                            style={{ width: `${Math.min((daysTraded / 30) * 100, 100)}%` }}
+                          ></div>
+                        </div>
+                      </div>
+                      
+                      {/* Winning Days Progress */}
+                      <div>
+                        <div className="flex justify-between text-sm mb-2">
+                          <span className="text-gray-300">Winning Days ($200+)</span>
+                          <span className={winningDays >= 5 ? 'text-green-400' : 'text-purple-400'}>
+                            {winningDays} / 5 days
+                          </span>
+                        </div>
+                        <div className="w-full bg-gray-700 rounded-full h-3">
+                          <div 
+                            className={`h-3 rounded-full transition-all duration-300 ${
+                              winningDays >= 5 ? 'bg-green-400' : 'bg-purple-400'
+                            }`}
+                            style={{ width: `${Math.min((winningDays / 5) * 100, 100)}%` }}
+                          ></div>
+                        </div>
+                      </div>
+                      
+                      {/* Drawdown Status */}
+                      <div className="flex justify-between items-center">
+                        <span className="text-gray-300">Drawdown Status</span>
+                        <span className={drawdownSafe ? 'text-green-400' : 'text-red-400'}>
+                          {drawdownSafe ? 'Safe' : 'In Violation'}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })()}
             </CardContent>
           </Card>
         </div>
-
-
 
 
 
