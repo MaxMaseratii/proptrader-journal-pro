@@ -267,36 +267,77 @@ export default function Dashboard() {
       </header>
 
       <div className="p-6 space-y-8">
-        {/* TOP PRIORITY: Current Performance Overview */}
-        <div className="mb-6">
-          <h2 className="text-2xl font-bold text-white mb-6 flex items-center border-b border-gray-700 pb-3">
-            <TrendingUp className="mr-3 h-6 w-6 text-success-green" />
+        {/* Current Performance Overview - Compact Header */}
+        <div className="mb-4">
+          <h2 className="text-xl font-bold text-white mb-4 flex items-center border-b border-gray-700 pb-2">
+            <TrendingUp className="mr-3 h-5 w-5 text-success-green" />
             Current Performance Overview
           </h2>
         </div>
 
-        {/* Total Balance Row - Larger */}
-        <div className="grid grid-cols-1 gap-6">
-          <Card className="bg-dark-card border-purple-600">
-            <CardContent className="p-8">
-              <div className="text-center">
-                <p className="text-gray-400 text-sm mb-2">Combined Account Balance</p>
-                <p className="text-5xl font-bold text-white mb-2">
-                  {formatCurrency(accounts?.reduce((sum, acc) => sum + acc.currentBalance, 0) || 0)}
-                </p>
-                <div className="flex justify-center items-center text-sm text-gray-400">
-                  <span>Starting Balance: {formatCurrency(accounts?.reduce((sum, acc) => sum + acc.startingBalance, 0) || 0)}</span>
-                  <span className="mx-2">•</span>
-                  <span className={`${
-                    (accounts?.reduce((sum, acc) => sum + acc.currentBalance, 0) || 0) >= 
-                    (accounts?.reduce((sum, acc) => sum + acc.startingBalance, 0) || 0) 
-                    ? 'text-green-400' : 'text-red-400'
-                  }`}>
-                    {((accounts?.reduce((sum, acc) => sum + acc.currentBalance, 0) || 0) - 
-                     (accounts?.reduce((sum, acc) => sum + acc.startingBalance, 0) || 0) >= 0 ? '+' : '') +
-                    formatCurrency((accounts?.reduce((sum, acc) => sum + acc.currentBalance, 0) || 0) - 
-                                  (accounts?.reduce((sum, acc) => sum + acc.startingBalance, 0) || 0))}
-                  </span>
+        {/* Key Performance Metrics Under Header */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          {/* Total Balance */}
+          <Card className="bg-dark-card border-success-green">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-gray-400 text-sm mb-1">Total Balance</p>
+                  <p className="text-2xl font-bold text-success-green">
+                    {formatCurrency(accounts?.reduce((sum, acc) => sum + acc.currentBalance, 0) || 0)}
+                  </p>
+                  <p className="text-xs text-gray-400 mt-1">
+                    Combined accounts
+                  </p>
+                </div>
+                <div className="bg-success-green bg-opacity-20 p-3 rounded-lg">
+                  <DollarSign className="text-success-green h-6 w-6" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Daily P&L */}
+          <Card className="bg-dark-card border-error-red">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-gray-400 text-sm mb-1">Daily P&L</p>
+                  <p className="text-2xl font-bold text-error-red">
+                    {formatCurrency(combinedAnalytics?.worstTrade || 0)}
+                  </p>
+                  <p className="text-xs text-gray-400 mt-1">
+                    Today's performance
+                  </p>
+                </div>
+                <div className="bg-error-red bg-opacity-20 p-3 rounded-lg">
+                  <TrendingDown className="text-error-red h-6 w-6" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Average Win/Loss */}
+          <Card className="bg-dark-card border-gray-600">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-gray-400 text-sm mb-1">Avg Win/Loss</p>
+                  <div className="flex items-center space-x-2 text-lg font-bold">
+                    <span className="text-success-green">
+                      {formatCurrency(combinedAnalytics?.averageWin || 0)}
+                    </span>
+                    <span className="text-gray-400">/</span>
+                    <span className="text-error-red">
+                      {formatCurrency(Math.abs(combinedAnalytics?.averageLoss || 0))}
+                    </span>
+                  </div>
+                  <p className="text-xs text-gray-400 mt-1">
+                    Win vs Loss ratio
+                  </p>
+                </div>
+                <div className="bg-gray-600 bg-opacity-20 p-3 rounded-lg">
+                  <BarChart3 className="text-gray-400 h-6 w-6" />
                 </div>
               </div>
             </CardContent>
@@ -311,7 +352,79 @@ export default function Dashboard() {
           </h2>
         </div>
 
-        {/* Account Type Summary */}
+        {/* Account Balance by Type - MOST IMPORTANT: Funded & Live */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+          {/* Funded Accounts Balance - PRIORITY */}
+          <Card className="bg-dark-card border-blue-600">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-gray-400 text-sm mb-1">Funded Accounts</p>
+                  <p className="text-2xl font-bold text-blue-400">
+                    {formatCurrency(
+                      accounts?.filter(acc => acc.status === 'funded')
+                        .reduce((sum, acc) => sum + acc.currentBalance, 0) || 0
+                    )}
+                  </p>
+                  <p className="text-xs text-gray-400 mt-1">
+                    {accounts?.filter(acc => acc.status === 'funded').length || 0} accounts • Payout eligible
+                  </p>
+                </div>
+                <div className="bg-blue-600 bg-opacity-20 p-3 rounded-lg">
+                  <DollarSign className="text-blue-400 h-6 w-6" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Live Accounts Balance - PRIORITY */}
+          <Card className="bg-dark-card border-green-600">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-gray-400 text-sm mb-1">Live Accounts</p>
+                  <p className="text-2xl font-bold text-green-400">
+                    {formatCurrency(
+                      accounts?.filter(acc => acc.status === 'active')
+                        .reduce((sum, acc) => sum + acc.currentBalance, 0) || 0
+                    )}
+                  </p>
+                  <p className="text-xs text-gray-400 mt-1">
+                    {accounts?.filter(acc => acc.status === 'active').length || 0} accounts • Payout eligible
+                  </p>
+                </div>
+                <div className="bg-green-600 bg-opacity-20 p-3 rounded-lg">
+                  <TrendingUp className="text-green-400 h-6 w-6" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Challenge Accounts Balance */}
+          <Card className="bg-dark-card border-yellow-600">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-gray-400 text-sm mb-1">Challenge Accounts</p>
+                  <p className="text-2xl font-bold text-yellow-400">
+                    {formatCurrency(
+                      accounts?.filter(acc => acc.type === 'challenge')
+                        .reduce((sum, acc) => sum + acc.currentBalance, 0) || 0
+                    )}
+                  </p>
+                  <p className="text-xs text-gray-400 mt-1">
+                    {accounts?.filter(acc => acc.type === 'challenge').length || 0} accounts • No payouts
+                  </p>
+                </div>
+                <div className="bg-yellow-600 bg-opacity-20 p-3 rounded-lg">
+                  <Target className="text-yellow-400 h-6 w-6" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Account Status Summary */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
           <Card className="bg-dark-card border-yellow-600">
             <CardContent className="p-4">
@@ -471,74 +584,7 @@ export default function Dashboard() {
           </Card>
         </div>
 
-        {/* Key Performance Metrics - MOST IMPORTANT */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          {/* Total Balance */}
-          <Card className="bg-dark-card border-success-green">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-gray-400 text-sm mb-1">Total Balance</p>
-                  <p className="text-2xl font-bold text-success-green">
-                    {formatCurrency(combinedAnalytics?.currentBalance || 0)}
-                  </p>
-                  <p className="text-xs text-gray-400 mt-1">
-                    +2.4% this month
-                  </p>
-                </div>
-                <div className="bg-success-green bg-opacity-20 p-3 rounded-lg">
-                  <DollarSign className="text-success-green h-6 w-6" />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
 
-          {/* Daily P&L */}
-          <Card className="bg-dark-card border-error-red">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-gray-400 text-sm mb-1">Daily P&L</p>
-                  <p className="text-2xl font-bold text-error-red">
-                    {formatCurrency(combinedAnalytics?.worstTrade || 0)}
-                  </p>
-                  <p className="text-xs text-gray-400 mt-1">
-                    Worst day: Oct 7
-                  </p>
-                </div>
-                <div className="bg-error-red bg-opacity-20 p-3 rounded-lg">
-                  <TrendingDown className="text-error-red h-6 w-6" />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Average Win/Loss */}
-          <Card className="bg-dark-card border-gray-600">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-gray-400 text-sm mb-1">Avg Win/Loss</p>
-                  <div className="flex items-center space-x-2 text-lg font-bold">
-                    <span className="text-success-green">
-                      {formatCurrency(combinedAnalytics?.averageWin || 0)}
-                    </span>
-                    <span className="text-gray-400">/</span>
-                    <span className="text-error-red">
-                      {formatCurrency(Math.abs(combinedAnalytics?.averageLoss || 0))}
-                    </span>
-                  </div>
-                  <p className="text-xs text-gray-400 mt-1">
-                    Win vs Loss ratio
-                  </p>
-                </div>
-                <div className="bg-gray-600 bg-opacity-20 p-3 rounded-lg">
-                  <TrendingUp className="text-gray-400 h-6 w-6" />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
 
         {/* Trading Performance Analysis */}
         <div className="mb-6">
