@@ -1,8 +1,8 @@
-# PropTracker Pro - Trading Dashboard
+# PropJournal Pro - Elite Trading Journal
 
 ## Overview
 
-PropTracker Pro is a full-stack trading dashboard application designed for proprietary trading account management. It provides comprehensive tools for tracking trading performance, managing risk, journaling trades, and generating reports. The application features a modern dark-themed UI with real-time analytics and visualization capabilities.
+PropJournal Pro is a full-stack trading journal application designed specifically for proprietary trading firms and prop traders. It provides comprehensive tools for tracking trading performance, managing risk, journaling trades, and generating reports. The application features a modern dark-themed UI with real-time analytics, professional welcome page with pricing tiers, and complete user authentication via Replit Auth.
 
 ## System Architecture
 
@@ -135,6 +135,16 @@ Changelog:
   * Implemented quick export functionality and report templates
   * Added "Advanced Analytics" navigation item with Brain icon to sidebar
   * Integrated comprehensive chart visualizations for performance tracking
+- June 30, 2025. Complete rebrand and authentication system overhaul:
+  * Rebranded application from "PropTracker Pro" to "PropJournal Pro - Elite Trading Journal"
+  * Implemented complete user authentication system using Replit Auth and PostgreSQL
+  * Created professional welcome page inspired by Tradezella with pricing tiers and features
+  * Added user sign-up flow with Free, Pro Trader ($19/month), and Firm ($99/month) plans
+  * Implemented authentication routing - welcome page for unauthenticated users
+  * Protected all API routes with authentication middleware
+  * Added professional testimonials, feature showcases, and call-to-action sections
+  * Updated sidebar branding and added logout functionality
+  * Enhanced SEO with proper meta tags and descriptions focused on prop trading journal
 ```
 
 ## User Preferences

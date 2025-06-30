@@ -36,8 +36,15 @@ export default function Sidebar() {
   return (
     <aside className="w-64 bg-dark-surface border-r border-dark-border flex-shrink-0">
       <div className="p-6 border-b border-dark-border">
-        <h1 className="text-xl font-bold text-primary">PropTracker Pro</h1>
-        <p className="text-sm text-gray-400 mt-1">Professional Trading Dashboard</p>
+        <div className="flex items-center space-x-3">
+          <div className="bg-gradient-to-r from-blue-500 to-purple-600 p-2 rounded-lg">
+            <Book className="h-5 w-5 text-white" />
+          </div>
+          <div>
+            <h1 className="text-lg font-bold text-primary">PropJournal Pro</h1>
+            <p className="text-xs text-gray-400">Elite Trading Journal</p>
+          </div>
+        </div>
       </div>
       
       <nav className="mt-6">
