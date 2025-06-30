@@ -596,17 +596,12 @@ export default function Dashboard() {
           {/* Max Trades Per Day Card */}
           <Card className="bg-dark-card border-dark-border">
             <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div className="w-full">
-                  <p className="text-gray-400 text-sm mb-1">Max Trades Per Day</p>
-                  <p className="text-2xl font-bold text-primary mb-2">5</p>
-                  <div className="space-y-1">
-                    <p className="text-xs text-gray-400">Today: 3 trades</p>
-                    <p className="text-xs text-success-green">Within limit</p>
-                  </div>
-                </div>
-                <div className="bg-primary bg-opacity-20 p-3 rounded-lg">
-                  <Calendar className="text-primary h-6 w-6" />
+              <div className="w-full">
+                <p className="text-gray-400 text-sm mb-1">Max Trades Per Day</p>
+                <p className="text-2xl font-bold text-primary mb-2">5</p>
+                <div className="space-y-1">
+                  <p className="text-xs text-gray-400">Today: 3 trades</p>
+                  <p className="text-xs text-success-green">Within limit</p>
                 </div>
               </div>
             </CardContent>
