@@ -241,6 +241,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
               fillTime,
               orderId: row.orderId || row['Order ID'] || '',
               orderType: row.Type || 'Market',
+              text: row.Text || '',
               row: i
             });
           }
