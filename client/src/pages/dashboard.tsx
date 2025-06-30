@@ -885,79 +885,85 @@ export default function Dashboard() {
           </Card>
         </div>
 
-        {/* First Row: Risk Management, Daily Trade Limit, Disciplined Score */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-          {/* Risk Management */}
+        {/* Key Status Cards Row: Risk Alert, Payout Status, Profit Target */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          {/* Risk Alert */}
           <Card className="bg-dark-card border-warning-orange">
             <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-gray-400 text-sm mb-1">Risk Management</p>
-                  <p className="text-2xl font-bold text-warning-orange">
-                    {formatCurrency(500)}
-                  </p>
-                  <p className="text-xs text-gray-400 mt-1">
-                    Per trade / {formatCurrency(1500)} daily limit
-                  </p>
+              <div className="flex items-center mb-4">
+                <div className="bg-warning-orange bg-opacity-20 p-2 rounded-lg mr-3">
+                  <AlertTriangle className="text-warning-orange h-5 w-5" />
                 </div>
-                <div className="bg-warning-orange bg-opacity-20 p-3 rounded-lg">
-                  <Shield className="text-warning-orange h-6 w-6" />
+                <h3 className="text-lg font-semibold">Risk Alert</h3>
+              </div>
+              <p className="text-sm text-gray-300 mb-3">
+                Daily loss limit approaching on TopStep Challenge #150K
+              </p>
+              <div className="space-y-2">
+                <div className="flex justify-between text-sm">
+                  <span>Daily Loss Used</span>
+                  <span className="text-warning-orange">0.0%</span>
                 </div>
+                <Progress value={0} className="w-full h-2 bg-dark-border" />
+                <p className="text-xs text-gray-400">
+                  $7,000.00 of $3,600.00 daily limit used
+                </p>
               </div>
             </CardContent>
           </Card>
 
-          {/* Daily Trade Limit */}
-          <Card className="bg-dark-card border-cyan-600">
+          {/* Payout Status */}
+          <Card className="bg-dark-card border-green-600">
             <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-gray-400 text-sm mb-1">Daily Trade Limit</p>
-                  <p className="text-2xl font-bold text-cyan-400">
-                    {trades?.filter(t => t.date === new Date().toISOString().split('T')[0]).length || 0} / 5
-                  </p>
-                  <p className="text-xs text-gray-400 mt-1">
-                    Current trades today / Maximum allowed
-                  </p>
+              <div className="flex items-center mb-4">
+                <div className="bg-green-600 bg-opacity-20 p-2 rounded-lg mr-3">
+                  <DollarSign className="text-green-400 h-5 w-5" />
                 </div>
-                <div className="bg-cyan-600 bg-opacity-20 p-3 rounded-lg">
-                  <BarChart3 className="text-cyan-400 h-6 w-6" />
-                </div>
+                <h3 className="text-lg font-semibold">Payout Status</h3>
               </div>
-            </CardContent>
-          </Card>
-
-          {/* Disciplined Score */}
-          <Card className="bg-dark-card border-primary">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-gray-400 text-sm mb-1">Disciplined Score</p>
-                  <div className="flex items-center space-x-2">
-                    <p className={`text-2xl font-bold ${getScoreColor(combinedAnalytics?.disciplinedScore || 100)}`}>
-                      {Math.round(combinedAnalytics?.disciplinedScore || 100)}
-                    </p>
-                    <Badge className={`${getGradeColor(
-                      (combinedAnalytics?.disciplinedScore || 100) >= 95 ? 'A+' :
-                      (combinedAnalytics?.disciplinedScore || 100) >= 90 ? 'A' :
-                      (combinedAnalytics?.disciplinedScore || 100) >= 80 ? 'B' :
-                      (combinedAnalytics?.disciplinedScore || 100) >= 70 ? 'C' :
-                      (combinedAnalytics?.disciplinedScore || 100) >= 60 ? 'D' : 'F'
-                    )} text-white`}>
-                      {(combinedAnalytics?.disciplinedScore || 100) >= 95 ? 'A+' :
-                       (combinedAnalytics?.disciplinedScore || 100) >= 90 ? 'A' :
-                       (combinedAnalytics?.disciplinedScore || 100) >= 80 ? 'B' :
-                       (combinedAnalytics?.disciplinedScore || 100) >= 70 ? 'C' :
-                       (combinedAnalytics?.disciplinedScore || 100) >= 60 ? 'D' : 'F'}
-                    </Badge>
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm">5-Day Eligibility</span>
+                  <div className="w-16 h-8 bg-green-500 rounded-full flex items-center justify-center">
+                    <div className="w-6 h-6 bg-white rounded-full"></div>
                   </div>
-                  <p className="text-xs text-gray-400 mt-1">
-                    98% risk compliance / 100% trade limits
-                  </p>
                 </div>
-                <div className="bg-primary bg-opacity-20 p-3 rounded-lg">
-                  <Brain className="text-primary h-6 w-6" />
+                <div className="flex items-center justify-between">
+                  <span className="text-sm">20% Consistency</span>
+                  <div className="w-16 h-8 bg-red-500 rounded-full flex items-center justify-center">
+                    <div className="w-6 h-6 bg-white rounded-full"></div>
+                  </div>
                 </div>
+                <div className="flex justify-between text-sm">
+                  <span>Available Payout</span>
+                  <span className="text-green-400 font-bold">$1,500.00</span>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Profit Target */}
+          <Card className="bg-dark-card border-blue-600">
+            <CardContent className="p-6">
+              <div className="flex items-center mb-4">
+                <div className="bg-blue-600 bg-opacity-20 p-2 rounded-lg mr-3">
+                  <Target className="text-blue-400 h-5 w-5" />
+                </div>
+                <h3 className="text-lg font-semibold">Profit Target</h3>
+              </div>
+              <p className="text-sm text-gray-300 mb-3">Challenge Progress</p>
+              <div className="space-y-2">
+                <div className="flex justify-between text-sm">
+                  <span>Progress</span>
+                  <span className="text-red-400">-2.96%</span>
+                </div>
+                <Progress value={0} className="w-full h-2 bg-dark-border" />
+                <p className="text-xs text-gray-400 mb-3">
+                  Need $19,562.50 to reach 10% target
+                </p>
+                <button className="w-full bg-blue-600 text-white py-2 rounded-lg text-sm hover:bg-blue-700">
+                  View Challenge Details
+                </button>
               </div>
             </CardContent>
           </Card>
