@@ -295,6 +295,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
               const actualRisk = Math.abs(pnl);
               const riskCompliance = actualRisk <= riskAmount;
 
+              // Detect stop loss and take profit from order types
+              const hasStopLoss = buyOrder.orderType === 'Stop' || sellOrder.orderType === 'Stop' ||
+                                 (buyOrder.text && buyOrder.text.includes('Exit')) || 
+                                 (sellOrder.text && sellOrder.text.includes('Exit'));
+              const hasTakeProfit = (buyOrder.orderType === 'Limit' && buyOrder.side === 'sell') || 
+                                   (sellOrder.orderType === 'Limit' && sellOrder.side === 'sell');
+
               const tradeData: InsertTrade = {
                 accountId: parseInt(accountId),
                 date: currentOrder.date,
@@ -310,7 +317,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
                 originalQuantity: quantityToClose,
                 riskAmount,
                 riskCompliance,
-                notes: `Imported - Entry: ${buyOrder.price}, Exit: ${sellOrder.price}, Qty: ${quantityToClose}`
+                initialStopLoss: hasStopLoss ? sellOrder.price : null,
+                initialTakeProfit: hasTakeProfit ? sellOrder.price : null,
+                finalStopLoss: hasStopLoss ? sellOrder.price : null,
+                finalTakeProfit: hasTakeProfit ? sellOrder.price : null,
+                notes: `Imported - Entry: ${buyOrder.price}, Exit: ${sellOrder.price}, Qty: ${quantityToClose}${hasStopLoss ? ' [SL]' : ''}${hasTakeProfit ? ' [TP]' : ''}`
               };
 
               const validatedData = insertTradeSchema.parse(tradeData);
