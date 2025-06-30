@@ -250,66 +250,100 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
       }
 
-      // Second pass: match orders to create trades
+      // Second pass: use time-based sequential matching for complete trades
       const processedOrders = new Set();
+      
+      // Sort orders by fill time for chronological processing
+      filledOrders.sort((a, b) => {
+        const timeA = new Date(`${a.date} ${a.fillTime}`).getTime();
+        const timeB = new Date(`${b.date} ${b.fillTime}`).getTime();
+        return timeA - timeB;
+      });
+      
+      // Track open positions by symbol and quantity
+      const openPositions: any[] = [];
       
       for (let i = 0; i < filledOrders.length; i++) {
         if (processedOrders.has(i)) continue;
         
-        const order1 = filledOrders[i];
+        const currentOrder = filledOrders[i];
         
-        // Look for matching opposing order (same symbol, different side, same quantity, same date)
-        for (let j = i + 1; j < filledOrders.length; j++) {
-          if (processedOrders.has(j)) continue;
+        // Look for matching position to close (FIFO - First In, First Out)
+        let matchedPositionIndex = -1;
+        
+        for (let j = 0; j < openPositions.length; j++) {
+          const openPos = openPositions[j];
           
-          const order2 = filledOrders[j];
-          
-          if (order1.symbol === order2.symbol && 
-              order1.side !== order2.side && 
-              order1.quantity === order2.quantity &&
-              order1.date === order2.date) {
+          if (openPos.symbol === currentOrder.symbol && 
+              openPos.side !== currentOrder.side) {
             
-            // Found a matching pair - create a complete trade
-            const buyOrder = order1.side === 'buy' ? order1 : order2;
-            const sellOrder = order1.side === 'sell' ? order1 : order2;
+            // Calculate quantity to close (take minimum of open position and current order)
+            const quantityToClose = Math.min(openPos.remainingQuantity, currentOrder.quantity);
             
-            // Calculate actual P&L for ES futures ($50 per point)
-            const pointValue = 50;
-            const priceDifference = sellOrder.price - buyOrder.price;
-            const pnl = priceDifference * order1.quantity * pointValue;
-            
-            // Check risk compliance
-            const riskAmount = account.riskPerTrade || 100;
-            const actualRisk = Math.abs(pnl);
-            const riskCompliance = actualRisk <= riskAmount;
+            if (quantityToClose > 0) {
+              // Create a completed trade
+              const buyOrder = openPos.side === 'buy' ? openPos : currentOrder;
+              const sellOrder = openPos.side === 'sell' ? openPos : currentOrder;
+              
+              // Calculate actual P&L for ES futures ($50 per point)
+              const pointValue = 50;
+              const priceDifference = sellOrder.price - buyOrder.price;
+              const pnl = priceDifference * quantityToClose * pointValue;
+              
+              // Check risk compliance
+              const riskAmount = account.riskPerTrade || 100;
+              const actualRisk = Math.abs(pnl);
+              const riskCompliance = actualRisk <= riskAmount;
 
-            const tradeData: InsertTrade = {
-              accountId: parseInt(accountId),
-              date: order1.date,
-              symbol: order1.symbol,
-              side: 'long', // Complete round trip trade
-              quantity: order1.quantity,
-              entryPrice: buyOrder.price,
-              exitPrice: sellOrder.price,
-              pnl,
-              status: 'closed',
-              orderId: `${buyOrder.orderId}-${sellOrder.orderId}`,
-              orderType: 'Matched Orders',
-              originalQuantity: order1.quantity,
-              riskAmount,
-              riskCompliance,
-              notes: `Imported - Buy: ${buyOrder.price}, Sell: ${sellOrder.price}`
-            };
+              const tradeData: InsertTrade = {
+                accountId: parseInt(accountId),
+                date: currentOrder.date,
+                symbol: currentOrder.symbol,
+                side: buyOrder.side === 'buy' ? 'long' : 'short',
+                quantity: quantityToClose,
+                entryPrice: buyOrder.price,
+                exitPrice: sellOrder.price,
+                pnl,
+                status: 'closed',
+                orderId: `${buyOrder.orderId}-${sellOrder.orderId}`,
+                orderType: 'Sequential Match',
+                originalQuantity: quantityToClose,
+                riskAmount,
+                riskCompliance,
+                notes: `Imported - Entry: ${buyOrder.price}, Exit: ${sellOrder.price}, Qty: ${quantityToClose}`
+              };
 
-            const validatedData = insertTradeSchema.parse(tradeData);
-            await storage.createTrade(validatedData);
-            recordsImported++;
-            
-            // Mark both orders as processed
-            processedOrders.add(i);
-            processedOrders.add(j);
-            break;
+              const validatedData = insertTradeSchema.parse(tradeData);
+              await storage.createTrade(validatedData);
+              recordsImported++;
+              
+              // Update remaining quantities
+              openPos.remainingQuantity -= quantityToClose;
+              currentOrder.quantity -= quantityToClose;
+              
+              // Remove fully closed positions
+              if (openPos.remainingQuantity <= 0) {
+                openPositions.splice(j, 1);
+                j--; // Adjust index after removal
+              }
+              
+              // If current order is fully processed, mark it
+              if (currentOrder.quantity <= 0) {
+                processedOrders.add(i);
+                break;
+              }
+            }
           }
+        }
+        
+        // If current order still has remaining quantity, add it as new open position
+        if (!processedOrders.has(i) && currentOrder.quantity > 0) {
+          openPositions.push({
+            ...currentOrder,
+            remainingQuantity: currentOrder.quantity,
+            index: i
+          });
+          processedOrders.add(i);
         }
       }
 

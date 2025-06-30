@@ -119,6 +119,62 @@ export default function AccountManagement({ account }: AccountManagementProps) {
     return account.resetCount && account.resetCount > 0;
   };
 
+  const getPayoutEligibility = () => {
+    // Challenge accounts: Cannot qualify for payout
+    if (account.type === 'challenge') {
+      return {
+        eligible: false,
+        reason: "Challenge accounts are not eligible for payout",
+        color: "text-gray-400"
+      };
+    }
+
+    // Funded accounts: Must meet buffer requirements
+    if (account.type === 'funded') {
+      const profitTarget = account.profitTarget || 0;
+      const bufferAmount = profitTarget * ((account.bufferPercentage || 0) / 100);
+      const currentProfit = account.currentBalance - account.startingBalance;
+      
+      if (currentProfit >= bufferAmount && account.status === 'active') {
+        return {
+          eligible: true,
+          reason: `Eligible for payout (Buffer: ${formatCurrency(bufferAmount)} met)`,
+          color: "text-green-400"
+        };
+      } else {
+        return {
+          eligible: false,
+          reason: `Buffer requirement not met (Need: ${formatCurrency(bufferAmount)})`,
+          color: "text-yellow-400"
+        };
+      }
+    }
+
+    // Live accounts: On-demand payout
+    if (account.type === 'live') {
+      const currentProfit = account.currentBalance - account.startingBalance;
+      if (currentProfit > 0 && account.status === 'active') {
+        return {
+          eligible: true,
+          reason: "On-demand payout available",
+          color: "text-green-400"
+        };
+      } else {
+        return {
+          eligible: false,
+          reason: "No profit available for payout",
+          color: "text-gray-400"
+        };
+      }
+    }
+
+    return {
+      eligible: false,
+      reason: "Payout not available",
+      color: "text-gray-400"
+    };
+  };
+
   return (
     <Card className="bg-gray-800 border-gray-700 hover:border-gray-600 transition-colors">
       <CardHeader className="pb-4">
