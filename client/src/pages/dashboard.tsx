@@ -448,84 +448,64 @@ export default function Dashboard() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           <Card className="bg-dark-card border-dark-border">
             <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-gray-400 text-sm mb-1">Total Balance</p>
-                  <p className="text-2xl font-bold text-success-green">
-                    {formatCurrency(combinedAnalytics?.currentBalance || 0)}
-                  </p>
-                  <p className="text-xs text-success-green mt-1">
-                    +2.4% this month
-                  </p>
-                </div>
-                <div className="bg-success-green bg-opacity-20 p-3 rounded-lg">
-                  <DollarSign className="text-success-green h-6 w-6" />
-                </div>
+              <div>
+                <p className="text-gray-400 text-sm mb-1">Total Balance</p>
+                <p className="text-2xl font-bold text-success-green">
+                  {formatCurrency(combinedAnalytics?.currentBalance || 0)}
+                </p>
+                <p className="text-xs text-success-green mt-1">
+                  +2.4% this month
+                </p>
               </div>
             </CardContent>
           </Card>
 
           <Card className="bg-dark-card border-dark-border">
             <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-gray-400 text-sm mb-1">Daily P&L</p>
-                  <p className="text-2xl font-bold text-error-red">
-                    {formatCurrency(combinedAnalytics?.worstTrade || 0)}
-                  </p>
-                  <p className="text-xs text-error-red mt-1">
-                    Worst day: Oct 7
-                  </p>
-                </div>
-                <div className="bg-error-red bg-opacity-20 p-3 rounded-lg">
-                  <TrendingDown className="text-error-red h-6 w-6" />
-                </div>
+              <div>
+                <p className="text-gray-400 text-sm mb-1">Daily P&L</p>
+                <p className="text-2xl font-bold text-error-red">
+                  {formatCurrency(combinedAnalytics?.worstTrade || 0)}
+                </p>
+                <p className="text-xs text-error-red mt-1">
+                  Worst day: Oct 7
+                </p>
               </div>
             </CardContent>
           </Card>
 
           <Card className="bg-dark-card border-dark-border">
             <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div className="w-full">
-                  <p className="text-gray-400 text-sm mb-1">Win Rate</p>
-                  <p className={`text-2xl font-bold mb-2 ${
-                    (combinedAnalytics?.winRate || 0) >= 70 ? 'text-success-green' :
-                    (combinedAnalytics?.winRate || 0) >= 50 ? 'text-warning-orange' : 'text-error-red'
-                  }`}>
-                    {combinedAnalytics?.winRate.toFixed(0) || 0}%
-                  </p>
-                  <div className="flex items-center space-x-2">
-                    <div className="bg-success-green bg-opacity-20 px-2 py-1 rounded text-xs text-success-green">
-                      {combinedAnalytics?.winningTrades || 0} wins
-                    </div>
-                    <div className="bg-error-red bg-opacity-20 px-2 py-1 rounded text-xs text-error-red">
-                      {combinedAnalytics?.losingTrades || 0} losses
-                    </div>
+              <div className="w-full">
+                <p className="text-gray-400 text-sm mb-1">Win Rate</p>
+                <p className={`text-2xl font-bold mb-2 ${
+                  (combinedAnalytics?.winRate || 0) >= 70 ? 'text-success-green' :
+                  (combinedAnalytics?.winRate || 0) >= 50 ? 'text-warning-orange' : 'text-error-red'
+                }`}>
+                  {combinedAnalytics?.winRate.toFixed(0) || 0}%
+                </p>
+                <div className="flex items-center space-x-2">
+                  <div className="bg-success-green bg-opacity-20 px-2 py-1 rounded text-xs text-success-green">
+                    {combinedAnalytics?.winningTrades || 0} wins
+                  </div>
+                  <div className="bg-error-red bg-opacity-20 px-2 py-1 rounded text-xs text-error-red">
+                    {combinedAnalytics?.losingTrades || 0} losses
                   </div>
                 </div>
-                <div className="bg-primary bg-opacity-20 p-3 rounded-lg">
-                  <Target className="text-primary h-6 w-6" />
-                </div>
               </div>
             </CardContent>
           </Card>
 
           <Card className="bg-dark-card border-dark-border">
             <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div className="w-full">
-                  <p className="text-gray-400 text-sm mb-1">Personal Risk Limit</p>
-                  <p className="text-2xl font-bold text-warning-orange mb-2">
-                    {formatCurrency(combinedAnalytics?.dailyLossLimit || 0)}
-                  </p>
-                  <div className="space-y-1">
-                    <p className="text-xs text-gray-400">Risk/trade: {formatCurrency(500)}</p>
-                    <p className="text-xs text-gray-400">Risk per day: {formatCurrency(1500)}</p>
-                  </div>
-                </div>
-                <div className="bg-warning-orange bg-opacity-20 p-3 rounded-lg">
-                  <Shield className="text-warning-orange h-6 w-6" />
+              <div className="w-full">
+                <p className="text-gray-400 text-sm mb-1">Personal Risk Limit</p>
+                <p className="text-2xl font-bold text-warning-orange mb-2">
+                  {formatCurrency(combinedAnalytics?.dailyLossLimit || 0)}
+                </p>
+                <div className="space-y-1">
+                  <p className="text-xs text-gray-400">Risk/trade: {formatCurrency(500)}</p>
+                  <p className="text-xs text-gray-400">Risk per day: {formatCurrency(1500)}</p>
                 </div>
               </div>
             </CardContent>
@@ -534,34 +514,29 @@ export default function Dashboard() {
           {/* Disciplined Score Card */}
           <Card className="bg-dark-card border-dark-border">
             <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div className="w-full">
-                  <p className="text-gray-400 text-sm mb-1">Disciplined Score</p>
-                  <div className="flex items-center space-x-2 mb-2">
-                    <p className={`text-2xl font-bold ${getScoreColor(combinedAnalytics?.disciplinedScore || 100)}`}>
-                      {Math.round(combinedAnalytics?.disciplinedScore || 100)}
-                    </p>
-                    <Badge className={`${getGradeColor(
-                      (combinedAnalytics?.disciplinedScore || 100) >= 95 ? 'A+' :
-                      (combinedAnalytics?.disciplinedScore || 100) >= 90 ? 'A' :
-                      (combinedAnalytics?.disciplinedScore || 100) >= 80 ? 'B' :
-                      (combinedAnalytics?.disciplinedScore || 100) >= 70 ? 'C' :
-                      (combinedAnalytics?.disciplinedScore || 100) >= 60 ? 'D' : 'F'
-                    )} text-white`}>
-                      {(combinedAnalytics?.disciplinedScore || 100) >= 95 ? 'A+' :
-                       (combinedAnalytics?.disciplinedScore || 100) >= 90 ? 'A' :
-                       (combinedAnalytics?.disciplinedScore || 100) >= 80 ? 'B' :
-                       (combinedAnalytics?.disciplinedScore || 100) >= 70 ? 'C' :
-                       (combinedAnalytics?.disciplinedScore || 100) >= 60 ? 'D' : 'F'}
-                    </Badge>
-                  </div>
-                  <div className="space-y-1">
-                    <p className="text-xs text-gray-400">Risk Compliance: 95</p>
-                    <p className="text-xs text-gray-400">Max Trade/Day: 100</p>
-                  </div>
+              <div className="w-full">
+                <p className="text-gray-400 text-sm mb-1">Disciplined Score</p>
+                <div className="flex items-center space-x-2 mb-2">
+                  <p className={`text-2xl font-bold ${getScoreColor(combinedAnalytics?.disciplinedScore || 100)}`}>
+                    {Math.round(combinedAnalytics?.disciplinedScore || 100)}
+                  </p>
+                  <Badge className={`${getGradeColor(
+                    (combinedAnalytics?.disciplinedScore || 100) >= 95 ? 'A+' :
+                    (combinedAnalytics?.disciplinedScore || 100) >= 90 ? 'A' :
+                    (combinedAnalytics?.disciplinedScore || 100) >= 80 ? 'B' :
+                    (combinedAnalytics?.disciplinedScore || 100) >= 70 ? 'C' :
+                    (combinedAnalytics?.disciplinedScore || 100) >= 60 ? 'D' : 'F'
+                  )} text-white`}>
+                    {(combinedAnalytics?.disciplinedScore || 100) >= 95 ? 'A+' :
+                     (combinedAnalytics?.disciplinedScore || 100) >= 90 ? 'A' :
+                     (combinedAnalytics?.disciplinedScore || 100) >= 80 ? 'B' :
+                     (combinedAnalytics?.disciplinedScore || 100) >= 70 ? 'C' :
+                     (combinedAnalytics?.disciplinedScore || 100) >= 60 ? 'D' : 'F'}
+                  </Badge>
                 </div>
-                <div className="bg-blue-600 bg-opacity-20 p-3 rounded-lg">
-                  <Crosshair className="text-blue-400 h-6 w-6" />
+                <div className="space-y-1">
+                  <p className="text-xs text-gray-400">Risk Compliance: 95</p>
+                  <p className="text-xs text-gray-400">Max Trade/Day: 100</p>
                 </div>
               </div>
             </CardContent>
@@ -570,20 +545,18 @@ export default function Dashboard() {
           {/* Average Win/Loss Card */}
           <Card className="bg-dark-card border-dark-border">
             <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-gray-400 text-sm mb-1">Avg Win/Loss</p>
-                  <div className="flex items-center space-x-2 text-sm">
-                    <span className="text-green-400">
-                      {formatCurrency(combinedAnalytics?.averageWin || 0)}
-                    </span>
-                    <span className="text-gray-400">/</span>
-                    <span className="text-red-400">
-                      {formatCurrency(combinedAnalytics?.averageLoss || 0)}
-                    </span>
-                  </div>
-                  <p className="text-xs text-gray-400 mt-1">Win vs Loss ratio</p>
+              <div>
+                <p className="text-gray-400 text-sm mb-1">Avg Win/Loss</p>
+                <div className="flex items-center space-x-2 text-sm">
+                  <span className="text-green-400">
+                    {formatCurrency(combinedAnalytics?.averageWin || 0)}
+                  </span>
+                  <span className="text-gray-400">/</span>
+                  <span className="text-red-400">
+                    {formatCurrency(combinedAnalytics?.averageLoss || 0)}
+                  </span>
                 </div>
+                <p className="text-xs text-gray-400 mt-1">Win vs Loss ratio</p>
               </div>
             </CardContent>
           </Card>
@@ -591,20 +564,15 @@ export default function Dashboard() {
           {/* R Factor Card */}
           <Card className="bg-dark-card border-dark-border">
             <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div className="w-full">
-                  <p className="text-gray-400 text-sm mb-1">R Factor</p>
-                  <p className={`text-2xl font-bold mb-2 ${
-                    (combinedAnalytics?.rFactor || 0) >= 2.0 ? 'text-success-green' :
-                    (combinedAnalytics?.rFactor || 0) >= 1.5 ? 'text-warning-orange' : 'text-error-red'
-                  }`}>
-                    {(combinedAnalytics?.rFactor || 0).toFixed(2)}
-                  </p>
-                  <p className="text-xs text-gray-400">Risk/Reward ratio</p>
-                </div>
-                <div className="bg-blue-400 bg-opacity-20 p-3 rounded-lg">
-                  <TrendingUp className="text-blue-400 h-6 w-6" />
-                </div>
+              <div className="w-full">
+                <p className="text-gray-400 text-sm mb-1">R Factor</p>
+                <p className={`text-2xl font-bold mb-2 ${
+                  (combinedAnalytics?.rFactor || 0) >= 2.0 ? 'text-success-green' :
+                  (combinedAnalytics?.rFactor || 0) >= 1.5 ? 'text-warning-orange' : 'text-error-red'
+                }`}>
+                  {(combinedAnalytics?.rFactor || 0).toFixed(2)}
+                </p>
+                <p className="text-xs text-gray-400">Risk/Reward ratio</p>
               </div>
             </CardContent>
           </Card>
@@ -612,20 +580,15 @@ export default function Dashboard() {
           {/* Profit Factor Card */}
           <Card className="bg-dark-card border-dark-border">
             <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div className="w-full">
-                  <p className="text-gray-400 text-sm mb-1">Profit Factor</p>
-                  <p className={`text-2xl font-bold mb-2 ${
-                    (combinedAnalytics?.profitFactor || 0) >= 2.0 ? 'text-success-green' :
-                    (combinedAnalytics?.profitFactor || 0) >= 1.5 ? 'text-warning-orange' : 'text-error-red'
-                  }`}>
-                    {(combinedAnalytics?.profitFactor || 0).toFixed(2)}
-                  </p>
-                  <p className="text-xs text-gray-400">Gross profit/loss</p>
-                </div>
-                <div className="bg-purple-400 bg-opacity-20 p-3 rounded-lg">
-                  <BarChart3 className="text-purple-400 h-6 w-6" />
-                </div>
+              <div className="w-full">
+                <p className="text-gray-400 text-sm mb-1">Profit Factor</p>
+                <p className={`text-2xl font-bold mb-2 ${
+                  (combinedAnalytics?.profitFactor || 0) >= 2.0 ? 'text-success-green' :
+                  (combinedAnalytics?.profitFactor || 0) >= 1.5 ? 'text-warning-orange' : 'text-error-red'
+                }`}>
+                  {(combinedAnalytics?.profitFactor || 0).toFixed(2)}
+                </p>
+                <p className="text-xs text-gray-400">Gross profit/loss</p>
               </div>
             </CardContent>
           </Card>
