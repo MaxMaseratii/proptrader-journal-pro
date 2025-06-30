@@ -59,14 +59,14 @@ export class MemStorage implements IStorage {
   }
 
   private initializeSampleData() {
-    // Create sample accounts
+    // Create sample accounts with fictional prop firm names
     const account1: Account = {
       id: 1,
-      name: "TopStep Challenge #150K",
+      name: "Elite Futures Challenge #150K",
       type: "challenge",
-      firm: "TopStep Trader",
+      firm: "Elite Futures Academy",
       startingBalance: 150000,
-      currentBalance: 148337.50,
+      currentBalance: 153420.75,
       maxDrawdown: 3000,
       dailyLossLimit: 1500,
       profitTarget: 6000,
@@ -76,10 +76,21 @@ export class MemStorage implements IStorage {
       maxPositionSize: 10000,
       maxTradesPerDay: 5,
       preferredAssets: "ES,NQ,YM",
-      createdAt: new Date(),
+      createdAt: new Date("2024-09-15"),
       hasDailyLossLimit: true,
       dailyLossLimitType: "soft",
-      // Risk calculator fields
+      accountCost: 649,
+      purchaseMethod: "credit_card",
+      resetCount: 0,
+      totalResetsCost: 0,
+      activationCost: 199,
+      activationPaid: true,
+      includesActivationFee: false,
+      numberOfPhases: 2,
+      phase1Target: 6000,
+      phase2Target: 4000,
+      minimumTradingDays: 5,
+      timeLimit: 30,
       tradingCapital: 3000,
       riskCalculationPeriod: "weekly",
       useRiskPercentage: false,
@@ -89,35 +100,39 @@ export class MemStorage implements IStorage {
       useIntradayMargins: true,
       marginSafetyBuffer: 50.0,
       stopLossPoints: 10,
-      // Payout fields
       payoutFrequency: "monthly",
       minimumPayoutAmount: 100,
       profitSplit: 80,
       bufferPercentage: 5.0,
       daysRequiredForPayout: 5,
-      maximumPayoutPercentage: 90
+      maximumPayoutPercentage: 90,
+      drawdownType: "eod",
+      maxTotalLoss: null,
+      trailingThreshold: null,
+      consistencyRule: null,
+      dailyLossLimitResetTime: null,
+      transitionTrigger: null
     };
 
     const account2: Account = {
       id: 2,
-      name: "TakeProfit Trader #100K",
+      name: "Pro Capital Funded #100K",
       type: "funded",
-      firm: "TakeProfit Trader",
+      firm: "Pro Capital Trading",
       startingBalance: 100000,
-      currentBalance: 103250,
+      currentBalance: 107850,
       maxDrawdown: 4000,
       dailyLossLimit: 2000,
       profitTarget: 8000,
-      status: "active",
+      status: "funded",
       riskPerTrade: 200,
       riskPercentage: 0.5,
       maxPositionSize: 25000,
       maxTradesPerDay: 3,
       preferredAssets: "ES,NQ,RTY",
-      createdAt: new Date(),
+      createdAt: new Date("2024-08-20"),
       hasDailyLossLimit: true,
       dailyLossLimitType: "hard",
-      // Financial tracking
       accountCost: 399,
       purchaseMethod: "credit_card",
       resetCount: 0,
@@ -125,7 +140,6 @@ export class MemStorage implements IStorage {
       activationCost: 199,
       activationPaid: true,
       includesActivationFee: false,
-      // Other required fields with defaults
       numberOfPhases: 2,
       phase1Target: 8000,
       phase2Target: 5000,
@@ -145,7 +159,13 @@ export class MemStorage implements IStorage {
       profitSplit: 90,
       bufferPercentage: 10.0,
       daysRequiredForPayout: 3,
-      maximumPayoutPercentage: 80
+      maximumPayoutPercentage: 80,
+      drawdownType: "eod",
+      maxTotalLoss: null,
+      trailingThreshold: null,
+      consistencyRule: null,
+      dailyLossLimitResetTime: null,
+      transitionTrigger: null
     };
 
     const account3: Account = {
@@ -170,33 +190,85 @@ export class MemStorage implements IStorage {
     this.accounts.set(2, account2);
     this.accounts.set(3, account3);
 
-    // Create sample trades
+    // Create comprehensive sample trades
     const trades = [
       {
         id: 1,
         accountId: 1,
-        date: "2024-10-07",
+        date: "2024-10-30",
         symbol: "ES",
-        side: "sell",
-        quantity: 10,
-        entryPrice: 5800,
-        exitPrice: 5900,
-        pnl: -7000,
+        side: "buy",
+        quantity: 3,
+        entryPrice: 5842.75,
+        exitPrice: 5855.50,
+        pnl: 1912.50,
         status: "closed",
-        notes: "Revenge trading - should have stopped earlier"
+        notes: "Perfect trend following setup, followed all rules"
       },
       {
         id: 2,
         accountId: 1,
-        date: "2024-10-04",
+        date: "2024-10-30",
+        symbol: "NQ",
+        side: "buy",
+        quantity: 2,
+        entryPrice: 20125.25,
+        exitPrice: 20185.75,
+        pnl: 2421.00,
+        status: "closed",
+        notes: "Tech breakout, excellent entry timing"
+      },
+      {
+        id: 3,
+        accountId: 1,
+        date: "2024-10-29",
+        symbol: "ES",
+        side: "sell",
+        quantity: 4,
+        entryPrice: 5798.25,
+        exitPrice: 5784.00,
+        pnl: 2850.00,
+        status: "closed",
+        notes: "Market reversal pattern worked perfectly"
+      },
+      {
+        id: 4,
+        accountId: 2,
+        date: "2024-10-30",
+        symbol: "NQ",
+        side: "buy",
+        quantity: 1,
+        entryPrice: 20095.50,
+        exitPrice: 20145.25,
+        pnl: 995.00,
+        status: "closed",
+        notes: "Morning momentum trade"
+      },
+      {
+        id: 5,
+        accountId: 2,
+        date: "2024-10-29",
         symbol: "ES",
         side: "buy",
-        quantity: 5,
-        entryPrice: 5750,
-        exitPrice: 5850,
-        pnl: 1400,
+        quantity: 2,
+        entryPrice: 5785.75,
+        exitPrice: 5812.25,
+        pnl: 2650.00,
         status: "closed",
-        notes: "Good setup, followed rules"
+        notes: "Support level bounce, textbook setup"
+      },
+      {
+        id: 6,
+        accountId: 1,
+        date: "2024-10-28",
+        symbol: "RTY",
+        side: "sell",
+        quantity: 5,
+        entryPrice: 2185.40,
+        exitPrice: 2178.60,
+        pnl: 3400.00,
+        status: "closed",
+        notes: "Small caps weakness, caught the move"
       },
       {
         id: 3,
@@ -228,23 +300,47 @@ export class MemStorage implements IStorage {
 
     trades.forEach(trade => this.trades.set(trade.id, trade as Trade));
 
-    // Create sample journal entries
+    // Create comprehensive sample journal entries
     const journalEntries = [
       {
         id: 1,
         accountId: 1,
-        date: "2024-10-07",
-        whatWentWrong: "I made a revenge trade after initial loss. Violated risk management rules by increasing position size instead of accepting the loss.",
-        whatWentRight: "At least I closed the position before it got worse and didn't let it run overnight.",
-        improvementPlan: "Stick to original position sizing. Take a break after any loss > $500. Review rules before next session."
+        date: "2024-10-30",
+        whatWentWrong: null,
+        whatWentRight: "Outstanding trading day! All setups worked perfectly. Stayed disciplined with position sizing and followed my rules exactly. The ES trend trade was textbook - waited for pullback to key level before entering. NQ breakout was beautifully timed with tech strength.",
+        improvementPlan: "Continue with current approach. Maybe work on scaling out positions more efficiently to maximize profits on strong trending moves."
       },
       {
         id: 2,
         accountId: 1,
-        date: "2024-10-04",
-        whatWentWrong: "Entered slightly early without perfect setup confirmation.",
-        whatWentRight: "Followed my trading plan, proper position sizing, took profit at target.",
-        improvementPlan: "Wait for complete setup confirmation before entry. No FOMO trades."
+        date: "2024-10-29",
+        whatWentWrong: "Almost got greedy on the ES reversal trade - held too long initially before taking profits",
+        whatWentRight: "Good risk management overall. Recognized market structure change quickly and adjusted accordingly. Position sizing was perfect.",
+        improvementPlan: "Set clearer profit targets before entering trades to avoid indecision during trade management phase."
+      },
+      {
+        id: 3,
+        accountId: 2,
+        date: "2024-10-30",
+        whatWentWrong: null,
+        whatWentRight: "Clean execution on both trades. NQ momentum trade was perfectly timed with the tech sector strength in the morning session.",
+        improvementPlan: "Look for more opportunities to trade tech momentum early in the session when volatility is highest."
+      },
+      {
+        id: 4,
+        accountId: 1,
+        date: "2024-10-28",
+        whatWentWrong: "Waited too long to enter the RTY short - could have caught more of the move if I trusted my analysis sooner",
+        whatWentRight: "Great market read on small cap weakness relative to large caps. Risk management was on point throughout.",
+        improvementPlan: "Trust my analysis more and enter positions with better timing on clear setups. Don't second-guess solid market reads."
+      },
+      {
+        id: 5,
+        accountId: 2,
+        date: "2024-10-29",
+        whatWentWrong: null,
+        whatWentRight: "Support level bounce on ES was textbook. Patience paid off waiting for the right level and confirmation.",
+        improvementPlan: "Continue focusing on high-probability support/resistance plays. These setups have highest win rate in my strategy."
       }
     ];
 
