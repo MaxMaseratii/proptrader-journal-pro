@@ -25,7 +25,9 @@ import {
   DollarSign,
   Crosshair,
   Filter,
-  Brain
+  Brain,
+  BarChart3,
+  Calendar
 } from "lucide-react";
 import type { Account, Trade } from "@shared/schema";
 
@@ -558,6 +560,9 @@ export default function Dashboard() {
                     <p className="text-xs text-gray-400">Max Trade/Day: 100</p>
                   </div>
                 </div>
+                <div className="bg-blue-600 bg-opacity-20 p-3 rounded-lg">
+                  <Crosshair className="text-blue-400 h-6 w-6" />
+                </div>
               </div>
             </CardContent>
           </Card>
@@ -597,6 +602,9 @@ export default function Dashboard() {
                   </p>
                   <p className="text-xs text-gray-400">Risk/Reward ratio</p>
                 </div>
+                <div className="bg-blue-400 bg-opacity-20 p-3 rounded-lg">
+                  <TrendingUp className="text-blue-400 h-6 w-6" />
+                </div>
               </div>
             </CardContent>
           </Card>
@@ -615,6 +623,9 @@ export default function Dashboard() {
                   </p>
                   <p className="text-xs text-gray-400">Gross profit/loss</p>
                 </div>
+                <div className="bg-purple-400 bg-opacity-20 p-3 rounded-lg">
+                  <BarChart3 className="text-purple-400 h-6 w-6" />
+                </div>
               </div>
             </CardContent>
           </Card>
@@ -630,6 +641,9 @@ export default function Dashboard() {
                     <p className="text-xs text-gray-400">Today: 3 trades</p>
                     <p className="text-xs text-success-green">Within limit</p>
                   </div>
+                </div>
+                <div className="bg-primary bg-opacity-20 p-3 rounded-lg">
+                  <Calendar className="text-primary h-6 w-6" />
                 </div>
               </div>
             </CardContent>
