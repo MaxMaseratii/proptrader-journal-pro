@@ -456,9 +456,6 @@ export default function Dashboard() {
                     +2.4% this month
                   </p>
                 </div>
-                <div className="bg-success-green bg-opacity-20 p-3 rounded-lg">
-                  <Wallet className="text-success-green h-6 w-6" />
-                </div>
               </div>
             </CardContent>
           </Card>
@@ -475,9 +472,6 @@ export default function Dashboard() {
                     Worst day: Oct 7
                   </p>
                 </div>
-                <div className="bg-error-red bg-opacity-20 p-3 rounded-lg">
-                  <TrendingDown className="text-error-red h-6 w-6" />
-                </div>
               </div>
             </CardContent>
           </Card>
@@ -492,9 +486,7 @@ export default function Dashboard() {
                     {combinedAnalytics?.winningTrades || 0} wins, {combinedAnalytics?.losingTrades || 0} losses
                   </p>
                 </div>
-                <div className="bg-primary bg-opacity-20 p-3 rounded-lg">
-                  <Target className="text-primary h-6 w-6" />
-                </div>
+                
               </div>
             </CardContent>
           </Card>
@@ -509,9 +501,7 @@ export default function Dashboard() {
                   </p>
                   <p className="text-xs text-gray-400 mt-1">Max daily loss</p>
                 </div>
-                <div className="bg-warning-orange bg-opacity-20 p-3 rounded-lg">
-                  <Shield className="text-warning-orange h-6 w-6" />
-                </div>
+                
               </div>
             </CardContent>
           </Card>
@@ -541,9 +531,6 @@ export default function Dashboard() {
                     </Badge>
                   </div>
                   <p className="text-xs text-gray-400 mt-1">Risk compliance</p>
-                </div>
-                <div className="bg-blue-600 bg-opacity-20 p-3 rounded-lg">
-                  <Crosshair className="text-blue-400 h-6 w-6" />
                 </div>
               </div>
             </CardContent>
