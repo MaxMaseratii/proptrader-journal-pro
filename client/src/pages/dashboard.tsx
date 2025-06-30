@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import React, { useState, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "wouter";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -52,6 +52,7 @@ interface DashboardAnalytics {
 export default function Dashboard() {
   const [selectedAccountIds, setSelectedAccountIds] = useState<number[]>([]);
   const [viewMode, setViewMode] = useState<'single' | 'multiple' | 'all'>('all');
+  const [selectedAccountId, setSelectedAccountId] = useState<number | null>(null);
 
   const { data: accounts, isLoading: accountsLoading } = useQuery<Account[]>({
     queryKey: ["/api/accounts"],
@@ -60,6 +61,16 @@ export default function Dashboard() {
   const { data: trades, isLoading: tradesLoading } = useQuery<Trade[]>({
     queryKey: ["/api/trades"],
   });
+
+  // Initialize selectedAccountId with first TopStep account
+  React.useEffect(() => {
+    if (accounts && !selectedAccountId) {
+      const topStepAccount = accounts.find(acc => acc.firm === 'TopStep');
+      if (topStepAccount) {
+        setSelectedAccountId(topStepAccount.id);
+      }
+    }
+  }, [accounts, selectedAccountId]);
 
   // Calculate combined combinedAnalytics for selected accounts
   const combinedAnalytics = useMemo(() => {
@@ -682,8 +693,8 @@ export default function Dashboard() {
           </Card>
         </div>
 
-        {/* Working Hours Summary - Under Investment Tracking */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+        {/* Working Hours & Profitability Summary - Under Investment Tracking */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           <Card className="bg-dark-card border-cyan-600">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
@@ -728,6 +739,48 @@ export default function Dashboard() {
               </div>
             </CardContent>
           </Card>
+
+          <Card className="bg-dark-card border-emerald-600">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-gray-400 text-sm mb-1">Profitability</p>
+                  {(() => {
+                    const totalSpent = (accounts?.reduce((sum, acc) => sum + (acc.accountCost || 0), 0) || 0) +
+                                      (accounts?.reduce((sum, acc) => sum + (acc.activationCost || 0), 0) || 0);
+                    const totalPayout = 0; // This would come from actual payout data
+                    const difference = totalPayout - totalSpent;
+                    const isProfit = difference >= 0;
+                    
+                    return (
+                      <>
+                        <p className={`text-2xl font-bold ${isProfit ? 'text-emerald-400' : 'text-red-400'}`}>
+                          {isProfit ? '+' : ''}{formatCurrency(difference)}
+                        </p>
+                        <p className="text-xs text-gray-400 mt-1">
+                          {isProfit ? 'Profitable' : 'Loss'} • {formatCurrency(totalPayout)} vs {formatCurrency(totalSpent)}
+                        </p>
+                      </>
+                    );
+                  })()}
+                </div>
+                <div className="bg-emerald-600 bg-opacity-20 p-3 rounded-lg">
+                  <TrendingUp className="text-emerald-400 h-6 w-6" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Add Investment Tracking Controls */}
+        <div className="flex justify-end mb-8">
+          <Button 
+            className="bg-blue-600 hover:bg-blue-700 text-white"
+            onClick={() => {/* TODO: Implement add spending/payout modal */}}
+          >
+            <Plus className="mr-2 h-4 w-4" />
+            Add Spending/Payout
+          </Button>
         </div>
 
 
@@ -849,30 +902,123 @@ export default function Dashboard() {
           {/* TopStep Payout Status */}
           <Card className="bg-dark-card border-blue-600">
             <CardContent className="p-6">
-              <div className="flex items-center mb-4">
-                <div className="bg-blue-600 bg-opacity-20 p-2 rounded-lg mr-3">
-                  <DollarSign className="text-blue-400 h-5 w-5" />
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center">
+                  <div className="bg-blue-600 bg-opacity-20 p-2 rounded-lg mr-3">
+                    <DollarSign className="text-blue-400 h-5 w-5" />
+                  </div>
+                  <h3 className="text-lg font-semibold">TopStep Payout Status</h3>
                 </div>
-                <h3 className="text-lg font-semibold">TopStep Payout Status</h3>
+                <select 
+                  className="bg-gray-800 text-white text-sm rounded px-3 py-1 border border-gray-600"
+                  value={selectedAccountId || ''}
+                  onChange={(e) => setSelectedAccountId(Number(e.target.value))}
+                >
+                  {accounts?.filter(acc => acc.firm === 'TopStep').map(account => (
+                    <option key={account.id} value={account.id}>
+                      {account.name}
+                    </option>
+                  ))}
+                </select>
               </div>
-              <div className="space-y-3">
-                <div className="flex justify-between items-center">
-                  <span className="text-gray-300">Min Trading Days</span>
-                  <span className="text-blue-400">30 days required</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-gray-300">Profit Target</span>
-                  <span className="text-green-400">$3,000 achieved</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-gray-300">Max Daily Loss</span>
-                  <span className="text-yellow-400">$2,500 limit</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-gray-300">Max Overall Loss</span>
-                  <span className="text-red-400">$6,000 limit</span>
-                </div>
-              </div>
+              
+              {(() => {
+                const selectedAccount = accounts?.find(acc => acc.id === selectedAccountId);
+                if (!selectedAccount) return null;
+                
+                const accountTrades = trades?.filter(t => t.accountId === selectedAccount.id) || [];
+                const winningTrades = accountTrades.filter(t => (t.pnl || 0) >= 200);
+                const totalProfit = selectedAccount.currentBalance - selectedAccount.startingBalance;
+                const currentDrawdown = selectedAccount.maxDrawdown - (selectedAccount.startingBalance - selectedAccount.currentBalance);
+                const isInDrawdown = currentDrawdown < 2500 || currentDrawdown < 6000;
+                
+                const daysTraded = new Set(accountTrades.map(t => t.date)).size;
+                const winningDays = winningTrades.length;
+                const profitTargetMet = totalProfit >= 3000;
+                const daysRequirementMet = daysTraded >= 30;
+                const drawdownSafe = !isInDrawdown;
+                
+                const isReady = profitTargetMet && daysRequirementMet && drawdownSafe && winningDays >= 5;
+                
+                return (
+                  <div className="space-y-4">
+                    {/* Status Indicator */}
+                    <div className="text-center p-4 rounded-lg bg-gray-800">
+                      <p className={`text-2xl font-bold ${isReady ? 'text-green-400' : 'text-yellow-400'}`}>
+                        {isReady ? '✓ READY FOR PAYOUT' : 'IN PROGRESS'}
+                      </p>
+                      <p className="text-sm text-gray-400 mt-2">
+                        Payout Amount: {formatCurrency(Math.min(selectedAccount.currentBalance * 0.5, 5000))}
+                      </p>
+                    </div>
+                    
+                    {/* Progress Tracking */}
+                    <div className="space-y-4">
+                      {/* Profit Target Progress */}
+                      <div>
+                        <div className="flex justify-between text-sm mb-2">
+                          <span className="text-gray-300">Profit Target</span>
+                          <span className={profitTargetMet ? 'text-green-400' : 'text-yellow-400'}>
+                            {formatCurrency(totalProfit)} / {formatCurrency(3000)}
+                          </span>
+                        </div>
+                        <div className="w-full bg-gray-700 rounded-full h-3">
+                          <div 
+                            className={`h-3 rounded-full transition-all duration-300 ${
+                              profitTargetMet ? 'bg-green-400' : 'bg-yellow-400'
+                            }`}
+                            style={{ width: `${Math.min((totalProfit / 3000) * 100, 100)}%` }}
+                          ></div>
+                        </div>
+                      </div>
+                      
+                      {/* Trading Days Progress */}
+                      <div>
+                        <div className="flex justify-between text-sm mb-2">
+                          <span className="text-gray-300">Trading Days</span>
+                          <span className={daysRequirementMet ? 'text-green-400' : 'text-blue-400'}>
+                            {daysTraded} / 30 days
+                          </span>
+                        </div>
+                        <div className="w-full bg-gray-700 rounded-full h-3">
+                          <div 
+                            className={`h-3 rounded-full transition-all duration-300 ${
+                              daysRequirementMet ? 'bg-green-400' : 'bg-blue-400'
+                            }`}
+                            style={{ width: `${Math.min((daysTraded / 30) * 100, 100)}%` }}
+                          ></div>
+                        </div>
+                      </div>
+                      
+                      {/* Winning Days Progress */}
+                      <div>
+                        <div className="flex justify-between text-sm mb-2">
+                          <span className="text-gray-300">Winning Days ($200+)</span>
+                          <span className={winningDays >= 5 ? 'text-green-400' : 'text-purple-400'}>
+                            {winningDays} / 5 days
+                          </span>
+                        </div>
+                        <div className="w-full bg-gray-700 rounded-full h-3">
+                          <div 
+                            className={`h-3 rounded-full transition-all duration-300 ${
+                              winningDays >= 5 ? 'bg-green-400' : 'bg-purple-400'
+                            }`}
+                            style={{ width: `${Math.min((winningDays / 5) * 100, 100)}%` }}
+                          ></div>
+                        </div>
+                      </div>
+                      
+                      {/* Drawdown Status */}
+                      <div className="flex justify-between items-center">
+                        <span className="text-gray-300">Drawdown Status</span>
+                        <span className={drawdownSafe ? 'text-green-400' : 'text-red-400'}>
+                          {drawdownSafe ? 'Safe' : 'In Violation'}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })()}
             </CardContent>
           </Card>
         </div>
