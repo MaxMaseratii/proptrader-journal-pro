@@ -446,78 +446,81 @@ export default function Dashboard() {
 
         {/* Key Metrics Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <Card className="bg-dark-card border-dark-border">
+          <Card className="bg-dark-card border-dark-border hover:border-success-green/50 transition-colors">
             <CardContent className="p-6">
               <div>
                 <p className="text-gray-400 text-sm mb-1">Total Balance</p>
-                <p className="text-2xl font-bold text-success-green">
+                <p className="text-3xl font-bold text-success-green">
                   {formatCurrency(combinedAnalytics?.currentBalance || 0)}
                 </p>
-                <p className="text-xs text-success-green mt-1">
+                <p className="text-sm text-success-green mt-2 font-medium">
                   +2.4% this month
                 </p>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="bg-dark-card border-dark-border">
+          <Card className="bg-dark-card border-dark-border hover:border-error-red/50 transition-colors">
             <CardContent className="p-6">
               <div>
                 <p className="text-gray-400 text-sm mb-1">Daily P&L</p>
-                <p className="text-2xl font-bold text-error-red">
+                <p className="text-3xl font-bold text-error-red">
                   {formatCurrency(combinedAnalytics?.worstTrade || 0)}
                 </p>
-                <p className="text-xs text-error-red mt-1">
+                <p className="text-sm text-error-red mt-2 font-medium">
                   Worst day: Oct 7
                 </p>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="bg-dark-card border-dark-border">
+          <Card className="bg-dark-card border-dark-border hover:border-primary/50 transition-colors">
             <CardContent className="p-6">
               <div className="w-full">
                 <p className="text-gray-400 text-sm mb-1">Win Rate</p>
-                <p className={`text-2xl font-bold mb-2 ${
+                <p className={`text-2xl font-bold mb-3 ${
                   (combinedAnalytics?.winRate || 0) >= 70 ? 'text-success-green' :
                   (combinedAnalytics?.winRate || 0) >= 50 ? 'text-warning-orange' : 'text-error-red'
                 }`}>
                   {combinedAnalytics?.winRate.toFixed(0) || 0}%
                 </p>
-                <div className="flex items-center space-x-2">
-                  <div className="bg-success-green bg-opacity-20 px-2 py-1 rounded text-xs text-success-green">
-                    {combinedAnalytics?.winningTrades || 0} wins
+                <div className="flex items-center justify-between">
+                  <div className="bg-success-green px-3 py-2 rounded-lg text-sm font-medium text-white">
+                    {combinedAnalytics?.winningTrades || 0} Wins
                   </div>
-                  <div className="bg-error-red bg-opacity-20 px-2 py-1 rounded text-xs text-error-red">
-                    {combinedAnalytics?.losingTrades || 0} losses
+                  <div className="bg-error-red px-3 py-2 rounded-lg text-sm font-medium text-white">
+                    {combinedAnalytics?.losingTrades || 0} Losses
                   </div>
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="bg-dark-card border-dark-border">
+          <Card className="bg-dark-card border-dark-border hover:border-warning-orange/50 transition-colors">
             <CardContent className="p-6">
               <div className="w-full">
-                <p className="text-gray-400 text-sm mb-1">Personal Risk Limit</p>
-                <p className="text-2xl font-bold text-warning-orange mb-2">
-                  {formatCurrency(combinedAnalytics?.dailyLossLimit || 0)}
-                </p>
-                <div className="space-y-1">
-                  <p className="text-xs text-gray-400">Risk/trade: {formatCurrency(500)}</p>
-                  <p className="text-xs text-gray-400">Risk per day: {formatCurrency(1500)}</p>
+                <p className="text-gray-400 text-sm mb-3">Personal Risk Management</p>
+                <div className="space-y-3">
+                  <div className="bg-warning-orange bg-opacity-10 p-3 rounded-lg border border-warning-orange/20">
+                    <p className="text-warning-orange text-sm font-medium mb-1">Risk per Trade</p>
+                    <p className="text-xl font-bold text-warning-orange">{formatCurrency(500)}</p>
+                  </div>
+                  <div className="bg-error-red bg-opacity-10 p-3 rounded-lg border border-error-red/20">
+                    <p className="text-error-red text-sm font-medium mb-1">Risk per Day</p>
+                    <p className="text-xl font-bold text-error-red">{formatCurrency(1500)}</p>
+                  </div>
                 </div>
               </div>
             </CardContent>
           </Card>
 
           {/* Disciplined Score Card */}
-          <Card className="bg-dark-card border-dark-border">
+          <Card className="bg-dark-card border-dark-border hover:border-success-green/50 transition-colors">
             <CardContent className="p-6">
               <div className="w-full">
-                <p className="text-gray-400 text-sm mb-1">Disciplined Score</p>
-                <div className="flex items-center space-x-2 mb-2">
-                  <p className={`text-2xl font-bold ${getScoreColor(combinedAnalytics?.disciplinedScore || 100)}`}>
+                <p className="text-gray-400 text-sm mb-2">Disciplined Score</p>
+                <div className="flex items-center space-x-3 mb-4">
+                  <p className={`text-3xl font-bold ${getScoreColor(combinedAnalytics?.disciplinedScore || 100)}`}>
                     {Math.round(combinedAnalytics?.disciplinedScore || 100)}
                   </p>
                   <Badge className={`${getGradeColor(
@@ -526,7 +529,7 @@ export default function Dashboard() {
                     (combinedAnalytics?.disciplinedScore || 100) >= 80 ? 'B' :
                     (combinedAnalytics?.disciplinedScore || 100) >= 70 ? 'C' :
                     (combinedAnalytics?.disciplinedScore || 100) >= 60 ? 'D' : 'F'
-                  )} text-white`}>
+                  )} text-white text-lg px-3 py-1`}>
                     {(combinedAnalytics?.disciplinedScore || 100) >= 95 ? 'A+' :
                      (combinedAnalytics?.disciplinedScore || 100) >= 90 ? 'A' :
                      (combinedAnalytics?.disciplinedScore || 100) >= 80 ? 'B' :
@@ -534,9 +537,15 @@ export default function Dashboard() {
                      (combinedAnalytics?.disciplinedScore || 100) >= 60 ? 'D' : 'F'}
                   </Badge>
                 </div>
-                <div className="space-y-1">
-                  <p className="text-xs text-gray-400">Risk Compliance: 95</p>
-                  <p className="text-xs text-gray-400">Max Trade/Day: 100</p>
+                <div className="grid grid-cols-2 gap-2">
+                  <div className="bg-success-green bg-opacity-10 p-2 rounded border border-success-green/20">
+                    <p className="text-success-green text-sm font-medium">Risk Compliance</p>
+                    <p className="text-success-green text-lg font-bold">98%</p>
+                  </div>
+                  <div className="bg-primary bg-opacity-10 p-2 rounded border border-primary/20">
+                    <p className="text-primary text-sm font-medium">Max Trade/Day</p>
+                    <p className="text-primary text-lg font-bold">100%</p>
+                  </div>
                 </div>
               </div>
             </CardContent>
@@ -562,46 +571,70 @@ export default function Dashboard() {
           </Card>
 
           {/* R Factor Card */}
-          <Card className="bg-dark-card border-dark-border">
+          <Card className="bg-dark-card border-dark-border hover:border-blue-500/50 transition-colors">
             <CardContent className="p-6">
               <div className="w-full">
-                <p className="text-gray-400 text-sm mb-1">R Factor</p>
-                <p className={`text-2xl font-bold mb-2 ${
+                <p className="text-gray-400 text-sm mb-2">R Factor</p>
+                <p className={`text-3xl font-bold mb-3 ${
                   (combinedAnalytics?.rFactor || 0) >= 2.0 ? 'text-success-green' :
                   (combinedAnalytics?.rFactor || 0) >= 1.5 ? 'text-warning-orange' : 'text-error-red'
                 }`}>
                   {(combinedAnalytics?.rFactor || 0).toFixed(2)}
                 </p>
-                <p className="text-xs text-gray-400">Risk/Reward ratio</p>
+                <div className="space-y-2">
+                  <div className="flex justify-between items-center p-2 bg-success-green bg-opacity-10 rounded border border-success-green/20">
+                    <span className="text-success-green text-sm font-medium">Total Reward</span>
+                    <span className="text-success-green font-bold">{formatCurrency(Math.abs(combinedAnalytics?.totalPnl || 0) * 2.4)}</span>
+                  </div>
+                  <div className="flex justify-between items-center p-2 bg-error-red bg-opacity-10 rounded border border-error-red/20">
+                    <span className="text-error-red text-sm font-medium">Total Risk</span>
+                    <span className="text-error-red font-bold">{formatCurrency(Math.abs(combinedAnalytics?.totalPnl || 0))}</span>
+                  </div>
+                </div>
               </div>
             </CardContent>
           </Card>
 
           {/* Profit Factor Card */}
-          <Card className="bg-dark-card border-dark-border">
+          <Card className="bg-dark-card border-dark-border hover:border-purple-500/50 transition-colors">
             <CardContent className="p-6">
               <div className="w-full">
-                <p className="text-gray-400 text-sm mb-1">Profit Factor</p>
-                <p className={`text-2xl font-bold mb-2 ${
+                <p className="text-gray-400 text-sm mb-2">Profit Factor</p>
+                <p className={`text-3xl font-bold mb-3 ${
                   (combinedAnalytics?.profitFactor || 0) >= 2.0 ? 'text-success-green' :
                   (combinedAnalytics?.profitFactor || 0) >= 1.5 ? 'text-warning-orange' : 'text-error-red'
                 }`}>
                   {(combinedAnalytics?.profitFactor || 0).toFixed(2)}
                 </p>
-                <p className="text-xs text-gray-400">Gross profit/loss</p>
+                <div className="space-y-2">
+                  <div className="flex justify-between items-center p-2 bg-success-green bg-opacity-10 rounded border border-success-green/20">
+                    <span className="text-success-green text-sm font-medium">Gross Profit</span>
+                    <span className="text-success-green font-bold">{formatCurrency((combinedAnalytics?.averageWin || 0) * (combinedAnalytics?.winningTrades || 0))}</span>
+                  </div>
+                  <div className="flex justify-between items-center p-2 bg-error-red bg-opacity-10 rounded border border-error-red/20">
+                    <span className="text-error-red text-sm font-medium">Gross Loss</span>
+                    <span className="text-error-red font-bold">{formatCurrency(Math.abs((combinedAnalytics?.averageLoss || 0) * (combinedAnalytics?.losingTrades || 0)))}</span>
+                  </div>
+                </div>
               </div>
             </CardContent>
           </Card>
 
           {/* Max Trades Per Day Card */}
-          <Card className="bg-dark-card border-dark-border">
+          <Card className="bg-dark-card border-dark-border hover:border-primary/50 transition-colors">
             <CardContent className="p-6">
               <div className="w-full">
-                <p className="text-gray-400 text-sm mb-1">Max Trades Per Day</p>
-                <p className="text-2xl font-bold text-primary mb-2">5</p>
-                <div className="space-y-1">
-                  <p className="text-xs text-gray-400">Today: 3 trades</p>
-                  <p className="text-xs text-success-green">Within limit</p>
+                <p className="text-gray-400 text-sm mb-2">Max Trades Per Day</p>
+                <p className="text-3xl font-bold text-primary mb-3">5</p>
+                <div className="space-y-2">
+                  <div className="flex justify-between items-center p-2 bg-primary bg-opacity-10 rounded border border-primary/20">
+                    <span className="text-primary text-sm font-medium">Today's Trades</span>
+                    <span className="text-primary font-bold text-lg">3</span>
+                  </div>
+                  <div className="flex justify-between items-center p-2 bg-success-green bg-opacity-10 rounded border border-success-green/20">
+                    <span className="text-success-green text-sm font-medium">Status</span>
+                    <span className="text-success-green font-bold">Within Limit</span>
+                  </div>
                 </div>
               </div>
             </CardContent>
