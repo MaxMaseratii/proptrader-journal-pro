@@ -444,6 +444,75 @@ export default function Dashboard() {
           </Card>
         </div>
 
+        {/* Key Balance & Performance */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          {/* Total Balance */}
+          <Card className="bg-dark-card border-success-green">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-gray-400 text-sm mb-1">Total Balance</p>
+                  <p className="text-2xl font-bold text-success-green">
+                    {formatCurrency(combinedAnalytics?.currentBalance || 0)}
+                  </p>
+                  <p className="text-xs text-gray-400 mt-1">
+                    +2.4% this month
+                  </p>
+                </div>
+                <div className="bg-success-green bg-opacity-20 p-3 rounded-lg">
+                  <DollarSign className="text-success-green h-6 w-6" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Daily P&L */}
+          <Card className="bg-dark-card border-error-red">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-gray-400 text-sm mb-1">Daily P&L</p>
+                  <p className="text-2xl font-bold text-error-red">
+                    {formatCurrency(combinedAnalytics?.worstTrade || 0)}
+                  </p>
+                  <p className="text-xs text-gray-400 mt-1">
+                    Worst day: Oct 7
+                  </p>
+                </div>
+                <div className="bg-error-red bg-opacity-20 p-3 rounded-lg">
+                  <TrendingDown className="text-error-red h-6 w-6" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Average Win/Loss */}
+          <Card className="bg-dark-card border-gray-600">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-gray-400 text-sm mb-1">Avg Win/Loss</p>
+                  <div className="flex items-center space-x-2 text-lg font-bold">
+                    <span className="text-success-green">
+                      {formatCurrency(combinedAnalytics?.averageWin || 0)}
+                    </span>
+                    <span className="text-gray-400">/</span>
+                    <span className="text-error-red">
+                      {formatCurrency(Math.abs(combinedAnalytics?.averageLoss || 0))}
+                    </span>
+                  </div>
+                  <p className="text-xs text-gray-400 mt-1">
+                    Win vs Loss ratio
+                  </p>
+                </div>
+                <div className="bg-gray-600 bg-opacity-20 p-3 rounded-lg">
+                  <TrendingUp className="text-gray-400 h-6 w-6" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
         {/* Trading Performance Metrics */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           {/* Win Rate & Performance */}
