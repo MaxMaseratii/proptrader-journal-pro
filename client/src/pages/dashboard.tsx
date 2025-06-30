@@ -598,49 +598,9 @@ export default function Dashboard() {
           </h2>
         </div>
 
-        {/* Disciplined Trading Analysis */}
-        <div className="mb-6 mt-12">
-          <h2 className="text-xl font-bold text-white mb-6 flex items-center border-b border-gray-700 pb-3">
-            <Brain className="mr-3 h-5 w-5 text-indigo-400" />
-            Disciplined Trading Analysis
-          </h2>
-        </div>
 
-        <div className="grid grid-cols-1 gap-6">
-          <Card className="bg-dark-card border-indigo-600">
-            <CardContent className="p-6">
-              <div className="text-center">
-                {accounts && accounts.length > 0 && trades && trades.length > 0 ? (
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    {accounts.map(account => {
-                      const accountTrades = trades.filter(t => t.accountId === account.id);
-                      const disciplinedAnalysis = calculateDisciplinedScore(account, accountTrades);
-                      
-                      return (
-                        <div key={account.id} className="text-center p-4 bg-gray-800 rounded-lg">
-                          <p className="text-xs text-gray-400 mb-1">{account.name}</p>
-                          <p className={`text-2xl font-bold mb-1 ${getGradeColor(disciplinedAnalysis.scoreGrade)}`}>
-                            {disciplinedAnalysis.disciplinedScore.toFixed(0)}%
-                          </p>
-                          <p className={`text-sm font-semibold ${getGradeColor(disciplinedAnalysis.scoreGrade)}`}>
-                            Grade {disciplinedAnalysis.scoreGrade}
-                          </p>
-                          <p className="text-xs text-gray-400 mt-1">
-                            {disciplinedAnalysis.totalTrades} trades • {disciplinedAnalysis.violationsCount} violations
-                          </p>
-                        </div>
-                      );
-                    })}
-                  </div>
-                ) : (
-                  <p className="text-gray-400">No trading data available for disciplined score analysis</p>
-                )}
-              </div>
-            </CardContent>
-          </Card>
-        </div>
 
-        {/* Investment Tracking Summary */}
+        {/* Investment Tracking & Working Hours Summary */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
           <Card className="bg-dark-card border-green-600">
             <CardContent className="p-6">
@@ -722,7 +682,7 @@ export default function Dashboard() {
           </Card>
         </div>
 
-        {/* Working Hours Summary */}
+        {/* Working Hours Summary - Under Investment Tracking */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
           <Card className="bg-dark-card border-cyan-600">
             <CardContent className="p-6">
@@ -730,10 +690,10 @@ export default function Dashboard() {
                 <div>
                   <p className="text-gray-400 text-sm mb-1">Total Working Hours</p>
                   <p className="text-2xl font-bold text-cyan-400">
-                    {((trades?.length || 0) * 2.5).toFixed(1)}h
+                    {((trades?.length || 0) * 2.5).toFixed(1)} Hrs
                   </p>
                   <p className="text-xs text-gray-400 mt-1">
-                    Based on {trades?.length || 0} trades × 2.5h avg duration
+                    Based on {trades?.length || 0} trades × 2.5 Hrs avg duration
                   </p>
                 </div>
                 <div className="bg-cyan-600 bg-opacity-20 p-3 rounded-lg">
@@ -749,7 +709,14 @@ export default function Dashboard() {
                 <div>
                   <p className="text-gray-400 text-sm mb-1">Average Hours Per Day</p>
                   <p className="text-2xl font-bold text-indigo-400">
-                    {(((trades?.length || 0) * 2.5) / 30).toFixed(1)}h
+                    {(() => {
+                      const totalMinutes = ((trades?.length || 0) * 2.5 * 60) / 30;
+                      if (totalMinutes < 60) {
+                        return `${Math.round(totalMinutes)} Min`;
+                      } else {
+                        return `${(totalMinutes / 60).toFixed(1)} Hrs`;
+                      }
+                    })()}
                   </p>
                   <p className="text-xs text-gray-400 mt-1">
                     Based on 30-day trading period
