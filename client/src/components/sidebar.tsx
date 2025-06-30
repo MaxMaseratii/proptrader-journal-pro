@@ -11,7 +11,8 @@ import {
   TrendingUp,
   User,
   Brain,
-  LogOut
+  LogOut,
+  BookOpen
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -34,14 +35,14 @@ export default function Sidebar() {
   const analyticsItems = navItems.filter(item => item.section === "analytics");
 
   return (
-    <aside className="w-64 bg-dark-surface border-r border-dark-border flex-shrink-0">
-      <div className="p-6 border-b border-dark-border">
+    <aside className="w-64 bg-prop-gradient-main border-r border-prop-gold/20 flex-shrink-0">
+      <div className="p-6 border-b border-prop-gold/20">
         <div className="flex items-center space-x-3">
-          <div className="bg-gradient-to-r from-blue-500 to-purple-600 p-2 rounded-lg">
-            <Book className="h-5 w-5 text-white" />
+          <div className="bg-prop-gradient-rainbow p-3 rounded-xl hover-glow smooth-transition">
+            <BookOpen className="h-6 w-6 text-white" />
           </div>
           <div>
-            <h1 className="text-lg font-bold text-primary">PropJournal Pro</h1>
+            <h1 className="text-lg font-bold text-gradient-rainbow">PropJournal Pro</h1>
             <p className="text-xs text-gray-400">Elite Trading Journal</p>
           </div>
         </div>
@@ -49,18 +50,21 @@ export default function Sidebar() {
       
       <nav className="mt-6">
         <div className="px-6 mb-4">
-          <h3 className="text-xs font-medium text-gray-400 uppercase tracking-wider">Main</h3>
+          <h3 className="text-xs font-medium text-prop-gold uppercase tracking-wider">Main</h3>
         </div>
-        <ul className="space-y-1 px-4">
+        <ul className="space-y-2 px-4">
           {mainItems.map(({ href, label, icon: Icon }) => (
             <li key={href}>
               <Link href={href} className={cn(
-                "flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer",
+                "flex items-center px-4 py-3 text-sm font-medium rounded-xl smooth-transition cursor-pointer group",
                 location === href 
-                  ? "bg-primary text-white" 
-                  : "text-gray-300 hover:bg-dark-card"
+                  ? "bg-prop-gradient-gold text-black font-bold" 
+                  : "text-gray-300 hover:bg-prop-card hover:text-prop-gold hover-scale"
               )}>
-                <Icon className="mr-3 h-4 w-4" />
+                <Icon className={cn(
+                  "mr-3 h-5 w-5 smooth-transition",
+                  location === href ? "text-black" : "text-gray-400 group-hover:text-prop-gold"
+                )} />
                 {label}
               </Link>
             </li>

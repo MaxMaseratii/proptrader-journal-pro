@@ -3,36 +3,41 @@
 @tailwind utilities;
 
 :root {
-  --background: hsl(0, 0%, 17.6%);
+  --background: hsl(0, 0%, 3%);
   --foreground: hsl(0, 0%, 98%);
-  --muted: hsl(0, 0%, 25.1%);
-  --muted-foreground: hsl(0, 0%, 64.9%);
-  --popover: hsl(0, 0%, 17.6%);
+  --muted: hsl(0, 0%, 12%);
+  --muted-foreground: hsl(0, 0%, 65%);
+  --popover: hsl(0, 0%, 6%);
   --popover-foreground: hsl(0, 0%, 98%);
-  --card: hsl(0, 0%, 17.6%);
+  --card: hsl(0, 0%, 6%);
   --card-foreground: hsl(0, 0%, 98%);
-  --border: hsl(0, 0%, 25.1%);
-  --input: hsl(0, 0%, 25.1%);
-  --primary: hsl(207, 90%, 54%);
-  --primary-foreground: hsl(211, 100%, 99%);
-  --secondary: hsl(0, 0%, 25.1%);
+  --border: hsl(0, 0%, 15%);
+  --input: hsl(0, 0%, 15%);
+  --primary: hsl(45, 100%, 65%);
+  --primary-foreground: hsl(0, 0%, 0%);
+  --secondary: hsl(180, 100%, 25%);
   --secondary-foreground: hsl(0, 0%, 98%);
-  --accent: hsl(0, 0%, 25.1%);
-  --accent-foreground: hsl(0, 0%, 98%);
+  --accent: hsl(322, 100%, 70%);
+  --accent-foreground: hsl(0, 0%, 0%);
   --destructive: hsl(0, 84.2%, 60.2%);
   --destructive-foreground: hsl(60, 9.1%, 97.8%);
-  --ring: hsl(20, 14.3%, 4.1%);
-  --radius: 0.5rem;
+  --ring: hsl(45, 100%, 65%);
+  --radius: 0.75rem;
 
-  /* Custom dark theme colors */
-  --dark-bg: hsl(0, 0%, 7.1%);
-  --dark-surface: hsl(0, 0%, 11.8%);
-  --dark-card: hsl(0, 0%, 17.6%);
-  --dark-border: hsl(0, 0%, 25.1%);
-  --success-green: hsl(122, 39.4%, 49.2%);
-  --warning-orange: hsl(36, 100%, 50%);
-  --error-red: hsl(4, 90.6%, 58.4%);
-  --accent-orange: hsl(14, 100%, 55.7%);
+  /* PropJournal Pro Unique Colors */
+  --prop-black: hsl(0, 0%, 4%);
+  --prop-dark: hsl(0, 0%, 10%);
+  --prop-surface: hsl(0, 0%, 12%);
+  --prop-gold: hsl(45, 100%, 55%);
+  --prop-gold-light: hsl(45, 100%, 65%);
+  --prop-tiffany: hsl(180, 70%, 55%);
+  --prop-tiffany-light: hsl(180, 80%, 65%);
+  --prop-green: hsl(142, 76%, 36%);
+  --prop-green-light: hsl(142, 76%, 46%);
+  --prop-blue: hsl(217, 91%, 60%);
+  --prop-blue-light: hsl(217, 91%, 70%);
+  --prop-pink: hsl(322, 100%, 70%);
+  --prop-pink-light: hsl(322, 100%, 80%);
 }
 
 .dark {
@@ -74,18 +79,166 @@
 }
 
 @layer utilities {
-  .bg-dark-bg { background-color: var(--dark-bg); }
-  .bg-dark-surface { background-color: var(--dark-surface); }
-  .bg-dark-card { background-color: var(--dark-card); }
-  .border-dark-border { border-color: var(--dark-border); }
-  .text-success-green { color: var(--success-green); }
-  .text-warning-orange { color: var(--warning-orange); }
-  .text-error-red { color: var(--error-red); }
-  .text-accent-orange { color: var(--accent-orange); }
-  .bg-success-green { background-color: var(--success-green); }
-  .bg-warning-orange { background-color: var(--warning-orange); }
-  .bg-error-red { background-color: var(--error-red); }
-  .bg-accent-orange { background-color: var(--accent-orange); }
+  /* PropJournal Pro Color System */
+  .bg-prop-black { background-color: var(--prop-black); }
+  .bg-prop-dark { background-color: var(--prop-dark); }
+  .bg-prop-surface { background-color: var(--prop-surface); }
+  
+  .bg-prop-gold { background-color: var(--prop-gold); }
+  .bg-prop-gold-light { background-color: var(--prop-gold-light); }
+  .text-prop-gold { color: var(--prop-gold); }
+  .text-prop-gold-light { color: var(--prop-gold-light); }
+  .border-prop-gold { border-color: var(--prop-gold); }
+  
+  .bg-prop-tiffany { background-color: var(--prop-tiffany); }
+  .bg-prop-tiffany-light { background-color: var(--prop-tiffany-light); }
+  .text-prop-tiffany { color: var(--prop-tiffany); }
+  .text-prop-tiffany-light { color: var(--prop-tiffany-light); }
+  .border-prop-tiffany { border-color: var(--prop-tiffany); }
+  
+  .bg-prop-green { background-color: var(--prop-green); }
+  .bg-prop-green-light { background-color: var(--prop-green-light); }
+  .text-prop-green { color: var(--prop-green); }
+  .text-prop-green-light { color: var(--prop-green-light); }
+  .border-prop-green { border-color: var(--prop-green); }
+  
+  .bg-prop-blue { background-color: var(--prop-blue); }
+  .bg-prop-blue-light { background-color: var(--prop-blue-light); }
+  .text-prop-blue { color: var(--prop-blue); }
+  .text-prop-blue-light { color: var(--prop-blue-light); }
+  .border-prop-blue { border-color: var(--prop-blue); }
+  
+  .bg-prop-pink { background-color: var(--prop-pink); }
+  .bg-prop-pink-light { background-color: var(--prop-pink-light); }
+  .text-prop-pink { color: var(--prop-pink); }
+  .text-prop-pink-light { color: var(--prop-pink-light); }
+  .border-prop-pink { border-color: var(--prop-pink); }
+
+  /* Unique Gradient System */
+  .bg-prop-gradient-gold {
+    background: linear-gradient(135deg, var(--prop-gold) 0%, var(--prop-gold-light) 100%);
+  }
+  
+  .bg-prop-gradient-tiffany {
+    background: linear-gradient(135deg, var(--prop-tiffany) 0%, var(--prop-tiffany-light) 100%);
+  }
+  
+  .bg-prop-gradient-green {
+    background: linear-gradient(135deg, var(--prop-green) 0%, var(--prop-green-light) 100%);
+  }
+  
+  .bg-prop-gradient-blue {
+    background: linear-gradient(135deg, var(--prop-blue) 0%, var(--prop-blue-light) 100%);
+  }
+  
+  .bg-prop-gradient-pink {
+    background: linear-gradient(135deg, var(--prop-pink) 0%, var(--prop-pink-light) 100%);
+  }
+
+  .bg-prop-gradient-rainbow {
+    background: linear-gradient(135deg, 
+      var(--prop-gold) 0%, 
+      var(--prop-tiffany) 25%, 
+      var(--prop-green) 50%, 
+      var(--prop-blue) 75%, 
+      var(--prop-pink) 100%);
+  }
+
+  .bg-prop-gradient-main {
+    background: linear-gradient(135deg, var(--prop-black) 0%, var(--prop-dark) 50%, var(--prop-black) 100%);
+  }
+
+  .bg-prop-gradient-hero {
+    background: linear-gradient(135deg, 
+      var(--prop-black) 0%, 
+      var(--prop-dark) 25%, 
+      var(--prop-surface) 50%, 
+      var(--prop-dark) 75%, 
+      var(--prop-black) 100%);
+  }
+
+  /* Glass Morphism Effects */
+  .bg-prop-card {
+    background: rgba(26, 26, 26, 0.8);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 215, 0, 0.1);
+  }
+
+  .bg-prop-card-hover {
+    background: rgba(30, 30, 30, 0.9);
+    backdrop-filter: blur(25px);
+    border: 1px solid rgba(255, 215, 0, 0.2);
+  }
+
+  .glass-effect {
+    background: rgba(18, 18, 18, 0.7);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .glass-effect-light {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  /* Text Gradients */
+  .text-gradient-gold {
+    background: linear-gradient(135deg, var(--prop-gold) 0%, var(--prop-gold-light) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .text-gradient-tiffany {
+    background: linear-gradient(135deg, var(--prop-tiffany) 0%, var(--prop-tiffany-light) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .text-gradient-rainbow {
+    background: linear-gradient(135deg, 
+      var(--prop-gold) 0%, 
+      var(--prop-tiffany) 25%, 
+      var(--prop-green) 50%, 
+      var(--prop-blue) 75%, 
+      var(--prop-pink) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* Smooth Animations */
+  .smooth-transition {
+    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+
+  .hover-lift:hover {
+    transform: translateY(-12px) scale(1.02);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
+  }
+
+  .hover-glow:hover {
+    box-shadow: 0 0 30px rgba(255, 215, 0, 0.3);
+  }
+
+  .hover-scale:hover {
+    transform: scale(1.05);
+  }
+
+  /* Unique Border Effects */
+  .border-gradient-gold {
+    border: 2px solid transparent;
+    background: linear-gradient(var(--prop-black), var(--prop-black)) padding-box,
+                linear-gradient(135deg, var(--prop-gold), var(--prop-gold-light)) border-box;
+  }
+
+  .border-gradient-rainbow {
+    border: 2px solid transparent;
+    background: linear-gradient(var(--prop-black), var(--prop-black)) padding-box,
+                linear-gradient(135deg, var(--prop-gold), var(--prop-tiffany), var(--prop-green), var(--prop-blue), var(--prop-pink)) border-box;
+  }
 }
 
 /* Fix Select component visibility - comprehensive styling */
