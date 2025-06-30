@@ -499,7 +499,7 @@ export default function Dashboard() {
         </div>
 
         {/* Account Status Summary */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
           <Card className="bg-dark-card border-yellow-600">
             <CardContent className="p-4">
               <div className="text-center">
@@ -543,6 +543,51 @@ export default function Dashboard() {
               </div>
             </CardContent>
           </Card>
+        </div>
+
+        {/* Account Progress - Profit Targets */}
+        <div className="mb-6">
+          <h3 className="text-lg font-semibold text-white mb-4 flex items-center">
+            <Target className="mr-2 h-5 w-5 text-green-400" />
+            Account Progress
+          </h3>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+          {accounts?.map((account) => {
+            const profitAmount = account.currentBalance - account.startingBalance;
+            const profitProgress = account.profitTarget ? (profitAmount / account.profitTarget) * 100 : 0;
+            
+            return (
+              <Card key={account.id} className="bg-dark-card border-green-600">
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between mb-4">
+                    <div>
+                      <p className="text-gray-400 text-sm mb-1">{account.name}</p>
+                      <p className="text-2xl font-bold text-green-400">
+                        {formatCurrency(profitAmount)}
+                      </p>
+                      <p className="text-xs text-gray-400 mt-1">
+                        Target: {formatCurrency(account.profitTarget || 0)}
+                      </p>
+                    </div>
+                    <div className="bg-green-600 bg-opacity-20 p-3 rounded-lg">
+                      <Target className="text-green-400 h-6 w-6" />
+                    </div>
+                  </div>
+                  <div className="w-full bg-gray-700 rounded-full h-2">
+                    <div 
+                      className="bg-green-400 h-2 rounded-full transition-all duration-300"
+                      style={{ width: `${Math.min(profitProgress, 100)}%` }}
+                    ></div>
+                  </div>
+                  <p className="text-xs text-gray-400 mt-2">
+                    {profitProgress.toFixed(1)}% of profit target achieved
+                  </p>
+                </CardContent>
+              </Card>
+            );
+          })}
         </div>
 
         {/* Investment Tracking */}
@@ -757,7 +802,7 @@ export default function Dashboard() {
                 <div>
                   <p className="text-gray-400 text-sm mb-1">Daily Trade Limit</p>
                   <p className="text-2xl font-bold text-cyan-400">
-                    {combinedAnalytics?.dailyTradeCount || 0} / 5
+                    {trades?.filter(t => t.date === new Date().toISOString().split('T')[0]).length || 0} / 5
                   </p>
                   <p className="text-xs text-gray-400 mt-1">
                     Current trades today / Maximum allowed
