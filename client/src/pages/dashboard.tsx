@@ -551,12 +551,37 @@ export default function Dashboard() {
                       {formatCurrency(combinedAnalytics?.averageLoss || 0)}
                     </span>
                   </div>
-                  <p className="text-xs text-gray-400 mt-1">
-                    R Factor: {(combinedAnalytics?.rFactor || 0).toFixed(2)} | Profit Factor: {(combinedAnalytics?.profitFactor || 0).toFixed(2)}
-                  </p>
+                  <p className="text-xs text-gray-400 mt-1">Win vs Loss ratio</p>
                 </div>
-                <div className="bg-purple-600 bg-opacity-20 p-3 rounded-lg">
-                  <DollarSign className="text-purple-400 h-6 w-6" />
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* R Factor Card */}
+          <Card className="bg-dark-card border-dark-border">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-gray-400 text-sm mb-1">R Factor</p>
+                  <p className="text-2xl font-bold text-blue-400">
+                    {(combinedAnalytics?.rFactor || 0).toFixed(2)}
+                  </p>
+                  <p className="text-xs text-gray-400 mt-1">Risk/Reward ratio</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Profit Factor Card */}
+          <Card className="bg-dark-card border-dark-border">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-gray-400 text-sm mb-1">Profit Factor</p>
+                  <p className="text-2xl font-bold text-purple-400">
+                    {(combinedAnalytics?.profitFactor || 0).toFixed(2)}
+                  </p>
+                  <p className="text-xs text-gray-400 mt-1">Gross profit/loss</p>
                 </div>
               </div>
             </CardContent>
