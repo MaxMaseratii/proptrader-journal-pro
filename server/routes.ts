@@ -2,6 +2,7 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { insertAccountSchema, insertTradeSchema, insertJournalEntrySchema, type InsertTrade } from "@shared/schema";
+import { tradovateService } from "./tradovate";
 import { z } from "zod";
 
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -673,6 +674,65 @@ export async function registerRoutes(app: Express): Promise<Server> {
         message: "CSV import failed",
         errors: [error instanceof Error ? error.message : 'Unknown error']
       });
+    }
+  });
+
+  // Tradovate API routes
+  app.get("/api/tradovate/test", async (req, res) => {
+    try {
+      if (!tradovateService.isConfigured()) {
+        return res.json({ 
+          success: false, 
+          message: "Tradovate credentials not configured. Please set TRADOVATE_USERNAME and TRADOVATE_PASSWORD environment variables." 
+        });
+      }
+
+      const result = await tradovateService.testConnection();
+      res.json(result);
+    } catch (error) {
+      res.status(500).json({ 
+        success: false, 
+        message: error instanceof Error ? error.message : 'Unknown error' 
+      });
+    }
+  });
+
+  app.get("/api/tradovate/accounts", async (req, res) => {
+    try {
+      const accounts = await tradovateService.getAccounts();
+      res.json(accounts);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch Tradovate accounts" });
+    }
+  });
+
+  app.get("/api/tradovate/positions", async (req, res) => {
+    try {
+      const accountId = req.query.accountId ? parseInt(req.query.accountId as string) : undefined;
+      const positions = await tradovateService.getPositions(accountId);
+      res.json(positions);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch Tradovate positions" });
+    }
+  });
+
+  app.get("/api/tradovate/orders", async (req, res) => {
+    try {
+      const accountId = req.query.accountId ? parseInt(req.query.accountId as string) : undefined;
+      const orders = await tradovateService.getOrders(accountId);
+      res.json(orders);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch Tradovate orders" });
+    }
+  });
+
+  app.get("/api/tradovate/executions", async (req, res) => {
+    try {
+      const accountId = req.query.accountId ? parseInt(req.query.accountId as string) : undefined;
+      const executions = await tradovateService.getExecutions(accountId);
+      res.json(executions);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch Tradovate executions" });
     }
   });
 

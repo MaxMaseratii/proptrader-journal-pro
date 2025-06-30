@@ -10,7 +10,8 @@ import {
   Calendar,
   TrendingUp,
   User,
-  Brain
+  Brain,
+  Activity
 } from "lucide-react";
 
 const navItems = [
