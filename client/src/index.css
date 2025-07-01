@@ -85,7 +85,7 @@
     background-color: #ffffff !important;
   }
   
-  /* Fix number inputs to allow blank state */
+  /* Fix number inputs to allow blank state and better UX */
   input[type="number"] {
     -moz-appearance: textfield;
   }
@@ -94,6 +94,15 @@
   input[type="number"]::-webkit-inner-spin-button {
     -webkit-appearance: none;
     margin: 0;
+  }
+  
+  /* Prevent number inputs from showing 0 when empty */
+  input[type="number"]:placeholder-shown {
+    color: transparent;
+  }
+  
+  input[type="number"]:focus:placeholder-shown {
+    color: #9ca3af;
   }
 
   /* PropJournal Pro Color System */
