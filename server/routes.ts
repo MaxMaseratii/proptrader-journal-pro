@@ -184,11 +184,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/trades/import-csv", async (req, res) => {
+  app.post("/api/csv-import", isAuthenticated, async (req, res) => {
     try {
-      const { accountId, csvContent } = req.body;
+      const { accountId, csvData } = req.body;
       
-      if (!accountId || !csvContent) {
+      if (!accountId || !csvData) {
         return res.status(400).json({ message: "Account ID and CSV content are required" });
       }
 
@@ -198,7 +198,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       // Parse CSV content
-      const lines = csvContent.split('\n').filter((line: string) => line.trim());
+      const lines = csvData.split('\n').filter((line: string) => line.trim());
       const headers = lines[0].split(',').map((h: string) => h.trim());
       
       let recordsProcessed = 0;

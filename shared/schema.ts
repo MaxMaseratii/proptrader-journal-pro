@@ -153,6 +153,33 @@ export const spending = pgTable("spending", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+export const achievements = pgTable("achievements", {
+  id: serial("id").primaryKey(),
+  userId: varchar("user_id").notNull(),
+  achievementType: text("achievement_type").notNull(), // 'risk_discipline', 'stop_loss_respect', 'profit_target', 'consistency', 'journal_streak'
+  title: text("title").notNull(),
+  description: text("description").notNull(),
+  badge: text("badge").notNull(), // emoji or icon identifier
+  level: integer("level").notNull().default(1), // bronze=1, silver=2, gold=3, platinum=4
+  progress: integer("progress").notNull().default(0),
+  target: integer("target").notNull(),
+  isUnlocked: boolean("is_unlocked").default(false),
+  unlockedAt: timestamp("unlocked_at"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const userStats = pgTable("user_stats", {
+  id: serial("id").primaryKey(),
+  userId: varchar("user_id").notNull().unique(),
+  riskDisciplineScore: integer("risk_discipline_score").notNull().default(0),
+  stopLossRespectStreak: integer("stop_loss_respect_streak").notNull().default(0),
+  profitTargetHitStreak: integer("profit_target_hit_streak").notNull().default(0),
+  journalStreakDays: integer("journal_streak_days").notNull().default(0),
+  totalPoints: integer("total_points").notNull().default(0),
+  level: integer("level").notNull().default(1),
+  lastUpdated: timestamp("last_updated").defaultNow(),
+});
+
 export const insertAccountSchema = createInsertSchema(accounts).omit({
   id: true,
   createdAt: true,
@@ -178,6 +205,16 @@ export const insertCsvImportSchema = createInsertSchema(csvImports).omit({
 export const insertSpendingSchema = createInsertSchema(spending).omit({
   id: true,
   createdAt: true,
+});
+
+export const insertAchievementSchema = createInsertSchema(achievements).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertUserStatsSchema = createInsertSchema(userStats).omit({
+  id: true,
+  lastUpdated: true,
 });
 
 export type Account = typeof accounts.$inferSelect;

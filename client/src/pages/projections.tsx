@@ -364,9 +364,9 @@ export default function Projections() {
                     <div className="flex items-center space-x-2">
                       <span className="text-2xl risk-slider-emoji">
                         {settings.riskCuttingPercent === 0 ? '😐' : 
-                         settings.riskCuttingPercent <= 25 ? '😌' :
-                         settings.riskCuttingPercent <= 50 ? '😟' :
-                         settings.riskCuttingPercent <= 75 ? '😰' : '😱'}
+                         settings.riskCuttingPercent <= 25 ? '🛡️' :
+                         settings.riskCuttingPercent <= 50 ? '🔒' :
+                         settings.riskCuttingPercent <= 75 ? '🛡️' : '🏛️'}
                       </span>
                       <Badge variant="outline" className="bg-red-900/20 border-red-500 text-red-300 risk-slider-badge">
                         {settings.riskCuttingPercent}%
