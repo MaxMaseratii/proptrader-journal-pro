@@ -12,7 +12,8 @@ import {
   User,
   Brain,
   LogOut,
-  BookOpen
+  BookOpen,
+  CreditCard
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 

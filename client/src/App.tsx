@@ -16,6 +16,7 @@ import Trades from "@/pages/trades";
 import Profile from "@/pages/profile";
 import Welcome from "@/pages/welcome";
 import CsvImport from "@/pages/csv-import";
+import Spending from "@/pages/spending";
 import Sidebar from "@/components/sidebar";
 import NotFound from "@/pages/not-found";
 import { useAuth } from "@/hooks/useAuth";
@@ -44,6 +45,7 @@ function Router() {
           <Route path="/dashboard-simple" component={Dashboard} />
           <Route path="/accounts" component={Accounts} />
           <Route path="/csv-import" component={CsvImport} />
+          <Route path="/spending" component={Spending} />
           <Route path="/journal" component={Journal} />
           <Route path="/risk-management" component={RiskManagement} />
           <Route path="/performance" component={Performance} />

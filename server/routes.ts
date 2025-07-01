@@ -1,7 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { insertAccountSchema, insertTradeSchema, insertJournalEntrySchema, type InsertTrade } from "@shared/schema";
+import { insertAccountSchema, insertTradeSchema, insertJournalEntrySchema, insertSpendingSchema, type InsertTrade } from "@shared/schema";
 import { z } from "zod";
 import { setupAuth, isAuthenticated } from "./replitAuth";
 
@@ -688,6 +688,30 @@ export async function registerRoutes(app: Express): Promise<Server> {
         message: "CSV import failed",
         errors: [error instanceof Error ? error.message : 'Unknown error']
       });
+    }
+  });
+
+  // Spending routes
+  app.get("/api/spending", isAuthenticated, async (req, res) => {
+    try {
+      const accountId = req.query.accountId ? parseInt(req.query.accountId as string) : undefined;
+      const spending = await storage.getSpending(accountId);
+      res.json(spending);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch spending records" });
+    }
+  });
+
+  app.post("/api/spending", isAuthenticated, async (req, res) => {
+    try {
+      const validatedData = insertSpendingSchema.parse(req.body);
+      const spending = await storage.createSpending(validatedData);
+      res.status(201).json(spending);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Invalid spending data", errors: error.errors });
+      }
+      res.status(500).json({ message: "Failed to create spending record" });
     }
   });
 
