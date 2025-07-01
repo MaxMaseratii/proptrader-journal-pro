@@ -100,24 +100,30 @@ export default function Projections() {
       let cumulativeTarget = 0;
       let cumulativeActual = 0;
       let currentRisk = settings.riskPerTrade;
-      let dayCount = 0;
+      let tradingDayCount = 0;
+      let calendarDayCount = 0;
       
-      // Calculate daily profit considering copied accounts
-      const dailyProfit = (settings.riskPerTrade * settings.riskRewardRatio) * settings.copiedAccounts;
-      const daysNeeded = Math.ceil(settings.profitTarget / dailyProfit);
+      // Calculate daily profit per account
+      const dailyProfitPerAccount = settings.riskPerTrade * settings.riskRewardRatio;
+      const totalDailyProfit = dailyProfitPerAccount * settings.copiedAccounts;
       
-      for (let i = 1; i <= daysNeeded; i++) {
-        dayCount++;
+      // Calculate exact days needed (without compounding for base calculation)
+      const baseDaysNeeded = Math.ceil(settings.profitTarget / totalDailyProfit);
+      
+      // Generate days until target is reached
+      while (cumulativeTarget < settings.profitTarget && tradingDayCount < 200) { // Safety limit
+        calendarDayCount++;
         const currentDate = new Date();
-        currentDate.setDate(currentDate.getDate() + i - 1);
+        currentDate.setDate(currentDate.getDate() + calendarDayCount - 1);
         
         // Skip weekends for trading days
         if (currentDate.getDay() === 0 || currentDate.getDay() === 6) {
-          i--; // Don't count weekends in day numbering
           continue;
         }
         
-        // Calculate reward per account, then multiply by copied accounts
+        tradingDayCount++;
+        
+        // Calculate reward for this day (current risk * RR * copied accounts)
         const rewardPerAccount = currentRisk * settings.riskRewardRatio;
         const totalDailyReward = rewardPerAccount * settings.copiedAccounts;
         cumulativeTarget += totalDailyReward;
@@ -136,27 +142,12 @@ export default function Projections() {
             actualPnl = dayTrades.reduce((sum, trade) => sum + trade.pnl, 0);
             isWin = actualPnl > 0;
             cumulativeActual += actualPnl;
-            
-            // Apply dynamic risk adjustment on losses
-            if (!isWin && settings.riskCuttingPercent > 0) {
-              currentRisk = currentRisk * (1 - settings.riskCuttingPercent / 100);
-            }
-            
-            // Apply compounding only on wins
-            if (isWin && settings.compoundingPercent > 0) {
-              currentRisk = currentRisk * (1 + settings.compoundingPercent / 100);
-            }
-          }
-        } else {
-          // In simulation mode, apply compounding on assumed wins
-          if (settings.compoundingPercent > 0) {
-            currentRisk = currentRisk * (1 + settings.compoundingPercent / 100);
           }
         }
         
         days.push({
           date: currentDate.toISOString().split('T')[0],
-          dayNumber: dayCount,
+          dayNumber: tradingDayCount,
           risk: currentRisk,
           reward: totalDailyReward,
           targetExpectation: cumulativeTarget,
@@ -166,9 +157,22 @@ export default function Projections() {
           cumulativeActual,
         });
         
-        // Stop if target is reached
-        if (cumulativeTarget >= settings.profitTarget) {
-          break;
+        // Apply risk adjustments AFTER recording the day
+        if (selectedAccountData && actualPnl !== undefined) {
+          // Apply dynamic risk adjustment on losses
+          if (!isWin && settings.riskCuttingPercent > 0) {
+            currentRisk = currentRisk * (1 - settings.riskCuttingPercent / 100);
+          }
+          
+          // Apply compounding only on wins
+          if (isWin && settings.compoundingPercent > 0) {
+            currentRisk = currentRisk * (1 + settings.compoundingPercent / 100);
+          }
+        } else {
+          // In simulation mode, apply compounding on assumed wins
+          if (settings.compoundingPercent > 0) {
+            currentRisk = currentRisk * (1 + settings.compoundingPercent / 100);
+          }
         }
       }
       
@@ -183,8 +187,12 @@ export default function Projections() {
   };
 
   const daysToTarget = projectionData.length;
-  const totalReward = settings.riskPerTrade * settings.riskRewardRatio;
+  const dailyRewardPerAccount = settings.riskPerTrade * settings.riskRewardRatio;
+  const totalDailyReward = dailyRewardPerAccount * settings.copiedAccounts;
   const progressPercentage = selectedAccountData ? selectedAccountData.actualProgress : 0;
+  
+  // Calculate theoretical days without compounding
+  const theoreticalDays = Math.ceil(settings.profitTarget / totalDailyReward);
 
   return (
     <div className="space-y-6">
@@ -402,8 +410,8 @@ export default function Projections() {
             <Card className="bg-blue-600 border-blue-500/20">
               <CardContent className="p-4">
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-white">{formatCurrency(settings.riskPerTrade)}</div>
-                  <div className="text-sm text-blue-100">Risk Per Trade</div>
+                  <div className="text-2xl font-bold text-white">{formatCurrency(totalDailyReward)}</div>
+                  <div className="text-sm text-blue-100">Daily Reward Target</div>
                 </div>
               </CardContent>
             </Card>
@@ -411,7 +419,7 @@ export default function Projections() {
             <Card className="bg-green-600 border-green-500/20">
               <CardContent className="p-4">
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-white">{daysToTarget}</div>
+                  <div className="text-2xl font-bold text-white">{theoreticalDays}</div>
                   <div className="text-sm text-green-100">Days to Target</div>
                 </div>
               </CardContent>
