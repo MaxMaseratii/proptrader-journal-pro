@@ -51,27 +51,6 @@ export default function Sidebar() {
             <p className="text-xs text-gray-400">Elite Trading Journal</p>
           </div>
         </div>
-        
-        {/* User Profile - Simplified */}
-        {user && (
-          <div className="mt-4 pt-4 border-t border-prop-gold/20">
-            <Link href="/profile" className="flex items-center justify-between hover:bg-prop-card p-2 rounded-lg smooth-transition group">
-              <div className="flex items-center space-x-3">
-                <div className="w-8 h-8 bg-prop-gradient-gold rounded-full flex items-center justify-center">
-                  <span className="text-black text-sm font-bold">
-                    {(user as any).firstName?.charAt(0) || (user as any).email?.charAt(0) || 'U'}
-                  </span>
-                </div>
-                <div className="flex-1">
-                  <p className="text-sm font-medium text-white group-hover:text-prop-gold smooth-transition">
-                    {(user as any).firstName || (user as any).email?.split('@')[0] || 'User'}
-                  </p>
-                </div>
-              </div>
-              <ChevronRight className="h-4 w-4 text-gray-400 group-hover:text-prop-gold smooth-transition" />
-            </Link>
-          </div>
-        )}
       </div>
       
       <nav className="mt-6">
@@ -117,8 +96,27 @@ export default function Sidebar() {
         </ul>
       </nav>
       
-      <div className="absolute bottom-0 w-64 p-4 border-t border-prop-gold/20 bg-prop-gradient-main">
-        {/* Logout Button */}
+      <div className="absolute bottom-0 w-64 p-4 border-t border-prop-gold/20 bg-prop-gradient-main space-y-3">
+        {/* User Profile - Simplified */}
+        {user && (
+          <Link href="/profile" className="flex items-center justify-between hover:bg-prop-card p-2 rounded-lg smooth-transition group">
+            <div className="flex items-center space-x-3">
+              <div className="w-8 h-8 bg-prop-gradient-gold rounded-full flex items-center justify-center">
+                <span className="text-black text-sm font-bold">
+                  {(user as any).firstName?.charAt(0) || (user as any).email?.charAt(0) || 'U'}
+                </span>
+              </div>
+              <div className="flex-1">
+                <p className="text-sm font-medium text-white group-hover:text-prop-gold smooth-transition">
+                  {(user as any).firstName || (user as any).email?.split('@')[0] || 'User'}
+                </p>
+              </div>
+            </div>
+            <ChevronRight className="h-4 w-4 text-gray-400 group-hover:text-prop-gold smooth-transition" />
+          </Link>
+        )}
+        
+        {/* Sign Out Button */}
         <Button 
           variant="outline" 
           size="sm" 
