@@ -175,6 +175,11 @@ export const insertCsvImportSchema = createInsertSchema(csvImports).omit({
   importDate: true,
 });
 
+export const insertSpendingSchema = createInsertSchema(spending).omit({
+  id: true,
+  createdAt: true,
+});
+
 export type Account = typeof accounts.$inferSelect;
 export type InsertAccount = z.infer<typeof insertAccountSchema>;
 export type Trade = typeof trades.$inferSelect;
@@ -185,6 +190,8 @@ export type DailyStats = typeof dailyStats.$inferSelect;
 export type InsertDailyStats = z.infer<typeof insertDailyStatsSchema>;
 export type CsvImport = typeof csvImports.$inferSelect;
 export type InsertCsvImport = z.infer<typeof insertCsvImportSchema>;
+export type Spending = typeof spending.$inferSelect;
+export type InsertSpending = z.infer<typeof insertSpendingSchema>;
 
 // Session storage table for Replit Auth
 export const sessions = pgTable(

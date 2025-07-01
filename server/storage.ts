@@ -1,10 +1,11 @@
 import { 
-  accounts, trades, journalEntries, dailyStats, csvImports, users,
+  accounts, trades, journalEntries, dailyStats, csvImports, spending, users,
   type Account, type InsertAccount,
   type Trade, type InsertTrade, 
   type JournalEntry, type InsertJournalEntry,
   type DailyStats, type InsertDailyStats,
   type CsvImport, type InsertCsvImport,
+  type Spending, type InsertSpending,
   type User, type UpsertUser
 } from "@shared/schema";
 
@@ -40,6 +41,10 @@ export interface IStorage {
   getCsvImports(accountId?: number): Promise<CsvImport[]>;
   createCsvImport(csvImport: InsertCsvImport): Promise<CsvImport>;
 
+  // Spending operations
+  getSpending(accountId?: number): Promise<Spending[]>;
+  createSpending(spending: InsertSpending): Promise<Spending>;
+
   // User operations for Replit Auth
   getUser(id: string): Promise<User | undefined>;
   upsertUser(user: UpsertUser): Promise<User>;
@@ -51,6 +56,7 @@ export class MemStorage implements IStorage {
   private journalEntries: Map<number, JournalEntry> = new Map();
   private dailyStats: Map<number, DailyStats> = new Map();
   private csvImports: Map<number, CsvImport> = new Map();
+  private spendingEntries: Map<number, Spending> = new Map();
   private currentId = 1;
 
   constructor() {
@@ -496,6 +502,23 @@ export class MemStorage implements IStorage {
     return newImport;
   }
 
+  // Spending operations
+  async getSpending(accountId?: number): Promise<Spending[]> {
+    const allSpending = Array.from(this.spendingEntries.values());
+    return accountId ? allSpending.filter(spending => spending.accountId === accountId) : allSpending;
+  }
+
+  async createSpending(spendingData: InsertSpending): Promise<Spending> {
+    const id = this.currentId++;
+    const newSpending: Spending = { 
+      ...spendingData, 
+      id,
+      createdAt: new Date()
+    };
+    this.spendingEntries.set(id, newSpending);
+    return newSpending;
+  }
+
   // User operations for Replit Auth
   async getUser(id: string): Promise<User | undefined> {
     // For in-memory storage, users would be stored in a Map
@@ -676,6 +699,19 @@ export class DatabaseStorage implements IStorage {
   async createCsvImport(csvImport: InsertCsvImport): Promise<CsvImport> {
     const [newImport] = await db.insert(csvImports).values(csvImport).returning();
     return newImport;
+  }
+
+  // Spending operations
+  async getSpending(accountId?: number): Promise<Spending[]> {
+    if (accountId) {
+      return await db.select().from(spending).where(eq(spending.accountId, accountId));
+    }
+    return await db.select().from(spending);
+  }
+
+  async createSpending(spendingData: InsertSpending): Promise<Spending> {
+    const [newSpending] = await db.insert(spending).values(spendingData).returning();
+    return newSpending;
   }
 }
 
