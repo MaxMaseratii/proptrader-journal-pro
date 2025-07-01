@@ -151,6 +151,13 @@ Changelog:
   * Ensured all clickable elements have proper navigation functionality
   * Enhanced dropdown navigation for trade views with full year selection
   * Maintained unique design identity with glass morphism effects and proper color scheme
+- July 1, 2025. Enhanced trading management with manual entry integration:
+  * Added spending page with complete financial overview and entry form
+  * Added spending navigation item to sidebar with credit card icon
+  * Integrated manual trade entry into trades page using tabbed interface
+  * Added "Add Trade" and "View All Trades" tabs for better user experience
+  * Made manual trade entry easily accessible from main navigation
+  * Both manual spending entry and manual trade entry now fully functional
 ```
 
 ## User Preferences

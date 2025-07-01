@@ -4,10 +4,12 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Calendar, CalendarDays, Download, Filter, Search } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Calendar, CalendarDays, Download, Filter, Search, Plus } from "lucide-react";
 import { formatCurrency, formatDate } from "@/lib/utils";
 import type { Trade, Account } from "@shared/schema";
 import { useState, useMemo } from "react";
+import TradeEntry from "@/components/trade-entry";
 
 export default function Trades() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -121,15 +123,43 @@ export default function Trades() {
       <header className="border-b border-gray-800 bg-dark-bg pb-6">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-white">All Trades</h1>
-            <p className="text-gray-400">View and analyze all your trading activity</p>
+            <h1 className="text-2xl font-bold text-white">Trading Management</h1>
+            <p className="text-gray-400">Add new trades manually or view existing trading activity</p>
           </div>
-          <Button onClick={exportToCSV} className="bg-blue-600 hover:bg-blue-700">
-            <Download className="mr-2 h-4 w-4" />
-            Export CSV
-          </Button>
         </div>
       </header>
+
+      <Tabs defaultValue="view" className="w-full">
+        <TabsList className="grid w-full grid-cols-2 bg-gray-800">
+          <TabsTrigger value="view" className="text-white data-[state=active]:bg-blue-600">
+            View All Trades
+          </TabsTrigger>
+          <TabsTrigger value="add" className="text-white data-[state=active]:bg-green-600">
+            <Plus className="mr-2 h-4 w-4" />
+            Add Trade
+          </TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="add" className="space-y-6">
+          <Card className="bg-dark-card border-dark-border">
+            <CardHeader>
+              <CardTitle className="text-white">Manual Trade Entry</CardTitle>
+              <p className="text-gray-400">Enter trade details manually for precise record keeping</p>
+            </CardHeader>
+            <CardContent>
+              <TradeEntry accounts={accounts || []} />
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="view" className="space-y-6">
+          <div className="flex items-center justify-between">
+            <h2 className="text-xl font-semibold text-white">All Trades</h2>
+            <Button onClick={exportToCSV} className="bg-blue-600 hover:bg-blue-700">
+              <Download className="mr-2 h-4 w-4" />
+              Export CSV
+            </Button>
+          </div>
 
       {/* Filters */}
       <Card className="bg-dark-card border-dark-border">
@@ -323,6 +353,8 @@ export default function Trades() {
           </div>
         </CardContent>
       </Card>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }
