@@ -13,9 +13,11 @@ import {
   Brain,
   LogOut,
   BookOpen,
-  CreditCard
+  CreditCard,
+  ChevronRight
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/hooks/useAuth";
 
 const navItems = [
   { href: "/", label: "Dashboard", icon: ChartLine, section: "main" },
@@ -32,6 +34,7 @@ const navItems = [
 
 export default function Sidebar() {
   const [location] = useLocation();
+  const { user } = useAuth();
 
   const mainItems = navItems.filter(item => item.section === "main");
   const analyticsItems = navItems.filter(item => item.section === "analytics");
@@ -48,6 +51,27 @@ export default function Sidebar() {
             <p className="text-xs text-gray-400">Elite Trading Journal</p>
           </div>
         </div>
+        
+        {/* User Profile - Simplified */}
+        {user && (
+          <div className="mt-4 pt-4 border-t border-prop-gold/20">
+            <Link href="/profile" className="flex items-center justify-between hover:bg-prop-card p-2 rounded-lg smooth-transition group">
+              <div className="flex items-center space-x-3">
+                <div className="w-8 h-8 bg-prop-gradient-gold rounded-full flex items-center justify-center">
+                  <span className="text-black text-sm font-bold">
+                    {(user as any).firstName?.charAt(0) || (user as any).email?.charAt(0) || 'U'}
+                  </span>
+                </div>
+                <div className="flex-1">
+                  <p className="text-sm font-medium text-white group-hover:text-prop-gold smooth-transition">
+                    {(user as any).firstName || (user as any).email?.split('@')[0] || 'User'}
+                  </p>
+                </div>
+              </div>
+              <ChevronRight className="h-4 w-4 text-gray-400 group-hover:text-prop-gold smooth-transition" />
+            </Link>
+          </div>
+        )}
       </div>
       
       <nav className="mt-6">
@@ -93,53 +117,17 @@ export default function Sidebar() {
         </ul>
       </nav>
       
-      <div className="absolute bottom-0 w-64 p-4 border-t border-dark-border bg-dark-surface">
-        <div className="space-y-4">
-          {/* Trader Profile */}
-          <Link href="/profile" className="flex items-center hover:bg-gray-700 p-2 rounded-lg transition-colors -m-2">
-            <div className="w-10 h-10 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full flex items-center justify-center">
-              <span className="text-white text-sm font-bold">MM</span>
-            </div>
-            <div className="ml-3 flex-1">
-              <p className="text-sm font-medium text-white hover:text-blue-400 cursor-pointer">Max Maserati</p>
-              <p className="text-xs text-gray-400">Professional Trader</p>
-            </div>
-          </Link>
-
-          {/* MMM Stats Subscription */}
-          <div className="bg-purple-900 bg-opacity-30 p-3 rounded-lg border border-purple-600 border-opacity-30">
-            <div className="flex items-center justify-between mb-2">
-              <div className="flex items-center">
-                <div className="w-6 h-6 bg-purple-600 bg-opacity-40 rounded flex items-center justify-center mr-2">
-                  <Shield className="h-3 w-3 text-purple-400" />
-                </div>
-                <span className="text-xs font-medium text-white">MMM Stats</span>
-              </div>
-              <span className="text-xs bg-purple-600 text-white px-2 py-1 rounded">Pro</span>
-            </div>
-            <div className="space-y-1">
-              <div className="flex justify-between text-xs">
-                <span className="text-gray-400">Plan:</span>
-                <span className="text-white">Monthly Pro</span>
-              </div>
-              <div className="flex justify-between text-xs">
-                <span className="text-gray-400">Next billing:</span>
-                <span className="text-white">Jan 15</span>
-              </div>
-            </div>
-          </div>
-          
-          {/* Logout Button */}
-          <Button 
-            variant="outline" 
-            size="sm" 
-            className="w-full border-gray-600 hover:bg-gray-700"
-            onClick={() => window.location.href = '/api/logout'}
-          >
-            <LogOut className="h-4 w-4 mr-2" />
-            Sign Out
-          </Button>
-        </div>
+      <div className="absolute bottom-0 w-64 p-4 border-t border-prop-gold/20 bg-prop-gradient-main">
+        {/* Logout Button */}
+        <Button 
+          variant="outline" 
+          size="sm" 
+          className="w-full border-prop-gold/40 hover:bg-prop-card text-white hover:text-prop-gold smooth-transition"
+          onClick={() => window.location.href = '/api/logout'}
+        >
+          <LogOut className="h-4 w-4 mr-2" />
+          Sign Out
+        </Button>
       </div>
     </aside>
   );
