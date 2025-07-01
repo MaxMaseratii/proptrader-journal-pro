@@ -157,7 +157,7 @@ export default function Projections() {
         days.push({
           date: currentDate.toISOString().split('T')[0],
           dayNumber: dayCount,
-          risk: currentRisk,
+          risk: settings.riskPerTrade, // Show base risk, not dynamic risk
           reward: totalDailyReward,
           targetExpectation: cumulativeTarget,
           actualPnl,
