@@ -430,6 +430,34 @@ export default function Projections() {
                     </p>
                   </div>
                 </div>
+
+                {/* Real-time Effect Preview */}
+                {(settings.riskCuttingPercent > 0 || settings.compoundingPercent > 0) && (
+                  <div className="mt-4 p-3 bg-gradient-to-r from-blue-900/20 to-purple-900/20 border border-blue-600/30 rounded-lg">
+                    <h5 className="text-white font-medium mb-2 flex items-center">
+                      <span className="text-lg mr-2">⚡</span>
+                      Live Effect Preview
+                    </h5>
+                    <div className="space-y-2 text-sm">
+                      {settings.riskCuttingPercent > 0 && (
+                        <div className="flex justify-between items-center">
+                          <span className="text-gray-300">After a loss:</span>
+                          <span className="text-red-400">
+                            {formatCurrency(settings.riskPerTrade)} → {formatCurrency(settings.riskPerTrade * (1 - settings.riskCuttingPercent / 100))}
+                          </span>
+                        </div>
+                      )}
+                      {settings.compoundingPercent > 0 && (
+                        <div className="flex justify-between items-center">
+                          <span className="text-gray-300">After a win:</span>
+                          <span className="text-green-400">
+                            {formatCurrency(settings.riskPerTrade)} → {formatCurrency(settings.riskPerTrade * (1 + settings.compoundingPercent / 100))}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
               </div>
             </CardContent>
           </Card>
