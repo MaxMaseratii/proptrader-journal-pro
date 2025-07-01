@@ -140,6 +140,19 @@ export const csvImports = pgTable("csv_imports", {
   errors: text("errors"), // JSON array of import errors
 });
 
+export const spending = pgTable("spending", {
+  id: serial("id").primaryKey(),
+  accountId: integer("account_id").notNull(),
+  spendingType: text("spending_type").notNull(), // 'account_purchase', 'account_reset', 'activation_fee', 'subscription', 'other'
+  amount: real("amount").notNull(),
+  description: text("description").notNull(),
+  paymentMethod: text("payment_method").notNull(), // 'credit_card', 'debit_card', 'paypal', 'bank_transfer', 'crypto', 'other'
+  date: date("date").notNull(),
+  isRecurring: boolean("is_recurring").default(false),
+  category: text("category"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
 export const insertAccountSchema = createInsertSchema(accounts).omit({
   id: true,
   createdAt: true,

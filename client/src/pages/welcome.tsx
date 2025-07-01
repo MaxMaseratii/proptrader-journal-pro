@@ -242,12 +242,21 @@ export default function Welcome() {
                     <span className="text-gray-300">CSV Import</span>
                   </li>
                 </ul>
-                <Button 
-                  onClick={() => window.location.href = '/api/login'}
-                  className="w-full bg-prop-gradient-green text-white hover-scale smooth-transition"
-                >
-                  Get Started Free
-                </Button>
+                <div className="space-y-3">
+                  <Button 
+                    onClick={() => window.location.href = '/api/login'}
+                    className="w-full bg-prop-gradient-green text-white hover-scale smooth-transition"
+                  >
+                    Sign Up Free
+                  </Button>
+                  <Button 
+                    onClick={() => window.location.href = '/api/login'}
+                    variant="outline"
+                    className="w-full border-prop-green text-prop-green hover:bg-prop-green hover:text-white smooth-transition"
+                  >
+                    Login
+                  </Button>
+                </div>
               </CardContent>
             </Card>
 
@@ -293,12 +302,21 @@ export default function Welcome() {
                     <span className="text-gray-300">Priority Support</span>
                   </li>
                 </ul>
-                <Button 
-                  onClick={() => window.location.href = '/api/login'}
-                  className="w-full bg-prop-gradient-gold text-black font-bold hover-scale smooth-transition"
-                >
-                  Start Pro Trial
-                </Button>
+                <div className="space-y-3">
+                  <Button 
+                    onClick={() => window.location.href = '/api/login'}
+                    className="w-full bg-prop-gradient-gold text-black font-bold hover-scale smooth-transition"
+                  >
+                    Start Pro Trial
+                  </Button>
+                  <Button 
+                    onClick={() => window.location.href = '/api/login'}
+                    variant="outline"
+                    className="w-full border-prop-gold text-prop-gold hover:bg-prop-gold hover:text-black smooth-transition"
+                  >
+                    Login
+                  </Button>
+                </div>
               </CardContent>
             </Card>
 
@@ -338,14 +356,138 @@ export default function Welcome() {
                     <span className="text-gray-300">White-Label Options</span>
                   </li>
                 </ul>
-                <Button 
-                  onClick={() => window.location.href = '/api/login'}
-                  className="w-full bg-prop-gradient-pink text-white hover-scale smooth-transition"
-                >
-                  Contact Sales
-                </Button>
+                <div className="space-y-3">
+                  <Button 
+                    onClick={() => window.location.href = '/api/login'}
+                    className="w-full bg-prop-gradient-pink text-white hover-scale smooth-transition"
+                  >
+                    Start Elite Trial
+                  </Button>
+                  <Button 
+                    onClick={() => window.location.href = '/api/login'}
+                    variant="outline"
+                    className="w-full border-prop-pink text-prop-pink hover:bg-prop-pink hover:text-white smooth-transition"
+                  >
+                    Login
+                  </Button>
+                </div>
               </CardContent>
             </Card>
+          </div>
+        </div>
+      </section>
+
+      {/* Dashboard Showcase */}
+      <section className="py-20 px-4 bg-gray-900/50">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-5xl font-bold mb-6 text-gradient-rainbow">
+              Powerful Dashboard at Your Fingertips
+            </h2>
+            <p className="text-xl text-gray-300">
+              See how PropJournal Pro transforms your trading data into actionable insights
+            </p>
+          </div>
+          
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-16">
+            {/* Account Overview Mockup */}
+            <div className="bg-prop-card rounded-xl border border-prop-gold/20 p-6 hover-lift smooth-transition">
+              <div className="mb-4">
+                <h3 className="text-xl font-bold text-prop-gold mb-2">Account Overview</h3>
+                <p className="text-gray-400">Real-time account monitoring and risk management</p>
+              </div>
+              <div className="bg-gray-800 rounded-lg p-4 space-y-3">
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-300">Current Balance</span>
+                  <span className="text-prop-green font-bold">$105,847.32</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-300">Daily P&L</span>
+                  <span className="text-prop-green font-bold">+$2,347.89</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-300">Max Drawdown</span>
+                  <span className="text-gray-300">2.3% / 10%</span>
+                </div>
+                <div className="w-full bg-gray-700 rounded-full h-2">
+                  <div className="bg-prop-green h-2 rounded-full w-2/3"></div>
+                </div>
+              </div>
+            </div>
+
+            {/* Trade Analytics Mockup */}
+            <div className="bg-prop-card rounded-xl border border-prop-blue/20 p-6 hover-lift smooth-transition">
+              <div className="mb-4">
+                <h3 className="text-xl font-bold text-prop-blue mb-2">Performance Analytics</h3>
+                <p className="text-gray-400">Advanced metrics and trading statistics</p>
+              </div>
+              <div className="bg-gray-800 rounded-lg p-4 space-y-3">
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-300">Win Rate</span>
+                  <span className="text-prop-blue font-bold">67.8%</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-300">Profit Factor</span>
+                  <span className="text-prop-blue font-bold">1.89</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-300">Sharpe Ratio</span>
+                  <span className="text-prop-blue font-bold">2.43</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-300">Total Trades</span>
+                  <span className="text-gray-300">2,847</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Risk Management Mockup */}
+            <div className="bg-prop-card rounded-xl border border-prop-pink/20 p-6 hover-lift smooth-transition">
+              <div className="mb-4">
+                <h3 className="text-xl font-bold text-prop-pink mb-2">Risk Management</h3>
+                <p className="text-gray-400">Smart position sizing and risk controls</p>
+              </div>
+              <div className="bg-gray-800 rounded-lg p-4 space-y-3">
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-300">Position Size</span>
+                  <span className="text-prop-pink font-bold">$15,750</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-300">Risk Per Trade</span>
+                  <span className="text-prop-pink font-bold">1.5%</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-300">Stop Loss</span>
+                  <span className="text-red-400">-$1,500</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-300">Take Profit</span>
+                  <span className="text-prop-green">+$4,500</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Journal Entry Mockup */}
+            <div className="bg-prop-card rounded-xl border border-prop-green/20 p-6 hover-lift smooth-transition">
+              <div className="mb-4">
+                <h3 className="text-xl font-bold text-prop-green mb-2">Trading Journal</h3>
+                <p className="text-gray-400">Detailed trade analysis and reflection</p>
+              </div>
+              <div className="bg-gray-800 rounded-lg p-4 space-y-3">
+                <div className="text-sm text-gray-300">
+                  <div className="font-semibold text-prop-green mb-1">What went right:</div>
+                  <div className="text-gray-400">Perfect entry at key support level, followed risk management rules</div>
+                </div>
+                <div className="text-sm text-gray-300">
+                  <div className="font-semibold text-red-400 mb-1">What went wrong:</div>
+                  <div className="text-gray-400">Could have held position longer for better R:R</div>
+                </div>
+                <div className="text-sm text-gray-300">
+                  <div className="font-semibold text-prop-blue mb-1">Improvement plan:</div>
+                  <div className="text-gray-400">Study market structure patterns for better exits</div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
