@@ -139,12 +139,18 @@ Changelog:
   * Rebranded application from "PropTracker Pro" to "PropJournal Pro - Elite Trading Journal"
   * Implemented complete user authentication system using Replit Auth and PostgreSQL
   * Created professional welcome page inspired by Tradezella with pricing tiers and features
-  * Added user sign-up flow with Free, Pro Trader ($19/month), and Firm ($99/month) plans
+  * Added user sign-up flow with Free, Pro Trader ($9.99/month), and Firm Elite ($14.99/month) plans
   * Implemented authentication routing - welcome page for unauthenticated users
   * Protected all API routes with authentication middleware
   * Added professional testimonials, feature showcases, and call-to-action sections
   * Updated sidebar branding and added logout functionality
   * Enhanced SEO with proper meta tags and descriptions focused on prop trading journal
+- July 1, 2025. Enhanced navigation and payment system:
+  * Added CSV import route (/csv-import) to main application routing
+  * Updated pricing structure to $9.99/month for Pro Trader and $14.99/month for Firm Elite
+  * Ensured all clickable elements have proper navigation functionality
+  * Enhanced dropdown navigation for trade views with full year selection
+  * Maintained unique design identity with glass morphism effects and proper color scheme
 ```
 
 ## User Preferences

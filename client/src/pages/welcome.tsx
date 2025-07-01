@@ -266,7 +266,7 @@ export default function Welcome() {
                 <CardTitle className="text-2xl text-prop-gold">Pro Trader</CardTitle>
                 <CardDescription className="text-gray-300 mt-4">For serious prop traders</CardDescription>
                 <div className="mt-6">
-                  <span className="text-4xl font-bold text-prop-gold">$19</span>
+                  <span className="text-4xl font-bold text-prop-gold">$9.99</span>
                   <span className="text-gray-400">/month</span>
                 </div>
               </CardHeader>
@@ -311,7 +311,7 @@ export default function Welcome() {
                 <CardTitle className="text-2xl text-prop-pink">Firm Elite</CardTitle>
                 <CardDescription className="text-gray-300 mt-4">For trading firms & teams</CardDescription>
                 <div className="mt-6">
-                  <span className="text-4xl font-bold text-prop-pink">$99</span>
+                  <span className="text-4xl font-bold text-prop-pink">$14.99</span>
                   <span className="text-gray-400">/month</span>
                 </div>
               </CardHeader>

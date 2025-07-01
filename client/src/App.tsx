@@ -43,6 +43,7 @@ function Router() {
           <Route path="/" component={DashboardShowcase} />
           <Route path="/dashboard-simple" component={Dashboard} />
           <Route path="/accounts" component={Accounts} />
+          <Route path="/csv-import" component={CsvImport} />
           <Route path="/journal" component={Journal} />
           <Route path="/risk-management" component={RiskManagement} />
           <Route path="/performance" component={Performance} />
