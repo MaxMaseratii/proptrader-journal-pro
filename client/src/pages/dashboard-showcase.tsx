@@ -207,37 +207,58 @@ export default function DashboardShowcase() {
           <CardHeader>
             <CardTitle className="text-gradient-rainbow flex items-center">
               <Activity className="mr-2 h-5 w-5" />
-              Investment Tracking
+              Investment Tracking & Payouts
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="p-4 bg-prop-gradient-subtle rounded-xl">
+            <div className="grid grid-cols-2 gap-4">
+              <div className="p-3 bg-prop-gradient-subtle rounded-xl">
+                <div className="text-center">
+                  <p className="text-gray-400 text-sm">Account Costs</p>
+                  <p className="font-bold text-prop-gold">${(totalInvested - 450).toLocaleString()}</p>
+                  <p className="text-xs text-gray-500">Purchase costs</p>
+                </div>
+              </div>
+              <div className="p-3 bg-prop-gradient-subtle rounded-xl">
+                <div className="text-center">
+                  <p className="text-gray-400 text-sm">Activation Fees</p>
+                  <p className="font-bold text-prop-blue">$450</p>
+                  <p className="text-xs text-gray-500">Activation costs</p>
+                </div>
+              </div>
+            </div>
+            
+            <div className="p-4 bg-prop-gradient-subtle rounded-xl border border-prop-green/20">
               <div className="flex justify-between items-center mb-2">
                 <span className="text-gray-400">Total Invested</span>
-                <span className="font-bold text-prop-gold">${totalInvested.toLocaleString()}</span>
+                <span className="font-bold text-white">${totalInvested.toLocaleString()}</span>
               </div>
               <div className="flex justify-between items-center mb-2">
-                <span className="text-gray-400">Portfolio Value</span>
-                <span className="font-bold text-white">${totalPortfolioValue.toLocaleString()}</span>
+                <span className="text-gray-400">Total Payouts</span>
+                <span className="font-bold text-prop-green">$8,750</span>
               </div>
+              <div className="h-px bg-gray-600 my-2"></div>
               <div className="flex justify-between items-center">
-                <span className="text-gray-400">Net Profit</span>
-                <span className={`font-bold ${totalPnL >= 0 ? 'text-prop-green' : 'text-prop-pink'}`}>
-                  ${(totalPortfolioValue - totalInvested).toLocaleString()}
+                <span className="text-gray-400 font-medium">Profitability</span>
+                <span className="font-bold text-prop-green">
+                  +${(8750 - totalInvested).toLocaleString()}
                 </span>
               </div>
+              <p className="text-xs text-gray-400 mt-1 text-center">
+                {`Profitable • $8,750 vs $${totalInvested.toLocaleString()}`}
+              </p>
             </div>
             
             <div className="space-y-2">
               <div className="flex justify-between">
-                <span className="text-sm text-gray-400">ROI</span>
+                <span className="text-sm text-gray-400">Payout ROI</span>
                 <span className="text-sm text-prop-green">
-                  +{(((totalPortfolioValue - totalInvested) / totalInvested) * 100).toFixed(1)}%
+                  +{(((8750 - totalInvested) / totalInvested) * 100).toFixed(1)}%
                 </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-sm text-gray-400">Active Accounts</span>
-                <span className="text-sm text-white">{activeAccounts + fundedAccounts}</span>
+                <span className="text-sm text-gray-400">Funded Accounts</span>
+                <span className="text-sm text-white">{fundedAccounts}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-sm text-gray-400">Reset Costs</span>
