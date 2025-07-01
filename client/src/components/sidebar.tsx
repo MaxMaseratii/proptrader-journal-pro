@@ -14,7 +14,8 @@ import {
   LogOut,
   BookOpen,
   CreditCard,
-  ChevronRight
+  ChevronRight,
+  Trophy
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
@@ -26,6 +27,7 @@ const navItems = [
   { href: "/accounts", label: "Accounts", icon: Wallet, section: "main" },
   { href: "/trades", label: "Trades", icon: BarChart3, section: "main" },
   { href: "/spending", label: "Spending", icon: CreditCard, section: "main" },
+  { href: "/achievements", label: "Achievements", icon: Trophy, section: "main" },
   { href: "/risk-management", label: "Risk Management", icon: Shield, section: "main" },
   { href: "/performance", label: "Performance", icon: Calendar, section: "analytics" },
   { href: "/analytics", label: "Advanced Analytics", icon: Brain, section: "analytics" },

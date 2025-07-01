@@ -1,12 +1,14 @@
 import { 
-  accounts, trades, journalEntries, dailyStats, csvImports, spending, users,
+  accounts, trades, journalEntries, dailyStats, csvImports, spending, users, achievements, userStats,
   type Account, type InsertAccount,
   type Trade, type InsertTrade, 
   type JournalEntry, type InsertJournalEntry,
   type DailyStats, type InsertDailyStats,
   type CsvImport, type InsertCsvImport,
   type Spending, type InsertSpending,
-  type User, type UpsertUser
+  type User, type UpsertUser,
+  type Achievement, type InsertAchievement,
+  type UserStats, type InsertUserStats
 } from "@shared/schema";
 
 export interface IStorage {
@@ -48,6 +50,16 @@ export interface IStorage {
   // User operations for Replit Auth
   getUser(id: string): Promise<User | undefined>;
   upsertUser(user: UpsertUser): Promise<User>;
+
+  // Achievement operations
+  getAchievements(userId: string): Promise<Achievement[]>;
+  createAchievement(achievement: InsertAchievement): Promise<Achievement>;
+  updateAchievement(id: number, achievement: Partial<InsertAchievement>): Promise<Achievement | undefined>;
+  
+  // User stats operations
+  getUserStats(userId: string): Promise<UserStats | undefined>;
+  createUserStats(stats: InsertUserStats): Promise<UserStats>;
+  updateUserStats(userId: string, stats: Partial<InsertUserStats>): Promise<UserStats | undefined>;
 }
 
 export class MemStorage implements IStorage {
@@ -540,6 +552,45 @@ export class MemStorage implements IStorage {
     };
     return user;
   }
+
+  // Achievement operations
+  async getAchievements(userId: string): Promise<Achievement[]> {
+    return [];
+  }
+
+  async createAchievement(achievement: InsertAchievement): Promise<Achievement> {
+    const id = this.currentId++;
+    const newAchievement: Achievement = { 
+      ...achievement, 
+      id,
+      createdAt: new Date(),
+      unlockedAt: achievement.isUnlocked ? new Date() : null
+    };
+    return newAchievement;
+  }
+
+  async updateAchievement(id: number, achievement: Partial<InsertAchievement>): Promise<Achievement | undefined> {
+    return undefined;
+  }
+
+  // User stats operations
+  async getUserStats(userId: string): Promise<UserStats | undefined> {
+    return undefined;
+  }
+
+  async createUserStats(stats: InsertUserStats): Promise<UserStats> {
+    const id = this.currentId++;
+    const newStats: UserStats = { 
+      ...stats, 
+      id,
+      lastUpdated: new Date()
+    };
+    return newStats;
+  }
+
+  async updateUserStats(userId: string, stats: Partial<InsertUserStats>): Promise<UserStats | undefined> {
+    return undefined;
+  }
 }
 
 // Switch to DatabaseStorage for authentication support
@@ -712,6 +763,45 @@ export class DatabaseStorage implements IStorage {
   async createSpending(spendingData: InsertSpending): Promise<Spending> {
     const [newSpending] = await db.insert(spending).values(spendingData).returning();
     return newSpending;
+  }
+
+  // Achievement operations
+  async getAchievements(userId: string): Promise<Achievement[]> {
+    return await db.select().from(achievements).where(eq(achievements.userId, userId));
+  }
+
+  async createAchievement(achievement: InsertAchievement): Promise<Achievement> {
+    const [newAchievement] = await db.insert(achievements).values(achievement).returning();
+    return newAchievement;
+  }
+
+  async updateAchievement(id: number, achievement: Partial<InsertAchievement>): Promise<Achievement | undefined> {
+    const [updatedAchievement] = await db
+      .update(achievements)
+      .set(achievement)
+      .where(eq(achievements.id, id))
+      .returning();
+    return updatedAchievement || undefined;
+  }
+
+  // User stats operations
+  async getUserStats(userId: string): Promise<UserStats | undefined> {
+    const [stats] = await db.select().from(userStats).where(eq(userStats.userId, userId));
+    return stats || undefined;
+  }
+
+  async createUserStats(stats: InsertUserStats): Promise<UserStats> {
+    const [newStats] = await db.insert(userStats).values(stats).returning();
+    return newStats;
+  }
+
+  async updateUserStats(userId: string, stats: Partial<InsertUserStats>): Promise<UserStats | undefined> {
+    const [updatedStats] = await db
+      .update(userStats)
+      .set({ ...stats, lastUpdated: new Date() })
+      .where(eq(userStats.userId, userId))
+      .returning();
+    return updatedStats || undefined;
   }
 }
 
