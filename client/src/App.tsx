@@ -18,6 +18,7 @@ import Profile from "@/pages/profile";
 import Welcome from "@/pages/welcome";
 import CsvImport from "@/pages/csv-import";
 import Spending from "@/pages/spending";
+import Achievements from "@/pages/achievements";
 import Sidebar from "@/components/sidebar";
 import NotFound from "@/pages/not-found";
 import { useAuth } from "@/hooks/useAuth";
@@ -55,6 +56,7 @@ function Router() {
           <Route path="/reports" component={Reports} />
           <Route path="/analytics" component={Analytics} />
           <Route path="/trades" component={Trades} />
+          <Route path="/achievements" component={Achievements} />
           <Route path="/profile" component={Profile} />
           <Route component={NotFound} />
         </Switch>

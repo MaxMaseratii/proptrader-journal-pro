@@ -229,6 +229,10 @@ export type CsvImport = typeof csvImports.$inferSelect;
 export type InsertCsvImport = z.infer<typeof insertCsvImportSchema>;
 export type Spending = typeof spending.$inferSelect;
 export type InsertSpending = z.infer<typeof insertSpendingSchema>;
+export type Achievement = typeof achievements.$inferSelect;
+export type InsertAchievement = z.infer<typeof insertAchievementSchema>;
+export type UserStats = typeof userStats.$inferSelect;
+export type InsertUserStats = z.infer<typeof insertUserStatsSchema>;
 
 // Session storage table for Replit Auth
 export const sessions = pgTable(
