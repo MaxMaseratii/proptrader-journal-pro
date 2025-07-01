@@ -22,7 +22,8 @@ import {
 
 interface ProjectionSettings {
   mode: 'account' | 'simulation';
-  selectedAccountIds: number[];
+  selectedAccountId: number | null;
+  copiedAccounts: number;
   startingCapital: number;
   riskPerTrade: number;
   riskRewardRatio: number;
@@ -57,11 +58,12 @@ export default function Projections() {
 
   const [settings, setSettings] = useState<ProjectionSettings>({
     mode: 'simulation',
-    selectedAccountIds: [],
+    selectedAccountId: null,
+    copiedAccounts: 1,
     startingCapital: 150000,
     riskPerTrade: 250,
     riskRewardRatio: 3,
-    profitTarget: 9000,
+    profitTarget: 10000,
     maxDrawdown: 4500,
     riskCuttingPercent: 0,
     compoundingPercent: 0,
@@ -72,27 +74,24 @@ export default function Projections() {
   const [projectionData, setProjectionData] = useState<ProjectionDay[]>([]);
 
   // Calculate account-specific data when account mode is selected
-  const selectedAccountsData = useMemo(() => {
-    if (settings.mode !== 'account' || settings.selectedAccountIds.length === 0) {
+  const selectedAccountData = useMemo(() => {
+    if (settings.mode !== 'account' || !settings.selectedAccountId) {
       return null;
     }
     
-    const selectedAccounts = accounts.filter(acc => settings.selectedAccountIds.includes(acc.id));
-    const accountTrades = trades.filter(trade => settings.selectedAccountIds.includes(trade.accountId));
+    const selectedAccount = accounts.find(acc => acc.id === settings.selectedAccountId);
+    if (!selectedAccount) return null;
     
-    const totalStartingCapital = selectedAccounts.reduce((sum, acc) => sum + acc.startingBalance, 0);
-    const totalCurrentBalance = selectedAccounts.reduce((sum, acc) => sum + acc.currentBalance, 0);
+    const accountTrades = trades.filter(trade => trade.accountId === settings.selectedAccountId);
     const totalPnl = accountTrades.reduce((sum, trade) => sum + trade.pnl, 0);
     
     return {
-      accounts: selectedAccounts,
+      account: selectedAccount,
       trades: accountTrades,
-      totalStartingCapital,
-      totalCurrentBalance,
       totalPnl,
       actualProgress: totalPnl / settings.profitTarget * 100,
     };
-  }, [accounts, trades, settings.selectedAccountIds, settings.mode, settings.profitTarget]);
+  }, [accounts, trades, settings.selectedAccountId, settings.mode, settings.profitTarget]);
 
   // Generate projection data
   useEffect(() => {
@@ -103,8 +102,8 @@ export default function Projections() {
       let currentRisk = settings.riskPerTrade;
       let dayCount = 0;
       
-      // Calculate how many days needed to reach target
-      const dailyProfit = settings.riskPerTrade * settings.riskRewardRatio;
+      // Calculate daily profit considering copied accounts
+      const dailyProfit = (settings.riskPerTrade * settings.riskRewardRatio) * settings.copiedAccounts;
       const daysNeeded = Math.ceil(settings.profitTarget / dailyProfit);
       
       for (let i = 1; i <= daysNeeded; i++) {
@@ -112,20 +111,23 @@ export default function Projections() {
         const currentDate = new Date();
         currentDate.setDate(currentDate.getDate() + i - 1);
         
-        // Skip weekends if it's a trading simulation
+        // Skip weekends for trading days
         if (currentDate.getDay() === 0 || currentDate.getDay() === 6) {
+          i--; // Don't count weekends in day numbering
           continue;
         }
         
-        const reward = currentRisk * settings.riskRewardRatio;
-        cumulativeTarget += reward;
+        // Calculate reward per account, then multiply by copied accounts
+        const rewardPerAccount = currentRisk * settings.riskRewardRatio;
+        const totalDailyReward = rewardPerAccount * settings.copiedAccounts;
+        cumulativeTarget += totalDailyReward;
         
-        // Check if there's actual trade data for this account and day
+        // Check for actual trade data if in account mode
         let actualPnl: number | undefined;
         let isWin = true;
         
-        if (selectedAccountsData && selectedAccountsData.trades.length > 0) {
-          const dayTrades = selectedAccountsData.trades.filter(trade => {
+        if (selectedAccountData && selectedAccountData.trades.length > 0) {
+          const dayTrades = selectedAccountData.trades.filter(trade => {
             const tradeDate = new Date(trade.date);
             return tradeDate.toDateString() === currentDate.toDateString();
           });
@@ -134,6 +136,21 @@ export default function Projections() {
             actualPnl = dayTrades.reduce((sum, trade) => sum + trade.pnl, 0);
             isWin = actualPnl > 0;
             cumulativeActual += actualPnl;
+            
+            // Apply dynamic risk adjustment on losses
+            if (!isWin && settings.riskCuttingPercent > 0) {
+              currentRisk = currentRisk * (1 - settings.riskCuttingPercent / 100);
+            }
+            
+            // Apply compounding only on wins
+            if (isWin && settings.compoundingPercent > 0) {
+              currentRisk = currentRisk * (1 + settings.compoundingPercent / 100);
+            }
+          }
+        } else {
+          // In simulation mode, apply compounding on assumed wins
+          if (settings.compoundingPercent > 0) {
+            currentRisk = currentRisk * (1 + settings.compoundingPercent / 100);
           }
         }
         
@@ -141,18 +158,13 @@ export default function Projections() {
           date: currentDate.toISOString().split('T')[0],
           dayNumber: dayCount,
           risk: currentRisk,
-          reward,
+          reward: totalDailyReward,
           targetExpectation: cumulativeTarget,
           actualPnl,
           isWin,
           cumulativeTarget,
           cumulativeActual,
         });
-        
-        // Apply compounding if set
-        if (settings.compoundingPercent > 0) {
-          currentRisk *= (1 + settings.compoundingPercent / 100);
-        }
         
         // Stop if target is reached
         if (cumulativeTarget >= settings.profitTarget) {
@@ -164,7 +176,7 @@ export default function Projections() {
     };
 
     generateProjection();
-  }, [settings, selectedAccountsData]);
+  }, [settings, selectedAccountData]);
 
   const updateSetting = (key: keyof ProjectionSettings, value: any) => {
     setSettings(prev => ({ ...prev, [key]: value }));
@@ -172,7 +184,7 @@ export default function Projections() {
 
   const daysToTarget = projectionData.length;
   const totalReward = settings.riskPerTrade * settings.riskRewardRatio;
-  const progressPercentage = selectedAccountsData ? selectedAccountsData.actualProgress : 0;
+  const progressPercentage = selectedAccountData ? selectedAccountData.actualProgress : 0;
 
   return (
     <div className="space-y-6">
@@ -212,30 +224,58 @@ export default function Projections() {
 
               {/* Account Selection (only in account mode) */}
               {settings.mode === 'account' && (
-                <div className="space-y-2">
-                  <Label className="text-white">Select Accounts</Label>
-                  <div className="space-y-2 max-h-32 overflow-y-auto">
-                    {accounts.map(account => (
-                      <div key={account.id} className="flex items-center space-x-2">
-                        <input
-                          type="checkbox"
-                          id={`account-${account.id}`}
-                          checked={settings.selectedAccountIds.includes(account.id)}
-                          onChange={(e) => {
-                            if (e.target.checked) {
-                              updateSetting('selectedAccountIds', [...settings.selectedAccountIds, account.id]);
-                            } else {
-                              updateSetting('selectedAccountIds', settings.selectedAccountIds.filter(id => id !== account.id));
-                            }
-                          }}
-                          className="rounded border-gray-600"
-                        />
-                        <label htmlFor={`account-${account.id}`} className="text-sm text-white">
-                          {account.name} - {formatCurrency(account.currentBalance)}
-                        </label>
-                      </div>
-                    ))}
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <Label className="text-white">Select Account</Label>
+                    <Select 
+                      value={settings.selectedAccountId?.toString() || ""} 
+                      onValueChange={(value) => updateSetting('selectedAccountId', value ? parseInt(value) : null)}
+                    >
+                      <SelectTrigger className="bg-gray-700 border-gray-600 text-white">
+                        <SelectValue placeholder="Choose an account..." />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {accounts.map(account => (
+                          <SelectItem key={account.id} value={account.id.toString()}>
+                            {account.name} - {formatCurrency(account.currentBalance)}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </div>
+                  
+                  <div className="space-y-2">
+                    <Label className="text-white">Number of Copied Accounts</Label>
+                    <Input
+                      type="number"
+                      min="1"
+                      max="10"
+                      value={settings.copiedAccounts}
+                      onChange={(e) => updateSetting('copiedAccounts', Number(e.target.value))}
+                      className="bg-gray-700 border-gray-600 text-white"
+                    />
+                    <p className="text-xs text-gray-400">
+                      Multiple accounts reach targets faster (e.g., 2 accounts = half the time)
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              {/* Copied Accounts for Simulation Mode */}
+              {settings.mode === 'simulation' && (
+                <div className="space-y-2">
+                  <Label className="text-white">Number of Copied Accounts</Label>
+                  <Input
+                    type="number"
+                    min="1"
+                    max="10"
+                    value={settings.copiedAccounts}
+                    onChange={(e) => updateSetting('copiedAccounts', Number(e.target.value))}
+                    className="bg-gray-700 border-gray-600 text-white"
+                  />
+                  <p className="text-xs text-gray-400">
+                    Multiple accounts reach targets faster (e.g., 2 accounts = half the time)
+                  </p>
                 </div>
               )}
 
@@ -303,6 +343,45 @@ export default function Projections() {
                   />
                 </div>
               </div>
+
+              {/* Advanced Risk Management */}
+              <div className="space-y-4 pt-4 border-t border-gray-700">
+                <h4 className="text-white font-medium">Advanced Settings</h4>
+                
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label className="text-white">Risk Cutting % (on loss)</Label>
+                    <Input
+                      type="number"
+                      min="0"
+                      max="100"
+                      step="5"
+                      value={settings.riskCuttingPercent}
+                      onChange={(e) => updateSetting('riskCuttingPercent', Number(e.target.value))}
+                      className="bg-gray-700 border-gray-600 text-white"
+                    />
+                    <p className="text-xs text-gray-400">
+                      Auto-reduce risk after losses (e.g., 50% = half risk)
+                    </p>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label className="text-white">Compounding % (on win)</Label>
+                    <Input
+                      type="number"
+                      min="0"
+                      max="100"
+                      step="5"
+                      value={settings.compoundingPercent}
+                      onChange={(e) => updateSetting('compoundingPercent', Number(e.target.value))}
+                      className="bg-gray-700 border-gray-600 text-white"
+                    />
+                    <p className="text-xs text-gray-400">
+                      Auto-increase risk after wins (0% = no compounding)
+                    </p>
+                  </div>
+                </div>
+              </div>
             </CardContent>
           </Card>
         </div>
@@ -349,30 +428,36 @@ export default function Projections() {
           </div>
 
           {/* Account Summary (if account mode) */}
-          {settings.mode === 'account' && selectedAccountsData && (
+          {settings.mode === 'account' && selectedAccountData && (
             <Card className="bg-dark-card border-dark-border">
               <CardHeader>
-                <CardTitle className="text-white">Selected Accounts Summary</CardTitle>
+                <CardTitle className="text-white">Selected Account Summary</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                   <div className="text-center">
                     <div className="text-lg font-bold text-green-400">
-                      {formatCurrency(selectedAccountsData.totalCurrentBalance)}
+                      {formatCurrency(selectedAccountData.account.currentBalance)}
                     </div>
                     <div className="text-sm text-gray-400">Current Balance</div>
                   </div>
                   <div className="text-center">
                     <div className="text-lg font-bold text-blue-400">
-                      {formatCurrency(selectedAccountsData.totalPnl)}
+                      {formatCurrency(selectedAccountData.totalPnl)}
                     </div>
                     <div className="text-sm text-gray-400">Total P&L</div>
                   </div>
                   <div className="text-center">
                     <div className="text-lg font-bold text-prop-gold">
-                      {selectedAccountsData.accounts.length}
+                      {settings.copiedAccounts}
                     </div>
-                    <div className="text-sm text-gray-400">Accounts</div>
+                    <div className="text-sm text-gray-400">Copied Accounts</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-lg font-bold text-purple-400">
+                      {selectedAccountData.trades.length}
+                    </div>
+                    <div className="text-sm text-gray-400">Total Trades</div>
                   </div>
                 </div>
               </CardContent>
