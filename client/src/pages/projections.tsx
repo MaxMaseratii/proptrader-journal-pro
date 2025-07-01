@@ -397,7 +397,7 @@ export default function Projections() {
         {/* Results Panel */}
         <div className="lg:col-span-2 space-y-6">
           {/* Summary Cards */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
             <Card className="bg-prop-gradient-gold border-prop-gold/20">
               <CardContent className="p-4">
                 <div className="text-center">
@@ -430,6 +430,15 @@ export default function Projections() {
                 <div className="text-center">
                   <div className="text-2xl font-bold text-white">{progressPercentage.toFixed(1)}%</div>
                   <div className="text-sm text-purple-100">Actual Progress</div>
+                </div>
+              </CardContent>
+            </Card>
+            
+            <Card className="bg-teal-600 border-teal-500/20">
+              <CardContent className="p-4">
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-white">{settings.copiedAccounts}x</div>
+                  <div className="text-sm text-teal-100">Copied Accounts</div>
                 </div>
               </CardContent>
             </Card>
