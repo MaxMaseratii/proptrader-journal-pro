@@ -6,6 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
 import { EquityChart, MonthlyPerformanceChart } from "@/components/chart-components";
+import { useLocation } from "wouter";
 import { 
   TrendingUp, 
   TrendingDown, 
@@ -28,6 +29,8 @@ import {
 import { Account, Trade, JournalEntry } from "@shared/schema";
 
 export default function DashboardShowcase() {
+  const [, setLocation] = useLocation();
+  
   const { data: accounts = [] } = useQuery<Account[]>({
     queryKey: ["/api/accounts"],
   });
@@ -91,11 +94,18 @@ export default function DashboardShowcase() {
           <p className="text-gray-400">Complete portfolio overview and performance analytics</p>
         </div>
         <div className="flex flex-col sm:flex-row gap-3">
-          <Button variant="outline" className="border-prop-tiffany/20 hover:bg-prop-tiffany/10">
+          <Button 
+            variant="outline" 
+            className="border-prop-tiffany/20 hover:bg-prop-tiffany/10"
+            onClick={() => setLocation('/csv-import')}
+          >
             <Upload className="mr-2 h-4 w-4" />
             Import CSV
           </Button>
-          <Button className="bg-prop-gradient-gold text-black font-bold hover-scale">
+          <Button 
+            className="bg-prop-gradient-gold text-black font-bold hover-scale"
+            onClick={() => setLocation('/accounts')}
+          >
             <PlusCircle className="mr-2 h-4 w-4" />
             Create New Account
           </Button>
@@ -618,9 +628,33 @@ export default function DashboardShowcase() {
 
         <Card className="bg-prop-card border-prop-pink/20 hover-glow">
           <CardHeader>
-            <CardTitle className="text-gradient-rainbow flex items-center">
-              <Clock className="mr-2 h-5 w-5" />
-              Monthly Trades View
+            <CardTitle className="text-gradient-rainbow flex items-center justify-between">
+              <div className="flex items-center">
+                <Clock className="mr-2 h-5 w-5" />
+                Trade Analysis View
+              </div>
+              <div className="flex gap-2">
+                <Select defaultValue="monthly">
+                  <SelectTrigger className="w-32 bg-prop-dark border-prop-pink/20">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="daily">Daily</SelectItem>
+                    <SelectItem value="weekly">Weekly</SelectItem>
+                    <SelectItem value="monthly">Monthly</SelectItem>
+                  </SelectContent>
+                </Select>
+                <Select defaultValue="2024">
+                  <SelectTrigger className="w-20 bg-prop-dark border-prop-pink/20">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="2024">2024</SelectItem>
+                    <SelectItem value="2023">2023</SelectItem>
+                    <SelectItem value="2022">2022</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </CardTitle>
           </CardHeader>
           <CardContent>

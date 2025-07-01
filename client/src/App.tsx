@@ -15,6 +15,7 @@ import Analytics from "@/pages/analytics";
 import Trades from "@/pages/trades";
 import Profile from "@/pages/profile";
 import Welcome from "@/pages/welcome";
+import CsvImport from "@/pages/csv-import";
 import Sidebar from "@/components/sidebar";
 import NotFound from "@/pages/not-found";
 import { useAuth } from "@/hooks/useAuth";
