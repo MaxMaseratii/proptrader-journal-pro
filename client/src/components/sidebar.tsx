@@ -22,6 +22,7 @@ const navItems = [
   { href: "/journal", label: "Trading Journal", icon: Book, section: "main" },
   { href: "/accounts", label: "Accounts", icon: Wallet, section: "main" },
   { href: "/trades", label: "Trades", icon: TrendingUp, section: "main" },
+  { href: "/spending", label: "Spending", icon: CreditCard, section: "main" },
   { href: "/risk-management", label: "Risk Management", icon: Shield, section: "main" },
   { href: "/performance", label: "Performance", icon: BarChart3, section: "analytics" },
   { href: "/analytics", label: "Advanced Analytics", icon: Brain, section: "analytics" },
