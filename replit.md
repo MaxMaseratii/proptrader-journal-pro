@@ -177,6 +177,19 @@ Changelog:
   * Implemented gradient slider animations with hover effects and ripple animations
   * Added contextual badges with color-coded feedback (red for risk cutting, green for compounding)
   * Live effect preview panel shows immediate impact of slider adjustments on trading amounts
+- July 1, 2025. Fixed Risk Cutting Emoji Theme & CSV Import Error:
+  * Changed risk cutting emojis from fear-based (😟😰😱) to protective/responsible theme (🛡️🔒🏛️)
+  * Fixed CSV import authentication error by adding isAuthenticated middleware and correcting parameter names
+  * Risk cutting now properly represents account protection and responsible trading behavior
+- July 1, 2025. Gamified Goal Tracking with Achievement System:
+  * Created comprehensive achievement system with Bronze/Silver/Gold/Platinum levels
+  * Added achievement categories: Risk Discipline, Stop Loss Respect, Profit Targets, Journal Consistency
+  * Implemented user stats tracking: discipline score, streak counters, total points, user level
+  * Created achievement badges and progress tracking with visual feedback
+  * Added default achievements: Risk Guardian, Iron Discipline, Target Master, Consistent Learner
+  * Achievement system promotes responsible trading behaviors and prevents emotional trading
+  * Added achievements page with filtering, progress bars, and unlocked achievement tracking
+  * Integrated trophy icon in sidebar navigation for easy access to achievement center
 ```
 
 ## User Preferences

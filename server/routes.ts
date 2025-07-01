@@ -715,6 +715,100 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Achievement routes
+  app.get("/api/achievements", isAuthenticated, async (req, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      let achievements = await storage.getAchievements(userId);
+      
+      // Initialize default achievements if none exist
+      if (achievements.length === 0) {
+        const defaultAchievements = [
+          {
+            userId,
+            achievementType: 'risk_discipline',
+            title: 'Risk Guardian',
+            description: 'Respect your predefined risk in 10 consecutive trades',
+            badge: '🛡️',
+            level: 1,
+            progress: 0,
+            target: 10,
+            isUnlocked: false
+          },
+          {
+            userId,
+            achievementType: 'stop_loss_respect',
+            title: 'Iron Discipline',
+            description: 'Never move your stop loss due to fear in 20 trades',
+            badge: '⚔️',
+            level: 1,
+            progress: 0,
+            target: 20,
+            isUnlocked: false
+          },
+          {
+            userId,
+            achievementType: 'profit_target',
+            title: 'Target Master',
+            description: 'Hit your profit target 5 times in a row',
+            badge: '🎯',
+            level: 1,
+            progress: 0,
+            target: 5,
+            isUnlocked: false
+          },
+          {
+            userId,
+            achievementType: 'journal_streak',
+            title: 'Consistent Learner',
+            description: 'Complete your trading journal for 30 consecutive days',
+            badge: '📚',
+            level: 1,
+            progress: 0,
+            target: 30,
+            isUnlocked: false
+          }
+        ];
+
+        for (const achievement of defaultAchievements) {
+          await storage.createAchievement(achievement);
+        }
+        
+        achievements = await storage.getAchievements(userId);
+      }
+      
+      res.json(achievements);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch achievements" });
+    }
+  });
+
+  app.get("/api/user-stats", isAuthenticated, async (req, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      let userStats = await storage.getUserStats(userId);
+      
+      // Initialize user stats if none exist
+      if (!userStats) {
+        const defaultStats = {
+          userId,
+          riskDisciplineScore: 0,
+          stopLossRespectStreak: 0,
+          profitTargetHitStreak: 0,
+          journalStreakDays: 0,
+          totalPoints: 0,
+          level: 1
+        };
+        
+        userStats = await storage.createUserStats(defaultStats);
+      }
+      
+      res.json(userStats);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch user stats" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

@@ -10,7 +10,7 @@ import type { Achievement, UserStats } from "@shared/schema";
 
 interface AchievementCardProps {
   achievement: Achievement;
-  userStats: UserStats;
+  userStats?: UserStats;
 }
 
 function AchievementCard({ achievement, userStats }: AchievementCardProps) {
