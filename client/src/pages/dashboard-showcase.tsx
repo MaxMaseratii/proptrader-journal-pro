@@ -98,6 +98,7 @@ export default function DashboardShowcase() {
                 <p className="text-2xl font-bold text-prop-gold">
                   ${totalPortfolioValue.toLocaleString()}
                 </p>
+                <p className="text-xs text-gray-400 mt-1">Combined accounts</p>
               </div>
               <div className="bg-prop-gradient-gold p-3 rounded-xl">
                 <DollarSign className="h-6 w-6 text-black" />
@@ -110,19 +111,12 @@ export default function DashboardShowcase() {
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-gray-400 text-sm font-medium">Total P&L</p>
-                <p className={`text-2xl font-bold ${totalPnL >= 0 ? 'text-prop-green' : 'text-prop-pink'}`}>
-                  {totalPnL >= 0 ? '+' : ''}${totalPnL.toLocaleString()}
-                </p>
-                <p className={`text-sm ${totalPnL >= 0 ? 'text-prop-green' : 'text-prop-pink'}`}>
-                  {totalPnL >= 0 ? '+' : ''}{totalPnLPercentage.toFixed(2)}%
-                </p>
+                <p className="text-gray-400 text-sm font-medium">Daily P&L</p>
+                <p className="text-2xl font-bold text-prop-pink">-$825</p>
+                <p className="text-xs text-gray-400 mt-1">Today's performance</p>
               </div>
-              <div className={`bg-prop-gradient-${totalPnL >= 0 ? 'green' : 'pink'} p-3 rounded-xl`}>
-                {totalPnL >= 0 ? 
-                  <TrendingUp className="h-6 w-6 text-white" /> : 
-                  <TrendingDown className="h-6 w-6 text-white" />
-                }
+              <div className="bg-prop-gradient-pink p-3 rounded-xl">
+                <TrendingDown className="h-6 w-6 text-white" />
               </div>
             </div>
           </CardContent>
@@ -132,12 +126,16 @@ export default function DashboardShowcase() {
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-gray-400 text-sm font-medium">Win Rate</p>
-                <p className="text-2xl font-bold text-prop-blue">{winRate.toFixed(1)}%</p>
-                <p className="text-sm text-gray-400">{winningTrades}/{totalTrades} trades</p>
+                <p className="text-gray-400 text-sm font-medium">Avg Win/Loss</p>
+                <div className="flex items-center space-x-2 text-lg font-bold">
+                  <span className="text-prop-green">$485</span>
+                  <span className="text-gray-400">/</span>
+                  <span className="text-prop-pink">$312</span>
+                </div>
+                <p className="text-xs text-gray-400 mt-1">Win vs Loss ratio</p>
               </div>
               <div className="bg-prop-gradient-blue p-3 rounded-xl">
-                <Target className="h-6 w-6 text-white" />
+                <BarChart3 className="h-6 w-6 text-white" />
               </div>
             </div>
           </CardContent>
@@ -147,12 +145,120 @@ export default function DashboardShowcase() {
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-gray-400 text-sm font-medium">Active Accounts</p>
-                <p className="text-2xl font-bold text-prop-green">{activeAccounts + fundedAccounts}</p>
-                <p className="text-sm text-gray-400">{challengeAccounts} challenges</p>
+                <p className="text-gray-400 text-sm font-medium">Win Rate</p>
+                <p className="text-2xl font-bold text-prop-green">{winRate.toFixed(0)}%</p>
+                <p className="text-xs text-gray-400 mt-1">{winningTrades} wins / {totalTrades - winningTrades} losses</p>
               </div>
               <div className="bg-prop-gradient-green p-3 rounded-xl">
-                <Shield className="h-6 w-6 text-white" />
+                <Target className="h-6 w-6 text-white" />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Secondary Performance Metrics */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <Card className="bg-prop-card border-prop-tiffany/20 hover-glow">
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-gray-400 text-sm font-medium">R Factor</p>
+                <p className="text-2xl font-bold text-prop-green">1.56</p>
+                <p className="text-xs text-gray-400 mt-1">Total Reward / Total Risk ratio</p>
+              </div>
+              <div className="bg-prop-gradient-tiffany p-3 rounded-xl">
+                <BarChart3 className="h-6 w-6 text-white" />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-prop-card border-prop-pink/20 hover-glow">
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-gray-400 text-sm font-medium">Profit Factor</p>
+                <p className="text-2xl font-bold text-prop-blue">2.14</p>
+                <p className="text-xs text-gray-400 mt-1">Gross Profit / Gross Loss ratio</p>
+              </div>
+              <div className="bg-prop-gradient-blue p-3 rounded-xl">
+                <TrendingUp className="h-6 w-6 text-white" />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-prop-card border-prop-gold/20 hover-glow">
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-gray-400 text-sm font-medium">Total Trades</p>
+                <p className="text-2xl font-bold text-prop-gold">{totalTrades}</p>
+                <p className="text-xs text-gray-400 mt-1">This month</p>
+              </div>
+              <div className="bg-prop-gradient-gold p-3 rounded-xl">
+                <Activity className="h-6 w-6 text-black" />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Account Balance by Type - Key Feature from Original */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <Card className="bg-prop-card border-prop-blue/20 hover-glow">
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-gray-400 text-sm font-medium">Funded Accounts</p>
+                <p className="text-2xl font-bold text-prop-blue">
+                  ${accounts.filter(acc => acc.status === 'funded').reduce((sum, acc) => sum + acc.currentBalance, 0).toLocaleString()}
+                </p>
+                <p className="text-xs text-gray-400 mt-1">
+                  {fundedAccounts} accounts • Payout eligible
+                </p>
+              </div>
+              <div className="bg-prop-gradient-blue p-3 rounded-xl">
+                <DollarSign className="h-6 w-6 text-white" />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-prop-card border-prop-green/20 hover-glow">
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-gray-400 text-sm font-medium">Live Accounts</p>
+                <p className="text-2xl font-bold text-prop-green">
+                  ${accounts.filter(acc => acc.status === 'active').reduce((sum, acc) => sum + acc.currentBalance, 0).toLocaleString()}
+                </p>
+                <p className="text-xs text-gray-400 mt-1">
+                  {activeAccounts} accounts • Payout eligible
+                </p>
+              </div>
+              <div className="bg-prop-gradient-green p-3 rounded-xl">
+                <TrendingUp className="h-6 w-6 text-white" />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-prop-card border-prop-gold/20 hover-glow">
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-gray-400 text-sm font-medium">Challenge Accounts</p>
+                <p className="text-2xl font-bold text-prop-gold">
+                  ${accounts.filter(acc => acc.type === 'challenge').reduce((sum, acc) => sum + acc.currentBalance, 0).toLocaleString()}
+                </p>
+                <p className="text-xs text-gray-400 mt-1">
+                  {challengeAccounts} accounts • In progress
+                </p>
+              </div>
+              <div className="bg-prop-gradient-gold p-3 rounded-xl">
+                <Shield className="h-6 w-6 text-black" />
               </div>
             </div>
           </CardContent>
