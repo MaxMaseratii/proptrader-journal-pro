@@ -79,6 +79,23 @@
 }
 
 @layer utilities {
+  /* Fix textarea text color - ensure black text on light backgrounds */
+  textarea {
+    color: #000000 !important;
+    background-color: #ffffff !important;
+  }
+  
+  /* Fix number inputs to allow blank state */
+  input[type="number"] {
+    -moz-appearance: textfield;
+  }
+  
+  input[type="number"]::-webkit-outer-spin-button,
+  input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
   /* PropJournal Pro Color System */
   .bg-prop-black { background-color: var(--prop-black); }
   .bg-prop-dark { background-color: var(--prop-dark); }

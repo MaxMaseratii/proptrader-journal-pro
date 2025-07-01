@@ -56,7 +56,7 @@ export default function Sidebar() {
         </div>
       </div>
       
-      <nav className="mt-6">
+      <nav className="mt-6 flex-1 overflow-y-auto pb-20">
         <div className="px-6 mb-4">
           <h3 className="text-xs font-medium text-prop-gold uppercase tracking-wider">Main</h3>
         </div>
@@ -110,7 +110,7 @@ export default function Sidebar() {
                 </span>
               </div>
               <div className="flex-1">
-                <p className="text-sm font-medium text-white group-hover:text-prop-gold smooth-transition">
+                <p className="text-xs font-normal text-gray-400 group-hover:text-prop-gold smooth-transition">
                   {(user as any).firstName || (user as any).email?.split('@')[0] || 'User'}
                 </p>
               </div>
