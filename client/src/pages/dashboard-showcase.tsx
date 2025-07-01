@@ -2,6 +2,9 @@ import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Progress } from "@/components/ui/progress";
 import { EquityChart, MonthlyPerformanceChart } from "@/components/chart-components";
 import { 
   TrendingUp, 
@@ -15,7 +18,12 @@ import {
   BarChart3,
   Activity,
   Award,
-  AlertTriangle
+  AlertTriangle,
+  Upload,
+  Filter,
+  Clock,
+  CheckCircle,
+  XCircle
 } from "lucide-react";
 import { Account, Trade, JournalEntry } from "@shared/schema";
 
@@ -77,15 +85,86 @@ export default function DashboardShowcase() {
   return (
     <div className="p-6 space-y-8 bg-prop-gradient-main min-h-screen">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
         <div>
           <h1 className="text-3xl font-bold text-gradient-rainbow mb-2">Trading Dashboard</h1>
           <p className="text-gray-400">Complete portfolio overview and performance analytics</p>
         </div>
-        <Button className="bg-prop-gradient-gold text-black font-bold hover-scale">
-          <PlusCircle className="mr-2 h-4 w-4" />
-          Create New Account
-        </Button>
+        <div className="flex flex-col sm:flex-row gap-3">
+          <Button variant="outline" className="border-prop-tiffany/20 hover:bg-prop-tiffany/10">
+            <Upload className="mr-2 h-4 w-4" />
+            Import CSV
+          </Button>
+          <Button className="bg-prop-gradient-gold text-black font-bold hover-scale">
+            <PlusCircle className="mr-2 h-4 w-4" />
+            Create New Account
+          </Button>
+        </div>
+      </div>
+
+      {/* Account Selection and Filters */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+        <Card className="bg-prop-card border-prop-gold/20">
+          <CardContent className="p-4">
+            <div className="flex items-center space-x-2">
+              <Filter className="h-4 w-4 text-prop-gold" />
+              <label className="text-sm font-medium text-gray-300">Account Filter</label>
+            </div>
+            <Select defaultValue="all">
+              <SelectTrigger className="mt-2 bg-prop-dark border-prop-gold/20">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Accounts ({accounts.length})</SelectItem>
+                <SelectItem value="funded">Funded Accounts ({fundedAccounts})</SelectItem>
+                <SelectItem value="challenge">Challenge Accounts ({challengeAccounts})</SelectItem>
+                <SelectItem value="active">Live Accounts ({activeAccounts})</SelectItem>
+              </SelectContent>
+            </Select>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-prop-card border-prop-blue/20">
+          <CardContent className="p-4">
+            <div className="flex items-center space-x-2">
+              <Calendar className="h-4 w-4 text-prop-blue" />
+              <label className="text-sm font-medium text-gray-300">Time Period</label>
+            </div>
+            <Select defaultValue="month">
+              <SelectTrigger className="mt-2 bg-prop-dark border-prop-blue/20">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="today">Today</SelectItem>
+                <SelectItem value="week">This Week</SelectItem>
+                <SelectItem value="month">This Month</SelectItem>
+                <SelectItem value="quarter">This Quarter</SelectItem>
+                <SelectItem value="year">This Year</SelectItem>
+                <SelectItem value="all">All Time</SelectItem>
+              </SelectContent>
+            </Select>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-prop-card border-prop-green/20">
+          <CardContent className="p-4">
+            <div className="flex items-center space-x-2">
+              <BarChart3 className="h-4 w-4 text-prop-green" />
+              <label className="text-sm font-medium text-gray-300">View Mode</label>
+            </div>
+            <Select defaultValue="overview">
+              <SelectTrigger className="mt-2 bg-prop-dark border-prop-green/20">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="overview">Overview</SelectItem>
+                <SelectItem value="detailed">Detailed Analysis</SelectItem>
+                <SelectItem value="monthly">Monthly View</SelectItem>
+                <SelectItem value="discipline">Discipline Score</SelectItem>
+              </SelectContent>
+            </Select>
+          </CardContent>
+        </Card>
       </div>
 
       {/* Portfolio Overview Cards */}
@@ -457,6 +536,154 @@ export default function DashboardShowcase() {
                 View Full Journal
               </Button>
             </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Challenge Progress Tracking - Critical Missing Feature */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <Card className="bg-prop-card border-prop-blue/20 hover-glow">
+          <CardHeader>
+            <CardTitle className="text-gradient-rainbow flex items-center">
+              <Target className="mr-2 h-5 w-5" />
+              Challenge Progress
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <div>
+                <div className="flex justify-between items-center mb-2">
+                  <span className="text-sm text-gray-400">Profit Target</span>
+                  <span className="text-sm text-prop-green">78%</span>
+                </div>
+                <Progress value={78} className="h-2" />
+                <p className="text-xs text-gray-400 mt-1">$7,800 / $10,000</p>
+              </div>
+              
+              <div>
+                <div className="flex justify-between items-center mb-2">
+                  <span className="text-sm text-gray-400">Max Drawdown</span>
+                  <span className="text-sm text-prop-pink">42%</span>
+                </div>
+                <Progress value={42} className="h-2" />
+                <p className="text-xs text-gray-400 mt-1">$2,100 / $5,000</p>
+              </div>
+
+              <div>
+                <div className="flex justify-between items-center mb-2">
+                  <span className="text-sm text-gray-400">Trading Days</span>
+                  <span className="text-sm text-prop-gold">12 / 30</span>
+                </div>
+                <Progress value={40} className="h-2" />
+                <p className="text-xs text-gray-400 mt-1">18 days remaining</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-prop-card border-prop-green/20 hover-glow">
+          <CardHeader>
+            <CardTitle className="text-gradient-rainbow flex items-center">
+              <DollarSign className="mr-2 h-5 w-5" />
+              Payout Tracking
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <div className="flex justify-between items-center">
+                <span className="text-gray-400">Next Payout</span>
+                <span className="text-prop-green font-bold">$2,450</span>
+              </div>
+              
+              <div className="flex justify-between items-center">
+                <span className="text-gray-400">Payout Date</span>
+                <span className="text-white">Nov 15, 2024</span>
+              </div>
+
+              <div className="flex justify-between items-center">
+                <span className="text-gray-400">Split Rate</span>
+                <span className="text-prop-gold">80%</span>
+              </div>
+
+              <div className="border-t border-gray-600 pt-3">
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-400">Total Payouts</span>
+                  <span className="text-prop-green font-bold">$8,750</span>
+                </div>
+                <p className="text-xs text-gray-400 mt-1">3 payouts this year</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-prop-card border-prop-pink/20 hover-glow">
+          <CardHeader>
+            <CardTitle className="text-gradient-rainbow flex items-center">
+              <Clock className="mr-2 h-5 w-5" />
+              Monthly Trades View
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Tabs defaultValue="october" className="w-full">
+              <TabsList className="grid w-full grid-cols-3 bg-prop-dark">
+                <TabsTrigger value="august">Aug</TabsTrigger>
+                <TabsTrigger value="september">Sep</TabsTrigger>
+                <TabsTrigger value="october">Oct</TabsTrigger>
+              </TabsList>
+              
+              <TabsContent value="october" className="space-y-3 mt-4">
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-400">Total Trades</span>
+                  <span className="text-white">47</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-400">Win Rate</span>
+                  <span className="text-prop-green">64%</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-400">Monthly P&L</span>
+                  <span className="text-prop-green">+$4,200</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-400">Best Day</span>
+                  <span className="text-prop-green">+$890</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-400">Worst Day</span>
+                  <span className="text-prop-pink">-$425</span>
+                </div>
+              </TabsContent>
+
+              <TabsContent value="september" className="space-y-3 mt-4">
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-400">Total Trades</span>
+                  <span className="text-white">38</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-400">Win Rate</span>
+                  <span className="text-prop-green">71%</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-400">Monthly P&L</span>
+                  <span className="text-prop-green">+$3,100</span>
+                </div>
+              </TabsContent>
+
+              <TabsContent value="august" className="space-y-3 mt-4">
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-400">Total Trades</span>
+                  <span className="text-white">29</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-400">Win Rate</span>
+                  <span className="text-prop-green">69%</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-400">Monthly P&L</span>
+                  <span className="text-prop-green">+$2,400</span>
+                </div>
+              </TabsContent>
+            </Tabs>
           </CardContent>
         </Card>
       </div>
