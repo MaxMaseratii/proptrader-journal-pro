@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
+import { Slider } from "@/components/ui/slider";
 import { formatCurrency, formatDate } from "@/lib/utils";
 import type { Account, Trade } from "@shared/schema";
 import { 
@@ -356,36 +357,76 @@ export default function Projections() {
               <div className="space-y-4 pt-4 border-t border-gray-700">
                 <h4 className="text-white font-medium">Advanced Settings</h4>
                 
-                <div className="grid grid-cols-2 gap-4">
+                {/* Animated Risk Cutting Slider */}
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <Label className="text-white font-medium">Risk Cutting % (on loss)</Label>
+                    <div className="flex items-center space-x-2">
+                      <span className="text-2xl risk-slider-emoji">
+                        {settings.riskCuttingPercent === 0 ? '😐' : 
+                         settings.riskCuttingPercent <= 25 ? '😌' :
+                         settings.riskCuttingPercent <= 50 ? '😟' :
+                         settings.riskCuttingPercent <= 75 ? '😰' : '😱'}
+                      </span>
+                      <Badge variant="outline" className="bg-red-900/20 border-red-500 text-red-300 risk-slider-badge">
+                        {settings.riskCuttingPercent}%
+                      </Badge>
+                    </div>
+                  </div>
                   <div className="space-y-2">
-                    <Label className="text-white">Risk Cutting % (on loss)</Label>
-                    <Input
-                      type="number"
-                      min="0"
-                      max="100"
-                      step="5"
-                      value={settings.riskCuttingPercent}
-                      onChange={(e) => updateSetting('riskCuttingPercent', Number(e.target.value))}
-                      className="bg-gray-700 border-gray-600 text-white"
+                    <Slider
+                      value={[settings.riskCuttingPercent]}
+                      onValueChange={(value) => updateSetting('riskCuttingPercent', value[0])}
+                      max={100}
+                      step={5}
+                      className="w-full animated-slider"
                     />
-                    <p className="text-xs text-gray-400">
-                      Auto-reduce risk after losses (e.g., 50% = half risk)
+                    <div className="flex justify-between text-xs text-gray-400">
+                      <span>No Cut (0%)</span>
+                      <span>Conservative (25%)</span>
+                      <span>Moderate (50%)</span>
+                      <span>Aggressive (75%)</span>
+                      <span>Extreme (100%)</span>
+                    </div>
+                    <p className="text-xs text-gray-400 bg-gray-800/50 p-2 rounded">
+                      💡 Auto-reduce risk after losses - higher % = more conservative after bad trades
                     </p>
                   </div>
-                  
+                </div>
+
+                {/* Animated Compounding Slider */}
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <Label className="text-white font-medium">Compounding % (on win)</Label>
+                    <div className="flex items-center space-x-2">
+                      <span className="text-2xl risk-slider-emoji">
+                        {settings.compoundingPercent === 0 ? '🔒' : 
+                         settings.compoundingPercent <= 10 ? '📈' :
+                         settings.compoundingPercent <= 25 ? '🚀' :
+                         settings.compoundingPercent <= 50 ? '💎' : '🔥'}
+                      </span>
+                      <Badge variant="outline" className="bg-green-900/20 border-green-500 text-green-300 risk-slider-badge">
+                        {settings.compoundingPercent}%
+                      </Badge>
+                    </div>
+                  </div>
                   <div className="space-y-2">
-                    <Label className="text-white">Compounding % (on win)</Label>
-                    <Input
-                      type="number"
-                      min="0"
-                      max="100"
-                      step="5"
-                      value={settings.compoundingPercent}
-                      onChange={(e) => updateSetting('compoundingPercent', Number(e.target.value))}
-                      className="bg-gray-700 border-gray-600 text-white"
+                    <Slider
+                      value={[settings.compoundingPercent]}
+                      onValueChange={(value) => updateSetting('compoundingPercent', value[0])}
+                      max={100}
+                      step={5}
+                      className="w-full animated-slider"
                     />
-                    <p className="text-xs text-gray-400">
-                      Auto-increase risk after wins (0% = no compounding)
+                    <div className="flex justify-between text-xs text-gray-400">
+                      <span>Fixed (0%)</span>
+                      <span>Steady (10%)</span>
+                      <span>Growth (25%)</span>
+                      <span>Aggressive (50%)</span>
+                      <span>Extreme (100%)</span>
+                    </div>
+                    <p className="text-xs text-gray-400 bg-gray-800/50 p-2 rounded">
+                      🎯 Auto-increase risk after wins - compounds only on winning trades
                     </p>
                   </div>
                 </div>
