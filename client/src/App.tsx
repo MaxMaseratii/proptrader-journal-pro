@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import Dashboard from "@/pages/dashboard";
 import DashboardShowcase from "@/pages/dashboard-showcase";
+import Projections from "@/pages/projections";
 import Accounts from "@/pages/accounts";
 import Journal from "@/pages/journal";
 import RiskManagement from "@/pages/risk-management";
@@ -43,6 +44,7 @@ function Router() {
         <Switch>
           <Route path="/" component={DashboardShowcase} />
           <Route path="/dashboard-simple" component={Dashboard} />
+          <Route path="/projections" component={Projections} />
           <Route path="/accounts" component={Accounts} />
           <Route path="/csv-import" component={CsvImport} />
           <Route path="/spending" component={Spending} />

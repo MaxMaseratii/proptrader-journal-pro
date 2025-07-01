@@ -158,6 +158,17 @@ Changelog:
   * Added "Add Trade" and "View All Trades" tabs for better user experience
   * Made manual trade entry easily accessible from main navigation
   * Both manual spending entry and manual trade entry now fully functional
+- July 1, 2025. Advanced Target & Risk Projection System:
+  * Created comprehensive "Target & Risk Projection" page positioned under Dashboard
+  * Implemented dual-mode functionality: Account-based and Simulation modes
+  * Account mode: Select existing accounts, uses real trading data for projections
+  * Simulation mode: Complete custom projection from scratch
+  * Real-time calculation of days needed to reach profit targets based on RR ratios
+  * Interactive settings panel with starting capital, risk per trade, RR ratio configuration
+  * Daily projection timeline table showing risk, reward, and cumulative targets
+  * Visual progress tracking with actual vs projected performance comparison
+  * Support for multiple account selection and compounding effects
+  * Professional UI matching application's gold/black/blue color scheme
 ```
 
 ## User Preferences

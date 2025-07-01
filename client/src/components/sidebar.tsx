@@ -21,12 +21,13 @@ import { useAuth } from "@/hooks/useAuth";
 
 const navItems = [
   { href: "/", label: "Dashboard", icon: ChartLine, section: "main" },
+  { href: "/projections", label: "Target & Risk Projection", icon: TrendingUp, section: "main" },
   { href: "/journal", label: "Trading Journal", icon: Book, section: "main" },
   { href: "/accounts", label: "Accounts", icon: Wallet, section: "main" },
-  { href: "/trades", label: "Trades", icon: TrendingUp, section: "main" },
+  { href: "/trades", label: "Trades", icon: BarChart3, section: "main" },
   { href: "/spending", label: "Spending", icon: CreditCard, section: "main" },
   { href: "/risk-management", label: "Risk Management", icon: Shield, section: "main" },
-  { href: "/performance", label: "Performance", icon: BarChart3, section: "analytics" },
+  { href: "/performance", label: "Performance", icon: Calendar, section: "analytics" },
   { href: "/analytics", label: "Advanced Analytics", icon: Brain, section: "analytics" },
   { href: "/payouts", label: "Payouts", icon: DollarSign, section: "analytics" },
   { href: "/reports", label: "Reports", icon: Calendar, section: "analytics" },
