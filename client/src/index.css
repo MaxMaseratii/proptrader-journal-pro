@@ -38,6 +38,14 @@
   --prop-blue-light: hsl(217, 91%, 70%);
   --prop-pink: hsl(322, 100%, 70%);
   --prop-pink-light: hsl(322, 100%, 80%);
+  
+  /* Additional Color Aliases */
+  --dark-bg: hsl(0, 0%, 4%);
+  --dark-card: hsl(0, 0%, 8%);
+  --dark-border: hsl(0, 0%, 15%);
+  --success-green: hsl(142, 76%, 36%);
+  --warning-orange: hsl(25, 100%, 50%);
+  --error-red: hsl(0, 84%, 60%);
 }
 
 .dark {
