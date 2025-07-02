@@ -100,6 +100,12 @@ export default function Projections() {
 
   const [projectionData, setProjectionData] = useState<ProjectionDay[]>([]);
 
+  // Query for saved projections for the selected account
+  const { data: savedProjections = [] } = useQuery({
+    queryKey: ["/api/projections/account", settings.selectedAccountId],
+    enabled: !!settings.selectedAccountId,
+  });
+
   // Calculate account-specific data when account mode is selected
   const selectedAccountData = useMemo(() => {
     if (settings.mode !== 'account' || !settings.selectedAccountId) {
@@ -213,6 +219,14 @@ export default function Projections() {
     setSettings(prev => ({ ...prev, [key]: value }));
   };
 
+  // Check if there's an active saved projection for the selected account
+  const activeProjection = useMemo(() => {
+    if (!settings.selectedAccountId || !savedProjections) return null;
+    return savedProjections.find((p: any) => p.status === 'active' && p.isLocked);
+  }, [settings.selectedAccountId, savedProjections]);
+
+  const hasActiveGoal = !!activeProjection;
+
   const daysToTarget = projectionData.length;
   const dailyRewardPerAccount = settings.riskPerTrade * settings.riskRewardRatio;
   const totalDailyReward = dailyRewardPerAccount * settings.copiedAccounts;
@@ -296,29 +310,45 @@ export default function Projections() {
 
                   {/* Save Projection Button for Account Mode */}
                   {settings.selectedAccountId && (
-                    <Button
-                      onClick={() => {
-                        const projectionData = {
-                          accountId: settings.selectedAccountId,
-                          startingCapital: settings.startingCapital,
-                          riskPerTrade: settings.riskPerTrade,
-                          rewardRiskRatio: settings.riskRewardRatio,
-                          targetProfit: settings.profitTarget,
-                          projectedDays: daysToTarget,
-                          compoundingEnabled: settings.compoundingPercent > 0,
-                          compoundingPercentage: settings.compoundingPercent,
-                          riskCuttingEnabled: settings.riskCuttingPercent > 0,
-                          riskCuttingPercentage: settings.riskCuttingPercent,
-                          status: 'active'
-                        };
-                        saveProjectionMutation.mutate(projectionData);
-                      }}
-                      disabled={saveProjectionMutation.isPending}
-                      className="w-full bg-prop-gold hover:bg-prop-gold/80 text-black font-medium"
-                    >
-                      <Save className="mr-2 h-4 w-4" />
-                      {saveProjectionMutation.isPending ? 'Saving...' : 'Save Projection'}
-                    </Button>
+                    <>
+                      {hasActiveGoal ? (
+                        <div className="w-full p-4 bg-prop-gold/20 border border-prop-gold rounded-lg text-center">
+                          <Bookmark className="mx-auto h-8 w-8 text-prop-gold mb-2" />
+                          <p className="text-prop-gold font-medium">Goal Active</p>
+                          <p className="text-xs text-gray-400 mt-1">
+                            Target: {formatCurrency(activeProjection?.targetProfit)}
+                          </p>
+                          <p className="text-xs text-gray-500 mt-1">
+                            Cannot modify until target is reached or goal fails
+                          </p>
+                        </div>
+                      ) : (
+                        <Button
+                          onClick={() => {
+                            const projectionData = {
+                              accountId: settings.selectedAccountId,
+                              startingCapital: settings.startingCapital,
+                              riskPerTrade: settings.riskPerTrade,
+                              rewardRiskRatio: settings.riskRewardRatio,
+                              targetProfit: settings.profitTarget,
+                              projectedDays: daysToTarget,
+                              compoundingEnabled: settings.compoundingPercent > 0,
+                              compoundingPercentage: settings.compoundingPercent,
+                              riskCuttingEnabled: settings.riskCuttingPercent > 0,
+                              riskCuttingPercentage: settings.riskCuttingPercent,
+                              status: 'active',
+                              isLocked: true
+                            };
+                            saveProjectionMutation.mutate(projectionData);
+                          }}
+                          disabled={saveProjectionMutation.isPending}
+                          className="w-full bg-prop-gold hover:bg-prop-gold/80 text-black font-medium"
+                        >
+                          <Save className="mr-2 h-4 w-4" />
+                          {saveProjectionMutation.isPending ? 'Starting Goal...' : 'Save to start the goal'}
+                        </Button>
+                      )}
+                    </>
                   )}
                 </div>
               )}

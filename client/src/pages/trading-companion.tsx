@@ -41,7 +41,7 @@ export default function TradingCompanion() {
     {
       id: '1',
       role: 'assistant',
-      content: "👋 Hey there, trader! I'm Alex, your Trading Companion. I've analyzed your recent performance and I'm here to help you level up your game. What would you like to discuss today?",
+      content: "👋 Hey there, trader! I'm Marthy, your Trading Companion. I've analyzed your recent performance and I'm here to help you level up your game. What would you like to discuss today?",
       timestamp: new Date(),
     }
   ]);
@@ -148,7 +148,7 @@ export default function TradingCompanion() {
           <Bot className="h-8 w-8 text-prop-gold" />
           <Badge className="bg-success-green text-white">
             <Activity className="h-3 w-3 mr-1" />
-            Alex is Online
+            Marthy is Online
           </Badge>
         </div>
       </div>

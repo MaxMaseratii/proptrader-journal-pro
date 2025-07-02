@@ -601,7 +601,7 @@ export class MemStorage implements IStorage {
 
 // Switch to DatabaseStorage for authentication support
 import { db } from "./db";
-import { eq } from "drizzle-orm";
+import { eq, and } from "drizzle-orm";
 
 export class DatabaseStorage implements IStorage {
   // User operations for Replit Auth
@@ -808,6 +808,34 @@ export class DatabaseStorage implements IStorage {
       .where(eq(userStats.userId, userId))
       .returning();
     return updatedStats || undefined;
+  }
+
+  // Saved projection operations
+  async getSavedProjections(userId: string, accountId?: number): Promise<SavedProjection[]> {
+    if (accountId) {
+      return await db.select().from(savedProjections)
+        .where(and(eq(savedProjections.userId, userId), eq(savedProjections.accountId, accountId)));
+    }
+    
+    return await db.select().from(savedProjections).where(eq(savedProjections.userId, userId));
+  }
+
+  async createSavedProjection(projection: InsertSavedProjection): Promise<SavedProjection> {
+    const [newProjection] = await db.insert(savedProjections).values({
+      ...projection,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    }).returning();
+    return newProjection;
+  }
+
+  async updateSavedProjection(id: number, projection: Partial<InsertSavedProjection>, userId: string): Promise<SavedProjection | undefined> {
+    const [updatedProjection] = await db
+      .update(savedProjections)
+      .set({ ...projection, updatedAt: new Date() })
+      .where(and(eq(savedProjections.id, id), eq(savedProjections.userId, userId)))
+      .returning();
+    return updatedProjection || undefined;
   }
 }
 
