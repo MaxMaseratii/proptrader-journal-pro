@@ -197,14 +197,6 @@ Changelog:
   * Confirmed Trade Analysis Calendar with multiple view modes (yearly, weekly, daily, monthly navigation)
   * Validated projection saving system with complete database schema for locked projections and adjustment suggestions
   * All 5 requested dashboard enhancement tasks successfully implemented and verified working
-- July 2, 2025. Navigation Reorganization & Dashboard Layout Changes:
-  * Reverted dashboard from drag-and-drop customizable version back to original static style per user request
-  * Moved Advanced Platform navigation item back under Dashboard in sidebar navigation
-  * Repositioned user profile to bottom of sidebar, right after Analytics section (no longer at very bottom)
-  * Dashboard widget repositioning: Account Performance and Monthly Performance moved to Current Performance Overview section under Win Rate
-  * Active Accounts and Recent Trades repositioned as first row under Disciplined Trading Analysis header
-  * All number formatting maintains blank display instead of 0 for better UX
-  * Navigation order finalized: Accounts, Dashboard, Advanced Platform, Target & Risk Projections, Trades, etc.
 ```
 
 ## User Preferences

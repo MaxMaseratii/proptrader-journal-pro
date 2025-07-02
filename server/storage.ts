@@ -60,13 +60,6 @@ export interface IStorage {
   getUserStats(userId: string): Promise<UserStats | undefined>;
   createUserStats(stats: InsertUserStats): Promise<UserStats>;
   updateUserStats(userId: string, stats: Partial<InsertUserStats>): Promise<UserStats | undefined>;
-
-  // Projection operations
-  getSavedProjections(userId: string): Promise<any[]>;
-  getSavedProjection(id: number): Promise<any | undefined>;
-  createSavedProjection(projection: any): Promise<any>;
-  updateSavedProjection(id: number, projection: any): Promise<any | undefined>;
-  deleteSavedProjection(id: number): Promise<boolean>;
 }
 
 export class MemStorage implements IStorage {
@@ -598,42 +591,6 @@ export class MemStorage implements IStorage {
   async updateUserStats(userId: string, stats: Partial<InsertUserStats>): Promise<UserStats | undefined> {
     return undefined;
   }
-
-  // Projection operations
-  private projections: Map<number, any> = new Map();
-
-  async getSavedProjections(userId: string): Promise<any[]> {
-    return Array.from(this.projections.values()).filter(p => p.userId === userId);
-  }
-
-  async getSavedProjection(id: number): Promise<any | undefined> {
-    return this.projections.get(id);
-  }
-
-  async createSavedProjection(projectionData: any): Promise<any> {
-    const id = this.currentId++;
-    const projection = { 
-      id, 
-      ...projectionData,
-      createdAt: new Date(),
-      updatedAt: new Date()
-    };
-    this.projections.set(id, projection);
-    return projection;
-  }
-
-  async updateSavedProjection(id: number, projectionData: any): Promise<any | undefined> {
-    const existing = this.projections.get(id);
-    if (!existing) return undefined;
-    
-    const updated = { ...existing, ...projectionData, updatedAt: new Date() };
-    this.projections.set(id, updated);
-    return updated;
-  }
-
-  async deleteSavedProjection(id: number): Promise<boolean> {
-    return this.projections.delete(id);
-  }
 }
 
 // Switch to DatabaseStorage for authentication support
@@ -845,43 +802,6 @@ export class DatabaseStorage implements IStorage {
       .where(eq(userStats.userId, userId))
       .returning();
     return updatedStats || undefined;
-  }
-
-  // Projection operations - for now using in-memory storage until database schema is created
-  private projections: Map<number, any> = new Map();
-  private projectionIdCounter = 1;
-
-  async getSavedProjections(userId: string): Promise<any[]> {
-    return Array.from(this.projections.values()).filter(p => p.userId === userId);
-  }
-
-  async getSavedProjection(id: number): Promise<any | undefined> {
-    return this.projections.get(id);
-  }
-
-  async createSavedProjection(projectionData: any): Promise<any> {
-    const id = this.projectionIdCounter++;
-    const projection = { 
-      id, 
-      ...projectionData,
-      createdAt: new Date(),
-      updatedAt: new Date()
-    };
-    this.projections.set(id, projection);
-    return projection;
-  }
-
-  async updateSavedProjection(id: number, projectionData: any): Promise<any | undefined> {
-    const existing = this.projections.get(id);
-    if (!existing) return undefined;
-    
-    const updated = { ...existing, ...projectionData, updatedAt: new Date() };
-    this.projections.set(id, updated);
-    return updated;
-  }
-
-  async deleteSavedProjection(id: number): Promise<boolean> {
-    return this.projections.delete(id);
   }
 }
 

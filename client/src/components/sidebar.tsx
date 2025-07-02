@@ -23,18 +23,19 @@ import { useAuth } from "@/hooks/useAuth";
 import UserProfileDropdown from "@/components/user-profile-dropdown";
 
 const navItems = [
-  { href: "/accounts", label: "Accounts", icon: Wallet, section: "main" },
   { href: "/", label: "Dashboard", icon: ChartLine, section: "main" },
-  { href: "/platform", label: "Advanced Platform", icon: Bot, section: "main" },
+  { href: "/advanced", label: "Advanced Platform", icon: Bot, section: "main" },
   { href: "/projections", label: "Target & Risk Projection", icon: TrendingUp, section: "main" },
-  { href: "/trades", label: "Trades", icon: BarChart3, section: "main" },
   { href: "/discipline-analysis", label: "Discipline Analysis", icon: Brain, section: "main" },
   { href: "/journal", label: "Trading Journal", icon: Book, section: "main" },
-  { href: "/spending", label: "Prop Spending", icon: CreditCard, section: "main" },
-  { href: "/payouts", label: "Payouts", icon: DollarSign, section: "main" },
-  { href: "/risk-management", label: "Risk Management", icon: Shield, section: "main" },
+  { href: "/accounts", label: "Accounts", icon: Wallet, section: "main" },
+  { href: "/trades", label: "Trades", icon: BarChart3, section: "main" },
+  { href: "/spending", label: "Spending", icon: CreditCard, section: "main" },
   { href: "/achievements", label: "Achievements", icon: Trophy, section: "main" },
+  { href: "/risk-management", label: "Risk Management", icon: Shield, section: "main" },
+  { href: "/performance", label: "Performance", icon: Calendar, section: "analytics" },
   { href: "/analytics", label: "Advanced Analytics", icon: Brain, section: "analytics" },
+  { href: "/payouts", label: "Payouts", icon: DollarSign, section: "analytics" },
   { href: "/reports", label: "Reports", icon: Calendar, section: "analytics" },
 ];
 
@@ -100,11 +101,11 @@ export default function Sidebar() {
             </li>
           ))}
         </ul>
-        
-        <div className="px-4 mt-6 mb-20">
-          <UserProfileDropdown />
-        </div>
       </nav>
+      
+      <div className="absolute bottom-0 w-64 p-4 border-t border-prop-gold/20 bg-prop-gradient-main space-y-3">
+        <UserProfileDropdown />
+      </div>
     </aside>
   );
 }
