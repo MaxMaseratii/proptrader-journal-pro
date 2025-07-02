@@ -34,7 +34,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 const navItems = [
   { href: "/accounts", label: "Accounts", icon: Wallet, section: "main" },
   { href: "/", label: "Dashboard", icon: ChartLine, section: "main" },
-  { href: "/advanced", label: "Advanced Platform", icon: Bot, section: "main" },
+  { href: "/trading-companion", label: "Trading Companion", icon: Bot, section: "main" },
   { href: "/projections", label: "Target & Risk Projection", icon: TrendingUp, section: "main" },
   { href: "/trades", label: "Trades", icon: BarChart3, section: "main" },
   { href: "/discipline-analysis", label: "Discipline Analysis", icon: Brain, section: "main" },

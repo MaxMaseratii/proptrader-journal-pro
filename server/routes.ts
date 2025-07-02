@@ -900,6 +900,111 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Trading Companion routes
+  app.post("/api/trading-companion/chat", isAuthenticated, async (req, res) => {
+    try {
+      const { message, context } = req.body;
+      
+      if (!process.env.DEEPSEEK_API_KEY) {
+        return res.status(503).json({ 
+          message: "AI companion is temporarily unavailable. Please check API configuration.",
+          error: "No API key configured"
+        });
+      }
+
+      // Prepare context for AI analysis
+      const userContext = {
+        totalTrades: context.totalTrades || 0,
+        recentPerformance: context.recentPerformance || 0,
+        winRate: context.winRate || 0,
+        accounts: context.accounts || [],
+        recentTrades: context.trades || []
+      };
+
+      // Create system prompt for Alex personality
+      const systemPrompt = `You are Alex, an expert trading companion with a friendly, supportive personality. You help prop traders improve their performance through data-driven insights and encouraging guidance.
+
+Your personality traits:
+- Friendly and approachable, like a knowledgeable trading buddy
+- Use casual language but maintain professionalism  
+- Encourage good habits and gently correct risky behavior
+- Celebrate wins and help learn from losses
+- Focus on practical, actionable advice
+- Use emojis occasionally but not excessively
+
+Current trader context:
+- Total trades: ${userContext.totalTrades}
+- Recent P&L: $${userContext.recentPerformance}
+- Win rate: ${userContext.winRate.toFixed(1)}%
+- Active accounts: ${userContext.accounts.length}
+
+Recent trades summary: ${userContext.recentTrades.map(trade => 
+  `${trade.symbol}: ${trade.pnl > 0 ? '+' : ''}$${trade.pnl} (${trade.type})`
+).join(', ') || 'No recent trades'}
+
+Provide helpful, personalized advice based on this data. Keep responses concise (2-3 paragraphs max) and actionable.`;
+
+      // Call DeepSeek API
+      const response = await fetch('https://api.deepseek.com/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${process.env.DEEPSEEK_API_KEY}`
+        },
+        body: JSON.stringify({
+          model: 'deepseek-reasoner',
+          messages: [
+            { role: 'system', content: systemPrompt },
+            { role: 'user', content: message }
+          ],
+          max_tokens: 500,
+          temperature: 0.7
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error(`DeepSeek API error: ${response.status}`);
+      }
+
+      const aiResponse = await response.json();
+      const aiMessage = aiResponse.choices[0]?.message?.content || "I'm having trouble thinking right now, but I'm here to help with your trading!";
+
+      res.json({
+        message: aiMessage,
+        context: userContext,
+        timestamp: new Date().toISOString()
+      });
+
+    } catch (error) {
+      console.error("Trading Companion error:", error);
+      
+      // Fallback responses based on common queries
+      const fallbackResponses = {
+        'analyze recent performance': "I can see you're looking for performance insights! Based on your recent activity, focus on maintaining your risk management discipline. Remember, consistency beats big wins every time! 📊",
+        'assess my current risk': "Risk management is crucial! Make sure you're never risking more than 1-2% per trade, and always set your stop losses before entering. Your account preservation is the top priority! 🛡️",
+        'give me trading tips': "Here are my top tips: 1) Plan your trades and trade your plan 2) Cut losses quickly, let winners run 3) Keep a trading journal 4) Focus on process over profits. You've got this! 💪",
+        'help me set trading goals': "Great question! Set SMART goals: daily risk limits, weekly profit targets, and monthly consistency goals. Start small and build momentum. What specific goal would you like to work on? 🎯"
+      };
+      
+      const userMessage = req.body.message?.toLowerCase() || '';
+      let fallbackMessage = "I'm having some connection issues, but I'm still here to help! ";
+      
+      for (const [key, response] of Object.entries(fallbackResponses)) {
+        if (userMessage.includes(key)) {
+          fallbackMessage = response;
+          break;
+        }
+      }
+      
+      res.json({
+        message: fallbackMessage,
+        context: req.body.context,
+        timestamp: new Date().toISOString(),
+        fallback: true
+      });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

@@ -20,6 +20,7 @@ import CsvImport from "@/pages/csv-import";
 import Spending from "@/pages/spending";
 import Achievements from "@/pages/achievements";
 import AdvancedDashboard from "@/pages/advanced-dashboard";
+import TradingCompanion from "@/pages/trading-companion";
 
 import DisciplineAnalysis from "@/pages/discipline-analysis";
 import Sidebar from "@/components/sidebar";
@@ -48,7 +49,7 @@ function Router() {
         <Switch>
           <Route path="/" component={Dashboard} />
           <Route path="/dashboard-simple" component={DashboardShowcase} />
-          <Route path="/advanced" component={AdvancedDashboard} />
+          <Route path="/trading-companion" component={TradingCompanion} />
           <Route path="/projections" component={Projections} />
           <Route path="/accounts" component={Accounts} />
           <Route path="/csv-import" component={CsvImport} />
