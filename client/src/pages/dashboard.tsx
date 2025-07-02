@@ -353,15 +353,15 @@ export default function Dashboard() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-gray-400 text-sm mb-1">Total Portfolio Value</p>
-                  <p className="text-2xl font-bold text-white">
+                  <p className="text-2xl font-bold text-prop-yellow">
                     {formatCurrency(accounts?.reduce((sum, acc) => sum + acc.currentBalance, 0) || 0)}
                   </p>
                   <p className="text-xs text-gray-400 mt-1">
                     Combined accounts
                   </p>
                 </div>
-                <div className="bg-yellow-500/20 p-3 rounded-lg">
-                  <DollarSign className="h-8 w-8 text-yellow-500" />
+                <div className="bg-prop-yellow/20 p-3 rounded-lg">
+                  <DollarSign className="h-8 w-8 text-prop-yellow" />
                 </div>
               </div>
             </CardContent>
@@ -373,15 +373,15 @@ export default function Dashboard() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-gray-400 text-sm mb-1">Daily P&L</p>
-                  <p className="text-2xl font-bold text-pink-500">
+                  <p className="text-2xl font-bold text-prop-pink">
                     {formatCurrency(combinedAnalytics?.worstTrade || 0)}
                   </p>
                   <p className="text-xs text-gray-400 mt-1">
                     Today's performance
                   </p>
                 </div>
-                <div className="bg-pink-500/20 p-3 rounded-lg">
-                  <TrendingDown className="h-8 w-8 text-pink-500" />
+                <div className="bg-prop-pink/20 p-3 rounded-lg">
+                  <TrendingDown className="h-8 w-8 text-prop-pink" />
                 </div>
               </div>
             </CardContent>
@@ -393,15 +393,15 @@ export default function Dashboard() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-gray-400 text-sm mb-1">Avg Win/Loss</p>
-                  <div className="flex items-center space-x-2 text-lg font-bold text-blue-500">
+                  <div className="flex items-center space-x-2 text-lg font-bold text-prop-blue">
                     {formatCurrency(combinedAnalytics?.averageWin || 0)} / {formatCurrency(Math.abs(combinedAnalytics?.averageLoss || 0))}
                   </div>
                   <p className="text-xs text-gray-400 mt-1">
                     Win vs Loss ratio
                   </p>
                 </div>
-                <div className="bg-blue-500/20 p-3 rounded-lg">
-                  <BarChart3 className="h-8 w-8 text-blue-500" />
+                <div className="bg-prop-blue/20 p-3 rounded-lg">
+                  <BarChart3 className="h-8 w-8 text-prop-blue" />
                 </div>
               </div>
             </CardContent>
@@ -416,15 +416,15 @@ export default function Dashboard() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-gray-400 text-sm mb-1">R Factor</p>
-                  <p className="text-2xl font-bold text-cyan-400">
+                  <p className="text-2xl font-bold text-prop-cyan">
                     {combinedAnalytics?.rFactor.toFixed(2) || '1.56'}
                   </p>
                   <p className="text-xs text-gray-400 mt-1">
                     Total Reward / Total Risk ratio
                   </p>
                 </div>
-                <div className="bg-cyan-400/20 p-3 rounded-lg">
-                  <BarChart3 className="h-8 w-8 text-cyan-400" />
+                <div className="bg-prop-cyan/20 p-3 rounded-lg">
+                  <BarChart3 className="h-8 w-8 text-prop-cyan" />
                 </div>
               </div>
             </CardContent>
@@ -436,15 +436,15 @@ export default function Dashboard() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-gray-400 text-sm mb-1">Profit Factor</p>
-                  <p className="text-2xl font-bold text-blue-500">
+                  <p className="text-2xl font-bold text-prop-green">
                     {combinedAnalytics?.profitFactor.toFixed(2) || '2.14'}
                   </p>
                   <p className="text-xs text-gray-400 mt-1">
                     Gross Profit / Gross Loss ratio
                   </p>
                 </div>
-                <div className="bg-blue-500/20 p-3 rounded-lg">
-                  <TrendingUp className="h-8 w-8 text-blue-500" />
+                <div className="bg-prop-green/20 p-3 rounded-lg">
+                  <TrendingUp className="h-8 w-8 text-prop-green" />
                 </div>
               </div>
             </CardContent>
@@ -456,15 +456,15 @@ export default function Dashboard() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-gray-400 text-sm mb-1">Total Trades</p>
-                  <p className="text-2xl font-bold text-yellow-500">
+                  <p className="text-2xl font-bold text-prop-yellow">
                     {combinedAnalytics?.totalTrades || 0}
                   </p>
                   <p className="text-xs text-gray-400 mt-1">
                     This month
                   </p>
                 </div>
-                <div className="bg-yellow-500/20 p-3 rounded-lg">
-                  <Activity className="h-8 w-8 text-yellow-500" />
+                <div className="bg-prop-yellow/20 p-3 rounded-lg">
+                  <Activity className="h-8 w-8 text-prop-yellow" />
                 </div>
               </div>
             </CardContent>
@@ -479,15 +479,15 @@ export default function Dashboard() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-gray-400 text-sm mb-1">Funded Accounts</p>
-                  <p className="text-2xl font-bold text-blue-500">
+                  <p className="text-2xl font-bold text-prop-blue">
                     $0
                   </p>
                   <p className="text-xs text-gray-400 mt-1">
                     0 accounts • Payout eligible
                   </p>
                 </div>
-                <div className="bg-blue-500/20 p-3 rounded-lg">
-                  <DollarSign className="h-8 w-8 text-blue-500" />
+                <div className="bg-prop-blue/20 p-3 rounded-lg">
+                  <DollarSign className="h-8 w-8 text-prop-blue" />
                 </div>
               </div>
             </CardContent>
@@ -499,15 +499,15 @@ export default function Dashboard() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-gray-400 text-sm mb-1">Live Accounts</p>
-                  <p className="text-2xl font-bold text-green-500">
+                  <p className="text-2xl font-bold text-prop-green">
                     {formatCurrency(accounts?.reduce((sum, acc) => sum + acc.currentBalance, 0) || 0)}
                   </p>
                   <p className="text-xs text-gray-400 mt-1">
                     {accounts?.filter(acc => acc.status === 'active').length || 2} accounts • Payout eligible
                   </p>
                 </div>
-                <div className="bg-green-500/20 p-3 rounded-lg">
-                  <TrendingUp className="h-8 w-8 text-green-500" />
+                <div className="bg-prop-green/20 p-3 rounded-lg">
+                  <TrendingUp className="h-8 w-8 text-prop-green" />
                 </div>
               </div>
             </CardContent>
@@ -519,15 +519,15 @@ export default function Dashboard() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-gray-400 text-sm mb-1">Challenge Accounts</p>
-                  <p className="text-2xl font-bold text-yellow-500">
+                  <p className="text-2xl font-bold text-prop-yellow">
                     {formatCurrency(accounts?.filter(acc => acc.type === 'challenge').reduce((sum, acc) => sum + acc.currentBalance, 0) || 154500)}
                   </p>
                   <p className="text-xs text-gray-400 mt-1">
                     {accounts?.filter(acc => acc.type === 'challenge').length || 1} accounts • In progress
                   </p>
                 </div>
-                <div className="bg-yellow-500/20 p-3 rounded-lg">
-                  <Target className="h-8 w-8 text-yellow-500" />
+                <div className="bg-prop-yellow/20 p-3 rounded-lg">
+                  <Target className="h-8 w-8 text-prop-yellow" />
                 </div>
               </div>
             </CardContent>
@@ -754,8 +754,8 @@ export default function Dashboard() {
 
         {/* Account Progress - Profit Targets */}
         <div className="mb-6">
-          <h3 className="text-lg font-semibold text-white mb-4 flex items-center">
-            <Target className="mr-2 h-5 w-5 text-green-400" />
+          <h3 className="text-lg font-semibold text-gradient-yellow-cyan mb-4 flex items-center">
+            <Target className="mr-2 h-5 w-5 text-prop-yellow" />
             Account Progress
           </h3>
         </div>
@@ -766,25 +766,25 @@ export default function Dashboard() {
             const profitProgress = account.profitTarget ? (profitAmount / account.profitTarget) * 100 : 0;
             
             return (
-              <Card key={account.id} className="bg-dark-card border-green-600">
+              <Card key={account.id} className="dashboard-widget">
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between mb-4">
                     <div>
                       <p className="text-gray-400 text-sm mb-1">{account.name}</p>
-                      <p className="text-2xl font-bold text-green-400">
+                      <p className="text-2xl font-bold text-prop-green">
                         {formatCurrency(profitAmount)}
                       </p>
                       <p className="text-xs text-gray-400 mt-1">
                         Target: {formatCurrency(account.profitTarget || 0)}
                       </p>
                     </div>
-                    <div className="bg-green-600 bg-opacity-20 p-3 rounded-lg">
-                      <Target className="text-green-400 h-6 w-6" />
+                    <div className="bg-prop-green/20 p-3 rounded-lg">
+                      <Target className="h-8 w-8 text-prop-green" />
                     </div>
                   </div>
                   <div className="w-full bg-gray-700 rounded-full h-2">
                     <div 
-                      className="bg-green-400 h-2 rounded-full transition-all duration-300"
+                      className="bg-prop-green h-2 rounded-full transition-all duration-300"
                       style={{ width: `${Math.min(profitProgress, 100)}%` }}
                     ></div>
                   </div>
@@ -809,50 +809,50 @@ export default function Dashboard() {
 
         {/* Investment Tracking & Working Hours Summary */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
-          <Card className="bg-dark-card border-green-600">
+          <Card className="dashboard-widget">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-gray-400 text-sm mb-1">Total Spent on Accounts</p>
-                  <p className="text-2xl font-bold text-white">
+                  <p className="text-2xl font-bold text-prop-green">
                     {formatCurrency(accounts?.reduce((sum, acc) => sum + (acc.accountCost || 0), 0) || 0)}
                   </p>
                   <p className="text-xs text-gray-400 mt-1">
                     Purchase costs for all accounts
                   </p>
                 </div>
-                <div className="bg-green-600 bg-opacity-20 p-3 rounded-lg">
-                  <DollarSign className="text-green-400 h-6 w-6" />
+                <div className="bg-prop-green/20 p-3 rounded-lg">
+                  <DollarSign className="h-8 w-8 text-prop-green" />
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="bg-dark-card border-blue-600">
+          <Card className="dashboard-widget">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-gray-400 text-sm mb-1">Activation Costs</p>
-                  <p className="text-2xl font-bold text-white">
+                  <p className="text-2xl font-bold text-prop-blue">
                     {formatCurrency(accounts?.reduce((sum, acc) => sum + (acc.activationCost || 0), 0) || 0)}
                   </p>
                   <p className="text-xs text-gray-400 mt-1">
                     Activation fees paid/required
                   </p>
                 </div>
-                <div className="bg-blue-600 bg-opacity-20 p-3 rounded-lg">
-                  <Shield className="text-blue-400 h-6 w-6" />
+                <div className="bg-prop-blue/20 p-3 rounded-lg">
+                  <Shield className="h-8 w-8 text-prop-blue" />
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="bg-dark-card border-orange-600">
+          <Card className="dashboard-widget">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-gray-400 text-sm mb-1">Total Combined</p>
-                  <p className="text-2xl font-bold text-white">
+                  <p className="text-2xl font-bold text-prop-yellow">
                     {formatCurrency(
                       (accounts?.reduce((sum, acc) => sum + (acc.accountCost || 0), 0) || 0) +
                       (accounts?.reduce((sum, acc) => sum + (acc.activationCost || 0), 0) || 0)
@@ -862,27 +862,27 @@ export default function Dashboard() {
                     Total investment in trading
                   </p>
                 </div>
-                <div className="bg-orange-600 bg-opacity-20 p-3 rounded-lg">
-                  <TrendingUp className="text-orange-400 h-6 w-6" />
+                <div className="bg-prop-yellow/20 p-3 rounded-lg">
+                  <TrendingUp className="h-8 w-8 text-prop-yellow" />
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="bg-dark-card border-purple-600">
+          <Card className="dashboard-widget">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-gray-400 text-sm mb-1">Total Payout</p>
-                  <p className="text-2xl font-bold text-purple-400">
+                  <p className="text-2xl font-bold text-prop-pink">
                     {formatCurrency(0)}
                   </p>
                   <p className="text-xs text-gray-400 mt-1">
                     Received payouts
                   </p>
                 </div>
-                <div className="bg-purple-600 bg-opacity-20 p-3 rounded-lg">
-                  <DollarSign className="text-purple-400 h-6 w-6" />
+                <div className="bg-prop-pink/20 p-3 rounded-lg">
+                  <DollarSign className="h-8 w-8 text-prop-pink" />
                 </div>
               </div>
             </CardContent>
@@ -891,31 +891,31 @@ export default function Dashboard() {
 
         {/* Working Hours & Profitability Summary - Under Investment Tracking */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <Card className="bg-dark-card border-cyan-600">
+          <Card className="dashboard-widget">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-gray-400 text-sm mb-1">Total Working Hours</p>
-                  <p className="text-2xl font-bold text-cyan-400">
+                  <p className="text-2xl font-bold text-prop-cyan">
                     {((trades?.length || 0) * 2.5).toFixed(1)} Hrs
                   </p>
                   <p className="text-xs text-gray-400 mt-1">
                     Based on {trades?.length || 0} trades × 2.5 Hrs avg duration
                   </p>
                 </div>
-                <div className="bg-cyan-600 bg-opacity-20 p-3 rounded-lg">
-                  <Calendar className="text-cyan-400 h-6 w-6" />
+                <div className="bg-prop-cyan/20 p-3 rounded-lg">
+                  <Clock className="h-8 w-8 text-prop-cyan" />
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="bg-dark-card border-indigo-600">
+          <Card className="dashboard-widget">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-gray-400 text-sm mb-1">Average Hours Per Day</p>
-                  <p className="text-2xl font-bold text-indigo-400">
+                  <p className="text-2xl font-bold text-prop-blue">
                     {(() => {
                       const totalMinutes = ((trades?.length || 0) * 2.5 * 60) / 30;
                       if (totalMinutes < 60) {
@@ -929,14 +929,14 @@ export default function Dashboard() {
                     Based on 30-day trading period
                   </p>
                 </div>
-                <div className="bg-indigo-600 bg-opacity-20 p-3 rounded-lg">
-                  <Calendar className="text-indigo-400 h-6 w-6" />
+                <div className="bg-prop-blue/20 p-3 rounded-lg">
+                  <Calendar className="h-8 w-8 text-prop-blue" />
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="bg-dark-card border-emerald-600">
+          <Card className="dashboard-widget">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
@@ -950,7 +950,7 @@ export default function Dashboard() {
                     
                     return (
                       <>
-                        <p className={`text-2xl font-bold ${isProfit ? 'text-emerald-400' : 'text-red-400'}`}>
+                        <p className={`text-2xl font-bold ${isProfit ? 'text-prop-green' : 'text-prop-pink'}`}>
                           {isProfit ? '+' : ''}{formatCurrency(difference)}
                         </p>
                         <p className="text-xs text-gray-400 mt-1">
@@ -960,8 +960,8 @@ export default function Dashboard() {
                     );
                   })()}
                 </div>
-                <div className="bg-emerald-600 bg-opacity-20 p-3 rounded-lg">
-                  <TrendingUp className="text-emerald-400 h-6 w-6" />
+                <div className="bg-prop-green/20 p-3 rounded-lg">
+                  <TrendingUp className="h-8 w-8 text-prop-green" />
                 </div>
               </div>
             </CardContent>
