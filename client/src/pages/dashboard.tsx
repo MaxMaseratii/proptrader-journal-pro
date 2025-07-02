@@ -352,7 +352,7 @@ export default function Dashboard() {
 
         {/* Current Performance Overview - Compact Header */}
         <div className="mb-4">
-          <h2 className="text-xl font-bold text-white mb-4 flex items-center border-b border-gray-700 pb-2">
+          <h2 className="text-xl font-bold text-gradient-rainbow mb-4 flex items-center border-b border-gray-700 pb-2">
             <TrendingUp className="mr-3 h-5 w-5 text-success-green" />
             Current Performance Overview
           </h2>
@@ -361,7 +361,7 @@ export default function Dashboard() {
         {/* Key Performance Metrics Under Header */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
           {/* Total Balance */}
-          <Card className="bg-dark-card border-success-green">
+          <Card className="bg-dark-card border-success-green hover-glow smooth-transition">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
@@ -381,7 +381,7 @@ export default function Dashboard() {
           </Card>
 
           {/* Daily P&L */}
-          <Card className="bg-dark-card border-error-red">
+          <Card className="bg-dark-card border-error-red hover-glow smooth-transition">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
@@ -401,7 +401,7 @@ export default function Dashboard() {
           </Card>
 
           {/* Average Win/Loss */}
-          <Card className="bg-dark-card border-gray-600">
+          <Card className="bg-dark-card border-gray-600 hover-glow smooth-transition">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
@@ -534,9 +534,9 @@ export default function Dashboard() {
           </Card>
 
           {/* Monthly Performance */}
-          <Card className="bg-dark-card border-dark-border">
+          <Card className="bg-dark-card border-dark-border hover-glow smooth-transition">
             <CardHeader>
-              <CardTitle className="text-white">Monthly Performance</CardTitle>
+              <CardTitle className="text-gradient-rainbow">Monthly Performance</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
@@ -569,7 +569,7 @@ export default function Dashboard() {
 
         {/* Account Portfolio Overview */}
         <div className="mb-6 mt-12">
-          <h2 className="text-xl font-bold text-white mb-6 flex items-center border-b border-gray-700 pb-3">
+          <h2 className="text-xl font-bold text-gradient-rainbow mb-6 flex items-center border-b border-gray-700 pb-3">
             <Wallet className="mr-3 h-5 w-5 text-blue-400" />
             Account Portfolio Overview
           </h2>
@@ -650,7 +650,7 @@ export default function Dashboard() {
         {/* TASK 2: Stats Row - Active accounts, Realized payouts, Failed accounts */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
           {/* Active Accounts */}
-          <Card className="bg-dark-card border-prop-tiffany">
+          <Card className="bg-dark-card border-prop-tiffany hover-glow smooth-transition">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
@@ -670,7 +670,7 @@ export default function Dashboard() {
           </Card>
 
           {/* Realized Payouts */}
-          <Card className="bg-dark-card border-prop-green">
+          <Card className="bg-dark-card border-prop-green hover-glow smooth-transition">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
@@ -693,7 +693,7 @@ export default function Dashboard() {
           </Card>
 
           {/* Failed Accounts */}
-          <Card className="bg-dark-card border-prop-pink">
+          <Card className="bg-dark-card border-prop-pink hover-glow smooth-transition">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
@@ -787,7 +787,7 @@ export default function Dashboard() {
 
         {/* Account Progress - Profit Targets */}
         <div className="mb-6">
-          <h3 className="text-lg font-semibold text-white mb-4 flex items-center">
+          <h3 className="text-lg font-semibold text-gradient-rainbow mb-4 flex items-center">
             <Target className="mr-2 h-5 w-5 text-green-400" />
             Account Progress
           </h3>
@@ -832,7 +832,7 @@ export default function Dashboard() {
 
         {/* Investment Tracking */}
         <div className="mb-6">
-          <h2 className="text-xl font-bold text-white mb-6 flex items-center border-b border-gray-700 pb-3">
+          <h2 className="text-xl font-bold text-gradient-rainbow mb-6 flex items-center border-b border-gray-700 pb-3">
             <Shield className="mr-3 h-5 w-5 text-green-400" />
             Investment Tracking
           </h2>
@@ -1095,7 +1095,7 @@ export default function Dashboard() {
 
         {/* Disciplined Trading Analysis */}
         <div className="mb-6">
-          <h2 className="text-xl font-bold text-white mb-6 flex items-center border-b border-gray-700 pb-3">
+          <h2 className="text-xl font-bold text-gradient-rainbow mb-6 flex items-center border-b border-gray-700 pb-3">
             <Brain className="mr-3 h-5 w-5 text-indigo-400" />
             Disciplined Trading Analysis
           </h2>
@@ -1103,9 +1103,9 @@ export default function Dashboard() {
 
         {/* FIRST ROW: Active Accounts & Recent Trades */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-          <Card className="bg-dark-card border-dark-border">
+          <Card className="bg-dark-card border-dark-border hover-glow smooth-transition">
             <CardHeader>
-              <CardTitle>Active Accounts</CardTitle>
+              <CardTitle className="text-gradient-rainbow">Active Accounts</CardTitle>
               <p className="text-gray-400 text-sm">Prop firm challenge and funded accounts</p>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -1142,9 +1142,9 @@ export default function Dashboard() {
             </CardContent>
           </Card>
 
-          <Card className="bg-dark-card border-dark-border">
+          <Card className="bg-dark-card border-dark-border hover-glow smooth-transition">
             <CardHeader>
-              <CardTitle>Recent Trades</CardTitle>
+              <CardTitle className="text-gradient-rainbow">Recent Trades</CardTitle>
               <p className="text-gray-400 text-sm">Latest trading activity</p>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -1303,7 +1303,7 @@ export default function Dashboard() {
                 <div className="bg-warning-orange bg-opacity-20 p-2 rounded-lg mr-3">
                   <AlertTriangle className="text-warning-orange h-5 w-5" />
                 </div>
-                <h3 className="text-lg font-semibold">Risk Alert</h3>
+                <h3 className="text-lg font-semibold text-gradient-rainbow">Risk Alert</h3>
               </div>
               <p className="text-gray-300 mb-4">3 Most Critical Accounts</p>
               <div className="space-y-3">
@@ -1361,7 +1361,7 @@ export default function Dashboard() {
                   <div className="bg-blue-600 bg-opacity-20 p-2 rounded-lg mr-3">
                     <DollarSign className="text-blue-400 h-5 w-5" />
                   </div>
-                  <h3 className="text-lg font-semibold">Payout Status</h3>
+                  <h3 className="text-lg font-semibold text-gradient-rainbow">Payout Status</h3>
                 </div>
                 <Select value={selectedAccountId?.toString() || ''} onValueChange={(value) => setSelectedAccountId(Number(value))}>
                   <SelectTrigger className="w-48 bg-gray-800 border-gray-600 text-white text-sm">
@@ -1482,9 +1482,9 @@ export default function Dashboard() {
 
         {/* Charts Section */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-          <Card className="bg-dark-card border-dark-border">
+          <Card className="bg-dark-card border-dark-border hover-glow smooth-transition">
             <CardHeader>
-              <CardTitle>Account Equity Curve</CardTitle>
+              <CardTitle className="text-gradient-rainbow">Account Equity Curve</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="h-64">
@@ -1493,9 +1493,9 @@ export default function Dashboard() {
             </CardContent>
           </Card>
 
-          <Card className="bg-dark-card border-dark-border">
+          <Card className="bg-dark-card border-dark-border hover-glow smooth-transition">
             <CardHeader>
-              <CardTitle>Monthly Performance</CardTitle>
+              <CardTitle className="text-gradient-rainbow">Monthly Performance</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="h-64">
@@ -1597,14 +1597,14 @@ export default function Dashboard() {
 
 
         {/* Daily Journal Quick Entry */}
-        <Card className="bg-dark-card border-dark-border">
+        <Card className="bg-dark-card border-dark-border hover-glow smooth-transition">
           <CardHeader>
             <div className="flex items-center justify-between">
               <div className="flex items-center">
                 <div className="bg-accent-orange bg-opacity-20 p-2 rounded-lg mr-3">
                   <Target className="text-accent-orange h-5 w-5" />
                 </div>
-                <CardTitle>Daily Trading Journal</CardTitle>
+                <CardTitle className="text-gradient-rainbow">Daily Trading Journal</CardTitle>
               </div>
               <Link href="/journal">
                 <Button variant="ghost" className="text-primary hover:text-blue-400">
@@ -1651,7 +1651,7 @@ export default function Dashboard() {
 
         {/* TASK 4: Enhanced Trade Analysis Calendar - Unique Design */}
         <div className="mb-8">
-          <h2 className="text-xl font-bold text-white mb-6 flex items-center border-b border-gray-700 pb-3">
+          <h2 className="text-xl font-bold text-gradient-rainbow mb-6 flex items-center border-b border-gray-700 pb-3">
             <Calendar className="mr-3 h-5 w-5 text-prop-tiffany" />
             Trade Analysis Calendar
           </h2>
