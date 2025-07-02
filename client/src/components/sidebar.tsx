@@ -25,6 +25,7 @@ import UserProfileDropdown from "@/components/user-profile-dropdown";
 const navItems = [
   { href: "/accounts", label: "Accounts", icon: Wallet, section: "main" },
   { href: "/", label: "Dashboard", icon: ChartLine, section: "main" },
+  { href: "/platform", label: "Advanced Platform", icon: Bot, section: "main" },
   { href: "/projections", label: "Target & Risk Projection", icon: TrendingUp, section: "main" },
   { href: "/trades", label: "Trades", icon: BarChart3, section: "main" },
   { href: "/discipline-analysis", label: "Discipline Analysis", icon: Brain, section: "main" },
@@ -99,11 +100,11 @@ export default function Sidebar() {
             </li>
           ))}
         </ul>
+        
+        <div className="px-4 mt-6 mb-20">
+          <UserProfileDropdown />
+        </div>
       </nav>
-      
-      <div className="absolute bottom-0 w-64 p-4 border-t border-prop-gold/20 bg-prop-gradient-main space-y-3">
-        <UserProfileDropdown />
-      </div>
     </aside>
   );
 }
