@@ -66,6 +66,8 @@ export default function Dashboard() {
     date: new Date().toISOString().split('T')[0]
   });
   const [calendarDate, setCalendarDate] = useState(new Date());
+  const [timePeriod, setTimePeriod] = useState<'daily' | 'weekly' | 'monthly' | 'yearly'>('monthly');
+  const [viewType, setViewType] = useState<'overview' | 'detailed' | 'analytics'>('overview');
 
   const { data: accounts, isLoading: accountsLoading } = useQuery<Account[]>({
     queryKey: ["/api/accounts"],
@@ -191,6 +193,14 @@ export default function Dashboard() {
     { month: "Oct", pnl: -2775 },
   ];
 
+  // TASK 3: Color determination function for all numbers
+  const getValueColor = (value: number, type: 'currency' | 'percentage' | 'neutral' = 'currency') => {
+    if (type === 'neutral') return 'text-prop-tiffany';
+    if (value > 0) return 'text-prop-green';
+    if (value < 0) return 'text-prop-pink';
+    return 'text-prop-gold'; // For zero values, use gold color like portfolio overview
+  };
+
   if (accountsLoading || tradesLoading) {
     return (
       <div className="flex items-center justify-center h-full">
@@ -280,6 +290,37 @@ export default function Dashboard() {
                 )}
               </div>
             )}
+
+            {/* TASK 1: Time Period Selection */}
+            <div className="flex items-center space-x-2">
+              <Clock className="h-4 w-4 text-gray-400" />
+              <Select value={timePeriod} onValueChange={(value: any) => setTimePeriod(value)}>
+                <SelectTrigger className="w-32">
+                  <SelectValue placeholder="Period" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="daily">Daily</SelectItem>
+                  <SelectItem value="weekly">Weekly</SelectItem>
+                  <SelectItem value="monthly">Monthly</SelectItem>
+                  <SelectItem value="yearly">Yearly</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* TASK 1: View Type Selection */}
+            <div className="flex items-center space-x-2">
+              <BarChart3 className="h-4 w-4 text-gray-400" />
+              <Select value={viewType} onValueChange={(value: any) => setViewType(value)}>
+                <SelectTrigger className="w-32">
+                  <SelectValue placeholder="View" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="overview">Overview</SelectItem>
+                  <SelectItem value="detailed">Detailed</SelectItem>
+                  <SelectItem value="analytics">Analytics</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
             
             <TradeEntry accounts={accounts || []} />
             <div className="relative">

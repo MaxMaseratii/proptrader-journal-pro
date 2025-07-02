@@ -184,7 +184,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/csv-import", isAuthenticated, async (req, res) => {
+  app.post("/api/trades/import-csv", isAuthenticated, async (req, res) => {
     try {
       const { accountId, csvData } = req.body;
       
