@@ -72,7 +72,7 @@ export default function AdvancedPlatform() {
     { id: 'active-accounts', title: 'Active Accounts', type: 'list', enabled: true, position: 3, size: 'small' }
   ]);
   
-  const [draggedWidget, setDraggedWidget] = useState(null);
+  const [draggedWidget, setDraggedWidget] = useState<string | null>(null);
   const [isEditMode, setIsEditMode] = useState(false);
   const [savedLayouts, setSavedLayouts] = useState([
     { id: 1, name: 'Default Layout', isActive: true },
