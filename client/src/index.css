@@ -3,22 +3,22 @@
 @tailwind utilities;
 
 :root {
-  --background: hsl(220, 13%, 7%);
-  --foreground: hsl(220, 13%, 98%);
-  --muted: hsl(220, 13%, 12%);
-  --muted-foreground: hsl(220, 8%, 65%);
-  --popover: hsl(220, 13%, 9%);
-  --popover-foreground: hsl(220, 13%, 98%);
-  --card: hsl(220, 13%, 9%);
-  --card-foreground: hsl(220, 13%, 98%);
-  --border: hsl(220, 13%, 18%);
-  --input: hsl(220, 13%, 18%);
+  --background: hsl(210, 20%, 6%);
+  --foreground: hsl(195, 100%, 50%);
+  --muted: hsl(210, 20%, 10%);
+  --muted-foreground: hsl(195, 50%, 65%);
+  --popover: hsl(210, 20%, 8%);
+  --popover-foreground: hsl(195, 100%, 50%);
+  --card: hsl(210, 20%, 8%);
+  --card-foreground: hsl(195, 100%, 50%);
+  --border: hsl(195, 100%, 20%);
+  --input: hsl(210, 20%, 12%);
   --primary: hsl(195, 100%, 50%);
-  --primary-foreground: hsl(220, 13%, 7%);
-  --secondary: hsl(195, 100%, 40%);
-  --secondary-foreground: hsl(220, 13%, 98%);
-  --accent: hsl(280, 100%, 70%);
-  --accent-foreground: hsl(220, 13%, 7%);
+  --primary-foreground: hsl(210, 20%, 6%);
+  --secondary: hsl(195, 80%, 40%);
+  --secondary-foreground: hsl(195, 100%, 50%);
+  --accent: hsl(45, 100%, 60%);
+  --accent-foreground: hsl(210, 20%, 6%);
   --destructive: hsl(0, 84.2%, 60.2%);
   --destructive-foreground: hsl(60, 9.1%, 97.8%);
   --ring: hsl(195, 100%, 50%);
@@ -64,25 +64,25 @@
 }
 
 .dark {
-  --background: hsl(0, 0%, 7.1%);
-  --foreground: hsl(0, 0%, 98%);
-  --muted: hsl(0, 0%, 15.9%);
-  --muted-foreground: hsl(0, 0%, 64.9%);
-  --popover: hsl(0, 0%, 7.1%);
-  --popover-foreground: hsl(0, 0%, 98%);
-  --card: hsl(0, 0%, 17.6%);
-  --card-foreground: hsl(0, 0%, 98%);
-  --border: hsl(0, 0%, 25.1%);
-  --input: hsl(0, 0%, 25.1%);
-  --primary: hsl(207, 90%, 54%);
-  --primary-foreground: hsl(211, 100%, 99%);
-  --secondary: hsl(0, 0%, 15.9%);
-  --secondary-foreground: hsl(0, 0%, 98%);
-  --accent: hsl(0, 0%, 15.9%);
-  --accent-foreground: hsl(0, 0%, 98%);
+  --background: hsl(210, 20%, 6%);
+  --foreground: hsl(195, 100%, 50%);
+  --muted: hsl(210, 20%, 10%);
+  --muted-foreground: hsl(195, 50%, 65%);
+  --popover: hsl(210, 20%, 8%);
+  --popover-foreground: hsl(195, 100%, 50%);
+  --card: hsl(210, 20%, 8%);
+  --card-foreground: hsl(195, 100%, 50%);
+  --border: hsl(195, 100%, 20%);
+  --input: hsl(210, 20%, 12%);
+  --primary: hsl(195, 100%, 50%);
+  --primary-foreground: hsl(210, 20%, 6%);
+  --secondary: hsl(210, 20%, 12%);
+  --secondary-foreground: hsl(195, 100%, 50%);
+  --accent: hsl(45, 100%, 60%);
+  --accent-foreground: hsl(210, 20%, 6%);
   --destructive: hsl(4, 90.6%, 58.4%);
-  --destructive-foreground: hsl(0, 0%, 98%);
-  --ring: hsl(0, 0%, 83.9%);
+  --destructive-foreground: hsl(195, 100%, 50%);
+  --ring: hsl(195, 100%, 50%);
   --radius: 0.5rem;
 }
 
@@ -451,5 +451,73 @@
   
   .slider-ripple {
     animation: slider-change 0.6s ease-out;
+  }
+  
+  /* Dashboard Widget Styles with Gold Hover Effects */
+  .dashboard-widget {
+    background: linear-gradient(135deg, hsl(210, 20%, 8%) 0%, hsl(210, 20%, 12%) 100%);
+    border: 1px solid hsl(195, 100%, 20%);
+    border-radius: 12px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .dashboard-widget::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, 
+      rgba(255, 215, 0, 0.05) 0%, 
+      rgba(0, 255, 255, 0.05) 50%, 
+      rgba(255, 215, 0, 0.05) 100%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+  }
+  
+  .dashboard-widget:hover {
+    transform: translateY(-4px) scale(1.02);
+    border-color: hsl(45, 100%, 60%);
+    box-shadow: 
+      0 10px 25px -5px rgba(0, 0, 0, 0.4),
+      0 0 20px rgba(255, 215, 0, 0.3),
+      inset 0 1px 0 rgba(255, 215, 0, 0.1);
+  }
+  
+  .dashboard-widget:hover::before {
+    opacity: 1;
+  }
+  
+  .widget-icon {
+    color: hsl(195, 100%, 50%);
+    transition: all 0.3s ease;
+  }
+  
+  .dashboard-widget:hover .widget-icon {
+    color: hsl(45, 100%, 60%);
+    transform: scale(1.1);
+    filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.5));
+  }
+  
+  .widget-title {
+    color: hsl(195, 100%, 50%);
+    transition: color 0.3s ease;
+  }
+  
+  .dashboard-widget:hover .widget-title {
+    color: hsl(45, 100%, 60%);
+  }
+  
+  .widget-value {
+    color: hsl(195, 100%, 50%);
+    transition: color 0.3s ease;
+  }
+  
+  .dashboard-widget:hover .widget-value {
+    color: hsl(45, 100%, 70%);
   }
 }

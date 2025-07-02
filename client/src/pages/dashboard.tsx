@@ -338,8 +338,8 @@ export default function Dashboard() {
 
         {/* Current Performance Overview - Compact Header */}
         <div className="mb-4">
-          <h2 className="text-xl font-bold text-white mb-4 flex items-center border-b border-gray-700 pb-2">
-            <TrendingUp className="mr-3 h-5 w-5 text-success-green" />
+          <h2 className="text-xl font-bold text-prop-tiffany mb-4 flex items-center border-b border-prop-tiffany/30 pb-2">
+            <TrendingUp className="mr-3 h-5 w-5 text-prop-gold" />
             Current Performance Overview
           </h2>
         </div>
@@ -347,66 +347,66 @@ export default function Dashboard() {
         {/* Key Performance Metrics Under Header */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
           {/* Total Balance */}
-          <Card className="bg-dark-card border-success-green">
+          <Card className="dashboard-widget">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-gray-400 text-sm mb-1">Total Balance</p>
-                  <p className="text-2xl font-bold text-success-green">
+                  <p className="widget-title text-sm mb-1">Total Balance</p>
+                  <p className="widget-value text-2xl font-bold">
                     {formatCurrency(accounts?.reduce((sum, acc) => sum + acc.currentBalance, 0) || 0)}
                   </p>
-                  <p className="text-xs text-gray-400 mt-1">
+                  <p className="text-xs text-prop-tiffany/60 mt-1">
                     Combined accounts
                   </p>
                 </div>
-                <div className="bg-success-green bg-opacity-20 p-3 rounded-lg">
-                  <DollarSign className="text-success-green h-6 w-6" />
+                <div className="bg-prop-tiffany/10 p-3 rounded-lg">
+                  <DollarSign className="widget-icon h-8 w-8" />
                 </div>
               </div>
             </CardContent>
           </Card>
 
           {/* Daily P&L */}
-          <Card className="bg-dark-card border-error-red">
+          <Card className="dashboard-widget">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-gray-400 text-sm mb-1">Daily P&L</p>
-                  <p className="text-2xl font-bold text-error-red">
+                  <p className="widget-title text-sm mb-1">Daily P&L</p>
+                  <p className="widget-value text-2xl font-bold">
                     {formatCurrency(combinedAnalytics?.worstTrade || 0)}
                   </p>
-                  <p className="text-xs text-gray-400 mt-1">
+                  <p className="text-xs text-prop-tiffany/60 mt-1">
                     Today's performance
                   </p>
                 </div>
-                <div className="bg-error-red bg-opacity-20 p-3 rounded-lg">
-                  <TrendingDown className="text-error-red h-6 w-6" />
+                <div className="bg-prop-tiffany/10 p-3 rounded-lg">
+                  <TrendingDown className="widget-icon h-8 w-8" />
                 </div>
               </div>
             </CardContent>
           </Card>
 
           {/* Average Win/Loss */}
-          <Card className="bg-dark-card border-gray-600">
+          <Card className="dashboard-widget">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-gray-400 text-sm mb-1">Avg Win/Loss</p>
+                  <p className="widget-title text-sm mb-1">Avg Win/Loss</p>
                   <div className="flex items-center space-x-2 text-lg font-bold">
-                    <span className="text-success-green">
+                    <span className="text-prop-green">
                       {formatCurrency(combinedAnalytics?.averageWin || 0)}
                     </span>
-                    <span className="text-gray-400">/</span>
-                    <span className="text-error-red">
+                    <span className="text-prop-tiffany/60">/</span>
+                    <span className="text-prop-pink">
                       {formatCurrency(Math.abs(combinedAnalytics?.averageLoss || 0))}
                     </span>
                   </div>
-                  <p className="text-xs text-gray-400 mt-1">
+                  <p className="text-xs text-prop-tiffany/60 mt-1">
                     Win vs Loss ratio
                   </p>
                 </div>
-                <div className="bg-gray-600 bg-opacity-20 p-3 rounded-lg">
-                  <BarChart3 className="text-gray-400 h-6 w-6" />
+                <div className="bg-prop-tiffany/10 p-3 rounded-lg">
+                  <BarChart3 className="widget-icon h-8 w-8" />
                 </div>
               </div>
             </CardContent>
@@ -416,23 +416,23 @@ export default function Dashboard() {
         {/* Secondary Performance Metrics Row - Win Rate, R Factor, Profit Factor */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           {/* Win Rate */}
-          <Card className="bg-dark-card border-success-green">
+          <Card className="dashboard-widget">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-gray-400 text-sm mb-1">Win Rate</p>
+                  <p className="widget-title text-sm mb-1">Win Rate</p>
                   <p className={`text-2xl font-bold ${
-                    (combinedAnalytics?.winRate || 0) >= 70 ? 'text-success-green' :
-                    (combinedAnalytics?.winRate || 0) >= 50 ? 'text-warning-orange' : 'text-error-red'
+                    (combinedAnalytics?.winRate || 0) >= 70 ? 'text-prop-green' :
+                    (combinedAnalytics?.winRate || 0) >= 50 ? 'text-prop-gold' : 'text-prop-pink'
                   }`}>
                     {combinedAnalytics?.winRate.toFixed(0) || 0}%
                   </p>
-                  <p className="text-xs text-gray-400 mt-1">
+                  <p className="text-xs text-prop-tiffany/60 mt-1">
                     {combinedAnalytics?.winningTrades || 0} wins / {combinedAnalytics?.losingTrades || 0} losses
                   </p>
                 </div>
-                <div className="bg-success-green bg-opacity-20 p-3 rounded-lg">
-                  <Target className="text-success-green h-6 w-6" />
+                <div className="bg-prop-tiffany/10 p-3 rounded-lg">
+                  <Target className="widget-icon h-8 w-8" />
                 </div>
               </div>
             </CardContent>
