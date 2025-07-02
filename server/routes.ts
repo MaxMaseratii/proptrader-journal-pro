@@ -191,7 +191,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         csvDataLength: req.body.csvData?.length,
         bodyKeys: Object.keys(req.body),
         bodyType: typeof req.body,
-        fullBody: req.body
+        firstLine: req.body.csvData?.split('\n')[0]
       });
       
       const { accountId, csvData } = req.body;
@@ -544,21 +544,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
             continue;
           }
 
-          // Parse order data
+          // Parse order data - handle exact column names from your CSV
           const symbol = row.Product || row.Contract || '';
-          const side = row['B/S']?.trim() === 'Buy' ? 'buy' : 'sell';
-          const quantity = parseFloat(row['Filled Qty']) || parseFloat(row.filledQty) || 0;
-          const price = parseFloat(row['Avg Fill Price']) || parseFloat(row.avgPrice) || 0;
+          const bsColumn = row['B/S'] || '';
+          const side = bsColumn.trim() === ' Buy' || bsColumn.trim() === 'Buy' ? 'buy' : 'sell';
+          const quantity = parseFloat(row.filledQty) || 0;
+          const price = parseFloat(row.avgPrice) || 0;
           const fillTime = row['Fill Time'] || row.Timestamp || '';
           
-          // Parse date from format like "6/12/25"
+          // Parse date from format like "10/17/23"
           let date = new Date().toISOString().split('T')[0];
           if (row.Date) {
             const dateParts = row.Date.split('/');
             if (dateParts.length === 3) {
               const month = dateParts[0].padStart(2, '0');
               const day = dateParts[1].padStart(2, '0');
-              const year = '20' + dateParts[2];
+              let year = dateParts[2];
+              if (year.length === 2) {
+                year = '20' + year;
+              }
               date = `${year}-${month}-${day}`;
             }
           }
