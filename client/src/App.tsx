@@ -19,6 +19,7 @@ import Welcome from "@/pages/welcome";
 import CsvImport from "@/pages/csv-import";
 import Spending from "@/pages/spending";
 import Achievements from "@/pages/achievements";
+import AdvancedDashboard from "@/pages/advanced-dashboard";
 import Sidebar from "@/components/sidebar";
 import NotFound from "@/pages/not-found";
 import { useAuth } from "@/hooks/useAuth";
