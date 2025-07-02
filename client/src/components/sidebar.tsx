@@ -100,11 +100,12 @@ export default function Sidebar() {
             </li>
           ))}
         </ul>
+        
+        {/* User Profile moved to Analytics section */}
+        <div className="px-4 mt-4">
+          <UserProfileDropdown />
+        </div>
       </nav>
-      
-      <div className="absolute bottom-0 w-64 p-4 border-t border-prop-gold/20 bg-prop-gradient-main space-y-3">
-        <UserProfileDropdown />
-      </div>
     </aside>
   );
 }
