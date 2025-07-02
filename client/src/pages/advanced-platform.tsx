@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
+import { Switch } from "@/components/ui/switch";
 import { 
   LayoutDashboard, 
   Bot, 
@@ -21,9 +22,38 @@ import {
   Brain,
   Globe,
   Heart,
-  Star
+  Star,
+  X,
+  Edit,
+  BarChart3,
+  Target,
+  Calendar,
+  DollarSign,
+  Wallet,
+  Shield,
+  Trophy,
+  Activity,
+  ChartLine,
+  Save,
+  RotateCcw
 } from 'lucide-react';
 import { formatCurrency } from "@/lib/utils";
+
+// Widget types available for the dashboard
+const AVAILABLE_WIDGETS = [
+  { id: 'portfolio-overview', title: 'Portfolio Overview', type: 'stats', icon: DollarSign, category: 'Finance' },
+  { id: 'performance-metrics', title: 'Performance Metrics', type: 'chart', icon: TrendingUp, category: 'Performance' },
+  { id: 'recent-trades', title: 'Recent Trades', type: 'table', icon: BarChart3, category: 'Trading' },
+  { id: 'active-accounts', title: 'Active Accounts', type: 'list', icon: Wallet, category: 'Accounts' },
+  { id: 'risk-metrics', title: 'Risk Metrics', type: 'gauge', icon: Shield, category: 'Risk' },
+  { id: 'trade-calendar', title: 'Trade Calendar', type: 'calendar', icon: Calendar, category: 'Calendar' },
+  { id: 'discipline-score', title: 'Discipline Score', type: 'score', icon: Target, category: 'Analysis' },
+  { id: 'achievements', title: 'Achievements', type: 'badges', icon: Trophy, category: 'Gamification' },
+  { id: 'win-rate', title: 'Win Rate', type: 'percentage', icon: Activity, category: 'Performance' },
+  { id: 'equity-curve', title: 'Equity Curve', type: 'line-chart', icon: ChartLine, category: 'Finance' },
+  { id: 'news-feed', title: 'Market News', type: 'feed', icon: Globe, category: 'Market' },
+  { id: 'profit-targets', title: 'Profit Targets', type: 'progress', icon: Target, category: 'Goals' }
+];
 
 export default function AdvancedPlatform() {
   const [chatMessages, setChatMessages] = useState([
