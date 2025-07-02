@@ -72,7 +72,7 @@ export default function AdvancedPlatform() {
     { id: 'active-accounts', title: 'Active Accounts', type: 'list', enabled: true, position: 3, size: 'small' }
   ]);
   
-  const [draggedWidget, setDraggedWidget] = useState<string | null>(null);
+  const [draggedWidget, setDraggedWidget] = useState(null);
   const [isEditMode, setIsEditMode] = useState(false);
   const [savedLayouts, setSavedLayouts] = useState([
     { id: 1, name: 'Default Layout', isActive: true },
@@ -188,11 +188,11 @@ export default function AdvancedPlatform() {
       <div className="max-w-7xl mx-auto space-y-8">
         {/* Header */}
         <div className="text-center space-y-4">
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-prop-primary to-prop-secondary bg-clip-text text-transparent">
+          <h1 className="text-4xl font-bold bg-gradient-to-r from-prop-gold to-prop-tiffany bg-clip-text text-transparent">
             Advanced Platform Features
           </h1>
           <p className="text-gray-300 text-lg">
-            Professional trading tools: Custom layouts, AI guidance, strategy sharing, and community insights
+            Supercharge your trading with cutting-edge tools and community insights
           </p>
         </div>
 
@@ -201,7 +201,7 @@ export default function AdvancedPlatform() {
           <TabsList className="grid w-full grid-cols-5 bg-dark-card">
             <TabsTrigger value="dashboard" className="flex items-center space-x-2">
               <LayoutDashboard className="h-4 w-4" />
-              <span>Widget Builder</span>
+              <span>Dashboard</span>
             </TabsTrigger>
             <TabsTrigger value="mentor" className="flex items-center space-x-2">
               <Bot className="h-4 w-4" />
@@ -228,8 +228,8 @@ export default function AdvancedPlatform() {
               <CardHeader>
                 <div className="flex items-center justify-between">
                   <CardTitle className="flex items-center space-x-2">
-                    <LayoutDashboard className="h-5 w-5 text-prop-primary" />
-                    <span>Custom Widget Builder</span>
+                    <LayoutDashboard className="h-5 w-5 text-prop-gold" />
+                    <span>Drag-and-Drop Dashboard Builder</span>
                   </CardTitle>
                   <div className="flex items-center space-x-2">
                     <Button
