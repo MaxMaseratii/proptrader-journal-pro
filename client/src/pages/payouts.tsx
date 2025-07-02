@@ -23,7 +23,7 @@ interface PayoutMetrics {
   availablePayout: number;
   totalEarnings: number;
   totalPayouts: number;
-  fiveDayEligible: boolean;
+  weeklyEligible: boolean;
   twentyPercentRule: boolean;
   consistencyProgress: number;
   daysTraded: number;
@@ -36,7 +36,7 @@ interface PayoutHistory {
   date: string;
   amount: number;
   status: 'pending' | 'approved' | 'paid' | 'rejected';
-  type: '5-day' | '10-day';
+  type: 'weekly';
 }
 
 export default function Payouts() {
@@ -61,21 +61,21 @@ export default function Payouts() {
       date: "2024-10-15",
       amount: 1200,
       status: 'paid',
-      type: '5-day'
+      type: 'weekly'
     },
     {
       id: 2,
       date: "2024-09-28",
       amount: 800,
       status: 'paid',
-      type: '5-day'
+      type: 'weekly'
     },
     {
       id: 3,
       date: "2024-09-10",
       amount: 600,
       status: 'paid',
-      type: '5-day'
+      type: 'weekly'
     }
   ];
 

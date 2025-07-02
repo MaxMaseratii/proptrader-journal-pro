@@ -6,6 +6,14 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export function formatCurrency(amount: number): string {
+  if (amount === 0) return '';
+  return amount.toLocaleString('en-US', {
+    style: 'currency',
+    currency: 'USD',
+  });
+}
+
+export function formatCurrencyWithZero(amount: number): string {
   return amount.toLocaleString('en-US', {
     style: 'currency',
     currency: 'USD',

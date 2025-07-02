@@ -28,15 +28,16 @@ export default function UserProfileDropdown() {
   const getInitials = () => {
     if (!user) return 'U';
     
-    const firstName = user.firstName || '';
-    const lastName = user.lastName || '';
+    const userAny = user as any;
+    const firstName = userAny.firstName || '';
+    const lastName = userAny.lastName || '';
     
     if (firstName && lastName) {
       return `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase();
     } else if (firstName) {
       return firstName.charAt(0).toUpperCase();
-    } else if (user.email) {
-      return user.email.charAt(0).toUpperCase();
+    } else if (userAny.email) {
+      return userAny.email.charAt(0).toUpperCase();
     }
     
     return 'U';
@@ -55,17 +56,17 @@ export default function UserProfileDropdown() {
         >
           <div className="flex items-center space-x-3">
             <Avatar className="h-8 w-8 border-2 border-prop-gold/30">
-              <AvatarImage src={user?.profileImageUrl || ''} />
+              <AvatarImage src={(user as any)?.profileImageUrl || ''} />
               <AvatarFallback className="bg-prop-gradient-gold text-black text-sm font-bold">
                 {getInitials()}
               </AvatarFallback>
             </Avatar>
             <div className="text-left">
               <div className="text-sm font-medium text-white truncate">
-                {user?.firstName || user?.email?.split('@')[0] || 'User'}
+                {(user as any)?.firstName || (user as any)?.email?.split('@')[0] || 'User'}
               </div>
               <div className="text-xs text-gray-400">
-                {user?.email || 'user@example.com'}
+                {(user as any)?.email || 'user@example.com'}
               </div>
             </div>
           </div>
