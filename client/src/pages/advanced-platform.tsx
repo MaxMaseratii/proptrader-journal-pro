@@ -63,11 +63,21 @@ export default function AdvancedPlatform() {
   ]);
 
   const [newMessage, setNewMessage] = useState('');
+  
+  // Dashboard customization state
   const [dashboardWidgets, setDashboardWidgets] = useState([
-    { id: 'pnl', title: 'P&L Overview', type: 'chart', position: { x: 0, y: 0 }, size: { w: 2, h: 1 } },
-    { id: 'trades', title: 'Recent Trades', type: 'table', position: { x: 2, y: 0 }, size: { w: 2, h: 1 } },
-    { id: 'stats', title: 'Key Metrics', type: 'stats', position: { x: 0, y: 1 }, size: { w: 1, h: 1 } },
-    { id: 'calendar', title: 'Trade Calendar', type: 'calendar', position: { x: 1, y: 1 }, size: { w: 3, h: 1 } }
+    { id: 'portfolio-overview', title: 'Portfolio Overview', type: 'stats', enabled: true, position: 0, size: 'large' },
+    { id: 'performance-metrics', title: 'Performance Metrics', type: 'chart', enabled: true, position: 1, size: 'medium' },
+    { id: 'recent-trades', title: 'Recent Trades', type: 'table', enabled: true, position: 2, size: 'large' },
+    { id: 'active-accounts', title: 'Active Accounts', type: 'list', enabled: true, position: 3, size: 'small' }
+  ]);
+  
+  const [draggedWidget, setDraggedWidget] = useState(null);
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [savedLayouts, setSavedLayouts] = useState([
+    { id: 1, name: 'Default Layout', isActive: true },
+    { id: 2, name: 'Performance Focus', isActive: false },
+    { id: 3, name: 'Risk Management', isActive: false }
   ]);
 
   const [forumPosts, setForumPosts] = useState([
@@ -76,6 +86,65 @@ export default function AdvancedPlatform() {
     { id: 3, title: 'Psychology Tips: Dealing with Drawdowns', author: 'MindfulTrader', replies: 34, likes: 89, category: 'Psychology', timestamp: '1 day ago' },
     { id: 4, title: 'Market Analysis: Current EUR/USD Setup', author: 'ForexAnalyst', replies: 12, likes: 34, category: 'Analysis', timestamp: '3 hours ago' }
   ]);
+
+  // Dashboard customization functions
+  const addWidget = (widgetType: any) => {
+    const newWidget = {
+      id: `${widgetType.id}-${Date.now()}`,
+      title: widgetType.title,
+      type: widgetType.type,
+      enabled: true,
+      position: dashboardWidgets.length,
+      size: 'medium'
+    };
+    setDashboardWidgets([...dashboardWidgets, newWidget]);
+  };
+
+  const removeWidget = (widgetId: string) => {
+    setDashboardWidgets(dashboardWidgets.filter(w => w.id !== widgetId));
+  };
+
+  const toggleWidget = (widgetId: string) => {
+    setDashboardWidgets(dashboardWidgets.map(w => 
+      w.id === widgetId ? { ...w, enabled: !w.enabled } : w
+    ));
+  };
+
+  const moveWidget = (draggedId: string, targetId: string) => {
+    const widgets = [...dashboardWidgets];
+    const draggedIndex = widgets.findIndex(w => w.id === draggedId);
+    const targetIndex = widgets.findIndex(w => w.id === targetId);
+    
+    if (draggedIndex !== -1 && targetIndex !== -1) {
+      const [draggedWidget] = widgets.splice(draggedIndex, 1);
+      widgets.splice(targetIndex, 0, draggedWidget);
+      
+      // Update positions
+      widgets.forEach((widget, index) => {
+        widget.position = index;
+      });
+      
+      setDashboardWidgets(widgets);
+    }
+  };
+
+  const saveLayout = (name: string) => {
+    const newLayout = {
+      id: Date.now(),
+      name,
+      isActive: false,
+      widgets: [...dashboardWidgets]
+    };
+    setSavedLayouts([...savedLayouts, newLayout]);
+  };
+
+  const loadLayout = (layoutId: number) => {
+    const layout = savedLayouts.find(l => l.id === layoutId);
+    if (layout && (layout as any).widgets) {
+      setDashboardWidgets((layout as any).widgets);
+      setSavedLayouts(savedLayouts.map(l => ({ ...l, isActive: l.id === layoutId })));
+    }
+  };
 
   const sendMessage = () => {
     if (newMessage.trim()) {
@@ -154,64 +223,241 @@ export default function AdvancedPlatform() {
 
           {/* Customizable Dashboard */}
           <TabsContent value="dashboard" className="space-y-6">
+            {/* Dashboard Controls */}
             <Card className="bg-dark-card border-prop-gold/20">
               <CardHeader>
-                <CardTitle className="flex items-center space-x-2">
-                  <LayoutDashboard className="h-5 w-5 text-prop-gold" />
-                  <span>Customizable Drag-and-Drop Dashboard</span>
+                <div className="flex items-center justify-between">
+                  <CardTitle className="flex items-center space-x-2">
+                    <LayoutDashboard className="h-5 w-5 text-prop-gold" />
+                    <span>Drag-and-Drop Dashboard Builder</span>
+                  </CardTitle>
+                  <div className="flex items-center space-x-2">
+                    <Button
+                      onClick={() => setIsEditMode(!isEditMode)}
+                      variant={isEditMode ? "destructive" : "default"}
+                      size="sm"
+                    >
+                      {isEditMode ? <X className="h-4 w-4 mr-2" /> : <Edit className="h-4 w-4 mr-2" />}
+                      {isEditMode ? 'Exit Edit' : 'Edit Mode'}
+                    </Button>
+                  </div>
+                </div>
+              </CardHeader>
+              
+              {isEditMode && (
+                <CardContent className="space-y-4">
+                  <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div className="space-y-2">
+                      <h4 className="text-sm font-semibold text-prop-gold">Add Widgets</h4>
+                      <div className="grid grid-cols-2 gap-2 max-h-48 overflow-y-auto">
+                        {AVAILABLE_WIDGETS.map(widget => (
+                          <Button
+                            key={widget.id}
+                            onClick={() => addWidget(widget)}
+                            size="sm"
+                            variant="outline"
+                            className="h-auto p-2 flex flex-col items-center space-y-1 border-prop-tiffany/30 hover:border-prop-tiffany/60"
+                          >
+                            <widget.icon className="h-4 w-4" />
+                            <span className="text-xs text-center">{widget.title}</span>
+                          </Button>
+                        ))}
+                      </div>
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <h4 className="text-sm font-semibold text-prop-blue">Layout Controls</h4>
+                      <div className="space-y-2">
+                        <Button size="sm" variant="outline" className="w-full">
+                          <Save className="h-4 w-4 mr-2" />
+                          Save Layout
+                        </Button>
+                        <Button size="sm" variant="outline" className="w-full">
+                          <RotateCcw className="h-4 w-4 mr-2" />
+                          Reset to Default
+                        </Button>
+                      </div>
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <h4 className="text-sm font-semibold text-prop-pink">Saved Layouts</h4>
+                      <div className="space-y-1 max-h-32 overflow-y-auto">
+                        {savedLayouts.map(layout => (
+                          <Button
+                            key={layout.id}
+                            onClick={() => loadLayout(layout.id)}
+                            size="sm"
+                            variant={layout.isActive ? "default" : "outline"}
+                            className="w-full text-xs"
+                          >
+                            {layout.name}
+                          </Button>
+                        ))}
+                      </div>
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <h4 className="text-sm font-semibold text-prop-green">Quick Actions</h4>
+                      <div className="space-y-1">
+                        <Button size="sm" variant="outline" className="w-full text-xs">
+                          Export Layout
+                        </Button>
+                        <Button size="sm" variant="outline" className="w-full text-xs">
+                          Import Layout
+                        </Button>
+                        <Button size="sm" variant="outline" className="w-full text-xs">
+                          Share Layout
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              )}
+            </Card>
+
+            {/* Dashboard Preview/Editor */}
+            <Card className="bg-dark-card border-prop-gold/20">
+              <CardHeader>
+                <CardTitle className="flex items-center justify-between">
+                  <span>Dashboard Preview</span>
+                  <Badge variant={isEditMode ? "destructive" : "default"}>
+                    {isEditMode ? 'Edit Mode Active' : 'Preview Mode'}
+                  </Badge>
                 </CardTitle>
               </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="flex items-center justify-between">
-                  <p className="text-gray-300">Design your perfect trading dashboard layout</p>
-                  <Button className="bg-prop-gold text-black hover:bg-prop-gold/80">
-                    <Plus className="h-4 w-4 mr-2" />
-                    Add Widget
-                  </Button>
-                </div>
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                  {dashboardWidgets.map((widget) => (
-                    <Card key={widget.id} className="bg-dark-surface border-prop-tiffany/30 cursor-move">
-                      <CardHeader className="pb-2">
-                        <CardTitle className="text-sm flex items-center justify-between">
-                          <span>{widget.title}</span>
-                          <GripVertical className="h-4 w-4 text-gray-400" />
-                        </CardTitle>
-                      </CardHeader>
-                      <CardContent className="pt-0">
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 min-h-[400px]">
+                  {dashboardWidgets
+                    .filter(w => w.enabled)
+                    .sort((a, b) => a.position - b.position)
+                    .map((widget) => (
+                    <div
+                      key={widget.id}
+                      className={`relative bg-dark-surface border rounded-lg p-4 transition-all duration-200 ${
+                        isEditMode 
+                          ? 'border-prop-tiffany/30 cursor-move hover:border-prop-tiffany/60 hover:shadow-lg transform hover:scale-105' 
+                          : 'border-gray-700'
+                      } ${
+                        widget.size === 'large' ? 'md:col-span-2' : 
+                        widget.size === 'small' ? 'md:col-span-1' : 'md:col-span-1'
+                      }`}
+                      draggable={isEditMode}
+                      onDragStart={() => setDraggedWidget(widget.id)}
+                      onDragOver={(e) => e.preventDefault()}
+                      onDrop={(e) => {
+                        e.preventDefault();
+                        if (draggedWidget && draggedWidget !== widget.id) {
+                          moveWidget(draggedWidget, widget.id);
+                          setDraggedWidget(null);
+                        }
+                      }}
+                    >
+                      {isEditMode && (
+                        <div className="absolute top-2 right-2 flex space-x-1">
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            className="h-6 w-6 p-0 hover:bg-prop-blue/20"
+                            onClick={() => toggleWidget(widget.id)}
+                          >
+                            <Settings className="h-3 w-3" />
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            className="h-6 w-6 p-0 hover:bg-red-500/20"
+                            onClick={() => removeWidget(widget.id)}
+                          >
+                            <X className="h-3 w-3" />
+                          </Button>
+                        </div>
+                      )}
+                      
+                      <div className="space-y-2">
+                        <div className="flex items-center space-x-2">
+                          {isEditMode && <GripVertical className="h-4 w-4 text-gray-400" />}
+                          <h3 className="font-semibold text-sm">{widget.title}</h3>
+                        </div>
+                        
+                        {/* Widget Content Based on Type */}
+                        {widget.type === 'stats' && (
+                          <div className="space-y-1">
+                            <div className="text-2xl font-bold text-prop-gold">$24,567</div>
+                            <div className="text-xs text-gray-400">Portfolio Value</div>
+                          </div>
+                        )}
+                        
                         {widget.type === 'chart' && (
-                          <div className="h-20 bg-prop-green/20 rounded flex items-center justify-center">
+                          <div className="h-24 bg-gradient-to-r from-prop-green/20 to-prop-blue/20 rounded flex items-center justify-center">
                             <TrendingUp className="h-8 w-8 text-prop-green" />
                           </div>
                         )}
-                        {widget.type === 'stats' && (
-                          <div className="space-y-2">
-                            <div className="text-lg font-bold text-prop-gold">{formatCurrency(1245.67)}</div>
-                            <div className="text-xs text-gray-400">Today's P&L</div>
-                          </div>
-                        )}
+                        
                         {widget.type === 'table' && (
-                          <div className="space-y-1">
-                            <div className="text-xs text-gray-400">EURUSD +$45.30</div>
-                            <div className="text-xs text-gray-400">GBPJPY -$12.40</div>
-                            <div className="text-xs text-gray-400">USDJPY +$78.90</div>
+                          <div className="space-y-1 text-xs">
+                            <div className="flex justify-between"><span>EURUSD</span><span className="text-prop-green">+$245</span></div>
+                            <div className="flex justify-between"><span>GBPJPY</span><span className="text-prop-pink">-$82</span></div>
+                            <div className="flex justify-between"><span>USDJPY</span><span className="text-prop-green">+$156</span></div>
                           </div>
                         )}
-                      </CardContent>
-                    </Card>
+                        
+                        {widget.type === 'list' && (
+                          <div className="space-y-1 text-xs">
+                            <div className="flex items-center space-x-2">
+                              <div className="w-2 h-2 bg-prop-green rounded-full"></div>
+                              <span>FTMO Challenge</span>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                              <div className="w-2 h-2 bg-prop-blue rounded-full"></div>
+                              <span>MyForexFunds</span>
+                            </div>
+                          </div>
+                        )}
+                        
+                        {widget.type === 'gauge' && (
+                          <div className="text-center">
+                            <div className="text-xl font-bold text-prop-tiffany">85%</div>
+                            <div className="text-xs text-gray-400">Risk Score</div>
+                          </div>
+                        )}
+                        
+                        {widget.type === 'calendar' && (
+                          <div className="grid grid-cols-7 gap-1 text-xs">
+                            {['S','M','T','W','T','F','S'].map(day => (
+                              <div key={day} className="text-center text-gray-400">{day}</div>
+                            ))}
+                            {Array.from({length: 7}, (_, i) => (
+                              <div key={i} className="text-center h-4 flex items-center justify-center">
+                                {i === 3 ? <div className="w-2 h-2 bg-prop-green rounded-full"></div> : i + 1}
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    </div>
                   ))}
+                  
+                  {/* Drop Zone for new widgets */}
+                  {isEditMode && (
+                    <div className="border-2 border-dashed border-gray-600 rounded-lg p-4 flex items-center justify-center min-h-[120px]">
+                      <div className="text-center text-gray-400">
+                        <Plus className="h-8 w-8 mx-auto mb-2" />
+                        <p className="text-sm">Drop widgets here or click "Add Widget"</p>
+                      </div>
+                    </div>
+                  )}
                 </div>
                 
-                <div className="bg-prop-blue/10 border border-prop-blue/20 rounded-lg p-4">
-                  <h4 className="font-semibold text-prop-blue mb-2">Pro Features:</h4>
-                  <ul className="text-sm text-gray-300 space-y-1">
-                    <li>• Drag and drop widgets to customize layout</li>
-                    <li>• Resize widgets to fit your needs</li>
-                    <li>• Add custom indicators and charts</li>
-                    <li>• Save multiple dashboard layouts</li>
-                    <li>• Real-time data updates across all widgets</li>
-                  </ul>
+                <div className="mt-6 bg-prop-blue/10 border border-prop-blue/20 rounded-lg p-4">
+                  <h4 className="font-semibold text-prop-blue mb-2">Dashboard Features:</h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm text-gray-300">
+                    <div>• Full drag-and-drop customization</div>
+                    <div>• Real-time data integration</div>
+                    <div>• Resizable widget support</div>
+                    <div>• Save and share layouts</div>
+                    <div>• 12+ widget types available</div>
+                    <div>• Responsive design for all devices</div>
+                  </div>
                 </div>
               </CardContent>
             </Card>

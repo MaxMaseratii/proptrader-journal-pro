@@ -823,6 +823,53 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Projection saving routes
+  app.post("/api/projections/save", isAuthenticated, async (req, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const projectionData = {
+        ...req.body,
+        userId
+      };
+      
+      const savedProjection = await storage.createSavedProjection(projectionData);
+      res.json(savedProjection);
+    } catch (error) {
+      console.error("Error saving projection:", error);
+      res.status(500).json({ message: "Failed to save projection" });
+    }
+  });
+
+  app.get("/api/projections/account/:accountId", isAuthenticated, async (req, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const accountId = parseInt(req.params.accountId);
+      
+      const projections = await storage.getSavedProjections(userId, accountId);
+      res.json(projections);
+    } catch (error) {
+      console.error("Error fetching projections:", error);
+      res.status(500).json({ message: "Failed to fetch projections" });
+    }
+  });
+
+  app.put("/api/projections/:id", isAuthenticated, async (req, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const projectionId = parseInt(req.params.id);
+      
+      const updatedProjection = await storage.updateSavedProjection(projectionId, req.body, userId);
+      if (!updatedProjection) {
+        return res.status(404).json({ message: "Projection not found" });
+      }
+      
+      res.json(updatedProjection);
+    } catch (error) {
+      console.error("Error updating projection:", error);
+      res.status(500).json({ message: "Failed to update projection" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

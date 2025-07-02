@@ -1,5 +1,5 @@
 import { 
-  accounts, trades, journalEntries, dailyStats, csvImports, spending, users, achievements, userStats,
+  accounts, trades, journalEntries, dailyStats, csvImports, spending, users, achievements, userStats, savedProjections,
   type Account, type InsertAccount,
   type Trade, type InsertTrade, 
   type JournalEntry, type InsertJournalEntry,
@@ -8,7 +8,8 @@ import {
   type Spending, type InsertSpending,
   type User, type UpsertUser,
   type Achievement, type InsertAchievement,
-  type UserStats, type InsertUserStats
+  type UserStats, type InsertUserStats,
+  type SavedProjection, type InsertSavedProjection
 } from "@shared/schema";
 
 export interface IStorage {
@@ -60,6 +61,11 @@ export interface IStorage {
   getUserStats(userId: string): Promise<UserStats | undefined>;
   createUserStats(stats: InsertUserStats): Promise<UserStats>;
   updateUserStats(userId: string, stats: Partial<InsertUserStats>): Promise<UserStats | undefined>;
+
+  // Saved projection operations
+  getSavedProjections(userId: string, accountId?: number): Promise<SavedProjection[]>;
+  createSavedProjection(projection: InsertSavedProjection): Promise<SavedProjection>;
+  updateSavedProjection(id: number, projection: Partial<InsertSavedProjection>, userId: string): Promise<SavedProjection | undefined>;
 }
 
 export class MemStorage implements IStorage {
