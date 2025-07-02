@@ -314,12 +314,12 @@ export default function Projections() {
                       {hasActiveGoal ? (
                         <div className="w-full p-4 bg-prop-gold/20 border border-prop-gold rounded-lg text-center">
                           <Bookmark className="mx-auto h-8 w-8 text-prop-gold mb-2" />
-                          <p className="text-prop-gold font-medium">Goal Active</p>
+                          <p className="text-prop-gold font-medium">Plan Active</p>
                           <p className="text-xs text-gray-400 mt-1">
                             Target: {formatCurrency(activeProjection?.targetProfit)}
                           </p>
                           <p className="text-xs text-gray-500 mt-1">
-                            Cannot modify until target is reached or goal fails
+                            Cannot modify until target is reached or plan fails
                           </p>
                         </div>
                       ) : (
@@ -345,7 +345,7 @@ export default function Projections() {
                           className="w-full bg-prop-gold hover:bg-prop-gold/80 text-black font-medium"
                         >
                           <Save className="mr-2 h-4 w-4" />
-                          {saveProjectionMutation.isPending ? 'Starting Goal...' : 'Save to start the goal'}
+                          {saveProjectionMutation.isPending ? 'Starting Plan...' : 'Save to start the Plan'}
                         </Button>
                       )}
                     </>

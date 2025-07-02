@@ -216,11 +216,14 @@ export default function Welcome() {
                 <div className="w-16 h-16 bg-prop-gradient-green rounded-full flex items-center justify-center mx-auto mb-4">
                   <BookOpen className="w-8 h-8 text-white" />
                 </div>
-                <CardTitle className="text-2xl text-prop-green">Free Starter</CardTitle>
+                <CardTitle className="text-2xl text-prop-green">Basic</CardTitle>
                 <CardDescription className="text-gray-300 mt-4">Perfect for new traders</CardDescription>
                 <div className="mt-6">
-                  <span className="text-4xl font-bold text-prop-green">$0</span>
+                  <span className="text-4xl font-bold text-prop-green">$4.99</span>
                   <span className="text-gray-400">/month</span>
+                </div>
+                <div className="mt-2">
+                  <Badge className="bg-success-green text-white text-xs">15 Days Free Trial</Badge>
                 </div>
               </CardHeader>
               <CardContent className="p-8 pt-0">
@@ -247,7 +250,7 @@ export default function Welcome() {
                     onClick={() => window.location.href = '/api/login'}
                     className="w-full bg-prop-gradient-green text-white hover-scale smooth-transition"
                   >
-                    Sign Up Free
+                    Start Free Trial
                   </Button>
                   <Button 
                     onClick={() => window.location.href = '/api/login'}
@@ -277,6 +280,9 @@ export default function Welcome() {
                 <div className="mt-6">
                   <span className="text-4xl font-bold text-prop-gold">$9.99</span>
                   <span className="text-gray-400">/month</span>
+                </div>
+                <div className="mt-2">
+                  <Badge className="bg-prop-gradient-gold text-black text-xs">15 Days Free Trial</Badge>
                 </div>
               </CardHeader>
               <CardContent className="p-8 pt-0">
@@ -326,11 +332,14 @@ export default function Welcome() {
                 <div className="w-16 h-16 bg-prop-gradient-pink rounded-full flex items-center justify-center mx-auto mb-4">
                   <Gem className="w-8 h-8 text-white" />
                 </div>
-                <CardTitle className="text-2xl text-prop-pink">Firm Elite</CardTitle>
+                <CardTitle className="text-2xl text-prop-pink">Premium</CardTitle>
                 <CardDescription className="text-gray-300 mt-4">For trading firms & teams</CardDescription>
                 <div className="mt-6">
                   <span className="text-4xl font-bold text-prop-pink">$14.99</span>
                   <span className="text-gray-400">/month</span>
+                </div>
+                <div className="mt-2">
+                  <Badge className="bg-prop-gradient-pink text-white text-xs">15 Days Free Trial</Badge>
                 </div>
               </CardHeader>
               <CardContent className="p-8 pt-0">
@@ -532,6 +541,40 @@ export default function Welcome() {
         </div>
       </section>
 
+      {/* Trial Information */}
+      <section className="py-16 px-4 bg-gray-900/30">
+        <div className="max-w-4xl mx-auto text-center">
+          <h2 className="text-3xl font-bold mb-6 text-white">15 Days Free Trial • Cancel Anytime</h2>
+          <p className="text-lg text-gray-300 mb-8 leading-relaxed">
+            Start your journey risk-free with our 15-day trial period. Experience all premium features 
+            and see why thousands of prop traders choose PropJournal Pro. No commitments, no hidden fees.
+          </p>
+          <div className="grid md:grid-cols-3 gap-6">
+            <div className="text-center">
+              <div className="w-16 h-16 bg-prop-gradient-green rounded-full flex items-center justify-center mx-auto mb-4">
+                <CheckCircle className="w-8 h-8 text-white" />
+              </div>
+              <h3 className="text-lg font-semibold text-white mb-2">Full Access</h3>
+              <p className="text-gray-400">All features unlocked during trial</p>
+            </div>
+            <div className="text-center">
+              <div className="w-16 h-16 bg-prop-gradient-gold rounded-full flex items-center justify-center mx-auto mb-4">
+                <Shield className="w-8 h-8 text-black" />
+              </div>
+              <h3 className="text-lg font-semibold text-white mb-2">No Risk</h3>
+              <p className="text-gray-400">Cancel anytime with one click</p>
+            </div>
+            <div className="text-center">
+              <div className="w-16 h-16 bg-prop-gradient-pink rounded-full flex items-center justify-center mx-auto mb-4">
+                <Zap className="w-8 h-8 text-white" />
+              </div>
+              <h3 className="text-lg font-semibold text-white mb-2">Instant Setup</h3>
+              <p className="text-gray-400">Start trading in under 2 minutes</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* CTA Section */}
       <section className="py-20 px-4">
         <div className="max-w-4xl mx-auto text-center">
@@ -549,8 +592,9 @@ export default function Welcome() {
               className="bg-prop-gradient-rainbow text-white text-xl px-12 py-6 font-bold hover-lift smooth-transition"
             >
               <Sparkles className="w-6 h-6 mr-3" />
-              Start Your Elite Journey
+              Start Your Free Trial
             </Button>
+            <p className="text-gray-400 mt-4 text-sm">15 days free • Cancel anytime • No credit card required</p>
           </div>
         </div>
       </section>
