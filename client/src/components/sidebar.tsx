@@ -15,13 +15,15 @@ import {
   BookOpen,
   CreditCard,
   ChevronRight,
-  Trophy
+  Trophy,
+  Bot
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
 
 const navItems = [
   { href: "/", label: "Dashboard", icon: ChartLine, section: "main" },
+  { href: "/advanced", label: "Advanced Platform", icon: Bot, section: "main" },
   { href: "/projections", label: "Target & Risk Projection", icon: TrendingUp, section: "main" },
   { href: "/journal", label: "Trading Journal", icon: Book, section: "main" },
   { href: "/accounts", label: "Accounts", icon: Wallet, section: "main" },

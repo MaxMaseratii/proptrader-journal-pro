@@ -46,6 +46,7 @@ function Router() {
         <Switch>
           <Route path="/" component={Dashboard} />
           <Route path="/dashboard-simple" component={DashboardShowcase} />
+          <Route path="/advanced" component={AdvancedDashboard} />
           <Route path="/projections" component={Projections} />
           <Route path="/accounts" component={Accounts} />
           <Route path="/csv-import" component={CsvImport} />
