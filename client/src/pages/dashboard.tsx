@@ -649,7 +649,7 @@ export default function Dashboard() {
                   </p>
                 </div>
                 <div className="bg-prop-tiffany bg-opacity-20 p-3 rounded-lg">
-                  <CheckCircle className="text-prop-tiffany h-6 w-6" />
+                  <CheckCircle className="text-prop-tiffany h-6 w-6" strokeWidth={2} />
                 </div>
               </div>
             </CardContent>
@@ -672,7 +672,7 @@ export default function Dashboard() {
                   </p>
                 </div>
                 <div className="bg-prop-green bg-opacity-20 p-3 rounded-lg">
-                  <Banknote className="text-prop-green h-6 w-6" />
+                  <Banknote className="text-prop-green h-6 w-6" strokeWidth={2} />
                 </div>
               </div>
             </CardContent>
@@ -692,7 +692,7 @@ export default function Dashboard() {
                   </p>
                 </div>
                 <div className="bg-prop-pink bg-opacity-20 p-3 rounded-lg">
-                  <AlertTriangle className="text-prop-pink h-6 w-6" />
+                  <AlertTriangle className="text-prop-pink h-6 w-6" strokeWidth={2} />
                 </div>
               </div>
             </CardContent>
