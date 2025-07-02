@@ -1,4 +1,4 @@
-import { pgTable, text, serial, integer, real, timestamp, boolean, date, varchar, jsonb, index, decimal } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, integer, real, timestamp, boolean, date, varchar, jsonb, index } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -270,12 +270,12 @@ export const savedProjections = pgTable("saved_projections", {
   targetProfit: real("target_profit").notNull(),
   projectedDays: integer("projected_days").notNull(),
   compoundingEnabled: boolean("compounding_enabled").default(false),
-  compoundingPercentage: decimal("compounding_percentage", { precision: 5, scale: 2 }).default("0"),
+  compoundingPercentage: real("compounding_percentage").default(0),
   riskCuttingEnabled: boolean("risk_cutting_enabled").default(false),
-  riskCuttingPercentage: decimal("risk_cutting_percentage", { precision: 5, scale: 2 }).default("0"),
+  riskCuttingPercentage: real("risk_cutting_percentage").default(0),
   status: varchar("status").notNull().default("active"), // active, completed, failed
   isLocked: boolean("is_locked").default(false),
-  actualPnl: decimal("actual_pnl", { precision: 10, scale: 2 }).default("0"),
+  actualPnl: real("actual_pnl").default(0),
   suggestedAdjustments: text("suggested_adjustments"), // JSON string of suggestions
   hasPendingSuggestions: boolean("has_pending_suggestions").default(false),
   createdAt: timestamp("created_at").defaultNow(),
