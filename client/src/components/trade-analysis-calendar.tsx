@@ -80,9 +80,11 @@ export default function TradeAnalysisCalendar({ trades, accounts, viewMode = 'mo
             <div className="grid grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-2">
               {hours.map(hour => {
                 const hourTrades = dayTrades.filter(trade => {
-                  // Use timestamp or default to 00:00 if no time available
-                  const tradeTime = trade.timestamp ? new Date(trade.timestamp) : new Date(`${trade.date} 00:00`);
-                  return tradeTime.getHours() === hour;
+                  // For daily view, distribute trades evenly across trading hours (9-16)
+                  const tradingHours = [9, 10, 11, 12, 13, 14, 15, 16];
+                  const tradeIndex = dayTrades.indexOf(trade);
+                  const assignedHour = tradingHours[tradeIndex % tradingHours.length];
+                  return hour === assignedHour;
                 });
                 
                 const hourPnl = hourTrades.reduce((sum, trade) => sum + trade.pnl, 0);

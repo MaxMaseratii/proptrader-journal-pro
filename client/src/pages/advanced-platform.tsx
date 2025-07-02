@@ -11,7 +11,7 @@ import {
   Share2, 
   Zap, 
   Users, 
-  DragHandleDots2Icon,
+  GripVertical,
   MessageSquare,
   TrendingUp,
   Settings,
@@ -146,7 +146,7 @@ export default function AdvancedPlatform() {
                       <CardHeader className="pb-2">
                         <CardTitle className="text-sm flex items-center justify-between">
                           <span>{widget.title}</span>
-                          <DragHandleDots2Icon className="h-4 w-4 text-gray-400" />
+                          <GripVertical className="h-4 w-4 text-gray-400" />
                         </CardTitle>
                       </CardHeader>
                       <CardContent className="pt-0">
