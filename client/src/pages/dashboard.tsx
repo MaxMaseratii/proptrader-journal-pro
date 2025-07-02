@@ -218,7 +218,7 @@ export default function Dashboard() {
       <header className="bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 border-b border-gray-700 px-8 py-6">
         <div className="flex justify-between items-center">
           <div>
-            <h2 className="text-3xl font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
+            <h2 className="text-3xl font-bold text-gradient-rainbow">
               Trading Dashboard
             </h2>
             <p className="text-gray-400 text-base mt-2 flex items-center">
@@ -334,21 +334,7 @@ export default function Dashboard() {
       </header>
 
       <div className="p-6 space-y-8">
-        {/* CONFIRMATION BANNER - Tasks Completed */}
-        <div className="bg-gradient-to-r from-prop-gold/20 to-prop-tiffany/20 border border-prop-gold/50 rounded-lg p-4 mb-6">
-          <div className="flex items-center justify-center">
-            <CheckCircle className="h-5 w-5 text-prop-gold mr-3" />
-            <p className="text-prop-gold font-bold text-lg">
-              ✓ ALL DASHBOARD IMPROVEMENTS COMPLETED
-            </p>
-          </div>
-          <div className="text-center text-sm text-gray-300 mt-2">
-            <span className="inline-block mx-2">✓ Reordered Account Types</span>
-            <span className="inline-block mx-2">✓ Added Stats Row</span>
-            <span className="inline-block mx-2">✓ Enhanced Filtering</span>
-            <span className="inline-block mx-2">✓ Trade Analysis Calendar</span>
-          </div>
-        </div>
+
 
         {/* Current Performance Overview - Compact Header */}
         <div className="mb-4">
@@ -453,7 +439,7 @@ export default function Dashboard() {
           </Card>
 
           {/* R Factor */}
-          <Card className="bg-dark-card border-blue-600">
+          <Card className="bg-dark-card border-blue-600 hover-glow smooth-transition">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
@@ -504,7 +490,7 @@ export default function Dashboard() {
           {/* Account Performance */}
           <Card className="bg-dark-card border-dark-border">
             <CardHeader>
-              <CardTitle className="text-white">Account Performance</CardTitle>
+              <CardTitle className="text-gradient-rainbow">Account Performance</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               {accounts?.slice(0, 3).map((account) => (
@@ -847,7 +833,7 @@ export default function Dashboard() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-gray-400 text-sm mb-1">Total Spent on Accounts</p>
-                  <p className="text-2xl font-bold text-white">
+                  <p className="text-2xl font-bold text-prop-gold">
                     {formatCurrency(accounts?.reduce((sum, acc) => sum + (acc.accountCost || 0), 0) || 0)}
                   </p>
                   <p className="text-xs text-gray-400 mt-1">
@@ -866,7 +852,7 @@ export default function Dashboard() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-gray-400 text-sm mb-1">Activation Costs</p>
-                  <p className="text-2xl font-bold text-white">
+                  <p className="text-2xl font-bold text-prop-tiffany">
                     {formatCurrency(accounts?.reduce((sum, acc) => sum + (acc.activationCost || 0), 0) || 0)}
                   </p>
                   <p className="text-xs text-gray-400 mt-1">
@@ -885,7 +871,7 @@ export default function Dashboard() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-gray-400 text-sm mb-1">Total Combined</p>
-                  <p className="text-2xl font-bold text-white">
+                  <p className="text-2xl font-bold text-prop-blue">
                     {formatCurrency(
                       (accounts?.reduce((sum, acc) => sum + (acc.accountCost || 0), 0) || 0) +
                       (accounts?.reduce((sum, acc) => sum + (acc.activationCost || 0), 0) || 0)
@@ -907,7 +893,7 @@ export default function Dashboard() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-gray-400 text-sm mb-1">Total Payout</p>
-                  <p className="text-2xl font-bold text-purple-400">
+                  <p className={`text-2xl font-bold ${0 > 0 ? 'text-prop-green' : 0 < 0 ? 'text-prop-pink' : 'text-prop-gold'}`}>
                     {formatCurrency(0)}
                   </p>
                   <p className="text-xs text-gray-400 mt-1">
