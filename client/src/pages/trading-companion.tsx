@@ -187,7 +187,7 @@ export default function TradingCompanion() {
           <CardHeader className="pb-4">
             <CardTitle className="text-prop-gold flex items-center">
               <MessageSquare className="h-5 w-5 mr-2" />
-              Chat with Alex
+              Chat with Marthy
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -252,7 +252,7 @@ export default function TradingCompanion() {
                 value={inputMessage}
                 onChange={(e) => setInputMessage(e.target.value)}
                 onKeyPress={handleKeyPress}
-                placeholder="Ask Alex about your trading performance, risk management, or get advice..."
+                placeholder="Ask Marthy about your trading performance, risk management, or get advice..."
                 className="flex-1 bg-dark-surface border-prop-gold/30 text-white placeholder:text-gray-400"
                 disabled={chatMutation.isPending}
               />
@@ -272,7 +272,7 @@ export default function TradingCompanion() {
           <CardHeader>
             <CardTitle className="text-prop-gold flex items-center">
               <Brain className="h-5 w-5 mr-2" />
-              Alex's Quick Insights
+              Marthy's Quick Insights
             </CardTitle>
           </CardHeader>
           <CardContent>
