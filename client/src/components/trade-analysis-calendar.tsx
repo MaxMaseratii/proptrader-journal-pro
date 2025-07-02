@@ -9,6 +9,7 @@ import type { Trade, Account } from "@shared/schema";
 interface TradeAnalysisCalendarProps {
   trades: Trade[];
   accounts: Account[];
+  viewMode?: 'daily' | 'weekly' | 'monthly' | 'yearly';
 }
 
 interface DayStats {
@@ -20,7 +21,7 @@ interface DayStats {
   isProfit: boolean;
 }
 
-export default function TradeAnalysisCalendar({ trades, accounts }: TradeAnalysisCalendarProps) {
+export default function TradeAnalysisCalendar({ trades, accounts, viewMode = 'monthly' }: TradeAnalysisCalendarProps) {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedMonth, setSelectedMonth] = useState(currentDate.getMonth());
   const [selectedYear, setSelectedYear] = useState(currentDate.getFullYear());
@@ -121,22 +122,41 @@ export default function TradeAnalysisCalendar({ trades, accounts }: TradeAnalysi
 
   const weekDays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
-  const navigateMonth = (direction: 'prev' | 'next') => {
-    if (direction === 'prev') {
-      if (selectedMonth === 0) {
-        setSelectedMonth(11);
-        setSelectedYear(selectedYear - 1);
+  const navigateTime = (direction: 'prev' | 'next') => {
+    if (viewMode === 'yearly') {
+      setSelectedYear(direction === 'prev' ? selectedYear - 1 : selectedYear + 1);
+    } else if (viewMode === 'weekly') {
+      const currentWeek = new Date(currentDate);
+      currentWeek.setDate(currentWeek.getDate() + (direction === 'prev' ? -7 : 7));
+      setCurrentDate(currentWeek);
+    } else if (viewMode === 'daily') {
+      const currentDay = new Date(currentDate);
+      currentDay.setDate(currentDay.getDate() + (direction === 'prev' ? -1 : 1));
+      setCurrentDate(currentDay);
+    } else { // monthly
+      if (direction === 'prev') {
+        if (selectedMonth === 0) {
+          setSelectedMonth(11);
+          setSelectedYear(selectedYear - 1);
+        } else {
+          setSelectedMonth(selectedMonth - 1);
+        }
       } else {
-        setSelectedMonth(selectedMonth - 1);
-      }
-    } else {
-      if (selectedMonth === 11) {
-        setSelectedMonth(0);
-        setSelectedYear(selectedYear + 1);
-      } else {
-        setSelectedMonth(selectedMonth + 1);
+        if (selectedMonth === 11) {
+          setSelectedMonth(0);
+          setSelectedYear(selectedYear + 1);
+        } else {
+          setSelectedMonth(selectedMonth + 1);
+        }
       }
     }
+  };
+
+  const getDisplayTitle = () => {
+    if (viewMode === 'yearly') return `${selectedYear}`;
+    if (viewMode === 'weekly') return `Week of ${currentDate.toLocaleDateString()}`;
+    if (viewMode === 'daily') return currentDate.toLocaleDateString();
+    return `${months[selectedMonth]} ${selectedYear}`;
   };
 
   const getCellColor = (dayStats: DayStats | undefined) => {
@@ -168,20 +188,20 @@ export default function TradeAnalysisCalendar({ trades, accounts }: TradeAnalysi
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => navigateMonth('prev')}
+                onClick={() => navigateTime('prev')}
                 className="border-prop-gold/30 hover:border-prop-gold"
               >
                 <ChevronLeft className="h-4 w-4" />
               </Button>
               
               <h3 className="text-lg font-semibold text-white min-w-[180px] text-center">
-                {months[selectedMonth]} {selectedYear}
+                {getDisplayTitle()}
               </h3>
               
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => navigateMonth('next')}
+                onClick={() => navigateTime('next')}
                 className="border-prop-gold/30 hover:border-prop-gold"
               >
                 <ChevronRight className="h-4 w-4" />

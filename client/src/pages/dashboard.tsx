@@ -1510,6 +1510,7 @@ export default function Dashboard() {
           <TradeAnalysisCalendar 
             trades={trades || []} 
             accounts={accounts || []}
+            viewMode={timePeriod}
           />
         </div>
       </div>

@@ -1,4 +1,4 @@
-import { pgTable, text, serial, integer, real, timestamp, boolean, date, varchar, jsonb, index } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, integer, real, timestamp, boolean, date, varchar, jsonb, index, decimal } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -258,3 +258,57 @@ export const users = pgTable("users", {
 
 export type UpsertUser = typeof users.$inferInsert;
 export type User = typeof users.$inferSelect;
+
+// Projection tables
+export const savedProjections = pgTable("saved_projections", {
+  id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+  accountId: integer("account_id").notNull(),
+  userId: varchar("user_id").notNull(),
+  startingCapital: real("starting_capital").notNull(),
+  riskPerTrade: real("risk_per_trade").notNull(),
+  rewardRiskRatio: real("reward_risk_ratio").notNull(),
+  targetProfit: real("target_profit").notNull(),
+  projectedDays: integer("projected_days").notNull(),
+  compoundingEnabled: boolean("compounding_enabled").default(false),
+  compoundingPercentage: decimal("compounding_percentage", { precision: 5, scale: 2 }).default("0"),
+  riskCuttingEnabled: boolean("risk_cutting_enabled").default(false),
+  riskCuttingPercentage: decimal("risk_cutting_percentage", { precision: 5, scale: 2 }).default("0"),
+  status: varchar("status").notNull().default("active"), // active, completed, failed
+  isLocked: boolean("is_locked").default(false),
+  actualPnl: decimal("actual_pnl", { precision: 10, scale: 2 }).default("0"),
+  suggestedAdjustments: text("suggested_adjustments"), // JSON string of suggestions
+  hasPendingSuggestions: boolean("has_pending_suggestions").default(false),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+  completedAt: timestamp("completed_at"),
+  lockedAt: timestamp("locked_at"),
+});
+
+export const projectionAdjustmentHistory = pgTable("projection_adjustment_history", {
+  id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+  projectionId: integer("projection_id").notNull(),
+  adjustmentType: varchar("adjustment_type").notNull(), // manual, auto-suggestion, system
+  oldValues: text("old_values").notNull(), // JSON string
+  newValues: text("new_values").notNull(), // JSON string
+  reason: text("reason"),
+  acceptedByUser: boolean("accepted_by_user"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const insertSavedProjectionSchema = createInsertSchema(savedProjections).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+  completedAt: true,
+  lockedAt: true,
+});
+
+export const insertProjectionAdjustmentSchema = createInsertSchema(projectionAdjustmentHistory).omit({
+  id: true,
+  createdAt: true,
+});
+
+export type SavedProjection = typeof savedProjections.$inferSelect;
+export type InsertSavedProjection = z.infer<typeof insertSavedProjectionSchema>;
+export type ProjectionAdjustmentHistory = typeof projectionAdjustmentHistory.$inferSelect;
+export type InsertProjectionAdjustment = z.infer<typeof insertProjectionAdjustmentSchema>;
