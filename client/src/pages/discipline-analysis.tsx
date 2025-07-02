@@ -48,11 +48,31 @@ export default function DisciplineAnalysis() {
     return tradeDate >= cutoffDate;
   });
 
-  // Calculate discipline metrics
+  // Calculate discipline metrics with enhanced stop loss tracking
   const disciplineMetrics = {
     totalTrades: filteredTrades.length,
     stopLossHits: filteredTrades.filter(t => t.exitPrice && t.initialStopLoss && Math.abs(t.exitPrice - t.initialStopLoss) < 1).length,
-    stopLossMoved: filteredTrades.filter(t => t.finalStopLoss !== t.initialStopLoss).length,
+    stopLossMoved: filteredTrades.filter(t => t.finalStopLoss && t.initialStopLoss && t.finalStopLoss !== t.initialStopLoss).length,
+    stopLossMovedAgainst: filteredTrades.filter(t => {
+      if (!t.finalStopLoss || !t.initialStopLoss || !t.exitPrice) return false;
+      // For buy orders, moving SL down reduces protection (against trader)
+      // For sell orders, moving SL up reduces protection (against trader)
+      if (t.side === 'buy') {
+        return t.finalStopLoss < t.initialStopLoss;
+      } else {
+        return t.finalStopLoss > t.initialStopLoss;
+      }
+    }).length,
+    stopLossMovedInFavor: filteredTrades.filter(t => {
+      if (!t.finalStopLoss || !t.initialStopLoss || !t.exitPrice) return false;
+      // For buy orders, moving SL up increases protection (in favor of trader)
+      // For sell orders, moving SL down increases protection (in favor of trader)
+      if (t.side === 'buy') {
+        return t.finalStopLoss > t.initialStopLoss;
+      } else {
+        return t.finalStopLoss < t.initialStopLoss;
+      }
+    }).length,
     takeProfitHits: filteredTrades.filter(t => t.exitPrice && t.initialTakeProfit && Math.abs(t.exitPrice - t.initialTakeProfit) < 1).length,
     overRisked: filteredTrades.filter(t => t.riskAmount && (t.riskAmount > 200)).length,
     emotionalTrades: filteredTrades.filter(t => t.notes && t.notes.toLowerCase().includes('emotional')).length,

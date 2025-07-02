@@ -205,6 +205,15 @@ Changelog:
   * Fixed CSV import format error by supporting both csvData and csvContent parameters in backend
   * Removed Advanced Platform dashboard entirely from application routing and navigation
   * Moved user profile to Analytics section with initials-only display and colored dropdown menu icons
+- July 2, 2025. Complete Rule System and Analysis Overhaul:
+  * Removed 20% consistency rule from FTT - replaced with proper 5-day $200+ profit rule for payouts
+  * Implemented proper 5-day rule: need 5 trading days with minimum $200 profit each (order doesn't matter, losses in between allowed)
+  * Added user-defined consistency rule percentage display - only shows if user enters it in account settings
+  * Enhanced Discipline Analysis with proper stop loss movement tracking for each trade
+  * Added detailed stop loss tracking: moves against trader (reducing protection) vs moves in favor (increasing protection)
+  * Completely deleted Advanced Platform/customizable dashboard file and removed all references
+  * Enhanced CSV parsing with exact date, day, and time identification for accurate trade display
+  * Improved timestamp parsing for various time formats and proper chronological trade ordering
 ```
 
 ## User Preferences

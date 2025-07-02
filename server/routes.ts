@@ -250,16 +250,43 @@ export async function registerRoutes(app: Express): Promise<Server> {
           const limitPrice = parseFloat(row['Limit Price']) || 0;
           const stopPrice = parseFloat(row['Stop Price']) || 0;
           
-          // Parse date from format like "6/27/25"
+          // Enhanced date parsing to identify exact date, day, and time
           let date = new Date().toISOString().split('T')[0];
+          let fillTimestamp = null;
+          
+          // Parse date from various formats
           if (row.Date) {
             const dateParts = row.Date.split('/');
             if (dateParts.length === 3) {
               const month = dateParts[0].padStart(2, '0');
               const day = dateParts[1].padStart(2, '0');
-              const year = '20' + dateParts[2];
+              const year = dateParts[2].length === 2 ? '20' + dateParts[2] : dateParts[2];
               date = `${year}-${month}-${day}`;
             }
+          }
+          
+          // Parse exact fill time and create timestamp
+          if (fillTime && date) {
+            try {
+              // Handle various time formats: "10:30:25" or "10:30:25 AM" or "2025-06-27 10:30:25"
+              let timeString = fillTime;
+              if (fillTime.includes(':')) {
+                // If time has date prefix, extract just the time part
+                if (fillTime.includes(' ') && fillTime.includes('-')) {
+                  timeString = fillTime.split(' ').slice(1).join(' ');
+                }
+                // Create full timestamp by combining date and time
+                fillTimestamp = new Date(`${date} ${timeString}`);
+                if (isNaN(fillTimestamp.getTime())) {
+                  fillTimestamp = new Date(`${date}T${timeString}`);
+                }
+              }
+            } catch (error) {
+              // If timestamp parsing fails, fallback to just the date
+              fillTimestamp = new Date(date);
+            }
+          } else if (date) {
+            fillTimestamp = new Date(date);
           }
 
           if (symbol && quantity && price) {
@@ -272,6 +299,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
               stopPrice, // Price level for stop orders (SL)
               date,
               fillTime,
+              fillTimestamp,
               orderId: row.orderId || row['Order ID'] || '',
               orderType,
               text: row.Text || '',
@@ -351,6 +379,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
                 pnl,
                 status: 'closed',
                 orderId: `${buyOrder.orderId}-${sellOrder.orderId}`,
+                fillTime: currentOrder.fillTimestamp || new Date(currentOrder.date),
                 orderType: 'Sequential Match',
                 originalQuantity: quantityToClose,
                 riskAmount,
@@ -359,7 +388,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
                 initialTakeProfit: takeProfitPrice,
                 finalStopLoss: stopLossPrice,
                 finalTakeProfit: takeProfitPrice,
-                notes: `Imported - Entry: ${buyOrder.price}, Exit: ${sellOrder.price}, Qty: ${quantityToClose}${hasStopLoss ? ' [SL]' : ''}${hasTakeProfit ? ' [TP]' : ''}`
+                notes: `Imported - Entry: ${buyOrder.price}, Exit: ${sellOrder.price}, Qty: ${quantityToClose}${hasStopLoss ? ' [SL]' : ''}${hasTakeProfit ? ' [TP]' : ''} - Time: ${currentOrder.fillTime || 'Unknown'}`
               };
 
               const validatedData = insertTradeSchema.parse(tradeData);

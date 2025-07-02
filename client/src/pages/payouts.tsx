@@ -23,9 +23,10 @@ interface PayoutMetrics {
   availablePayout: number;
   totalEarnings: number;
   totalPayouts: number;
-  weeklyEligible: boolean;
-  twentyPercentRule: boolean;
-  consistencyProgress: number;
+  fiveDayEligible: boolean;
+  fiveDayRule: boolean;
+  profitableDays200Plus: number;
+  consistencyRulePercent: number | null;
   daysTraded: number;
   requiredTradingDays: number;
   nextPayoutDate: string | null;
@@ -93,11 +94,13 @@ export default function Payouts() {
     }, {} as Record<string, number>);
 
     const dailyPnLValues = Object.values(dailyPnL);
-    const highestDayProfit = Math.max(...dailyPnLValues, 0);
-    const twentyPercentThreshold = highestDayProfit * 0.2;
-
-    // Check if any single day exceeds 20% of total profit
-    const twentyPercentRule = dailyPnLValues.every(dayPnL => dayPnL <= twentyPercentThreshold || totalPnL <= 0);
+    
+    // 5-day $200+ profit rule - need 5 trading days with at least $200 profit each
+    const profitableDays200Plus = dailyPnLValues.filter(dayPnL => dayPnL >= 200).length;
+    const fiveDayRule = profitableDays200Plus >= 5;
+    
+    // Check for user-defined consistency rule percentage from account settings
+    const consistencyRulePercent = selectedAccount.consistencyRule ? (selectedAccount.consistencyPercentage || null) : null;
 
     // 5-day trading requirement
     const tradingDays = Object.keys(dailyPnL).length;
@@ -116,11 +119,12 @@ export default function Payouts() {
       totalEarnings: totalProfit,
       totalPayouts: payoutHistory.filter(p => p.status === 'paid').reduce((sum, p) => sum + p.amount, 0),
       fiveDayEligible,
-      twentyPercentRule,
-      consistencyProgress: twentyPercentRule ? 100 : (twentyPercentThreshold / Math.max(dailyPnLValues) * 100),
+      fiveDayRule,
+      profitableDays200Plus,
+      consistencyRulePercent,
       daysTraded: tradingDays,
       requiredTradingDays: 5,
-      nextPayoutDate: fiveDayEligible && twentyPercentRule ? nextPayoutDate.toISOString().split('T')[0] : null,
+      nextPayoutDate: fiveDayEligible && fiveDayRule ? nextPayoutDate.toISOString().split('T')[0] : null,
     };
   };
 
@@ -171,7 +175,7 @@ export default function Payouts() {
               <DialogTrigger asChild>
                 <Button 
                   className="bg-success-green hover:bg-green-600"
-                  disabled={!metrics?.fiveDayEligible || !metrics?.twentyPercentRule || !metrics?.availablePayout}
+                  disabled={!metrics?.fiveDayEligible || !metrics?.fiveDayRule || !metrics?.availablePayout}
                 >
                   <DollarSign className="mr-2 h-4 w-4" />
                   Request Payout
@@ -320,30 +324,31 @@ export default function Payouts() {
 
                   <div className="flex items-center justify-between">
                     <div className="flex items-center">
-                      {metrics?.twentyPercentRule ? (
+                      {metrics?.fiveDayRule ? (
                         <CheckCircle className="h-5 w-5 text-success-green mr-3" />
                       ) : (
                         <XCircle className="h-5 w-5 text-error-red mr-3" />
                       )}
-                      <span className="text-sm">20% Consistency Rule</span>
+                      <span className="text-sm">5-Day $200+ Rule</span>
                     </div>
-                    <Badge className={metrics?.twentyPercentRule ? 'bg-success-green text-white' : 'bg-error-red text-white'}>
-                      {metrics?.twentyPercentRule ? 'Met' : 'Not Met'}
+                    <Badge className={metrics?.fiveDayRule ? 'bg-success-green text-white' : 'bg-error-red text-white'}>
+                      {metrics?.profitableDays200Plus || 0}/5
                     </Badge>
                   </div>
 
-                  <div className="space-y-2">
-                    <div className="flex justify-between text-sm">
-                      <span>Consistency Progress</span>
-                      <span>{metrics?.consistencyProgress.toFixed(0) || 0}%</span>
+                  {metrics?.consistencyRulePercent && (
+                    <div className="space-y-2">
+                      <div className="flex justify-between text-sm">
+                        <span>User Consistency Rule</span>
+                        <span>{metrics.consistencyRulePercent}%</span>
+                      </div>
+                      <p className="text-xs text-gray-400">
+                        Custom consistency rule from account settings
+                      </p>
                     </div>
-                    <Progress value={metrics?.consistencyProgress || 0} className="h-2" />
-                    <p className="text-xs text-gray-400">
-                      No single trading day should exceed 20% of total profit
-                    </p>
-                  </div>
+                  )}
 
-                  {(!metrics?.fiveDayEligible || !metrics?.twentyPercentRule) && (
+                  {(!metrics?.fiveDayEligible || !metrics?.fiveDayRule) && (
                     <div className="mt-4 p-3 bg-warning-orange bg-opacity-20 rounded-lg border border-warning-orange">
                       <div className="flex items-center">
                         <AlertCircle className="h-4 w-4 text-warning-orange mr-2" />
