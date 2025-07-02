@@ -16,6 +16,7 @@ import { formatCurrency, formatPercentage, formatDate } from "@/lib/utils";
 import { calculateDisciplinedScore, getScoreColor, getGradeColor } from "@/lib/disciplined-score";
 import TradeCalendar from "@/components/trade-calendar";
 import TradeEntry from "@/components/trade-entry";
+import TradeAnalysisCalendar from "@/components/trade-analysis-calendar";
 import { 
   Wallet, 
   TrendingDown, 
@@ -449,32 +450,9 @@ export default function Dashboard() {
           </h2>
         </div>
 
-        {/* Account Balance by Type - MOST IMPORTANT: Funded & Live */}
+        {/* TASK 1: Account Type Row - Reordered: Live, Funded, Challenge */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-          {/* Funded Accounts Balance - PRIORITY */}
-          <Card className="bg-dark-card border-blue-600">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-gray-400 text-sm mb-1">Funded Accounts</p>
-                  <p className="text-2xl font-bold text-blue-400">
-                    {formatCurrency(
-                      accounts?.filter(acc => acc.status === 'funded')
-                        .reduce((sum, acc) => sum + acc.currentBalance, 0) || 0
-                    )}
-                  </p>
-                  <p className="text-xs text-gray-400 mt-1">
-                    {accounts?.filter(acc => acc.status === 'funded').length || 0} accounts • Payout eligible
-                  </p>
-                </div>
-                <div className="bg-blue-600 bg-opacity-20 p-3 rounded-lg">
-                  <DollarSign className="text-blue-400 h-6 w-6" />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Live Accounts Balance - PRIORITY */}
+          {/* Live Accounts - First Priority */}
           <Card className="bg-dark-card border-green-600">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
@@ -497,7 +475,30 @@ export default function Dashboard() {
             </CardContent>
           </Card>
 
-          {/* Challenge Accounts Balance */}
+          {/* Funded Accounts - Second Priority */}
+          <Card className="bg-dark-card border-blue-600">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-gray-400 text-sm mb-1">Funded Accounts</p>
+                  <p className="text-2xl font-bold text-blue-400">
+                    {formatCurrency(
+                      accounts?.filter(acc => acc.status === 'funded')
+                        .reduce((sum, acc) => sum + acc.currentBalance, 0) || 0
+                    )}
+                  </p>
+                  <p className="text-xs text-gray-400 mt-1">
+                    {accounts?.filter(acc => acc.status === 'funded').length || 0} accounts • Payout eligible
+                  </p>
+                </div>
+                <div className="bg-blue-600 bg-opacity-20 p-3 rounded-lg">
+                  <DollarSign className="text-blue-400 h-6 w-6" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Challenge Accounts - Third Priority */}
           <Card className="bg-dark-card border-yellow-600">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
@@ -521,48 +522,139 @@ export default function Dashboard() {
           </Card>
         </div>
 
-        {/* Account Status Summary */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-          <Card className="bg-dark-card border-yellow-600">
-            <CardContent className="p-4">
-              <div className="text-center">
-                <p className="text-2xl font-bold text-yellow-400">
-                  {accounts?.filter(acc => acc.type === 'challenge').length || 0}
-                </p>
-                <p className="text-sm text-gray-400 mt-1">Challenge</p>
+        {/* TASK 2: Stats Row - Active accounts, Realized payouts, Failed accounts */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+          {/* Active Accounts */}
+          <Card className="bg-dark-card border-prop-tiffany">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-gray-400 text-sm mb-1">Active Accounts</p>
+                  <p className="text-2xl font-bold text-prop-tiffany">
+                    {accounts?.filter(acc => acc.status === 'active' || acc.status === 'funded').length || 0}
+                  </p>
+                  <p className="text-xs text-gray-400 mt-1">
+                    Currently trading
+                  </p>
+                </div>
+                <div className="bg-prop-tiffany bg-opacity-20 p-3 rounded-lg">
+                  <CheckCircle className="text-prop-tiffany h-6 w-6" />
+                </div>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="bg-dark-card border-red-600">
-            <CardContent className="p-4">
-              <div className="text-center">
-                <p className="text-2xl font-bold text-red-400">
-                  {accounts?.filter(acc => acc.status === 'failed').length || 0}
-                </p>
-                <p className="text-sm text-gray-400 mt-1">Failed</p>
+          {/* Realized Payouts */}
+          <Card className="bg-dark-card border-prop-green">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-gray-400 text-sm mb-1">Realized Payouts</p>
+                  <p className="text-2xl font-bold text-prop-green">
+                    {formatCurrency(
+                      accounts?.filter(acc => acc.status === 'withdrawn')
+                        .reduce((sum, acc) => sum + (acc.currentBalance - acc.startingBalance), 0) || 0
+                    )}
+                  </p>
+                  <p className="text-xs text-gray-400 mt-1">
+                    Total earnings withdrawn
+                  </p>
+                </div>
+                <div className="bg-prop-green bg-opacity-20 p-3 rounded-lg">
+                  <Banknote className="text-prop-green h-6 w-6" />
+                </div>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="bg-dark-card border-green-600">
-            <CardContent className="p-4">
-              <div className="text-center">
-                <p className="text-2xl font-bold text-green-400">
-                  {accounts?.filter(acc => acc.status === 'active').length || 0}
-                </p>
-                <p className="text-sm text-gray-400 mt-1">Live</p>
+          {/* Failed Accounts */}
+          <Card className="bg-dark-card border-prop-pink">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-gray-400 text-sm mb-1">Failed Accounts</p>
+                  <p className="text-2xl font-bold text-prop-pink">
+                    {accounts?.filter(acc => acc.status === 'failed').length || 0}
+                  </p>
+                  <p className="text-xs text-gray-400 mt-1">
+                    Accounts that broke rules
+                  </p>
+                </div>
+                <div className="bg-prop-pink bg-opacity-20 p-3 rounded-lg">
+                  <AlertTriangle className="text-prop-pink h-6 w-6" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Total Portfolio Value Row */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+          {/* Total Portfolio Value */}
+          <Card className="bg-dark-card border-prop-gold">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-gray-400 text-sm mb-1">Total Portfolio Value</p>
+                  <p className="text-2xl font-bold text-prop-gold">
+                    {formatCurrency(accounts?.reduce((sum, acc) => sum + acc.currentBalance, 0) || 0)}
+                  </p>
+                  <p className="text-xs text-gray-400 mt-1">
+                    Combined accounts
+                  </p>
+                </div>
+                <div className="bg-prop-gold bg-opacity-20 p-3 rounded-lg">
+                  <DollarSign className="text-prop-gold h-6 w-6" />
+                </div>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="bg-dark-card border-blue-600">
-            <CardContent className="p-4">
-              <div className="text-center">
-                <p className="text-2xl font-bold text-blue-400">
-                  {accounts?.filter(acc => acc.status === 'funded').length || 0}
-                </p>
-                <p className="text-sm text-gray-400 mt-1">Funded</p>
+          {/* Total Investment */}
+          <Card className="bg-dark-card border-orange-600">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-gray-400 text-sm mb-1">Total Investment</p>
+                  <p className="text-2xl font-bold text-orange-400">
+                    {formatCurrency(
+                      (accounts?.reduce((sum, acc) => sum + (acc.accountCost || 0), 0) || 0) +
+                      (accounts?.reduce((sum, acc) => sum + (acc.activationCost || 0), 0) || 0)
+                    )}
+                  </p>
+                  <p className="text-xs text-gray-400 mt-1">
+                    Account costs + activations
+                  </p>
+                </div>
+                <div className="bg-orange-600 bg-opacity-20 p-3 rounded-lg">
+                  <TrendingUp className="text-orange-400 h-6 w-6" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Total Return */}
+          <Card className="bg-dark-card border-purple-600">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-gray-400 text-sm mb-1">Total Return</p>
+                  <p className={`text-2xl font-bold ${
+                    (accounts?.reduce((sum, acc) => sum + (acc.currentBalance - acc.startingBalance), 0) || 0) >= 0 
+                      ? 'text-success-green' 
+                      : 'text-error-red'
+                  }`}>
+                    {formatCurrency(
+                      accounts?.reduce((sum, acc) => sum + (acc.currentBalance - acc.startingBalance), 0) || 0
+                    )}
+                  </p>
+                  <p className="text-xs text-gray-400 mt-1">
+                    Profit/Loss from trading
+                  </p>
+                </div>
+                <div className="bg-purple-600 bg-opacity-20 p-3 rounded-lg">
+                  <TrendingUp className="text-purple-400 h-6 w-6" />
+                </div>
               </div>
             </CardContent>
           </Card>
@@ -1352,26 +1444,17 @@ export default function Dashboard() {
           </CardContent>
         </Card>
 
-        {/* Compact Trading Calendar */}
-        <Card className="bg-dark-card border-dark-border mb-8">
-          <CardHeader>
-            <CardTitle className="flex items-center">
-              <div className="bg-green-600 bg-opacity-20 p-2 rounded-lg mr-3">
-                <Target className="text-green-400 h-5 w-5" />
-              </div>
-              Trading Calendar
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="max-w-4xl">
-              <TradeCalendar 
-                trades={trades || []} 
-                currentDate={calendarDate}
-                onDateChange={setCalendarDate}
-              />
-            </div>
-          </CardContent>
-        </Card>
+        {/* TASK 4: Enhanced Trade Analysis Calendar - Unique Design */}
+        <div className="mb-8">
+          <h2 className="text-xl font-bold text-white mb-6 flex items-center border-b border-gray-700 pb-3">
+            <Calendar className="mr-3 h-5 w-5 text-prop-tiffany" />
+            Trade Analysis Calendar
+          </h2>
+          <TradeAnalysisCalendar 
+            trades={trades || []} 
+            accounts={accounts || []}
+          />
+        </div>
       </div>
     </>
   );
