@@ -16,7 +16,8 @@ import {
   CreditCard,
   ChevronRight,
   Trophy,
-  Bot
+  Bot,
+  Settings
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
@@ -108,71 +109,84 @@ export default function Sidebar() {
             </li>
           ))}
           
-          {/* User Profile with dropdown */}
-          <li>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button 
-                  variant="ghost" 
-                  className="w-full flex items-center justify-start px-3 py-2 text-sm font-medium text-gray-300 hover:bg-dark-card rounded-lg"
-                >
-                  <div className="mr-3 h-4 w-4 bg-prop-gradient-gold rounded-full flex items-center justify-center text-xs font-bold text-black">
-                    {user ? (
-                      (user as any)?.firstName?.charAt(0) || 
-                      (user as any)?.email?.charAt(0).toUpperCase() || 'U'
-                    ) : 'U'}
-                  </div>
-                  {(user as any)?.firstName || (user as any)?.email?.split('@')[0] || 'User'}
-                </Button>
-              </DropdownMenuTrigger>
-              
-              <DropdownMenuContent 
-                className="w-64 bg-dark-card border-prop-gold/20 shadow-xl" 
-                align="start"
-                side="right"
-              >
-                <DropdownMenuLabel className="text-prop-gold">My Account</DropdownMenuLabel>
-                <DropdownMenuSeparator className="bg-prop-gold/20" />
-                
-                <DropdownMenuItem 
-                  className="text-gray-300 hover:bg-dark-surface cursor-pointer"
-                  onClick={() => window.location.href = '/profile'}
-                >
-                  <User className="mr-2 h-4 w-4" />
-                  Profile Settings
-                </DropdownMenuItem>
-                
-                <DropdownMenuItem 
-                  className="text-gray-300 hover:bg-dark-surface cursor-pointer"
-                >
-                  <Shield className="mr-2 h-4 w-4" />
-                  Security Settings
-                </DropdownMenuItem>
-                
-                <DropdownMenuSeparator className="bg-prop-gold/20" />
-                
-                <DropdownMenuItem 
-                  className="text-red-400 hover:bg-red-600/20 cursor-pointer"
-                  onClick={() => window.location.href = '/api/logout'}
-                >
-                  <LogOut className="mr-2 h-4 w-4" />
-                  Sign Out
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </li>
+
         </ul>
       </nav>
       
       <div className="absolute bottom-0 w-64 p-4 border-t border-prop-gold/20 bg-prop-gradient-main space-y-3">
-        <Button 
-          onClick={() => window.location.href = '/api/logout'}
-          variant="ghost" 
-          className="w-full flex items-center justify-center px-3 py-2 text-sm font-medium text-gray-300 hover:bg-dark-card rounded-lg"
-        >
-          <LogOut className="mr-3 h-4 w-4" />
-          Sign Out
-        </Button>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button 
+              variant="ghost" 
+              className="h-12 w-full flex items-center justify-between px-3 hover:bg-prop-card/50 border border-prop-gold/20 rounded-xl"
+            >
+              <div className="flex items-center space-x-3">
+                <div className="h-8 w-8 border-2 border-prop-gold/30 bg-prop-gradient-gold rounded-full flex items-center justify-center text-sm font-bold text-black">
+                  {user ? (
+                    (user as any)?.firstName?.charAt(0) || 
+                    (user as any)?.email?.charAt(0).toUpperCase() || 'U'
+                  ) : 'U'}
+                </div>
+                <div className="text-left">
+                  <div className="text-sm font-medium text-white truncate">
+                    {(user as any)?.firstName || (user as any)?.email?.split('@')[0] || 'User'}
+                  </div>
+                  <div className="text-xs text-gray-400">
+                    {(user as any)?.email || 'user@example.com'}
+                  </div>
+                </div>
+              </div>
+            </Button>
+          </DropdownMenuTrigger>
+          
+          <DropdownMenuContent 
+            className="w-64 bg-dark-card border-prop-gold/20 shadow-xl" 
+            align="end"
+            side="right"
+          >
+            <DropdownMenuLabel className="text-prop-gold">My Account</DropdownMenuLabel>
+            <DropdownMenuSeparator className="bg-prop-gold/20" />
+            
+            <DropdownMenuItem 
+              className="text-gray-300 hover:bg-dark-surface cursor-pointer"
+              onClick={() => window.location.href = '/profile'}
+            >
+              <User className="mr-2 h-4 w-4" />
+              Profile Settings
+            </DropdownMenuItem>
+            
+            <DropdownMenuItem 
+              className="text-gray-300 hover:bg-dark-surface cursor-pointer"
+            >
+              <Shield className="mr-2 h-4 w-4" />
+              Account Management
+            </DropdownMenuItem>
+            
+            <DropdownMenuItem 
+              className="text-gray-300 hover:bg-dark-surface cursor-pointer"
+            >
+              <CreditCard className="mr-2 h-4 w-4" />
+              Billing & Subscription
+            </DropdownMenuItem>
+            
+            <DropdownMenuItem 
+              className="text-gray-300 hover:bg-dark-surface cursor-pointer"
+            >
+              <Shield className="mr-2 h-4 w-4" />
+              Security Settings
+            </DropdownMenuItem>
+            
+            <DropdownMenuSeparator className="bg-prop-gold/20" />
+            
+            <DropdownMenuItem 
+              className="text-red-400 hover:bg-red-600/20 cursor-pointer"
+              onClick={() => window.location.href = '/api/logout'}
+            >
+              <LogOut className="mr-2 h-4 w-4" />
+              Sign Out
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
     </aside>
   );
