@@ -1,16 +1,16 @@
 import React, { useState, useCallback } from 'react';
 import { DndProvider, useDrag, useDrop } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
-import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Layout, Plus, Save, RotateCcw, Grid, Edit3 } from 'lucide-react';
-import DashboardWidget from './dashboard-widget';
-import type { Account, Trade } from "@shared/schema";
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Badge } from '@/components/ui/badge';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { BarChart3, TrendingUp, DollarSign, Target, Maximize2, Minimize2, X, Plus, Settings, RotateCcw, Save } from 'lucide-react';
 
 interface WidgetConfig {
   id: string;
-  type: 'performance' | 'accounts' | 'trades' | 'calendar' | 'chart' | 'risk';
+  type: string;
   title: string;
   position: { x: number; y: number };
   size: { width: number; height: number };
@@ -18,58 +18,114 @@ interface WidgetConfig {
 }
 
 interface CustomizableDashboardProps {
-  accounts: Account[];
-  trades: Trade[];
+  accounts: any[];
+  trades: any[];
 }
 
 const defaultWidgets: WidgetConfig[] = [
-  { id: 'performance', type: 'performance', title: 'Performance Overview', position: { x: 0, y: 0 }, size: { width: 1, height: 1 }, isExpanded: false },
-  { id: 'accounts', type: 'accounts', title: 'Account Summary', position: { x: 1, y: 0 }, size: { width: 1, height: 1 }, isExpanded: false },
-  { id: 'trades', type: 'trades', title: 'Recent Trades', position: { x: 2, y: 0 }, size: { width: 1, height: 1 }, isExpanded: false },
-  { id: 'calendar', type: 'calendar', title: 'Trading Calendar', position: { x: 0, y: 1 }, size: { width: 2, height: 1 }, isExpanded: false },
-  { id: 'chart', type: 'chart', title: 'P&L Chart', position: { x: 2, y: 1 }, size: { width: 1, height: 1 }, isExpanded: false },
-  { id: 'risk', type: 'risk', title: 'Risk Metrics', position: { x: 0, y: 2 }, size: { width: 1, height: 1 }, isExpanded: false },
+  { id: '1', type: 'account-overview', title: 'Account Overview', position: { x: 0, y: 0 }, size: { width: 300, height: 200 }, isExpanded: false },
+  { id: '2', type: 'recent-trades', title: 'Recent Trades', position: { x: 320, y: 0 }, size: { width: 300, height: 200 }, isExpanded: false },
+  { id: '3', type: 'performance-chart', title: 'Performance Chart', position: { x: 0, y: 220 }, size: { width: 620, height: 300 }, isExpanded: false },
+  { id: '4', type: 'risk-metrics', title: 'Risk Metrics', position: { x: 640, y: 0 }, size: { width: 300, height: 200 }, isExpanded: false },
 ];
 
-function DraggableWidget({ widget, isEditing, onMove, onRemove, onExpand, children }: any) {
-  const [{ isDragging }, drag] = useDrag({
+const DashboardWidget: React.FC<{
+  id: string;
+  title: string;
+  type: string;
+  isEditing: boolean;
+  isExpanded: boolean;
+  onRemove: (id: string) => void;
+  onExpand: (id: string) => void;
+  children?: React.ReactNode;
+}> = ({ id, title, type, isEditing, isExpanded, onRemove, onExpand, children }) => {
+  return (
+    <Card className="dashboard-widget bg-prop-card border-prop-gold/20 shadow-xl">
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+        <CardTitle className="text-sm font-medium text-prop-gold">{title}</CardTitle>
+        {isEditing && (
+          <div className="flex space-x-1">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => onExpand(id)}
+              className="h-6 w-6 p-0 hover:bg-prop-gold/20"
+            >
+              {isExpanded ? <Minimize2 className="h-3 w-3" /> : <Maximize2 className="h-3 w-3" />}
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => onRemove(id)}
+              className="h-6 w-6 p-0 hover:bg-red-500/20 text-red-400"
+            >
+              <X className="h-3 w-3" />
+            </Button>
+          </div>
+        )}
+      </CardHeader>
+      <CardContent>
+        {children}
+      </CardContent>
+    </Card>
+  );
+};
+
+const DraggableWidget: React.FC<{
+  widget: WidgetConfig;
+  isEditing: boolean;
+  onMove: (draggedId: string, targetPosition: { x: number; y: number }) => void;
+  onRemove: (id: string) => void;
+  onExpand: (id: string) => void;
+  children: React.ReactNode;
+}> = ({ widget, isEditing, onMove, onRemove, onExpand, children }) => {
+  const [{ isDragging }, drag] = useDrag(() => ({
     type: 'widget',
-    item: { id: widget.id, type: 'widget' },
+    item: { id: widget.id, position: widget.position },
     collect: (monitor) => ({
       isDragging: monitor.isDragging(),
     }),
-    canDrag: isEditing,
-  });
+  }));
 
-  const [, drop] = useDrop({
+  const [, drop] = useDrop(() => ({
     accept: 'widget',
     drop: (item: any, monitor) => {
       if (!monitor.didDrop() && item.id !== widget.id) {
         onMove(item.id, widget.position);
       }
     },
-  });
+  }));
 
-  const dragHandleProps = drag({ opacity: isDragging ? 0.5 : 1 });
+  const ref = React.useRef<HTMLDivElement>(null);
+  drag(drop(ref));
 
   return (
-    <div ref={drop} className="relative">
+    <div 
+      ref={ref}
+      className="absolute"
+      style={{
+        left: widget.position.x,
+        top: widget.position.y,
+        width: widget.size.width,
+        height: widget.size.height,
+        opacity: isDragging ? 0.5 : 1,
+        cursor: isEditing ? 'move' : 'default',
+      }}
+    >
       <DashboardWidget
         id={widget.id}
         title={widget.title}
-        type={widget.type as any}
+        type={widget.type}
         isEditing={isEditing}
         isExpanded={widget.isExpanded}
         onRemove={onRemove}
         onExpand={onExpand}
-        dragHandleProps={dragHandleProps}
-        className={isDragging ? 'opacity-50' : ''}
       >
         {children}
       </DashboardWidget>
     </div>
   );
-}
+};
 
 export default function CustomizableDashboard({ accounts, trades }: CustomizableDashboardProps) {
   const [widgets, setWidgets] = useState<WidgetConfig[]>(defaultWidgets);
@@ -98,21 +154,20 @@ export default function CustomizableDashboard({ accounts, trades }: Customizable
   }, []);
 
   const addWidget = useCallback(() => {
-    if (!newWidgetType) return;
-    
-    const newWidget: WidgetConfig = {
-      id: `widget-${Date.now()}`,
-      type: newWidgetType as any,
-      title: `New ${newWidgetType.charAt(0).toUpperCase() + newWidgetType.slice(1)} Widget`,
-      position: { x: 0, y: Math.max(...widgets.map(w => w.position.y)) + 1 },
-      size: { width: 1, height: 1 },
-      isExpanded: false,
-    };
-    
-    setWidgets(prev => [...prev, newWidget]);
-    setNewWidgetType('');
-    setShowAddWidget(false);
-  }, [newWidgetType, widgets]);
+    if (newWidgetType) {
+      const newWidget: WidgetConfig = {
+        id: Date.now().toString(),
+        type: newWidgetType,
+        title: newWidgetType.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase()),
+        position: { x: 0, y: 0 },
+        size: { width: 300, height: 200 },
+        isExpanded: false,
+      };
+      setWidgets(prev => [...prev, newWidget]);
+      setShowAddWidget(false);
+      setNewWidgetType('');
+    }
+  }, [newWidgetType]);
 
   const resetLayout = useCallback(() => {
     setWidgets(defaultWidgets);
@@ -120,156 +175,137 @@ export default function CustomizableDashboard({ accounts, trades }: Customizable
 
   const saveLayout = useCallback(() => {
     localStorage.setItem('dashboard-layout', JSON.stringify(widgets));
-    setIsEditing(false);
   }, [widgets]);
 
   const renderWidgetContent = (widget: WidgetConfig) => {
     switch (widget.type) {
-      case 'performance':
+      case 'account-overview':
+        const totalBalance = accounts.reduce((sum, acc) => sum + (acc.balance || 0), 0);
+        const totalAccounts = accounts.length;
+        const activeAccounts = accounts.filter(acc => acc.status === 'active').length;
+        
         return (
-          <div className="space-y-3">
-            <div className="text-2xl font-bold text-prop-green">
-              ${accounts.reduce((sum, acc) => sum + acc.currentBalance, 0).toLocaleString()}
+          <div className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <p className="text-xs text-gray-400">Total Balance</p>
+                <p className="text-2xl font-bold text-prop-gold">${totalBalance.toLocaleString()}</p>
+              </div>
+              <div>
+                <p className="text-xs text-gray-400">Active Accounts</p>
+                <p className="text-2xl font-bold text-prop-blue">{activeAccounts}/{totalAccounts}</p>
+              </div>
             </div>
-            <div className="text-sm text-gray-400">Total Portfolio Value</div>
           </div>
         );
       
-      case 'accounts':
+      case 'recent-trades':
+        const recentTrades = trades.slice(0, 5);
         return (
           <div className="space-y-2">
-            {accounts.slice(0, 3).map(account => (
-              <div key={account.id} className="flex justify-between text-sm">
-                <span className="truncate">{account.name}</span>
-                <span className="text-prop-gold">${account.currentBalance.toLocaleString()}</span>
-              </div>
-            ))}
+            {recentTrades.length === 0 ? (
+              <p className="text-gray-400 text-sm">No recent trades</p>
+            ) : (
+              recentTrades.map((trade: any, index: number) => (
+                <div key={index} className="flex justify-between items-center p-2 bg-prop-dark rounded">
+                  <span className="text-sm text-gray-300">{trade.symbol}</span>
+                  <span className={`text-sm font-medium ${trade.pnl >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                    {trade.pnl >= 0 ? '+' : ''}${trade.pnl}
+                  </span>
+                </div>
+              ))
+            )}
           </div>
         );
       
-      case 'trades':
+      case 'performance-chart':
         return (
-          <div className="space-y-2">
-            {trades.slice(-3).map(trade => (
-              <div key={trade.id} className="flex justify-between text-sm">
-                <span>{trade.symbol}</span>
-                <span className={trade.pnl >= 0 ? 'text-prop-green' : 'text-prop-pink'}>
-                  ${trade.pnl.toFixed(2)}
-                </span>
-              </div>
-            ))}
+          <div className="h-full flex items-center justify-center">
+            <div className="text-center">
+              <BarChart3 className="h-16 w-16 text-prop-gold mx-auto mb-4" />
+              <p className="text-gray-400">Performance Chart Widget</p>
+              <p className="text-sm text-gray-500">Chart visualization will appear here</p>
+            </div>
           </div>
         );
       
-      case 'calendar':
+      case 'risk-metrics':
         return (
-          <div className="text-center text-gray-400">
-            Trading Calendar View
-          </div>
-        );
-      
-      case 'chart':
-        return (
-          <div className="text-center text-gray-400">
-            P&L Chart Visualization
-          </div>
-        );
-      
-      case 'risk':
-        return (
-          <div className="space-y-2">
-            <div className="text-sm">Risk Level: <span className="text-prop-tiffany">Moderate</span></div>
-            <div className="text-sm">Daily Loss: <span className="text-prop-pink">-$250</span></div>
+          <div className="space-y-4">
+            <div className="flex justify-between">
+              <span className="text-sm text-gray-400">Risk Level</span>
+              <Badge variant="outline" className="text-prop-blue border-prop-blue">Low</Badge>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-sm text-gray-400">Max Drawdown</span>
+              <span className="text-sm text-red-400">-2.5%</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-sm text-gray-400">Win Rate</span>
+              <span className="text-sm text-green-400">68%</span>
+            </div>
           </div>
         );
       
       default:
-        return <div className="text-gray-400">Widget content</div>;
+        return (
+          <div className="h-full flex items-center justify-center">
+            <p className="text-gray-400">Widget content</p>
+          </div>
+        );
     }
   };
 
   return (
     <DndProvider backend={HTML5Backend}>
       <div className="space-y-6">
-        {/* Dashboard Controls */}
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-3">
-            <h2 className="text-2xl font-bold text-white flex items-center">
-              <Layout className="mr-3 h-6 w-6 text-prop-gold" />
-              Customizable Dashboard
-            </h2>
-            {isEditing && (
-              <div className="bg-prop-gold/20 text-prop-gold px-3 py-1 rounded-full text-sm">
-                Edit Mode Active
-              </div>
-            )}
-          </div>
-          
-          <div className="flex items-center space-x-2">
+        <div className="flex justify-between items-center">
+          <h2 className="text-2xl font-bold text-prop-gold">Customizable Dashboard</h2>
+          <div className="flex space-x-2">
             <Button
-              variant={isEditing ? "default" : "outline"}
+              variant="outline"
+              size="sm"
               onClick={() => setIsEditing(!isEditing)}
-              className={isEditing ? "bg-prop-gold hover:bg-prop-gold/80" : "border-prop-gold/30 hover:border-prop-gold"}
+              className="border-prop-gold/30 text-prop-gold hover:bg-prop-gold/10"
             >
-              <Edit3 className="h-4 w-4 mr-2" />
-              {isEditing ? 'Exit Edit' : 'Edit Layout'}
+              <Settings className="h-4 w-4 mr-2" />
+              {isEditing ? 'Done' : 'Edit'}
             </Button>
-            
             {isEditing && (
               <>
-                <Dialog open={showAddWidget} onOpenChange={setShowAddWidget}>
-                  <DialogTrigger asChild>
-                    <Button variant="outline" className="border-prop-tiffany/30 hover:border-prop-tiffany">
-                      <Plus className="h-4 w-4 mr-2" />
-                      Add Widget
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent className="bg-gray-800 border-gray-600">
-                    <DialogHeader>
-                      <DialogTitle className="text-white">Add New Widget</DialogTitle>
-                    </DialogHeader>
-                    <div className="space-y-4">
-                      <Select value={newWidgetType} onValueChange={setNewWidgetType}>
-                        <SelectTrigger className="bg-gray-700 border-gray-600">
-                          <SelectValue placeholder="Select widget type" />
-                        </SelectTrigger>
-                        <SelectContent className="bg-gray-700 border-gray-600">
-                          <SelectItem value="performance">Performance</SelectItem>
-                          <SelectItem value="accounts">Accounts</SelectItem>
-                          <SelectItem value="trades">Trades</SelectItem>
-                          <SelectItem value="calendar">Calendar</SelectItem>
-                          <SelectItem value="chart">Chart</SelectItem>
-                          <SelectItem value="risk">Risk</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <div className="flex space-x-2">
-                        <Button onClick={addWidget} className="bg-prop-tiffany hover:bg-prop-tiffany/80">
-                          Add Widget
-                        </Button>
-                        <Button variant="outline" onClick={() => setShowAddWidget(false)}>
-                          Cancel
-                        </Button>
-                      </div>
-                    </div>
-                  </DialogContent>
-                </Dialog>
-                
-                <Button variant="outline" onClick={resetLayout} className="border-gray-500 hover:border-gray-400">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShowAddWidget(true)}
+                  className="border-prop-blue/30 text-prop-blue hover:bg-prop-blue/10"
+                >
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add Widget
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={resetLayout}
+                  className="border-orange-400/30 text-orange-400 hover:bg-orange-400/10"
+                >
                   <RotateCcw className="h-4 w-4 mr-2" />
                   Reset
                 </Button>
-                
-                <Button onClick={saveLayout} className="bg-prop-green hover:bg-prop-green/80">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={saveLayout}
+                  className="border-green-400/30 text-green-400 hover:bg-green-400/10"
+                >
                   <Save className="h-4 w-4 mr-2" />
-                  Save Layout
+                  Save
                 </Button>
               </>
             )}
           </div>
         </div>
 
-        {/* Dashboard Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 auto-rows-min">
+        <div className="relative min-h-[600px] bg-prop-dark/20 rounded-lg border border-prop-gold/20 p-4">
           {widgets.map(widget => (
             <DraggableWidget
               key={widget.id}
@@ -283,6 +319,39 @@ export default function CustomizableDashboard({ accounts, trades }: Customizable
             </DraggableWidget>
           ))}
         </div>
+
+        {showAddWidget && (
+          <Card className="bg-prop-card border-prop-gold/20">
+            <CardHeader>
+              <CardTitle className="text-prop-gold">Add New Widget</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="flex space-x-4">
+                <Select value={newWidgetType} onValueChange={setNewWidgetType}>
+                  <SelectTrigger className="flex-1">
+                    <SelectValue placeholder="Select widget type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="account-overview">Account Overview</SelectItem>
+                    <SelectItem value="recent-trades">Recent Trades</SelectItem>
+                    <SelectItem value="performance-chart">Performance Chart</SelectItem>
+                    <SelectItem value="risk-metrics">Risk Metrics</SelectItem>
+                  </SelectContent>
+                </Select>
+                <Button onClick={addWidget} className="bg-prop-gradient-gold text-black hover:bg-prop-gold">
+                  Add Widget
+                </Button>
+                <Button 
+                  variant="outline" 
+                  onClick={() => setShowAddWidget(false)}
+                  className="border-gray-600 text-gray-400 hover:bg-gray-800"
+                >
+                  Cancel
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        )}
       </div>
     </DndProvider>
   );
