@@ -20,6 +20,15 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
+import { 
+  DropdownMenu, 
+  DropdownMenuContent, 
+  DropdownMenuItem, 
+  DropdownMenuLabel, 
+  DropdownMenuSeparator, 
+  DropdownMenuTrigger 
+} from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
 const navItems = [
   { href: "/accounts", label: "Accounts", icon: Wallet, section: "main" },
@@ -99,22 +108,58 @@ export default function Sidebar() {
             </li>
           ))}
           
-          {/* User Profile with just initials */}
+          {/* User Profile with dropdown */}
           <li>
-            <Link href="/profile" className={cn(
-              "flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer",
-              location === "/profile" 
-                ? "bg-primary text-white" 
-                : "text-gray-300 hover:bg-dark-card"
-            )}>
-              <div className="mr-3 h-4 w-4 bg-prop-gradient-gold rounded-full flex items-center justify-center text-xs font-bold text-black">
-                {user ? (
-                  (user as any)?.firstName?.charAt(0) || 
-                  (user as any)?.email?.charAt(0).toUpperCase() || 'U'
-                ) : 'U'}
-              </div>
-              Profile
-            </Link>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button 
+                  variant="ghost" 
+                  className="w-full flex items-center justify-start px-3 py-2 text-sm font-medium text-gray-300 hover:bg-dark-card rounded-lg"
+                >
+                  <div className="mr-3 h-4 w-4 bg-prop-gradient-gold rounded-full flex items-center justify-center text-xs font-bold text-black">
+                    {user ? (
+                      (user as any)?.firstName?.charAt(0) || 
+                      (user as any)?.email?.charAt(0).toUpperCase() || 'U'
+                    ) : 'U'}
+                  </div>
+                  {(user as any)?.firstName || (user as any)?.email?.split('@')[0] || 'User'}
+                </Button>
+              </DropdownMenuTrigger>
+              
+              <DropdownMenuContent 
+                className="w-64 bg-dark-card border-prop-gold/20 shadow-xl" 
+                align="start"
+                side="right"
+              >
+                <DropdownMenuLabel className="text-prop-gold">My Account</DropdownMenuLabel>
+                <DropdownMenuSeparator className="bg-prop-gold/20" />
+                
+                <DropdownMenuItem 
+                  className="text-gray-300 hover:bg-dark-surface cursor-pointer"
+                  onClick={() => window.location.href = '/profile'}
+                >
+                  <User className="mr-2 h-4 w-4" />
+                  Profile Settings
+                </DropdownMenuItem>
+                
+                <DropdownMenuItem 
+                  className="text-gray-300 hover:bg-dark-surface cursor-pointer"
+                >
+                  <Shield className="mr-2 h-4 w-4" />
+                  Security Settings
+                </DropdownMenuItem>
+                
+                <DropdownMenuSeparator className="bg-prop-gold/20" />
+                
+                <DropdownMenuItem 
+                  className="text-red-400 hover:bg-red-600/20 cursor-pointer"
+                  onClick={() => window.location.href = '/api/logout'}
+                >
+                  <LogOut className="mr-2 h-4 w-4" />
+                  Sign Out
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </li>
         </ul>
       </nav>
