@@ -5,11 +5,9 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
-export function formatCurrency(amount: number | string): string {
-  if (amount === 0 || amount === '' || amount === null || amount === undefined) return '';
-  const numAmount = typeof amount === 'string' ? parseFloat(amount) : amount;
-  if (isNaN(numAmount) || numAmount === 0) return '';
-  return numAmount.toLocaleString('en-US', {
+export function formatCurrency(amount: number): string {
+  if (amount === 0) return '';
+  return amount.toLocaleString('en-US', {
     style: 'currency',
     currency: 'USD',
   });
@@ -23,21 +21,7 @@ export function formatCurrencyWithZero(amount: number): string {
 }
 
 export function formatPercentage(value: number): string {
-  if (value === 0) return '';
   return `${value >= 0 ? '+' : ''}${value.toFixed(2)}%`;
-}
-
-export function formatPercentageWithZero(value: number): string {
-  return `${value >= 0 ? '+' : ''}${value.toFixed(2)}%`;
-}
-
-export function formatNumber(value: number): string {
-  if (value === 0) return '';
-  return value.toLocaleString();
-}
-
-export function formatNumberWithZero(value: number): string {
-  return value.toLocaleString();
 }
 
 export function formatDate(date: string | Date): string {
