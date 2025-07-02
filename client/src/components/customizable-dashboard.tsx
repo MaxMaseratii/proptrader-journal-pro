@@ -1,358 +1,460 @@
-import React, { useState, useCallback } from 'react';
-import { DndProvider, useDrag, useDrop } from 'react-dnd';
-import { HTML5Backend } from 'react-dnd-html5-backend';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { BarChart3, TrendingUp, DollarSign, Target, Maximize2, Minimize2, X, Plus, Settings, RotateCcw, Save } from 'lucide-react';
+import React, { useState, useMemo } from "react";
+import { Responsive, WidthProvider } from "react-grid-layout";
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
+import { formatCurrency, formatPercentage } from "@/lib/utils";
+import { calculateDisciplinedScore, getScoreColor } from "@/lib/disciplined-score";
+import { EquityChart, MonthlyPerformanceChart } from "@/components/chart-components";
+import TradeAnalysisCalendar from "@/components/trade-analysis-calendar";
+import { Settings, Eye, EyeOff, Grid, Save } from "lucide-react";
+import type { Account, Trade } from "@shared/schema";
+import "react-grid-layout/css/styles.css";
+import "react-resizable/css/styles.css";
 
-interface WidgetConfig {
+const ResponsiveGridLayout = WidthProvider(Responsive);
+
+interface DashboardWidget {
   id: string;
-  type: string;
   title: string;
-  position: { x: number; y: number };
-  size: { width: number; height: number };
-  isExpanded: boolean;
+  component: React.ComponentType<any>;
+  defaultSize: { w: number; h: number };
+  category: string;
 }
 
 interface CustomizableDashboardProps {
-  accounts: any[];
-  trades: any[];
+  accounts: Account[];
+  trades: Trade[];
+  analytics: any[];
 }
 
-const defaultWidgets: WidgetConfig[] = [
-  { id: '1', type: 'account-overview', title: 'Account Overview', position: { x: 0, y: 0 }, size: { width: 300, height: 200 }, isExpanded: false },
-  { id: '2', type: 'recent-trades', title: 'Recent Trades', position: { x: 320, y: 0 }, size: { width: 300, height: 200 }, isExpanded: false },
-  { id: '3', type: 'performance-chart', title: 'Performance Chart', position: { x: 0, y: 220 }, size: { width: 620, height: 300 }, isExpanded: false },
-  { id: '4', type: 'risk-metrics', title: 'Risk Metrics', position: { x: 640, y: 0 }, size: { width: 300, height: 200 }, isExpanded: false },
-];
-
-const DashboardWidget: React.FC<{
-  id: string;
-  title: string;
-  type: string;
-  isEditing: boolean;
-  isExpanded: boolean;
-  onRemove: (id: string) => void;
-  onExpand: (id: string) => void;
-  children?: React.ReactNode;
-}> = ({ id, title, type, isEditing, isExpanded, onRemove, onExpand, children }) => {
-  return (
-    <Card className="dashboard-widget bg-prop-card border-prop-gold/20 shadow-xl">
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <CardTitle className="text-sm font-medium text-prop-gold">{title}</CardTitle>
-        {isEditing && (
-          <div className="flex space-x-1">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => onExpand(id)}
-              className="h-6 w-6 p-0 hover:bg-prop-gold/20"
-            >
-              {isExpanded ? <Minimize2 className="h-3 w-3" /> : <Maximize2 className="h-3 w-3" />}
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => onRemove(id)}
-              className="h-6 w-6 p-0 hover:bg-red-500/20 text-red-400"
-            >
-              <X className="h-3 w-3" />
-            </Button>
+// Widget Components
+const ActiveAccountsWidget = ({ accounts }: { accounts: Account[] }) => (
+  <Card className="h-full bg-prop-card border-prop-gold/20">
+    <CardHeader className="pb-3">
+      <CardTitle className="text-prop-gold text-lg flex items-center gap-2">
+        <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+        Active Accounts
+      </CardTitle>
+    </CardHeader>
+    <CardContent className="space-y-3">
+      {accounts.slice(0, 3).map((account) => (
+        <div key={account.id} className="flex justify-between items-center p-3 bg-dark-card rounded-lg">
+          <div>
+            <p className="text-white font-medium">{account.name}</p>
+            <p className="text-xs text-gray-400 capitalize">{account.type}</p>
           </div>
-        )}
+          <div className="text-right">
+            <p className="text-white font-bold">{formatCurrency(account.balance || 0)}</p>
+            <Badge variant={account.status === 'active' ? 'default' : 'secondary'} className="text-xs">
+              {account.status}
+            </Badge>
+          </div>
+        </div>
+      ))}
+    </CardContent>
+  </Card>
+);
+
+const RecentTradesWidget = ({ trades }: { trades: Trade[] }) => (
+  <Card className="h-full bg-prop-card border-prop-gold/20">
+    <CardHeader className="pb-3">
+      <CardTitle className="text-prop-gold text-lg">Recent Trades</CardTitle>
+    </CardHeader>
+    <CardContent className="space-y-3">
+      {trades.slice(0, 4).map((trade) => (
+        <div key={trade.id} className="flex justify-between items-center p-3 bg-dark-card rounded-lg">
+          <div>
+            <p className="text-white font-medium">{trade.symbol}</p>
+            <p className="text-xs text-gray-400">{trade.date}</p>
+          </div>
+          <div className="text-right">
+            <p className={`font-bold ${(trade.pnl || 0) >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+              {formatCurrency(trade.pnl || 0)}
+            </p>
+            <p className="text-xs text-gray-400">{trade.side}</p>
+          </div>
+        </div>
+      ))}
+    </CardContent>
+  </Card>
+);
+
+const DisciplinedScoreWidget = ({ trades }: { trades: Trade[] }) => {
+  const disciplineScore = calculateDisciplinedScore(trades);
+  const scoreColor = getScoreColor(disciplineScore);
+  
+  return (
+    <Card className="h-full bg-prop-card border-prop-gold/20">
+      <CardHeader className="pb-3">
+        <CardTitle className="text-prop-gold text-lg">Disciplined Trading Score</CardTitle>
       </CardHeader>
-      <CardContent>
-        {children}
+      <CardContent className="flex flex-col items-center justify-center space-y-4">
+        <div className="relative">
+          <div className="w-24 h-24 rounded-full border-8 border-gray-700 flex items-center justify-center">
+            <span className={`text-2xl font-bold ${scoreColor}`}>{disciplineScore}</span>
+          </div>
+          <div className={`absolute inset-0 rounded-full border-8 border-transparent ${scoreColor} border-t-current`} 
+               style={{ transform: `rotate(${(disciplineScore / 100) * 360}deg)` }}></div>
+        </div>
+        <div className="text-center">
+          <p className="text-white font-medium">Overall Grade</p>
+          <Badge className={`${scoreColor} text-white font-bold`}>
+            {disciplineScore >= 90 ? 'A+' : disciplineScore >= 80 ? 'A' : disciplineScore >= 70 ? 'B' : disciplineScore >= 60 ? 'C' : 'D'}
+          </Badge>
+        </div>
       </CardContent>
     </Card>
   );
 };
 
-const DraggableWidget: React.FC<{
-  widget: WidgetConfig;
-  isEditing: boolean;
-  onMove: (draggedId: string, targetPosition: { x: number; y: number }) => void;
-  onRemove: (id: string) => void;
-  onExpand: (id: string) => void;
-  children: React.ReactNode;
-}> = ({ widget, isEditing, onMove, onRemove, onExpand, children }) => {
-  const [{ isDragging }, drag] = useDrag(() => ({
-    type: 'widget',
-    item: { id: widget.id, position: widget.position },
-    collect: (monitor) => ({
-      isDragging: monitor.isDragging(),
-    }),
-  }));
-
-  const [, drop] = useDrop(() => ({
-    accept: 'widget',
-    drop: (item: any, monitor) => {
-      if (!monitor.didDrop() && item.id !== widget.id) {
-        onMove(item.id, widget.position);
-      }
-    },
-  }));
-
-  const ref = React.useRef<HTMLDivElement>(null);
-  drag(drop(ref));
-
+const WinRateWidget = ({ trades }: { trades: Trade[] }) => {
+  const winningTrades = trades.filter(t => (t.pnl || 0) > 0).length;
+  const totalTrades = trades.length;
+  const winRate = totalTrades > 0 ? (winningTrades / totalTrades) * 100 : 0;
+  
   return (
-    <div 
-      ref={ref}
-      className="absolute"
-      style={{
-        left: widget.position.x,
-        top: widget.position.y,
-        width: widget.size.width,
-        height: widget.size.height,
-        opacity: isDragging ? 0.5 : 1,
-        cursor: isEditing ? 'move' : 'default',
-      }}
-    >
-      <DashboardWidget
-        id={widget.id}
-        title={widget.title}
-        type={widget.type}
-        isEditing={isEditing}
-        isExpanded={widget.isExpanded}
-        onRemove={onRemove}
-        onExpand={onExpand}
-      >
-        {children}
-      </DashboardWidget>
-    </div>
+    <Card className="h-full bg-prop-card border-prop-gold/20">
+      <CardHeader className="pb-3">
+        <CardTitle className="text-prop-gold text-lg">Win Rate</CardTitle>
+      </CardHeader>
+      <CardContent className="flex flex-col justify-center space-y-4">
+        <div className="text-center">
+          <div className="text-3xl font-bold text-white mb-2">{formatPercentage(winRate)}</div>
+          <Progress value={winRate} className="w-full h-3" />
+        </div>
+        <div className="grid grid-cols-2 gap-4 text-center">
+          <div>
+            <p className="text-gray-400 text-sm">Wins</p>
+            <p className="text-green-400 font-bold">{winningTrades}</p>
+          </div>
+          <div>
+            <p className="text-gray-400 text-sm">Losses</p>
+            <p className="text-red-400 font-bold">{totalTrades - winningTrades}</p>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
   );
 };
 
-export default function CustomizableDashboard({ accounts, trades }: CustomizableDashboardProps) {
-  const [widgets, setWidgets] = useState<WidgetConfig[]>(defaultWidgets);
-  const [isEditing, setIsEditing] = useState(false);
-  const [showAddWidget, setShowAddWidget] = useState(false);
-  const [newWidgetType, setNewWidgetType] = useState<string>('');
-
-  const moveWidget = useCallback((draggedId: string, targetPosition: { x: number; y: number }) => {
-    setWidgets(prev => prev.map(widget => 
-      widget.id === draggedId 
-        ? { ...widget, position: targetPosition }
-        : widget
-    ));
-  }, []);
-
-  const removeWidget = useCallback((id: string) => {
-    setWidgets(prev => prev.filter(widget => widget.id !== id));
-  }, []);
-
-  const expandWidget = useCallback((id: string) => {
-    setWidgets(prev => prev.map(widget => 
-      widget.id === id 
-        ? { ...widget, isExpanded: !widget.isExpanded }
-        : widget
-    ));
-  }, []);
-
-  const addWidget = useCallback(() => {
-    if (newWidgetType) {
-      const newWidget: WidgetConfig = {
-        id: Date.now().toString(),
-        type: newWidgetType,
-        title: newWidgetType.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase()),
-        position: { x: 0, y: 0 },
-        size: { width: 300, height: 200 },
-        isExpanded: false,
-      };
-      setWidgets(prev => [...prev, newWidget]);
-      setShowAddWidget(false);
-      setNewWidgetType('');
-    }
-  }, [newWidgetType]);
-
-  const resetLayout = useCallback(() => {
-    setWidgets(defaultWidgets);
-  }, []);
-
-  const saveLayout = useCallback(() => {
-    localStorage.setItem('dashboard-layout', JSON.stringify(widgets));
-  }, [widgets]);
-
-  const renderWidgetContent = (widget: WidgetConfig) => {
-    switch (widget.type) {
-      case 'account-overview':
-        const totalBalance = accounts.reduce((sum, acc) => sum + (acc.balance || 0), 0);
-        const totalAccounts = accounts.length;
-        const activeAccounts = accounts.filter(acc => acc.status === 'active').length;
-        
-        return (
-          <div className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <p className="text-xs text-gray-400">Total Balance</p>
-                <p className="text-2xl font-bold text-prop-gold">${totalBalance.toLocaleString()}</p>
-              </div>
-              <div>
-                <p className="text-xs text-gray-400">Active Accounts</p>
-                <p className="text-2xl font-bold text-prop-blue">{activeAccounts}/{totalAccounts}</p>
-              </div>
+const AccountPerformanceWidget = ({ accounts }: { accounts: Account[] }) => (
+  <Card className="h-full bg-prop-card border-prop-gold/20">
+    <CardHeader className="pb-3">
+      <CardTitle className="text-prop-gold text-lg">Account Performance</CardTitle>
+    </CardHeader>
+    <CardContent className="space-y-4">
+      {accounts.slice(0, 2).map((account) => (
+        <div key={account.id} className="p-3 bg-dark-card rounded-lg">
+          <div className="flex justify-between mb-2">
+            <p className="text-white font-medium">{account.name}</p>
+            <Badge variant={account.status === 'active' ? 'default' : 'secondary'}>
+              {account.status}
+            </Badge>
+          </div>
+          <div className="grid grid-cols-2 gap-2 text-sm">
+            <div>
+              <p className="text-gray-400">Balance</p>
+              <p className="text-white font-bold">{formatCurrency(account.balance || 0)}</p>
+            </div>
+            <div>
+              <p className="text-gray-400">Profit Target</p>
+              <p className="text-prop-gold font-bold">{formatCurrency(account.profitTarget || 0)}</p>
             </div>
           </div>
-        );
-      
-      case 'recent-trades':
-        const recentTrades = trades.slice(0, 5);
-        return (
-          <div className="space-y-2">
-            {recentTrades.length === 0 ? (
-              <p className="text-gray-400 text-sm">No recent trades</p>
-            ) : (
-              recentTrades.map((trade: any, index: number) => (
-                <div key={index} className="flex justify-between items-center p-2 bg-prop-dark rounded">
-                  <span className="text-sm text-gray-300">{trade.symbol}</span>
-                  <span className={`text-sm font-medium ${trade.pnl >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-                    {trade.pnl >= 0 ? '+' : ''}${trade.pnl}
-                  </span>
-                </div>
-              ))
-            )}
-          </div>
-        );
-      
-      case 'performance-chart':
-        return (
-          <div className="h-full flex items-center justify-center">
-            <div className="text-center">
-              <BarChart3 className="h-16 w-16 text-prop-gold mx-auto mb-4" />
-              <p className="text-gray-400">Performance Chart Widget</p>
-              <p className="text-sm text-gray-500">Chart visualization will appear here</p>
-            </div>
-          </div>
-        );
-      
-      case 'risk-metrics':
-        return (
-          <div className="space-y-4">
-            <div className="flex justify-between">
-              <span className="text-sm text-gray-400">Risk Level</span>
-              <Badge variant="outline" className="text-prop-blue border-prop-blue">Low</Badge>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-sm text-gray-400">Max Drawdown</span>
-              <span className="text-sm text-red-400">-2.5%</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-sm text-gray-400">Win Rate</span>
-              <span className="text-sm text-green-400">68%</span>
-            </div>
-          </div>
-        );
-      
-      default:
-        return (
-          <div className="h-full flex items-center justify-center">
-            <p className="text-gray-400">Widget content</p>
-          </div>
-        );
-    }
+        </div>
+      ))}
+    </CardContent>
+  </Card>
+);
+
+const MonthlyPerformanceWidget = ({ trades }: { trades: Trade[] }) => (
+  <Card className="h-full bg-prop-card border-prop-gold/20">
+    <CardHeader className="pb-3">
+      <CardTitle className="text-prop-gold text-lg">Monthly Performance</CardTitle>
+    </CardHeader>
+    <CardContent>
+      <MonthlyPerformanceChart trades={trades} />
+    </CardContent>
+  </Card>
+);
+
+const EquityChartWidget = ({ trades }: { trades: Trade[] }) => (
+  <Card className="h-full bg-prop-card border-prop-gold/20">
+    <CardHeader className="pb-3">
+      <CardTitle className="text-prop-gold text-lg">Equity Curve</CardTitle>
+    </CardHeader>
+    <CardContent>
+      <EquityChart trades={trades} />
+    </CardContent>
+  </Card>
+);
+
+const TradeCalendarWidget = ({ trades }: { trades: Trade[] }) => (
+  <Card className="h-full bg-prop-card border-prop-gold/20">
+    <CardHeader className="pb-3">
+      <CardTitle className="text-prop-gold text-lg">Trade Analysis Calendar</CardTitle>
+    </CardHeader>
+    <CardContent>
+      <TradeAnalysisCalendar trades={trades} />
+    </CardContent>
+  </Card>
+);
+
+const DASHBOARD_WIDGETS: DashboardWidget[] = [
+  {
+    id: "active-accounts",
+    title: "Active Accounts",
+    component: ActiveAccountsWidget,
+    defaultSize: { w: 6, h: 4 },
+    category: "accounts"
+  },
+  {
+    id: "recent-trades",
+    title: "Recent Trades",
+    component: RecentTradesWidget,
+    defaultSize: { w: 6, h: 4 },
+    category: "trades"
+  },
+  {
+    id: "disciplined-score",
+    title: "Disciplined Trading Score",
+    component: DisciplinedScoreWidget,
+    defaultSize: { w: 4, h: 4 },
+    category: "analysis"
+  },
+  {
+    id: "win-rate",
+    title: "Win Rate",
+    component: WinRateWidget,
+    defaultSize: { w: 4, h: 4 },
+    category: "performance"
+  },
+  {
+    id: "account-performance",
+    title: "Account Performance",
+    component: AccountPerformanceWidget,
+    defaultSize: { w: 4, h: 4 },
+    category: "accounts"
+  },
+  {
+    id: "monthly-performance",
+    title: "Monthly Performance",
+    component: MonthlyPerformanceWidget,
+    defaultSize: { w: 8, h: 5 },
+    category: "performance"
+  },
+  {
+    id: "equity-chart",
+    title: "Equity Curve",
+    component: EquityChartWidget,
+    defaultSize: { w: 12, h: 6 },
+    category: "charts"
+  },
+  {
+    id: "trade-calendar",
+    title: "Trade Analysis Calendar",
+    component: TradeCalendarWidget,
+    defaultSize: { w: 12, h: 8 },
+    category: "analysis"
+  }
+];
+
+export default function CustomizableDashboard({ accounts, trades, analytics }: CustomizableDashboardProps) {
+  const [isCustomizing, setIsCustomizing] = useState(false);
+  const [visibleWidgets, setVisibleWidgets] = useState<string[]>(
+    DASHBOARD_WIDGETS.map(w => w.id)
+  );
+  const [layouts, setLayouts] = useState({
+    lg: DASHBOARD_WIDGETS.map((widget, index) => ({
+      i: widget.id,
+      x: (index % 2) * 6,
+      y: Math.floor(index / 2) * widget.defaultSize.h,
+      w: widget.defaultSize.w,
+      h: widget.defaultSize.h,
+    }))
+  });
+
+  const handleLayoutChange = (layout: any, layouts: any) => {
+    setLayouts(layouts);
   };
 
+  const toggleWidget = (widgetId: string) => {
+    setVisibleWidgets(prev => 
+      prev.includes(widgetId) 
+        ? prev.filter(id => id !== widgetId)
+        : [...prev, widgetId]
+    );
+  };
+
+  const saveDashboardLayout = () => {
+    localStorage.setItem('dashboard-layout', JSON.stringify(layouts));
+    localStorage.setItem('visible-widgets', JSON.stringify(visibleWidgets));
+    setIsCustomizing(false);
+  };
+
+  const resetDashboard = () => {
+    const defaultLayout = DASHBOARD_WIDGETS.map((widget, index) => ({
+      i: widget.id,
+      x: (index % 2) * 6,
+      y: Math.floor(index / 2) * widget.defaultSize.h,
+      w: widget.defaultSize.w,
+      h: widget.defaultSize.h,
+    }));
+    setLayouts({ lg: defaultLayout });
+    setVisibleWidgets(DASHBOARD_WIDGETS.map(w => w.id));
+  };
+
+  // Load saved layout on mount
+  React.useEffect(() => {
+    const savedLayout = localStorage.getItem('dashboard-layout');
+    const savedWidgets = localStorage.getItem('visible-widgets');
+    
+    if (savedLayout) {
+      setLayouts(JSON.parse(savedLayout));
+    }
+    if (savedWidgets) {
+      setVisibleWidgets(JSON.parse(savedWidgets));
+    }
+  }, []);
+
+  const filteredWidgets = DASHBOARD_WIDGETS.filter(widget => 
+    visibleWidgets.includes(widget.id)
+  );
+
   return (
-    <DndProvider backend={HTML5Backend}>
-      <div className="space-y-6">
-        <div className="flex justify-between items-center">
-          <h2 className="text-2xl font-bold text-prop-gold">Customizable Dashboard</h2>
-          <div className="flex space-x-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setIsEditing(!isEditing)}
-              className="border-prop-gold/30 text-prop-gold hover:bg-prop-gold/10"
-            >
-              <Settings className="h-4 w-4 mr-2" />
-              {isEditing ? 'Done' : 'Edit'}
-            </Button>
-            {isEditing && (
-              <>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setShowAddWidget(true)}
-                  className="border-prop-blue/30 text-prop-blue hover:bg-prop-blue/10"
-                >
-                  <Plus className="h-4 w-4 mr-2" />
-                  Add Widget
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={resetLayout}
-                  className="border-orange-400/30 text-orange-400 hover:bg-orange-400/10"
-                >
-                  <RotateCcw className="h-4 w-4 mr-2" />
-                  Reset
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={saveLayout}
-                  className="border-green-400/30 text-green-400 hover:bg-green-400/10"
-                >
-                  <Save className="h-4 w-4 mr-2" />
-                  Save
-                </Button>
-              </>
-            )}
-          </div>
+    <div className="p-6 bg-gradient-to-br from-black via-gray-900 to-black min-h-screen">
+      <div className="flex justify-between items-center mb-6">
+        <div>
+          <h1 className="text-3xl font-bold text-gradient-rainbow mb-2">Dashboard</h1>
+          <p className="text-gray-400">Customize your trading overview</p>
         </div>
-
-        <div className="relative min-h-[600px] bg-prop-dark/20 rounded-lg border border-prop-gold/20 p-4">
-          {widgets.map(widget => (
-            <DraggableWidget
-              key={widget.id}
-              widget={widget}
-              isEditing={isEditing}
-              onMove={moveWidget}
-              onRemove={removeWidget}
-              onExpand={expandWidget}
-            >
-              {renderWidgetContent(widget)}
-            </DraggableWidget>
-          ))}
-        </div>
-
-        {showAddWidget && (
-          <Card className="bg-prop-card border-prop-gold/20">
-            <CardHeader>
-              <CardTitle className="text-prop-gold">Add New Widget</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex space-x-4">
-                <Select value={newWidgetType} onValueChange={setNewWidgetType}>
-                  <SelectTrigger className="flex-1">
-                    <SelectValue placeholder="Select widget type" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="account-overview">Account Overview</SelectItem>
-                    <SelectItem value="recent-trades">Recent Trades</SelectItem>
-                    <SelectItem value="performance-chart">Performance Chart</SelectItem>
-                    <SelectItem value="risk-metrics">Risk Metrics</SelectItem>
-                  </SelectContent>
-                </Select>
-                <Button onClick={addWidget} className="bg-prop-gradient-gold text-black hover:bg-prop-gold">
-                  Add Widget
-                </Button>
-                <Button 
-                  variant="outline" 
-                  onClick={() => setShowAddWidget(false)}
-                  className="border-gray-600 text-gray-400 hover:bg-gray-800"
-                >
-                  Cancel
-                </Button>
+        
+        <div className="flex gap-2">
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button variant="outline" className="bg-prop-card border-prop-gold/20 text-prop-gold hover:bg-prop-gold hover:text-black">
+                <Settings className="w-4 h-4 mr-2" />
+                Customize Widgets
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="bg-prop-card border-prop-gold/20 max-w-2xl">
+              <DialogHeader>
+                <DialogTitle className="text-prop-gold">Dashboard Customization</DialogTitle>
+              </DialogHeader>
+              <div className="space-y-6">
+                <div>
+                  <h3 className="text-white font-medium mb-3">Visible Widgets</h3>
+                  <div className="grid grid-cols-2 gap-3">
+                    {DASHBOARD_WIDGETS.map((widget) => (
+                      <div key={widget.id} className="flex items-center space-x-2">
+                        <Checkbox
+                          id={widget.id}
+                          checked={visibleWidgets.includes(widget.id)}
+                          onCheckedChange={() => toggleWidget(widget.id)}
+                        />
+                        <label htmlFor={widget.id} className="text-sm text-gray-300">
+                          {widget.title}
+                        </label>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                
+                <div className="flex gap-2">
+                  <Button 
+                    onClick={saveDashboardLayout}
+                    className="bg-prop-gold text-black hover:bg-prop-gold/80"
+                  >
+                    <Save className="w-4 h-4 mr-2" />
+                    Save Layout
+                  </Button>
+                  <Button 
+                    onClick={resetDashboard}
+                    variant="outline"
+                    className="border-prop-gold/20 text-prop-gold hover:bg-prop-gold hover:text-black"
+                  >
+                    Reset to Default
+                  </Button>
+                </div>
               </div>
-            </CardContent>
-          </Card>
-        )}
+            </DialogContent>
+          </Dialog>
+
+          <Button
+            onClick={() => setIsCustomizing(!isCustomizing)}
+            variant={isCustomizing ? "default" : "outline"}
+            className={isCustomizing 
+              ? "bg-prop-gold text-black hover:bg-prop-gold/80" 
+              : "bg-prop-card border-prop-gold/20 text-prop-gold hover:bg-prop-gold hover:text-black"
+            }
+          >
+            <Grid className="w-4 h-4 mr-2" />
+            {isCustomizing ? "Exit Customize" : "Drag & Drop Mode"}
+          </Button>
+        </div>
       </div>
-    </DndProvider>
+
+      <ResponsiveGridLayout
+        className="layout"
+        layouts={layouts}
+        onLayoutChange={handleLayoutChange}
+        isDraggable={isCustomizing}
+        isResizable={isCustomizing}
+        breakpoints={{ lg: 1200, md: 996, sm: 768, xs: 480, xxs: 0 }}
+        cols={{ lg: 12, md: 10, sm: 6, xs: 4, xxs: 2 }}
+        rowHeight={60}
+        margin={[16, 16]}
+      >
+        {filteredWidgets.map((widget) => {
+          const WidgetComponent = widget.component;
+          return (
+            <div key={widget.id} className={`widget ${isCustomizing ? 'customizing' : ''}`}>
+              <WidgetComponent 
+                accounts={accounts} 
+                trades={trades} 
+                analytics={analytics}
+              />
+              {isCustomizing && (
+                <div className="absolute top-2 right-2 bg-black/80 rounded p-1">
+                  <Grid className="w-4 h-4 text-prop-gold" />
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </ResponsiveGridLayout>
+
+      <style jsx global>{`
+        .widget {
+          position: relative;
+          transition: all 0.2s ease;
+        }
+        
+        .widget.customizing {
+          outline: 2px dashed #d4af37;
+          outline-offset: 4px;
+        }
+        
+        .widget.customizing:hover {
+          outline-color: #f4d03f;
+          transform: scale(1.02);
+        }
+        
+        .react-grid-item.react-grid-placeholder {
+          background: rgba(212, 175, 55, 0.2);
+          border: 2px dashed #d4af37;
+          border-radius: 8px;
+        }
+        
+        .react-grid-item > .react-resizable-handle::after {
+          border-right: 2px solid #d4af37;
+          border-bottom: 2px solid #d4af37;
+        }
+      `}</style>
+    </div>
   );
 }
