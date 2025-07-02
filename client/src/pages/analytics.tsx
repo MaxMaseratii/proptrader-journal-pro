@@ -672,27 +672,328 @@ export default function Analytics() {
           </TabsContent>
 
           <TabsContent value="detailed" className="space-y-6">
-            {/* Detailed time-based analysis will go here */}
+            {/* Risk Breakdown Analysis */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <Card className="bg-gray-800 border-gray-700">
+                <CardHeader>
+                  <CardTitle>Risk Analysis Breakdown</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="bg-red-900/20 p-3 rounded-lg">
+                      <p className="text-red-400 text-sm">Max Drawdown</p>
+                      <p className="text-xl font-bold text-white">
+                        {formatPercentage(Math.abs(advancedMetrics.maxDrawdown))}
+                      </p>
+                    </div>
+                    <div className="bg-orange-900/20 p-3 rounded-lg">
+                      <p className="text-orange-400 text-sm">Current Drawdown</p>
+                      <p className="text-xl font-bold text-white">
+                        {formatPercentage(Math.abs(advancedMetrics.currentDrawdown))}
+                      </p>
+                    </div>
+                    <div className="bg-blue-900/20 p-3 rounded-lg">
+                      <p className="text-blue-400 text-sm">Avg R:R Ratio</p>
+                      <p className="text-xl font-bold text-white">
+                        {advancedMetrics.averageRiskReward.toFixed(2)}
+                      </p>
+                    </div>
+                    <div className="bg-purple-900/20 p-3 rounded-lg">
+                      <p className="text-purple-400 text-sm">Kelly Criterion</p>
+                      <p className="text-xl font-bold text-white">
+                        {formatPercentage(advancedMetrics.kellyCriterion)}
+                      </p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-gray-800 border-gray-700">
+                <CardHeader>
+                  <CardTitle>Trading Consistency</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="space-y-3">
+                    <div className="flex justify-between items-center">
+                      <span className="text-gray-400">Best Trading Day</span>
+                      <span className={`font-bold ${advancedMetrics.bestDay >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                        {formatCurrency(advancedMetrics.bestDay)}
+                      </span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-gray-400">Worst Trading Day</span>
+                      <span className={`font-bold ${advancedMetrics.worstDay >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                        {formatCurrency(advancedMetrics.worstDay)}
+                      </span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-gray-400">Avg Trades/Day</span>
+                      <span className="font-bold text-white">
+                        {advancedMetrics.averageTradesPerDay.toFixed(1)}
+                      </span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-gray-400">Max Consecutive Wins</span>
+                      <span className="font-bold text-green-400">
+                        {advancedMetrics.maxConsecutiveWins}
+                      </span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-gray-400">Max Consecutive Losses</span>
+                      <span className="font-bold text-red-400">
+                        {advancedMetrics.maxConsecutiveLosses}
+                      </span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Advanced Performance Metrics */}
             <Card className="bg-gray-800 border-gray-700">
               <CardHeader>
-                <CardTitle>Detailed Time-Based Analysis</CardTitle>
+                <CardTitle>Advanced Performance Metrics</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-gray-400">Detailed analysis features coming soon...</p>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <div className="space-y-3">
+                    <h4 className="font-semibold text-gray-300 border-b border-gray-600 pb-2">Risk Metrics</h4>
+                    <div className="space-y-2">
+                      <div className="flex justify-between">
+                        <span className="text-gray-400">Expectancy</span>
+                        <span className={`font-medium ${advancedMetrics.expectancy >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                          {formatCurrency(advancedMetrics.expectancy)}
+                        </span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-400">Recovery Factor</span>
+                        <span className="font-medium text-white">
+                          {advancedMetrics.recoveryFactor.toFixed(2)}
+                        </span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-400">Calmar Ratio</span>
+                        <span className="font-medium text-white">
+                          {advancedMetrics.calmarRatio.toFixed(2)}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-3">
+                    <h4 className="font-semibold text-gray-300 border-b border-gray-600 pb-2">Trade Analysis</h4>
+                    <div className="space-y-2">
+                      <div className="flex justify-between">
+                        <span className="text-gray-400">Largest Win</span>
+                        <span className="font-medium text-green-400">
+                          {formatCurrency(advancedMetrics.largestWin)}
+                        </span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-400">Largest Loss</span>
+                        <span className="font-medium text-red-400">
+                          {formatCurrency(Math.abs(advancedMetrics.largestLoss))}
+                        </span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-400">Average Win</span>
+                        <span className="font-medium text-green-400">
+                          {formatCurrency(advancedMetrics.averageWin)}
+                        </span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-400">Average Loss</span>
+                        <span className="font-medium text-red-400">
+                          {formatCurrency(Math.abs(advancedMetrics.averageLoss))}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-3">
+                    <h4 className="font-semibold text-gray-300 border-b border-gray-600 pb-2">Advanced Ratios</h4>
+                    <div className="space-y-2">
+                      <div className="flex justify-between">
+                        <span className="text-gray-400">Ulcer Index</span>
+                        <span className="font-medium text-white">
+                          {advancedMetrics.ulcerIndex.toFixed(2)}
+                        </span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-400">Sterling Ratio</span>
+                        <span className="font-medium text-white">
+                          {advancedMetrics.sterlingRatio.toFixed(2)}
+                        </span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-400">Total Trading Days</span>
+                        <span className="font-medium text-white">
+                          {advancedMetrics.totalTradingDays}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </CardContent>
             </Card>
           </TabsContent>
 
           <TabsContent value="comparison" className="space-y-6">
-            {/* Account comparison features will go here */}
-            <Card className="bg-gray-800 border-gray-700">
-              <CardHeader>
-                <CardTitle>Account Comparison</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-gray-400">Account comparison features coming soon...</p>
-              </CardContent>
-            </Card>
+            {/* Account Comparison */}
+            {filteredData.accounts.length > 1 ? (
+              <div className="space-y-6">
+                <Card className="bg-gray-800 border-gray-700">
+                  <CardHeader>
+                    <CardTitle>Account Performance Comparison</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-sm">
+                        <thead>
+                          <tr className="border-b border-gray-600">
+                            <th className="text-left py-2">Account</th>
+                            <th className="text-right py-2">P&L</th>
+                            <th className="text-right py-2">Win Rate</th>
+                            <th className="text-right py-2">Total Trades</th>
+                            <th className="text-right py-2">Avg Trade</th>
+                            <th className="text-right py-2">Max DD</th>
+                            <th className="text-right py-2 pr-4">Status</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {filteredData.accounts.map((account) => {
+                            const accountTrades = filteredData.trades.filter(t => t.accountId === account.id);
+                            const accountPnL = accountTrades.reduce((sum, trade) => sum + (trade.pnl || 0), 0);
+                            const winningTrades = accountTrades.filter(t => (t.pnl || 0) > 0).length;
+                            const accountWinRate = accountTrades.length > 0 ? winningTrades / accountTrades.length : 0;
+                            const avgTrade = accountTrades.length > 0 ? accountPnL / accountTrades.length : 0;
+                            const drawdown = ((account.currentBalance - account.startingBalance) / account.startingBalance) * 100;
+                            
+                            return (
+                              <tr key={account.id} className="border-b border-gray-700 hover:bg-gray-700/50">
+                                <td className="py-3">
+                                  <div>
+                                    <p className="font-medium text-white">{account.name}</p>
+                                    <p className="text-xs text-gray-400 capitalize">{account.type}</p>
+                                  </div>
+                                </td>
+                                <td className={`text-right py-3 font-bold ${accountPnL >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                                  {formatCurrency(accountPnL)}
+                                </td>
+                                <td className="text-right py-3 text-white">
+                                  {formatPercentage(accountWinRate)}
+                                </td>
+                                <td className="text-right py-3 text-white">
+                                  {accountTrades.length}
+                                </td>
+                                <td className={`text-right py-3 ${avgTrade >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                                  {formatCurrency(avgTrade)}
+                                </td>
+                                <td className={`text-right py-3 ${Math.abs(drawdown) > 10 ? 'text-red-400' : Math.abs(drawdown) > 5 ? 'text-orange-400' : 'text-green-400'}`}>
+                                  {formatPercentage(drawdown)}
+                                </td>
+                                <td className="text-right py-3 pr-4">
+                                  <Badge variant={
+                                    account.status === 'funded' ? 'default' :
+                                    account.status === 'active' ? 'secondary' :
+                                    account.status === 'passed' ? 'default' :
+                                    'destructive'
+                                  } className="capitalize">
+                                    {account.status}
+                                  </Badge>
+                                </td>
+                              </tr>
+                            );
+                          })}
+                        </tbody>
+                      </table>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Visual Comparison Charts */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  <Card className="bg-gray-800 border-gray-700">
+                    <CardHeader>
+                      <CardTitle>P&L Comparison</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-3">
+                        {filteredData.accounts.map((account) => {
+                          const accountTrades = filteredData.trades.filter(t => t.accountId === account.id);
+                          const accountPnL = accountTrades.reduce((sum, trade) => sum + (trade.pnl || 0), 0);
+                          const maxPnL = Math.max(...filteredData.accounts.map(acc => {
+                            const accTrades = filteredData.trades.filter(t => t.accountId === acc.id);
+                            return Math.abs(accTrades.reduce((sum, trade) => sum + (trade.pnl || 0), 0));
+                          }));
+                          const barWidth = maxPnL > 0 ? (Math.abs(accountPnL) / maxPnL) * 100 : 0;
+                          
+                          return (
+                            <div key={account.id} className="space-y-1">
+                              <div className="flex justify-between text-sm">
+                                <span className="text-gray-300">{account.name}</span>
+                                <span className={accountPnL >= 0 ? 'text-green-400' : 'text-red-400'}>
+                                  {formatCurrency(accountPnL)}
+                                </span>
+                              </div>
+                              <div className="h-2 bg-gray-700 rounded-full overflow-hidden">
+                                <div 
+                                  className={`h-full rounded-full transition-all ${accountPnL >= 0 ? 'bg-green-400' : 'bg-red-400'}`}
+                                  style={{ width: `${barWidth}%` }}
+                                />
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  <Card className="bg-gray-800 border-gray-700">
+                    <CardHeader>
+                      <CardTitle>Trading Activity Comparison</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-3">
+                        {filteredData.accounts.map((account) => {
+                          const accountTrades = filteredData.trades.filter(t => t.accountId === account.id);
+                          const maxTrades = Math.max(...filteredData.accounts.map(acc => 
+                            filteredData.trades.filter(t => t.accountId === acc.id).length
+                          ));
+                          const barWidth = maxTrades > 0 ? (accountTrades.length / maxTrades) * 100 : 0;
+                          
+                          return (
+                            <div key={account.id} className="space-y-1">
+                              <div className="flex justify-between text-sm">
+                                <span className="text-gray-300">{account.name}</span>
+                                <span className="text-white">{accountTrades.length} trades</span>
+                              </div>
+                              <div className="h-2 bg-gray-700 rounded-full overflow-hidden">
+                                <div 
+                                  className="h-full bg-blue-400 rounded-full transition-all"
+                                  style={{ width: `${barWidth}%` }}
+                                />
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
+              </div>
+            ) : (
+              <Card className="bg-gray-800 border-gray-700">
+                <CardHeader>
+                  <CardTitle>Account Comparison</CardTitle>
+                </CardHeader>
+                <CardContent className="text-center py-8">
+                  <Users className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                  <p className="text-gray-400 mb-2">No accounts to compare</p>
+                  <p className="text-sm text-gray-500">Create multiple accounts to see performance comparisons</p>
+                </CardContent>
+              </Card>
+            )}
           </TabsContent>
         </Tabs>
       </div>

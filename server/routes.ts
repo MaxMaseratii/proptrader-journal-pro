@@ -194,10 +194,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
         firstLine: req.body.csvData?.split('\n')[0]
       });
       
-      const { accountId, csvData } = req.body;
+      const { accountId, csvData, csvContent } = req.body;
+      const csvText = csvData || csvContent;
       
-      if (!accountId || !csvData) {
-        console.log("Missing required fields:", { accountId: !!accountId, csvData: !!csvData });
+      if (!accountId || !csvText) {
+        console.log("Missing required fields:", { accountId: !!accountId, csvData: !!csvData, csvContent: !!csvContent });
         return res.status(400).json({ message: "Account ID and CSV content are required" });
       }
 
@@ -208,7 +209,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       // Parse CSV content
-      const lines = csvData.split('\n').filter((line: string) => line.trim());
+      const lines = csvText.split('\n').filter((line: string) => line.trim());
       const headers = lines[0].split(',').map((h: string) => h.trim());
       
       let recordsProcessed = 0;

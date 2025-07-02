@@ -358,33 +358,64 @@ export default function Payouts() {
 
               <Card className="bg-dark-card border-dark-border">
                 <CardHeader>
-                  <CardTitle>Payout Schedule</CardTitle>
-                  <p className="text-gray-400 text-sm">Payment options and processing times</p>
+                  <CardTitle>Account Information</CardTitle>
+                  <p className="text-gray-400 text-sm">Your account details and payout settings</p>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <div className="border border-dark-border rounded-lg p-4">
-                    <div className="flex items-center justify-between mb-2">
-                      <h4 className="font-medium">5-Day Payout</h4>
-                      <Badge className="bg-primary text-white">Standard</Badge>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <div className="flex justify-between">
+                        <span className="text-gray-400">Account Type</span>
+                        <span className="font-medium text-white capitalize">{selectedAccount.type}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-400">Starting Balance</span>
+                        <span className="font-medium text-white">{formatCurrency(selectedAccount.startingBalance)}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-400">Current Balance</span>
+                        <span className={`font-medium ${selectedAccount.currentBalance >= selectedAccount.startingBalance ? 'text-green-400' : 'text-red-400'}`}>
+                          {formatCurrency(selectedAccount.currentBalance)}
+                        </span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-400">Profit Target</span>
+                        <span className="font-medium text-blue-400">{formatCurrency(selectedAccount.profitTarget)}</span>
+                      </div>
                     </div>
-                    <div className="text-sm text-gray-400 space-y-1">
-                      <p>• Available after 5 trading days</p>
-                      <p>• Up to {formatCurrency(1500)} maximum</p>
-                      <p>• 2-3 business days processing</p>
+                    
+                    <div className="space-y-2">
+                      <div className="flex justify-between">
+                        <span className="text-gray-400">Max Drawdown</span>
+                        <span className="font-medium text-orange-400">{formatCurrency(selectedAccount.maxDrawdown)}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-400">Daily Loss Limit</span>
+                        <span className="font-medium text-red-400">{formatCurrency(selectedAccount.dailyLossLimit)}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-400">Firm</span>
+                        <span className="font-medium text-white">{selectedAccount.firm || 'Not specified'}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-400">Status</span>
+                        <Badge variant={selectedAccount.status === 'funded' ? 'default' : selectedAccount.status === 'active' ? 'secondary' : 'destructive'} className="capitalize">
+                          {selectedAccount.status}
+                        </Badge>
+                      </div>
                     </div>
                   </div>
-
-                  <div className="border border-dark-border rounded-lg p-4">
-                    <div className="flex items-center justify-between mb-2">
-                      <h4 className="font-medium">10-Day Payout</h4>
-                      <Badge className="bg-success-green text-white">Premium</Badge>
+                  
+                  {selectedAccount.status === 'funded' && (
+                    <div className="mt-4 p-3 bg-green-900/20 rounded-lg border border-green-500/30">
+                      <div className="flex items-center">
+                        <CheckCircle className="h-4 w-4 text-green-400 mr-2" />
+                        <p className="text-sm text-green-400">
+                          This account is eligible for payouts based on your trading performance
+                        </p>
+                      </div>
                     </div>
-                    <div className="text-sm text-gray-400 space-y-1">
-                      <p>• Available after 10 trading days</p>
-                      <p>• Up to {formatCurrency(3000)} maximum</p>
-                      <p>• 1-2 business days processing</p>
-                    </div>
-                  </div>
+                  )}
                 </CardContent>
               </Card>
             </div>
