@@ -109,7 +109,9 @@ export default function TradeAnalysisCalendar({ trades, accounts, viewMode = 'mo
                     
                     {hourTrades.length > 0 && (
                       <div className="space-y-1">
-                        <div className="text-xs font-bold text-white">
+                        <div className={`text-xs font-bold ${
+                          hourPnl >= 0 ? 'text-prop-green' : 'text-prop-pink'
+                        }`}>
                           {formatCurrency(hourPnl)}
                         </div>
                         <div className="text-xs text-gray-300">

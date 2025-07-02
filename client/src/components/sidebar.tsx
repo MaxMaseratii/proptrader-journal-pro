@@ -20,11 +20,13 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
+import UserProfileDropdown from "@/components/user-profile-dropdown";
 
 const navItems = [
   { href: "/", label: "Dashboard", icon: ChartLine, section: "main" },
   { href: "/advanced", label: "Advanced Platform", icon: Bot, section: "main" },
   { href: "/projections", label: "Target & Risk Projection", icon: TrendingUp, section: "main" },
+  { href: "/discipline-analysis", label: "Discipline Analysis", icon: Brain, section: "main" },
   { href: "/journal", label: "Trading Journal", icon: Book, section: "main" },
   { href: "/accounts", label: "Accounts", icon: Wallet, section: "main" },
   { href: "/trades", label: "Trades", icon: BarChart3, section: "main" },

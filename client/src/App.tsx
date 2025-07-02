@@ -21,6 +21,7 @@ import Spending from "@/pages/spending";
 import Achievements from "@/pages/achievements";
 import AdvancedDashboard from "@/pages/advanced-dashboard";
 import AdvancedPlatform from "@/pages/advanced-platform";
+import DisciplineAnalysis from "@/pages/discipline-analysis";
 import Sidebar from "@/components/sidebar";
 import NotFound from "@/pages/not-found";
 import { useAuth } from "@/hooks/useAuth";
@@ -61,6 +62,7 @@ function Router() {
           <Route path="/trades" component={Trades} />
           <Route path="/achievements" component={Achievements} />
           <Route path="/advanced-platform" component={AdvancedPlatform} />
+          <Route path="/discipline-analysis" component={DisciplineAnalysis} />
           <Route path="/profile" component={Profile} />
           <Route component={NotFound} />
         </Switch>
