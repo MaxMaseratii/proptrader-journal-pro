@@ -46,8 +46,8 @@ export default function Sidebar() {
   const analyticsItems = navItems.filter(item => item.section === "analytics");
 
   return (
-    <aside className="w-64 bg-prop-gradient-main border-r border-prop-gold/20 flex-shrink-0">
-      <div className="p-6 border-b border-prop-gold/20">
+    <aside className="w-64 bg-gradient-to-b from-slate-900 to-slate-800 border-r border-prop-tiffany/20 flex-shrink-0">
+      <div className="p-6 border-b border-prop-tiffany/20">
         <div className="flex items-center space-x-3">
           <div className="bg-prop-gradient-rainbow p-3 rounded-xl hover-glow smooth-transition">
             <BookOpen className="h-6 w-6 text-white" />

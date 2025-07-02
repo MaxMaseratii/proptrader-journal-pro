@@ -439,46 +439,46 @@ export default function Dashboard() {
           </Card>
 
           {/* R Factor */}
-          <Card className="bg-dark-card border-blue-600">
+          <Card className="dashboard-widget">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-gray-400 text-sm mb-1">R Factor</p>
+                  <p className="widget-title text-sm mb-1">R Factor</p>
                   <p className={`text-2xl font-bold ${
-                    (combinedAnalytics?.rFactor || 0) >= 2 ? 'text-success-green' :
-                    (combinedAnalytics?.rFactor || 0) >= 1 ? 'text-warning-orange' : 'text-error-red'
+                    (combinedAnalytics?.rFactor || 0) >= 2 ? 'text-prop-green' :
+                    (combinedAnalytics?.rFactor || 0) >= 1 ? 'text-prop-gold' : 'text-prop-pink'
                   }`}>
                     {combinedAnalytics?.rFactor.toFixed(2) || '0.00'}
                   </p>
-                  <p className="text-xs text-gray-400 mt-1">
+                  <p className="text-xs text-prop-tiffany/60 mt-1">
                     Total Reward / Total Risk ratio
                   </p>
                 </div>
-                <div className="bg-blue-600 bg-opacity-20 p-3 rounded-lg">
-                  <BarChart3 className="text-blue-400 h-6 w-6" />
+                <div className="bg-prop-tiffany/10 p-3 rounded-lg">
+                  <BarChart3 className="widget-icon h-8 w-8" />
                 </div>
               </div>
             </CardContent>
           </Card>
 
           {/* Profit Factor */}
-          <Card className="bg-dark-card border-purple-600">
+          <Card className="dashboard-widget">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-gray-400 text-sm mb-1">Profit Factor</p>
+                  <p className="widget-title text-sm mb-1">Profit Factor</p>
                   <p className={`text-2xl font-bold ${
-                    (combinedAnalytics?.profitFactor || 0) >= 2 ? 'text-success-green' :
-                    (combinedAnalytics?.profitFactor || 0) >= 1 ? 'text-warning-orange' : 'text-error-red'
+                    (combinedAnalytics?.profitFactor || 0) >= 2 ? 'text-prop-green' :
+                    (combinedAnalytics?.profitFactor || 0) >= 1 ? 'text-prop-gold' : 'text-prop-pink'
                   }`}>
                     {combinedAnalytics?.profitFactor.toFixed(2) || '0.00'}
                   </p>
-                  <p className="text-xs text-gray-400 mt-1">
+                  <p className="text-xs text-prop-tiffany/60 mt-1">
                     Gross Profit / Gross Loss ratio
                   </p>
                 </div>
-                <div className="bg-purple-600 bg-opacity-20 p-3 rounded-lg">
-                  <TrendingUp className="text-purple-400 h-6 w-6" />
+                <div className="bg-prop-tiffany/10 p-3 rounded-lg">
+                  <TrendingUp className="widget-icon h-8 w-8" />
                 </div>
               </div>
             </CardContent>
@@ -487,8 +487,8 @@ export default function Dashboard() {
 
         {/* Account Portfolio Overview */}
         <div className="mb-6 mt-12">
-          <h2 className="text-xl font-bold text-white mb-6 flex items-center border-b border-gray-700 pb-3">
-            <Wallet className="mr-3 h-5 w-5 text-blue-400" />
+          <h2 className="text-xl font-bold text-prop-tiffany mb-6 flex items-center border-b border-prop-tiffany/30 pb-3">
+            <Wallet className="mr-3 h-5 w-5 text-prop-gold" />
             Account Portfolio Overview
           </h2>
         </div>
