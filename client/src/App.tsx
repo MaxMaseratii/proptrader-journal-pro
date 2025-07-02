@@ -43,8 +43,8 @@ function Router() {
       <Sidebar />
       <main className="flex-1 overflow-y-auto">
         <Switch>
-          <Route path="/" component={DashboardShowcase} />
-          <Route path="/dashboard-simple" component={Dashboard} />
+          <Route path="/" component={Dashboard} />
+          <Route path="/dashboard-simple" component={DashboardShowcase} />
           <Route path="/projections" component={Projections} />
           <Route path="/accounts" component={Accounts} />
           <Route path="/csv-import" component={CsvImport} />
