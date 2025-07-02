@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,6 +8,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Slider } from "@/components/ui/slider";
+import { useToast } from "@/hooks/use-toast";
+import { apiRequest } from "@/lib/queryClient";
 import { formatCurrency, formatDate } from "@/lib/utils";
 import type { Account, Trade } from "@shared/schema";
 import { 
@@ -18,7 +20,9 @@ import {
   BarChart3,
   AlertTriangle,
   CheckCircle2,
-  Clock
+  Clock,
+  Save,
+  Bookmark
 } from "lucide-react";
 
 interface ProjectionSettings {
@@ -49,12 +53,34 @@ interface ProjectionDay {
 }
 
 export default function Projections() {
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+
   const { data: accounts = [] } = useQuery<Account[]>({
     queryKey: ["/api/accounts"],
   });
 
   const { data: trades = [] } = useQuery<Trade[]>({
     queryKey: ["/api/trades"],
+  });
+
+  const saveProjectionMutation = useMutation({
+    mutationFn: async (projectionData: any) => {
+      return await apiRequest("POST", "/api/projections/save", projectionData);
+    },
+    onSuccess: () => {
+      toast({
+        title: "Projection Saved",
+        description: "Your projection has been saved successfully",
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: "Failed to save projection",
+        variant: "destructive",
+      });
+    },
   });
 
   const [settings, setSettings] = useState<ProjectionSettings>({
@@ -267,6 +293,33 @@ export default function Projections() {
                       Multiple accounts reach targets faster (e.g., 2 accounts = half the time)
                     </p>
                   </div>
+
+                  {/* Save Projection Button for Account Mode */}
+                  {settings.selectedAccountId && (
+                    <Button
+                      onClick={() => {
+                        const projectionData = {
+                          accountId: settings.selectedAccountId,
+                          startingCapital: settings.startingCapital,
+                          riskPerTrade: settings.riskPerTrade,
+                          rewardRiskRatio: settings.riskRewardRatio,
+                          targetProfit: settings.profitTarget,
+                          projectedDays: daysToTarget,
+                          compoundingEnabled: settings.compoundingPercent > 0,
+                          compoundingPercentage: settings.compoundingPercent,
+                          riskCuttingEnabled: settings.riskCuttingPercent > 0,
+                          riskCuttingPercentage: settings.riskCuttingPercent,
+                          status: 'active'
+                        };
+                        saveProjectionMutation.mutate(projectionData);
+                      }}
+                      disabled={saveProjectionMutation.isPending}
+                      className="w-full bg-prop-gold hover:bg-prop-gold/80 text-black font-medium"
+                    >
+                      <Save className="mr-2 h-4 w-4" />
+                      {saveProjectionMutation.isPending ? 'Saving...' : 'Save Projection'}
+                    </Button>
+                  )}
                 </div>
               )}
 
