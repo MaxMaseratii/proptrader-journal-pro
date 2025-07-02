@@ -136,7 +136,7 @@ Changelog:
   * Added "Advanced Analytics" navigation item with Brain icon to sidebar
   * Integrated comprehensive chart visualizations for performance tracking
 - June 30, 2025. Complete rebrand and authentication system overhaul:
-  * Rebranded application from "PropTracker Pro" to "PropJournal Pro - Elite Trading Journal"
+  * Rebranded application from "PropTracker Pro" to "PropTraderJournal - Elite Trading Journal"
   * Implemented complete user authentication system using Replit Auth and PostgreSQL
   * Created professional welcome page inspired by Tradezella with pricing tiers and features
   * Added user sign-up flow with Free, Pro Trader ($9.99/month), and Firm Elite ($14.99/month) plans

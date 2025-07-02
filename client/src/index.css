@@ -24,7 +24,7 @@
   --ring: hsl(45, 100%, 65%);
   --radius: 0.75rem;
 
-  /* PropJournal Pro Unique Colors */
+  /* PropTraderJournal Unique Colors */
   --prop-black: hsl(0, 0%, 4%);
   --prop-dark: hsl(0, 0%, 10%);
   --prop-surface: hsl(0, 0%, 12%);
@@ -113,7 +113,7 @@
     color: #9ca3af;
   }
 
-  /* PropJournal Pro Color System */
+  /* PropTraderJournal Color System */
   .bg-prop-black { background-color: var(--prop-black); }
   .bg-prop-dark { background-color: var(--prop-dark); }
   .bg-prop-surface { background-color: var(--prop-surface); }

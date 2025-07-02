@@ -91,7 +91,7 @@ export default function Welcome() {
               <BookOpen className="h-6 w-6 text-white" />
             </div>
             <div>
-              <h1 className="text-xl font-bold text-gradient-rainbow">PropJournal Pro</h1>
+              <h1 className="text-xl font-bold text-gradient-rainbow">PropTraderJournal</h1>
               <p className="text-xs text-gray-400">Elite Trading Journal</p>
             </div>
           </div>
@@ -607,7 +607,7 @@ export default function Welcome() {
               <BookOpen className="h-6 w-6 text-white" />
             </div>
             <div>
-              <h3 className="text-xl font-bold text-gradient-rainbow">PropJournal Pro</h3>
+              <h3 className="text-xl font-bold text-gradient-rainbow">PropTraderJournal</h3>
               <p className="text-sm text-gray-400">Elite Trading Journal</p>
             </div>
           </div>
@@ -615,7 +615,7 @@ export default function Welcome() {
             Empowering prop traders worldwide to achieve consistent profitability
           </p>
           <div className="flex justify-center space-x-8 text-gray-400">
-            <span>© 2025 PropJournal Pro</span>
+            <span>© 2025 PropTraderJournal</span>
             <span>Privacy Policy</span>
             <span>Terms of Service</span>
             <span>Support</span>
