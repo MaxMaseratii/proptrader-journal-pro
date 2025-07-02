@@ -20,7 +20,6 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
-import UserProfileDropdown from "@/components/user-profile-dropdown";
 
 const navItems = [
   { href: "/accounts", label: "Accounts", icon: Wallet, section: "main" },
@@ -36,6 +35,7 @@ const navItems = [
   { href: "/achievements", label: "Achievement", icon: Trophy, section: "analytics" },
   { href: "/analytics", label: "Advanced Analytics", icon: Brain, section: "analytics" },
   { href: "/reports", label: "Reports", icon: Calendar, section: "analytics" },
+  { href: "/profile", label: "User Profile", icon: User, section: "analytics" },
 ];
 
 export default function Sidebar() {
@@ -103,7 +103,14 @@ export default function Sidebar() {
       </nav>
       
       <div className="absolute bottom-0 w-64 p-4 border-t border-prop-gold/20 bg-prop-gradient-main space-y-3">
-        <UserProfileDropdown />
+        <Button 
+          onClick={() => window.location.href = '/api/logout'}
+          variant="ghost" 
+          className="w-full flex items-center justify-center px-3 py-2 text-sm font-medium text-gray-300 hover:bg-dark-card rounded-lg"
+        >
+          <LogOut className="mr-3 h-4 w-4" />
+          Sign Out
+        </Button>
       </div>
     </aside>
   );
