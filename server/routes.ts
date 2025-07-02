@@ -186,7 +186,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/trades/import-csv", isAuthenticated, async (req, res) => {
     try {
-      console.log("CSV Import request received:", { accountId: req.body.accountId, csvDataLength: req.body.csvData?.length });
+      console.log("CSV Import request received:", { 
+        accountId: req.body.accountId, 
+        csvDataLength: req.body.csvData?.length,
+        bodyKeys: Object.keys(req.body),
+        bodyType: typeof req.body,
+        fullBody: req.body
+      });
       
       const { accountId, csvData } = req.body;
       

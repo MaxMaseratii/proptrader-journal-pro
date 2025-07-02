@@ -41,17 +41,30 @@ export default function CsvImport({ accounts }: CsvImportProps) {
     try {
       // Read file content
       const fileContent = await selectedFile.text();
+      console.log("File content loaded:", { 
+        fileName: selectedFile.name, 
+        contentLength: fileContent.length,
+        firstChars: fileContent.substring(0, 100)
+      });
       setUploadProgress(25);
 
       // Send to backend
+      const payload = {
+        accountId: parseInt(selectedAccountId),
+        csvData: fileContent,
+        fileName: selectedFile.name
+      };
+      
+      console.log("Sending payload:", { 
+        accountId: payload.accountId, 
+        csvDataLength: payload.csvData.length,
+        fileName: payload.fileName 
+      });
+
       const res = await apiRequest(
         "POST",
         "/api/trades/import-csv",
-        {
-          accountId: parseInt(selectedAccountId),
-          csvData: fileContent,
-          fileName: selectedFile.name
-        }
+        payload
       );
 
       setUploadProgress(75);
