@@ -45,14 +45,20 @@ export default function CsvImport() {
     }
 
     setIsUploading(true);
-    const formData = new FormData();
-    formData.append('file', selectedFile);
-    formData.append('accountId', selectedAccount);
 
     try {
-      const response = await fetch('/api/csv-import', {
+      // Read file content
+      const fileContent = await selectedFile.text();
+      
+      const response = await fetch('/api/trades/import-csv', {
         method: 'POST',
-        body: formData,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          accountId: parseInt(selectedAccount),
+          csvData: fileContent
+        }),
       });
 
       if (!response.ok) {

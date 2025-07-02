@@ -46,7 +46,7 @@ export default function CsvImport({ accounts }: CsvImportProps) {
       // Send to backend
       const res = await apiRequest(
         "POST",
-        "/api/csv-import",
+        "/api/trades/import-csv",
         {
           accountId: parseInt(selectedAccountId),
           csvData: fileContent,
