@@ -62,7 +62,7 @@ export default function Sidebar() {
             <BookOpen className="h-6 w-6 text-white" />
           </div>
           <div>
-            <h1 className="text-lg font-bold text-gradient-rainbow">PropJournal Pro</h1>
+            <h1 className="text-lg font-bold text-gradient-rainbow">PropTraderJournal</h1>
             <p className="text-xs text-gray-400">Elite Trading Journal</p>
           </div>
         </div>
