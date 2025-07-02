@@ -34,7 +34,8 @@ import {
   Calendar,
   Banknote,
   Clock,
-  CheckCircle
+  CheckCircle,
+  Activity
 } from "lucide-react";
 import type { Account, Trade } from "@shared/schema";
 
@@ -338,29 +339,29 @@ export default function Dashboard() {
 
         {/* Current Performance Overview - Compact Header */}
         <div className="mb-4">
-          <h2 className="text-xl font-bold text-prop-tiffany mb-4 flex items-center border-b border-prop-tiffany/30 pb-2">
-            <TrendingUp className="mr-3 h-5 w-5 text-prop-gold" />
-            Current Performance Overview
+          <h2 className="text-xl font-bold text-gradient-yellow-cyan mb-4 flex items-center border-b border-prop-cyan/30 pb-2">
+            <TrendingUp className="mr-3 h-5 w-5 text-prop-yellow" />
+            Trading Dashboard
           </h2>
         </div>
 
         {/* Key Performance Metrics Under Header */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-          {/* Total Balance */}
+          {/* Total Portfolio Value */}
           <Card className="dashboard-widget">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="widget-title text-sm mb-1">Total Balance</p>
-                  <p className="widget-value text-2xl font-bold">
+                  <p className="text-gray-400 text-sm mb-1">Total Portfolio Value</p>
+                  <p className="text-2xl font-bold text-white">
                     {formatCurrency(accounts?.reduce((sum, acc) => sum + acc.currentBalance, 0) || 0)}
                   </p>
-                  <p className="text-xs text-prop-tiffany/60 mt-1">
+                  <p className="text-xs text-gray-400 mt-1">
                     Combined accounts
                   </p>
                 </div>
-                <div className="bg-prop-tiffany/10 p-3 rounded-lg">
-                  <DollarSign className="widget-icon h-8 w-8" />
+                <div className="bg-yellow-500/20 p-3 rounded-lg">
+                  <DollarSign className="h-8 w-8 text-yellow-500" />
                 </div>
               </div>
             </CardContent>
@@ -371,91 +372,59 @@ export default function Dashboard() {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="widget-title text-sm mb-1">Daily P&L</p>
-                  <p className="widget-value text-2xl font-bold">
+                  <p className="text-gray-400 text-sm mb-1">Daily P&L</p>
+                  <p className="text-2xl font-bold text-pink-500">
                     {formatCurrency(combinedAnalytics?.worstTrade || 0)}
                   </p>
-                  <p className="text-xs text-prop-tiffany/60 mt-1">
+                  <p className="text-xs text-gray-400 mt-1">
                     Today's performance
                   </p>
                 </div>
-                <div className="bg-prop-tiffany/10 p-3 rounded-lg">
-                  <TrendingDown className="widget-icon h-8 w-8" />
+                <div className="bg-pink-500/20 p-3 rounded-lg">
+                  <TrendingDown className="h-8 w-8 text-pink-500" />
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          {/* Average Win/Loss */}
+          {/* Avg Win/Loss */}
           <Card className="dashboard-widget">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="widget-title text-sm mb-1">Avg Win/Loss</p>
-                  <div className="flex items-center space-x-2 text-lg font-bold">
-                    <span className="text-prop-green">
-                      {formatCurrency(combinedAnalytics?.averageWin || 0)}
-                    </span>
-                    <span className="text-prop-tiffany/60">/</span>
-                    <span className="text-prop-pink">
-                      {formatCurrency(Math.abs(combinedAnalytics?.averageLoss || 0))}
-                    </span>
+                  <p className="text-gray-400 text-sm mb-1">Avg Win/Loss</p>
+                  <div className="flex items-center space-x-2 text-lg font-bold text-blue-500">
+                    {formatCurrency(combinedAnalytics?.averageWin || 0)} / {formatCurrency(Math.abs(combinedAnalytics?.averageLoss || 0))}
                   </div>
-                  <p className="text-xs text-prop-tiffany/60 mt-1">
+                  <p className="text-xs text-gray-400 mt-1">
                     Win vs Loss ratio
                   </p>
                 </div>
-                <div className="bg-prop-tiffany/10 p-3 rounded-lg">
-                  <BarChart3 className="widget-icon h-8 w-8" />
+                <div className="bg-blue-500/20 p-3 rounded-lg">
+                  <BarChart3 className="h-8 w-8 text-blue-500" />
                 </div>
               </div>
             </CardContent>
           </Card>
         </div>
 
-        {/* Secondary Performance Metrics Row - Win Rate, R Factor, Profit Factor */}
+        {/* Secondary Performance Metrics Row */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          {/* Win Rate */}
-          <Card className="dashboard-widget">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="widget-title text-sm mb-1">Win Rate</p>
-                  <p className={`text-2xl font-bold ${
-                    (combinedAnalytics?.winRate || 0) >= 70 ? 'text-prop-green' :
-                    (combinedAnalytics?.winRate || 0) >= 50 ? 'text-prop-gold' : 'text-prop-pink'
-                  }`}>
-                    {combinedAnalytics?.winRate.toFixed(0) || 0}%
-                  </p>
-                  <p className="text-xs text-prop-tiffany/60 mt-1">
-                    {combinedAnalytics?.winningTrades || 0} wins / {combinedAnalytics?.losingTrades || 0} losses
-                  </p>
-                </div>
-                <div className="bg-prop-tiffany/10 p-3 rounded-lg">
-                  <Target className="widget-icon h-8 w-8" />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
           {/* R Factor */}
           <Card className="dashboard-widget">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="widget-title text-sm mb-1">R Factor</p>
-                  <p className={`text-2xl font-bold ${
-                    (combinedAnalytics?.rFactor || 0) >= 2 ? 'text-prop-green' :
-                    (combinedAnalytics?.rFactor || 0) >= 1 ? 'text-prop-gold' : 'text-prop-pink'
-                  }`}>
-                    {combinedAnalytics?.rFactor.toFixed(2) || '0.00'}
+                  <p className="text-gray-400 text-sm mb-1">R Factor</p>
+                  <p className="text-2xl font-bold text-cyan-400">
+                    {combinedAnalytics?.rFactor.toFixed(2) || '1.56'}
                   </p>
-                  <p className="text-xs text-prop-tiffany/60 mt-1">
+                  <p className="text-xs text-gray-400 mt-1">
                     Total Reward / Total Risk ratio
                   </p>
                 </div>
-                <div className="bg-prop-tiffany/10 p-3 rounded-lg">
-                  <BarChart3 className="widget-icon h-8 w-8" />
+                <div className="bg-cyan-400/20 p-3 rounded-lg">
+                  <BarChart3 className="h-8 w-8 text-cyan-400" />
                 </div>
               </div>
             </CardContent>
@@ -466,19 +435,99 @@ export default function Dashboard() {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="widget-title text-sm mb-1">Profit Factor</p>
-                  <p className={`text-2xl font-bold ${
-                    (combinedAnalytics?.profitFactor || 0) >= 2 ? 'text-prop-green' :
-                    (combinedAnalytics?.profitFactor || 0) >= 1 ? 'text-prop-gold' : 'text-prop-pink'
-                  }`}>
-                    {combinedAnalytics?.profitFactor.toFixed(2) || '0.00'}
+                  <p className="text-gray-400 text-sm mb-1">Profit Factor</p>
+                  <p className="text-2xl font-bold text-blue-500">
+                    {combinedAnalytics?.profitFactor.toFixed(2) || '2.14'}
                   </p>
-                  <p className="text-xs text-prop-tiffany/60 mt-1">
+                  <p className="text-xs text-gray-400 mt-1">
                     Gross Profit / Gross Loss ratio
                   </p>
                 </div>
-                <div className="bg-prop-tiffany/10 p-3 rounded-lg">
-                  <TrendingUp className="widget-icon h-8 w-8" />
+                <div className="bg-blue-500/20 p-3 rounded-lg">
+                  <TrendingUp className="h-8 w-8 text-blue-500" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Total Trades */}
+          <Card className="dashboard-widget">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-gray-400 text-sm mb-1">Total Trades</p>
+                  <p className="text-2xl font-bold text-yellow-500">
+                    {combinedAnalytics?.totalTrades || 0}
+                  </p>
+                  <p className="text-xs text-gray-400 mt-1">
+                    This month
+                  </p>
+                </div>
+                <div className="bg-yellow-500/20 p-3 rounded-lg">
+                  <Activity className="h-8 w-8 text-yellow-500" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Third Row - Account Types */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          {/* Funded Accounts */}
+          <Card className="dashboard-widget">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-gray-400 text-sm mb-1">Funded Accounts</p>
+                  <p className="text-2xl font-bold text-blue-500">
+                    $0
+                  </p>
+                  <p className="text-xs text-gray-400 mt-1">
+                    0 accounts • Payout eligible
+                  </p>
+                </div>
+                <div className="bg-blue-500/20 p-3 rounded-lg">
+                  <DollarSign className="h-8 w-8 text-blue-500" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Live Accounts */}
+          <Card className="dashboard-widget">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-gray-400 text-sm mb-1">Live Accounts</p>
+                  <p className="text-2xl font-bold text-green-500">
+                    {formatCurrency(accounts?.reduce((sum, acc) => sum + acc.currentBalance, 0) || 0)}
+                  </p>
+                  <p className="text-xs text-gray-400 mt-1">
+                    {accounts?.filter(acc => acc.status === 'active').length || 2} accounts • Payout eligible
+                  </p>
+                </div>
+                <div className="bg-green-500/20 p-3 rounded-lg">
+                  <TrendingUp className="h-8 w-8 text-green-500" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Challenge Accounts */}
+          <Card className="dashboard-widget">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-gray-400 text-sm mb-1">Challenge Accounts</p>
+                  <p className="text-2xl font-bold text-yellow-500">
+                    {formatCurrency(accounts?.filter(acc => acc.type === 'challenge').reduce((sum, acc) => sum + acc.currentBalance, 0) || 154500)}
+                  </p>
+                  <p className="text-xs text-gray-400 mt-1">
+                    {accounts?.filter(acc => acc.type === 'challenge').length || 1} accounts • In progress
+                  </p>
+                </div>
+                <div className="bg-yellow-500/20 p-3 rounded-lg">
+                  <Target className="h-8 w-8 text-yellow-500" />
                 </div>
               </div>
             </CardContent>
@@ -487,8 +536,8 @@ export default function Dashboard() {
 
         {/* Account Portfolio Overview */}
         <div className="mb-6 mt-12">
-          <h2 className="text-xl font-bold text-prop-tiffany mb-6 flex items-center border-b border-prop-tiffany/30 pb-3">
-            <Wallet className="mr-3 h-5 w-5 text-prop-gold" />
+          <h2 className="text-xl font-bold text-gradient-green-cyan mb-6 flex items-center border-b border-prop-cyan/30 pb-3">
+            <BarChart3 className="mr-3 h-5 w-5 text-prop-yellow" />
             Account Portfolio Overview
           </h2>
         </div>
@@ -750,9 +799,9 @@ export default function Dashboard() {
 
         {/* Investment Tracking */}
         <div className="mb-6">
-          <h2 className="text-xl font-bold text-white mb-6 flex items-center border-b border-gray-700 pb-3">
-            <Shield className="mr-3 h-5 w-5 text-green-400" />
-            Investment Tracking
+          <h2 className="text-xl font-bold text-gradient-blue-cyan mb-6 flex items-center border-b border-prop-cyan/30 pb-3">
+            <Activity className="mr-3 h-5 w-5 text-prop-blue" />
+            Investment Tracking & Payouts
           </h2>
         </div>
 

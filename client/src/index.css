@@ -24,22 +24,20 @@
   --ring: hsl(195, 100%, 50%);
   --radius: 0.75rem;
 
-  /* PropJournal Pro Reference Page Colors */
+  /* PropJournal Pro Reference Page Colors - Exact Match */
   --prop-black: hsl(220, 13%, 7%);
   --prop-dark: hsl(220, 13%, 10%);
   --prop-surface: hsl(220, 13%, 12%);
-  --prop-primary: hsl(195, 100%, 50%);
-  --prop-primary-light: hsl(195, 100%, 60%);
-  --prop-secondary: hsl(195, 80%, 40%);
-  --prop-secondary-light: hsl(195, 80%, 50%);
-  --prop-accent: hsl(280, 100%, 70%);
-  --prop-accent-light: hsl(280, 100%, 80%);
-  --prop-success: hsl(142, 76%, 50%);
-  --prop-success-light: hsl(142, 76%, 60%);
-  --prop-warning: hsl(45, 100%, 60%);
-  --prop-warning-light: hsl(45, 100%, 70%);
-  --prop-danger: hsl(0, 84%, 60%);
-  --prop-danger-light: hsl(0, 84%, 70%);
+  --prop-yellow: hsl(51, 100%, 50%);
+  --prop-yellow-light: hsl(51, 100%, 60%);
+  --prop-cyan: hsl(180, 100%, 50%);
+  --prop-cyan-light: hsl(180, 100%, 60%);
+  --prop-green: hsl(142, 76%, 50%);
+  --prop-green-light: hsl(142, 76%, 60%);
+  --prop-blue: hsl(220, 100%, 60%);
+  --prop-blue-light: hsl(220, 100%, 70%);
+  --prop-pink: hsl(320, 100%, 60%);
+  --prop-pink-light: hsl(320, 100%, 70%);
   
   /* Legacy color mappings for compatibility */
   --prop-gold: hsl(45, 100%, 60%);
@@ -231,28 +229,33 @@
     border: 1px solid rgba(255, 255, 255, 0.1);
   }
 
-  /* Text Gradients */
-  .text-gradient-gold {
-    background: linear-gradient(135deg, var(--prop-gold) 0%, var(--prop-gold-light) 100%);
+  /* Text Gradients - Exact Reference Page Match */
+  .text-gradient-yellow-cyan {
+    background: linear-gradient(90deg, var(--prop-yellow) 0%, var(--prop-cyan) 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
   }
 
-  .text-gradient-tiffany {
-    background: linear-gradient(135deg, var(--prop-tiffany) 0%, var(--prop-tiffany-light) 100%);
+  .text-gradient-green-cyan {
+    background: linear-gradient(90deg, var(--prop-green) 0%, var(--prop-cyan) 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
   }
 
-  .text-gradient-rainbow {
-    background: linear-gradient(135deg, 
-      var(--prop-gold) 0%, 
-      var(--prop-tiffany) 25%, 
-      var(--prop-green) 50%, 
-      var(--prop-blue) 75%, 
-      var(--prop-pink) 100%);
+  .text-gradient-blue-cyan {
+    background: linear-gradient(90deg, var(--prop-blue) 0%, var(--prop-cyan) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .text-gradient-reference {
+    background: linear-gradient(90deg, 
+      var(--prop-yellow) 0%, 
+      var(--prop-cyan) 50%, 
+      var(--prop-green) 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
