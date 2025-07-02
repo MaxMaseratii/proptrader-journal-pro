@@ -1,8 +1,8 @@
-# PropJournal Pro - Elite Trading Journal
+# PropTraderJournal - Elite Trading Journal
 
 ## Overview
 
-PropJournal Pro is a full-stack trading journal application designed specifically for proprietary trading firms and prop traders. It provides comprehensive tools for tracking trading performance, managing risk, journaling trades, and generating reports. The application features a modern dark-themed UI with real-time analytics, professional welcome page with pricing tiers, and complete user authentication via Replit Auth.
+PropTraderJournal is a full-stack trading journal application designed specifically for proprietary trading firms and prop traders. It provides comprehensive tools for tracking trading performance, managing risk, journaling trades, and generating reports. The application features a modern dark-themed UI with real-time analytics, professional welcome page with pricing tiers, and complete user authentication via Replit Auth.
 
 ## System Architecture
 
@@ -223,6 +223,10 @@ Changelog:
   * Added comprehensive trial information section with "Cancel Anytime" policy
   * Fixed all text color issues on welcome page ensuring white text on dark backgrounds
   * Application is now ready for public launch with complete authentication and payment system
+- July 2, 2025. Journal Name Update:
+  * Updated journal name from "PropJournal Pro" to "PropTraderJournal" throughout the application
+  * Updated documentation and capabilities guide to reflect new branding
+  * Maintained all existing functionality while ensuring consistent naming across all components
 ```
 
 ## User Preferences

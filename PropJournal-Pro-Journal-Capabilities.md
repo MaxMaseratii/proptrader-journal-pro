@@ -1,8 +1,8 @@
-# PropJournal Pro - Journal Capabilities & Focus
+# PropTraderJournal - Journal Capabilities & Focus
 
 ## 🎯 Core Philosophy
 
-PropJournal Pro's trading journal is built on the principle that **consistent self-reflection drives trading success**. Unlike simple trade logs, this journal focuses on the psychological and decision-making aspects of trading that separate profitable traders from those who struggle.
+PropTraderJournal's trading journal is built on the principle that **consistent self-reflection drives trading success**. Unlike simple trade logs, this journal focuses on the psychological and decision-making aspects of trading that separate profitable traders from those who struggle.
 
 ## 📝 Journal Structure & Features
 
@@ -74,7 +74,7 @@ Transforms daily trading into learning opportunities:
 
 ## 🏆 Achievement Integration
 
-The journal system connects with PropJournal Pro's gamified achievement system:
+The journal system connects with PropTraderJournal's gamified achievement system:
 
 ### Journal Consistency Achievements
 - **Consistent Learner**: Rewards daily journal entries
@@ -89,7 +89,7 @@ The journal system connects with PropJournal Pro's gamified achievement system:
 ## 🚀 Unique Advantages
 
 ### 1. Prop Trading Focused
-Unlike generic trading journals, PropJournal Pro understands:
+Unlike generic trading journals, PropTraderJournal understands:
 - Challenge evaluation criteria
 - Prop firm rule structures
 - Payout qualification requirements
@@ -148,10 +148,10 @@ The journal system measures success through:
 
 ## 🔮 Vision
 
-PropJournal Pro's journal transforms trading from a series of isolated transactions into a **structured learning journey**. By focusing on the psychological and decision-making aspects of trading, it helps prop traders develop the mental discipline required for consistent profitability.
+PropTraderJournal's journal transforms trading from a series of isolated transactions into a **structured learning journey**. By focusing on the psychological and decision-making aspects of trading, it helps prop traders develop the mental discipline required for consistent profitability.
 
 The journal isn't just a record of what happened—it's a **blueprint for what comes next**.
 
 ---
 
-*PropJournal Pro: Where Every Trade Becomes a Learning Opportunity*
+*PropTraderJournal: Where Every Trade Becomes a Learning Opportunity*es a Learning Opportunity*
