@@ -1062,8 +1062,8 @@ export default function Dashboard() {
 
         {/* Disciplined Trading Analysis */}
         <div className="mb-6">
-          <h2 className="text-xl font-bold text-white mb-6 flex items-center border-b border-gray-700 pb-3">
-            <Brain className="mr-3 h-5 w-5 text-indigo-400" />
+          <h2 className="text-xl font-bold text-gradient-yellow-cyan mb-6 flex items-center border-b border-prop-cyan/30 pb-3">
+            <Brain className="mr-3 h-5 w-5 text-prop-blue" />
             Disciplined Trading Analysis
           </h2>
         </div>
@@ -1106,47 +1106,47 @@ export default function Dashboard() {
         {/* First Row: Risk Management, Daily Trade Limit, Disciplined Score */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
           {/* Risk Management */}
-          <Card className="bg-dark-card border-warning-orange">
+          <Card className="dashboard-widget">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-gray-400 text-sm mb-1">Risk Management</p>
-                  <p className="text-2xl font-bold text-warning-orange">
+                  <p className="text-2xl font-bold text-prop-yellow">
                     {formatCurrency(500)}
                   </p>
                   <p className="text-xs text-gray-400 mt-1">
                     Per trade / {formatCurrency(1500)} daily limit
                   </p>
                 </div>
-                <div className="bg-warning-orange bg-opacity-20 p-3 rounded-lg">
-                  <Shield className="text-warning-orange h-6 w-6" />
+                <div className="bg-prop-yellow/20 p-3 rounded-lg">
+                  <Shield className="h-8 w-8 text-prop-yellow" />
                 </div>
               </div>
             </CardContent>
           </Card>
 
           {/* Daily Trade Limit */}
-          <Card className="bg-dark-card border-cyan-600">
+          <Card className="dashboard-widget">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-gray-400 text-sm mb-1">Daily Trade Limit</p>
-                  <p className="text-2xl font-bold text-cyan-400">
+                  <p className="text-2xl font-bold text-prop-cyan">
                     {trades?.filter(t => t.date === new Date().toISOString().split('T')[0]).length || 0} / 5
                   </p>
                   <p className="text-xs text-gray-400 mt-1">
                     Current trades today / Maximum allowed
                   </p>
                 </div>
-                <div className="bg-cyan-600 bg-opacity-20 p-3 rounded-lg">
-                  <BarChart3 className="text-cyan-400 h-6 w-6" />
+                <div className="bg-prop-cyan/20 p-3 rounded-lg">
+                  <BarChart3 className="h-8 w-8 text-prop-cyan" />
                 </div>
               </div>
             </CardContent>
           </Card>
 
           {/* Disciplined Score */}
-          <Card className="bg-dark-card border-primary">
+          <Card className="dashboard-widget">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
@@ -1173,8 +1173,8 @@ export default function Dashboard() {
                     98% risk compliance / 100% trade limits
                   </p>
                 </div>
-                <div className="bg-primary bg-opacity-20 p-3 rounded-lg">
-                  <Brain className="text-primary h-6 w-6" />
+                <div className="bg-prop-blue/20 p-3 rounded-lg">
+                  <Brain className="h-8 w-8 text-prop-blue" />
                 </div>
               </div>
             </CardContent>
@@ -1184,11 +1184,11 @@ export default function Dashboard() {
         {/* Second Row: Risk Alert, Payout Status */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
           {/* Risk Alert - Top 3 Critical Accounts */}
-          <Card className="bg-dark-card border-warning-orange">
+          <Card className="dashboard-widget">
             <CardContent className="p-6">
               <div className="flex items-center mb-4">
-                <div className="bg-warning-orange bg-opacity-20 p-2 rounded-lg mr-3">
-                  <AlertTriangle className="text-warning-orange h-5 w-5" />
+                <div className="bg-prop-pink/20 p-2 rounded-lg mr-3">
+                  <AlertTriangle className="h-6 w-6 text-prop-pink" />
                 </div>
                 <h3 className="text-lg font-semibold">Risk Alert</h3>
               </div>
@@ -1241,12 +1241,12 @@ export default function Dashboard() {
           </Card>
 
           {/* TopStep Payout Status */}
-          <Card className="bg-dark-card border-blue-600">
+          <Card className="dashboard-widget">
             <CardContent className="p-6">
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center">
-                  <div className="bg-blue-600 bg-opacity-20 p-2 rounded-lg mr-3">
-                    <DollarSign className="text-blue-400 h-5 w-5" />
+                  <div className="bg-prop-green/20 p-2 rounded-lg mr-3">
+                    <DollarSign className="h-6 w-6 text-prop-green" />
                   </div>
                   <h3 className="text-lg font-semibold">Payout Status</h3>
                 </div>
@@ -1369,9 +1369,9 @@ export default function Dashboard() {
 
         {/* Charts Section */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-          <Card className="bg-dark-card border-dark-border">
+          <Card className="dashboard-widget">
             <CardHeader>
-              <CardTitle>Account Equity Curve</CardTitle>
+              <CardTitle className="text-gradient-yellow-cyan">Account Equity Curve</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="h-64">
@@ -1380,9 +1380,9 @@ export default function Dashboard() {
             </CardContent>
           </Card>
 
-          <Card className="bg-dark-card border-dark-border">
+          <Card className="dashboard-widget">
             <CardHeader>
-              <CardTitle>Monthly Performance</CardTitle>
+              <CardTitle className="text-gradient-yellow-cyan">Monthly Performance</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="h-64">
@@ -1394,9 +1394,9 @@ export default function Dashboard() {
 
         {/* Active Accounts & Recent Trades */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-          <Card className="bg-dark-card border-dark-border">
+          <Card className="dashboard-widget">
             <CardHeader>
-              <CardTitle>Active Accounts</CardTitle>
+              <CardTitle className="text-gradient-yellow-cyan">Active Accounts</CardTitle>
               <p className="text-gray-400 text-sm">Prop firm challenge and funded accounts</p>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -1437,9 +1437,9 @@ export default function Dashboard() {
             </CardContent>
           </Card>
 
-          <Card className="bg-dark-card border-dark-border">
+          <Card className="dashboard-widget">
             <CardHeader>
-              <CardTitle>Recent Trades</CardTitle>
+              <CardTitle className="text-gradient-yellow-cyan">Recent Trades</CardTitle>
               <p className="text-gray-400 text-sm">Latest trading activity</p>
             </CardHeader>
             <CardContent>
@@ -1484,14 +1484,14 @@ export default function Dashboard() {
 
 
         {/* Daily Journal Quick Entry */}
-        <Card className="bg-dark-card border-dark-border">
+        <Card className="dashboard-widget">
           <CardHeader>
             <div className="flex items-center justify-between">
               <div className="flex items-center">
-                <div className="bg-accent-orange bg-opacity-20 p-2 rounded-lg mr-3">
-                  <Target className="text-accent-orange h-5 w-5" />
+                <div className="bg-prop-blue/20 p-2 rounded-lg mr-3">
+                  <Target className="h-6 w-6 text-prop-blue" />
                 </div>
-                <CardTitle>Daily Trading Journal</CardTitle>
+                <CardTitle className="text-gradient-yellow-cyan">Daily Trading Journal</CardTitle>
               </div>
               <Link href="/journal">
                 <Button variant="ghost" className="text-primary hover:text-blue-400">
@@ -1529,7 +1529,7 @@ export default function Dashboard() {
             </div>
             
             <div className="flex justify-end mt-4">
-              <Button className="bg-accent-orange hover:bg-orange-600">
+              <Button className="bg-prop-blue hover:bg-prop-blue/80">
                 Save Journal Entry
               </Button>
             </div>
@@ -1538,8 +1538,8 @@ export default function Dashboard() {
 
         {/* TASK 4: Enhanced Trade Analysis Calendar - Unique Design */}
         <div className="mb-8">
-          <h2 className="text-xl font-bold text-white mb-6 flex items-center border-b border-gray-700 pb-3">
-            <Calendar className="mr-3 h-5 w-5 text-prop-tiffany" />
+          <h2 className="text-xl font-bold text-gradient-yellow-cyan mb-6 flex items-center border-b border-prop-cyan/30 pb-3">
+            <Calendar className="mr-3 h-5 w-5 text-prop-yellow" />
             Trade Analysis Calendar
           </h2>
           <TradeAnalysisCalendar 
