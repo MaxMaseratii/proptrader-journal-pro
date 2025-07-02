@@ -26,7 +26,7 @@ import {
 import type { Account, Trade } from "@shared/schema";
 
 export default function DisciplineAnalysis() {
-  const [selectedAccountId, setSelectedAccountId] = useState<string>("");
+  const [selectedAccountId, setSelectedAccountId] = useState<string>("all");
   const [timeframe, setTimeframe] = useState<string>("30");
 
   const { data: accounts = [] } = useQuery<Account[]>({
@@ -39,7 +39,7 @@ export default function DisciplineAnalysis() {
 
   // Filter trades by selected account and timeframe
   const filteredTrades = trades.filter(trade => {
-    if (selectedAccountId && trade.accountId !== parseInt(selectedAccountId)) return false;
+    if (selectedAccountId !== "all" && trade.accountId !== parseInt(selectedAccountId)) return false;
     
     const tradeDate = new Date(trade.date);
     const cutoffDate = new Date();
@@ -122,7 +122,7 @@ export default function DisciplineAnalysis() {
               <SelectValue placeholder="All Accounts" />
             </SelectTrigger>
             <SelectContent className="bg-dark-card border-gray-600">
-              <SelectItem value="">All Accounts</SelectItem>
+              <SelectItem value="all">All Accounts</SelectItem>
               {accounts.map((account) => (
                 <SelectItem key={account.id} value={account.id.toString()}>
                   {account.name}
