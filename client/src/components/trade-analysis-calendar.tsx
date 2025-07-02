@@ -25,6 +25,7 @@ export default function TradeAnalysisCalendar({ trades, accounts, viewMode = 'mo
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedMonth, setSelectedMonth] = useState(currentDate.getMonth());
   const [selectedYear, setSelectedYear] = useState(currentDate.getFullYear());
+  const [internalViewMode, setInternalViewMode] = useState<'daily' | 'weekly' | 'monthly' | 'yearly'>(viewMode);
 
   // Group trades by date
   const dailyStats = useMemo(() => {
@@ -123,13 +124,13 @@ export default function TradeAnalysisCalendar({ trades, accounts, viewMode = 'mo
   const weekDays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
   const navigateTime = (direction: 'prev' | 'next') => {
-    if (viewMode === 'yearly') {
+    if (internalViewMode === 'yearly') {
       setSelectedYear(direction === 'prev' ? selectedYear - 1 : selectedYear + 1);
-    } else if (viewMode === 'weekly') {
+    } else if (internalViewMode === 'weekly') {
       const currentWeek = new Date(currentDate);
       currentWeek.setDate(currentWeek.getDate() + (direction === 'prev' ? -7 : 7));
       setCurrentDate(currentWeek);
-    } else if (viewMode === 'daily') {
+    } else if (internalViewMode === 'daily') {
       const currentDay = new Date(currentDate);
       currentDay.setDate(currentDay.getDate() + (direction === 'prev' ? -1 : 1));
       setCurrentDate(currentDay);
@@ -185,6 +186,19 @@ export default function TradeAnalysisCalendar({ trades, accounts, viewMode = 'mo
             </CardTitle>
             
             <div className="flex items-center space-x-4">
+              {/* View Mode Selector */}
+              <Select value={internalViewMode} onValueChange={(value: any) => setInternalViewMode(value)}>
+                <SelectTrigger className="w-28 border-prop-gold/30">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="daily">Daily</SelectItem>
+                  <SelectItem value="weekly">Weekly</SelectItem>
+                  <SelectItem value="monthly">Monthly</SelectItem>
+                  <SelectItem value="yearly">Yearly</SelectItem>
+                </SelectContent>
+              </Select>
+
               <Button
                 variant="outline"
                 size="sm"
@@ -195,7 +209,10 @@ export default function TradeAnalysisCalendar({ trades, accounts, viewMode = 'mo
               </Button>
               
               <h3 className="text-lg font-semibold text-white min-w-[180px] text-center">
-                {getDisplayTitle()}
+                {internalViewMode === 'yearly' ? `${selectedYear}` :
+                 internalViewMode === 'daily' ? currentDate.toLocaleDateString() :
+                 internalViewMode === 'weekly' ? `Week of ${currentDate.toLocaleDateString()}` :
+                 `${months[selectedMonth]} ${selectedYear}`}
               </h3>
               
               <Button

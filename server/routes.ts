@@ -186,14 +186,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/trades/import-csv", isAuthenticated, async (req, res) => {
     try {
+      console.log("CSV Import request received:", { accountId: req.body.accountId, csvDataLength: req.body.csvData?.length });
+      
       const { accountId, csvData } = req.body;
       
       if (!accountId || !csvData) {
+        console.log("Missing required fields:", { accountId: !!accountId, csvData: !!csvData });
         return res.status(400).json({ message: "Account ID and CSV content are required" });
       }
 
       const account = await storage.getAccount(parseInt(accountId));
       if (!account) {
+        console.log("Account not found:", accountId);
         return res.status(404).json({ message: "Account not found" });
       }
 
