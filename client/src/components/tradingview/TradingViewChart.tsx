@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import type { Trade } from "@shared/schema";
 
 interface TradingViewChartProps {
@@ -8,6 +8,13 @@ interface TradingViewChartProps {
   theme?: 'light' | 'dark';
 }
 
+interface HoverInfo {
+  trade: Trade;
+  x: number;
+  y: number;
+  visible: boolean;
+}
+
 export const TradingViewChart: React.FC<TradingViewChartProps> = ({
   trades,
   symbol,
@@ -15,6 +22,49 @@ export const TradingViewChart: React.FC<TradingViewChartProps> = ({
   theme = 'dark'
 }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [hoverInfo, setHoverInfo] = useState<HoverInfo>({ trade: {} as Trade, x: 0, y: 0, visible: false });
+
+  // Format currency for display
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(amount);
+  };
+
+  // Store trade positions for hover detection
+  const tradePositions = useRef<Array<{ trade: Trade; x: number; y: number; radius: number }>>([]);
+
+  const handleMouseMove = (event: React.MouseEvent<HTMLCanvasElement>) => {
+    if (!canvasRef.current) return;
+    
+    const rect = canvasRef.current.getBoundingClientRect();
+    const mouseX = event.clientX - rect.left;
+    const mouseY = event.clientY - rect.top;
+    
+    // Check if mouse is over any trade marker
+    const hoveredTrade = tradePositions.current.find(pos => {
+      const distance = Math.sqrt(Math.pow(mouseX - pos.x, 2) + Math.pow(mouseY - pos.y, 2));
+      return distance <= pos.radius + 5; // 5px tolerance
+    });
+    
+    if (hoveredTrade) {
+      setHoverInfo({
+        trade: hoveredTrade.trade,
+        x: mouseX,
+        y: mouseY,
+        visible: true
+      });
+    } else {
+      setHoverInfo(prev => ({ ...prev, visible: false }));
+    }
+  };
+
+  const handleMouseLeave = () => {
+    setHoverInfo(prev => ({ ...prev, visible: false }));
+  };
 
   useEffect(() => {
     if (!canvasRef.current || !trades.length) return;
@@ -22,6 +72,9 @@ export const TradingViewChart: React.FC<TradingViewChartProps> = ({
     const canvas = canvasRef.current;
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
+
+    // Clear trade positions
+    tradePositions.current = [];
 
     // Set canvas size
     const rect = canvas.getBoundingClientRect();
@@ -72,16 +125,20 @@ export const TradingViewChart: React.FC<TradingViewChartProps> = ({
     });
     ctx.stroke();
 
-    // Draw trade markers
+    // Draw trade markers and store positions for hover detection
     sortedTrades.forEach((trade, index) => {
       const x = padding + (index / Math.max(sortedTrades.length - 1, 1)) * chartWidth;
       const price = trade.exitPrice || trade.entryPrice;
       const y = padding + chartHeight - ((price - minPrice) / priceRange) * chartHeight;
       const pnl = trade.pnl || 0;
+      const radius = 4;
+      
+      // Store position for hover detection
+      tradePositions.current.push({ trade, x, y, radius });
       
       // Draw marker circle
       ctx.beginPath();
-      ctx.arc(x, y, 4, 0, 2 * Math.PI);
+      ctx.arc(x, y, radius, 0, 2 * Math.PI);
       ctx.fillStyle = pnl > 0 ? '#10b981' : pnl < 0 ? '#ef4444' : '#6b7280';
       ctx.fill();
       ctx.strokeStyle = bgColor;
@@ -139,11 +196,57 @@ export const TradingViewChart: React.FC<TradingViewChartProps> = ({
         </div>
       </div>
       
-      <canvas
-        ref={canvasRef}
-        className="w-full rounded border border-gray-600"
-        style={{ height: `${height}px` }}
-      />
+      <div className="relative">
+        <canvas
+          ref={canvasRef}
+          className="w-full rounded border border-gray-600 cursor-crosshair"
+          style={{ height: `${height}px` }}
+          onMouseMove={handleMouseMove}
+          onMouseLeave={handleMouseLeave}
+        />
+        
+        {/* Hover Tooltip */}
+        {hoverInfo.visible && (
+          <div 
+            className="absolute z-10 bg-gradient-to-br from-gray-800 via-gray-900 to-black border border-prop-gold/30 rounded-lg p-3 shadow-2xl pointer-events-none backdrop-blur-sm"
+            style={{
+              left: Math.min(hoverInfo.x + 10, window.innerWidth - 200),
+              top: Math.max(hoverInfo.y - 80, 10),
+              minWidth: '180px'
+            }}
+          >
+            <div className="text-xs text-gray-300 mb-1">
+              {new Date(hoverInfo.trade.date).toLocaleDateString()}
+            </div>
+            <div className="text-sm font-medium text-white mb-1">
+              {hoverInfo.trade.symbol || 'Unknown Symbol'}
+            </div>
+            <div className="flex justify-between items-center mb-1">
+              <span className="text-xs text-gray-400">Entry:</span>
+              <span className="text-xs text-white">{hoverInfo.trade.entryPrice?.toFixed(2) || 'N/A'}</span>
+            </div>
+            <div className="flex justify-between items-center mb-2">
+              <span className="text-xs text-gray-400">Exit:</span>
+              <span className="text-xs text-white">{hoverInfo.trade.exitPrice?.toFixed(2) || 'N/A'}</span>
+            </div>
+            <div className="flex justify-between items-center">
+              <span className="text-xs text-gray-400">P&L:</span>
+              <span className={`text-sm font-bold ${
+                (hoverInfo.trade.pnl || 0) > 0 ? 'text-prop-green' : 
+                (hoverInfo.trade.pnl || 0) < 0 ? 'text-prop-pink' : 'text-prop-gold'
+              }`}>
+                {(hoverInfo.trade.pnl || 0) >= 0 ? '+' : ''}{formatCurrency(hoverInfo.trade.pnl || 0)}
+              </span>
+            </div>
+            {hoverInfo.trade.quantity && (
+              <div className="flex justify-between items-center mt-1">
+                <span className="text-xs text-gray-400">Qty:</span>
+                <span className="text-xs text-white">{hoverInfo.trade.quantity}</span>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
       
       <div className="flex justify-center mt-4 space-x-6 text-xs text-gray-400">
         <div className="flex items-center">
