@@ -511,7 +511,7 @@ export default function Dashboard() {
         {/* Secondary Performance Metrics Row - Win Rate, R Factor, Profit Factor */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           {/* Win Rate */}
-          <Card className="bg-dark-card border-success-green">
+          <Card className="bg-dark-card border-dark-border hover-glow smooth-transition">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
@@ -580,69 +580,121 @@ export default function Dashboard() {
           </Card>
         </div>
 
-        {/* Account & Monthly Performance - Right under Win Rate row */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-          {/* Account Performance */}
-          <Card className="bg-dark-card border-dark-border">
-            <CardHeader>
-              <CardTitle className="text-gradient-rainbow">Account Performance</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {accounts?.slice(0, 3).map((account) => (
-                <div key={account.id} className="flex items-center justify-between p-3 bg-dark-surface rounded-lg">
-                  <div className="flex items-center">
-                    <div className={`w-8 h-8 rounded-lg flex items-center justify-center mr-3 ${
-                      account.type === 'funded' ? 'bg-success-green' : 'bg-primary'
-                    }`}>
-                      <Target className="text-white h-4 w-4" />
-                    </div>
-                    <div>
-                      <p className="font-medium text-white text-sm">{account.name}</p>
-                      <p className="text-xs text-gray-400">{account.type} • {account.firm}</p>
-                    </div>
-                  </div>
-                  <div className="text-right">
-                    <p className="font-bold text-white text-sm">{formatCurrency(account.currentBalance)}</p>
-                    <p className={`text-xs ${
-                      account.currentBalance >= account.startingBalance ? 'text-success-green' : 'text-error-red'
-                    }`}>
-                      {formatCurrency(account.currentBalance - account.startingBalance)}
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </CardContent>
-          </Card>
-
-          {/* Monthly Performance */}
+        {/* Weekly Performance Calendar - Current Trading Week */}
+        <div className="mb-8">
           <Card className="bg-dark-card border-dark-border hover-glow smooth-transition">
             <CardHeader>
-              <CardTitle className="text-gradient-rainbow">Monthly Performance</CardTitle>
+              <CardTitle className="text-gradient-rainbow">Weekly Performance</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="space-y-3">
-                <div className="flex justify-between items-center">
-                  <span className="text-gray-400 text-sm">Current Month</span>
-                  <span className="text-success-green font-bold">
-                    {formatCurrency(combinedAnalytics?.totalPnl || 0)}
-                  </span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-gray-400 text-sm">Total Trades</span>
-                  <span className="text-white font-bold">{combinedAnalytics?.totalTrades || 0}</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-gray-400 text-sm">Best Trade</span>
-                  <span className="text-success-green font-bold">
-                    {formatCurrency(combinedAnalytics?.bestTrade || 0)}
-                  </span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-gray-400 text-sm">Worst Trade</span>
-                  <span className="text-error-red font-bold">
-                    {formatCurrency(combinedAnalytics?.worstTrade || 0)}
-                  </span>
-                </div>
+              <div className="grid grid-cols-7 gap-1 mb-4">
+                {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
+                  <div key={day} className="text-center text-sm font-medium text-gray-400 p-2">
+                    {day}
+                  </div>
+                ))}
+              </div>
+              <div className="grid grid-cols-7 gap-1 mb-6">
+                {(() => {
+                  const getCurrentWeekDays = () => {
+                    const today = new Date();
+                    const dayOfWeek = today.getDay(); // 0 = Sunday, 1 = Monday, etc.
+                    const startOfWeek = new Date(today);
+                    startOfWeek.setDate(today.getDate() - dayOfWeek);
+                    
+                    const weekDays = [];
+                    for (let i = 0; i < 7; i++) {
+                      const day = new Date(startOfWeek);
+                      day.setDate(startOfWeek.getDate() + i);
+                      weekDays.push(day);
+                    }
+                    return weekDays;
+                  };
+
+                  const weekDays = getCurrentWeekDays();
+                  
+                  return weekDays.map((day, index) => {
+                    const dayStr = day.toISOString().split('T')[0];
+                    const dayTrades = trades?.filter(trade => trade.date === dayStr) || [];
+                    const dayPnL = dayTrades.reduce((sum, trade) => sum + (trade.pnl || 0), 0);
+                    const isToday = day.toDateString() === new Date().toDateString();
+                    
+                    return (
+                      <div 
+                        key={index} 
+                        className={`
+                          relative p-3 rounded-lg border transition-all duration-300
+                          ${isToday ? 'border-gold bg-gold/10' : 'border-gray-700 bg-gray-800/50'}
+                          ${dayTrades.length > 0 ? 'hover:scale-105 cursor-pointer' : ''}
+                        `}
+                      >
+                        <div className="text-center">
+                          <div className="text-sm font-medium text-white mb-1">
+                            {day.getDate()}
+                          </div>
+                          {dayTrades.length > 0 && (
+                            <>
+                              <div className={`text-xs font-semibold ${dayPnL >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                                ${dayPnL >= 0 ? '+' : ''}${dayPnL.toFixed(2)}
+                              </div>
+                              <div className="text-xs text-gray-400">
+                                {dayTrades.length} trades
+                              </div>
+                            </>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  });
+                })()}
+              </div>
+              
+              {/* Week Summary Stats */}
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-4 border-t border-gray-700">
+                {(() => {
+                  const getCurrentWeekTrades = () => {
+                    const today = new Date();
+                    const dayOfWeek = today.getDay();
+                    const startOfWeek = new Date(today);
+                    startOfWeek.setDate(today.getDate() - dayOfWeek);
+                    const endOfWeek = new Date(startOfWeek);
+                    endOfWeek.setDate(startOfWeek.getDate() + 6);
+                    
+                    const startStr = startOfWeek.toISOString().split('T')[0];
+                    const endStr = endOfWeek.toISOString().split('T')[0];
+                    
+                    return trades?.filter(trade => trade.date >= startStr && trade.date <= endStr) || [];
+                  };
+                  
+                  const weekTrades = getCurrentWeekTrades();
+                  const weekPnL = weekTrades.reduce((sum, trade) => sum + (trade.pnl || 0), 0);
+                  const winningTrades = weekTrades.filter(trade => (trade.pnl || 0) > 0).length;
+                  const weekWinRate = weekTrades.length > 0 ? (winningTrades / weekTrades.length) * 100 : 0;
+                  const bestTrade = weekTrades.length > 0 ? Math.max(...weekTrades.map(t => t.pnl || 0)) : 0;
+                  
+                  return (
+                    <>
+                      <div className="text-center">
+                        <div className={`text-lg font-bold ${weekPnL >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                          {formatCurrency(weekPnL)}
+                        </div>
+                        <div className="text-xs text-gray-400">Week P&L</div>
+                      </div>
+                      <div className="text-center">
+                        <div className="text-lg font-bold text-white">{weekTrades.length}</div>
+                        <div className="text-xs text-gray-400">Total Trades</div>
+                      </div>
+                      <div className="text-center">
+                        <div className="text-lg font-bold text-blue-400">{weekWinRate.toFixed(1)}%</div>
+                        <div className="text-xs text-gray-400">Win Rate</div>
+                      </div>
+                      <div className="text-center">
+                        <div className="text-lg font-bold text-green-400">{formatCurrency(bestTrade)}</div>
+                        <div className="text-xs text-gray-400">Best Trade</div>
+                      </div>
+                    </>
+                  );
+                })()}
               </div>
             </CardContent>
           </Card>
@@ -832,7 +884,7 @@ export default function Dashboard() {
         {/* Total Portfolio Value Row */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
           {/* Total Portfolio Value */}
-          <Card className="bg-dark-card border-prop-gold">
+          <Card className="bg-dark-card border-dark-border hover-glow smooth-transition">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
@@ -1292,7 +1344,7 @@ export default function Dashboard() {
         {/* First Row: Risk Management, Daily Trade Limit, Disciplined Score */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
           {/* Risk Management */}
-          <Card className="bg-dark-card border-warning-orange">
+          <Card className="bg-dark-card border-dark-border hover-glow smooth-transition">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
@@ -1332,7 +1384,7 @@ export default function Dashboard() {
           </Card>
 
           {/* Disciplined Score */}
-          <Card className="bg-dark-card border-primary">
+          <Card className="bg-dark-card border-dark-border hover-glow smooth-transition">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
@@ -1370,7 +1422,7 @@ export default function Dashboard() {
         {/* Second Row: Risk Alert, Payout Status */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
           {/* Risk Alert - Top 3 Critical Accounts */}
-          <Card className="bg-dark-card border-warning-orange">
+          <Card className="bg-dark-card border-dark-border hover-glow smooth-transition">
             <CardContent className="p-6">
               <div className="flex items-center mb-4">
                 <div className="bg-warning-orange bg-opacity-20 p-2 rounded-lg mr-3">

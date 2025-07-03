@@ -404,7 +404,11 @@ export default function Trades() {
                       <Button
                         size="sm"
                         variant="outline"
-                        onClick={() => window.open(`https://www.tradingview.com/chart/?symbol=${trade.symbol}`, '_blank')}
+                        onClick={() => {
+                          // Clean symbol for TradingView (remove contract months)
+                          let cleanSymbol = trade.symbol.replace(/[UHM]\d{2}$/, '');
+                          window.open(`https://www.tradingview.com/chart/?symbol=${cleanSymbol}`, '_blank');
+                        }}
                         className="text-blue-400 border-blue-400 hover:bg-blue-400/20"
                       >
                         📈 View Chart
