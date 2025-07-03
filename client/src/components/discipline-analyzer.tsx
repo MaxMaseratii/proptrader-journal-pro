@@ -1,11 +1,13 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useToast } from "@/hooks/use-toast";
+import type { Account, Trade } from "@shared/schema";
 import { 
   Shield, 
   TrendingUp, 
@@ -14,642 +16,427 @@ import {
   Brain,
   Clock,
   Award,
-  Eye,
   CheckCircle,
   XCircle,
   Activity,
   BarChart3,
   Calculator,
-  Calendar,
-  Upload,
-  FileText,
-  Zap,
-  RefreshCw,
   TrendingDown,
   DollarSign,
-  Users,
   Database
 } from "lucide-react";
 
 interface DisciplineMetrics {
   totalTrades: number;
-  totalOrders: number;
-  filledOrders: number;
-  cancelledOrders: number;
-  cancellationRate: number;
-  stopLossHits: number;
-  stopLossMoved: number;
-  stopLossMovedAgainst: number;
-  stopLossMovedInFavor: number;
-  takeProfitHits: number;
-  overRisked: number;
-  emotionalTrades: number;
-  consecutiveLosses: number;
-  maxDrawdown: number;
-  disciplineScore: number;
-  averageTradeTime: number;
-  scalping: number;
-  dayTrading: number;
-  swingTrading: number;
   winRate: number;
   profitFactor: number;
   avgWin: number;
   avgLoss: number;
-  bestTrade: any;
-  worstTrade: any;
-  orderModificationRate: number;
+  maxDrawdown: number;
+  disciplineScore: number;
+  riskManagementScore: number;
+  emotionalControlScore: number;
+  consistencyScore: number;
+  stopLossRespect: number;
+  takeProfitHits: number;
+  overRiskedTrades: number;
   revengeTrading: number;
-  fomoTrades: number;
-  timeOfDayAnalysis: any;
-  assetPerformance: any;
-}
-
-interface TradeData {
-  orderId: string;
-  symbol: string;
-  side: string;
-  quantity: number;
-  price: number;
-  timestamp: string;
-  status: string;
-  type: string;
-  limitPrice?: number;
-  stopPrice?: number;
-  account: string;
-}
-
-interface CompleteTrade {
-  symbol: string;
-  entryTime: string;
-  exitTime: string;
-  entryPrice: number;
-  exitPrice: number;
-  quantity: number;
-  side: string;
-  pnl: number;
-  duration: number;
-  hadModifications: boolean;
-  cancelledOrders: number;
-  behaviorType: string;
-  riskReward: number;
+  bestTrade: Trade | null;
+  worstTrade: Trade | null;
+  recommendations: string[];
 }
 
 export default function DisciplineAnalyzer() {
-  const [csvFile, setCsvFile] = useState<File | null>(null);
-  const [isProcessing, setIsProcessing] = useState(false);
-  const [processingStage, setProcessingStage] = useState("");
+  const [selectedAccount, setSelectedAccount] = useState<string>("all");
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [disciplineData, setDisciplineData] = useState<DisciplineMetrics | null>(null);
-  const [tradeDetails, setTradeDetails] = useState<CompleteTrade[]>([]);
-  const [rawOrders, setRawOrders] = useState<TradeData[]>([]);
   const { toast } = useToast();
 
-  // Enhanced CSV parsing with better error handling
-  const parseCSV = useCallback((csvText: string) => {
-    try {
-      const lines = csvText.trim().split('\n');
-      const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, ''));
-      
-      const orders: TradeData[] = lines.slice(1).map(line => {
-        const values = line.split(',').map(v => v.trim().replace(/"/g, ''));
-        const row: any = {};
-        headers.forEach((header, index) => {
-          row[header] = values[index] || '';
-        });
-        
-        return {
-          orderId: row.orderId || row['Order ID'] || '',
-          symbol: row.Product || row.Symbol || '',
-          side: row['B/S'] ? row['B/S'].trim() : '',
-          quantity: Math.abs(parseFloat(row.filledQty) || parseFloat(row['Filled Qty']) || parseFloat(row.Quantity) || 0),
-          price: parseFloat(row.avgPrice) || parseFloat(row['Avg Fill Price']) || 0,
-          timestamp: row['Fill Time'] || row.Timestamp || '',
-          status: row.Status ? row.Status.trim() : '',
-          type: row.Type ? row.Type.trim() : '',
-          limitPrice: parseFloat(row['Limit Price']) || undefined,
-          stopPrice: parseFloat(row['Stop Price']) || undefined,
-          account: row.Account || ''
-        };
-      }).filter(order => order.orderId && order.symbol);
-      
-      return orders;
-    } catch (error: any) {
-      throw new Error(`CSV parsing failed: ${error.message}`);
+  const { data: accounts = [] } = useQuery<Account[]>({
+    queryKey: ["/api/accounts"],
+  });
+
+  const { data: trades = [] } = useQuery<Trade[]>({
+    queryKey: ["/api/trades"],
+  });
+
+  // Filter trades based on selected account
+  const filteredTrades = selectedAccount === "all" 
+    ? trades 
+    : trades.filter(trade => trade.accountId === parseInt(selectedAccount));
+
+  // Calculate discipline metrics from existing trades
+  const calculateDisciplineMetrics = (tradeData: Trade[]): DisciplineMetrics => {
+    if (tradeData.length === 0) {
+      return {
+        totalTrades: 0,
+        winRate: 0,
+        profitFactor: 0,
+        avgWin: 0,
+        avgLoss: 0,
+        maxDrawdown: 0,
+        disciplineScore: 0,
+        riskManagementScore: 0,
+        emotionalControlScore: 0,
+        consistencyScore: 0,
+        stopLossRespect: 0,
+        takeProfitHits: 0,
+        overRiskedTrades: 0,
+        revengeTrading: 0,
+        bestTrade: null,
+        worstTrade: null,
+        recommendations: []
+      };
     }
-  }, []);
 
-  // Group orders into complete trades for behavior analysis
-  const groupOrdersIntoTrades = useCallback((orders: TradeData[]) => {
-    const trades: CompleteTrade[] = [];
-    const processedOrders = new Set();
+    const totalTrades = tradeData.length;
+    const winningTrades = tradeData.filter(t => (t.pnl || 0) > 0);
+    const losingTrades = tradeData.filter(t => (t.pnl || 0) < 0);
+    const winRate = winningTrades.length / totalTrades;
     
-    const filledOrders = orders.filter(o => o.status === 'Filled')
-      .sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
-    
-    filledOrders.forEach((order, index) => {
-      if (processedOrders.has(index)) return;
-      
-      const symbol = order.symbol;
-      const side = order.side.toLowerCase();
-      const quantity = order.quantity;
-      const price = order.price;
-      const timestamp = new Date(order.timestamp);
-      
-      // Look for opposing trade within 48 hours
-      const timeWindow = 48 * 60 * 60 * 1000;
-      
-      const matchingExit = filledOrders.find((exitOrder, exitIndex) => {
-        if (processedOrders.has(exitIndex) || exitIndex === index) return false;
-        if (exitOrder.symbol !== symbol) return false;
-        
-        const exitSide = exitOrder.side.toLowerCase();
-        const exitTime = new Date(exitOrder.timestamp);
-        const exitQty = exitOrder.quantity;
-        
-        const isOpposingTrade = (side.includes('buy') && exitSide.includes('sell')) || 
-                               (side.includes('sell') && exitSide.includes('buy'));
-        const isWithinTimeWindow = Math.abs(exitTime.getTime() - timestamp.getTime()) <= timeWindow;
-        const isSameQuantity = Math.abs(quantity - exitQty) < 0.01;
-        
-        return isOpposingTrade && isWithinTimeWindow && isSameQuantity;
-      });
-
-      if (matchingExit) {
-        const entryPrice = price;
-        const exitPrice = matchingExit.price;
-        const multiplier = side.includes('buy') ? 1 : -1;
-        const duration = (new Date(matchingExit.timestamp).getTime() - timestamp.getTime()) / (1000 * 60); // minutes
-        
-        // Calculate P&L (using ES point value of $50 as default)
-        const pointValue = symbol === 'ES' ? 50 : symbol === 'NQ' ? 20 : symbol === 'MES' ? 5 : 50;
-        const pnl = (exitPrice - entryPrice) * quantity * multiplier * pointValue;
-        
-        // Check for cancelled orders between entry and exit
-        const entryTime = timestamp;
-        const exitTime = new Date(matchingExit.timestamp);
-        const cancelledBetween = orders.filter(o => 
-          o.status === 'Canceled' &&
-          o.symbol === symbol &&
-          new Date(o.timestamp) >= entryTime &&
-          new Date(o.timestamp) <= exitTime
-        );
-        
-        // Determine behavior type
-        let behaviorType = 'Disciplined';
-        if (cancelledBetween.length > 0) {
-          behaviorType = 'Modified SL/TP';
-          if (Math.abs(exitPrice - entryPrice) / entryPrice < 0.002) {
-            behaviorType = 'Moved to Breakeven';
-          }
-        }
-        
-        // Calculate risk-reward
-        const riskReward = pnl > 0 ? Math.abs(pnl) / (Math.abs(entryPrice - (order.stopPrice || entryPrice * 0.99)) * quantity * pointValue) : 0;
-        
-        trades.push({
-          symbol,
-          entryTime: order.timestamp,
-          exitTime: matchingExit.timestamp,
-          entryPrice,
-          exitPrice,
-          quantity,
-          side: side.includes('buy') ? 'Long' : 'Short',
-          pnl,
-          duration,
-          hadModifications: cancelledBetween.length > 0,
-          cancelledOrders: cancelledBetween.length,
-          behaviorType,
-          riskReward
-        });
-        
-        processedOrders.add(index);
-        processedOrders.add(filledOrders.indexOf(matchingExit));
-      }
-    });
-    
-    return trades;
-  }, []);
-
-  // Advanced discipline analysis
-  const analyzeDiscipline = useCallback((orders: TradeData[], trades: CompleteTrade[]): DisciplineMetrics => {
-    const filledOrders = orders.filter(o => o.status === 'Filled');
-    const cancelledOrders = orders.filter(o => o.status === 'Canceled');
-    
-    // Basic metrics
-    const totalOrders = orders.length;
-    const cancellationRate = (cancelledOrders.length / totalOrders) * 100;
-    
-    // Trade-specific metrics
-    const winningTrades = trades.filter(t => t.pnl > 0);
-    const losingTrades = trades.filter(t => t.pnl < 0);
-    const winRate = trades.length > 0 ? (winningTrades.length / trades.length) * 100 : 0;
-    
-    const totalPnL = trades.reduce((sum, t) => sum + t.pnl, 0);
-    const totalWins = winningTrades.reduce((sum, t) => sum + t.pnl, 0);
-    const totalLosses = Math.abs(losingTrades.reduce((sum, t) => sum + t.pnl, 0));
-    const profitFactor = totalLosses > 0 ? totalWins / totalLosses : 0;
+    const totalWins = winningTrades.reduce((sum, t) => sum + (t.pnl || 0), 0);
+    const totalLosses = Math.abs(losingTrades.reduce((sum, t) => sum + (t.pnl || 0), 0));
+    const profitFactor = totalLosses > 0 ? totalWins / totalLosses : totalWins > 0 ? 999 : 0;
     
     const avgWin = winningTrades.length > 0 ? totalWins / winningTrades.length : 0;
     const avgLoss = losingTrades.length > 0 ? totalLosses / losingTrades.length : 0;
     
-    // Duration analysis
-    const durations = trades.map(t => t.duration);
-    const avgTradeTime = durations.length > 0 ? durations.reduce((sum, d) => sum + d, 0) / durations.length : 0;
+    // Calculate max drawdown
+    let runningPnL = 0;
+    let peak = 0;
+    let maxDrawdown = 0;
     
-    const scalping = trades.filter(t => t.duration <= 5).length;
-    const dayTrading = trades.filter(t => t.duration > 5 && t.duration <= 360).length;
-    const swingTrading = trades.filter(t => t.duration > 360).length;
+    tradeData.forEach(trade => {
+      runningPnL += trade.pnl || 0;
+      if (runningPnL > peak) peak = runningPnL;
+      const drawdown = peak - runningPnL;
+      if (drawdown > maxDrawdown) maxDrawdown = drawdown;
+    });
+
+    // Analysis of discipline factors
+    const stopLossHits = tradeData.filter(t => t.notes?.includes("HIT STOP")).length;
+    const takeProfitHits = tradeData.filter(t => t.notes?.includes("HIT TARGET")).length;
+    const stopLossRespect = stopLossHits / Math.max(losingTrades.length, 1);
     
-    // Discipline-specific metrics
-    const stopLossMoved = trades.filter(t => t.hadModifications).length;
-    const disciplinedTrades = trades.filter(t => !t.hadModifications).length;
-    const stopLossHits = trades.filter(t => t.pnl < 0 && !t.hadModifications).length;
+    // Risk management analysis
+    const overRiskedTrades = tradeData.filter(t => {
+      const riskAmount = Math.abs((t.entryPrice || 0) - (t.initialStopLoss || 0)) * (t.quantity || 1);
+      return riskAmount > 1000; // Assuming $1000 as high risk threshold
+    }).length;
     
-    // Emotional trading indicators
-    const consecutiveLosses = calculateConsecutiveLosses(trades);
-    const revengeTrading = consecutiveLosses > 3 ? 1 : 0;
-    const fomoTrades = trades.filter(t => t.duration < 2).length; // Very quick trades
-    const emotionalTrades = trades.filter(t => t.hadModifications && t.pnl < 0).length;
-    
-    // Time of day analysis
-    const timeOfDayAnalysis = analyzeTimeOfDay(trades);
-    
-    // Asset performance
-    const assetPerformance = analyzeAssetPerformance(trades);
-    
-    // Calculate discipline score
-    const stopLossRespect = trades.length > 0 ? (stopLossHits / trades.length) * 25 : 0;
-    const orderDiscipline = ((totalOrders - cancelledOrders.length) / totalOrders) * 25;
-    const emotionalControl = trades.length > 0 ? ((trades.length - emotionalTrades) / trades.length) * 25 : 25;
-    const consistencyBonus = consecutiveLosses < 5 ? 25 : Math.max(0, 25 - consecutiveLosses * 2);
-    
-    const disciplineScore = Math.round(stopLossRespect + orderDiscipline + emotionalControl + consistencyBonus);
-    
+    // Revenge trading detection (consecutive losses followed by larger position)
+    let revengeTrading = 0;
+    for (let i = 1; i < tradeData.length; i++) {
+      const prevTrade = tradeData[i - 1];
+      const currTrade = tradeData[i];
+      if ((prevTrade.pnl || 0) < 0 && (currTrade.quantity || 0) > (prevTrade.quantity || 0) * 1.5) {
+        revengeTrading++;
+      }
+    }
+
+    // Calculate component scores
+    const riskManagementScore = Math.max(0, 100 - (overRiskedTrades / totalTrades) * 100);
+    const emotionalControlScore = Math.max(0, 100 - (revengeTrading / totalTrades) * 200);
+    const consistencyScore = winRate * 100;
+    const disciplineScore = (riskManagementScore + emotionalControlScore + consistencyScore) / 3;
+
+    // Generate recommendations
+    const recommendations = [];
+    if (winRate < 0.5) recommendations.push("Focus on improving trade selection and entry timing");
+    if (profitFactor < 1.5) recommendations.push("Work on risk-reward ratios and profit targets");
+    if (overRiskedTrades > totalTrades * 0.1) recommendations.push("Reduce position sizes to manage risk better");
+    if (revengeTrading > 0) recommendations.push("Implement cooling-off periods after losses");
+    if (stopLossRespect < 0.8) recommendations.push("Improve stop loss discipline and respect exit levels");
+
+    const bestTrade = tradeData.reduce((best, current) => 
+      (current.pnl || 0) > (best?.pnl || 0) ? current : best, tradeData[0]);
+    const worstTrade = tradeData.reduce((worst, current) => 
+      (current.pnl || 0) < (worst?.pnl || 0) ? current : worst, tradeData[0]);
+
     return {
-      totalTrades: trades.length,
-      totalOrders,
-      filledOrders: filledOrders.length,
-      cancelledOrders: cancelledOrders.length,
-      cancellationRate,
-      stopLossHits,
-      stopLossMoved,
-      stopLossMovedAgainst: stopLossMoved, // Simplified
-      stopLossMovedInFavor: 0,
-      takeProfitHits: winningTrades.filter(t => !t.hadModifications).length,
-      overRisked: trades.filter(t => t.quantity > 5).length, // Assuming 5+ contracts is over-risking
-      emotionalTrades,
-      consecutiveLosses,
-      maxDrawdown: calculateMaxDrawdown(trades),
-      disciplineScore,
-      averageTradeTime: avgTradeTime / 60, // Convert to hours
-      scalping,
-      dayTrading,
-      swingTrading,
+      totalTrades,
       winRate,
       profitFactor,
       avgWin,
       avgLoss,
-      bestTrade: trades.reduce((best, trade) => trade.pnl > best.pnl ? trade : best, trades[0]),
-      worstTrade: trades.reduce((worst, trade) => trade.pnl < worst.pnl ? trade : worst, trades[0]),
-      orderModificationRate: cancellationRate,
+      maxDrawdown,
+      disciplineScore,
+      riskManagementScore,
+      emotionalControlScore,
+      consistencyScore,
+      stopLossRespect,
+      takeProfitHits,
+      overRiskedTrades,
       revengeTrading,
-      fomoTrades,
-      timeOfDayAnalysis,
-      assetPerformance
+      bestTrade,
+      worstTrade,
+      recommendations
     };
-  }, []);
-
-  // Helper functions
-  const calculateConsecutiveLosses = (trades: CompleteTrade[]): number => {
-    let maxConsecutive = 0;
-    let current = 0;
-    
-    trades.sort((a, b) => new Date(a.entryTime).getTime() - new Date(b.entryTime).getTime());
-    
-    for (const trade of trades) {
-      if (trade.pnl < 0) {
-        current++;
-        maxConsecutive = Math.max(maxConsecutive, current);
-      } else {
-        current = 0;
-      }
-    }
-    
-    return maxConsecutive;
   };
 
-  const calculateMaxDrawdown = (trades: CompleteTrade[]): number => {
-    let peak = 0;
-    let drawdown = 0;
-    let runningPnl = 0;
+  const analyzeTrading = async () => {
+    setIsAnalyzing(true);
     
-    trades.sort((a, b) => new Date(a.entryTime).getTime() - new Date(b.entryTime).getTime());
-    
-    for (const trade of trades) {
-      runningPnl += trade.pnl;
-      peak = Math.max(peak, runningPnl);
-      drawdown = Math.max(drawdown, peak - runningPnl);
-    }
-    
-    return drawdown;
-  };
-
-  const analyzeTimeOfDay = (trades: CompleteTrade[]) => {
-    const timeSlots = {
-      morning: 0,    // 6-12
-      afternoon: 0,  // 12-18
-      evening: 0,    // 18-24
-      night: 0       // 0-6
-    };
-    
-    trades.forEach(trade => {
-      const hour = new Date(trade.entryTime).getHours();
-      if (hour >= 6 && hour < 12) timeSlots.morning++;
-      else if (hour >= 12 && hour < 18) timeSlots.afternoon++;
-      else if (hour >= 18 && hour < 24) timeSlots.evening++;
-      else timeSlots.night++;
-    });
-    
-    return timeSlots;
-  };
-
-  const analyzeAssetPerformance = (trades: CompleteTrade[]) => {
-    const assetStats: Record<string, any> = {};
-    
-    trades.forEach(trade => {
-      if (!assetStats[trade.symbol]) {
-        assetStats[trade.symbol] = {
-          trades: 0,
-          totalPnL: 0,
-          wins: 0,
-          losses: 0
-        };
-      }
-      
-      assetStats[trade.symbol].trades++;
-      assetStats[trade.symbol].totalPnL += trade.pnl;
-      if (trade.pnl > 0) assetStats[trade.symbol].wins++;
-      else assetStats[trade.symbol].losses++;
-    });
-    
-    return assetStats;
-  };
-
-  // File upload handler
-  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
-
-    if (!file.name.toLowerCase().endsWith('.csv')) {
-      toast({
-        title: "Invalid File Type",
-        description: "Please select a CSV file.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    setCsvFile(file);
-    setIsProcessing(true);
-    setProcessingStage("Reading CSV file...");
-
     try {
-      const content = await file.text();
+      // Simulate analysis processing
+      await new Promise(resolve => setTimeout(resolve, 2000));
       
-      setProcessingStage("Parsing orders...");
-      const orders = parseCSV(content);
-      setRawOrders(orders);
-      
-      setProcessingStage("Analyzing trade patterns...");
-      const trades = groupOrdersIntoTrades(orders);
-      setTradeDetails(trades);
-      
-      setProcessingStage("Calculating discipline metrics...");
-      const metrics = analyzeDiscipline(orders, trades);
+      const metrics = calculateDisciplineMetrics(filteredTrades);
       setDisciplineData(metrics);
       
       toast({
         title: "Analysis Complete",
-        description: `Analyzed ${orders.length} orders and ${trades.length} complete trades.`,
+        description: `Analyzed ${metrics.totalTrades} trades with discipline score of ${metrics.disciplineScore.toFixed(1)}`,
       });
-      
-    } catch (error: any) {
+    } catch (error) {
       toast({
         title: "Analysis Failed",
-        description: error.message,
+        description: "Could not analyze trading data",
         variant: "destructive",
       });
     } finally {
-      setIsProcessing(false);
-      setProcessingStage("");
+      setIsAnalyzing(false);
     }
   };
 
-  return (
-    <div className="space-y-8">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-2xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-            Trading Discipline Analyzer
-          </h2>
-          <p className="text-gray-400 mt-2">Deep analysis of your trading psychology and behavioral patterns from CSV data</p>
-        </div>
-      </div>
+  useEffect(() => {
+    if (filteredTrades.length > 0) {
+      analyzeTrading();
+    }
+  }, [selectedAccount, filteredTrades]);
 
-      {/* File Upload Section */}
-      {!disciplineData && (
-        <Card className="bg-gray-800 border-gray-700">
-          <CardHeader>
-            <CardTitle className="text-white flex items-center">
-              <Upload className="mr-2 h-5 w-5 text-blue-400" />
-              Upload Trading Data
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <div className="border-2 border-dashed border-gray-600 rounded-lg p-8 text-center hover:border-gray-500 transition-colors">
-                <input
-                  type="file"
-                  accept=".csv"
-                  onChange={handleFileUpload}
-                  className="hidden"
-                  id="csv-upload"
-                  disabled={isProcessing}
-                />
-                <label htmlFor="csv-upload" className="cursor-pointer">
-                  <FileText className="mx-auto h-16 w-16 text-gray-400 mb-4" />
-                  <p className="text-gray-300 mb-2">
-                    {csvFile ? csvFile.name : "Click to upload your trading CSV file"}
-                  </p>
-                  <p className="text-sm text-gray-500">
-                    Supports Tradovate, MT4/5, and other broker formats
-                  </p>
-                </label>
-              </div>
-              
-              {isProcessing && (
-                <div className="flex items-center space-x-4 p-4 bg-blue-900/20 rounded-lg">
-                  <RefreshCw className="h-5 w-5 text-blue-400 animate-spin" />
-                  <span className="text-blue-300">{processingStage}</span>
-                </div>
-              )}
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+    }).format(amount);
+  };
+
+  const formatPercentage = (value: number) => {
+    return `${(value * 100).toFixed(1)}%`;
+  };
+
+  const getScoreColor = (score: number) => {
+    if (score >= 80) return "text-green-400";
+    if (score >= 60) return "text-yellow-400";
+    return "text-red-400";
+  };
+
+  const getScoreBadgeVariant = (score: number) => {
+    if (score >= 80) return "default";
+    if (score >= 60) return "secondary";
+    return "destructive";
+  };
+
+  return (
+    <div className="space-y-6">
+      {/* Account Selection */}
+      <Card className="bg-gray-800 border-gray-700">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Database className="h-5 w-5 text-blue-400" />
+            Account Selection
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex items-center gap-4">
+            <div className="flex-1">
+              <Select value={selectedAccount} onValueChange={setSelectedAccount}>
+                <SelectTrigger className="bg-gray-700 border-gray-600 text-white">
+                  <SelectValue placeholder="Select account to analyze" />
+                </SelectTrigger>
+                <SelectContent className="bg-gray-800 border-gray-700">
+                  <SelectItem value="all">All Accounts</SelectItem>
+                  {accounts.map((account) => (
+                    <SelectItem key={account.id} value={account.id.toString()}>
+                      {account.name} ({account.type})
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
-          </CardContent>
-        </Card>
-      )}
+            <Button 
+              onClick={analyzeTrading} 
+              disabled={isAnalyzing || filteredTrades.length === 0}
+              className="bg-blue-600 hover:bg-blue-700"
+            >
+              {isAnalyzing ? (
+                <>
+                  <Activity className="h-4 w-4 mr-2 animate-spin" />
+                  Analyzing...
+                </>
+              ) : (
+                <>
+                  <Brain className="h-4 w-4 mr-2" />
+                  Analyze Trading
+                </>
+              )}
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Analysis Results */}
-      {disciplineData && (
-        <>
+      {filteredTrades.length === 0 ? (
+        <Alert className="bg-gray-800 border-gray-700">
+          <AlertTriangle className="h-4 w-4" />
+          <AlertDescription>
+            No trades found for the selected account. Import your trading data first to perform discipline analysis.
+          </AlertDescription>
+        </Alert>
+      ) : disciplineData ? (
+        <div className="space-y-6">
           {/* Discipline Score Overview */}
-          <Card className="bg-gray-800 border-yellow-500/30">
+          <Card className="bg-gradient-to-r from-gray-800 to-gray-700 border-gray-600">
             <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <Brain className="h-6 w-6 text-yellow-400" />
-                <span className="text-white">Overall Discipline Score</span>
+              <CardTitle className="flex items-center gap-2">
+                <Brain className="h-5 w-5 text-purple-400" />
+                Overall Discipline Score
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="flex items-center justify-between">
+              <div className="flex items-center gap-6">
                 <div className="text-center">
-                  <div className="text-5xl font-bold text-yellow-400 mb-2">
-                    {disciplineData.disciplineScore}
+                  <div className={`text-4xl font-bold ${getScoreColor(disciplineData.disciplineScore)}`}>
+                    {disciplineData.disciplineScore.toFixed(1)}
                   </div>
-                  <Badge className={`text-lg px-4 py-2 ${
-                    disciplineData.disciplineScore >= 80 ? 'bg-green-600 text-white' :
-                    disciplineData.disciplineScore >= 60 ? 'bg-yellow-600 text-white' :
-                    'bg-red-600 text-white'
-                  }`}>
-                    {disciplineData.disciplineScore >= 80 ? 'Excellent Discipline' :
-                     disciplineData.disciplineScore >= 60 ? 'Good Discipline' : 
-                     'Needs Improvement'}
-                  </Badge>
+                  <div className="text-sm text-gray-400">out of 100</div>
                 </div>
-                
-                <div className="flex-1 ml-8">
+                <div className="flex-1">
                   <Progress 
                     value={disciplineData.disciplineScore} 
-                    className="h-4 mb-6"
+                    className="h-3"
                   />
-                  <div className="grid grid-cols-4 gap-4 text-sm">
-                    <div className="text-center">
-                      <div className="text-gray-400">Order Discipline</div>
-                      <div className="font-bold text-white text-lg">
-                        {(100 - disciplineData.cancellationRate).toFixed(0)}%
-                      </div>
-                    </div>
-                    <div className="text-center">
-                      <div className="text-gray-400">Risk Control</div>
-                      <div className="font-bold text-white text-lg">
-                        {disciplineData.totalTrades > 0 ? 
-                          (((disciplineData.totalTrades - disciplineData.overRisked) / disciplineData.totalTrades) * 100).toFixed(0) : 0}%
-                      </div>
-                    </div>
-                    <div className="text-center">
-                      <div className="text-gray-400">Emotional Control</div>
-                      <div className="font-bold text-white text-lg">
-                        {disciplineData.totalTrades > 0 ? 
-                          (((disciplineData.totalTrades - disciplineData.emotionalTrades) / disciplineData.totalTrades) * 100).toFixed(0) : 0}%
-                      </div>
-                    </div>
-                    <div className="text-center">
-                      <div className="text-gray-400">Consistency</div>
-                      <div className="font-bold text-white text-lg">
-                        {disciplineData.consecutiveLosses < 5 ? 100 : Math.max(0, 100 - disciplineData.consecutiveLosses * 5)}%
-                      </div>
-                    </div>
+                  <div className="mt-2 text-sm text-gray-400">
+                    Based on {disciplineData.totalTrades} trades
                   </div>
+                </div>
+                <Badge variant={getScoreBadgeVariant(disciplineData.disciplineScore)}>
+                  {disciplineData.disciplineScore >= 80 ? "Excellent" :
+                   disciplineData.disciplineScore >= 60 ? "Good" : "Needs Improvement"}
+                </Badge>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Component Scores */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <Card className="bg-gray-800 border-gray-700">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-sm flex items-center gap-2">
+                  <Shield className="h-4 w-4 text-blue-400" />
+                  Risk Management
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className={`text-2xl font-bold ${getScoreColor(disciplineData.riskManagementScore)}`}>
+                  {disciplineData.riskManagementScore.toFixed(1)}
+                </div>
+                <Progress value={disciplineData.riskManagementScore} className="mt-2 h-2" />
+                <div className="mt-2 text-xs text-gray-400">
+                  {disciplineData.overRiskedTrades} over-risked trades
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-gray-800 border-gray-700">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-sm flex items-center gap-2">
+                  <Brain className="h-4 w-4 text-purple-400" />
+                  Emotional Control
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className={`text-2xl font-bold ${getScoreColor(disciplineData.emotionalControlScore)}`}>
+                  {disciplineData.emotionalControlScore.toFixed(1)}
+                </div>
+                <Progress value={disciplineData.emotionalControlScore} className="mt-2 h-2" />
+                <div className="mt-2 text-xs text-gray-400">
+                  {disciplineData.revengeTrading} revenge trades detected
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-gray-800 border-gray-700">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-sm flex items-center gap-2">
+                  <Target className="h-4 w-4 text-green-400" />
+                  Consistency
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className={`text-2xl font-bold ${getScoreColor(disciplineData.consistencyScore)}`}>
+                  {disciplineData.consistencyScore.toFixed(1)}
+                </div>
+                <Progress value={disciplineData.consistencyScore} className="mt-2 h-2" />
+                <div className="mt-2 text-xs text-gray-400">
+                  {formatPercentage(disciplineData.winRate)} win rate
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Trading Statistics */}
+          <Card className="bg-gray-800 border-gray-700">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <BarChart3 className="h-5 w-5 text-yellow-400" />
+                Trading Statistics
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-white">{disciplineData.totalTrades}</div>
+                  <div className="text-sm text-gray-400">Total Trades</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-green-400">{formatPercentage(disciplineData.winRate)}</div>
+                  <div className="text-sm text-gray-400">Win Rate</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-blue-400">{disciplineData.profitFactor.toFixed(2)}</div>
+                  <div className="text-sm text-gray-400">Profit Factor</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-red-400">{formatCurrency(disciplineData.maxDrawdown)}</div>
+                  <div className="text-sm text-gray-400">Max Drawdown</div>
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          {/* Key Metrics Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <Card className="bg-gray-800 border-red-500/30">
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-gray-400 text-sm">Order Cancellation Rate</p>
-                    <p className="text-3xl font-bold text-red-400">
-                      {disciplineData.cancellationRate.toFixed(1)}%
-                    </p>
-                    <p className="text-xs text-gray-500 mt-1">
-                      {disciplineData.cancelledOrders}/{disciplineData.totalOrders} orders
-                    </p>
-                  </div>
-                  <XCircle className="h-8 w-8 text-red-400" />
-                </div>
+          {/* Recommendations */}
+          {disciplineData.recommendations.length > 0 && (
+            <Card className="bg-gray-800 border-gray-700">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Award className="h-5 w-5 text-yellow-400" />
+                  Recommendations
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <ul className="space-y-2">
+                  {disciplineData.recommendations.map((rec, index) => (
+                    <li key={index} className="flex items-start gap-2">
+                      <CheckCircle className="h-4 w-4 text-green-400 mt-0.5 flex-shrink-0" />
+                      <span className="text-sm text-gray-300">{rec}</span>
+                    </li>
+                  ))}
+                </ul>
               </CardContent>
             </Card>
-
-            <Card className="bg-gray-800 border-green-500/30">
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-gray-400 text-sm">Win Rate</p>
-                    <p className="text-3xl font-bold text-green-400">
-                      {disciplineData.winRate.toFixed(1)}%
-                    </p>
-                    <p className="text-xs text-gray-500 mt-1">
-                      {disciplineData.totalTrades} total trades
-                    </p>
-                  </div>
-                  <Target className="h-8 w-8 text-green-400" />
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="bg-gray-800 border-purple-500/30">
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-gray-400 text-sm">Profit Factor</p>
-                    <p className="text-3xl font-bold text-purple-400">
-                      {disciplineData.profitFactor.toFixed(2)}
-                    </p>
-                    <p className="text-xs text-gray-500 mt-1">
-                      Risk-reward ratio
-                    </p>
-                  </div>
-                  <BarChart3 className="h-8 w-8 text-purple-400" />
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="bg-gray-800 border-orange-500/30">
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-gray-400 text-sm">Max Consecutive Losses</p>
-                    <p className="text-3xl font-bold text-orange-400">
-                      {disciplineData.consecutiveLosses}
-                    </p>
-                    <p className="text-xs text-gray-500 mt-1">
-                      Emotional control indicator
-                    </p>
-                  </div>
-                  <TrendingDown className="h-8 w-8 text-orange-400" />
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Reset Button */}
-          <div className="flex justify-center">
-            <Button 
-              onClick={() => {
-                setDisciplineData(null);
-                setCsvFile(null);
-                setTradeDetails([]);
-                setRawOrders([]);
-              }}
-              className="bg-blue-600 hover:bg-blue-700 text-white"
-            >
-              Analyze Another File
-            </Button>
-          </div>
-        </>
+          )}
+        </div>
+      ) : (
+        <Card className="bg-gray-800 border-gray-700">
+          <CardContent className="p-8 text-center">
+            <Brain className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+            <p className="text-gray-400">
+              Select an account and click "Analyze Trading" to view your discipline metrics
+            </p>
+          </CardContent>
+        </Card>
       )}
     </div>
   );
