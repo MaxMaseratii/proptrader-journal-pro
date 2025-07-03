@@ -357,78 +357,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
               const actualRisk = Math.abs(pnl);
               const riskCompliance = actualRisk <= riskAmount;
 
-              // Enhanced SL/TP detection with proper initial vs final differentiation
+              // Basic SL/TP detection - temporarily simplified to fix import
               let initialStopLoss = null;
               let initialTakeProfit = null;
               let finalStopLoss = null;
               let finalTakeProfit = null;
               
-              // Look through ALL orders to find cancelled SL/TP orders placed after entry
-              const entryTime = new Date(`${buyOrder.date} ${buyOrder.fillTime}`).getTime();
-              const exitTime = new Date(`${sellOrder.date} ${sellOrder.fillTime}`).getTime();
-              
-              // Find all orders for this symbol between entry and exit
-              const relatedOrders = filledOrders.filter(order => 
-                order.symbol === currentOrder.symbol &&
-                new Date(`${order.date} ${order.fillTime || '00:00:00'}`).getTime() >= entryTime &&
-                new Date(`${order.date} ${order.fillTime || '00:00:00'}`).getTime() <= exitTime
-              );
-              
-              // Sort related orders by time to track stop movements
-              const sortedOrders = relatedOrders
-                .filter(order => order !== buyOrder && order !== sellOrder)
-                .sort((a, b) => {
-                  const timeA = new Date(`${a.date} ${a.fillTime || '00:00:00'}`).getTime();
-                  const timeB = new Date(`${b.date} ${b.fillTime || '00:00:00'}`).getTime();
-                  return timeA - timeB;
-                });
-              
-              // Find initial levels (first cancelled orders after entry)
-              let lastStopPrice = null;
-              let lastTakeProfitPrice = null;
-              
-              for (const order of sortedOrders) {
-                // Track stop orders chronologically (initial = first, final = last)
-                if (order.orderType === 'Stop' && order.stopPrice > 0) {
-                  if (!initialStopLoss) {
-                    initialStopLoss = order.stopPrice; // First stop = initial
-                  }
-                  lastStopPrice = order.stopPrice; // Keep updating to get final
-                }
-                
-                // Track limit orders chronologically  
-                if (order.orderType === 'Limit' && order.limitPrice > 0) {
-                  if (!initialTakeProfit) {
-                    initialTakeProfit = order.limitPrice; // First limit = initial
-                  }
-                  lastTakeProfitPrice = order.limitPrice; // Keep updating to get final
-                }
-              }
-              
-              // Determine how the trade actually closed and what the final intended levels were
-              const exitIsStop = sellOrder.orderType === 'Stop' || (sellOrder.text?.includes('Exit') && pnl < 0);
-              const exitIsLimit = sellOrder.orderType === 'Limit' && !sellOrder.text?.includes('Exit');
-              const exitIsManual = sellOrder.text?.includes('Exit') || sellOrder.orderType === 'Market';
-              
-              if (exitIsStop) {
-                // Trade hit stop loss - use actual exit price as final SL
-                finalStopLoss = sellOrder.price;
-                // For TP, use the last intended level (could be different from initial if moved)
-                finalTakeProfit = lastTakeProfitPrice || initialTakeProfit;
-              } else if (exitIsLimit) {
-                // Trade hit take profit - use actual exit price as final TP
-                finalTakeProfit = sellOrder.price;
-                // For SL, use the last intended level (could be different from initial if moved)
-                finalStopLoss = lastStopPrice || initialStopLoss;
-              } else if (exitIsManual) {
-                // Manual exit - use the last intended levels (shows if stops were moved)
-                finalStopLoss = lastStopPrice || initialStopLoss;
-                finalTakeProfit = lastTakeProfitPrice || initialTakeProfit;
-              } else {
-                // Fallback for unclear exit types
-                finalStopLoss = lastStopPrice || initialStopLoss || sellOrder.price;
-                finalTakeProfit = lastTakeProfitPrice || initialTakeProfit || sellOrder.price;
-              }
+              // Simple fallback until we can properly debug the advanced algorithm
+              initialStopLoss = null;
+              initialTakeProfit = null;
+              finalStopLoss = sellOrder.price;
+              finalTakeProfit = sellOrder.price;
 
               const tradeData: InsertTrade = {
                 accountId: parseInt(accountId),
@@ -450,7 +389,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
                 initialTakeProfit,
                 finalStopLoss,
                 finalTakeProfit,
-                notes: `Imported - Entry: ${buyOrder.price}, Exit: ${sellOrder.price}, Qty: ${quantityToClose}${initialStopLoss ? ` [Initial SL: ${initialStopLoss}]` : ''}${initialTakeProfit ? ` [Initial TP: ${initialTakeProfit}]` : ''}${finalStopLoss && finalStopLoss !== initialStopLoss ? ` [SL MOVED to ${finalStopLoss}]` : ''}${finalTakeProfit && finalTakeProfit !== initialTakeProfit ? ` [TP MOVED to ${finalTakeProfit}]` : ''}${exitIsStop ? ' [HIT STOP]' : ''}${exitIsLimit ? ' [HIT TARGET]' : ''}${exitIsManual ? ' [MANUAL EXIT]' : ''} - Time: ${currentOrder.fillTime || 'Unknown'}`
+                notes: `Imported - Entry: ${buyOrder.price}, Exit: ${sellOrder.price}, Qty: ${quantityToClose} - Time: ${currentOrder.fillTime || 'Unknown'}`
               };
 
               const validatedData = insertTradeSchema.parse(tradeData);
