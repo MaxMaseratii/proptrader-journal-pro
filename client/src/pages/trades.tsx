@@ -8,7 +8,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Calendar, CalendarDays, Download, Filter, Search, Plus } from "lucide-react";
 import { formatCurrency, formatDate } from "@/lib/utils";
 import type { Trade, Account } from "@shared/schema";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
+import { useLocation } from "wouter";
 
 // Format price levels (not currency)
 const formatPrice = (price: number): string => {
@@ -23,6 +24,16 @@ export default function Trades() {
   const [selectedStatus, setSelectedStatus] = useState<string>("all");
   const [sortBy, setSortBy] = useState<string>("date");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
+  const [activeTab, setActiveTab] = useState<string>("view");
+  const [location] = useLocation();
+
+  // Check if we should open the "Add Trade" tab automatically
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('tab') === 'add') {
+      setActiveTab('add');
+    }
+  }, [location]);
 
   const { data: trades, isLoading: tradesLoading } = useQuery<Trade[]>({
     queryKey: ['/api/trades'],
@@ -135,7 +146,7 @@ export default function Trades() {
         </div>
       </header>
 
-      <Tabs defaultValue="view" className="w-full">
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsList className="grid w-full grid-cols-2 bg-gray-800">
           <TabsTrigger value="view" className="text-white data-[state=active]:bg-blue-600">
             View All Trades

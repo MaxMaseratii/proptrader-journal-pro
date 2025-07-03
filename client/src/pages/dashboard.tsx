@@ -322,7 +322,12 @@ export default function Dashboard() {
               </Select>
             </div>
             
-            <TradeEntry accounts={accounts || []} />
+            <Link href="/trades?tab=add">
+              <Button className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105">
+                <Plus className="mr-2 h-4 w-4" />
+                Add Trade
+              </Button>
+            </Link>
             <div className="relative">
               <Bell className="h-5 w-5 text-gray-400" />
               <span className="absolute -top-1 -right-1 bg-error-red text-xs rounded-full w-4 h-4 flex items-center justify-center text-white">
