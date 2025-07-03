@@ -97,6 +97,14 @@ export default function DashboardShowcase() {
         <div className="flex flex-col sm:flex-row gap-3">
           <Button 
             variant="outline" 
+            className="border-prop-blue/20 hover:bg-prop-blue/10"
+            onClick={() => setLocation('/dashboard-copy')}
+          >
+            <Calendar className="mr-2 h-4 w-4" />
+            View Dashboard Copy
+          </Button>
+          <Button 
+            variant="outline" 
             className="border-prop-tiffany/20 hover:bg-prop-tiffany/10"
             onClick={() => setLocation('/csv-import')}
           >

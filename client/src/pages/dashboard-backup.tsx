@@ -86,6 +86,14 @@ export default function DashboardBackup() {
         <div className="flex flex-col sm:flex-row gap-3">
           <Button 
             variant="outline" 
+            className="border-prop-green/20 hover:bg-prop-green/10"
+            onClick={() => setLocation('/')}
+          >
+            <Activity className="mr-2 h-4 w-4" />
+            Back to Original
+          </Button>
+          <Button 
+            variant="outline" 
             className="border-prop-tiffany/20 hover:bg-prop-tiffany/10"
             onClick={() => setLocation('/csv-import')}
           >
