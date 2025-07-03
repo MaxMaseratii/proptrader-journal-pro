@@ -402,28 +402,29 @@ export default function TradeEntry({ accounts }: TradeEntryProps) {
                 <Card className="bg-gray-800 border-gray-700">
                   <CardHeader className="pb-4">
                     <CardTitle className="text-lg text-white">Initial Levels</CardTitle>
+                    <p className="text-xs text-gray-400 mt-1">Price levels set when opening the trade</p>
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div className="space-y-2">
-                      <Label className="text-gray-300 font-medium">Initial Stop Loss</Label>
+                      <Label className="text-gray-300 font-medium">Initial Stop Loss Price</Label>
                       <Input 
                         type="number"
                         step="0.01"
                         value={formData.initialStopLoss || ""}
                         onChange={(e) => setFormData(prev => ({ ...prev, initialStopLoss: e.target.value ? parseFloat(e.target.value) : null }))}
                         className="bg-gray-700 border-gray-600 text-white focus:border-red-400"
-                        placeholder="0.00"
+                        placeholder="e.g., 6237.75"
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label className="text-gray-300 font-medium">Initial Take Profit</Label>
+                      <Label className="text-gray-300 font-medium">Initial Take Profit Price</Label>
                       <Input 
                         type="number"
                         step="0.01"
                         value={formData.initialTakeProfit || ""}
                         onChange={(e) => setFormData(prev => ({ ...prev, initialTakeProfit: e.target.value ? parseFloat(e.target.value) : null }))}
                         className="bg-gray-700 border-gray-600 text-white focus:border-green-400"
-                        placeholder="0.00"
+                        placeholder="e.g., 6270.75"
                       />
                     </div>
                   </CardContent>
@@ -432,28 +433,29 @@ export default function TradeEntry({ accounts }: TradeEntryProps) {
                 <Card className="bg-gray-800 border-gray-700">
                   <CardHeader className="pb-4">
                     <CardTitle className="text-lg text-white">Final Levels</CardTitle>
+                    <p className="text-xs text-gray-400 mt-1">Actual price levels when trade was closed (may differ from initial due to trailing stops, manual adjustments)</p>
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div className="space-y-2">
-                      <Label className="text-gray-300 font-medium">Final Stop Loss</Label>
+                      <Label className="text-gray-300 font-medium">Final Stop Loss Price</Label>
                       <Input 
                         type="number"
                         step="0.01"
                         value={formData.finalStopLoss || ""}
                         onChange={(e) => setFormData(prev => ({ ...prev, finalStopLoss: e.target.value ? parseFloat(e.target.value) : null }))}
                         className="bg-gray-700 border-gray-600 text-white focus:border-red-400"
-                        placeholder="0.00"
+                        placeholder="e.g., 6240.50"
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label className="text-gray-300 font-medium">Final Take Profit</Label>
+                      <Label className="text-gray-300 font-medium">Final Take Profit Price</Label>
                       <Input 
                         type="number"
                         step="0.01"
                         value={formData.finalTakeProfit || ""}
                         onChange={(e) => setFormData(prev => ({ ...prev, finalTakeProfit: e.target.value ? parseFloat(e.target.value) : null }))}
                         className="bg-gray-700 border-gray-600 text-white focus:border-green-400"
-                        placeholder="0.00"
+                        placeholder="e.g., 6268.25"
                       />
                     </div>
                   </CardContent>

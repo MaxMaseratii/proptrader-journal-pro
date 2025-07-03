@@ -9,6 +9,11 @@ import { Calendar, CalendarDays, Download, Filter, Search, Plus } from "lucide-r
 import { formatCurrency, formatDate } from "@/lib/utils";
 import type { Trade, Account } from "@shared/schema";
 import { useState, useMemo } from "react";
+
+// Format price levels (not currency)
+const formatPrice = (price: number): string => {
+  return price.toFixed(2);
+};
 import TradeEntry from "@/components/trade-entry";
 
 export default function Trades() {
@@ -286,10 +291,10 @@ export default function Trades() {
                   <th className="text-right py-3 px-4 text-gray-400 font-medium">Exit</th>
                   <th className="text-right py-3 px-4 text-gray-400 font-medium">P&L</th>
                   <th className="text-center py-3 px-4 text-gray-400 font-medium">Result</th>
-                  <th className="text-right py-3 px-4 text-gray-400 font-medium">Initial SL</th>
-                  <th className="text-right py-3 px-4 text-gray-400 font-medium">Initial TP</th>
-                  <th className="text-right py-3 px-4 text-gray-400 font-medium">Final SL</th>
-                  <th className="text-right py-3 px-4 text-gray-400 font-medium">Final TP</th>
+                  <th className="text-right py-3 px-4 text-gray-400 font-medium">Initial SL Price</th>
+                  <th className="text-right py-3 px-4 text-gray-400 font-medium">Initial TP Price</th>
+                  <th className="text-right py-3 px-4 text-gray-400 font-medium">Final SL Price</th>
+                  <th className="text-right py-3 px-4 text-gray-400 font-medium">Final TP Price</th>
                 </tr>
               </thead>
               <tbody>
@@ -307,9 +312,9 @@ export default function Trades() {
                       </Badge>
                     </td>
                     <td className="py-3 px-4 text-right text-white">{trade.quantity}</td>
-                    <td className="py-3 px-4 text-right text-white">{formatCurrency(trade.entryPrice)}</td>
+                    <td className="py-3 px-4 text-right text-white">{formatPrice(trade.entryPrice)}</td>
                     <td className="py-3 px-4 text-right text-white">
-                      {trade.exitPrice ? formatCurrency(trade.exitPrice) : '-'}
+                      {trade.exitPrice ? formatPrice(trade.exitPrice) : '-'}
                     </td>
                     <td className={`py-3 px-4 text-right font-medium ${
                       trade.pnl > 0 ? 'text-green-400' : trade.pnl < 0 ? 'text-red-400' : 'text-gray-400'
@@ -329,16 +334,16 @@ export default function Trades() {
                       </Badge>
                     </td>
                     <td className="py-3 px-4 text-right text-gray-300">
-                      {trade.initialStopLoss ? formatCurrency(trade.initialStopLoss) : 'Not placed'}
+                      {trade.initialStopLoss ? formatPrice(trade.initialStopLoss) : 'Not placed'}
                     </td>
                     <td className="py-3 px-4 text-right text-gray-300">
-                      {trade.initialTakeProfit ? formatCurrency(trade.initialTakeProfit) : 'Not placed'}
+                      {trade.initialTakeProfit ? formatPrice(trade.initialTakeProfit) : 'Not placed'}
                     </td>
                     <td className="py-3 px-4 text-right text-gray-300">
-                      {trade.finalStopLoss ? formatCurrency(trade.finalStopLoss) : 'Not placed'}
+                      {trade.finalStopLoss ? formatPrice(trade.finalStopLoss) : 'Not placed'}
                     </td>
                     <td className="py-3 px-4 text-right text-gray-300">
-                      {trade.finalTakeProfit ? formatCurrency(trade.finalTakeProfit) : 'Not placed'}
+                      {trade.finalTakeProfit ? formatPrice(trade.finalTakeProfit) : 'Not placed'}
                     </td>
                   </tr>
                 ))}
