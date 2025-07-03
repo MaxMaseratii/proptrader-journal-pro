@@ -117,15 +117,36 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.delete("/api/accounts/:id", async (req, res) => {
+  app.delete("/api/accounts/:id", isAuthenticated, async (req, res) => {
     try {
       const id = parseInt(req.params.id);
-      const deleted = await storage.deleteAccount(id);
-      if (!deleted) {
+      
+      // First check if account exists
+      const account = await storage.getAccount(id);
+      if (!account) {
         return res.status(404).json({ message: "Account not found" });
       }
-      res.status(204).send();
+      
+      // Delete associated data first
+      const trades = await storage.getTrades(id);
+      for (const trade of trades) {
+        await storage.deleteTrade(trade.id);
+      }
+      
+      const journalEntries = await storage.getJournalEntries(id);
+      for (const entry of journalEntries) {
+        await storage.deleteJournalEntry(entry.id);
+      }
+      
+      // Finally delete the account
+      const deleted = await storage.deleteAccount(id);
+      if (!deleted) {
+        return res.status(500).json({ message: "Failed to delete account data" });
+      }
+      
+      res.json({ message: "Account deleted successfully" });
     } catch (error) {
+      console.error("Account deletion error:", error);
       res.status(500).json({ message: "Failed to delete account" });
     }
   });
@@ -285,8 +306,49 @@ export async function registerRoutes(app: Express): Promise<Server> {
         firstLine: req.body.csvData?.split('\n')[0]
       });
       
-      const { accountId, csvData, csvContent } = req.body;
+      const { accountId, csvData, csvContent, trades, fileName } = req.body;
       const csvText = csvData || csvContent;
+      
+      // If trades are already processed, use them directly
+      if (trades && Array.isArray(trades) && accountId) {
+        console.log(`Processing ${trades.length} pre-processed trades for account ${accountId}`);
+        
+        let recordsImported = 0;
+        const errors: string[] = [];
+        
+        for (const trade of trades) {
+          try {
+            const tradeData = {
+              accountId: parseInt(accountId),
+              symbol: trade.symbol || 'UNKNOWN',
+              side: trade.side || 'long',
+              quantity: trade.quantity || 1,
+              entryPrice: trade.entryPrice || 0,
+              exitPrice: trade.exitPrice || trade.entryPrice || 0,
+              pnl: trade.pnl || 0,
+              date: trade.date || new Date().toISOString().split('T')[0],
+              status: trade.status || 'closed',
+              initialStopLoss: trade.initialStopLoss || null,
+              finalStopLoss: trade.finalStopLoss || null,
+              initialTakeProfit: trade.initialTakeProfit || null,
+              finalTakeProfit: trade.finalTakeProfit || null,
+              notes: trade.notes || 'Imported via Universal CSV'
+            };
+            
+            await storage.createTrade(tradeData);
+            recordsImported++;
+          } catch (error) {
+            errors.push(`Failed to import trade: ${error instanceof Error ? error.message : 'Unknown error'}`);
+          }
+        }
+        
+        return res.json({
+          success: true,
+          recordsImported,
+          errors,
+          message: `Successfully imported ${recordsImported} trades`
+        });
+      }
       
       if (!accountId || !csvText) {
         console.log("Missing required fields:", { accountId: !!accountId, csvData: !!csvData, csvContent: !!csvContent });

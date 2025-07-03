@@ -15,7 +15,7 @@ const formatPrice = (price: number): string => {
   return price.toFixed(2);
 };
 import TradeEntry from "@/components/trade-entry";
-import RobustTradeEntry from "@/components/robust-trade-entry";
+import AutomaticCsvImport from "@/components/automatic-csv-import";
 
 export default function Trades() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -155,7 +155,7 @@ export default function Trades() {
             </CardHeader>
             <CardContent>
               <div className="flex justify-center">
-                <RobustTradeEntry />
+                <AutomaticCsvImport />
               </div>
             </CardContent>
           </Card>

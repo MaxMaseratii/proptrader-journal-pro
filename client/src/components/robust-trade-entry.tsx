@@ -525,12 +525,10 @@ export default function RobustTradeEntry() {
           headers: { "Content-Type": "application/json" },
           credentials: 'include',
           body: JSON.stringify({
-            trades: data.trades,
-            options: {
-              updateExisting: importMode === 'update' || importMode === 'merge',
-              createNew: importMode === 'create' || importMode === 'merge',
-              skipDuplicates: importMode === 'merge'
-            }
+            accountId: data.accountId,
+            csvData: csvContent,
+            csvContent: csvContent,
+            trades: data.trades
           }),
         });
 
