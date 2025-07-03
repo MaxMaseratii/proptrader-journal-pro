@@ -15,7 +15,7 @@ const formatPrice = (price: number): string => {
   return price.toFixed(2);
 };
 import TradeEntry from "@/components/trade-entry";
-import { UniversalCSVImporter } from "@/components/universal-csv-importer";
+import CsvImport from "@/components/universal-csv-importer";
 
 export default function Trades() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -155,10 +155,7 @@ export default function Trades() {
             </CardHeader>
             <CardContent>
               <div className="flex justify-center">
-                <UniversalCSVImporter 
-                  accounts={accounts || []} 
-                  onImportComplete={() => window.location.reload()} 
-                />
+                <CsvImport />
               </div>
             </CardContent>
           </Card>
