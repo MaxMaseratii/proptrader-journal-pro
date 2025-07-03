@@ -212,6 +212,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const lines = csvText.split('\n').filter((line: string) => line.trim());
       const headers = lines[0].split(',').map((h: string) => h.trim());
       
+      console.log("CSV Processing Debug:");
+      console.log("- Lines count:", lines.length);
+      console.log("- Headers:", headers);
+      console.log("- First few lines:", lines.slice(0, 3));
+      
       let recordsProcessed = 0;
       let recordsImported = 0;
       const errors: string[] = [];
@@ -433,6 +438,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         errors,
       });
     } catch (error) {
+      console.error("Detailed CSV import error:", error);
+      console.error("Error stack:", error.stack);
+      console.error("Error name:", error.name);
       res.status(500).json({ message: "Failed to import CSV", error: error instanceof Error ? error.message : 'Unknown error' });
     }
   });
