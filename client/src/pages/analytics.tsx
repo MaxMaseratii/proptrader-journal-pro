@@ -429,11 +429,10 @@ export default function Analytics() {
         </Card>
 
         <Tabs value={analysisType} onValueChange={(value: any) => setAnalysisType(value)}>
-          <TabsList className="grid w-full grid-cols-4 bg-gray-800">
+          <TabsList className="grid w-full grid-cols-3 bg-gray-800">
             <TabsTrigger value="overview">Overview</TabsTrigger>
             <TabsTrigger value="detailed">Detailed Analysis</TabsTrigger>
             <TabsTrigger value="comparison">Comparison</TabsTrigger>
-            <TabsTrigger value="discipline">Discipline Analysis</TabsTrigger>
           </TabsList>
 
           <TabsContent value="overview" className="space-y-6">
@@ -998,9 +997,7 @@ export default function Analytics() {
             )}
           </TabsContent>
 
-          <TabsContent value="discipline" className="space-y-6">
-            <DisciplineAnalyzer />
-          </TabsContent>
+
         </Tabs>
       </div>
     </div>

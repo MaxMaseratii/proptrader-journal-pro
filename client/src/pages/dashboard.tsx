@@ -245,23 +245,43 @@ export default function Dashboard() {
     return totalPayouts;
   };
 
-  // Mock data for charts
-  const equityData = [
-    { date: "Oct 1", balance: 150000 },
-    { date: "Oct 2", balance: 150575 },
-    { date: "Oct 3", balance: 151950 },
-    { date: "Oct 4", balance: 153350 },
-    { date: "Oct 7", balance: 146350 },
-    { date: "Oct 8", balance: 146825 },
-    { date: "Oct 9", balance: 150200 },
-  ];
+  // Calculate real equity curve from trades
+  const getEquityData = () => {
+    if (!trades || !accounts) return [];
+    
+    const sortedTrades = [...trades].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+    const startingBalance = accounts.reduce((sum, acc) => sum + acc.startingBalance, 0);
+    
+    let runningBalance = startingBalance;
+    const equityData = [{ date: "Start", balance: startingBalance }];
+    
+    sortedTrades.forEach(trade => {
+      runningBalance += trade.pnl || 0;
+      equityData.push({
+        date: new Date(trade.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+        balance: runningBalance
+      });
+    });
+    
+    return equityData;
+  };
 
-  const monthlyData = [
-    { month: "Jul", pnl: 2500 },
-    { month: "Aug", pnl: -1200 },
-    { month: "Sep", pnl: 4800 },
-    { month: "Oct", pnl: -2775 },
-  ];
+  // Calculate real monthly performance from trades
+  const getMonthlyData = () => {
+    if (!trades) return [];
+    
+    const monthlyPnL: { [key: string]: number } = {};
+    
+    trades.forEach(trade => {
+      const date = new Date(trade.date);
+      const monthKey = date.toLocaleDateString('en-US', { year: 'numeric', month: 'short' });
+      monthlyPnL[monthKey] = (monthlyPnL[monthKey] || 0) + (trade.pnl || 0);
+    });
+    
+    return Object.entries(monthlyPnL)
+      .sort(([a], [b]) => new Date(a).getTime() - new Date(b).getTime())
+      .map(([month, pnl]) => ({ month: month.split(' ')[1], pnl }));
+  };
 
   // TASK 3: Color determination function for all numbers
   const getValueColor = (value: number, type: 'currency' | 'percentage' | 'neutral' = 'currency') => {
@@ -1584,7 +1604,7 @@ export default function Dashboard() {
             </CardHeader>
             <CardContent>
               <div className="h-64">
-                <EquityChart data={equityData} />
+                <EquityChart data={getEquityData()} />
               </div>
             </CardContent>
           </Card>
@@ -1595,7 +1615,7 @@ export default function Dashboard() {
             </CardHeader>
             <CardContent>
               <div className="h-64">
-                <MonthlyPerformanceChart data={monthlyData} />
+                <MonthlyPerformanceChart data={getMonthlyData()} />
               </div>
             </CardContent>
           </Card>
