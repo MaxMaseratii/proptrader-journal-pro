@@ -273,17 +273,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
           // Parse exact fill time and create timestamp
           if (fillTime && date) {
             try {
-              // Handle various time formats: "10:30:25" or "10:30:25 AM" or "2025-06-27 10:30:25"
-              let timeString = fillTime;
-              if (fillTime.includes(':')) {
-                // If time has date prefix, extract just the time part
-                if (fillTime.includes(' ') && fillTime.includes('-')) {
-                  timeString = fillTime.split(' ').slice(1).join(' ');
-                }
-                // Create full timestamp by combining date and time
-                fillTimestamp = new Date(`${date} ${timeString}`);
-                if (isNaN(fillTimestamp.getTime())) {
-                  fillTimestamp = new Date(`${date}T${timeString}`);
+              // Handle TakeProfit format: "06/12/2025 10:18:22" 
+              if (fillTime.includes('/') && fillTime.includes(' ')) {
+                // Format: "06/12/2025 10:18:22"
+                const [datePart, timePart] = fillTime.split(' ');
+                const [month, day, year] = datePart.split('/');
+                const fullYear = year.length === 2 ? '20' + year : year;
+                const isoDate = `${fullYear}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+                fillTimestamp = new Date(`${isoDate} ${timePart}`);
+              } else {
+                // Handle various time formats: "10:30:25" or "10:30:25 AM" or "2025-06-27 10:30:25"
+                let timeString = fillTime;
+                if (fillTime.includes(':')) {
+                  // If time has date prefix, extract just the time part
+                  if (fillTime.includes(' ') && fillTime.includes('-')) {
+                    timeString = fillTime.split(' ').slice(1).join(' ');
+                  }
+                  // Create full timestamp by combining date and time
+                  fillTimestamp = new Date(`${date} ${timeString}`);
+                  if (isNaN(fillTimestamp.getTime())) {
+                    fillTimestamp = new Date(`${date}T${timeString}`);
+                  }
                 }
               }
             } catch (error) {
@@ -292,6 +302,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
             }
           } else if (date) {
             fillTimestamp = new Date(date);
+          }
+          
+          // Ensure we always have a valid Date object
+          if (!fillTimestamp || isNaN(fillTimestamp.getTime())) {
+            fillTimestamp = new Date(); // Current date as fallback
           }
 
           if (symbol && quantity && price) {
