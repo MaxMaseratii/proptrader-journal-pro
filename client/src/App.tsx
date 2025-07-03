@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import Dashboard from "@/pages/dashboard";
 import DashboardShowcase from "@/pages/dashboard-showcase";
+import DashboardBackup from "@/pages/dashboard-backup";
 import Projections from "@/pages/projections";
 import Accounts from "@/pages/accounts";
 import Journal from "@/pages/journal";
@@ -50,6 +51,7 @@ function Router() {
         <Switch>
           <Route path="/" component={Dashboard} />
           <Route path="/dashboard-simple" component={DashboardShowcase} />
+          <Route path="/dashboard-copy" component={DashboardBackup} />
           <Route path="/trading-companion" component={TradingCompanion} />
           <Route path="/projections" component={Projections} />
           <Route path="/accounts" component={Accounts} />
