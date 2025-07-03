@@ -18,17 +18,7 @@ export interface DisciplinedAnalysis {
 export function calculateDisciplinedScore(account: Account, trades: Trade[]): DisciplinedAnalysis {
   const accountTrades = trades.filter(trade => trade.accountId === account.id);
   
-  console.log('Discipline calculation debug:', {
-    accountId: account.id,
-    totalTrades: trades.length,
-    accountTrades: accountTrades.length,
-    riskPerTrade: account.riskPerTrade,
-    maxDrawdown: account.maxDrawdown,
-    sampleTrade: accountTrades[0]
-  });
-  
   if (accountTrades.length === 0) {
-    console.log('No trades found for account', account.id);
     return {
       disciplinedScore: 0,
       scoreGrade: 'F',
@@ -73,16 +63,7 @@ export function calculateDisciplinedScore(account: Account, trades: Trade[]): Di
   const consistencyScore = winRate * 100;
   const score = (riskManagementScore + emotionalControlScore + consistencyScore) / 3;
 
-  console.log('New discipline calculation debug:', {
-    totalTrades,
-    winRate,
-    overRiskedTrades,
-    revengeTrading,
-    riskManagementScore,
-    emotionalControlScore,
-    consistencyScore,
-    finalScore: score
-  });
+
 
   const violationsCount = overRiskedTrades; // Use overRiskedTrades as violations for consistency
   const personalRiskLimit = account.riskPerTrade || 100; // Default risk amount

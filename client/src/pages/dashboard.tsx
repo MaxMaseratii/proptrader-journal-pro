@@ -17,6 +17,7 @@ import { calculateDisciplinedScore, getScoreColor, getGradeColor } from "@/lib/d
 import TradeCalendar from "@/components/trade-calendar";
 import TradeEntry from "@/components/trade-entry";
 import TradeAnalysisCalendar from "@/components/trade-analysis-calendar";
+import { SimpleChart } from "@/components/tradingview/SimpleChart";
 import { 
   Wallet, 
   TrendingDown, 
@@ -126,11 +127,6 @@ export default function Dashboard() {
     const disciplinedScores = accountsToAnalyze.map(account => {
       const accountTrades = tradesToAnalyze.filter(t => t.accountId === account.id);
       const disciplineResult = calculateDisciplinedScore(account, accountTrades);
-      console.log(`Discipline calculation for account ${account.id}:`, {
-        accountTrades: accountTrades.length,
-        disciplineScore: disciplineResult.disciplinedScore,
-        violations: disciplineResult.violationsCount
-      });
       return disciplineResult;
     });
     
@@ -138,11 +134,7 @@ export default function Dashboard() {
     const avgDisciplinedScore = disciplinedScores.length > 0 ? 
       disciplinedScores.reduce((sum, score) => sum + score.disciplinedScore, 0) / disciplinedScores.length : 0;
     
-    console.log('Dashboard discipline calculation:', {
-      disciplinedScores: disciplinedScores.map(s => s.disciplinedScore),
-      avgDisciplinedScore,
-      totalTrades: tradesToAnalyze.length
-    });
+
     
     // Calculate average win/loss and profit factor
     const winningTradeAmounts = tradesToAnalyze.filter(t => t.pnl > 0).map(t => t.pnl);
@@ -570,6 +562,41 @@ export default function Dashboard() {
             </CardContent>
           </Card>
         </div>
+
+        {/* Trading Charts Preview */}
+        {trades && trades.length > 0 && (
+          <div className="mb-8">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-xl font-bold text-gradient-rainbow flex items-center border-b border-gray-700 pb-3">
+                <BarChart3 className="mr-3 h-5 w-5 text-blue-400" />
+                Trading Charts Preview
+              </h2>
+              <Link href="/charts">
+                <Button variant="outline" size="sm" className="text-blue-400 border-blue-400 hover:bg-blue-400/10">
+                  View All Charts
+                </Button>
+              </Link>
+            </div>
+            
+            {(() => {
+              const topSymbol = Array.from(new Set(trades.map(t => t.symbol).filter(Boolean)))
+                .map(symbol => ({
+                  symbol,
+                  trades: trades.filter(t => t.symbol === symbol),
+                  pnl: trades.filter(t => t.symbol === symbol).reduce((sum, t) => sum + (t.pnl || 0), 0)
+                }))
+                .sort((a, b) => b.trades.length - a.trades.length)[0];
+              
+              return topSymbol ? (
+                <SimpleChart
+                  trades={topSymbol.trades}
+                  symbol={topSymbol.symbol}
+                  height={300}
+                />
+              ) : null;
+            })()}
+          </div>
+        )}
 
         {/* Account Portfolio Overview */}
         <div className="mb-6 mt-12">
