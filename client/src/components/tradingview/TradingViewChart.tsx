@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import type { Trade } from "@shared/schema";
+import { cleanSymbolForTradingView, getSymbolDisplayName } from "@/lib/symbol-utils";
 
 interface TradingViewChartProps {
   trades: Trade[];
@@ -21,6 +22,9 @@ export const TradingViewChart: React.FC<TradingViewChartProps> = ({
   height = 400,
   theme = 'dark'
 }) => {
+  // Clean the symbol for TradingView compatibility (removes contract months)
+  const cleanSymbol = cleanSymbolForTradingView(symbol);
+  const displayName = getSymbolDisplayName(symbol);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [hoverInfo, setHoverInfo] = useState<HoverInfo>({ trade: {} as Trade, x: 0, y: 0, visible: false });
 
@@ -168,7 +172,7 @@ export const TradingViewChart: React.FC<TradingViewChartProps> = ({
     // Draw symbol watermark
     ctx.font = '24px system-ui';
     ctx.fillStyle = theme === 'dark' ? 'rgba(180, 180, 180, 0.4)' : 'rgba(180, 180, 180, 0.7)';
-    ctx.fillText(symbol || 'PropTraderJournal', padding, height - padding / 2);
+    ctx.fillText(cleanSymbol || 'PropTraderJournal', padding, height - padding / 2);
 
   }, [trades, symbol, height, theme]);
 
@@ -180,9 +184,9 @@ export const TradingViewChart: React.FC<TradingViewChartProps> = ({
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-lg font-semibold text-white flex items-center">
           <span className="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-            {symbol}
+            {cleanSymbol}
           </span>
-          <span className="text-gray-400 ml-2 text-sm">Price Chart</span>
+          <span className="text-gray-400 ml-2 text-sm">{displayName}</span>
         </h3>
         <div className="flex items-center gap-4 text-sm">
           <div className="text-gray-400">
@@ -219,7 +223,7 @@ export const TradingViewChart: React.FC<TradingViewChartProps> = ({
               {new Date(hoverInfo.trade.date).toLocaleDateString()}
             </div>
             <div className="text-sm font-medium text-white mb-1">
-              {hoverInfo.trade.symbol || 'Unknown Symbol'}
+              {cleanSymbolForTradingView(hoverInfo.trade.symbol || '') || 'Unknown Symbol'}
             </div>
             <div className="flex justify-between items-center mb-1">
               <span className="text-xs text-gray-400">Entry:</span>

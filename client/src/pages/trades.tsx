@@ -7,6 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Calendar, CalendarDays, Download, Filter, Search, Plus } from "lucide-react";
 import { formatCurrency, formatDate } from "@/lib/utils";
+import { cleanSymbolForTradingView } from "@/lib/symbol-utils";
 import type { Trade, Account } from "@shared/schema";
 import { useState, useMemo, useEffect } from "react";
 import { useLocation } from "wouter";
@@ -406,7 +407,7 @@ export default function Trades() {
                         variant="outline"
                         onClick={() => {
                           // Clean symbol for TradingView (remove contract months)
-                          let cleanSymbol = trade.symbol.replace(/[UHM]\d{2}$/, '');
+                          const cleanSymbol = cleanSymbolForTradingView(trade.symbol);
                           window.open(`https://www.tradingview.com/chart/?symbol=${cleanSymbol}`, '_blank');
                         }}
                         className="text-blue-400 border-blue-400 hover:bg-blue-400/20"
