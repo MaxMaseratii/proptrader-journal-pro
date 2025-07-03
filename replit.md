@@ -277,6 +277,12 @@ Changelog:
   * Updated DisciplineAnalyzer component to work with existing account data instead of requiring CSV re-uploads
   * Added support for completed trades CSV format (EnteredAt, ExitedAt, EntryPrice, ExitPrice columns)
   * Fixed CSV import issue where completed trades weren't being processed due to missing "Status" column requirement
+- July 3, 2025. Critical User Experience Fixes:
+  * Fixed PDF reports downloading as JSON files - now generates proper HTML reports instead of fallback JSON
+  * Changed dashboard "Total Balance" display to "Net Balance" as requested by user
+  * Fixed discipline score inconsistency - dashboard was showing 100% fallback while analysis showed actual score of 38.2
+  * Updated discipline score calculation to use actual trade data instead of placeholder values
+  * Removed fallback values that were masking real discipline analysis results
 ```
 
 ## User Preferences

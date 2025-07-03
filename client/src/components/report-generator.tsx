@@ -144,8 +144,8 @@ export default function ReportGenerator({ accounts }: ReportGeneratorProps) {
           downloadCSV(reportData);
           break;
         case 'pdf':
-          // For now, generate JSON as PDF requires additional libraries
-          downloadJSON(reportData);
+          // Generate proper PDF instead of JSON
+          downloadPDF(reportData);
           break;
         default:
           downloadJSON(reportData);
@@ -161,6 +161,115 @@ export default function ReportGenerator({ accounts }: ReportGeneratorProps) {
   const downloadJSON = (data: any) => {
     const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
     downloadBlob(blob, `trading-report-${new Date().toISOString().split('T')[0]}.json`);
+  };
+
+  const downloadPDF = (data: any) => {
+    // Generate HTML content for PDF
+    const htmlContent = `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <title>${data.title}</title>
+        <style>
+          body { font-family: Arial, sans-serif; margin: 20px; line-height: 1.6; }
+          .header { border-bottom: 2px solid #333; padding-bottom: 20px; margin-bottom: 20px; }
+          .summary { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px; }
+          .metric { padding: 15px; background: #f5f5f5; border-radius: 8px; text-align: center; }
+          .metric h3 { margin: 0 0 10px 0; color: #333; }
+          .metric .value { font-size: 24px; font-weight: bold; color: #2563eb; }
+          .positive { color: #16a34a; }
+          .negative { color: #dc2626; }
+          .trades-table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+          .trades-table th, .trades-table td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+          .trades-table th { background: #f8f9fa; }
+          .section { margin: 30px 0; }
+          .section h2 { color: #333; border-bottom: 1px solid #ddd; padding-bottom: 10px; }
+        </style>
+      </head>
+      <body>
+        <div class="header">
+          <h1>${data.title}</h1>
+          <p>Generated on: ${new Date(data.generatedAt).toLocaleDateString()}</p>
+          <p>Date Range: ${data.dateRange.from} to ${data.dateRange.to}</p>
+        </div>
+        
+        <div class="section">
+          <h2>Performance Summary</h2>
+          <div class="summary">
+            <div class="metric">
+              <h3>Total Trades</h3>
+              <div class="value">${data.summary.totalTrades}</div>
+            </div>
+            <div class="metric">
+              <h3>Total P&L</h3>
+              <div class="value ${data.summary.totalPnL >= 0 ? 'positive' : 'negative'}">
+                $${data.summary.totalPnL.toFixed(2)}
+              </div>
+            </div>
+            <div class="metric">
+              <h3>Win Rate</h3>
+              <div class="value">${(data.summary.winRate * 100).toFixed(1)}%</div>
+            </div>
+            <div class="metric">
+              <h3>Profit Factor</h3>
+              <div class="value">${data.summary.profitFactor.toFixed(2)}</div>
+            </div>
+            <div class="metric">
+              <h3>Best Trade</h3>
+              <div class="value positive">$${data.summary.largestWin.toFixed(2)}</div>
+            </div>
+            <div class="metric">
+              <h3>Worst Trade</h3>
+              <div class="value negative">$${data.summary.largestLoss.toFixed(2)}</div>
+            </div>
+          </div>
+        </div>
+
+        ${data.trades && data.trades.length > 0 ? `
+        <div class="section">
+          <h2>Recent Trades</h2>
+          <table class="trades-table">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Symbol</th>
+                <th>Side</th>
+                <th>Quantity</th>
+                <th>Entry Price</th>
+                <th>Exit Price</th>
+                <th>P&L</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${data.trades.slice(-50).map((trade: any) => `
+                <tr>
+                  <td>${trade.date}</td>
+                  <td>${trade.symbol}</td>
+                  <td>${trade.side}</td>
+                  <td>${trade.quantity}</td>
+                  <td>${trade.entryPrice}</td>
+                  <td>${trade.exitPrice}</td>
+                  <td class="${trade.pnl >= 0 ? 'positive' : 'negative'}">$${trade.pnl.toFixed(2)}</td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        </div>
+        ` : ''}
+
+        ${data.notes ? `
+        <div class="section">
+          <h2>Notes</h2>
+          <p>${data.notes}</p>
+        </div>
+        ` : ''}
+      </body>
+      </html>
+    `;
+
+    // Create blob and download
+    const blob = new Blob([htmlContent], { type: 'text/html' });
+    downloadBlob(blob, `trading-report-${new Date().toISOString().split('T')[0]}.html`);
   };
 
   const downloadCSV = (data: any) => {

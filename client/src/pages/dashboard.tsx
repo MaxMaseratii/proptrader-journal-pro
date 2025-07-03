@@ -129,7 +129,7 @@ export default function Dashboard() {
     
     // Get average disciplined score
     const avgDisciplinedScore = disciplinedScores.length > 0 ? 
-      disciplinedScores.reduce((sum, score) => sum + score.disciplinedScore, 0) / disciplinedScores.length : 100;
+      disciplinedScores.reduce((sum, score) => sum + score.disciplinedScore, 0) / disciplinedScores.length : 0;
     
     // Calculate average win/loss and profit factor
     const winningTradeAmounts = tradesToAnalyze.filter(t => t.pnl > 0).map(t => t.pnl);
@@ -351,12 +351,12 @@ export default function Dashboard() {
 
         {/* Key Performance Metrics Under Header */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-          {/* Total Balance */}
+          {/* Net Balance */}
           <Card className="bg-dark-card border-success-green hover-glow smooth-transition">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-gray-400 text-sm mb-1">Total Balance</p>
+                  <p className="text-gray-400 text-sm mb-1">Net Balance</p>
                   <p className="text-2xl font-bold text-success-green">
                     {formatCurrency(accounts?.reduce((sum, acc) => sum + acc.currentBalance, 0) || 0)}
                   </p>
@@ -1256,21 +1256,21 @@ export default function Dashboard() {
                 <div>
                   <p className="text-gray-400 text-sm mb-1">Disciplined Score</p>
                   <div className="flex items-center space-x-2">
-                    <p className={`text-2xl font-bold ${getScoreColor(combinedAnalytics?.disciplinedScore || 100)}`}>
-                      {Math.round(combinedAnalytics?.disciplinedScore || 100)}
+                    <p className={`text-2xl font-bold ${getScoreColor(combinedAnalytics?.disciplinedScore || 0)}`}>
+                      {Math.round(combinedAnalytics?.disciplinedScore || 0)}
                     </p>
                     <Badge className={`${getGradeColor(
-                      (combinedAnalytics?.disciplinedScore || 100) >= 95 ? 'A+' :
-                      (combinedAnalytics?.disciplinedScore || 100) >= 90 ? 'A' :
-                      (combinedAnalytics?.disciplinedScore || 100) >= 80 ? 'B' :
-                      (combinedAnalytics?.disciplinedScore || 100) >= 70 ? 'C' :
-                      (combinedAnalytics?.disciplinedScore || 100) >= 60 ? 'D' : 'F'
+                      (combinedAnalytics?.disciplinedScore || 0) >= 95 ? 'A+' :
+                      (combinedAnalytics?.disciplinedScore || 0) >= 90 ? 'A' :
+                      (combinedAnalytics?.disciplinedScore || 0) >= 80 ? 'B' :
+                      (combinedAnalytics?.disciplinedScore || 0) >= 70 ? 'C' :
+                      (combinedAnalytics?.disciplinedScore || 0) >= 60 ? 'D' : 'F'
                     )} text-white`}>
-                      {(combinedAnalytics?.disciplinedScore || 100) >= 95 ? 'A+' :
-                       (combinedAnalytics?.disciplinedScore || 100) >= 90 ? 'A' :
-                       (combinedAnalytics?.disciplinedScore || 100) >= 80 ? 'B' :
-                       (combinedAnalytics?.disciplinedScore || 100) >= 70 ? 'C' :
-                       (combinedAnalytics?.disciplinedScore || 100) >= 60 ? 'D' : 'F'}
+                      {(combinedAnalytics?.disciplinedScore || 0) >= 95 ? 'A+' :
+                       (combinedAnalytics?.disciplinedScore || 0) >= 90 ? 'A' :
+                       (combinedAnalytics?.disciplinedScore || 0) >= 80 ? 'B' :
+                       (combinedAnalytics?.disciplinedScore || 0) >= 70 ? 'C' :
+                       (combinedAnalytics?.disciplinedScore || 0) >= 60 ? 'D' : 'F'}
                     </Badge>
                   </div>
                   <p className="text-xs text-gray-400 mt-1">

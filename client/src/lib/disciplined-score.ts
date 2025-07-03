@@ -20,8 +20,8 @@ export function calculateDisciplinedScore(account: Account, trades: Trade[]): Di
   
   if (accountTrades.length === 0) {
     return {
-      disciplinedScore: 100,
-      scoreGrade: 'A+',
+      disciplinedScore: 0,
+      scoreGrade: 'F',
       personalRiskPerTrade: account.riskPerTrade || 0,
       averageTradeRisk: 0,
       violationsCount: 0,
