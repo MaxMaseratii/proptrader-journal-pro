@@ -98,10 +98,10 @@ export default function DashboardShowcase() {
           <Button 
             variant="outline" 
             className="border-prop-blue/20 hover:bg-prop-blue/10"
-            onClick={() => window.open('/dashboard-copy', '_blank', 'noopener,noreferrer')}
+            onClick={() => window.open('https://replit.com/new/nodejs', '_blank')}
           >
-            <Calendar className="mr-2 h-4 w-4" />
-            Open Dashboard Copy (New Agent)
+            <PlusCircle className="mr-2 h-4 w-4" />
+            Create New Copy
           </Button>
           <Button 
             variant="outline" 
