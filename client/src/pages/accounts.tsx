@@ -229,7 +229,8 @@ export default function Accounts() {
                                     <Input 
                                       type="number" 
                                       {...field} 
-                                      onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                                      value={field.value || ""}
+                                      onChange={(e) => field.onChange(e.target.value === "" ? null : parseFloat(e.target.value))}
                                       className="bg-gray-700 border-gray-600 text-white placeholder-gray-400"
                                     />
                                   </FormControl>
@@ -247,7 +248,8 @@ export default function Accounts() {
                                     <Input 
                                       type="number" 
                                       {...field} 
-                                      onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                                      value={field.value || ""}
+                                      onChange={(e) => field.onChange(e.target.value === "" ? null : parseFloat(e.target.value))}
                                       className="bg-gray-700 border-gray-600 text-white placeholder-gray-400"
                                     />
                                   </FormControl>
@@ -265,7 +267,8 @@ export default function Accounts() {
                                     <Input 
                                       type="number" 
                                       {...field} 
-                                      onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                                      value={field.value || ""}
+                                      onChange={(e) => field.onChange(e.target.value === "" ? null : parseFloat(e.target.value))}
                                       className="bg-gray-700 border-gray-600 text-white placeholder-gray-400"
                                     />
                                   </FormControl>
@@ -283,7 +286,8 @@ export default function Accounts() {
                                     <Input 
                                       type="number" 
                                       {...field} 
-                                      onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                                      value={field.value || ""}
+                                      onChange={(e) => field.onChange(e.target.value === "" ? null : parseFloat(e.target.value))}
                                       className="bg-gray-700 border-gray-600 text-white placeholder-gray-400"
                                     />
                                   </FormControl>
