@@ -15,6 +15,7 @@ const formatPrice = (price: number): string => {
   return price.toFixed(2);
 };
 import TradeEntry from "@/components/trade-entry";
+import { UniversalCSVImporter } from "@/components/universal-csv-importer";
 
 export default function Trades() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -146,6 +147,23 @@ export default function Trades() {
         </TabsList>
 
         <TabsContent value="add" className="space-y-6">
+          {/* CSV Import Section */}
+          <Card className="bg-dark-card border-dark-border">
+            <CardHeader>
+              <CardTitle className="text-white">Universal CSV Import</CardTitle>
+              <p className="text-gray-400">Import trades from any broker: Tradovate, MT4/5, Rithmic, CQG, NinjaTrader, Interactive Brokers, and more</p>
+            </CardHeader>
+            <CardContent>
+              <div className="flex justify-center">
+                <UniversalCSVImporter 
+                  accounts={accounts || []} 
+                  onImportComplete={() => window.location.reload()} 
+                />
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Manual Entry Section */}
           <Card className="bg-dark-card border-dark-border">
             <CardHeader>
               <CardTitle className="text-white">Manual Trade Entry</CardTitle>

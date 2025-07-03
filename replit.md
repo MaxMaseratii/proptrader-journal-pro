@@ -239,6 +239,16 @@ Changelog:
   * Final levels: Determined from last cancelled orders or actual exit prices if stops were hit
   * Added detailed notes showing when stops were moved: "[SL MOVED to X]", "[TP MOVED to X]", "[HIT STOP]", "[HIT TARGET]", "[MANUAL EXIT]"
   * Now enables proper analysis of trader discipline: stop loss movements, profit target achievements, and exit strategy effectiveness
+- July 3, 2025. Universal CSV Importer Integration:
+  * Created comprehensive Universal CSV Importer supporting all major trading platforms
+  * Added support for: Tradovate, MetaTrader 4/5, Rithmic, CQG, NinjaTrader, Interactive Brokers, FTMO, TopstepTrader, ThinkorSwim, Binance
+  * Implemented intelligent format auto-detection based on column headers and content patterns
+  * Added customizable column mapping with visual interface for manual field assignment
+  * Integrated advanced trading behavior analysis: discipline scoring, stop loss movement tracking, profit target analysis
+  * Added real-time data preview with comprehensive analytics dashboard showing win rates, P&L, and behavioral insights
+  * Fixed CSV import functionality and temporarily simplified SL/TP tracking algorithm to restore basic import capability
+  * Integrated Universal CSV Importer into Trades page alongside manual trade entry for seamless workflow
+  * Enhanced user experience with PropTraderJournal's signature dark theme and gradient styling
 ```
 
 ## User Preferences

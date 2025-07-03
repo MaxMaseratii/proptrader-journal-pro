@@ -1,0 +1,752 @@
+import React, { useState, useCallback } from 'react';
+import { Upload, FileText, Settings, BarChart3, TrendingUp, TrendingDown, DollarSign, Calendar, AlertCircle, CheckCircle, Download } from 'lucide-react';
+
+const UniversalCSVImporter = () => {
+  const [csvData, setCsvData] = useState(null);
+  const [mappedData, setMappedData] = useState(null);
+  const [detectedFormat, setDetectedFormat] = useState(null);
+  const [columnMapping, setColumnMapping] = useState({});
+  const [customMapping, setCustomMapping] = useState(false);
+  const [analysis, setAnalysis] = useState(null);
+  const [fileName, setFileName] = useState('');
+
+  // Standard field mappings for different brokers
+  const formatTemplates = {
+    tradovate: {
+      name: "Tradovate",
+      fields: {
+        orderId: ['orderId', 'Order ID', 'orderid'],
+        symbol: ['Product', 'Contract', 'Symbol', 'Instrument'],
+        side: ['B/S', 'Side', 'Buy/Sell', 'Direction'],
+        quantity: ['Quantity', 'filledQty', 'Filled Qty', 'Size'],
+        price: ['avgPrice', 'Avg Fill Price', 'Price', 'Fill Price'],
+        timestamp: ['Fill Time', 'Timestamp', 'Time', 'Date'],
+        status: ['Status', 'Order Status', 'State'],
+        type: ['Type', 'Order Type'],
+        account: ['Account', 'Account ID']
+      }
+    },
+    mt4: {
+      name: "MetaTrader 4/5",
+      fields: {
+        ticket: ['Ticket', 'Order', '#'],
+        symbol: ['Symbol', 'Instrument'],
+        side: ['Type', 'Cmd', 'Operation'],
+        quantity: ['Size', 'Volume', 'Lots'],
+        price: ['Price', 'Open Price', 'Close Price'],
+        timestamp: ['Time', 'Open Time', 'Close Time'],
+        profit: ['Profit', 'P/L', 'Swap'],
+        comment: ['Comment', 'Description']
+      }
+    },
+    rithmic: {
+      name: "Rithmic",
+      fields: {
+        orderId: ['Order ID', 'OrderId', 'ID'],
+        symbol: ['Symbol', 'Contract', 'Instrument'],
+        side: ['Side', 'Buy/Sell', 'B/S'],
+        quantity: ['Quantity', 'Qty', 'Size'],
+        price: ['Price', 'Fill Price', 'Avg Price'],
+        timestamp: ['Timestamp', 'Time', 'Fill Time'],
+        status: ['Status', 'Order Status'],
+        account: ['Account', 'Account ID']
+      }
+    },
+    cqg: {
+      name: "CQG",
+      fields: {
+        orderId: ['Order ID', 'OrderID'],
+        symbol: ['Symbol', 'Contract'],
+        side: ['Side', 'B/S'],
+        quantity: ['Qty', 'Quantity', 'Size'],
+        price: ['Price', 'Fill Price'],
+        timestamp: ['Time', 'Fill Time'],
+        status: ['Status'],
+        account: ['Account']
+      }
+    },
+    ninjatrader: {
+      name: "NinjaTrader",
+      fields: {
+        instrument: ['Instrument', 'Contract'],
+        action: ['Action', 'Side'],
+        quantity: ['Qty', 'Quantity'],
+        price: ['Price', 'Avg fill price'],
+        time: ['Time', 'Fill time'],
+        id: ['Id', 'Order id']
+      }
+    },
+    interactive_brokers: {
+      name: "Interactive Brokers",
+      fields: {
+        symbol: ['Symbol', 'UnderlyingSymbol'],
+        side: ['Buy/Sell', 'B/S'],
+        quantity: ['Quantity', 'Qty'],
+        price: ['Price', 'TradePrice'],
+        datetime: ['Date/Time', 'DateTime'],
+        currency: ['Currency'],
+        proceeds: ['Proceeds', 'NetCash']
+      }
+    },
+    ftmo: {
+      name: "FTMO",
+      fields: {
+        symbol: ['Symbol', 'Instrument'],
+        side: ['Action', 'Type', 'Side'],
+        quantity: ['Volume', 'Size', 'Lots'],
+        price: ['Price', 'Open Price', 'Close Price'],
+        timestamp: ['Time', 'Open Time', 'Close Time'],
+        profit: ['Profit', 'P/L'],
+        drawdown: ['Drawdown', 'Max DD']
+      }
+    },
+    topstep: {
+      name: "TopstepTrader",
+      fields: {
+        contract: ['Contract', 'Symbol'],
+        side: ['Side', 'Buy/Sell'],
+        quantity: ['Qty', 'Quantity'],
+        price: ['Price', 'Fill Price'],
+        timestamp: ['Date/Time', 'Timestamp'],
+        pnl: ['P&L', 'PnL', 'Profit']
+      }
+    },
+    thinkorswim: {
+      name: "ThinkorSwim",
+      fields: {
+        symbol: ['Symbol', 'Underlying'],
+        side: ['Side', 'B/S'],
+        quantity: ['Qty', 'Quantity'],
+        price: ['Price', 'Net Price'],
+        timestamp: ['Exec Time', 'Date'],
+        type: ['Instr', 'Type'],
+        proceeds: ['Net Amount', 'Proceeds']
+      }
+    },
+    binance: {
+      name: "Binance",
+      fields: {
+        symbol: ['Symbol', 'Pair'],
+        side: ['Side', 'Type'],
+        quantity: ['Executed Qty', 'Qty'],
+        price: ['Price', 'Avg Price'],
+        timestamp: ['Date', 'Time'],
+        commission: ['Commission', 'Fee'],
+        asset: ['Commission Asset', 'Fee Coin']
+      }
+    },
+    project_x: {
+      name: "Project X (Custom)",
+      fields: {
+        id: ['ID', 'Trade ID', 'Order ID'],
+        symbol: ['Symbol', 'Asset', 'Pair', 'Instrument'],
+        side: ['Side', 'Direction', 'Type'],
+        quantity: ['Quantity', 'Size', 'Amount'],
+        price: ['Price', 'Rate', 'Fill Price'],
+        timestamp: ['Timestamp', 'Date', 'Time'],
+        status: ['Status', 'State'],
+        custom1: ['Custom1', 'Field1', 'Extra1'],
+        custom2: ['Custom2', 'Field2', 'Extra2']
+      }
+    }
+  };
+
+  // Auto-detect format based on column names
+  const detectFormat = (headers) => {
+    const headerLower = headers.map(h => h.toLowerCase().trim());
+    
+    // Check for specific indicators
+    if (headerLower.includes('orderid') || headerLower.some(h => h.includes('tradingview'))) return 'tradovate';
+    if (headerLower.includes('ticket') || headerLower.includes('magic') || headerLower.includes('expert')) return 'mt4';
+    if (headerLower.some(h => h.includes('rithmic') || h.includes('rith'))) return 'rithmic';
+    if (headerLower.some(h => h.includes('cqg'))) return 'cqg';
+    if (headerLower.includes('instrument') && headerLower.includes('action')) return 'ninjatrader';
+    if (headerLower.includes('underlyingsymbol') || headerLower.includes('proceeds')) return 'interactive_brokers';
+    if (headerLower.some(h => h.includes('ftmo') || h.includes('drawdown'))) return 'ftmo';
+    if (headerLower.some(h => h.includes('topstep') || h.includes('combine'))) return 'topstep';
+    if (headerLower.includes('exec time') || headerLower.includes('net amount')) return 'thinkorswim';
+    if (headerLower.includes('executed qty') || headerLower.includes('commission asset')) return 'binance';
+    if (headerLower.some(h => h.includes('project') || h.includes('custom'))) return 'project_x';
+    
+    return 'custom';
+  };
+
+  // Parse CSV file
+  const handleFileUpload = useCallback(async (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    setFileName(file.name);
+    const text = await file.text();
+    
+    // Simple CSV parser
+    const lines = text.trim().split('\n');
+    const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, ''));
+    const rows = lines.slice(1).map(line => {
+      const values = line.split(',').map(v => v.trim().replace(/"/g, ''));
+      const row = {};
+      headers.forEach((header, index) => {
+        row[header] = values[index];
+      });
+      return row;
+    });
+
+    setCsvData({ headers, rows });
+    
+    // Auto-detect format
+    const format = detectFormat(headers);
+    setDetectedFormat(format);
+    
+    // Auto-map if known format
+    if (format !== 'custom' && formatTemplates[format]) {
+      const autoMapping = {};
+      const template = formatTemplates[format].fields;
+      
+      Object.keys(template).forEach(standardField => {
+        const possibleColumns = template[standardField];
+        const matchedColumn = headers.find(header => 
+          possibleColumns.some(col => 
+            header.toLowerCase().includes(col.toLowerCase())
+          )
+        );
+        if (matchedColumn) {
+          autoMapping[standardField] = matchedColumn;
+        }
+      });
+      
+      setColumnMapping(autoMapping);
+      applyMapping(rows, autoMapping);
+    }
+  }, []);
+
+  // Apply column mapping to data
+  const applyMapping = (rows, mapping) => {
+    const mapped = rows.map(row => {
+      const mappedRow = {};
+      Object.keys(mapping).forEach(standardField => {
+        const csvColumn = mapping[standardField];
+        if (csvColumn && row[csvColumn] !== undefined) {
+          mappedRow[standardField] = row[csvColumn];
+        }
+      });
+      return mappedRow;
+    }).filter(row => Object.keys(row).length > 0);
+    
+    setMappedData(mapped);
+    generateAnalysis(mapped);
+  };
+
+  // Advanced trade analysis with behavior tracking
+  const generateAnalysis = (data) => {
+    if (!data || data.length === 0) return;
+
+    // Separate orders by type and status
+    const filledOrders = data.filter(row => row.status && row.status.toLowerCase().trim() === 'filled');
+    const cancelledOrders = data.filter(row => row.status && row.status.toLowerCase().trim() === 'canceled');
+    const allOrders = data;
+
+    // Group orders by symbol and time proximity to identify trades
+    const trades = groupOrdersIntoTrades(filledOrders, cancelledOrders);
+    const behaviorAnalysis = analyzeTradingBehavior(trades, allOrders);
+    
+    let totalProfit = 0;
+    let winningTrades = 0;
+    let losingTrades = 0;
+    const symbols = new Set();
+    const dailyPnL = {};
+
+    trades.forEach(trade => {
+      if (trade.symbol) symbols.add(trade.symbol);
+      
+      if (trade.pnl !== undefined) {
+        totalProfit += trade.pnl;
+        if (trade.pnl > 0) winningTrades++;
+        else if (trade.pnl < 0) losingTrades++;
+      }
+      
+      // Daily P&L tracking
+      if (trade.exitTime) {
+        const date = trade.exitTime.split(' ')[0];
+        if (!dailyPnL[date]) dailyPnL[date] = 0;
+        dailyPnL[date] += trade.pnl || 0;
+      }
+    });
+
+    const completedTrades = winningTrades + losingTrades;
+    const winRate = completedTrades > 0 ? ((winningTrades / completedTrades) * 100).toFixed(1) : 0;
+
+    setAnalysis({
+      totalTrades: filledOrders.length,
+      completedTrades,
+      winningTrades,
+      losingTrades,
+      winRate,
+      totalProfit: totalProfit.toFixed(2),
+      symbols: Array.from(symbols),
+      dailyPnL,
+      trades,
+      behaviorAnalysis,
+      cancelledOrders: cancelledOrders.length,
+      orderTypes: {
+        filled: filledOrders.length,
+        cancelled: cancelledOrders.length,
+        total: allOrders.length
+      }
+    });
+  };
+
+  // Group related orders into complete trades
+  const groupOrdersIntoTrades = (filledOrders, cancelledOrders) => {
+    const trades = [];
+    const processedOrders = new Set();
+    
+    filledOrders.forEach(order => {
+      if (processedOrders.has(order.orderId)) return;
+      
+      const symbol = order.symbol;
+      const side = order.side ? order.side.toLowerCase().trim() : '';
+      const quantity = Math.abs(parseFloat(order.quantity) || 0);
+      const price = parseFloat(order.price) || 0;
+      const timestamp = order.timestamp;
+      
+      // Look for opposing trades (entry/exit pairs)
+      const isEntry = side.includes('buy') || side.includes('sell');
+      if (!isEntry) return;
+      
+      // Find matching exit within reasonable time window
+      const timeWindow = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+      const orderTime = new Date(timestamp).getTime();
+      
+      const matchingExit = filledOrders.find(exitOrder => {
+        if (processedOrders.has(exitOrder.orderId)) return false;
+        if (exitOrder.symbol !== symbol) return false;
+        
+        const exitSide = exitOrder.side ? exitOrder.side.toLowerCase().trim() : '';
+        const exitTime = new Date(exitOrder.timestamp).getTime();
+        const exitQty = Math.abs(parseFloat(exitOrder.quantity) || 0);
+        
+        // Check if it's an opposing trade within time window
+        const isOpposingTrade = (side.includes('buy') && exitSide.includes('sell')) || 
+                               (side.includes('sell') && exitSide.includes('buy'));
+        const isWithinTimeWindow = Math.abs(exitTime - orderTime) <= timeWindow;
+        const isSameQuantity = Math.abs(quantity - exitQty) < 0.01; // Allow for small rounding differences
+        
+        return isOpposingTrade && isWithinTimeWindow && isSameQuantity;
+      });
+
+      if (matchingExit) {
+        // Calculate P&L
+        const entryPrice = price;
+        const exitPrice = parseFloat(matchingExit.price) || 0;
+        const multiplier = side.includes('buy') ? 1 : -1;
+        const pnl = (exitPrice - entryPrice) * quantity * multiplier;
+        
+        // Look for cancelled SL/TP orders related to this trade
+        const relatedCancelledOrders = findRelatedCancelledOrders(order, matchingExit, cancelledOrders);
+        
+        trades.push({
+          symbol,
+          entryPrice,
+          exitPrice,
+          quantity,
+          side: side.includes('buy') ? 'Long' : 'Short',
+          entryTime: timestamp,
+          exitTime: matchingExit.timestamp,
+          pnl,
+          entryOrderId: order.orderId,
+          exitOrderId: matchingExit.orderId,
+          cancelledOrders: relatedCancelledOrders,
+          hadCancelledSLTP: relatedCancelledOrders.length > 0
+        });
+        
+        processedOrders.add(order.orderId);
+        processedOrders.add(matchingExit.orderId);
+      }
+    });
+    
+    return trades;
+  };
+
+  // Find cancelled SL/TP orders related to a trade
+  const findRelatedCancelledOrders = (entryOrder, exitOrder, cancelledOrders) => {
+    const symbol = entryOrder.symbol;
+    const entryTime = new Date(entryOrder.timestamp).getTime();
+    const exitTime = new Date(exitOrder.timestamp).getTime();
+    
+    return cancelledOrders.filter(cancelledOrder => {
+      if (cancelledOrder.symbol !== symbol) return false;
+      
+      const cancelTime = new Date(cancelledOrder.timestamp).getTime();
+      return cancelTime >= entryTime && cancelTime <= exitTime;
+    });
+  };
+
+  // Analyze trading behavior and discipline
+  const analyzeTradingBehavior = (trades, allOrders) => {
+    let disciplinedExits = 0;
+    let movedStopLoss = 0;
+    let movedToBreakeven = 0;
+    let exceededTP = 0;
+    let exceededSL = 0;
+    let manualExits = 0;
+    
+    const behaviorDetails = [];
+    
+    trades.forEach(trade => {
+      const behavior = {
+        symbol: trade.symbol,
+        side: trade.side,
+        entryPrice: trade.entryPrice,
+        exitPrice: trade.exitPrice,
+        pnl: trade.pnl,
+        hadCancelledSLTP: trade.hadCancelledSLTP,
+        behaviorType: 'Unknown'
+      };
+
+      // Analyze exit behavior
+      if (trade.hadCancelledSLTP) {
+        movedStopLoss++;
+        behavior.behaviorType = 'Moved SL/TP';
+        
+        // Check if moved to breakeven (exit near entry price)
+        const priceDeviation = Math.abs(trade.exitPrice - trade.entryPrice) / trade.entryPrice;
+        if (priceDeviation < 0.001) { // Less than 0.1% deviation
+          movedToBreakeven++;
+          behavior.behaviorType = 'Moved to Breakeven';
+        }
+      } else {
+        disciplinedExits++;
+        behavior.behaviorType = 'Disciplined Exit';
+      }
+
+      // Check if they held longer for more profit or cut losses short
+      if (trade.pnl > 0) {
+        const profitPercentage = Math.abs(trade.pnl) / (trade.entryPrice * trade.quantity);
+        if (profitPercentage > 0.02) { // More than 2% profit
+          exceededTP++;
+          behavior.behaviorType += ' (Exceeded Target)';
+        }
+      } else if (trade.pnl < 0) {
+        const lossPercentage = Math.abs(trade.pnl) / (trade.entryPrice * trade.quantity);
+        if (lossPercentage > 0.02) { // More than 2% loss
+          exceededSL++;
+          behavior.behaviorType += ' (Exceeded Stop)';
+        }
+      }
+
+      behaviorDetails.push(behavior);
+    });
+
+    const totalCompleteTrades = trades.length;
+    
+    return {
+      disciplineScore: totalCompleteTrades > 0 ? ((disciplinedExits / totalCompleteTrades) * 100).toFixed(1) : 0,
+      disciplinedExits,
+      movedStopLoss,
+      movedToBreakeven,
+      exceededTP,
+      exceededSL,
+      manualExits,
+      totalCompleteTrades,
+      behaviorDetails: behaviorDetails.slice(0, 10) // Show first 10 for preview
+    };
+  };
+
+  // Update custom mapping
+  const updateMapping = (standardField, csvColumn) => {
+    const newMapping = { ...columnMapping, [standardField]: csvColumn };
+    setColumnMapping(newMapping);
+    if (csvData) {
+      applyMapping(csvData.rows, newMapping);
+    }
+  };
+
+  return (
+    <div className="max-w-6xl mx-auto p-6 bg-gray-50 min-h-screen">
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold text-gray-900 mb-2">Universal Trading CSV Importer</h1>
+        <p className="text-gray-600">Import and analyze trading data from any broker: Tradovate, MT4/5, Rithmic, CQG, and more</p>
+      </div>
+
+      {/* File Upload */}
+      <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+        <h2 className="text-xl font-semibold mb-4 flex items-center">
+          <Upload className="mr-2" size={20} />
+          Upload CSV File
+        </h2>
+        
+        <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
+          <input
+            type="file"
+            accept=".csv"
+            onChange={handleFileUpload}
+            className="hidden"
+            id="csvUpload"
+          />
+          <label htmlFor="csvUpload" className="cursor-pointer">
+            <FileText size={48} className="mx-auto text-gray-400 mb-4" />
+            <p className="text-gray-600 mb-2">Click to upload your trading CSV file</p>
+            <p className="text-sm text-gray-500">Supports: Tradovate, MT4/5, Rithmic, CQG, NinjaTrader, IB, and custom formats</p>
+          </label>
+        </div>
+
+        {fileName && (
+          <div className="mt-4 p-3 bg-blue-50 rounded-lg">
+            <p className="text-blue-800">
+              <strong>File:</strong> {fileName}
+              {detectedFormat && (
+                <span className="ml-4">
+                  <strong>Detected Format:</strong> {formatTemplates[detectedFormat]?.name || 'Custom'}
+                </span>
+              )}
+            </p>
+          </div>
+        )}
+      </div>
+
+      {/* Column Mapping */}
+      {csvData && (
+        <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+          <h2 className="text-xl font-semibold mb-4 flex items-center">
+            <Settings className="mr-2" size={20} />
+            Column Mapping
+            <button
+              onClick={() => setCustomMapping(!customMapping)}
+              className="ml-4 px-3 py-1 bg-blue-500 text-white rounded text-sm hover:bg-blue-600"
+            >
+              {customMapping ? 'Auto Map' : 'Custom Map'}
+            </button>
+          </h2>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {['symbol', 'side', 'quantity', 'price', 'timestamp', 'status', 'orderId', 'account'].map(field => (
+              <div key={field} className="flex flex-col">
+                <label className="text-sm font-medium text-gray-700 mb-1 capitalize">
+                  {field}
+                </label>
+                <select
+                  value={columnMapping[field] || ''}
+                  onChange={(e) => updateMapping(field, e.target.value)}
+                  className="border border-gray-300 rounded px-3 py-2 text-sm"
+                >
+                  <option value="">Select column...</option>
+                  {csvData.headers.map(header => (
+                    <option key={header} value={header}>{header}</option>
+                  ))}
+                </select>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Analysis Results */}
+      {analysis && (
+        <>
+          {/* Main Metrics */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+            <div className="bg-white rounded-lg shadow-md p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-gray-600">Total Orders</p>
+                  <p className="text-2xl font-bold text-gray-900">{analysis.totalTrades}</p>
+                  <p className="text-xs text-gray-500">
+                    {analysis.orderTypes?.filled} filled, {analysis.orderTypes?.cancelled} cancelled
+                  </p>
+                </div>
+                <BarChart3 className="text-blue-500" size={24} />
+              </div>
+            </div>
+
+            <div className="bg-white rounded-lg shadow-md p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-gray-600">Win Rate</p>
+                  <p className="text-2xl font-bold text-green-600">{analysis.winRate}%</p>
+                  <p className="text-xs text-gray-500">
+                    {analysis.winningTrades}W / {analysis.losingTrades}L
+                  </p>
+                </div>
+                <TrendingUp className="text-green-500" size={24} />
+              </div>
+            </div>
+
+            <div className="bg-white rounded-lg shadow-md p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-gray-600">Total P&L</p>
+                  <p className={`text-2xl font-bold ${parseFloat(analysis.totalProfit) >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                    ${analysis.totalProfit}
+                  </p>
+                  <p className="text-xs text-gray-500">
+                    {analysis.completedTrades} completed trades
+                  </p>
+                </div>
+                <DollarSign className={parseFloat(analysis.totalProfit) >= 0 ? 'text-green-500' : 'text-red-500'} size={24} />
+              </div>
+            </div>
+
+            <div className="bg-white rounded-lg shadow-md p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-gray-600">Discipline Score</p>
+                  <p className={`text-2xl font-bold ${parseFloat(analysis.behaviorAnalysis?.disciplineScore || 0) >= 70 ? 'text-green-600' : parseFloat(analysis.behaviorAnalysis?.disciplineScore || 0) >= 50 ? 'text-yellow-600' : 'text-red-600'}`}>
+                    {analysis.behaviorAnalysis?.disciplineScore || 0}%
+                  </p>
+                  <p className="text-xs text-gray-500">
+                    Trading discipline
+                  </p>
+                </div>
+                <CheckCircle className={parseFloat(analysis.behaviorAnalysis?.disciplineScore || 0) >= 70 ? 'text-green-500' : parseFloat(analysis.behaviorAnalysis?.disciplineScore || 0) >= 50 ? 'text-yellow-500' : 'text-red-500'} size={24} />
+              </div>
+            </div>
+          </div>
+
+          {/* Trader Behavior Analysis */}
+          {analysis.behaviorAnalysis && (
+            <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+              <h2 className="text-xl font-semibold mb-4 flex items-center">
+                <AlertCircle className="mr-2 text-orange-500" size={20} />
+                Trader Behavior Analysis
+              </h2>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
+                <div className="bg-green-50 rounded-lg p-4">
+                  <h3 className="font-semibold text-green-800 mb-2">Disciplined Exits</h3>
+                  <p className="text-2xl font-bold text-green-600">{analysis.behaviorAnalysis.disciplinedExits}</p>
+                  <p className="text-sm text-green-700">Followed original SL/TP</p>
+                </div>
+                
+                <div className="bg-yellow-50 rounded-lg p-4">
+                  <h3 className="font-semibold text-yellow-800 mb-2">Moved Stop Loss</h3>
+                  <p className="text-2xl font-bold text-yellow-600">{analysis.behaviorAnalysis.movedStopLoss}</p>
+                  <p className="text-sm text-yellow-700">Modified original plan</p>
+                </div>
+                
+                <div className="bg-blue-50 rounded-lg p-4">
+                  <h3 className="font-semibold text-blue-800 mb-2">Breakeven Exits</h3>
+                  <p className="text-2xl font-bold text-blue-600">{analysis.behaviorAnalysis.movedToBreakeven}</p>
+                  <p className="text-sm text-blue-700">Moved SL to breakeven</p>
+                </div>
+                
+                <div className="bg-green-50 rounded-lg p-4">
+                  <h3 className="font-semibold text-green-800 mb-2">Exceeded Target</h3>
+                  <p className="text-2xl font-bold text-green-600">{analysis.behaviorAnalysis.exceededTP}</p>
+                  <p className="text-sm text-green-700">Held for more profit</p>
+                </div>
+                
+                <div className="bg-red-50 rounded-lg p-4">
+                  <h3 className="font-semibold text-red-800 mb-2">Exceeded Stop</h3>
+                  <p className="text-2xl font-bold text-red-600">{analysis.behaviorAnalysis.exceededSL}</p>
+                  <p className="text-sm text-red-700">Lost more than planned</p>
+                </div>
+                
+                <div className="bg-purple-50 rounded-lg p-4">
+                  <h3 className="font-semibold text-purple-800 mb-2">Total Trades</h3>
+                  <p className="text-2xl font-bold text-purple-600">{analysis.behaviorAnalysis.totalCompleteTrades}</p>
+                  <p className="text-sm text-purple-700">Complete entry/exit pairs</p>
+                </div>
+              </div>
+
+              {/* Behavior Insights */}
+              <div className="bg-gray-50 rounded-lg p-4">
+                <h3 className="font-semibold text-gray-800 mb-3">Behavioral Insights</h3>
+                <div className="space-y-2">
+                  {analysis.behaviorAnalysis.disciplineScore >= 70 && (
+                    <div className="flex items-center text-green-700">
+                      <CheckCircle size={16} className="mr-2" />
+                      <span>Excellent discipline - consistently follows trading plan</span>
+                    </div>
+                  )}
+                  {analysis.behaviorAnalysis.disciplineScore < 70 && analysis.behaviorAnalysis.disciplineScore >= 50 && (
+                    <div className="flex items-center text-yellow-700">
+                      <AlertCircle size={16} className="mr-2" />
+                      <span>Moderate discipline - sometimes deviates from plan</span>
+                    </div>
+                  )}
+                  {analysis.behaviorAnalysis.disciplineScore < 50 && (
+                    <div className="flex items-center text-red-700">
+                      <AlertCircle size={16} className="mr-2" />
+                      <span>Needs improvement - frequently moves stops and targets</span>
+                    </div>
+                  )}
+                  
+                  {analysis.behaviorAnalysis.movedToBreakeven > 0 && (
+                    <div className="flex items-center text-blue-700">
+                      <TrendingUp size={16} className="mr-2" />
+                      <span>Good risk management - moves stops to breakeven when in profit</span>
+                    </div>
+                  )}
+                  
+                  {analysis.behaviorAnalysis.exceededSL > analysis.behaviorAnalysis.exceededTP && (
+                    <div className="flex items-center text-red-700">
+                      <TrendingDown size={16} className="mr-2" />
+                      <span>Warning: Taking larger losses than planned profits</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
+        </>
+      )}
+
+      {/* Data Preview */}
+      {mappedData && (
+        <div className="bg-white rounded-lg shadow-md p-6">
+          <h2 className="text-xl font-semibold mb-4 flex items-center">
+            <CheckCircle className="mr-2 text-green-500" size={20} />
+            Mapped Data Preview ({mappedData.length} records)
+          </h2>
+          
+          <div className="overflow-x-auto">
+            <table className="min-w-full table-auto">
+              <thead className="bg-gray-50">
+                <tr>
+                  {Object.keys(columnMapping).filter(field => columnMapping[field]).map(field => (
+                    <th key={field} className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      {field}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {mappedData.slice(0, 10).map((row, index) => (
+                  <tr key={index} className="hover:bg-gray-50">
+                    {Object.keys(columnMapping).filter(field => columnMapping[field]).map(field => (
+                      <td key={field} className="px-4 py-2 whitespace-nowrap text-sm text-gray-900">
+                        {row[field] || '-'}
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {mappedData.length > 10 && (
+            <p className="text-sm text-gray-500 mt-4">
+              Showing first 10 of {mappedData.length} records
+            </p>
+          )}
+        </div>
+      )}
+
+      {/* Trading Symbols Summary */}
+      {analysis && analysis.symbols.length > 0 && (
+        <div className="bg-white rounded-lg shadow-md p-6 mt-6">
+          <h2 className="text-xl font-semibold mb-4">Instruments Traded</h2>
+          <div className="flex flex-wrap gap-2">
+            {analysis.symbols.map(symbol => (
+              <span key={symbol} className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">
+                {symbol}
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default UniversalCSVImporter;
