@@ -901,50 +901,7 @@ export default function Dashboard() {
           </Card>
         </div>
 
-        {/* Account Progress - Profit Targets */}
-        <div className="mb-6">
-          <h3 className="text-lg font-semibold text-gradient-rainbow mb-4 flex items-center">
-            <Target className="mr-2 h-5 w-5 text-green-400" />
-            Account Progress
-          </h3>
-        </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-          {accounts?.map((account) => {
-            const profitAmount = account.currentBalance - account.startingBalance;
-            const profitProgress = account.profitTarget ? (profitAmount / account.profitTarget) * 100 : 0;
-            
-            return (
-              <Card key={account.id} className="bg-dark-card border-green-600">
-                <CardContent className="p-6">
-                  <div className="flex items-center justify-between mb-4">
-                    <div>
-                      <p className="text-gray-400 text-sm mb-1">{account.name}</p>
-                      <p className="text-2xl font-bold text-green-400">
-                        {formatCurrency(profitAmount)}
-                      </p>
-                      <p className="text-xs text-gray-400 mt-1">
-                        Target: {formatCurrency(account.profitTarget || 0)}
-                      </p>
-                    </div>
-                    <div className="bg-green-600 bg-opacity-20 p-3 rounded-lg">
-                      <Target className="text-green-400 h-6 w-6" />
-                    </div>
-                  </div>
-                  <div className="w-full bg-gray-700 rounded-full h-2">
-                    <div 
-                      className="bg-green-400 h-2 rounded-full transition-all duration-300"
-                      style={{ width: `${Math.min(profitProgress, 100)}%` }}
-                    ></div>
-                  </div>
-                  <p className="text-xs text-gray-400 mt-2">
-                    {profitProgress.toFixed(1)}% of profit target achieved
-                  </p>
-                </CardContent>
-              </Card>
-            );
-          })}
-        </div>
 
         {/* Investment Tracking */}
         <div className="mb-6">
@@ -1519,7 +1476,17 @@ export default function Dashboard() {
                         {isReady ? '✓ READY FOR PAYOUT' : 'IN PROGRESS'}
                       </p>
                       <p className="text-sm text-gray-400 mt-2">
-                        Payout Amount: {formatCurrency(Math.min(selectedAccount.currentBalance * 0.5, 5000))}
+                        Estimated Payout: {formatCurrency((() => {
+                          if (selectedAccount.type !== 'funded') return 0;
+                          const currentProfit = selectedAccount.currentBalance - selectedAccount.startingBalance;
+                          const profitSplit = (selectedAccount.profitSplit || 90) / 100;
+                          const maxPayoutPercentage = (selectedAccount.maximumPayoutPercentage || 90) / 100;
+                          const bufferPercentage = (selectedAccount.bufferPercentage || 5) / 100;
+                          const profitTarget = selectedAccount.profitTarget || 0;
+                          const bufferAmount = profitTarget * bufferPercentage;
+                          const profitAboveBuffer = Math.max(0, currentProfit - bufferAmount);
+                          return Math.max(0, profitAboveBuffer * profitSplit * maxPayoutPercentage);
+                        })())}
                       </p>
                     </div>
                     
@@ -1611,11 +1578,69 @@ export default function Dashboard() {
 
           <Card className="bg-dark-card border-dark-border hover-glow smooth-transition">
             <CardHeader>
-              <CardTitle className="text-gradient-rainbow">Monthly Performance</CardTitle>
+              <CardTitle className="text-gradient-rainbow">Weekly Performance</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="h-64">
-                <MonthlyPerformanceChart data={getMonthlyData()} />
+              <div className="grid grid-cols-7 gap-1 mb-4">
+                {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
+                  <div key={day} className="text-center text-sm font-medium text-gray-400 p-2">
+                    {day}
+                  </div>
+                ))}
+              </div>
+              <div className="grid grid-cols-7 gap-1">
+                {(() => {
+                  const getCurrentWeekDays = () => {
+                    const today = new Date();
+                    const dayOfWeek = today.getDay(); // 0 = Sunday, 1 = Monday, etc.
+                    const startOfWeek = new Date(today);
+                    startOfWeek.setDate(today.getDate() - dayOfWeek);
+                    
+                    const weekDays = [];
+                    for (let i = 0; i < 7; i++) {
+                      const day = new Date(startOfWeek);
+                      day.setDate(startOfWeek.getDate() + i);
+                      weekDays.push(day);
+                    }
+                    return weekDays;
+                  };
+
+                  const weekDays = getCurrentWeekDays();
+                  
+                  return weekDays.map((day, index) => {
+                    const dayStr = day.toISOString().split('T')[0];
+                    const dayTrades = trades?.filter(trade => trade.date === dayStr) || [];
+                    const dayPnL = dayTrades.reduce((sum, trade) => sum + (trade.pnl || 0), 0);
+                    const isToday = day.toDateString() === new Date().toDateString();
+                    
+                    return (
+                      <div 
+                        key={index} 
+                        className={`
+                          relative p-3 rounded-lg border transition-all duration-300
+                          ${isToday ? 'border-gold bg-gold/10' : 'border-gray-700 bg-gray-800/50'}
+                          ${dayTrades.length > 0 ? 'hover:scale-105 cursor-pointer' : ''}
+                        `}
+                      >
+                        <div className="text-center">
+                          <div className="text-sm font-medium text-white mb-1">
+                            {day.getDate()}
+                          </div>
+                          {dayTrades.length > 0 && (
+                            <>
+                              <div className={`text-xs font-semibold ${dayPnL >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                                ${dayPnL >= 0 ? '+' : ''}${dayPnL.toFixed(2)}
+                              </div>
+                              <div className="text-xs text-gray-400">
+                                {dayTrades.length} trades
+                              </div>
+                            </>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  });
+                })()}
               </div>
             </CardContent>
           </Card>

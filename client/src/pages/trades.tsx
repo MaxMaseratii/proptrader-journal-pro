@@ -349,6 +349,7 @@ export default function Trades() {
                   <th className="text-right py-3 px-4 text-gray-400 font-medium">Initial TP Price</th>
                   <th className="text-right py-3 px-4 text-gray-400 font-medium">Final SL Price</th>
                   <th className="text-right py-3 px-4 text-gray-400 font-medium">Final TP Price</th>
+                  <th className="text-center py-3 px-4 text-gray-400 font-medium">Price Chart</th>
                 </tr>
               </thead>
               <tbody>
@@ -398,6 +399,16 @@ export default function Trades() {
                     </td>
                     <td className="py-3 px-4 text-right text-gray-300">
                       {trade.finalTakeProfit ? formatPrice(trade.finalTakeProfit) : 'Not placed'}
+                    </td>
+                    <td className="py-3 px-4 text-center">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => window.open(`https://www.tradingview.com/chart/?symbol=${trade.symbol}`, '_blank')}
+                        className="text-blue-400 border-blue-400 hover:bg-blue-400/20"
+                      >
+                        📈 View Chart
+                      </Button>
                     </td>
                   </tr>
                 ))}

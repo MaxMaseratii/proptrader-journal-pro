@@ -24,12 +24,21 @@ export default function SpendingPage() {
     );
   }
 
-  // Calculate total spending by category
-  const totalSpending = spendingRecords.reduce((sum, record) => sum + record.amount, 0);
+  // Calculate investment tracking from account data
+  const totalAccountCosts = accounts.reduce((sum, account) => sum + (account.accountCost || 0), 0);
+  const totalActivationCosts = accounts.reduce((sum, account) => sum + (account.activationCost || 0), 0);
+  const totalResetCosts = accounts.reduce((sum, account) => sum + (account.totalResetsCost || 0), 0);
+  const totalInvestmentTracking = totalAccountCosts + totalActivationCosts + totalResetCosts;
+  
+  // Calculate manual spending entries
+  const totalManualSpending = spendingRecords.reduce((sum, record) => sum + record.amount, 0);
   const spendingByType = spendingRecords.reduce((acc, record) => {
     acc[record.spendingType] = (acc[record.spendingType] || 0) + record.amount;
     return acc;
   }, {} as Record<string, number>);
+  
+  // Combined total spending
+  const totalSpending = totalInvestmentTracking + totalManualSpending;
 
   return (
     <div className="container mx-auto p-6 space-y-6">
@@ -46,6 +55,37 @@ export default function SpendingPage() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-red-400">{formatCurrency(totalSpending)}</div>
+            <div className="text-xs text-gray-500 mt-1">Investment + Manual</div>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-blue-800/50 border-blue-700">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium text-gray-400">Account Costs</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-blue-400">{formatCurrency(totalAccountCosts)}</div>
+            <div className="text-xs text-gray-500 mt-1">From Account Creation</div>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-purple-800/50 border-purple-700">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium text-gray-400">Activation Costs</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-purple-400">{formatCurrency(totalActivationCosts)}</div>
+            <div className="text-xs text-gray-500 mt-1">Account Activations</div>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-orange-800/50 border-orange-700">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium text-gray-400">Reset Costs</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-orange-400">{formatCurrency(totalResetCosts)}</div>
+            <div className="text-xs text-gray-500 mt-1">Failed Account Resets</div>
           </CardContent>
         </Card>
 
