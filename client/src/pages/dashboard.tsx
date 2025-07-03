@@ -123,13 +123,26 @@ export default function Dashboard() {
     const totalProfitTarget = accountsToAnalyze.reduce((sum, acc) => sum + acc.profitTarget, 0);
 
     // Calculate disciplined scores for each account
-    const disciplinedScores = accountsToAnalyze.map(account => 
-      calculateDisciplinedScore(account, tradesToAnalyze.filter(t => t.accountId === account.id))
-    );
+    const disciplinedScores = accountsToAnalyze.map(account => {
+      const accountTrades = tradesToAnalyze.filter(t => t.accountId === account.id);
+      const disciplineResult = calculateDisciplinedScore(account, accountTrades);
+      console.log(`Discipline calculation for account ${account.id}:`, {
+        accountTrades: accountTrades.length,
+        disciplineScore: disciplineResult.disciplinedScore,
+        violations: disciplineResult.violationsCount
+      });
+      return disciplineResult;
+    });
     
     // Get average disciplined score
     const avgDisciplinedScore = disciplinedScores.length > 0 ? 
       disciplinedScores.reduce((sum, score) => sum + score.disciplinedScore, 0) / disciplinedScores.length : 0;
+    
+    console.log('Dashboard discipline calculation:', {
+      disciplinedScores: disciplinedScores.map(s => s.disciplinedScore),
+      avgDisciplinedScore,
+      totalTrades: tradesToAnalyze.length
+    });
     
     // Calculate average win/loss and profit factor
     const winningTradeAmounts = tradesToAnalyze.filter(t => t.pnl > 0).map(t => t.pnl);
