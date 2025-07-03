@@ -98,10 +98,10 @@ export default function DashboardShowcase() {
           <Button 
             variant="outline" 
             className="border-prop-blue/20 hover:bg-prop-blue/10"
-            onClick={() => window.open('/dashboard-copy', '_blank')}
+            onClick={() => window.open('/dashboard-copy', '_blank', 'noopener,noreferrer')}
           >
             <Calendar className="mr-2 h-4 w-4" />
-            View Dashboard Copy
+            Open Dashboard Copy (New Agent)
           </Button>
           <Button 
             variant="outline" 
