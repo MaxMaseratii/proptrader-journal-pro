@@ -182,13 +182,22 @@ export default function Trades() {
               <Button 
                 onClick={async () => {
                   try {
-                    const response = await fetch('/api/trades/reprocess-sltp', { method: 'POST' });
+                    const response = await fetch('/api/trades/reprocess-sltp', { 
+                      method: 'POST',
+                      headers: {
+                        'Content-Type': 'application/json'
+                      },
+                      credentials: 'include'
+                    });
                     const result = await response.json();
                     if (result.success) {
                       alert(`Updated ${result.updatedCount} trades with improved SL/TP analysis`);
                       window.location.reload();
+                    } else {
+                      alert(`Error: ${result.message || 'Failed to reprocess trades'}`);
                     }
                   } catch (error) {
+                    console.error('Reprocessing error:', error);
                     alert('Failed to reprocess trades');
                   }
                 }}

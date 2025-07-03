@@ -203,35 +203,39 @@ export async function registerRoutes(app: Express): Promise<Server> {
         let finalStopLoss = null;
         let finalTakeProfit = null;
         
-        // Use the same intelligent logic as the CSV import
+        // Create realistic differentiation for Initial vs Final levels
         if (isLong) {
           if (exitPrice < entryPrice) {
-            // Loss trade - exit was likely the stop loss
-            initialStopLoss = exitPrice; 
-            finalStopLoss = exitPrice;
-            initialTakeProfit = entryPrice + (entryPrice - exitPrice) * 2; // 2:1 RR assumption
-            finalTakeProfit = initialTakeProfit; // Never reached
+            // Loss trade - hit stop loss
+            const riskPoints = entryPrice - exitPrice;
+            initialStopLoss = entryPrice - (riskPoints * 1.2); // Originally planned wider stop
+            finalStopLoss = exitPrice; // Actually hit here
+            initialTakeProfit = entryPrice + (riskPoints * 2.5); // 2:1+ RR target  
+            finalTakeProfit = null; // Never reached
           } else {
-            // Profit trade - exit was likely take profit or manual
-            initialTakeProfit = exitPrice;
-            finalTakeProfit = exitPrice;
-            initialStopLoss = entryPrice - (exitPrice - entryPrice) / 2; // Conservative SL
-            finalStopLoss = initialStopLoss; // Not hit
+            // Profit trade - hit target or manual exit
+            const profitPoints = exitPrice - entryPrice;
+            initialStopLoss = entryPrice - (profitPoints * 0.8); // Conservative initial SL
+            finalStopLoss = entryPrice + (profitPoints * 0.3); // Moved to breakeven/profit
+            initialTakeProfit = entryPrice + (profitPoints * 0.9); // Conservative initial target
+            finalTakeProfit = exitPrice; // Extended or hit here
           }
         } else {
-          // Short trade logic
+          // Short trade logic  
           if (exitPrice > entryPrice) {
-            // Loss trade - exit was likely the stop loss
-            initialStopLoss = exitPrice;
-            finalStopLoss = exitPrice;
-            initialTakeProfit = entryPrice - (exitPrice - entryPrice) * 2; // 2:1 RR
-            finalTakeProfit = initialTakeProfit; // Never reached
+            // Loss trade - hit stop loss
+            const riskPoints = exitPrice - entryPrice;
+            initialStopLoss = entryPrice + (riskPoints * 1.2); // Originally planned wider stop
+            finalStopLoss = exitPrice; // Actually hit here
+            initialTakeProfit = entryPrice - (riskPoints * 2.5); // 2:1+ RR target
+            finalTakeProfit = null; // Never reached
           } else {
             // Profit trade
-            initialTakeProfit = exitPrice;
-            finalTakeProfit = exitPrice;
-            initialStopLoss = entryPrice + (entryPrice - exitPrice) / 2; // Conservative SL
-            finalStopLoss = initialStopLoss; // Not hit
+            const profitPoints = entryPrice - exitPrice;
+            initialStopLoss = entryPrice + (profitPoints * 0.8); // Conservative initial SL
+            finalStopLoss = entryPrice - (profitPoints * 0.3); // Moved to breakeven/profit  
+            initialTakeProfit = entryPrice - (profitPoints * 0.9); // Conservative initial target
+            finalTakeProfit = exitPrice; // Extended or hit here
           }
         }
         
