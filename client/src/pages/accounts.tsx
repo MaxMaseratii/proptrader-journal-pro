@@ -74,8 +74,8 @@ export default function Accounts() {
       maximumPayoutPercentage: 90,
       // Trading Asset Selection
       primaryTradingAsset: "ES",
-      secondaryTradingAsset: "",
-      tertiaryTradingAsset: "",
+      secondaryTradingAsset: "none",
+      tertiaryTradingAsset: "none",
     },
   });
 
@@ -466,7 +466,7 @@ export default function Accounts() {
                                         </SelectTrigger>
                                       </FormControl>
                                       <SelectContent className="bg-gray-700 border-gray-600 max-h-64">
-                                        <SelectItem value="" className="text-white hover:bg-gray-600">
+                                        <SelectItem value="none" className="text-white hover:bg-gray-600">
                                           None
                                         </SelectItem>
                                         {ASSET_CONFIG.map((asset) => (
@@ -498,7 +498,7 @@ export default function Accounts() {
                                         </SelectTrigger>
                                       </FormControl>
                                       <SelectContent className="bg-gray-700 border-gray-600 max-h-64">
-                                        <SelectItem value="" className="text-white hover:bg-gray-600">
+                                        <SelectItem value="none" className="text-white hover:bg-gray-600">
                                           None
                                         </SelectItem>
                                         {ASSET_CONFIG.map((asset) => (
