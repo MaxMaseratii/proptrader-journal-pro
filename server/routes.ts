@@ -377,17 +377,118 @@ export async function registerRoutes(app: Express): Promise<Server> {
               const actualRisk = Math.abs(pnl);
               const riskCompliance = actualRisk <= riskAmount;
 
-              // Basic SL/TP detection - temporarily simplified to fix import
+              // Advanced TakeProfit-specific SL/TP detection 
               let initialStopLoss = null;
               let initialTakeProfit = null;
               let finalStopLoss = null;
               let finalTakeProfit = null;
               
-              // Simple fallback until we can properly debug the advanced algorithm
-              initialStopLoss = null;
-              initialTakeProfit = null;
-              finalStopLoss = sellOrder.price;
-              finalTakeProfit = sellOrder.price;
+              // For TakeProfit CSVs, analyze the order sequence and price levels more intelligently
+              const entryPrice = buyOrder.price;
+              const exitPrice = sellOrder.price;
+              const isLong = buyOrder.side === 'buy';
+              
+              // Find all orders for this symbol in a reasonable time window (30 minutes)
+              const tradeWindow = filledOrders.filter(order => 
+                order.symbol === currentOrder.symbol &&
+                Math.abs(new Date(order.fillTimestamp || order.date).getTime() - 
+                        new Date(currentOrder.fillTimestamp || currentOrder.date).getTime()) < 1800000 // 30 minutes
+              ).sort((a, b) => 
+                new Date(a.fillTimestamp || a.date).getTime() - new Date(b.fillTimestamp || b.date).getTime()
+              );
+              
+              // Analyze order types and price levels in the window
+              const stopOrders = tradeWindow.filter(order => order.orderType === 'Stop');
+              const limitOrders = tradeWindow.filter(order => order.orderType === 'Limit');
+              
+              if (isLong) {
+                // For long trades: SL should be below entry, TP above entry
+                
+                // Initial Stop Loss: Look for stops below entry price
+                const potentialSLs = stopOrders
+                  .filter(order => order.stopPrice && order.stopPrice < entryPrice)
+                  .map(order => order.stopPrice || 0)
+                  .filter(price => price > 0);
+                
+                // Initial Take Profit: Look for limits above entry price  
+                const potentialTPs = limitOrders
+                  .filter(order => order.limitPrice && order.limitPrice > entryPrice)
+                  .map(order => order.limitPrice || 0)
+                  .filter(price => price > 0);
+                
+                // Set initial levels (closest to entry price indicates initial plan)
+                if (potentialSLs.length > 0) {
+                  initialStopLoss = Math.max(...potentialSLs); // Highest SL below entry
+                  finalStopLoss = Math.min(...potentialSLs); // Lowest SL (if moved down)
+                }
+                
+                if (potentialTPs.length > 0) {
+                  initialTakeProfit = Math.min(...potentialTPs); // Lowest TP above entry  
+                  finalTakeProfit = Math.max(...potentialTPs); // Highest TP (if moved up)
+                }
+                
+              } else {
+                // For short trades: SL should be above entry, TP below entry
+                
+                // Initial Stop Loss: Look for stops above entry price
+                const potentialSLs = stopOrders
+                  .filter(order => order.stopPrice && order.stopPrice > entryPrice)
+                  .map(order => order.stopPrice || 0)
+                  .filter(price => price > 0);
+                
+                // Initial Take Profit: Look for limits below entry price
+                const potentialTPs = limitOrders
+                  .filter(order => order.limitPrice && order.limitPrice < entryPrice)
+                  .map(order => order.limitPrice || 0)
+                  .filter(price => price > 0);
+                
+                // Set initial levels 
+                if (potentialSLs.length > 0) {
+                  initialStopLoss = Math.min(...potentialSLs); // Lowest SL above entry
+                  finalStopLoss = Math.max(...potentialSLs); // Highest SL (if moved up)
+                }
+                
+                if (potentialTPs.length > 0) {
+                  initialTakeProfit = Math.max(...potentialTPs); // Highest TP below entry
+                  finalTakeProfit = Math.min(...potentialTPs); // Lowest TP (if moved down)
+                }
+              }
+              
+              // Fallback logic if no stop/limit orders detected
+              if (!initialStopLoss || !initialTakeProfit) {
+                // Use exit price analysis and standard risk management rules
+                if (isLong) {
+                  // Check if exit was likely a stop hit or profit take
+                  if (exitPrice < entryPrice) {
+                    // Loss trade - exit was likely the stop loss
+                    initialStopLoss = exitPrice; 
+                    finalStopLoss = exitPrice;
+                    initialTakeProfit = entryPrice + (entryPrice - exitPrice) * 2; // 2:1 RR assumption
+                    finalTakeProfit = initialTakeProfit; // Never reached
+                  } else {
+                    // Profit trade - exit was likely take profit or manual
+                    initialTakeProfit = exitPrice;
+                    finalTakeProfit = exitPrice;
+                    initialStopLoss = entryPrice - (exitPrice - entryPrice) / 2; // Conservative SL
+                    finalStopLoss = initialStopLoss; // Not hit
+                  }
+                } else {
+                  // Short trade logic
+                  if (exitPrice > entryPrice) {
+                    // Loss trade - exit was likely the stop loss
+                    initialStopLoss = exitPrice;
+                    finalStopLoss = exitPrice;
+                    initialTakeProfit = entryPrice - (exitPrice - entryPrice) * 2; // 2:1 RR
+                    finalTakeProfit = initialTakeProfit; // Never reached
+                  } else {
+                    // Profit trade
+                    initialTakeProfit = exitPrice;
+                    finalTakeProfit = exitPrice;
+                    initialStopLoss = entryPrice + (entryPrice - exitPrice) / 2; // Conservative SL
+                    finalStopLoss = initialStopLoss; // Not hit
+                  }
+                }
+              }
 
               const tradeData: InsertTrade = {
                 accountId: parseInt(accountId),
@@ -409,8 +510,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
                 initialTakeProfit,
                 finalStopLoss,
                 finalTakeProfit,
-                notes: `Imported - Entry: ${buyOrder.price}, Exit: ${sellOrder.price}, Qty: ${quantityToClose} - Time: ${currentOrder.fillTime || 'Unknown'}`
+                notes: `Entry: ${buyOrder.price}, Exit: ${sellOrder.price} | Initial SL: ${initialStopLoss}, Initial TP: ${initialTakeProfit} | Final SL: ${finalStopLoss}, Final TP: ${finalTakeProfit}`
               };
+              
+              // Debug logging for SL/TP detection
+              console.log(`Trade ${currentOrder.symbol}: Entry=${entryPrice}, Exit=${exitPrice}, Side=${buyOrder.side}`);
+              console.log(`  Initial SL: ${initialStopLoss}, Initial TP: ${initialTakeProfit}`);
+              console.log(`  Final SL: ${finalStopLoss}, Final TP: ${finalTakeProfit}`);
+              console.log(`  Stop Orders Found: ${stopOrders.length}, Limit Orders Found: ${limitOrders.length}`);
 
               const validatedData = insertTradeSchema.parse(tradeData);
               await storage.createTrade(validatedData);

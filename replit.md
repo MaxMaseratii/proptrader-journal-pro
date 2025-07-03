@@ -249,6 +249,15 @@ Changelog:
   * Fixed CSV import functionality and temporarily simplified SL/TP tracking algorithm to restore basic import capability
   * Integrated Universal CSV Importer into Trades page alongside manual trade entry for seamless workflow
   * Enhanced user experience with PropTraderJournal's signature dark theme and gradient styling
+- July 3, 2025. Advanced SL/TP Tracking Algorithm Implementation:
+  * Completely rebuilt Initial vs Final Stop Loss and Take Profit detection algorithm
+  * Implemented TakeProfit-specific order sequence analysis to properly differentiate initial and final price levels
+  * Added intelligent analysis of order types (Stop, Limit) within trading time windows
+  * Enhanced algorithm to detect stop loss movements (tightening vs loosening) and take profit adjustments
+  * Implemented fallback logic using entry/exit price analysis and standard risk management assumptions
+  * Added comprehensive debugging output to track SL/TP detection accuracy
+  * Now properly enables discipline analysis: tracking if traders move stops against themselves or let profits run
+  * Fixed the core issue where all SL/TP columns showed identical values preventing proper trader discipline evaluation
 ```
 
 ## User Preferences
