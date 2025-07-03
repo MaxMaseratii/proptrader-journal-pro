@@ -406,6 +406,89 @@ export async function registerRoutes(app: Express): Promise<Server> {
       let recordsImported = 0;
       const errors: string[] = [];
 
+      // Check if this is a completed trades CSV format (has EnteredAt, ExitedAt, etc.)
+      const isCompletedTradesFormat = headers.some(h => 
+        h.toLowerCase().includes('enteredat') || 
+        h.toLowerCase().includes('exitedat') || 
+        h.toLowerCase().includes('entryprice') ||
+        h.toLowerCase().includes('exitprice')
+      );
+
+      if (isCompletedTradesFormat) {
+        console.log("Detected completed trades CSV format");
+        
+        // Process as completed trades (each row is a complete trade)
+        for (let i = 1; i < lines.length; i++) {
+          const line = lines[i].trim();
+          if (!line) continue;
+          
+          recordsProcessed++;
+          
+          try {
+            const values = line.split(',').map((v: string) => v.trim());
+            const row: any = {};
+            
+            headers.forEach((header: string, index: number) => {
+              row[header] = values[index] || '';
+            });
+
+            // Parse trade data from completed trades CSV format
+            const symbol = (row.ContractName || row.Symbol || '').replace(/[^A-Z]/g, '');
+            const side = row.Type?.toLowerCase() === 'long' ? 'buy' : 'sell';
+            const quantity = parseFloat(row.Size) || 1;
+            const entryPrice = parseFloat(row.EntryPrice) || 0;
+            const exitPrice = parseFloat(row.ExitPrice) || 0;
+            const pnl = parseFloat(row.PnL) || 0;
+            
+            // Parse entry date
+            let date = new Date().toISOString().split('T')[0];
+            if (row.EnteredAt) {
+              try {
+                // Handle format like "06/02/2025 10:08:05 -04:00"
+                const entryDate = new Date(row.EnteredAt);
+                if (!isNaN(entryDate.getTime())) {
+                  date = entryDate.toISOString().split('T')[0];
+                }
+              } catch (error) {
+                console.log("Date parsing error:", error);
+              }
+            }
+
+            if (symbol && entryPrice && exitPrice) {
+              const tradeData: InsertTrade = {
+                accountId: parseInt(accountId),
+                symbol,
+                side,
+                quantity,
+                entryPrice,
+                exitPrice,
+                pnl,
+                date,
+                status: 'closed',
+                notes: 'Imported from completed trades CSV'
+              };
+
+              console.log(`Creating trade: ${symbol} ${side} ${quantity} @ ${entryPrice} -> ${exitPrice} P&L: ${pnl}`);
+              await storage.createTrade(tradeData);
+              recordsImported++;
+            } else {
+              console.log(`Skipping row ${i}: symbol=${symbol}, entryPrice=${entryPrice}, exitPrice=${exitPrice}`);
+            }
+
+          } catch (error) {
+            errors.push(`Row ${i}: ${error instanceof Error ? error.message : 'Unknown error'}`);
+          }
+        }
+
+        return res.json({
+          success: true,
+          recordsProcessed,
+          recordsImported,
+          errors,
+          message: `Successfully imported ${recordsImported} completed trades`
+        });
+      }
+
       // First pass: collect all filled orders
       const filledOrders: any[] = [];
       

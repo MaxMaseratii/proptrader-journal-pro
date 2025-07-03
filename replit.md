@@ -274,6 +274,9 @@ Changelog:
   * Integrated discipline analyzer as new "Discipline Analysis" tab in Advanced Analytics section with professional UI
   * Enhanced account creation with comprehensive trading asset selection (20+ instruments) with real-time risk suggestions
   * Fixed SelectItem validation errors and completed professional trading asset database integration
+  * Updated DisciplineAnalyzer component to work with existing account data instead of requiring CSV re-uploads
+  * Added support for completed trades CSV format (EnteredAt, ExitedAt, EntryPrice, ExitPrice columns)
+  * Fixed CSV import issue where completed trades weren't being processed due to missing "Status" column requirement
 ```
 
 ## User Preferences
