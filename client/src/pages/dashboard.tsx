@@ -180,6 +180,55 @@ export default function Dashboard() {
   const primaryAccount = accounts?.[0];
   const recentTrades = trades?.slice(0, 4) || [];
 
+  // Calculate total available payouts based on actual account requirements
+  const calculateTotalAvailablePayouts = () => {
+    if (!accounts || !trades) return 0;
+    
+    let totalPayouts = 0;
+    
+    accounts.forEach(account => {
+      if (account.type !== 'funded') return; // Only funded accounts have payouts
+      
+      const accountTrades = trades.filter(t => t.accountId === account.id);
+      const currentProfit = account.currentBalance - account.startingBalance;
+      
+      // Check payout requirements
+      const daysRequired = account.daysRequiredForPayout || 5;
+      const winningDayMinimum = account.winningDayMinimum || 200;
+      const minimumPayoutAmount = account.minimumPayoutAmount || 250;
+      const maxPayoutPercentage = (account.maximumPayoutPercentage || 90) / 100;
+      const profitSplit = (account.profitSplit || 90) / 100;
+      const bufferPercentage = (account.bufferPercentage || 5) / 100;
+      
+      // Calculate daily P&L
+      const dailyPnL = accountTrades.reduce((acc, trade) => {
+        acc[trade.date] = (acc[trade.date] || 0) + trade.pnl;
+        return acc;
+      }, {} as Record<string, number>);
+      
+      const tradingDays = Object.keys(dailyPnL).length;
+      const profitableDays = Object.values(dailyPnL).filter(pnl => pnl >= winningDayMinimum).length;
+      
+      // Check if payout requirements are met
+      const meetsMinimumDays = tradingDays >= daysRequired;
+      const meetsProfitableDays = profitableDays >= daysRequired;
+      const hasMinimumProfit = currentProfit >= minimumPayoutAmount;
+      
+      if (meetsMinimumDays && meetsProfitableDays && hasMinimumProfit) {
+        // Calculate buffer requirement
+        const profitTarget = account.profitTarget || 0;
+        const bufferAmount = profitTarget * bufferPercentage;
+        const profitAboveBuffer = Math.max(0, currentProfit - bufferAmount);
+        
+        // Calculate available payout (profit split applied)
+        const availablePayout = profitAboveBuffer * profitSplit * maxPayoutPercentage;
+        totalPayouts += Math.max(0, availablePayout);
+      }
+    });
+    
+    return totalPayouts;
+  };
+
   // Mock data for charts
   const equityData = [
     { date: "Oct 1", balance: 150000 },
@@ -938,8 +987,8 @@ export default function Dashboard() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-gray-400 text-sm mb-1">Total Payout</p>
-                  <p className={`text-2xl font-bold ${0 > 0 ? 'text-prop-green' : 0 < 0 ? 'text-prop-pink' : 'text-prop-gold'}`}>
-                    {formatCurrency(0)}
+                  <p className={`text-2xl font-bold ${calculateTotalAvailablePayouts() > 0 ? 'text-prop-green' : 'text-prop-gold'}`}>
+                    {formatCurrency(calculateTotalAvailablePayouts())}
                   </p>
                   <p className="text-xs text-gray-400 mt-1">
                     Received payouts
