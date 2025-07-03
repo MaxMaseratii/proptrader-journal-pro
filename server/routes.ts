@@ -184,6 +184,93 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Re-process existing trades with improved SL/TP algorithm
+  app.post("/api/trades/reprocess-sltp", isAuthenticated, async (req, res) => {
+    try {
+      console.log("Re-processing existing trades with improved SL/TP algorithm...");
+      
+      const trades = await storage.getTrades();
+      let updatedCount = 0;
+      
+      for (const trade of trades) {
+        // Apply the improved SL/TP algorithm to existing trades
+        const entryPrice = trade.entryPrice;
+        const exitPrice = trade.exitPrice || entryPrice;
+        const isLong = trade.side === 'long';
+        
+        let initialStopLoss = null;
+        let initialTakeProfit = null;
+        let finalStopLoss = null;
+        let finalTakeProfit = null;
+        
+        // Use the same intelligent logic as the CSV import
+        if (isLong) {
+          if (exitPrice < entryPrice) {
+            // Loss trade - exit was likely the stop loss
+            initialStopLoss = exitPrice; 
+            finalStopLoss = exitPrice;
+            initialTakeProfit = entryPrice + (entryPrice - exitPrice) * 2; // 2:1 RR assumption
+            finalTakeProfit = initialTakeProfit; // Never reached
+          } else {
+            // Profit trade - exit was likely take profit or manual
+            initialTakeProfit = exitPrice;
+            finalTakeProfit = exitPrice;
+            initialStopLoss = entryPrice - (exitPrice - entryPrice) / 2; // Conservative SL
+            finalStopLoss = initialStopLoss; // Not hit
+          }
+        } else {
+          // Short trade logic
+          if (exitPrice > entryPrice) {
+            // Loss trade - exit was likely the stop loss
+            initialStopLoss = exitPrice;
+            finalStopLoss = exitPrice;
+            initialTakeProfit = entryPrice - (exitPrice - entryPrice) * 2; // 2:1 RR
+            finalTakeProfit = initialTakeProfit; // Never reached
+          } else {
+            // Profit trade
+            initialTakeProfit = exitPrice;
+            finalTakeProfit = exitPrice;
+            initialStopLoss = entryPrice + (entryPrice - exitPrice) / 2; // Conservative SL
+            finalStopLoss = initialStopLoss; // Not hit
+          }
+        }
+        
+        // Update the trade with new SL/TP values
+        if (initialStopLoss !== trade.initialStopLoss || 
+            initialTakeProfit !== trade.initialTakeProfit ||
+            finalStopLoss !== trade.finalStopLoss ||
+            finalTakeProfit !== trade.finalTakeProfit) {
+          
+          await storage.updateTrade(trade.id, {
+            initialStopLoss,
+            initialTakeProfit,
+            finalStopLoss,
+            finalTakeProfit,
+            notes: (trade.notes || '').includes('Re-processed') ? trade.notes : 
+                   `${trade.notes || ''} | Re-processed SL/TP: Initial SL: ${initialStopLoss}, Initial TP: ${initialTakeProfit}`
+          });
+          
+          updatedCount++;
+        }
+      }
+      
+      console.log(`Re-processed ${updatedCount} trades with improved SL/TP algorithm`);
+      res.json({ 
+        success: true, 
+        message: `Successfully re-processed ${updatedCount} trades with improved SL/TP detection`,
+        updatedCount 
+      });
+      
+    } catch (error) {
+      console.error('Error re-processing trades:', error);
+      res.status(500).json({ 
+        success: false, 
+        message: 'Failed to re-process trades',
+        error: error instanceof Error ? error.message : 'Unknown error'
+      });
+    }
+  });
+
   app.post("/api/trades/import-csv", isAuthenticated, async (req, res) => {
     try {
       console.log("CSV Import request received:", { 

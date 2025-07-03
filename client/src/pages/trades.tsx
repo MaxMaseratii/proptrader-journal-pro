@@ -178,10 +178,29 @@ export default function Trades() {
         <TabsContent value="view" className="space-y-6">
           <div className="flex items-center justify-between">
             <h2 className="text-xl font-semibold text-white">All Trades</h2>
-            <Button onClick={exportToCSV} className="bg-blue-600 hover:bg-blue-700">
-              <Download className="mr-2 h-4 w-4" />
-              Export CSV
-            </Button>
+            <div className="flex gap-2">
+              <Button 
+                onClick={async () => {
+                  try {
+                    const response = await fetch('/api/trades/reprocess-sltp', { method: 'POST' });
+                    const result = await response.json();
+                    if (result.success) {
+                      alert(`Updated ${result.updatedCount} trades with improved SL/TP analysis`);
+                      window.location.reload();
+                    }
+                  } catch (error) {
+                    alert('Failed to reprocess trades');
+                  }
+                }}
+                className="bg-green-600 hover:bg-green-700"
+              >
+                Update SL/TP Analysis
+              </Button>
+              <Button onClick={exportToCSV} className="bg-blue-600 hover:bg-blue-700">
+                <Download className="mr-2 h-4 w-4" />
+                Export CSV
+              </Button>
+            </div>
           </div>
 
       {/* Filters */}
