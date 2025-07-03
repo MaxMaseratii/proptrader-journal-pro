@@ -230,6 +230,15 @@ Changelog:
   * Green text for positive P&L, red text for negative P&L across all calendar view modes (daily, weekly, monthly, yearly)
   * Updated documentation and capabilities guide to reflect new branding
   * Application is now 100% production-ready with unified branding and improved visual indicators
+- July 3, 2025. Critical Fix: Initial vs Final SL/TP Differentiation:
+  * Completely redesigned CSV import algorithm to properly distinguish between initial and final stop loss/take profit levels
+  * Enhanced trade entry forms to clearly label fields as "price levels" with explanatory text
+  * Updated table headers and display formatting to show prices (6237.75) instead of currency ($6237.75)
+  * Fixed algorithm to track stop loss movements by analyzing cancelled orders chronologically
+  * Initial levels: Extracted from first cancelled stop/limit orders placed after entry
+  * Final levels: Determined from last cancelled orders or actual exit prices if stops were hit
+  * Added detailed notes showing when stops were moved: "[SL MOVED to X]", "[TP MOVED to X]", "[HIT STOP]", "[HIT TARGET]", "[MANUAL EXIT]"
+  * Now enables proper analysis of trader discipline: stop loss movements, profit target achievements, and exit strategy effectiveness
 ```
 
 ## User Preferences
