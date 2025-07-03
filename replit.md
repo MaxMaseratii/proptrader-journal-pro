@@ -258,6 +258,12 @@ Changelog:
   * Added comprehensive debugging output to track SL/TP detection accuracy
   * Now properly enables discipline analysis: tracking if traders move stops against themselves or let profits run
   * Fixed the core issue where all SL/TP columns showed identical values preventing proper trader discipline evaluation
+- July 3, 2025. CSV Account ID Consistency Validation:
+  * Added csvAccountId field to accounts table for import security validation
+  * Implemented account ID consistency check - each account can only accept CSV files with matching account IDs
+  * First CSV import to an account stores its account ID, subsequent imports must match exactly
+  * Added comprehensive error messaging for account ID mismatches to prevent cross-contamination
+  * Enhanced security prevents accidentally importing wrong trading data to accounts
 ```
 
 ## User Preferences

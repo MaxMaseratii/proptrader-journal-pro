@@ -39,6 +39,9 @@ export const accounts = pgTable("accounts", {
   minimumTradingDays: integer("minimum_trading_days"),
   timeLimit: integer("time_limit"), // days, 0 = unlimited
   
+  // CSV Import Security
+  csvAccountId: text("csv_account_id"), // Associated CSV account ID for import validation
+  
   // Drawdown Rules
   drawdownType: text("drawdown_type"), // 'daily', 'unrealized', 'trailing', 'balance_based'
   maxTotalLoss: real("max_total_loss"),

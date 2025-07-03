@@ -361,9 +361,41 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "Account not found" });
       }
 
-      // Parse CSV content
+      // Parse CSV content to detect the CSV's account ID
       const lines = csvText.split('\n').filter((line: string) => line.trim());
       const headers = lines[0].split(',').map((h: string) => h.trim());
+      
+      // Extract CSV account ID from the first data row
+      let csvAccountId = null;
+      if (lines.length > 1) {
+        const firstDataLine = lines[1].split(',').map((v: string) => v.trim());
+        const firstRow: any = {};
+        headers.forEach((header: string, index: number) => {
+          firstRow[header] = firstDataLine[index] || '';
+        });
+        
+        // Try to find account ID in various common column names
+        csvAccountId = firstRow.Account || firstRow.AccountId || firstRow['Account ID'] || 
+                      firstRow.AccountNumber || firstRow['Account Number'] || 
+                      firstRow.ID || firstRow.Id || null;
+      }
+      
+      console.log("CSV Account ID detected:", csvAccountId);
+      console.log("Account stored CSV ID:", account.csvAccountId);
+      
+      // Validate account ID consistency
+      if (account.csvAccountId) {
+        // Account already has a CSV account ID - must match
+        if (account.csvAccountId !== csvAccountId) {
+          return res.status(400).json({ 
+            message: `Account ID mismatch. This account is associated with CSV account ID "${account.csvAccountId}" but the uploaded CSV contains account ID "${csvAccountId}". Please upload a CSV file with the correct account ID.`
+          });
+        }
+      } else if (csvAccountId) {
+        // First time importing to this account - store the CSV account ID
+        await storage.updateAccount(parseInt(accountId), { csvAccountId });
+        console.log(`Associated account ${accountId} with CSV account ID: ${csvAccountId}`);
+      }
       
       console.log("CSV Processing Debug:");
       console.log("- Lines count:", lines.length);
