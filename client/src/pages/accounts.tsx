@@ -14,9 +14,10 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { insertAccountSchema, type Account, type InsertAccount } from "@shared/schema";
 import { formatCurrency } from "@/lib/utils";
 import { apiRequest, queryClient } from "@/lib/queryClient";
-import { Plus, Calculator, TrendingUp, DollarSign, Lightbulb, RotateCcw, LogOut, Trash2, AlertTriangle } from "lucide-react";
+import { Plus, Calculator, TrendingUp, DollarSign, Lightbulb, RotateCcw, LogOut, Trash2, AlertTriangle, Target } from "lucide-react";
 import { useState, useEffect, useMemo } from "react";
 import { calculateRiskSuggestions, TRADING_ASSETS, type AssetSymbol } from "@/lib/risk-calculator";
+import { TRADING_ASSETS as ASSET_CONFIG, ASSET_CATEGORIES, getRiskSuggestion } from "@/lib/trading-assets";
 import AccountManagement from "@/components/account-management";
 
 export default function Accounts() {
@@ -71,6 +72,10 @@ export default function Accounts() {
       bufferPercentage: 5.0,
       daysRequiredForPayout: 5,
       maximumPayoutPercentage: 90,
+      // Trading Asset Selection
+      primaryTradingAsset: "ES",
+      secondaryTradingAsset: "",
+      tertiaryTradingAsset: "",
     },
   });
 
@@ -372,6 +377,147 @@ export default function Accounts() {
                               />
                             </div>
                           )}
+                        </div>
+
+                        {/* Trading Assets Selection */}
+                        <div className="bg-gray-800 p-4 rounded-lg">
+                          <h3 className="text-lg font-semibold text-white mb-4 flex items-center">
+                            <Target className="mr-2 h-5 w-5" />
+                            Primary Trading Assets
+                          </h3>
+                          <p className="text-gray-400 text-sm mb-4">
+                            Select your main trading instruments to get personalized risk suggestions and position sizing recommendations.
+                          </p>
+
+                          <div className="grid grid-cols-1 gap-4">
+                            <FormField
+                              control={form.control}
+                              name="primaryTradingAsset"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel className="text-white font-medium">Primary Trading Asset</FormLabel>
+                                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                    <FormControl>
+                                      <SelectTrigger className="bg-gray-700 border-gray-600 text-white">
+                                        <SelectValue placeholder="Select your main trading instrument" />
+                                      </SelectTrigger>
+                                    </FormControl>
+                                    <SelectContent className="bg-gray-700 border-gray-600 max-h-64">
+                                      {Object.entries(ASSET_CATEGORIES).map(([category, config]) => (
+                                        <div key={category}>
+                                          <div className="text-xs font-semibold text-gray-400 px-2 py-1 uppercase tracking-wide">
+                                            {config.name}
+                                          </div>
+                                          {ASSET_CONFIG.filter(asset => asset.category === category).map((asset) => (
+                                            <SelectItem 
+                                              key={asset.symbol} 
+                                              value={asset.symbol}
+                                              className="text-white hover:bg-gray-600"
+                                            >
+                                              <div className="flex items-center justify-between w-full">
+                                                <span>{asset.symbol} - {asset.name}</span>
+                                                {asset.isBeginnerFriendly && (
+                                                  <Badge variant="secondary" className="ml-2 bg-green-600 text-xs">
+                                                    Beginner Friendly
+                                                  </Badge>
+                                                )}
+                                              </div>
+                                            </SelectItem>
+                                          ))}
+                                        </div>
+                                      ))}
+                                    </SelectContent>
+                                  </Select>
+                                  <FormMessage />
+                                  {form.watch("primaryTradingAsset") && (
+                                    <div className="mt-2 p-2 bg-blue-900/30 rounded border border-blue-600/30">
+                                      {(() => {
+                                        const asset = ASSET_CONFIG.find(a => a.symbol === form.watch("primaryTradingAsset"));
+                                        const riskSuggestion = getRiskSuggestion(form.watch("primaryTradingAsset"), form.watch("startingBalance") || 50000);
+                                        return asset ? (
+                                          <div className="space-y-1">
+                                            <p className="text-blue-300 text-xs">
+                                              <strong>{asset.name}</strong> - {asset.description}
+                                            </p>
+                                            <p className="text-blue-300 text-xs">
+                                              Risk Level: {asset.riskLevel}/5 | Volatility: {asset.volatility} | Suggested Risk: ${riskSuggestion.suggestedRisk}
+                                            </p>
+                                            <p className="text-blue-400 text-xs">{riskSuggestion.reasoning}</p>
+                                          </div>
+                                        ) : null;
+                                      })()}
+                                    </div>
+                                  )}
+                                </FormItem>
+                              )}
+                            />
+
+                            <div className="grid grid-cols-2 gap-4">
+                              <FormField
+                                control={form.control}
+                                name="secondaryTradingAsset"
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormLabel className="text-white font-medium">Secondary Asset (Optional)</FormLabel>
+                                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                      <FormControl>
+                                        <SelectTrigger className="bg-gray-700 border-gray-600 text-white">
+                                          <SelectValue placeholder="Select secondary instrument" />
+                                        </SelectTrigger>
+                                      </FormControl>
+                                      <SelectContent className="bg-gray-700 border-gray-600 max-h-64">
+                                        <SelectItem value="" className="text-white hover:bg-gray-600">
+                                          None
+                                        </SelectItem>
+                                        {ASSET_CONFIG.map((asset) => (
+                                          <SelectItem 
+                                            key={asset.symbol} 
+                                            value={asset.symbol}
+                                            className="text-white hover:bg-gray-600"
+                                          >
+                                            {asset.symbol} - {asset.name}
+                                          </SelectItem>
+                                        ))}
+                                      </SelectContent>
+                                    </Select>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+
+                              <FormField
+                                control={form.control}
+                                name="tertiaryTradingAsset"
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormLabel className="text-white font-medium">Tertiary Asset (Optional)</FormLabel>
+                                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                      <FormControl>
+                                        <SelectTrigger className="bg-gray-700 border-gray-600 text-white">
+                                          <SelectValue placeholder="Select third instrument" />
+                                        </SelectTrigger>
+                                      </FormControl>
+                                      <SelectContent className="bg-gray-700 border-gray-600 max-h-64">
+                                        <SelectItem value="" className="text-white hover:bg-gray-600">
+                                          None
+                                        </SelectItem>
+                                        {ASSET_CONFIG.map((asset) => (
+                                          <SelectItem 
+                                            key={asset.symbol} 
+                                            value={asset.symbol}
+                                            className="text-white hover:bg-gray-600"
+                                          >
+                                            {asset.symbol} - {asset.name}
+                                          </SelectItem>
+                                        ))}
+                                      </SelectContent>
+                                    </Select>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+                            </div>
+                          </div>
                         </div>
                       </TabsContent>
 

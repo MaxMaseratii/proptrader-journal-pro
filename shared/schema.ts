@@ -23,6 +23,11 @@ export const accounts = pgTable("accounts", {
   maxTradesPerDay: integer("max_trades_per_day").default(0), // Maximum trades allowed per day (0 = unlimited)
   preferredAssets: text("preferred_assets"), // JSON array of preferred trading instruments
   
+  // Trading Asset Selection
+  primaryTradingAsset: text("primary_trading_asset"), // Main trading instrument
+  secondaryTradingAsset: text("secondary_trading_asset"), // Secondary trading instrument  
+  tertiaryTradingAsset: text("tertiary_trading_asset"), // Third trading instrument
+  
   // Financial Tracking
   accountCost: real("account_cost"), // Cost to purchase the account
   purchaseMethod: text("purchase_method"), // 'credit_card', 'paypal', 'crypto', 'bank_transfer', 'other'

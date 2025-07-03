@@ -1,0 +1,162 @@
+🏢 Prop Firm Trading Assets Overview
+The assets you can trade in prop firms vary significantly depending on the firm and their business model. Here's a comprehensive breakdown:
+📈 Futures Trading Firms (Most Common)
+Major Indices:
+
+ES (E-mini S&P 500) - Most popular
+NQ (E-mini Nasdaq) - High volatility
+YM (E-mini Dow Jones)
+RTY (E-mini Russell 2000)
+MES/MNQ (Micro contracts) - Lower capital requirements
+
+Energy & Commodities:
+
+CL (Crude Oil) - High profit potential
+NG (Natural Gas)
+GC (Gold) - Safe haven asset
+SI (Silver)
+HG (Copper)
+
+Agricultural Futures:
+
+ZC (Corn)
+ZS (Soybeans)
+ZW (Wheat)
+KC (Coffee)
+CC (Cocoa)
+
+Currency Futures:
+
+6E (Euro FX)
+6J (Japanese Yen)
+6B (British Pound)
+
+Popular Futures Prop Firms:
+
+Topstep Trader
+Apex Trader Funding
+Earn2Trade
+SurgeTrader
+The5%ers (Futures)
+
+
+💱 Forex Trading Firms
+Major Currency Pairs:
+
+EUR/USD - Most liquid
+GBP/USD - High volatility
+USD/JPY - Popular Asian pair
+USD/CHF - Safe haven pair
+AUD/USD - Commodity currency
+USD/CAD - Oil-correlated
+
+Minor & Exotic Pairs:
+
+EUR/GBP, EUR/JPY, GBP/JPY
+USD/ZAR, USD/TRY (Higher spreads)
+Commodity pairs (AUD, CAD, NZD)
+
+Popular Forex Prop Firms:
+
+FTMO
+MyFundedFX
+The5%ers
+FundedNext
+E8 Markets
+
+
+📊 Stock/Equity Prop Firms
+US Stocks:
+
+Large Cap (AAPL, MSFT, GOOGL, TSLA)
+Mid Cap and Small Cap stocks
+ETFs (SPY, QQQ, IWM)
+Sector ETFs (XLF, XLE, XLK)
+
+International Markets:
+
+European stocks (some firms)
+Asian markets (limited)
+
+Popular Stock Prop Firms:
+
+T3 Trading
+SMB Capital
+Maverick Trading
+SureTrader Pro
+
+
+🪙 Crypto Trading Firms
+Major Cryptocurrencies:
+
+BTC/USD (Bitcoin)
+ETH/USD (Ethereum)
+Popular Altcoins (varies by firm)
+Crypto Futures (some firms)
+
+Crypto Prop Firms:
+
+Crypto Fund Trader
+Funding Pips (crypto division)
+
+
+⚠️ Common Restrictions
+What's Usually NOT Allowed:
+
+News Trading (around major announcements)
+Scalping (sub-minute trades) - Some firms
+Grid Trading or Martingale strategies
+Copy Trading or EA trading (varies)
+Weekend Gap Trading
+Illiquid instruments
+
+Risk Limitations:
+
+Maximum position size per trade
+Daily loss limits (typically 3-5%)
+Maximum loss limits (typically 6-10%)
+Correlation limits (similar positions)
+Overnight holding restrictions (some firms)
+
+
+🎯 Choosing the Right Prop Firm
+For Futures Traders:
+
+Topstep - Great for beginners
+Apex - Flexible rules
+Earn2Trade - Multiple evaluation options
+
+For Forex Traders:
+
+FTMO - Industry standard
+MyFundedFX - Lower spreads
+The5%ers - Scaling program
+
+For Stock Traders:
+
+T3 Trading - Direct market access
+SMB Capital - Training programs
+
+
+💡 Pro Tips for Asset Selection:
+Best Assets for Beginners:
+
+ES (S&P 500 futures) - Consistent liquidity
+EUR/USD - Tight spreads, predictable
+Large cap stocks - Less volatile
+
+High Profit Potential (Higher Risk):
+
+NQ (Nasdaq futures) - High volatility
+GBP/USD - Major price swings
+CL (Crude Oil) - Energy sector volatility
+
+Factors to Consider:
+
+Trading session (US, European, Asian)
+Spread costs and commissions
+Volatility levels
+Your trading style (scalping, swing, day trading)
+Capital requirements
+
+Most prop firms focus on liquid, major instruments rather than exotic or low-volume assets. The key is choosing instruments that match your trading style and the firm's rules!
