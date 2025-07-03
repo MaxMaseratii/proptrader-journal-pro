@@ -180,6 +180,22 @@ export default function Dashboard() {
   const primaryAccount = accounts?.[0];
   const recentTrades = trades?.slice(0, 4) || [];
 
+  // Calculate net balance (starting balance + total P&L from trades)
+  const calculateNetBalance = () => {
+    if (!accounts || !trades) return 0;
+    
+    let totalNetBalance = 0;
+    
+    accounts.forEach(account => {
+      const accountTrades = trades.filter(t => t.accountId === account.id);
+      const totalPnL = accountTrades.reduce((sum, trade) => sum + (trade.pnl || 0), 0);
+      const netBalance = account.startingBalance + totalPnL;
+      totalNetBalance += netBalance;
+    });
+    
+    return totalNetBalance;
+  };
+
   // Calculate total available payouts based on actual account requirements
   const calculateTotalAvailablePayouts = () => {
     if (!accounts || !trades) return 0;
@@ -411,11 +427,11 @@ export default function Dashboard() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-gray-400 text-sm mb-1">Net Balance</p>
-                  <p className="text-2xl font-bold text-success-green">
-                    {formatCurrency(accounts?.reduce((sum, acc) => sum + acc.currentBalance, 0) || 0)}
+                  <p className={`text-2xl font-bold ${calculateNetBalance() >= (accounts?.reduce((sum, acc) => sum + acc.startingBalance, 0) || 0) ? 'text-prop-green' : 'text-prop-pink'}`}>
+                    {formatCurrency(calculateNetBalance())}
                   </p>
                   <p className="text-xs text-gray-400 mt-1">
-                    Combined accounts
+                    Starting balance + total P&L
                   </p>
                 </div>
                 <div className="bg-success-green bg-opacity-20 p-3 rounded-lg">
