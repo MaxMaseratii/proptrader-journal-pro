@@ -221,8 +221,8 @@ export default function Projections() {
 
   // Check if there's an active saved projection for the selected account
   const activeProjection = useMemo(() => {
-    if (!settings.selectedAccountId || !savedProjections) return null;
-    return savedProjections.find((p: any) => p.status === 'active' && p.isLocked);
+    if (!settings.selectedAccountId || !savedProjections || !Array.isArray(savedProjections)) return null;
+    return savedProjections.find((p: any) => p.accountId === settings.selectedAccountId && p.status === 'active' && p.isLocked);
   }, [settings.selectedAccountId, savedProjections]);
 
   const hasActiveGoal = !!activeProjection;

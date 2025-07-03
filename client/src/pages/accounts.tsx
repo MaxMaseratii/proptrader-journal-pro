@@ -331,7 +331,9 @@ export default function Accounts() {
                                       <Input 
                                         type="number" 
                                         {...field} 
-                                        onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                                        value={field.value || ""}
+                                        onChange={(e) => field.onChange(e.target.value === "" ? null : parseFloat(e.target.value))}
+                                        placeholder="0"
                                         className="bg-gray-700 border-gray-600 text-white placeholder-gray-400"
                                       />
                                     </FormControl>
@@ -460,7 +462,8 @@ export default function Accounts() {
                                       type="number" 
                                       step="0.01"
                                       {...field} 
-                                      onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                                      value={field.value || ""}
+                                      onChange={(e) => field.onChange(e.target.value === "" ? null : parseFloat(e.target.value))}
                                       className="bg-gray-700 border-gray-600 text-white placeholder-gray-400"
                                       placeholder="e.g., 99.00"
                                     />
@@ -484,7 +487,8 @@ export default function Accounts() {
                                       <Input 
                                         type="number" 
                                         {...field} 
-                                        onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
+                                        value={field.value || ""}
+                                        onChange={(e) => field.onChange(e.target.value === "" ? null : parseInt(e.target.value))}
                                         className="bg-gray-600 border-gray-500 text-white placeholder-gray-400"
                                         placeholder="0"
                                       />
@@ -505,7 +509,8 @@ export default function Accounts() {
                                         type="number" 
                                         step="0.01"
                                         {...field} 
-                                        onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                                        value={field.value || ""}
+                                        onChange={(e) => field.onChange(e.target.value === "" ? null : parseFloat(e.target.value))}
                                         className="bg-gray-600 border-gray-500 text-white placeholder-gray-400"
                                         placeholder="0.00"
                                       />
@@ -591,7 +596,8 @@ export default function Accounts() {
                                     <Input 
                                       type="number" 
                                       {...field} 
-                                      onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                                      value={field.value || ""}
+                                      onChange={(e) => field.onChange(e.target.value === "" ? null : parseFloat(e.target.value))}
                                       className="bg-gray-700 border-gray-600 text-white placeholder-gray-400"
                                       placeholder="e.g., 100"
                                     />
@@ -613,7 +619,8 @@ export default function Accounts() {
                                       min="0"
                                       max="100"
                                       {...field} 
-                                      onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                                      value={field.value || ""}
+                                      onChange={(e) => field.onChange(e.target.value === "" ? null : parseFloat(e.target.value))}
                                       className="bg-gray-700 border-gray-600 text-white placeholder-gray-400"
                                       placeholder="e.g., 80"
                                     />
@@ -639,7 +646,8 @@ export default function Accounts() {
                                       max="100"
                                       step="0.1"
                                       {...field} 
-                                      onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                                      value={field.value || ""}
+                                      onChange={(e) => field.onChange(e.target.value === "" ? null : parseFloat(e.target.value))}
                                       className="bg-gray-700 border-gray-600 text-white placeholder-gray-400"
                                       placeholder="e.g., 5.0"
                                     />
@@ -674,7 +682,8 @@ export default function Accounts() {
                                     <Input 
                                       type="number" 
                                       {...field} 
-                                      onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                                      value={field.value || ""}
+                                      onChange={(e) => field.onChange(e.target.value === "" ? null : parseFloat(e.target.value))}
                                       className="bg-gray-700 border-gray-600 text-white placeholder-gray-400"
                                       placeholder="e.g., 50000"
                                     />
@@ -766,7 +775,8 @@ export default function Accounts() {
                                         min="0.01"
                                         max="10"
                                         {...field} 
-                                        onChange={(e) => field.onChange(parseFloat(e.target.value) || 1.0)}
+                                        value={field.value || ""}
+                                        onChange={(e) => field.onChange(e.target.value === "" ? null : parseFloat(e.target.value))}
                                         className="bg-gray-700 border-gray-600 text-white placeholder-gray-400"
                                         placeholder="e.g., 1.0"
                                       />
@@ -790,7 +800,8 @@ export default function Accounts() {
                                         <Input 
                                           type="number" 
                                           {...field} 
-                                          onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                                          value={field.value || ""}
+                                          onChange={(e) => field.onChange(e.target.value === "" ? null : parseFloat(e.target.value))}
                                           className="bg-gray-700 border-gray-600 text-white placeholder-gray-400"
                                           placeholder="e.g., 500"
                                         />
@@ -817,7 +828,8 @@ export default function Accounts() {
                                       min="0"
                                       max="50"
                                       {...field}
-                                      onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
+                                      value={field.value || ""}
+                                      onChange={(e) => field.onChange(e.target.value === "" ? null : parseInt(e.target.value))}
                                       className="bg-gray-700 border-gray-600 text-white placeholder-gray-400"
                                       placeholder="0 = unlimited"
                                     />
