@@ -377,18 +377,20 @@ export default function Projections() {
                   <Label className="text-white">Starting Capital</Label>
                   <Input
                     type="number"
-                    value={settings.startingCapital}
-                    onChange={(e) => updateSetting('startingCapital', Number(e.target.value))}
+                    value={settings.startingCapital || ""}
+                    onChange={(e) => updateSetting('startingCapital', e.target.value === "" ? 0 : Number(e.target.value))}
                     className="bg-gray-700 border-gray-600 text-white"
+                    placeholder="0"
                   />
                 </div>
                 <div className="space-y-2">
                   <Label className="text-white">Risk Per Trade</Label>
                   <Input
                     type="number"
-                    value={settings.riskPerTrade}
-                    onChange={(e) => updateSetting('riskPerTrade', Number(e.target.value))}
+                    value={settings.riskPerTrade || ""}
+                    onChange={(e) => updateSetting('riskPerTrade', e.target.value === "" ? 0 : Number(e.target.value))}
                     className="bg-gray-700 border-gray-600 text-white"
+                    placeholder="0"
                   />
                 </div>
               </div>
@@ -399,18 +401,20 @@ export default function Projections() {
                   <Input
                     type="number"
                     step="0.1"
-                    value={settings.riskRewardRatio}
-                    onChange={(e) => updateSetting('riskRewardRatio', Number(e.target.value))}
+                    value={settings.riskRewardRatio || ""}
+                    onChange={(e) => updateSetting('riskRewardRatio', e.target.value === "" ? 0 : Number(e.target.value))}
                     className="bg-gray-700 border-gray-600 text-white"
+                    placeholder="0"
                   />
                 </div>
                 <div className="space-y-2">
                   <Label className="text-white">Profit Target</Label>
                   <Input
                     type="number"
-                    value={settings.profitTarget}
-                    onChange={(e) => updateSetting('profitTarget', Number(e.target.value))}
+                    value={settings.profitTarget || ""}
+                    onChange={(e) => updateSetting('profitTarget', e.target.value === "" ? 0 : Number(e.target.value))}
                     className="bg-gray-700 border-gray-600 text-white"
+                    placeholder="0"
                   />
                 </div>
               </div>
@@ -420,18 +424,20 @@ export default function Projections() {
                   <Label className="text-white">Max Drawdown</Label>
                   <Input
                     type="number"
-                    value={settings.maxDrawdown}
-                    onChange={(e) => updateSetting('maxDrawdown', Number(e.target.value))}
+                    value={settings.maxDrawdown || ""}
+                    onChange={(e) => updateSetting('maxDrawdown', e.target.value === "" ? 0 : Number(e.target.value))}
                     className="bg-gray-700 border-gray-600 text-white"
+                    placeholder="0"
                   />
                 </div>
                 <div className="space-y-2">
                   <Label className="text-white">Max Loss/Day</Label>
                   <Input
                     type="number"
-                    value={settings.maxLossPerDay}
-                    onChange={(e) => updateSetting('maxLossPerDay', Number(e.target.value))}
+                    value={settings.maxLossPerDay || ""}
+                    onChange={(e) => updateSetting('maxLossPerDay', e.target.value === "" ? 0 : Number(e.target.value))}
                     className="bg-gray-700 border-gray-600 text-white"
+                    placeholder="0"
                   />
                 </div>
               </div>

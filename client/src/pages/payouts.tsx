@@ -1,11 +1,17 @@
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import { Slider } from "@/components/ui/slider";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { useToast } from "@/hooks/use-toast";
+import { apiRequest } from "@/lib/queryClient";
 import { formatCurrency, formatDate } from "@/lib/utils";
 import { 
   DollarSign, 
@@ -15,7 +21,11 @@ import {
   Clock,
   TrendingUp,
   AlertCircle,
-  Download
+  Download,
+  Send,
+  Star,
+  Banknote,
+  FileText
 } from "lucide-react";
 import type { Account, Trade } from "@shared/schema";
 
@@ -36,13 +46,27 @@ interface PayoutHistory {
   id: number;
   date: string;
   amount: number;
-  status: 'pending' | 'approved' | 'paid' | 'rejected';
+  status: 'suggested' | 'requested' | 'approved' | 'received' | 'rejected';
   type: 'weekly';
+  notes?: string;
+  firmRating?: number;
+  firmExperience?: string;
+  requestedDate?: string;
+  approvedDate?: string;
+  receivedDate?: string;
 }
 
 export default function Payouts() {
   const [selectedAccountId, setSelectedAccountId] = useState<string>("");
   const [showRequestDialog, setShowRequestDialog] = useState(false);
+  const [payoutAmount, setPayoutAmount] = useState<number>(0);
+  const [suggestedPayoutPercent, setSuggestedPayoutPercent] = useState<number>(75);
+  const [payoutNotes, setPayoutNotes] = useState<string>("");
+  const [firmRating, setFirmRating] = useState<number>(0);
+  const [firmExperience, setFirmExperience] = useState<string>("");
+  
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
 
   const { data: accounts } = useQuery<Account[]>({
     queryKey: ["/api/accounts"],
@@ -61,22 +85,35 @@ export default function Payouts() {
       id: 1,
       date: "2024-10-15",
       amount: 1200,
-      status: 'paid',
-      type: 'weekly'
+      status: 'received',
+      type: 'weekly',
+      firmRating: 5,
+      firmExperience: "Excellent service! Fast payout processing, no issues whatsoever.",
+      requestedDate: "2024-10-10",
+      approvedDate: "2024-10-12",
+      receivedDate: "2024-10-15"
     },
     {
       id: 2,
       date: "2024-09-28",
       amount: 800,
-      status: 'paid',
-      type: 'weekly'
+      status: 'received',
+      type: 'weekly',
+      firmRating: 4,
+      firmExperience: "Good experience, took 3 days but everything went smoothly.",
+      requestedDate: "2024-09-25",
+      approvedDate: "2024-09-26",
+      receivedDate: "2024-09-28"
     },
     {
       id: 3,
-      date: "2024-09-10",
+      date: "2024-09-10", 
       amount: 600,
-      status: 'paid',
-      type: 'weekly'
+      status: 'approved',
+      type: 'weekly',
+      notes: "Waiting for bank transfer to complete",
+      requestedDate: "2024-09-05",
+      approvedDate: "2024-09-08"
     }
   ];
 
@@ -117,7 +154,7 @@ export default function Payouts() {
     return {
       availablePayout,
       totalEarnings: totalProfit,
-      totalPayouts: payoutHistory.filter(p => p.status === 'paid').reduce((sum, p) => sum + p.amount, 0),
+      totalPayouts: payoutHistory.filter(p => p.status === 'received').reduce((sum, p) => sum + p.amount, 0),
       fiveDayEligible,
       fiveDayRule,
       profitableDays200Plus,
@@ -128,11 +165,39 @@ export default function Payouts() {
     };
   };
 
+  // Payout workflow mutations
+  const requestPayoutMutation = useMutation({
+    mutationFn: async (data: { accountId: number; amount: number; notes?: string }) => {
+      return apiRequest("POST", "/api/payouts/request", data);
+    },
+    onSuccess: () => {
+      toast({ title: "Payout Request Submitted", description: "Your payout request has been sent for approval." });
+      setShowRequestDialog(false);
+      queryClient.invalidateQueries({ queryKey: ['/api/payouts'] });
+    },
+  });
+
+  const updatePayoutStatusMutation = useMutation({
+    mutationFn: async ({ payoutId, status, rating, experience }: { payoutId: number; status: string; rating?: number; experience?: string }) => {
+      return apiRequest("PATCH", `/api/payouts/${payoutId}`, { status, firmRating: rating, firmExperience: experience });
+    },
+    onSuccess: () => {
+      toast({ title: "Payout Status Updated", description: "Payout status has been updated successfully." });
+      queryClient.invalidateQueries({ queryKey: ['/api/payouts'] });
+    },
+  });
+
+  const calculateSuggestedPayout = () => {
+    if (!metrics) return 0;
+    return Math.round((metrics.availablePayout * suggestedPayoutPercent) / 100);
+  };
+
   const getStatusIcon = (status: string) => {
     switch (status) {
-      case 'paid': return <CheckCircle className="h-4 w-4 text-success-green" />;
+      case 'received': return <CheckCircle className="h-4 w-4 text-success-green" />;
       case 'approved': return <Clock className="h-4 w-4 text-primary" />;
-      case 'pending': return <Clock className="h-4 w-4 text-warning-orange" />;
+      case 'requested': return <Send className="h-4 w-4 text-blue-400" />;
+      case 'suggested': return <TrendingUp className="h-4 w-4 text-warning-orange" />;
       case 'rejected': return <XCircle className="h-4 w-4 text-error-red" />;
       default: return <Clock className="h-4 w-4 text-gray-400" />;
     }
@@ -140,12 +205,22 @@ export default function Payouts() {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'paid': return 'bg-success-green text-white';
+      case 'received': return 'bg-success-green text-white';
       case 'approved': return 'bg-primary text-white';
-      case 'pending': return 'bg-warning-orange text-white';
+      case 'requested': return 'bg-blue-600 text-white';
+      case 'suggested': return 'bg-warning-orange text-white';
       case 'rejected': return 'bg-error-red text-white';
       default: return 'bg-gray-500 text-white';
     }
+  };
+
+  const renderStars = (rating: number) => {
+    return Array.from({ length: 5 }, (_, i) => (
+      <Star 
+        key={i} 
+        className={`h-4 w-4 ${i < rating ? 'text-yellow-400 fill-current' : 'text-gray-400'}`} 
+      />
+    ));
   };
 
   const metrics = calculatePayoutMetrics();
@@ -425,6 +500,134 @@ export default function Payouts() {
               </Card>
             </div>
 
+            {/* Enhanced Payout Request Workflow */}
+            {metrics?.fiveDayEligible && metrics?.fiveDayRule && (
+              <Card className="bg-dark-card border-prop-gold">
+                <CardHeader>
+                  <CardTitle className="flex items-center">
+                    <Banknote className="mr-2 h-5 w-5 text-prop-gold" />
+                    Payout Request Center
+                  </CardTitle>
+                  <p className="text-gray-400 text-sm">Complete payout workflow with suggestion engine</p>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  {/* Payout Suggestion Engine */}
+                  <div className="bg-gray-800 p-4 rounded-lg border border-gray-600">
+                    <h4 className="text-white font-medium mb-3 flex items-center">
+                      <TrendingUp className="mr-2 h-4 w-4 text-prop-gold" />
+                      Smart Payout Suggestion
+                    </h4>
+                    
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between">
+                        <Label className="text-white">Suggested Payout Percentage</Label>
+                        <div className="text-prop-gold font-medium">{suggestedPayoutPercent}%</div>
+                      </div>
+                      
+                      <Slider
+                        value={[suggestedPayoutPercent]}
+                        onValueChange={([value]) => setSuggestedPayoutPercent(value)}
+                        max={90}
+                        min={10}
+                        step={5}
+                        className="w-full"
+                      />
+                      
+                      <div className="grid grid-cols-3 gap-4 text-center">
+                        <div className="bg-gray-700 p-3 rounded">
+                          <p className="text-xs text-gray-400">Available</p>
+                          <p className="font-bold text-white">{formatCurrency(metrics?.availablePayout || 0)}</p>
+                        </div>
+                        <div className="bg-prop-gold bg-opacity-20 p-3 rounded border border-prop-gold">
+                          <p className="text-xs text-gray-400">Suggested</p>
+                          <p className="font-bold text-prop-gold">{formatCurrency(calculateSuggestedPayout())}</p>
+                        </div>
+                        <div className="bg-gray-700 p-3 rounded">
+                          <p className="text-xs text-gray-400">Remaining</p>
+                          <p className="font-bold text-green-400">{formatCurrency((metrics?.availablePayout || 0) - calculateSuggestedPayout())}</p>
+                        </div>
+                      </div>
+                      
+                      <div className="text-xs text-gray-400 space-y-1">
+                        <p>💡 Smart suggestions based on:</p>
+                        <ul className="space-y-1 ml-4">
+                          <li>• Account buffer requirements ({selectedAccount.bufferPercentage || 5}%)</li>
+                          <li>• Risk management best practices</li>
+                          <li>• Historical payout patterns</li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Payout Request Form */}
+                  <div className="space-y-4">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label className="text-white">Request Amount</Label>
+                        <Input
+                          type="number"
+                          value={payoutAmount || ""}
+                          onChange={(e) => setPayoutAmount(e.target.value === "" ? 0 : Number(e.target.value))}
+                          placeholder="Enter amount"
+                          className="bg-gray-700 border-gray-600 text-white"
+                        />
+                      </div>
+                      
+                      <div className="space-y-2">
+                        <Label className="text-white">Quick Select</Label>
+                        <div className="flex gap-2">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => setPayoutAmount(calculateSuggestedPayout())}
+                            className="border-prop-gold text-prop-gold hover:bg-prop-gold hover:text-black"
+                          >
+                            Suggested
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => setPayoutAmount(metrics?.availablePayout || 0)}
+                            className="border-gray-600 text-white hover:bg-gray-600"
+                          >
+                            Max
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label className="text-white">Notes (Optional)</Label>
+                      <Textarea
+                        value={payoutNotes}
+                        onChange={(e) => setPayoutNotes(e.target.value)}
+                        placeholder="Add notes about this payout request..."
+                        className="bg-gray-700 border-gray-600 text-white"
+                        rows={3}
+                      />
+                    </div>
+                    
+                    <Button
+                      onClick={() => {
+                        if (payoutAmount > 0 && selectedAccount) {
+                          requestPayoutMutation.mutate({
+                            accountId: selectedAccount.id,
+                            amount: payoutAmount,
+                            notes: payoutNotes || undefined
+                          });
+                        }
+                      }}
+                      disabled={!payoutAmount || payoutAmount <= 0 || requestPayoutMutation.isPending}
+                      className="w-full bg-prop-gold hover:bg-prop-gold/80 text-black font-medium"
+                    >
+                      <Send className="mr-2 h-4 w-4" />
+                      {requestPayoutMutation.isPending ? 'Submitting Request...' : 'Submit Payout Request'}
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
             {/* Payout History */}
             <Card className="bg-dark-card border-dark-border">
               <CardHeader>
@@ -463,9 +666,108 @@ export default function Payouts() {
                               </div>
                             </td>
                             <td className="px-6 py-4">
-                              <Button variant="ghost" size="sm" className="text-primary hover:text-blue-400">
-                                View Details
-                              </Button>
+                              <div className="flex items-center gap-2">
+                                {payout.status === 'approved' && (
+                                  <Button 
+                                    size="sm"
+                                    onClick={() => updatePayoutStatusMutation.mutate({ 
+                                      payoutId: payout.id, 
+                                      status: 'received' 
+                                    })}
+                                    className="bg-success-green hover:bg-success-green/80 text-white"
+                                  >
+                                    <CheckCircle className="h-3 w-3 mr-1" />
+                                    Confirm Received
+                                  </Button>
+                                )}
+                                
+                                {payout.status === 'received' && !payout.firmRating && (
+                                  <Dialog>
+                                    <DialogTrigger asChild>
+                                      <Button size="sm" variant="outline" className="border-yellow-600 text-yellow-400 hover:bg-yellow-600 hover:text-white">
+                                        <Star className="h-3 w-3 mr-1" />
+                                        Rate Experience
+                                      </Button>
+                                    </DialogTrigger>
+                                    <DialogContent className="bg-dark-card border-dark-border">
+                                      <DialogHeader>
+                                        <DialogTitle className="text-white">Rate Your Payout Experience</DialogTitle>
+                                      </DialogHeader>
+                                      <div className="space-y-4">
+                                        <div className="space-y-3">
+                                          <Label className="text-white">Firm Experience Rating</Label>
+                                          <div className="flex items-center gap-2">
+                                            {Array.from({ length: 5 }, (_, i) => (
+                                              <button
+                                                key={i}
+                                                onClick={() => setFirmRating(i + 1)}
+                                                className="transition-colors"
+                                              >
+                                                <Star 
+                                                  className={`h-6 w-6 ${
+                                                    i < firmRating ? 'text-yellow-400 fill-current' : 'text-gray-400'
+                                                  }`} 
+                                                />
+                                              </button>
+                                            ))}
+                                            <span className="ml-2 text-sm text-gray-400">
+                                              {firmRating === 0 ? 'No rating' : 
+                                               firmRating === 1 ? 'Poor' :
+                                               firmRating === 2 ? 'Fair' :
+                                               firmRating === 3 ? 'Good' :
+                                               firmRating === 4 ? 'Very Good' : 'Excellent'}
+                                            </span>
+                                          </div>
+                                        </div>
+                                        
+                                        <div className="space-y-2">
+                                          <Label className="text-white">Experience Details</Label>
+                                          <Textarea
+                                            value={firmExperience}
+                                            onChange={(e) => setFirmExperience(e.target.value)}
+                                            placeholder="Share your experience with the payout process..."
+                                            className="bg-gray-700 border-gray-600 text-white"
+                                            rows={4}
+                                          />
+                                        </div>
+                                        
+                                        <Button
+                                          onClick={() => {
+                                            updatePayoutStatusMutation.mutate({
+                                              payoutId: payout.id,
+                                              status: 'received',
+                                              rating: firmRating,
+                                              experience: firmExperience
+                                            });
+                                            setFirmRating(0);
+                                            setFirmExperience("");
+                                          }}
+                                          disabled={firmRating === 0 || !firmExperience.trim()}
+                                          className="w-full bg-prop-gold hover:bg-prop-gold/80 text-black"
+                                        >
+                                          Submit Rating
+                                        </Button>
+                                      </div>
+                                    </DialogContent>
+                                  </Dialog>
+                                )}
+                                
+                                {payout.status === 'received' && payout.firmRating && (
+                                  <div className="flex items-center gap-2">
+                                    <div className="flex items-center">
+                                      {renderStars(payout.firmRating)}
+                                    </div>
+                                    <Badge variant="outline" className="border-green-600 text-green-400">
+                                      Rated
+                                    </Badge>
+                                  </div>
+                                )}
+                                
+                                <Button variant="ghost" size="sm" className="text-primary hover:text-blue-400">
+                                  <FileText className="h-3 w-3 mr-1" />
+                                  Details
+                                </Button>
+                              </div>
                             </td>
                           </tr>
                         ))}

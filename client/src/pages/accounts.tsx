@@ -388,7 +388,8 @@ export default function Accounts() {
                                       type="number" 
                                       step="0.01"
                                       {...field} 
-                                      onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                                      value={field.value || ""}
+                                      onChange={(e) => field.onChange(e.target.value === "" ? 0 : parseFloat(e.target.value))}
                                       className="bg-gray-700 border-gray-600 text-white placeholder-gray-400"
                                       placeholder="e.g., 299.00"
                                     />
