@@ -406,9 +406,9 @@ export default function Trades() {
                         size="sm"
                         variant="outline"
                         onClick={() => {
-                          // Clean symbol for TradingView (remove contract months)
+                          // Format symbol for TradingView with proper futures format (e.g., MNQ1!)
                           const cleanSymbol = cleanSymbolForTradingView(trade.symbol);
-                          window.open(`https://www.tradingview.com/chart/?symbol=${cleanSymbol}`, '_blank');
+                          window.open(`https://www.tradingview.com/chart/?symbol=${cleanSymbol}1!`, '_blank');
                         }}
                         className="text-blue-400 border-blue-400 hover:bg-blue-400/20"
                       >
