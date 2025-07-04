@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import type { Trade } from "@shared/schema";
-import { cleanSymbolForTradingView, getSymbolDisplayName } from "@/lib/symbol-utils";
+import { getTradingViewSymbol, getSymbolDisplayName, cleanSymbolForTradingView } from "@/lib/symbol-utils";
 
 interface TradingViewChartProps {
   trades: Trade[];
@@ -22,7 +22,8 @@ export const TradingViewChart: React.FC<TradingViewChartProps> = ({
   height = 400,
   theme = 'dark'
 }) => {
-  // Clean the symbol for TradingView compatibility (removes contract months)
+  // Get the proper TradingView symbol format (e.g., CME:MNQ1!)
+  const tradingViewSymbol = getTradingViewSymbol(symbol);
   const cleanSymbol = cleanSymbolForTradingView(symbol);
   const displayName = getSymbolDisplayName(symbol);
   const canvasRef = useRef<HTMLCanvasElement>(null);

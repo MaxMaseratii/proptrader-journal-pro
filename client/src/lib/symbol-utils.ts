@@ -139,7 +139,9 @@ export function getTradingViewSymbol(symbol: string, exchange: string = 'CBOT'):
   };
   
   const symbolExchange = exchangeMappings[cleanSymbol] || exchange;
-  return `${symbolExchange}:${cleanSymbol}`;
+  
+  // Format with exclamation mark for TradingView futures contracts
+  return `${symbolExchange}:${cleanSymbol}1!`;
 }
 
 /**
