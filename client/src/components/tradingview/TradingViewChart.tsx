@@ -173,7 +173,7 @@ export const TradingViewChart: React.FC<TradingViewChartProps> = ({
     // Draw symbol watermark
     ctx.font = '24px system-ui';
     ctx.fillStyle = theme === 'dark' ? 'rgba(180, 180, 180, 0.4)' : 'rgba(180, 180, 180, 0.7)';
-    ctx.fillText(cleanSymbol || 'PropTraderJournal', padding, height - padding / 2);
+    ctx.fillText(`${cleanSymbol}1!` || 'PropTraderJournal', padding, height - padding / 2);
 
   }, [trades, symbol, height, theme]);
 
@@ -185,7 +185,7 @@ export const TradingViewChart: React.FC<TradingViewChartProps> = ({
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-lg font-semibold text-white flex items-center">
           <span className="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-            {cleanSymbol}
+            {cleanSymbol}1!
           </span>
           <span className="text-gray-400 ml-2 text-sm">{displayName}</span>
         </h3>
@@ -224,7 +224,7 @@ export const TradingViewChart: React.FC<TradingViewChartProps> = ({
               {new Date(hoverInfo.trade.date).toLocaleDateString()}
             </div>
             <div className="text-sm font-medium text-white mb-1">
-              {cleanSymbolForTradingView(hoverInfo.trade.symbol || '') || 'Unknown Symbol'}
+              {`${cleanSymbolForTradingView(hoverInfo.trade.symbol || '')}1!` || 'Unknown Symbol'}
             </div>
             <div className="flex justify-between items-center mb-1">
               <span className="text-xs text-gray-400">Entry:</span>

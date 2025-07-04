@@ -3,6 +3,7 @@ import { TradingViewChart } from './TradingViewChart';
 import type { Trade } from "@shared/schema";
 import { Grid3X3, Grid2X2, Square, BarChart3 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { cleanSymbolForTradingView } from '@/lib/symbol-utils';
 
 interface ChartGridProps {
   trades: Trade[];
@@ -127,7 +128,7 @@ export const ChartGrid: React.FC<ChartGridProps> = ({
 
           return (
             <div key={symbol} className="bg-gray-900 border border-gray-700 rounded-lg p-3">
-              <h4 className="text-sm font-medium text-white mb-2">{symbol}</h4>
+              <h4 className="text-sm font-medium text-white mb-2">{cleanSymbolForTradingView(symbol)}1!</h4>
               <div className="space-y-1">
                 <div className="flex justify-between text-xs">
                   <span className="text-gray-400">P&L:</span>
