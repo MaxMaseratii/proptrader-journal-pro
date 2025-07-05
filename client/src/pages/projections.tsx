@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Slider } from "@/components/ui/slider";
+import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { formatCurrency, formatDate } from "@/lib/utils";
@@ -38,6 +39,7 @@ interface ProjectionSettings {
   compoundingPercent: number;
   maxLossPerDay: number;
   extraDaysIfLoss: number;
+  useMaxDrawdownAsCapital: boolean;
 }
 
 interface ProjectionDay {
@@ -96,6 +98,7 @@ export default function Projections() {
     compoundingPercent: 0,
     maxLossPerDay: 500,
     extraDaysIfLoss: 5,
+    useMaxDrawdownAsCapital: false,
   });
 
   const [projectionData, setProjectionData] = useState<ProjectionDay[]>([]);
@@ -135,6 +138,9 @@ export default function Projections() {
       let currentRisk = settings.riskPerTrade;
       let tradingDayCount = 0;
       let calendarDayCount = 0;
+      
+      // Determine effective capital based on switch
+      const effectiveCapital = settings.useMaxDrawdownAsCapital ? settings.maxDrawdown : settings.startingCapital;
       
       // Calculate daily profit per account
       const dailyProfitPerAccount = settings.riskPerTrade * settings.riskRewardRatio;
@@ -242,9 +248,9 @@ export default function Projections() {
           <div>
             <h1 className="text-2xl font-bold text-white flex items-center">
               <Target className="mr-3 h-6 w-6 text-prop-gold" />
-              Target & Risk Projection
+              Target & Risk Management Planning
             </h1>
-            <p className="text-gray-400">Project your trading goals and visualize the path to achieve them</p>
+            <p className="text-gray-400">Project your prop firm account goals and visualize a consistent path to achieve them with consistency and discipline</p>
           </div>
         </div>
       </header>
@@ -371,16 +377,46 @@ export default function Projections() {
                 </div>
               )}
 
+              {/* Capital Mode Toggle */}
+              <div className="space-y-4">
+                <div className="flex items-center justify-between p-4 bg-gray-800/50 rounded-lg border border-gray-700">
+                  <div className="space-y-1">
+                    <Label className="text-white font-medium">Capital Calculation Mode</Label>
+                    <p className="text-sm text-gray-400">
+                      {settings.useMaxDrawdownAsCapital 
+                        ? "Using Max Drawdown as starting capital for calculations" 
+                        : "Using Starting Capital for calculations"
+                      }
+                    </p>
+                  </div>
+                  <div className="flex items-center space-x-3">
+                    <span className={`text-sm ${settings.useMaxDrawdownAsCapital ? 'text-gray-400' : 'text-blue-400 font-medium'}`}>
+                      Starting Capital
+                    </span>
+                    <Switch
+                      checked={settings.useMaxDrawdownAsCapital}
+                      onCheckedChange={(checked) => updateSetting('useMaxDrawdownAsCapital', checked)}
+                    />
+                    <span className={`text-sm ${settings.useMaxDrawdownAsCapital ? 'text-orange-400 font-medium' : 'text-gray-400'}`}>
+                      Max Drawdown
+                    </span>
+                  </div>
+                </div>
+              </div>
+
               {/* Financial Settings */}
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label className="text-white">Starting Capital</Label>
+                  <Label className="text-white">
+                    {settings.useMaxDrawdownAsCapital ? "Starting Capital (Display Only)" : "Starting Capital"}
+                  </Label>
                   <Input
                     type="number"
                     value={settings.startingCapital || ""}
                     onChange={(e) => updateSetting('startingCapital', e.target.value === "" ? null : Number(e.target.value))}
                     className="bg-gray-700 border-gray-600 text-white"
                     placeholder="0"
+                    disabled={settings.useMaxDrawdownAsCapital}
                   />
                 </div>
                 <div className="space-y-2">
@@ -559,8 +595,12 @@ export default function Projections() {
             <Card className="bg-prop-gradient-gold border-prop-gold/20">
               <CardContent className="p-4">
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-black">{formatCurrency(settings.startingCapital)}</div>
-                  <div className="text-sm text-black/70">Starting Capital</div>
+                  <div className="text-2xl font-bold text-black">
+                    {formatCurrency(settings.useMaxDrawdownAsCapital ? settings.maxDrawdown : settings.startingCapital)}
+                  </div>
+                  <div className="text-sm text-black/70">
+                    {settings.useMaxDrawdownAsCapital ? "Effective Capital (Max DD)" : "Starting Capital"}
+                  </div>
                 </div>
               </CardContent>
             </Card>
@@ -655,7 +695,7 @@ export default function Projections() {
                       <th className="text-left py-3 px-4 text-gray-300">Date</th>
                       <th className="text-center py-3 px-4 text-gray-300"># Days</th>
                       <th className="text-right py-3 px-4 text-gray-300">Risk</th>
-                      <th className="text-right py-3 px-4 text-gray-300">Reward</th>
+                      <th className="text-right py-3 px-4 text-gray-300">Daily Reward</th>
                       <th className="text-right py-3 px-4 text-gray-300">Target Expectation</th>
                       {settings.mode === 'account' && (
                         <th className="text-right py-3 px-4 text-gray-300">Actual P&L</th>

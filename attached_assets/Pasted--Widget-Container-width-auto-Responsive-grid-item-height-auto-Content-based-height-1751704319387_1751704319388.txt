@@ -1,0 +1,118 @@
+/* Widget Container */
+width: auto; /* Responsive grid item */
+height: auto; /* Content-based height */
+padding: 24px; /* p-6 = 24px */
+border-radius: 12px; /* rounded-lg */
+Color Values (Exact Hex/HSL)
+/* Background */
+background: #000000; /* Complete black as requested */
+/* Thin Golden Border */
+border: 1px solid rgba(255, 215, 0, 0.2); /* 20% opacity golden border */
+/* Golden Hover Effect */
+:hover {
+  border-color: rgba(217, 163, 26, 0.5); /* 50% opacity on hover */
+  box-shadow: 0 0 30px rgba(255, 215, 0, 0.3); /* Golden glow */
+  transform: translateY(-2px); /* Lift effect */
+}
+/* Gold Colors */
+--prop-gold: hsl(45, 100%, 55%); /* #D4AF37 */
+--prop-gold-light: hsl(45, 100%, 65%); /* #E6C547 */
+Icon Square Specifications
+/* Icon Container Square */
+width: 60px; /* Fixed size */
+height: 60px; /* Fixed size */
+padding: 12px; /* p-3 = 12px */
+border-radius: 12px; /* rounded-xl */
+background: linear-gradient(135deg, #D4AF37 0%, #E6C547 100%);
+/* Icon Inside Square */
+width: 24px; /* h-6 w-6 = 24px */
+height: 24px; /* h-6 w-6 = 24px */
+color: #000000; /* text-black */
+Typography Specifications
+/* Label Text */
+font-size: 14px; /* text-sm */
+font-weight: 500; /* font-medium */
+color: #9CA3AF; /* text-gray-400 */
+/* Main Value */
+font-size: 24px; /* text-2xl */
+font-weight: 700; /* font-bold */
+color: #D4AF37; /* text-prop-gold */
+/* Description Text */
+font-size: 12px; /* text-xs */
+color: #9CA3AF; /* text-gray-400 */
+margin-top: 4px; /* mt-1 */
+Complete Widget Code Template
+<div class="widget-container">
+  <div class="widget-content">
+    <div class="widget-left">
+      <p class="widget-label">Total Portfolio Value</p>
+      <p class="widget-value">$123,456</p>
+      <p class="widget-description">Combined accounts</p>
+    </div>
+    <div class="widget-icon-square">
+      <svg class="widget-icon" viewBox="0 0 24 24" fill="currentColor">
+        <!-- Your icon SVG path here -->
+      </svg>
+    </div>
+  </div>
+</div>
+Exact CSS for Widget
+.widget-container {
+  background: #000000;
+  border: 1px solid rgba(255, 215, 0, 0.2);
+  border-radius: 12px;
+  padding: 24px;
+  transition: all 0.3s ease;
+}
+.widget-container:hover {
+  border-color: rgba(217, 163, 26, 0.5);
+  box-shadow: 0 0 30px rgba(255, 215, 0, 0.3);
+  transform: translateY(-2px);
+}
+.widget-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.widget-left {
+  display: flex;
+  flex-direction: column;
+}
+.widget-label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #9CA3AF;
+  margin: 0 0 8px 0;
+}
+.widget-value {
+  font-size: 24px;
+  font-weight: 700;
+  color: #D4AF37;
+  margin: 0;
+}
+.widget-description {
+  font-size: 12px;
+  color: #9CA3AF;
+  margin: 4px 0 0 0;
+}
+.widget-icon-square {
+  width: 60px;
+  height: 60px;
+  padding: 12px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #D4AF37 0%, #E6C547 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.widget-icon {
+  width: 24px;
+  height: 24px;
+  color: #000000;
+}
+Grid Layout for Multiple Widgets
+.widget-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 24px;
+}
