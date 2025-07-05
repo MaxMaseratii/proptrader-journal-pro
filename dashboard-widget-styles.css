@@ -1,0 +1,345 @@
+/* PropTraderJournal Widget System - Complete CSS Export */
+/* Copy this CSS file and use the HTML structure below for instant widget implementation */
+
+/* ===== CSS VARIABLES ===== */
+:root {
+  /* Core Colors */
+  --prop-black: #0a0a0a;
+  --prop-dark: #1a1a1a;
+  --prop-surface: #1f1f1f;
+  
+  /* Brand Colors */
+  --prop-gold: #D4AF37;
+  --prop-gold-light: #E6C547;
+  --prop-tiffany: #40B0A6;
+  --prop-tiffany-light: #5CC7BC;
+  --prop-green: #22C55E;
+  --prop-green-light: #4ADE80;
+  --prop-blue: #3B82F6;
+  --prop-blue-light: #60A5FA;
+  --prop-pink: #EC4899;
+  --prop-pink-light: #F472B6;
+  
+  /* Utility Colors */
+  --gray-400: #9CA3AF;
+  --gray-700: #374151;
+  --gray-800: #1F2937;
+  --dark-card: #141414;
+  --dark-border: #262626;
+}
+
+/* ===== WIDGET BASE STYLES ===== */
+.widget-container {
+  /* Exact dimensions */
+  padding: 24px;
+  border-radius: 12px;
+  
+  /* Complete black background as requested */
+  background: #000000;
+  
+  /* Thin golden border */
+  border: 1px solid rgba(255, 215, 0, 0.2);
+  
+  /* Smooth transitions */
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  
+  /* Layout */
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+}
+
+/* ===== GOLDEN HOVER EFFECT ===== */
+.widget-container:hover {
+  /* Golden glow effect */
+  box-shadow: 0 0 30px rgba(255, 215, 0, 0.3);
+  
+  /* Lift animation */
+  transform: translateY(-2px);
+  
+  /* Enhanced border */
+  border-color: rgba(217, 163, 26, 0.5);
+  
+  /* Subtle background enhancement */
+  background: linear-gradient(135deg, 
+    rgba(217, 163, 26, 0.04) 0%, 
+    #000000 50%, 
+    rgba(217, 163, 26, 0.04) 100%);
+}
+
+/* ===== WIDGET CONTENT LAYOUT ===== */
+.widget-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.widget-left {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+/* ===== TYPOGRAPHY ===== */
+.widget-label {
+  /* Exact specifications */
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--gray-400);
+  margin: 0 0 8px 0;
+  line-height: 1.4;
+}
+
+.widget-value {
+  /* Exact specifications */
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--prop-gold);
+  margin: 0;
+  line-height: 1.2;
+}
+
+.widget-description {
+  /* Exact specifications */
+  font-size: 12px;
+  color: var(--gray-400);
+  margin: 4px 0 0 0;
+  line-height: 1.3;
+}
+
+/* ===== ICON SQUARE ===== */
+.widget-icon-square {
+  /* Exact dimensions */
+  width: 60px;
+  height: 60px;
+  min-width: 60px;
+  min-height: 60px;
+  
+  /* Layout */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  /* Styling */
+  padding: 12px;
+  border-radius: 12px;
+  
+  /* Golden gradient background */
+  background: linear-gradient(135deg, var(--prop-gold) 0%, var(--prop-gold-light) 100%);
+  
+  /* Smooth transition */
+  transition: all 0.3s ease;
+}
+
+.widget-icon-square:hover {
+  transform: scale(1.05);
+}
+
+.widget-icon {
+  /* Exact icon size */
+  width: 24px;
+  height: 24px;
+  color: #000000;
+  flex-shrink: 0;
+}
+
+/* ===== COLOR VARIANTS ===== */
+/* Gold Variant (Default) */
+.widget-variant-gold {
+  border-color: rgba(212, 175, 55, 0.2);
+}
+.widget-variant-gold:hover {
+  border-color: rgba(212, 175, 55, 0.5);
+  box-shadow: 0 0 30px rgba(212, 175, 55, 0.3);
+}
+.widget-variant-gold .widget-value {
+  color: var(--prop-gold);
+}
+.widget-variant-gold .widget-icon-square {
+  background: linear-gradient(135deg, var(--prop-gold) 0%, var(--prop-gold-light) 100%);
+}
+
+/* Tiffany Variant */
+.widget-variant-tiffany {
+  border-color: rgba(64, 176, 166, 0.2);
+}
+.widget-variant-tiffany:hover {
+  border-color: rgba(64, 176, 166, 0.5);
+  box-shadow: 0 0 30px rgba(64, 176, 166, 0.3);
+}
+.widget-variant-tiffany .widget-value {
+  color: var(--prop-tiffany);
+}
+.widget-variant-tiffany .widget-icon-square {
+  background: linear-gradient(135deg, var(--prop-tiffany) 0%, var(--prop-tiffany-light) 100%);
+}
+.widget-variant-tiffany .widget-icon {
+  color: #ffffff;
+}
+
+/* Green Variant */
+.widget-variant-green {
+  border-color: rgba(34, 197, 94, 0.2);
+}
+.widget-variant-green:hover {
+  border-color: rgba(34, 197, 94, 0.5);
+  box-shadow: 0 0 30px rgba(34, 197, 94, 0.3);
+}
+.widget-variant-green .widget-value {
+  color: var(--prop-green);
+}
+.widget-variant-green .widget-icon-square {
+  background: linear-gradient(135deg, var(--prop-green) 0%, var(--prop-green-light) 100%);
+}
+.widget-variant-green .widget-icon {
+  color: #ffffff;
+}
+
+/* Blue Variant */
+.widget-variant-blue {
+  border-color: rgba(59, 130, 246, 0.2);
+}
+.widget-variant-blue:hover {
+  border-color: rgba(59, 130, 246, 0.5);
+  box-shadow: 0 0 30px rgba(59, 130, 246, 0.3);
+}
+.widget-variant-blue .widget-value {
+  color: var(--prop-blue);
+}
+.widget-variant-blue .widget-icon-square {
+  background: linear-gradient(135deg, var(--prop-blue) 0%, var(--prop-blue-light) 100%);
+}
+.widget-variant-blue .widget-icon {
+  color: #ffffff;
+}
+
+/* Pink Variant */
+.widget-variant-pink {
+  border-color: rgba(236, 72, 153, 0.2);
+}
+.widget-variant-pink:hover {
+  border-color: rgba(236, 72, 153, 0.5);
+  box-shadow: 0 0 30px rgba(236, 72, 153, 0.3);
+}
+.widget-variant-pink .widget-value {
+  color: var(--prop-pink);
+}
+.widget-variant-pink .widget-icon-square {
+  background: linear-gradient(135deg, var(--prop-pink) 0%, var(--prop-pink-light) 100%);
+}
+.widget-variant-pink .widget-icon {
+  color: #ffffff;
+}
+
+/* ===== GRID LAYOUT ===== */
+.widget-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 24px;
+  padding: 24px;
+}
+
+/* Responsive breakpoints */
+@media (max-width: 768px) {
+  .widget-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+    padding: 16px;
+  }
+  
+  .widget-container {
+    padding: 20px;
+  }
+}
+
+/* ===== UTILITIES ===== */
+.positive-value {
+  color: var(--prop-green) !important;
+}
+
+.negative-value {
+  color: var(--prop-pink) !important;
+}
+
+.neutral-value {
+  color: var(--gray-400) !important;
+}
+
+/* ===== ANIMATIONS ===== */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.widget-container {
+  animation: fadeInUp 0.6s ease-out;
+}
+
+/* ===== DARK MODE READY ===== */
+@media (prefers-color-scheme: dark) {
+  .widget-container {
+    background: #000000; /* Already black */
+  }
+}
+
+/* ===== ACCESSIBILITY ===== */
+.widget-container:focus-within {
+  outline: 2px solid var(--prop-gold);
+  outline-offset: 2px;
+}
+
+/* ===== PRINT STYLES ===== */
+@media print {
+  .widget-container {
+    background: white !important;
+    color: black !important;
+    border: 1px solid #ccc !important;
+    box-shadow: none !important;
+  }
+}
+
+/*
+===== HTML STRUCTURE TO USE =====
+
+<!-- Basic Widget -->
+<div class="widget-container widget-variant-gold">
+  <div class="widget-content">
+    <div class="widget-left">
+      <p class="widget-label">Total Portfolio Value</p>
+      <p class="widget-value">$123,456</p>
+      <p class="widget-description">Combined accounts</p>
+    </div>
+    <div class="widget-icon-square">
+      <svg class="widget-icon" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+      </svg>
+    </div>
+  </div>
+</div>
+
+<!-- Widget Grid Container -->
+<div class="widget-grid">
+  <!-- Multiple widgets here -->
+</div>
+
+===== VARIANTS AVAILABLE =====
+- widget-variant-gold (default)
+- widget-variant-tiffany
+- widget-variant-green
+- widget-variant-blue
+- widget-variant-pink
+
+===== VALUE CLASSES =====
+- positive-value (green)
+- negative-value (pink/red)
+- neutral-value (gray)
+
+*/
