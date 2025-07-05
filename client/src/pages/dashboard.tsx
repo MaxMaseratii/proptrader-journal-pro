@@ -28,6 +28,7 @@ import {
   Bell,
   AlertTriangle,
   DollarSign,
+  Activity,
   Crosshair,
   Filter,
   Brain,
@@ -509,75 +510,118 @@ export default function Dashboard() {
         </div>
 
         {/* Secondary Performance Metrics Row - Win Rate, R Factor, Profit Factor */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div className="widget-grid mb-8">
           {/* Win Rate */}
-          <Card className="bg-dark-card border-success-green">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-gray-400 text-sm mb-1">Win Rate</p>
-                  <p className={`text-2xl font-bold ${
-                    (combinedAnalytics?.winRate || 0) >= 70 ? 'text-success-green' :
-                    (combinedAnalytics?.winRate || 0) >= 50 ? 'text-warning-orange' : 'text-error-red'
-                  }`}>
-                    {combinedAnalytics?.winRate.toFixed(0) || 0}%
-                  </p>
-                  <p className="text-xs text-gray-400 mt-1">
-                    {combinedAnalytics?.winningTrades || 0} wins / {combinedAnalytics?.losingTrades || 0} losses
-                  </p>
-                </div>
-                <div className="bg-success-green bg-opacity-20 p-3 rounded-lg">
-                  <Target className="text-success-green h-6 w-6" />
-                </div>
+          <div className="widget-container">
+            <div className="widget-content">
+              <div className="widget-left">
+                <p className="widget-label">Win Rate</p>
+                <p className="widget-value">
+                  {combinedAnalytics?.winRate.toFixed(0) || 0}%
+                </p>
+                <p className="widget-description">
+                  {combinedAnalytics?.winningTrades || 0} wins / {combinedAnalytics?.losingTrades || 0} losses
+                </p>
               </div>
-            </CardContent>
-          </Card>
+              <div className="widget-icon-square">
+                <Target className="widget-icon" />
+              </div>
+            </div>
+          </div>
 
           {/* R Factor */}
-          <Card className="bg-dark-card border-blue-600 hover-glow smooth-transition">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-gray-400 text-sm mb-1">R Factor</p>
-                  <p className={`text-2xl font-bold ${
-                    (combinedAnalytics?.rFactor || 0) >= 2 ? 'text-success-green' :
-                    (combinedAnalytics?.rFactor || 0) >= 1 ? 'text-warning-orange' : 'text-error-red'
-                  }`}>
-                    {combinedAnalytics?.rFactor.toFixed(2) || '0.00'}
-                  </p>
-                  <p className="text-xs text-gray-400 mt-1">
-                    Total Reward / Total Risk ratio
-                  </p>
-                </div>
-                <div className="bg-blue-600 bg-opacity-20 p-3 rounded-lg">
-                  <BarChart3 className="text-blue-400 h-6 w-6" />
-                </div>
+          <div className="widget-container">
+            <div className="widget-content">
+              <div className="widget-left">
+                <p className="widget-label">R Factor</p>
+                <p className="widget-value">
+                  {combinedAnalytics?.rFactor.toFixed(2) || '0.00'}
+                </p>
+                <p className="widget-description">Total Reward / Total Risk ratio</p>
               </div>
-            </CardContent>
-          </Card>
+              <div className="widget-icon-square">
+                <BarChart3 className="widget-icon" />
+              </div>
+            </div>
+          </div>
 
           {/* Profit Factor */}
-          <Card className="bg-dark-card border-purple-600">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-gray-400 text-sm mb-1">Profit Factor</p>
-                  <p className={`text-2xl font-bold ${
-                    (combinedAnalytics?.profitFactor || 0) >= 2 ? 'text-success-green' :
-                    (combinedAnalytics?.profitFactor || 0) >= 1 ? 'text-warning-orange' : 'text-error-red'
-                  }`}>
-                    {combinedAnalytics?.profitFactor.toFixed(2) || '0.00'}
-                  </p>
-                  <p className="text-xs text-gray-400 mt-1">
-                    Gross Profit / Gross Loss ratio
-                  </p>
-                </div>
-                <div className="bg-purple-600 bg-opacity-20 p-3 rounded-lg">
-                  <TrendingUp className="text-purple-400 h-6 w-6" />
-                </div>
+          <div className="widget-container">
+            <div className="widget-content">
+              <div className="widget-left">
+                <p className="widget-label">Profit Factor</p>
+                <p className="widget-value">
+                  {combinedAnalytics?.profitFactor.toFixed(2) || '0.00'}
+                </p>
+                <p className="widget-description">Gross Profit / Gross Loss ratio</p>
               </div>
-            </CardContent>
-          </Card>
+              <div className="widget-icon-square">
+                <TrendingUp className="widget-icon" />
+              </div>
+            </div>
+          </div>
+
+          {/* Total Trades */}
+          <div className="widget-container">
+            <div className="widget-content">
+              <div className="widget-left">
+                <p className="widget-label">Total Trades</p>
+                <p className="widget-value">{combinedAnalytics?.totalTrades || 0}</p>
+                <p className="widget-description">All accounts combined</p>
+              </div>
+              <div className="widget-icon-square">
+                <Activity className="widget-icon" />
+              </div>
+            </div>
+          </div>
+
+          {/* Total P&L */}
+          <div className="widget-container">
+            <div className="widget-content">
+              <div className="widget-left">
+                <p className="widget-label">Total P&L</p>
+                <p className="widget-value">
+                  {formatCurrency(combinedAnalytics?.totalPnl || 0)}
+                </p>
+                <p className="widget-description">Net profit/loss</p>
+              </div>
+              <div className="widget-icon-square">
+                <DollarSign className="widget-icon" />
+              </div>
+            </div>
+          </div>
+
+          {/* Best Trade */}
+          <div className="widget-container">
+            <div className="widget-content">
+              <div className="widget-left">
+                <p className="widget-label">Best Trade</p>
+                <p className="widget-value">
+                  {formatCurrency(combinedAnalytics?.bestTrade || 0)}
+                </p>
+                <p className="widget-description">Largest single win</p>
+              </div>
+              <div className="widget-icon-square">
+                <TrendingUp className="widget-icon" />
+              </div>
+            </div>
+          </div>
+
+          {/* Net Balance */}
+          <div className="widget-container">
+            <div className="widget-content">
+              <div className="widget-left">
+                <p className="widget-label">Net Balance</p>
+                <p className="widget-value">
+                  {formatCurrency(calculateNetBalance())}
+                </p>
+                <p className="widget-description">Starting balance + Total P&L</p>
+              </div>
+              <div className="widget-icon-square">
+                <Wallet className="widget-icon" />
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* Account & Monthly Performance - Right under Win Rate row */}
