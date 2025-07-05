@@ -7,7 +7,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Calendar, CalendarDays, Download, Filter, Search, Plus } from "lucide-react";
 import { formatCurrency, formatDate } from "@/lib/utils";
-import { cleanSymbolForTradingView } from "@/lib/symbol-utils";
 import type { Trade, Account } from "@shared/schema";
 import { useState, useMemo, useEffect } from "react";
 import { useLocation } from "wouter";
@@ -405,11 +404,7 @@ export default function Trades() {
                       <Button
                         size="sm"
                         variant="outline"
-                        onClick={() => {
-                          // Format symbol for TradingView with proper futures format (e.g., MNQ1!)
-                          const cleanSymbol = cleanSymbolForTradingView(trade.symbol);
-                          window.open(`https://www.tradingview.com/chart/?symbol=${cleanSymbol}1!`, '_blank');
-                        }}
+                        onClick={() => window.open(`https://www.tradingview.com/chart/?symbol=${trade.symbol}`, '_blank')}
                         className="text-blue-400 border-blue-400 hover:bg-blue-400/20"
                       >
                         📈 View Chart

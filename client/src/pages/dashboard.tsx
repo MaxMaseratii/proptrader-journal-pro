@@ -1,785 +1,1719 @@
+import React, { useState, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { Link } from "wouter";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Textarea } from "@/components/ui/textarea";
 import { Progress } from "@/components/ui/progress";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { EquityChart, MonthlyPerformanceChart } from "@/components/chart-components";
-import WeeklyPerformanceCalendar from "@/components/weekly-performance-calendar";
-import { useLocation } from "wouter";
+import { formatCurrency, formatPercentage, formatDate } from "@/lib/utils";
+import { calculateDisciplinedScore, getScoreColor, getGradeColor } from "@/lib/disciplined-score";
+import TradeCalendar from "@/components/trade-calendar";
+import TradeEntry from "@/components/trade-entry";
+import TradeAnalysisCalendar from "@/components/trade-analysis-calendar";
+import { SimpleChart } from "@/components/tradingview/SimpleChart";
 import { 
-  TrendingUp, 
+  Wallet, 
   TrendingDown, 
-  DollarSign, 
+  TrendingUp,
   Target, 
   Shield, 
-  Calendar,
-  PlusCircle,
-  BookOpen,
-  BarChart3,
-  Activity,
-  Award,
+  Plus, 
+  Bell,
   AlertTriangle,
-  Upload,
+  DollarSign,
+  Crosshair,
   Filter,
+  Brain,
+  BarChart3,
+  Calendar,
+  Banknote,
   Clock,
-  CheckCircle,
-  XCircle
+  CheckCircle
 } from "lucide-react";
-import { Account, Trade, JournalEntry } from "@shared/schema";
+import type { Account, Trade } from "@shared/schema";
 
-export default function DashboardShowcase() {
-  const [, setLocation] = useLocation();
-  
-  const { data: accounts = [] } = useQuery<Account[]>({
+interface DashboardAnalytics {
+  account: Account;
+  totalPnl: number;
+  winRate: number;
+  totalTrades: number;
+  winningTrades: number;
+  losingTrades: number;
+  bestTrade: number;
+  worstTrade: number;
+  currentBalance: number;
+  drawdown: number;
+  profitTarget: number;
+  dailyLossLimit: number;
+  riskLimitUsed: number;
+}
+
+export default function Dashboard() {
+  const [selectedAccountIds, setSelectedAccountIds] = useState<number[]>([]);
+  const [viewMode, setViewMode] = useState<'single' | 'multiple' | 'all'>('all');
+  const [selectedAccountId, setSelectedAccountId] = useState<number | null>(null);
+  const [showSpendingModal, setShowSpendingModal] = useState(false);
+  const [spendingForm, setSpendingForm] = useState({
+    type: 'spending' as 'spending' | 'payout',
+    amount: '',
+    description: '',
+    date: new Date().toISOString().split('T')[0]
+  });
+  const [calendarDate, setCalendarDate] = useState(new Date());
+  const [timePeriod, setTimePeriod] = useState<'daily' | 'weekly' | 'monthly' | 'yearly'>('monthly');
+  const [viewType, setViewType] = useState<'overview' | 'detailed' | 'analytics'>('overview');
+
+  const { data: accounts, isLoading: accountsLoading } = useQuery<Account[]>({
     queryKey: ["/api/accounts"],
   });
 
-  const { data: trades = [] } = useQuery<Trade[]>({
+  const { data: trades, isLoading: tradesLoading } = useQuery<Trade[]>({
     queryKey: ["/api/trades"],
   });
 
-  const { data: journalEntries = [] } = useQuery<JournalEntry[]>({
-    queryKey: ["/api/journal-entries"],
-  });
+  // Initialize selectedAccountId with first TopStep account
+  React.useEffect(() => {
+    if (accounts && !selectedAccountId) {
+      const topStepAccount = accounts.find(acc => acc.firm === 'TopStep');
+      if (topStepAccount) {
+        setSelectedAccountId(topStepAccount.id);
+      }
+    }
+  }, [accounts, selectedAccountId]);
 
-  // Calculate portfolio metrics
-  const totalPortfolioValue = accounts.reduce((sum, acc) => sum + acc.currentBalance, 0);
-  const totalInvested = accounts.reduce((sum, acc) => sum + (acc.accountCost || 0) + (acc.activationCost || 0), 0);
-  const totalPnL = accounts.reduce((sum, acc) => sum + (acc.currentBalance - acc.startingBalance), 0);
-  const totalPnLPercentage = accounts.length > 0 
-    ? (totalPnL / accounts.reduce((sum, acc) => sum + acc.startingBalance, 0)) * 100 
-    : 0;
+  // Calculate combined combinedAnalytics for selected accounts
+  const combinedAnalytics = useMemo(() => {
+    if (!accounts || !trades) return null;
 
-  // Account status counts
-  const activeAccounts = accounts.filter(acc => acc.status === 'active').length;
-  const fundedAccounts = accounts.filter(acc => acc.status === 'funded').length;
-  const challengeAccounts = accounts.filter(acc => acc.type === 'challenge').length;
+    let accountsToAnalyze: Account[] = [];
+    let tradesToAnalyze: Trade[] = [];
 
-  // Trading performance metrics
-  const winningTrades = trades.filter(trade => trade.pnl > 0).length;
-  const totalTrades = trades.length;
-  const winRate = totalTrades > 0 ? (winningTrades / totalTrades) * 100 : 0;
-  const totalTradingPnL = trades.reduce((sum, trade) => sum + trade.pnl, 0);
+    if (viewMode === 'all') {
+      accountsToAnalyze = accounts;
+      tradesToAnalyze = trades;
+    } else {
+      const accountIdsToUse = selectedAccountIds.length > 0 ? selectedAccountIds : (accounts.length > 0 ? [accounts[0].id] : []);
+      accountsToAnalyze = accounts.filter(acc => accountIdsToUse.includes(acc.id));
+      tradesToAnalyze = trades.filter(trade => accountIdsToUse.includes(trade.accountId));
+    }
 
-  // Recent trades for showcase
-  const recentTrades = trades.slice(0, 5);
+    if (accountsToAnalyze.length === 0) return null;
 
-  // Mock equity curve data
-  const equityData = [
-    { date: '2024-09-15', balance: 150000 },
-    { date: '2024-09-20', balance: 151200 },
-    { date: '2024-09-25', balance: 149800 },
-    { date: '2024-09-30', balance: 152100 },
-    { date: '2024-10-05', balance: 153400 },
-    { date: '2024-10-10', balance: 152800 },
-    { date: '2024-10-15', balance: 154600 },
-    { date: '2024-10-20', balance: 156200 },
-    { date: '2024-10-25', balance: 155100 },
-    { date: '2024-10-30', balance: 157800 },
-  ];
+    // Calculate combined combinedAnalytics
+    const totalStartingBalance = accountsToAnalyze.reduce((sum, acc) => sum + acc.startingBalance, 0);
+    const totalCurrentBalance = accountsToAnalyze.reduce((sum, acc) => sum + acc.currentBalance, 0);
+    const totalPnl = totalCurrentBalance - totalStartingBalance;
+    
+    const winningTrades = tradesToAnalyze.filter(trade => trade.pnl > 0).length;
+    const losingTrades = tradesToAnalyze.filter(trade => trade.pnl < 0).length;
+    const totalTrades = tradesToAnalyze.length;
+    const winRate = totalTrades > 0 ? (winningTrades / totalTrades) * 100 : 0;
+    
+    const bestTrade = Math.max(...tradesToAnalyze.map(t => t.pnl), 0);
+    const worstTrade = Math.min(...tradesToAnalyze.map(t => t.pnl), 0);
+    
+    const totalMaxDrawdown = accountsToAnalyze.reduce((sum, acc) => sum + acc.maxDrawdown, 0);
+    const totalDailyLossLimit = accountsToAnalyze.reduce((sum, acc) => sum + (acc.dailyLossLimit || 0), 0);
+    const totalProfitTarget = accountsToAnalyze.reduce((sum, acc) => sum + acc.profitTarget, 0);
 
-  const monthlyData = [
-    { month: 'Aug', pnl: 2400 },
-    { month: 'Sep', pnl: 3100 },
-    { month: 'Oct', pnl: 4200 },
-  ];
+    // Calculate disciplined scores for each account
+    const disciplinedScores = accountsToAnalyze.map(account => {
+      const accountTrades = tradesToAnalyze.filter(t => t.accountId === account.id);
+      const disciplineResult = calculateDisciplinedScore(account, accountTrades);
+      return disciplineResult;
+    });
+    
+    // Get average disciplined score
+    const avgDisciplinedScore = disciplinedScores.length > 0 ? 
+      disciplinedScores.reduce((sum, score) => sum + score.disciplinedScore, 0) / disciplinedScores.length : 0;
+    
+
+    
+    // Calculate average win/loss and profit factor
+    const winningTradeAmounts = tradesToAnalyze.filter(t => t.pnl > 0).map(t => t.pnl);
+    const losingTradeAmounts = tradesToAnalyze.filter(t => t.pnl < 0).map(t => Math.abs(t.pnl));
+    
+    const averageWin = winningTradeAmounts.length > 0 ? 
+      winningTradeAmounts.reduce((sum, pnl) => sum + pnl, 0) / winningTradeAmounts.length : 0;
+    const averageLoss = losingTradeAmounts.length > 0 ? 
+      losingTradeAmounts.reduce((sum, pnl) => sum + pnl, 0) / losingTradeAmounts.length : 0;
+    
+    const grossProfit = winningTradeAmounts.reduce((sum, pnl) => sum + pnl, 0);
+    const grossLoss = losingTradeAmounts.reduce((sum, pnl) => sum + pnl, 0);
+    const profitFactor = grossLoss > 0 ? grossProfit / grossLoss : grossProfit > 0 ? 999 : 0;
+    
+    // Calculate R factor (Risk/Reward ratio) 
+    const rFactor = averageLoss > 0 ? averageWin / averageLoss : averageWin > 0 ? 999 : 0;
+
+    return {
+      accounts: accountsToAnalyze,
+      totalPnl,
+      winRate,
+      totalTrades,
+      winningTrades,
+      losingTrades,
+      bestTrade,
+      worstTrade,
+      currentBalance: totalCurrentBalance,
+      startingBalance: totalStartingBalance,
+      drawdown: totalStartingBalance - totalCurrentBalance,
+      profitTarget: totalProfitTarget,
+      dailyLossLimit: totalDailyLossLimit,
+      maxDrawdown: totalMaxDrawdown,
+      riskLimitUsed: 0,
+      disciplinedScore: avgDisciplinedScore,
+      disciplinedScores,
+      averageWin,
+      averageLoss,
+      profitFactor,
+      rFactor
+    };
+  }, [accounts, trades, selectedAccountIds, viewMode]);
+
+  const primaryAccount = accounts?.[0];
+  const recentTrades = trades?.slice(0, 4) || [];
+
+  // Calculate net balance (starting balance + total P&L from trades)
+  const calculateNetBalance = () => {
+    if (!accounts || !trades) return 0;
+    
+    let totalNetBalance = 0;
+    
+    accounts.forEach(account => {
+      const accountTrades = trades.filter(t => t.accountId === account.id);
+      const totalPnL = accountTrades.reduce((sum, trade) => sum + (trade.pnl || 0), 0);
+      const netBalance = account.startingBalance + totalPnL;
+      totalNetBalance += netBalance;
+    });
+    
+    return totalNetBalance;
+  };
+
+  // Calculate total available payouts based on actual account requirements
+  const calculateTotalAvailablePayouts = () => {
+    if (!accounts || !trades) return 0;
+    
+    let totalPayouts = 0;
+    
+    accounts.forEach(account => {
+      if (account.type !== 'funded') return; // Only funded accounts have payouts
+      
+      const accountTrades = trades.filter(t => t.accountId === account.id);
+      const currentProfit = account.currentBalance - account.startingBalance;
+      
+      // Check payout requirements
+      const daysRequired = account.daysRequiredForPayout || 5;
+      const winningDayMinimum = account.winningDayMinimum || 200;
+      const minimumPayoutAmount = account.minimumPayoutAmount || 250;
+      const maxPayoutPercentage = (account.maximumPayoutPercentage || 90) / 100;
+      const profitSplit = (account.profitSplit || 90) / 100;
+      const bufferPercentage = (account.bufferPercentage || 5) / 100;
+      
+      // Calculate daily P&L
+      const dailyPnL = accountTrades.reduce((acc, trade) => {
+        acc[trade.date] = (acc[trade.date] || 0) + trade.pnl;
+        return acc;
+      }, {} as Record<string, number>);
+      
+      const tradingDays = Object.keys(dailyPnL).length;
+      const profitableDays = Object.values(dailyPnL).filter(pnl => pnl >= winningDayMinimum).length;
+      
+      // Check if payout requirements are met
+      const meetsMinimumDays = tradingDays >= daysRequired;
+      const meetsProfitableDays = profitableDays >= daysRequired;
+      const hasMinimumProfit = currentProfit >= minimumPayoutAmount;
+      
+      if (meetsMinimumDays && meetsProfitableDays && hasMinimumProfit) {
+        // Calculate buffer requirement
+        const profitTarget = account.profitTarget || 0;
+        const bufferAmount = profitTarget * bufferPercentage;
+        const profitAboveBuffer = Math.max(0, currentProfit - bufferAmount);
+        
+        // Calculate available payout (profit split applied)
+        const availablePayout = profitAboveBuffer * profitSplit * maxPayoutPercentage;
+        totalPayouts += Math.max(0, availablePayout);
+      }
+    });
+    
+    return totalPayouts;
+  };
+
+  // Calculate real equity curve from trades
+  const getEquityData = () => {
+    if (!trades || !accounts) return [];
+    
+    const sortedTrades = [...trades].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+    const startingBalance = accounts.reduce((sum, acc) => sum + acc.startingBalance, 0);
+    
+    let runningBalance = startingBalance;
+    const equityData = [{ date: "Start", balance: startingBalance }];
+    
+    sortedTrades.forEach(trade => {
+      runningBalance += trade.pnl || 0;
+      equityData.push({
+        date: new Date(trade.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+        balance: runningBalance
+      });
+    });
+    
+    return equityData;
+  };
+
+  // Calculate real monthly performance from trades
+  const getMonthlyData = () => {
+    if (!trades) return [];
+    
+    const monthlyPnL: { [key: string]: number } = {};
+    
+    trades.forEach(trade => {
+      const date = new Date(trade.date);
+      const monthKey = date.toLocaleDateString('en-US', { year: 'numeric', month: 'short' });
+      monthlyPnL[monthKey] = (monthlyPnL[monthKey] || 0) + (trade.pnl || 0);
+    });
+    
+    return Object.entries(monthlyPnL)
+      .sort(([a], [b]) => new Date(a).getTime() - new Date(b).getTime())
+      .map(([month, pnl]) => ({ month: month.split(' ')[1], pnl }));
+  };
+
+  // TASK 3: Color determination function for all numbers
+  const getValueColor = (value: number, type: 'currency' | 'percentage' | 'neutral' = 'currency') => {
+    if (type === 'neutral') return 'text-prop-tiffany';
+    if (value > 0) return 'text-prop-green';
+    if (value < 0) return 'text-prop-pink';
+    return 'text-prop-gold'; // For zero values, use gold color like portfolio overview
+  };
+
+  if (accountsLoading || tradesLoading) {
+    return (
+      <div className="flex items-center justify-center h-full">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-gray-400">Loading dashboard...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="p-6 space-y-8 bg-prop-gradient-main min-h-screen">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
-        <div>
-          <h1 className="text-3xl font-bold text-gradient-rainbow mb-2">Trading Dashboard</h1>
-          <p className="text-gray-400">Complete portfolio overview and performance analytics</p>
-        </div>
-        <div className="flex flex-col sm:flex-row gap-3">
-          <Button 
-            variant="outline" 
-            className="border-prop-blue/20 hover:bg-prop-blue/10"
-            onClick={() => window.open('https://replit.com/new/nodejs', '_blank')}
-          >
-            <PlusCircle className="mr-2 h-4 w-4" />
-            Create New Copy
-          </Button>
-          <Button 
-            variant="outline" 
-            className="border-prop-tiffany/20 hover:bg-prop-tiffany/10"
-            onClick={() => setLocation('/csv-import')}
-          >
-            <Upload className="mr-2 h-4 w-4" />
-            Import CSV
-          </Button>
-          <Button 
-            className="bg-prop-gradient-gold text-black font-bold hover-scale"
-            onClick={() => setLocation('/accounts')}
-          >
-            <PlusCircle className="mr-2 h-4 w-4" />
-            Create New Account
-          </Button>
-        </div>
-      </div>
-
-      {/* Account Selection and Filters */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-        <Card className="bg-prop-card border-prop-gold/20">
-          <CardContent className="p-4">
+    <>
+      {/* Enhanced Header */}
+      <header className="bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 border-b border-gray-700 px-8 py-6">
+        <div className="flex justify-between items-center">
+          <div>
+            <h2 className="text-3xl font-bold text-gradient-rainbow">
+              Trading Dashboard
+            </h2>
+            <p className="text-gray-400 text-base mt-2 flex items-center">
+              <Target className="h-4 w-4 mr-2 text-orange-400" />
+              {viewMode === 'all' 
+                ? `Monitoring all ${accounts?.length ?? 0} trading accounts` 
+                : `Analyzing ${selectedAccountIds.length || (accounts && accounts.length > 0 ? 1 : 0)} selected account(s)`}
+            </p>
+          </div>
+          <div className="flex items-center space-x-4">
+            {/* Account Selection */}
             <div className="flex items-center space-x-2">
-              <Filter className="h-4 w-4 text-prop-gold" />
-              <label className="text-sm font-medium text-gray-300">Account Filter</label>
-            </div>
-            <Select defaultValue="all">
-              <SelectTrigger className="mt-2 bg-prop-dark border-prop-gold/20">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Accounts ({accounts.length})</SelectItem>
-                <SelectItem value="funded">Funded Accounts ({fundedAccounts})</SelectItem>
-                <SelectItem value="challenge">Challenge Accounts ({challengeAccounts})</SelectItem>
-                <SelectItem value="active">Live Accounts ({activeAccounts})</SelectItem>
-              </SelectContent>
-            </Select>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-prop-card border-prop-blue/20">
-          <CardContent className="p-4">
-            <div className="flex items-center space-x-2">
-              <Calendar className="h-4 w-4 text-prop-blue" />
-              <label className="text-sm font-medium text-gray-300">Time Period</label>
-            </div>
-            <Select defaultValue="month">
-              <SelectTrigger className="mt-2 bg-prop-dark border-prop-blue/20">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="today">Today</SelectItem>
-                <SelectItem value="week">This Week</SelectItem>
-                <SelectItem value="month">This Month</SelectItem>
-                <SelectItem value="quarter">This Quarter</SelectItem>
-                <SelectItem value="year">This Year</SelectItem>
-                <SelectItem value="all">All Time</SelectItem>
-              </SelectContent>
-            </Select>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-prop-card border-prop-green/20">
-          <CardContent className="p-4">
-            <div className="flex items-center space-x-2">
-              <BarChart3 className="h-4 w-4 text-prop-green" />
-              <label className="text-sm font-medium text-gray-300">View Mode</label>
-            </div>
-            <Select defaultValue="overview">
-              <SelectTrigger className="mt-2 bg-prop-dark border-prop-green/20">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="overview">Overview</SelectItem>
-                <SelectItem value="detailed">Detailed Analysis</SelectItem>
-                <SelectItem value="monthly">Monthly View</SelectItem>
-                <SelectItem value="discipline">Discipline Score</SelectItem>
-              </SelectContent>
-            </Select>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Portfolio Overview Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <Card className="bg-prop-card border-prop-gold/20 hover-glow">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-gray-400 text-sm font-medium">Total Portfolio Value</p>
-                <p className="text-2xl font-bold text-prop-gold">
-                  ${totalPortfolioValue.toLocaleString()}
-                </p>
-                <p className="text-xs text-gray-400 mt-1">Combined accounts</p>
-              </div>
-              <div className="bg-prop-gradient-gold p-3 rounded-xl">
-                <DollarSign className="h-6 w-6 text-black" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-prop-card border-prop-tiffany/20 hover-glow">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-gray-400 text-sm font-medium">Daily P&L</p>
-                <p className="text-2xl font-bold text-prop-pink">-$825</p>
-                <p className="text-xs text-gray-400 mt-1">Today's performance</p>
-              </div>
-              <div className="bg-prop-gradient-pink p-3 rounded-xl">
-                <TrendingDown className="h-6 w-6 text-white" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-prop-card border-prop-blue/20 hover-glow">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-gray-400 text-sm font-medium">Avg Win/Loss</p>
-                <div className="flex items-center space-x-2 text-lg font-bold">
-                  <span className="text-prop-green">$485</span>
-                  <span className="text-gray-400">/</span>
-                  <span className="text-prop-pink">$312</span>
-                </div>
-                <p className="text-xs text-gray-400 mt-1">Win vs Loss ratio</p>
-              </div>
-              <div className="bg-prop-gradient-blue p-3 rounded-xl">
-                <BarChart3 className="h-6 w-6 text-white" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-prop-card border-prop-green/20 hover-glow">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-gray-400 text-sm font-medium">Win Rate</p>
-                <p className="text-2xl font-bold text-prop-green">{winRate.toFixed(0)}%</p>
-                <p className="text-xs text-gray-400 mt-1">{winningTrades} wins / {totalTrades - winningTrades} losses</p>
-              </div>
-              <div className="bg-prop-gradient-green p-3 rounded-xl">
-                <Target className="h-6 w-6 text-white" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Secondary Performance Metrics */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <Card className="bg-prop-card border-prop-tiffany/20 hover-glow">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-gray-400 text-sm font-medium">R Factor</p>
-                <p className="text-2xl font-bold text-prop-green">1.56</p>
-                <p className="text-xs text-gray-400 mt-1">Total Reward / Total Risk ratio</p>
-              </div>
-              <div className="bg-prop-gradient-tiffany p-3 rounded-xl">
-                <BarChart3 className="h-6 w-6 text-white" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-prop-card border-prop-pink/20 hover-glow">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-gray-400 text-sm font-medium">Profit Factor</p>
-                <p className="text-2xl font-bold text-prop-blue">2.14</p>
-                <p className="text-xs text-gray-400 mt-1">Gross Profit / Gross Loss ratio</p>
-              </div>
-              <div className="bg-prop-gradient-blue p-3 rounded-xl">
-                <TrendingUp className="h-6 w-6 text-white" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-prop-card border-prop-gold/20 hover-glow">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-gray-400 text-sm font-medium">Total Trades</p>
-                <p className="text-2xl font-bold text-prop-gold">{totalTrades}</p>
-                <p className="text-xs text-gray-400 mt-1">This month</p>
-              </div>
-              <div className="bg-prop-gradient-gold p-3 rounded-xl">
-                <Activity className="h-6 w-6 text-black" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Account Balance by Type - Key Feature from Original */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <Card className="bg-prop-card border-prop-blue/20 hover-glow">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-gray-400 text-sm font-medium">Funded Accounts</p>
-                <p className="text-2xl font-bold text-prop-blue">
-                  ${accounts.filter(acc => acc.status === 'funded').reduce((sum, acc) => sum + acc.currentBalance, 0).toLocaleString()}
-                </p>
-                <p className="text-xs text-gray-400 mt-1">
-                  {fundedAccounts} accounts • Payout eligible
-                </p>
-              </div>
-              <div className="bg-prop-gradient-blue p-3 rounded-xl">
-                <DollarSign className="h-6 w-6 text-white" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-prop-card border-prop-green/20 hover-glow">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-gray-400 text-sm font-medium">Live Accounts</p>
-                <p className="text-2xl font-bold text-prop-green">
-                  ${accounts.filter(acc => acc.status === 'active').reduce((sum, acc) => sum + acc.currentBalance, 0).toLocaleString()}
-                </p>
-                <p className="text-xs text-gray-400 mt-1">
-                  {activeAccounts} accounts • Payout eligible
-                </p>
-              </div>
-              <div className="bg-prop-gradient-green p-3 rounded-xl">
-                <TrendingUp className="h-6 w-6 text-white" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-prop-card border-prop-gold/20 hover-glow">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-gray-400 text-sm font-medium">Challenge Accounts</p>
-                <p className="text-2xl font-bold text-prop-gold">
-                  ${accounts.filter(acc => acc.type === 'challenge').reduce((sum, acc) => sum + acc.currentBalance, 0).toLocaleString()}
-                </p>
-                <p className="text-xs text-gray-400 mt-1">
-                  {challengeAccounts} accounts • In progress
-                </p>
-              </div>
-              <div className="bg-prop-gradient-gold p-3 rounded-xl">
-                <Shield className="h-6 w-6 text-black" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Account Portfolio Overview */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <Card className="lg:col-span-2 bg-prop-card border-prop-gold/20 hover-glow">
-          <CardHeader>
-            <CardTitle className="text-gradient-rainbow flex items-center">
-              <BarChart3 className="mr-2 h-5 w-5" />
-              Account Portfolio Overview
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {accounts.map((account) => (
-                <div key={account.id} className="flex items-center justify-between p-4 bg-prop-gradient-subtle rounded-xl border border-prop-gold/10">
-                  <div>
-                    <div className="flex items-center space-x-3">
-                      <h3 className="font-semibold text-white">{account.name}</h3>
-                      <Badge 
-                        variant={account.status === 'funded' ? 'default' : 'secondary'}
-                        className={`
-                          ${account.status === 'funded' ? 'bg-prop-green text-white' : ''}
-                          ${account.status === 'active' ? 'bg-prop-blue text-white' : ''}
-                          ${account.status === 'challenge' ? 'bg-prop-gold text-black' : ''}
-                        `}
-                      >
-                        {account.status === 'funded' ? 'Funded' : account.type === 'challenge' ? 'Challenge' : 'Active'}
-                      </Badge>
-                    </div>
-                    <p className="text-sm text-gray-400">{account.firm}</p>
-                  </div>
-                  <div className="text-right">
-                    <p className="font-semibold text-white">${account.currentBalance.toLocaleString()}</p>
-                    <p className={`text-sm ${
-                      account.currentBalance >= account.startingBalance ? 'text-prop-green' : 'text-prop-pink'
-                    }`}>
-                      {account.currentBalance >= account.startingBalance ? '+' : ''}
-                      ${(account.currentBalance - account.startingBalance).toLocaleString()}
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-prop-card border-prop-tiffany/20 hover-glow">
-          <CardHeader>
-            <CardTitle className="text-gradient-rainbow flex items-center">
-              <Activity className="mr-2 h-5 w-5" />
-              Investment Tracking & Payouts
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div className="p-3 bg-prop-gradient-subtle rounded-xl">
-                <div className="text-center">
-                  <p className="text-gray-400 text-sm">Account Costs</p>
-                  <p className="font-bold text-prop-gold">${(totalInvested - 450).toLocaleString()}</p>
-                  <p className="text-xs text-gray-500">Purchase costs</p>
-                </div>
-              </div>
-              <div className="p-3 bg-prop-gradient-subtle rounded-xl">
-                <div className="text-center">
-                  <p className="text-gray-400 text-sm">Activation Fees</p>
-                  <p className="font-bold text-prop-blue">$450</p>
-                  <p className="text-xs text-gray-500">Activation costs</p>
-                </div>
-              </div>
+              <Filter className="h-4 w-4 text-gray-400" />
+              <Select value={viewMode} onValueChange={(value: any) => setViewMode(value)}>
+                <SelectTrigger className="w-40">
+                  <SelectValue placeholder="View mode" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Accounts</SelectItem>
+                  <SelectItem value="single">Single Account</SelectItem>
+                  <SelectItem value="multiple">Multiple Accounts</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
             
-            <div className="p-4 bg-prop-gradient-subtle rounded-xl border border-prop-green/20">
-              <div className="flex justify-between items-center mb-2">
-                <span className="text-gray-400">Total Invested</span>
-                <span className="font-bold text-white">${totalInvested.toLocaleString()}</span>
+            {/* Account Selection Dropdown */}
+            {viewMode !== 'all' && accounts && (
+              <div className="flex items-center space-x-2">
+                {viewMode === 'single' ? (
+                  <Select 
+                    value={selectedAccountIds[0]?.toString() || ''} 
+                    onValueChange={(value) => setSelectedAccountIds([parseInt(value)])}
+                  >
+                    <SelectTrigger className="w-48">
+                      <SelectValue placeholder="Select account" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {accounts.map((account) => (
+                        <SelectItem key={account.id} value={account.id.toString()}>
+                          {account.name} ({account.firm})
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                ) : (
+                  <div className="bg-dark-card border border-dark-border rounded-md p-2 max-w-sm">
+                    <p className="text-xs text-gray-400 mb-2">Select accounts:</p>
+                    <div className="space-y-1 max-h-32 overflow-y-auto">
+                      {accounts.map((account) => (
+                        <div key={account.id} className="flex items-center space-x-2">
+                          <Checkbox
+                            id={`account-${account.id}`}
+                            checked={selectedAccountIds.includes(account.id)}
+                            onCheckedChange={(checked) => {
+                              if (checked) {
+                                setSelectedAccountIds([...selectedAccountIds, account.id]);
+                              } else {
+                                setSelectedAccountIds(selectedAccountIds.filter(id => id !== account.id));
+                              }
+                            }}
+                          />
+                          <label htmlFor={`account-${account.id}`} className="text-xs cursor-pointer">
+                            {account.name}
+                          </label>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
-              <div className="flex justify-between items-center mb-2">
-                <span className="text-gray-400">Total Payouts</span>
-                <span className="font-bold text-prop-green">$8,750</span>
-              </div>
-              <div className="h-px bg-gray-600 my-2"></div>
-              <div className="flex justify-between items-center">
-                <span className="text-gray-400 font-medium">Profitability</span>
-                <span className="font-bold text-prop-green">
-                  +${(8750 - totalInvested).toLocaleString()}
-                </span>
-              </div>
-              <p className="text-xs text-gray-400 mt-1 text-center">
-                {`Profitable • $8,750 vs $${totalInvested.toLocaleString()}`}
-              </p>
+            )}
+
+            {/* TASK 1: Time Period Selection */}
+            <div className="flex items-center space-x-2">
+              <Clock className="h-4 w-4 text-gray-400" />
+              <Select value={timePeriod} onValueChange={(value: any) => setTimePeriod(value)}>
+                <SelectTrigger className="w-32">
+                  <SelectValue placeholder="Period" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="daily">Daily</SelectItem>
+                  <SelectItem value="weekly">Weekly</SelectItem>
+                  <SelectItem value="monthly">Monthly</SelectItem>
+                  <SelectItem value="yearly">Yearly</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* TASK 1: View Type Selection */}
+            <div className="flex items-center space-x-2">
+              <BarChart3 className="h-4 w-4 text-gray-400" />
+              <Select value={viewType} onValueChange={(value: any) => setViewType(value)}>
+                <SelectTrigger className="w-32">
+                  <SelectValue placeholder="View" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="overview">Overview</SelectItem>
+                  <SelectItem value="detailed">Detailed</SelectItem>
+                  <SelectItem value="analytics">Analytics</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
             
-            <div className="space-y-2">
-              <div className="flex justify-between">
-                <span className="text-sm text-gray-400">Payout ROI</span>
-                <span className="text-sm text-prop-green">
-                  +{(((8750 - totalInvested) / totalInvested) * 100).toFixed(1)}%
-                </span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-sm text-gray-400">Funded Accounts</span>
-                <span className="text-sm text-white">{fundedAccounts}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-sm text-gray-400">Reset Costs</span>
-                <span className="text-sm text-white">$0</span>
-              </div>
+            <Link href="/trades?tab=add">
+              <Button className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105">
+                <Plus className="mr-2 h-4 w-4" />
+                Add Trade
+              </Button>
+            </Link>
+            <div className="relative">
+              <Bell className="h-5 w-5 text-gray-400" />
+              <span className="absolute -top-1 -right-1 bg-error-red text-xs rounded-full w-4 h-4 flex items-center justify-center text-white">
+                3
+              </span>
             </div>
-          </CardContent>
-        </Card>
-      </div>
+          </div>
+        </div>
+      </header>
 
-      {/* Performance Charts */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card className="bg-prop-card border-prop-blue/20 hover-glow">
-          <CardHeader>
-            <CardTitle className="text-gradient-rainbow">Equity Curve</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <EquityChart data={equityData} />
-          </CardContent>
-        </Card>
+      <div className="p-6 space-y-8">
 
-        <Card className="bg-prop-card border-prop-green/20 hover-glow">
-          <CardHeader>
-            <CardTitle className="text-gradient-rainbow">Monthly Performance</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <MonthlyPerformanceChart data={monthlyData} />
-          </CardContent>
-        </Card>
-      </div>
 
-      {/* Recent Activity & Journal */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card className="bg-prop-card border-prop-pink/20 hover-glow">
-          <CardHeader>
-            <CardTitle className="text-gradient-rainbow flex items-center">
-              <Award className="mr-2 h-5 w-5" />
-              Recent Trades
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-3">
-              {recentTrades.map((trade) => (
-                <div key={trade.id} className="flex items-center justify-between p-3 bg-prop-gradient-subtle rounded-lg border border-prop-gold/10">
-                  <div>
-                    <div className="flex items-center space-x-2">
-                      <Badge variant="outline" className="text-prop-gold border-prop-gold">
-                        {trade.symbol}
-                      </Badge>
-                      <span className="text-sm text-gray-400">{trade.date}</span>
-                    </div>
-                    <p className="text-xs text-gray-500 mt-1">
-                      {trade.side.toUpperCase()} {trade.quantity} @ {trade.entryPrice}
-                    </p>
-                  </div>
-                  <div className="text-right">
-                    <p className={`font-semibold ${trade.pnl >= 0 ? 'text-prop-green' : 'text-prop-pink'}`}>
-                      {trade.pnl >= 0 ? '+' : ''}${trade.pnl.toLocaleString()}
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
+        {/* Current Performance Overview - Compact Header */}
+        <div className="mb-4">
+          <h2 className="text-xl font-bold text-gradient-rainbow mb-4 flex items-center border-b border-gray-700 pb-2">
+            <TrendingUp className="mr-3 h-5 w-5 text-success-green" />
+            Current Performance Overview
+          </h2>
+        </div>
 
-        <Card className="bg-prop-card border-prop-tiffany/20 hover-glow">
-          <CardHeader>
-            <CardTitle className="text-gradient-rainbow flex items-center">
-              <BookOpen className="mr-2 h-5 w-5" />
-              Daily Journal Insights
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {journalEntries.slice(0, 3).map((entry) => (
-                <div key={entry.id} className="p-3 bg-prop-gradient-subtle rounded-lg border border-prop-gold/10">
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-sm text-prop-gold font-medium">{entry.date}</span>
-                    <Badge variant="outline" className="text-prop-tiffany border-prop-tiffany">
-                      Journal
-                    </Badge>
-                  </div>
-                  <p className="text-sm text-gray-300 line-clamp-2">
-                    {entry.whatWentRight || entry.improvementPlan}
+        {/* Key Performance Metrics Under Header */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+          {/* Net Balance */}
+          <Card className="bg-dark-card border-success-green hover-glow smooth-transition">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-gray-400 text-sm mb-1">Net Balance</p>
+                  <p className={`text-2xl font-bold ${calculateNetBalance() >= (accounts?.reduce((sum, acc) => sum + acc.startingBalance, 0) || 0) ? 'text-prop-green' : 'text-prop-pink'}`}>
+                    {formatCurrency(calculateNetBalance())}
+                  </p>
+                  <p className="text-xs text-gray-400 mt-1">
+                    Starting balance + total P&L
                   </p>
                 </div>
+                <div className="bg-success-green bg-opacity-20 p-3 rounded-lg">
+                  <DollarSign className="text-success-green h-6 w-6" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Daily P&L */}
+          <Card className="bg-dark-card border-error-red hover-glow smooth-transition">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-gray-400 text-sm mb-1">Daily P&L</p>
+                  <p className="text-2xl font-bold text-error-red">
+                    {formatCurrency(combinedAnalytics?.worstTrade || 0)}
+                  </p>
+                  <p className="text-xs text-gray-400 mt-1">
+                    Today's performance
+                  </p>
+                </div>
+                <div className="bg-error-red bg-opacity-20 p-3 rounded-lg">
+                  <TrendingDown className="text-error-red h-6 w-6" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Average Win/Loss */}
+          <Card className="bg-dark-card border-gray-600 hover-glow smooth-transition">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-gray-400 text-sm mb-1">Avg Win/Loss</p>
+                  <div className="flex items-center space-x-2 text-lg font-bold">
+                    <span className="text-success-green">
+                      {formatCurrency(combinedAnalytics?.averageWin || 0)}
+                    </span>
+                    <span className="text-gray-400">/</span>
+                    <span className="text-error-red">
+                      {formatCurrency(Math.abs(combinedAnalytics?.averageLoss || 0))}
+                    </span>
+                  </div>
+                  <p className="text-xs text-gray-400 mt-1">
+                    Win vs Loss ratio
+                  </p>
+                </div>
+                <div className="bg-gray-600 bg-opacity-20 p-3 rounded-lg">
+                  <BarChart3 className="text-gray-400 h-6 w-6" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Secondary Performance Metrics Row - Win Rate, R Factor, Profit Factor */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          {/* Win Rate */}
+          <Card className="bg-dark-card border-success-green">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-gray-400 text-sm mb-1">Win Rate</p>
+                  <p className={`text-2xl font-bold ${
+                    (combinedAnalytics?.winRate || 0) >= 70 ? 'text-success-green' :
+                    (combinedAnalytics?.winRate || 0) >= 50 ? 'text-warning-orange' : 'text-error-red'
+                  }`}>
+                    {combinedAnalytics?.winRate.toFixed(0) || 0}%
+                  </p>
+                  <p className="text-xs text-gray-400 mt-1">
+                    {combinedAnalytics?.winningTrades || 0} wins / {combinedAnalytics?.losingTrades || 0} losses
+                  </p>
+                </div>
+                <div className="bg-success-green bg-opacity-20 p-3 rounded-lg">
+                  <Target className="text-success-green h-6 w-6" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* R Factor */}
+          <Card className="bg-dark-card border-blue-600 hover-glow smooth-transition">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-gray-400 text-sm mb-1">R Factor</p>
+                  <p className={`text-2xl font-bold ${
+                    (combinedAnalytics?.rFactor || 0) >= 2 ? 'text-success-green' :
+                    (combinedAnalytics?.rFactor || 0) >= 1 ? 'text-warning-orange' : 'text-error-red'
+                  }`}>
+                    {combinedAnalytics?.rFactor.toFixed(2) || '0.00'}
+                  </p>
+                  <p className="text-xs text-gray-400 mt-1">
+                    Total Reward / Total Risk ratio
+                  </p>
+                </div>
+                <div className="bg-blue-600 bg-opacity-20 p-3 rounded-lg">
+                  <BarChart3 className="text-blue-400 h-6 w-6" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Profit Factor */}
+          <Card className="bg-dark-card border-purple-600">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-gray-400 text-sm mb-1">Profit Factor</p>
+                  <p className={`text-2xl font-bold ${
+                    (combinedAnalytics?.profitFactor || 0) >= 2 ? 'text-success-green' :
+                    (combinedAnalytics?.profitFactor || 0) >= 1 ? 'text-warning-orange' : 'text-error-red'
+                  }`}>
+                    {combinedAnalytics?.profitFactor.toFixed(2) || '0.00'}
+                  </p>
+                  <p className="text-xs text-gray-400 mt-1">
+                    Gross Profit / Gross Loss ratio
+                  </p>
+                </div>
+                <div className="bg-purple-600 bg-opacity-20 p-3 rounded-lg">
+                  <TrendingUp className="text-purple-400 h-6 w-6" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Account & Monthly Performance - Right under Win Rate row */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+          {/* Account Performance */}
+          <Card className="bg-dark-card border-dark-border">
+            <CardHeader>
+              <CardTitle className="text-gradient-rainbow">Account Performance</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {accounts?.slice(0, 3).map((account) => (
+                <div key={account.id} className="flex items-center justify-between p-3 bg-dark-surface rounded-lg">
+                  <div className="flex items-center">
+                    <div className={`w-8 h-8 rounded-lg flex items-center justify-center mr-3 ${
+                      account.type === 'funded' ? 'bg-success-green' : 'bg-primary'
+                    }`}>
+                      <Target className="text-white h-4 w-4" />
+                    </div>
+                    <div>
+                      <p className="font-medium text-white text-sm">{account.name}</p>
+                      <p className="text-xs text-gray-400">{account.type} • {account.firm}</p>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <p className="font-bold text-white text-sm">{formatCurrency(account.currentBalance)}</p>
+                    <p className={`text-xs ${
+                      account.currentBalance >= account.startingBalance ? 'text-success-green' : 'text-error-red'
+                    }`}>
+                      {formatCurrency(account.currentBalance - account.startingBalance)}
+                    </p>
+                  </div>
+                </div>
               ))}
-              <Button variant="outline" className="w-full border-prop-tiffany text-prop-tiffany hover:bg-prop-tiffany hover:text-black">
-                View Full Journal
+            </CardContent>
+          </Card>
+
+          {/* Monthly Performance */}
+          <Card className="bg-dark-card border-dark-border hover-glow smooth-transition">
+            <CardHeader>
+              <CardTitle className="text-gradient-rainbow">Monthly Performance</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-400 text-sm">Current Month</span>
+                  <span className="text-success-green font-bold">
+                    {formatCurrency(combinedAnalytics?.totalPnl || 0)}
+                  </span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-400 text-sm">Total Trades</span>
+                  <span className="text-white font-bold">{combinedAnalytics?.totalTrades || 0}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-400 text-sm">Best Trade</span>
+                  <span className="text-success-green font-bold">
+                    {formatCurrency(combinedAnalytics?.bestTrade || 0)}
+                  </span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-400 text-sm">Worst Trade</span>
+                  <span className="text-error-red font-bold">
+                    {formatCurrency(combinedAnalytics?.worstTrade || 0)}
+                  </span>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Trading Charts Preview */}
+        {trades && trades.length > 0 && (
+          <div className="mb-8">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-xl font-bold text-gradient-rainbow flex items-center border-b border-gray-700 pb-3">
+                <BarChart3 className="mr-3 h-5 w-5 text-blue-400" />
+                Trading Charts Preview
+              </h2>
+              <Link href="/charts">
+                <Button variant="outline" size="sm" className="text-blue-400 border-blue-400 hover:bg-blue-400/10">
+                  View All Charts
+                </Button>
+              </Link>
+            </div>
+            
+            {(() => {
+              const topSymbol = Array.from(new Set(trades.map(t => t.symbol).filter(Boolean)))
+                .map(symbol => ({
+                  symbol,
+                  trades: trades.filter(t => t.symbol === symbol),
+                  pnl: trades.filter(t => t.symbol === symbol).reduce((sum, t) => sum + (t.pnl || 0), 0)
+                }))
+                .sort((a, b) => b.trades.length - a.trades.length)[0];
+              
+              return topSymbol ? (
+                <SimpleChart
+                  trades={topSymbol.trades}
+                  symbol={topSymbol.symbol}
+                  height={300}
+                />
+              ) : null;
+            })()}
+          </div>
+        )}
+
+        {/* Account Portfolio Overview */}
+        <div className="mb-6 mt-12">
+          <h2 className="text-xl font-bold text-gradient-rainbow mb-6 flex items-center border-b border-gray-700 pb-3">
+            <Wallet className="mr-3 h-5 w-5 text-blue-400" />
+            Account Portfolio Overview
+          </h2>
+        </div>
+
+        {/* TASK 1: Account Type Row - Reordered: Live, Funded, Challenge */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+          {/* Live Accounts - First Priority */}
+          <Card className="bg-dark-card border-green-600">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-gray-400 text-sm mb-1">Live Accounts</p>
+                  <p className="text-2xl font-bold text-green-400">
+                    {formatCurrency(
+                      accounts?.filter(acc => acc.status === 'active')
+                        .reduce((sum, acc) => sum + acc.currentBalance, 0) || 0
+                    )}
+                  </p>
+                  <p className="text-xs text-gray-400 mt-1">
+                    {accounts?.filter(acc => acc.status === 'active').length || 0} accounts • Payout eligible
+                  </p>
+                </div>
+                <div className="bg-green-600 bg-opacity-20 p-3 rounded-lg">
+                  <TrendingUp className="text-green-400 h-6 w-6" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Funded Accounts - Second Priority */}
+          <Card className="bg-dark-card border-blue-600">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-gray-400 text-sm mb-1">Funded Accounts</p>
+                  <p className="text-2xl font-bold text-blue-400">
+                    {formatCurrency(
+                      accounts?.filter(acc => acc.status === 'funded')
+                        .reduce((sum, acc) => sum + acc.currentBalance, 0) || 0
+                    )}
+                  </p>
+                  <p className="text-xs text-gray-400 mt-1">
+                    {accounts?.filter(acc => acc.status === 'funded').length || 0} accounts • Payout eligible
+                  </p>
+                </div>
+                <div className="bg-blue-600 bg-opacity-20 p-3 rounded-lg">
+                  <DollarSign className="text-blue-400 h-6 w-6" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Challenge Accounts - Third Priority */}
+          <Card className="bg-dark-card border-yellow-600">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-gray-400 text-sm mb-1">Challenge Accounts</p>
+                  <p className="text-2xl font-bold text-yellow-400">
+                    {formatCurrency(
+                      accounts?.filter(acc => acc.type === 'challenge')
+                        .reduce((sum, acc) => sum + acc.currentBalance, 0) || 0
+                    )}
+                  </p>
+                  <p className="text-xs text-gray-400 mt-1">
+                    {accounts?.filter(acc => acc.type === 'challenge').length || 0} accounts • No payouts
+                  </p>
+                </div>
+                <div className="bg-yellow-600 bg-opacity-20 p-3 rounded-lg">
+                  <Target className="text-yellow-400 h-6 w-6" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* TASK 2: Stats Row - Active accounts, Realized payouts, Failed accounts */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+          {/* Active Accounts */}
+          <Card className="bg-dark-card border-prop-tiffany hover-glow smooth-transition">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-gray-400 text-sm mb-1">Active Accounts</p>
+                  <p className="text-2xl font-bold text-prop-tiffany">
+                    {accounts?.filter(acc => acc.status === 'active' || acc.status === 'funded').length || 0}
+                  </p>
+                  <p className="text-xs text-gray-400 mt-1">
+                    Currently trading
+                  </p>
+                </div>
+                <div className="bg-prop-tiffany bg-opacity-20 p-3 rounded-lg">
+                  <CheckCircle className="text-prop-tiffany h-6 w-6" strokeWidth={2} />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Realized Payouts */}
+          <Card className="bg-dark-card border-prop-green hover-glow smooth-transition">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-gray-400 text-sm mb-1">Realized Payouts</p>
+                  <p className="text-2xl font-bold text-prop-green">
+                    {formatCurrency(
+                      accounts?.filter(acc => acc.status === 'withdrawn')
+                        .reduce((sum, acc) => sum + (acc.currentBalance - acc.startingBalance), 0) || 0
+                    )}
+                  </p>
+                  <p className="text-xs text-gray-400 mt-1">
+                    Total earnings withdrawn
+                  </p>
+                </div>
+                <div className="bg-prop-green bg-opacity-20 p-3 rounded-lg">
+                  <Banknote className="text-prop-green h-6 w-6" strokeWidth={2} />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Failed Accounts */}
+          <Card className="bg-dark-card border-prop-pink hover-glow smooth-transition">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-gray-400 text-sm mb-1">Failed Accounts</p>
+                  <p className="text-2xl font-bold text-prop-pink">
+                    {accounts?.filter(acc => acc.status === 'failed').length || 0}
+                  </p>
+                  <p className="text-xs text-gray-400 mt-1">
+                    Accounts that broke rules
+                  </p>
+                </div>
+                <div className="bg-prop-pink bg-opacity-20 p-3 rounded-lg">
+                  <AlertTriangle className="text-prop-pink h-6 w-6" strokeWidth={2} />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Total Portfolio Value Row */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+          {/* Total Portfolio Value */}
+          <Card className="bg-dark-card border-prop-gold">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-gray-400 text-sm mb-1">Total Portfolio Value</p>
+                  <p className="text-2xl font-bold text-prop-gold">
+                    {formatCurrency(accounts?.reduce((sum, acc) => sum + acc.currentBalance, 0) || 0)}
+                  </p>
+                  <p className="text-xs text-gray-400 mt-1">
+                    Combined accounts
+                  </p>
+                </div>
+                <div className="bg-prop-gold bg-opacity-20 p-3 rounded-lg">
+                  <DollarSign className="text-prop-gold h-6 w-6" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Total Investment */}
+          <Card className="bg-dark-card border-orange-600">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-gray-400 text-sm mb-1">Total Investment</p>
+                  <p className="text-2xl font-bold text-orange-400">
+                    {formatCurrency(
+                      (accounts?.reduce((sum, acc) => sum + (acc.accountCost || 0), 0) || 0) +
+                      (accounts?.reduce((sum, acc) => sum + (acc.activationCost || 0), 0) || 0)
+                    )}
+                  </p>
+                  <p className="text-xs text-gray-400 mt-1">
+                    Account costs + activations
+                  </p>
+                </div>
+                <div className="bg-orange-600 bg-opacity-20 p-3 rounded-lg">
+                  <TrendingUp className="text-orange-400 h-6 w-6" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Total Return */}
+          <Card className="bg-dark-card border-purple-600">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-gray-400 text-sm mb-1">Total Return</p>
+                  <p className={`text-2xl font-bold ${
+                    (accounts?.reduce((sum, acc) => sum + (acc.currentBalance - acc.startingBalance), 0) || 0) >= 0 
+                      ? 'text-success-green' 
+                      : 'text-error-red'
+                  }`}>
+                    {formatCurrency(
+                      accounts?.reduce((sum, acc) => sum + (acc.currentBalance - acc.startingBalance), 0) || 0
+                    )}
+                  </p>
+                  <p className="text-xs text-gray-400 mt-1">
+                    Profit/Loss from trading
+                  </p>
+                </div>
+                <div className="bg-purple-600 bg-opacity-20 p-3 rounded-lg">
+                  <TrendingUp className="text-purple-400 h-6 w-6" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+
+
+        {/* Investment Tracking */}
+        <div className="mb-6">
+          <h2 className="text-xl font-bold text-gradient-rainbow mb-6 flex items-center border-b border-gray-700 pb-3">
+            <Shield className="mr-3 h-5 w-5 text-green-400" />
+            Investment Tracking
+          </h2>
+        </div>
+
+
+
+        {/* Investment Tracking & Working Hours Summary */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+          <Card className="bg-dark-card border-green-600">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-gray-400 text-sm mb-1">Total Spent on Accounts</p>
+                  <p className="text-2xl font-bold text-prop-gold">
+                    {formatCurrency(accounts?.reduce((sum, acc) => sum + (acc.accountCost || 0), 0) || 0)}
+                  </p>
+                  <p className="text-xs text-gray-400 mt-1">
+                    Purchase costs for all accounts
+                  </p>
+                </div>
+                <div className="bg-green-600 bg-opacity-20 p-3 rounded-lg">
+                  <DollarSign className="text-green-400 h-6 w-6" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-dark-card border-blue-600">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-gray-400 text-sm mb-1">Activation Costs</p>
+                  <p className="text-2xl font-bold text-prop-tiffany">
+                    {formatCurrency(accounts?.reduce((sum, acc) => sum + (acc.activationCost || 0), 0) || 0)}
+                  </p>
+                  <p className="text-xs text-gray-400 mt-1">
+                    Activation fees paid/required
+                  </p>
+                </div>
+                <div className="bg-blue-600 bg-opacity-20 p-3 rounded-lg">
+                  <Shield className="text-blue-400 h-6 w-6" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-dark-card border-orange-600">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-gray-400 text-sm mb-1">Total Combined</p>
+                  <p className="text-2xl font-bold text-prop-blue">
+                    {formatCurrency(
+                      (accounts?.reduce((sum, acc) => sum + (acc.accountCost || 0), 0) || 0) +
+                      (accounts?.reduce((sum, acc) => sum + (acc.activationCost || 0), 0) || 0)
+                    )}
+                  </p>
+                  <p className="text-xs text-gray-400 mt-1">
+                    Total investment in trading
+                  </p>
+                </div>
+                <div className="bg-orange-600 bg-opacity-20 p-3 rounded-lg">
+                  <TrendingUp className="text-orange-400 h-6 w-6" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-dark-card border-purple-600">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-gray-400 text-sm mb-1">Total Payout</p>
+                  <p className={`text-2xl font-bold ${calculateTotalAvailablePayouts() > 0 ? 'text-prop-green' : 'text-prop-gold'}`}>
+                    {formatCurrency(calculateTotalAvailablePayouts())}
+                  </p>
+                  <p className="text-xs text-gray-400 mt-1">
+                    Received payouts
+                  </p>
+                </div>
+                <div className="bg-purple-600 bg-opacity-20 p-3 rounded-lg">
+                  <DollarSign className="text-purple-400 h-6 w-6" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Working Hours & Profitability Summary - Under Investment Tracking */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          <Card className="bg-dark-card border-cyan-600">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-gray-400 text-sm mb-1">Total Working Hours</p>
+                  <p className="text-2xl font-bold text-cyan-400">
+                    {((trades?.length || 0) * 2.5).toFixed(1)} Hrs
+                  </p>
+                  <p className="text-xs text-gray-400 mt-1">
+                    Based on {trades?.length || 0} trades × 2.5 Hrs avg duration
+                  </p>
+                </div>
+                <div className="bg-cyan-600 bg-opacity-20 p-3 rounded-lg">
+                  <Calendar className="text-cyan-400 h-6 w-6" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-dark-card border-indigo-600">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-gray-400 text-sm mb-1">Average Hours Per Day</p>
+                  <p className="text-2xl font-bold text-indigo-400">
+                    {(() => {
+                      const totalMinutes = ((trades?.length || 0) * 2.5 * 60) / 30;
+                      if (totalMinutes < 60) {
+                        return `${Math.round(totalMinutes)} Min`;
+                      } else {
+                        return `${(totalMinutes / 60).toFixed(1)} Hrs`;
+                      }
+                    })()}
+                  </p>
+                  <p className="text-xs text-gray-400 mt-1">
+                    Based on 30-day trading period
+                  </p>
+                </div>
+                <div className="bg-indigo-600 bg-opacity-20 p-3 rounded-lg">
+                  <Calendar className="text-indigo-400 h-6 w-6" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-dark-card border-emerald-600">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-gray-400 text-sm mb-1">Profitability</p>
+                  {(() => {
+                    const totalSpent = (accounts?.reduce((sum, acc) => sum + (acc.accountCost || 0), 0) || 0) +
+                                      (accounts?.reduce((sum, acc) => sum + (acc.activationCost || 0), 0) || 0);
+                    const totalPayout = 0; // This would come from actual payout data
+                    const difference = totalPayout - totalSpent;
+                    const isProfit = difference >= 0;
+                    
+                    return (
+                      <>
+                        <p className={`text-2xl font-bold ${isProfit ? 'text-emerald-400' : 'text-red-400'}`}>
+                          {isProfit ? '+' : ''}{formatCurrency(difference)}
+                        </p>
+                        <p className="text-xs text-gray-400 mt-1">
+                          {isProfit ? 'Profitable' : 'Loss'} • {formatCurrency(totalPayout)} vs {formatCurrency(totalSpent)}
+                        </p>
+                      </>
+                    );
+                  })()}
+                </div>
+                <div className="bg-emerald-600 bg-opacity-20 p-3 rounded-lg">
+                  <TrendingUp className="text-emerald-400 h-6 w-6" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Add Investment Tracking Controls */}
+        <div className="flex justify-end mb-8">
+          <Dialog open={showSpendingModal} onOpenChange={setShowSpendingModal}>
+            <DialogTrigger asChild>
+              <Button className="bg-blue-600 hover:bg-blue-700 text-white">
+                <Plus className="mr-2 h-4 w-4" />
+                Add Spending/Payout
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="bg-gray-800 border-gray-700 text-white">
+              <DialogHeader>
+                <DialogTitle>Add Spending/Payout Entry</DialogTitle>
+              </DialogHeader>
+              <div className="space-y-4">
+                <div>
+                  <Label htmlFor="type">Type</Label>
+                  <Select 
+                    value={spendingForm.type} 
+                    onValueChange={(value: 'spending' | 'payout') => setSpendingForm({...spendingForm, type: value})}
+                  >
+                    <SelectTrigger className="bg-gray-700 border-gray-600 text-white">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="bg-gray-700 border-gray-600">
+                      <SelectItem value="spending">Spending</SelectItem>
+                      <SelectItem value="payout">Payout</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label htmlFor="amount">Amount</Label>
+                  <Input
+                    id="amount"
+                    type="number"
+                    placeholder="0.00"
+                    value={spendingForm.amount}
+                    onChange={(e) => setSpendingForm({...spendingForm, amount: e.target.value})}
+                    className="bg-gray-700 border-gray-600 text-white"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="description">Description</Label>
+                  <Input
+                    id="description"
+                    placeholder="Account purchase, payout, etc."
+                    value={spendingForm.description}
+                    onChange={(e) => setSpendingForm({...spendingForm, description: e.target.value})}
+                    className="bg-gray-700 border-gray-600 text-white"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="date">Date</Label>
+                  <Input
+                    id="date"
+                    type="date"
+                    value={spendingForm.date}
+                    onChange={(e) => setSpendingForm({...spendingForm, date: e.target.value})}
+                    className="bg-gray-700 border-gray-600 text-white"
+                  />
+                </div>
+                <div className="flex gap-2 pt-4">
+                  <Button 
+                    onClick={() => {
+                      // TODO: Save spending/payout entry
+                      console.log('Saving:', spendingForm);
+                      setShowSpendingModal(false);
+                      setSpendingForm({
+                        type: 'spending',
+                        amount: '',
+                        description: '',
+                        date: new Date().toISOString().split('T')[0]
+                      });
+                    }}
+                    className="bg-blue-600 hover:bg-blue-700 flex-1"
+                  >
+                    Save Entry
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    onClick={() => setShowSpendingModal(false)}
+                    className="border-gray-600 text-white hover:bg-gray-700"
+                  >
+                    Cancel
+                  </Button>
+                </div>
+              </div>
+            </DialogContent>
+          </Dialog>
+        </div>
+
+
+
+        {/* Disciplined Trading Analysis */}
+        <div className="mb-6">
+          <h2 className="text-xl font-bold text-gradient-rainbow mb-6 flex items-center border-b border-gray-700 pb-3">
+            <Brain className="mr-3 h-5 w-5 text-indigo-400" />
+            Disciplined Trading Analysis
+          </h2>
+        </div>
+
+        {/* FIRST ROW: Active Accounts & Recent Trades */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+          <Card className="bg-dark-card border-dark-border hover-glow smooth-transition">
+            <CardHeader>
+              <CardTitle className="text-gradient-rainbow">Active Accounts</CardTitle>
+              <p className="text-gray-400 text-sm">Prop firm challenge and funded accounts</p>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {accounts?.map((account) => (
+                <div key={account.id} className="flex items-center justify-between p-4 bg-dark-surface rounded-lg border border-dark-border">
+                  <div className="flex items-center">
+                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center mr-4 ${
+                      account.type === 'funded' ? 'bg-success-green' : 
+                      account.currentBalance < account.startingBalance * 0.95 ? 'bg-warning-orange' : 'bg-primary'
+                    }`}>
+                      {account.type === 'funded' ? (
+                        <Target className="text-white h-5 w-5" />
+                      ) : account.currentBalance < account.startingBalance * 0.95 ? (
+                        <AlertTriangle className="text-white h-5 w-5" />
+                      ) : (
+                        <TrendingDown className="text-white h-5 w-5" />
+                      )}
+                    </div>
+                    <div>
+                      <p className="font-medium text-white">{account.name}</p>
+                      <p className="text-sm text-gray-400">{account.type} • {account.firm}</p>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <p className="font-bold text-white">{formatCurrency(account.currentBalance)}</p>
+                    <p className={`text-sm ${
+                      account.currentBalance >= account.startingBalance ? 'text-success-green' : 'text-error-red'
+                    }`}>
+                      {account.currentBalance >= account.startingBalance ? '+' : ''}{formatCurrency(account.currentBalance - account.startingBalance)}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </CardContent>
+          </Card>
+
+          <Card className="bg-dark-card border-dark-border hover-glow smooth-transition">
+            <CardHeader>
+              <CardTitle className="text-gradient-rainbow">Recent Trades</CardTitle>
+              <p className="text-gray-400 text-sm">Latest trading activity</p>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {trades?.slice(0, 5).map((trade) => (
+                <div key={trade.id} className="flex items-center justify-between p-4 bg-dark-surface rounded-lg border border-dark-border">
+                  <div className="flex items-center">
+                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center mr-4 ${
+                      trade.pnl > 0 ? 'bg-success-green' : trade.pnl < 0 ? 'bg-error-red' : 'bg-gray-600'
+                    }`}>
+                      {trade.pnl > 0 ? (
+                        <TrendingUp className="text-white h-5 w-5" />
+                      ) : trade.pnl < 0 ? (
+                        <TrendingDown className="text-white h-5 w-5" />
+                      ) : (
+                        <Target className="text-white h-5 w-5" />
+                      )}
+                    </div>
+                    <div>
+                      <p className="font-medium text-white">{trade.symbol}</p>
+                      <p className="text-sm text-gray-400">{trade.side} • {trade.date}</p>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <p className={`font-bold ${
+                      trade.pnl > 0 ? 'text-success-green' : trade.pnl < 0 ? 'text-error-red' : 'text-gray-400'
+                    }`}>
+                      {formatCurrency(trade.pnl)}
+                    </p>
+                    <p className="text-sm text-gray-400">{trade.quantity} shares</p>
+                  </div>
+                </div>
+              ))}
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Active Account Disciplined Analysis Row */}
+        <div className="grid grid-cols-1 gap-6 mb-6">
+          <Card className="bg-dark-card border-indigo-600">
+            <CardContent className="p-6">
+              <div className="text-center">
+                {accounts && accounts.length > 0 && trades && trades.length > 0 ? (
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    {accounts.map(account => {
+                      const accountTrades = trades.filter(t => t.accountId === account.id);
+                      const disciplinedAnalysis = calculateDisciplinedScore(account, accountTrades);
+                      
+                      return (
+                        <div key={account.id} className="text-center p-4 bg-gray-800 rounded-lg">
+                          <p className="text-xs text-gray-400 mb-1">{account.name}</p>
+                          <p className={`text-2xl font-bold mb-1 ${getGradeColor(disciplinedAnalysis.scoreGrade)}`}>
+                            {disciplinedAnalysis.disciplinedScore.toFixed(0)}%
+                          </p>
+                          <p className={`text-sm font-semibold ${getGradeColor(disciplinedAnalysis.scoreGrade)}`}>
+                            Grade {disciplinedAnalysis.scoreGrade}
+                          </p>
+                          <p className="text-xs text-gray-400 mt-1">
+                            {disciplinedAnalysis.totalTrades} trades • {disciplinedAnalysis.violationsCount} violations
+                          </p>
+                        </div>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <p className="text-gray-400">No trading data available for disciplined score analysis</p>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* First Row: Risk Management, Daily Trade Limit, Disciplined Score */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+          {/* Risk Management */}
+          <Card className="bg-dark-card border-warning-orange">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-gray-400 text-sm mb-1">Risk Management</p>
+                  <p className="text-2xl font-bold text-warning-orange">
+                    {formatCurrency(500)}
+                  </p>
+                  <p className="text-xs text-gray-400 mt-1">
+                    Per trade / {formatCurrency(1500)} daily limit
+                  </p>
+                </div>
+                <div className="bg-warning-orange bg-opacity-20 p-3 rounded-lg">
+                  <Shield className="text-warning-orange h-6 w-6" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Daily Trade Limit */}
+          <Card className="bg-dark-card border-cyan-600">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-gray-400 text-sm mb-1">Daily Trade Limit</p>
+                  <p className="text-2xl font-bold text-cyan-400">
+                    {trades?.filter(t => t.date === new Date().toISOString().split('T')[0]).length || 0} / 5
+                  </p>
+                  <p className="text-xs text-gray-400 mt-1">
+                    Current trades today / Maximum allowed
+                  </p>
+                </div>
+                <div className="bg-cyan-600 bg-opacity-20 p-3 rounded-lg">
+                  <BarChart3 className="text-cyan-400 h-6 w-6" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Disciplined Score */}
+          <Card className="bg-dark-card border-primary">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-gray-400 text-sm mb-1">Disciplined Score</p>
+                  <div className="flex items-center space-x-2">
+                    <p className={`text-2xl font-bold ${getScoreColor(combinedAnalytics?.disciplinedScore || 0)}`}>
+                      {Math.round(combinedAnalytics?.disciplinedScore || 0)}
+                    </p>
+                    <Badge className={`${getGradeColor(
+                      (combinedAnalytics?.disciplinedScore || 0) >= 95 ? 'A+' :
+                      (combinedAnalytics?.disciplinedScore || 0) >= 90 ? 'A' :
+                      (combinedAnalytics?.disciplinedScore || 0) >= 80 ? 'B' :
+                      (combinedAnalytics?.disciplinedScore || 0) >= 70 ? 'C' :
+                      (combinedAnalytics?.disciplinedScore || 0) >= 60 ? 'D' : 'F'
+                    )} text-white`}>
+                      {(combinedAnalytics?.disciplinedScore || 0) >= 95 ? 'A+' :
+                       (combinedAnalytics?.disciplinedScore || 0) >= 90 ? 'A' :
+                       (combinedAnalytics?.disciplinedScore || 0) >= 80 ? 'B' :
+                       (combinedAnalytics?.disciplinedScore || 0) >= 70 ? 'C' :
+                       (combinedAnalytics?.disciplinedScore || 0) >= 60 ? 'D' : 'F'}
+                    </Badge>
+                  </div>
+                  <p className="text-xs text-gray-400 mt-1">
+                    98% risk compliance / 100% trade limits
+                  </p>
+                </div>
+                <div className="bg-primary bg-opacity-20 p-3 rounded-lg">
+                  <Brain className="text-primary h-6 w-6" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Second Row: Risk Alert, Payout Status */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+          {/* Risk Alert - Top 3 Critical Accounts */}
+          <Card className="bg-dark-card border-warning-orange">
+            <CardContent className="p-6">
+              <div className="flex items-center mb-4">
+                <div className="bg-warning-orange bg-opacity-20 p-2 rounded-lg mr-3">
+                  <AlertTriangle className="text-warning-orange h-5 w-5" />
+                </div>
+                <h3 className="text-lg font-semibold text-gradient-rainbow">Risk Alert</h3>
+              </div>
+              <p className="text-gray-300 mb-4">3 Most Critical Accounts</p>
+              <div className="space-y-3">
+                {accounts && trades ? (
+                  accounts
+                    .map(account => {
+                      const accountTrades = trades.filter(t => t.accountId === account.id);
+                      const totalPnl = accountTrades.reduce((sum, trade) => sum + (trade.pnl || 0), 0);
+                      const dailyLossLimit = account.maxDrawdown ? account.maxDrawdown * 0.05 : 2500; // 5% daily loss limit
+                      const currentDrawdown = Math.abs(Math.min(0, totalPnl));
+                      const riskPercentage = (currentDrawdown / dailyLossLimit) * 100;
+                      
+                      return {
+                        account,
+                        riskPercentage: Math.min(100, riskPercentage),
+                        currentDrawdown,
+                        dailyLossLimit
+                      };
+                    })
+                    .sort((a, b) => b.riskPercentage - a.riskPercentage)
+                    .slice(0, 3)
+                    .map(({ account, riskPercentage, currentDrawdown, dailyLossLimit }) => (
+                      <div key={account.id} className="bg-dark-surface rounded-lg p-3">
+                        <div className="flex justify-between text-sm mb-2">
+                          <span className="truncate">{account.name}</span>
+                          <span className={`font-medium ${
+                            riskPercentage > 80 ? 'text-red-400' : 
+                            riskPercentage > 60 ? 'text-warning-orange' : 
+                            'text-yellow-400'
+                          }`}>
+                            {riskPercentage.toFixed(1)}%
+                          </span>
+                        </div>
+                        <Progress 
+                          value={riskPercentage} 
+                          className="w-full h-1.5 bg-dark-border"
+                        />
+                        <p className="text-xs text-gray-400 mt-1">
+                          {formatCurrency(currentDrawdown)} / {formatCurrency(dailyLossLimit)} risk used
+                        </p>
+                      </div>
+                    ))
+                ) : (
+                  <p className="text-gray-400 text-sm">No accounts to monitor</p>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* TopStep Payout Status */}
+          <Card className="bg-dark-card border-blue-600">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center">
+                  <div className="bg-blue-600 bg-opacity-20 p-2 rounded-lg mr-3">
+                    <DollarSign className="text-blue-400 h-5 w-5" />
+                  </div>
+                  <h3 className="text-lg font-semibold text-gradient-rainbow">Payout Status</h3>
+                </div>
+                <Select value={selectedAccountId?.toString() || ''} onValueChange={(value) => setSelectedAccountId(Number(value))}>
+                  <SelectTrigger className="w-48 bg-gray-800 border-gray-600 text-white text-sm">
+                    <SelectValue placeholder="Select account" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-gray-800 border-gray-600">
+                    {accounts?.map(account => (
+                      <SelectItem key={account.id} value={account.id.toString()} className="text-white">
+                        {account.name} {account.status === 'active' ? '(Active)' : ''}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              {(() => {
+                const selectedAccount = accounts?.find(acc => acc.id === selectedAccountId);
+                if (!selectedAccount) return null;
+                
+                const accountTrades = trades?.filter(t => t.accountId === selectedAccount.id) || [];
+                const winningTrades = accountTrades.filter(t => (t.pnl || 0) >= 200);
+                const totalProfit = selectedAccount.currentBalance - selectedAccount.startingBalance;
+                const currentDrawdown = selectedAccount.maxDrawdown - (selectedAccount.startingBalance - selectedAccount.currentBalance);
+                const isInDrawdown = currentDrawdown < 2500 || currentDrawdown < 6000;
+                
+                const daysTraded = new Set(accountTrades.map(t => t.date)).size;
+                const winningDays = winningTrades.length;
+                const profitTargetMet = totalProfit >= 3000;
+                const daysRequirementMet = daysTraded >= 30;
+                const drawdownSafe = !isInDrawdown;
+                
+                const isReady = profitTargetMet && daysRequirementMet && drawdownSafe && winningDays >= 5;
+                
+                return (
+                  <div className="space-y-4">
+                    {/* Status Indicator */}
+                    <div className="text-center p-4 rounded-lg bg-gray-800">
+                      <p className={`text-2xl font-bold ${isReady ? 'text-green-400' : 'text-yellow-400'}`}>
+                        {isReady ? '✓ READY FOR PAYOUT' : 'IN PROGRESS'}
+                      </p>
+                      <p className="text-sm text-gray-400 mt-2">
+                        Estimated Payout: {formatCurrency((() => {
+                          if (selectedAccount.type !== 'funded') return 0;
+                          const currentProfit = selectedAccount.currentBalance - selectedAccount.startingBalance;
+                          const profitSplit = (selectedAccount.profitSplit || 90) / 100;
+                          const maxPayoutPercentage = (selectedAccount.maximumPayoutPercentage || 90) / 100;
+                          const bufferPercentage = (selectedAccount.bufferPercentage || 5) / 100;
+                          const profitTarget = selectedAccount.profitTarget || 0;
+                          const bufferAmount = profitTarget * bufferPercentage;
+                          const profitAboveBuffer = Math.max(0, currentProfit - bufferAmount);
+                          return Math.max(0, profitAboveBuffer * profitSplit * maxPayoutPercentage);
+                        })())}
+                      </p>
+                    </div>
+                    
+                    {/* Progress Tracking */}
+                    <div className="space-y-4">
+                      {/* Profit Target Progress */}
+                      <div>
+                        <div className="flex justify-between text-sm mb-2">
+                          <span className="text-gray-300">Profit Target</span>
+                          <span className={profitTargetMet ? 'text-green-400' : 'text-yellow-400'}>
+                            {formatCurrency(totalProfit)} / {formatCurrency(3000)}
+                          </span>
+                        </div>
+                        <div className="w-full bg-gray-700 rounded-full h-3">
+                          <div 
+                            className={`h-3 rounded-full transition-all duration-300 ${
+                              profitTargetMet ? 'bg-green-400' : 'bg-yellow-400'
+                            }`}
+                            style={{ width: `${Math.min((totalProfit / 3000) * 100, 100)}%` }}
+                          ></div>
+                        </div>
+                      </div>
+                      
+                      {/* Trading Days Progress */}
+                      <div>
+                        <div className="flex justify-between text-sm mb-2">
+                          <span className="text-gray-300">Trading Days</span>
+                          <span className={daysRequirementMet ? 'text-green-400' : 'text-blue-400'}>
+                            {daysTraded} / 30 days
+                          </span>
+                        </div>
+                        <div className="w-full bg-gray-700 rounded-full h-3">
+                          <div 
+                            className={`h-3 rounded-full transition-all duration-300 ${
+                              daysRequirementMet ? 'bg-green-400' : 'bg-blue-400'
+                            }`}
+                            style={{ width: `${Math.min((daysTraded / 30) * 100, 100)}%` }}
+                          ></div>
+                        </div>
+                      </div>
+                      
+                      {/* Winning Days Progress */}
+                      <div>
+                        <div className="flex justify-between text-sm mb-2">
+                          <span className="text-gray-300">Winning Days ($200+)</span>
+                          <span className={winningDays >= 5 ? 'text-green-400' : 'text-purple-400'}>
+                            {winningDays} / 5 days
+                          </span>
+                        </div>
+                        <div className="w-full bg-gray-700 rounded-full h-3">
+                          <div 
+                            className={`h-3 rounded-full transition-all duration-300 ${
+                              winningDays >= 5 ? 'bg-green-400' : 'bg-purple-400'
+                            }`}
+                            style={{ width: `${Math.min((winningDays / 5) * 100, 100)}%` }}
+                          ></div>
+                        </div>
+                      </div>
+                      
+                      {/* Drawdown Status */}
+                      <div className="flex justify-between items-center">
+                        <span className="text-gray-300">Drawdown Status</span>
+                        <span className={drawdownSafe ? 'text-green-400' : 'text-red-400'}>
+                          {drawdownSafe ? 'Safe' : 'In Violation'}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })()}
+            </CardContent>
+          </Card>
+        </div>
+
+
+
+        {/* Charts Section */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+          <Card className="bg-dark-card border-dark-border hover-glow smooth-transition">
+            <CardHeader>
+              <CardTitle className="text-gradient-rainbow">Account Equity Curve</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="h-64">
+                <EquityChart data={getEquityData()} />
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-dark-card border-dark-border hover-glow smooth-transition">
+            <CardHeader>
+              <CardTitle className="text-gradient-rainbow">Weekly Performance</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-7 gap-1 mb-4">
+                {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
+                  <div key={day} className="text-center text-sm font-medium text-gray-400 p-2">
+                    {day}
+                  </div>
+                ))}
+              </div>
+              <div className="grid grid-cols-7 gap-1">
+                {(() => {
+                  const getCurrentWeekDays = () => {
+                    const today = new Date();
+                    const dayOfWeek = today.getDay(); // 0 = Sunday, 1 = Monday, etc.
+                    const startOfWeek = new Date(today);
+                    startOfWeek.setDate(today.getDate() - dayOfWeek);
+                    
+                    const weekDays = [];
+                    for (let i = 0; i < 7; i++) {
+                      const day = new Date(startOfWeek);
+                      day.setDate(startOfWeek.getDate() + i);
+                      weekDays.push(day);
+                    }
+                    return weekDays;
+                  };
+
+                  const weekDays = getCurrentWeekDays();
+                  
+                  return weekDays.map((day, index) => {
+                    const dayStr = day.toISOString().split('T')[0];
+                    const dayTrades = trades?.filter(trade => trade.date === dayStr) || [];
+                    const dayPnL = dayTrades.reduce((sum, trade) => sum + (trade.pnl || 0), 0);
+                    const isToday = day.toDateString() === new Date().toDateString();
+                    
+                    return (
+                      <div 
+                        key={index} 
+                        className={`
+                          relative p-3 rounded-lg border transition-all duration-300
+                          ${isToday ? 'border-gold bg-gold/10' : 'border-gray-700 bg-gray-800/50'}
+                          ${dayTrades.length > 0 ? 'hover:scale-105 cursor-pointer' : ''}
+                        `}
+                      >
+                        <div className="text-center">
+                          <div className="text-sm font-medium text-white mb-1">
+                            {day.getDate()}
+                          </div>
+                          {dayTrades.length > 0 && (
+                            <>
+                              <div className={`text-xs font-semibold ${dayPnL >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                                ${dayPnL >= 0 ? '+' : ''}${dayPnL.toFixed(2)}
+                              </div>
+                              <div className="text-xs text-gray-400">
+                                {dayTrades.length} trades
+                              </div>
+                            </>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  });
+                })()}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+
+
+        {/* Daily Journal Quick Entry */}
+        <Card className="bg-dark-card border-dark-border hover-glow smooth-transition">
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center">
+                <div className="bg-accent-orange bg-opacity-20 p-2 rounded-lg mr-3">
+                  <Target className="text-accent-orange h-5 w-5" />
+                </div>
+                <CardTitle className="text-gradient-rainbow">Daily Trading Journal</CardTitle>
+              </div>
+              <Link href="/journal">
+                <Button variant="ghost" className="text-primary hover:text-blue-400">
+                  View Full Journal
+                </Button>
+              </Link>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div>
+                <label className="block text-sm font-medium text-gray-400 mb-2">What went wrong today?</label>
+                <Textarea 
+                  className="bg-dark-surface border-dark-border resize-none" 
+                  rows={3} 
+                  placeholder="Reflect on mistakes and lessons learned..."
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-400 mb-2">What went right today?</label>
+                <Textarea 
+                  className="bg-dark-surface border-dark-border resize-none" 
+                  rows={3} 
+                  placeholder="Note successful strategies and decisions..."
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-400 mb-2">Tomorrow's improvement plan</label>
+                <Textarea 
+                  className="bg-dark-surface border-dark-border resize-none" 
+                  rows={3} 
+                  placeholder="Set goals for tomorrow's session..."
+                />
+              </div>
+            </div>
+            
+            <div className="flex justify-end mt-4">
+              <Button className="bg-accent-orange hover:bg-orange-600">
+                Save Journal Entry
               </Button>
             </div>
           </CardContent>
         </Card>
+
+        {/* TASK 4: Enhanced Trade Analysis Calendar - Unique Design */}
+        <div className="mb-8">
+          <h2 className="text-xl font-bold text-gradient-rainbow mb-6 flex items-center border-b border-gray-700 pb-3">
+            <Calendar className="mr-3 h-5 w-5 text-prop-tiffany" />
+            Trade Analysis Calendar
+          </h2>
+          <TradeAnalysisCalendar 
+            trades={trades || []} 
+            accounts={accounts || []}
+            viewMode={timePeriod}
+          />
+        </div>
       </div>
-
-      {/* Challenge Progress Tracking - Critical Missing Feature */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <Card className="bg-prop-card border-prop-blue/20 hover-glow">
-          <CardHeader>
-            <CardTitle className="text-gradient-rainbow flex items-center">
-              <Target className="mr-2 h-5 w-5" />
-              Challenge Progress
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <div>
-                <div className="flex justify-between items-center mb-2">
-                  <span className="text-sm text-gray-400">Profit Target</span>
-                  <span className="text-sm text-prop-green">78%</span>
-                </div>
-                <Progress value={78} className="h-2" />
-                <p className="text-xs text-gray-400 mt-1">$7,800 / $10,000</p>
-              </div>
-              
-              <div>
-                <div className="flex justify-between items-center mb-2">
-                  <span className="text-sm text-gray-400">Max Drawdown</span>
-                  <span className="text-sm text-prop-pink">42%</span>
-                </div>
-                <Progress value={42} className="h-2" />
-                <p className="text-xs text-gray-400 mt-1">$2,100 / $5,000</p>
-              </div>
-
-              <div>
-                <div className="flex justify-between items-center mb-2">
-                  <span className="text-sm text-gray-400">Trading Days</span>
-                  <span className="text-sm text-prop-gold">12 / 30</span>
-                </div>
-                <Progress value={40} className="h-2" />
-                <p className="text-xs text-gray-400 mt-1">18 days remaining</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-prop-card border-prop-green/20 hover-glow">
-          <CardHeader>
-            <CardTitle className="text-gradient-rainbow flex items-center">
-              <DollarSign className="mr-2 h-5 w-5" />
-              Payout Tracking
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <div className="flex justify-between items-center">
-                <span className="text-gray-400">Next Payout</span>
-                <span className="text-prop-green font-bold">$2,450</span>
-              </div>
-              
-              <div className="flex justify-between items-center">
-                <span className="text-gray-400">Payout Date</span>
-                <span className="text-white">Nov 15, 2024</span>
-              </div>
-
-              <div className="flex justify-between items-center">
-                <span className="text-gray-400">Split Rate</span>
-                <span className="text-prop-gold">80%</span>
-              </div>
-
-              <div className="border-t border-gray-600 pt-3">
-                <div className="flex justify-between items-center">
-                  <span className="text-gray-400">Total Payouts</span>
-                  <span className="text-prop-green font-bold">$8,750</span>
-                </div>
-                <p className="text-xs text-gray-400 mt-1">3 payouts this year</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-prop-card border-prop-pink/20 hover-glow">
-          <CardHeader>
-            <CardTitle className="text-gradient-rainbow flex items-center justify-between">
-              <div className="flex items-center">
-                <Clock className="mr-2 h-5 w-5" />
-                Trade Analysis View
-              </div>
-              <div className="flex gap-2">
-                <Select defaultValue="monthly">
-                  <SelectTrigger className="w-32 bg-prop-dark border-prop-pink/20">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="daily">Daily</SelectItem>
-                    <SelectItem value="weekly">Weekly</SelectItem>
-                    <SelectItem value="monthly">Monthly</SelectItem>
-                  </SelectContent>
-                </Select>
-                <Select defaultValue="2024">
-                  <SelectTrigger className="w-20 bg-prop-dark border-prop-pink/20">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="2024">2024</SelectItem>
-                    <SelectItem value="2023">2023</SelectItem>
-                    <SelectItem value="2022">2022</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Tabs defaultValue="october" className="w-full">
-              <TabsList className="grid w-full grid-cols-3 bg-prop-dark">
-                <TabsTrigger value="august">Aug</TabsTrigger>
-                <TabsTrigger value="september">Sep</TabsTrigger>
-                <TabsTrigger value="october">Oct</TabsTrigger>
-              </TabsList>
-              
-              <TabsContent value="october" className="space-y-3 mt-4">
-                <div className="flex justify-between text-sm">
-                  <span className="text-gray-400">Total Trades</span>
-                  <span className="text-white">47</span>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-gray-400">Win Rate</span>
-                  <span className="text-prop-green">64%</span>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-gray-400">Monthly P&L</span>
-                  <span className="text-prop-green">+$4,200</span>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-gray-400">Best Day</span>
-                  <span className="text-prop-green">+$890</span>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-gray-400">Worst Day</span>
-                  <span className="text-prop-pink">-$425</span>
-                </div>
-              </TabsContent>
-
-              <TabsContent value="september" className="space-y-3 mt-4">
-                <div className="flex justify-between text-sm">
-                  <span className="text-gray-400">Total Trades</span>
-                  <span className="text-white">38</span>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-gray-400">Win Rate</span>
-                  <span className="text-prop-green">71%</span>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-gray-400">Monthly P&L</span>
-                  <span className="text-prop-green">+$3,100</span>
-                </div>
-              </TabsContent>
-
-              <TabsContent value="august" className="space-y-3 mt-4">
-                <div className="flex justify-between text-sm">
-                  <span className="text-gray-400">Total Trades</span>
-                  <span className="text-white">29</span>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-gray-400">Win Rate</span>
-                  <span className="text-prop-green">69%</span>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-gray-400">Monthly P&L</span>
-                  <span className="text-prop-green">+$2,400</span>
-                </div>
-              </TabsContent>
-            </Tabs>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Weekly Performance Calendar */}
-      <Card className="bg-prop-card border-prop-gold/20 hover-glow">
-        <CardHeader>
-          <CardTitle className="text-gradient-rainbow flex items-center">
-            <Calendar className="mr-2 h-5 w-5" />
-            Weekly Performance
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <WeeklyPerformanceCalendar trades={trades} />
-        </CardContent>
-      </Card>
-
-      {/* Disciplined Analysis */}
-      <Card className="bg-prop-card border-prop-gold/20 hover-glow">
-        <CardHeader>
-          <CardTitle className="text-gradient-rainbow flex items-center">
-            <AlertTriangle className="mr-2 h-5 w-5" />
-            Disciplined Trading Analysis
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="text-center p-4 bg-prop-gradient-subtle rounded-xl">
-              <div className="text-3xl font-bold text-prop-green mb-2">95%</div>
-              <p className="text-gray-400">Discipline Score</p>
-              <p className="text-xs text-prop-green mt-1">Excellent</p>
-            </div>
-            <div className="text-center p-4 bg-prop-gradient-subtle rounded-xl">
-              <div className="text-3xl font-bold text-prop-blue mb-2">2</div>
-              <p className="text-gray-400">Rule Violations</p>
-              <p className="text-xs text-prop-blue mt-1">This Month</p>
-            </div>
-            <div className="text-center p-4 bg-prop-gradient-subtle rounded-xl">
-              <div className="text-3xl font-bold text-prop-tiffany mb-2">15</div>
-              <p className="text-gray-400">Streak Days</p>
-              <p className="text-xs text-prop-tiffany mt-1">Following Rules</p>
-            </div>
-          </div>
-          <div className="mt-6 p-4 bg-prop-gradient-subtle rounded-xl border border-prop-green/20">
-            <h4 className="font-semibold text-prop-green mb-2">Recent Achievements</h4>
-            <ul className="space-y-1 text-sm text-gray-300">
-              <li>• Maintained perfect position sizing for 10 consecutive trades</li>
-              <li>• No revenge trading incidents in the last 30 days</li>
-              <li>• Successfully followed stop-loss rules on all losing trades</li>
-            </ul>
-          </div>
-        </CardContent>
-      </Card>
-    </div>
+    </>
   );
 }

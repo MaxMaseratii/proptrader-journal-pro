@@ -6,7 +6,6 @@ import { BarChart3, TrendingUp, Grid3X3, Activity } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
-import { cleanSymbolForTradingView } from "@/lib/symbol-utils";
 
 export default function Charts() {
   const { data: accounts = [] } = useQuery<Account[]>({
@@ -90,7 +89,7 @@ export default function Charts() {
             {symbolStats.length > 0 && (
               <div>
                 <div className="text-2xl font-bold text-white mb-1">
-                  {cleanSymbolForTradingView(symbolStats.sort((a, b) => b.pnl - a.pnl)[0]?.symbol || '')}1!
+                  {symbolStats.sort((a, b) => b.pnl - a.pnl)[0]?.symbol}
                 </div>
                 <div className={`text-sm ${symbolStats[0]?.pnl >= 0 ? 'text-green-400' : 'text-red-400'}`}>
                   ${symbolStats.sort((a, b) => b.pnl - a.pnl)[0]?.pnl.toFixed(0)} P&L
@@ -108,7 +107,7 @@ export default function Charts() {
             {symbolStats.length > 0 && (
               <div>
                 <div className="text-2xl font-bold text-white mb-1">
-                  {cleanSymbolForTradingView(symbolStats[0]?.symbol || '')}1!
+                  {symbolStats[0]?.symbol}
                 </div>
                 <div className="text-sm text-gray-400">
                   {symbolStats[0]?.trades} trades
@@ -126,7 +125,7 @@ export default function Charts() {
             {symbolStats.length > 0 && (
               <div>
                 <div className="text-2xl font-bold text-white mb-1">
-                  {cleanSymbolForTradingView(symbolStats.sort((a, b) => b.winRate - a.winRate)[0]?.symbol || '')}1!
+                  {symbolStats.sort((a, b) => b.winRate - a.winRate)[0]?.symbol}
                 </div>
                 <div className="text-sm text-green-400">
                   {symbolStats.sort((a, b) => b.winRate - a.winRate)[0]?.winRate.toFixed(1)}% win rate
