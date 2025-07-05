@@ -441,72 +441,60 @@ export default function Dashboard() {
         </div>
 
         {/* Key Performance Metrics Under Header */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+        <div className="widget-grid mb-6">
           {/* Net Balance */}
-          <Card className="bg-dark-card border-success-green hover-glow smooth-transition">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-gray-400 text-sm mb-1">Net Balance</p>
-                  <p className={`text-2xl font-bold ${calculateNetBalance() >= (accounts?.reduce((sum, acc) => sum + acc.startingBalance, 0) || 0) ? 'text-prop-green' : 'text-prop-pink'}`}>
-                    {formatCurrency(calculateNetBalance())}
-                  </p>
-                  <p className="text-xs text-gray-400 mt-1">
-                    Starting balance + total P&L
-                  </p>
-                </div>
-                <div className="bg-success-green bg-opacity-20 p-3 rounded-lg">
-                  <DollarSign className="text-success-green h-6 w-6" />
-                </div>
+          <div className="widget-container">
+            <div className="widget-content">
+              <div className="widget-left">
+                <p className="widget-label">Net Balance</p>
+                <p className="widget-value">
+                  {formatCurrency(calculateNetBalance())}
+                </p>
+                <p className="widget-description">Starting balance + Total P&L</p>
               </div>
-            </CardContent>
-          </Card>
+              <div className="widget-icon-square">
+                <DollarSign className="widget-icon" />
+              </div>
+            </div>
+          </div>
 
           {/* Daily P&L */}
-          <Card className="bg-dark-card border-error-red hover-glow smooth-transition">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-gray-400 text-sm mb-1">Daily P&L</p>
-                  <p className="text-2xl font-bold text-error-red">
-                    {formatCurrency(combinedAnalytics?.worstTrade || 0)}
-                  </p>
-                  <p className="text-xs text-gray-400 mt-1">
-                    Today's performance
-                  </p>
-                </div>
-                <div className="bg-error-red bg-opacity-20 p-3 rounded-lg">
-                  <TrendingDown className="text-error-red h-6 w-6" />
-                </div>
+          <div className="widget-container">
+            <div className="widget-content">
+              <div className="widget-left">
+                <p className="widget-label">Daily P&L</p>
+                <p className="widget-value">
+                  {formatCurrency(combinedAnalytics?.worstTrade || 0)}
+                </p>
+                <p className="widget-description">Today's performance</p>
               </div>
-            </CardContent>
-          </Card>
+              <div className="widget-icon-square">
+                <TrendingDown className="widget-icon" />
+              </div>
+            </div>
+          </div>
 
           {/* Average Win/Loss */}
-          <Card className="bg-dark-card border-gray-600 hover-glow smooth-transition">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-gray-400 text-sm mb-1">Avg Win/Loss</p>
-                  <div className="flex items-center space-x-2 text-lg font-bold">
-                    <span className="text-success-green">
-                      {formatCurrency(combinedAnalytics?.averageWin || 0)}
-                    </span>
-                    <span className="text-gray-400">/</span>
-                    <span className="text-error-red">
-                      {formatCurrency(Math.abs(combinedAnalytics?.averageLoss || 0))}
-                    </span>
-                  </div>
-                  <p className="text-xs text-gray-400 mt-1">
-                    Win vs Loss ratio
-                  </p>
+          <div className="widget-container">
+            <div className="widget-content">
+              <div className="widget-left">
+                <p className="widget-label">Avg Win/Loss</p>
+                <div className="flex items-center space-x-2 text-lg font-bold">
+                  <span className="text-success-green">
+                    {formatCurrency(combinedAnalytics?.averageWin || 0)}
+                  </span>
+                  <span className="text-gray-400">/</span>
+                  <span className="text-error-red">
+                    {formatCurrency(Math.abs(combinedAnalytics?.averageLoss || 0))}
+                  </span>
                 </div>
-                <div className="bg-gray-600 bg-opacity-20 p-3 rounded-lg">
-                  <BarChart3 className="text-gray-400 h-6 w-6" />
-                </div>
+                <p className="widget-description">Win vs Loss ratio</p>
               </div>
-            </CardContent>
-          </Card>
+              <div className="widget-icon-square">
+                <BarChart3 className="widget-icon" />
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* Secondary Performance Metrics Row - Win Rate, R Factor, Profit Factor */}
@@ -607,89 +595,31 @@ export default function Dashboard() {
             </div>
           </div>
 
-          {/* Net Balance */}
+
+        </div>
+
+        {/* Weekly Performance Calendar */}
+        <div className="mb-8">
+          <h2 className="text-xl font-bold text-gradient-rainbow flex items-center border-b border-gray-700 pb-3 mb-6">
+            <Calendar className="mr-3 h-5 w-5 text-blue-400" />
+            Weekly Performance Calendar
+          </h2>
           <div className="widget-container">
             <div className="widget-content">
               <div className="widget-left">
-                <p className="widget-label">Net Balance</p>
+                <p className="widget-label">This Week's P&L</p>
                 <p className="widget-value">
-                  {formatCurrency(calculateNetBalance())}
+                  {formatCurrency(combinedAnalytics?.totalPnl || 0)}
                 </p>
-                <p className="widget-description">Starting balance + Total P&L</p>
+                <p className="widget-description">
+                  {combinedAnalytics?.totalTrades || 0} trades • {combinedAnalytics?.winRate.toFixed(0) || 0}% win rate
+                </p>
               </div>
               <div className="widget-icon-square">
-                <Wallet className="widget-icon" />
+                <Calendar className="widget-icon" />
               </div>
             </div>
           </div>
-        </div>
-
-        {/* Account & Monthly Performance - Right under Win Rate row */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-          {/* Account Performance */}
-          <Card className="bg-dark-card border-dark-border">
-            <CardHeader>
-              <CardTitle className="text-gradient-rainbow">Account Performance</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {accounts?.slice(0, 3).map((account) => (
-                <div key={account.id} className="flex items-center justify-between p-3 bg-dark-surface rounded-lg">
-                  <div className="flex items-center">
-                    <div className={`w-8 h-8 rounded-lg flex items-center justify-center mr-3 ${
-                      account.type === 'funded' ? 'bg-success-green' : 'bg-primary'
-                    }`}>
-                      <Target className="text-white h-4 w-4" />
-                    </div>
-                    <div>
-                      <p className="font-medium text-white text-sm">{account.name}</p>
-                      <p className="text-xs text-gray-400">{account.type} • {account.firm}</p>
-                    </div>
-                  </div>
-                  <div className="text-right">
-                    <p className="font-bold text-white text-sm">{formatCurrency(account.currentBalance)}</p>
-                    <p className={`text-xs ${
-                      account.currentBalance >= account.startingBalance ? 'text-success-green' : 'text-error-red'
-                    }`}>
-                      {formatCurrency(account.currentBalance - account.startingBalance)}
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </CardContent>
-          </Card>
-
-          {/* Monthly Performance */}
-          <Card className="bg-dark-card border-dark-border hover-glow smooth-transition">
-            <CardHeader>
-              <CardTitle className="text-gradient-rainbow">Monthly Performance</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                <div className="flex justify-between items-center">
-                  <span className="text-gray-400 text-sm">Current Month</span>
-                  <span className="text-success-green font-bold">
-                    {formatCurrency(combinedAnalytics?.totalPnl || 0)}
-                  </span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-gray-400 text-sm">Total Trades</span>
-                  <span className="text-white font-bold">{combinedAnalytics?.totalTrades || 0}</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-gray-400 text-sm">Best Trade</span>
-                  <span className="text-success-green font-bold">
-                    {formatCurrency(combinedAnalytics?.bestTrade || 0)}
-                  </span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-gray-400 text-sm">Worst Trade</span>
-                  <span className="text-error-red font-bold">
-                    {formatCurrency(combinedAnalytics?.worstTrade || 0)}
-                  </span>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
         </div>
 
         {/* Trading Charts Preview */}
@@ -735,214 +665,180 @@ export default function Dashboard() {
           </h2>
         </div>
 
-        {/* TASK 1: Account Type Row - Reordered: Live, Funded, Challenge */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+        {/* Account Type Row - Reordered: Live, Funded, Challenge */}
+        <div className="widget-grid mb-6">
           {/* Live Accounts - First Priority */}
-          <Card className="bg-dark-card border-green-600">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-gray-400 text-sm mb-1">Live Accounts</p>
-                  <p className="text-2xl font-bold text-green-400">
-                    {formatCurrency(
-                      accounts?.filter(acc => acc.status === 'active')
-                        .reduce((sum, acc) => sum + acc.currentBalance, 0) || 0
-                    )}
-                  </p>
-                  <p className="text-xs text-gray-400 mt-1">
-                    {accounts?.filter(acc => acc.status === 'active').length || 0} accounts • Payout eligible
-                  </p>
-                </div>
-                <div className="bg-green-600 bg-opacity-20 p-3 rounded-lg">
-                  <TrendingUp className="text-green-400 h-6 w-6" />
-                </div>
+          <div className="widget-container">
+            <div className="widget-content">
+              <div className="widget-left">
+                <p className="widget-label">Live Accounts</p>
+                <p className="widget-value">
+                  {formatCurrency(
+                    accounts?.filter(acc => acc.status === 'active')
+                      .reduce((sum, acc) => sum + acc.currentBalance, 0) || 0
+                  )}
+                </p>
+                <p className="widget-description">
+                  {accounts?.filter(acc => acc.status === 'active').length || 0} accounts • Payout eligible
+                </p>
               </div>
-            </CardContent>
-          </Card>
+              <div className="widget-icon-square">
+                <TrendingUp className="widget-icon" />
+              </div>
+            </div>
+          </div>
 
           {/* Funded Accounts - Second Priority */}
-          <Card className="bg-dark-card border-blue-600">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-gray-400 text-sm mb-1">Funded Accounts</p>
-                  <p className="text-2xl font-bold text-blue-400">
-                    {formatCurrency(
-                      accounts?.filter(acc => acc.status === 'funded')
-                        .reduce((sum, acc) => sum + acc.currentBalance, 0) || 0
-                    )}
-                  </p>
-                  <p className="text-xs text-gray-400 mt-1">
-                    {accounts?.filter(acc => acc.status === 'funded').length || 0} accounts • Payout eligible
-                  </p>
-                </div>
-                <div className="bg-blue-600 bg-opacity-20 p-3 rounded-lg">
-                  <DollarSign className="text-blue-400 h-6 w-6" />
-                </div>
+          <div className="widget-container">
+            <div className="widget-content">
+              <div className="widget-left">
+                <p className="widget-label">Funded Accounts</p>
+                <p className="widget-value">
+                  {formatCurrency(
+                    accounts?.filter(acc => acc.status === 'funded')
+                      .reduce((sum, acc) => sum + acc.currentBalance, 0) || 0
+                  )}
+                </p>
+                <p className="widget-description">
+                  {accounts?.filter(acc => acc.status === 'funded').length || 0} accounts • Payout eligible
+                </p>
               </div>
-            </CardContent>
-          </Card>
+              <div className="widget-icon-square">
+                <DollarSign className="widget-icon" />
+              </div>
+            </div>
+          </div>
 
           {/* Challenge Accounts - Third Priority */}
-          <Card className="bg-dark-card border-yellow-600">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-gray-400 text-sm mb-1">Challenge Accounts</p>
-                  <p className="text-2xl font-bold text-yellow-400">
-                    {formatCurrency(
-                      accounts?.filter(acc => acc.type === 'challenge')
-                        .reduce((sum, acc) => sum + acc.currentBalance, 0) || 0
-                    )}
-                  </p>
-                  <p className="text-xs text-gray-400 mt-1">
-                    {accounts?.filter(acc => acc.type === 'challenge').length || 0} accounts • No payouts
-                  </p>
-                </div>
-                <div className="bg-yellow-600 bg-opacity-20 p-3 rounded-lg">
-                  <Target className="text-yellow-400 h-6 w-6" />
-                </div>
+          <div className="widget-container">
+            <div className="widget-content">
+              <div className="widget-left">
+                <p className="widget-label">Challenge Accounts</p>
+                <p className="widget-value">
+                  {formatCurrency(
+                    accounts?.filter(acc => acc.type === 'challenge')
+                      .reduce((sum, acc) => sum + acc.currentBalance, 0) || 0
+                  )}
+                </p>
+                <p className="widget-description">
+                  {accounts?.filter(acc => acc.type === 'challenge').length || 0} accounts • No payouts
+                </p>
               </div>
-            </CardContent>
-          </Card>
+              <div className="widget-icon-square">
+                <Target className="widget-icon" />
+              </div>
+            </div>
+          </div>
         </div>
 
-        {/* TASK 2: Stats Row - Active accounts, Realized payouts, Failed accounts */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+        {/* Stats Row - Active accounts, Realized payouts, Failed accounts */}
+        <div className="widget-grid mb-6">
           {/* Active Accounts */}
-          <Card className="bg-dark-card border-prop-tiffany hover-glow smooth-transition">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-gray-400 text-sm mb-1">Active Accounts</p>
-                  <p className="text-2xl font-bold text-prop-tiffany">
-                    {accounts?.filter(acc => acc.status === 'active' || acc.status === 'funded').length || 0}
-                  </p>
-                  <p className="text-xs text-gray-400 mt-1">
-                    Currently trading
-                  </p>
-                </div>
-                <div className="bg-prop-tiffany bg-opacity-20 p-3 rounded-lg">
-                  <CheckCircle className="text-prop-tiffany h-6 w-6" strokeWidth={2} />
-                </div>
+          <div className="widget-container">
+            <div className="widget-content">
+              <div className="widget-left">
+                <p className="widget-label">Active Accounts</p>
+                <p className="widget-value">
+                  {accounts?.filter(acc => acc.status === 'active' || acc.status === 'funded').length || 0}
+                </p>
+                <p className="widget-description">Currently trading</p>
               </div>
-            </CardContent>
-          </Card>
+              <div className="widget-icon-square">
+                <CheckCircle className="widget-icon" />
+              </div>
+            </div>
+          </div>
 
           {/* Realized Payouts */}
-          <Card className="bg-dark-card border-prop-green hover-glow smooth-transition">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-gray-400 text-sm mb-1">Realized Payouts</p>
-                  <p className="text-2xl font-bold text-prop-green">
-                    {formatCurrency(
-                      accounts?.filter(acc => acc.status === 'withdrawn')
-                        .reduce((sum, acc) => sum + (acc.currentBalance - acc.startingBalance), 0) || 0
-                    )}
-                  </p>
-                  <p className="text-xs text-gray-400 mt-1">
-                    Total earnings withdrawn
-                  </p>
-                </div>
-                <div className="bg-prop-green bg-opacity-20 p-3 rounded-lg">
-                  <Banknote className="text-prop-green h-6 w-6" strokeWidth={2} />
-                </div>
+          <div className="widget-container">
+            <div className="widget-content">
+              <div className="widget-left">
+                <p className="widget-label">Realized Payouts</p>
+                <p className="widget-value">
+                  {formatCurrency(
+                    accounts?.filter(acc => acc.status === 'withdrawn')
+                      .reduce((sum, acc) => sum + (acc.currentBalance - acc.startingBalance), 0) || 0
+                  )}
+                </p>
+                <p className="widget-description">Total earnings withdrawn</p>
               </div>
-            </CardContent>
-          </Card>
+              <div className="widget-icon-square">
+                <Banknote className="widget-icon" />
+              </div>
+            </div>
+          </div>
 
           {/* Failed Accounts */}
-          <Card className="bg-dark-card border-prop-pink hover-glow smooth-transition">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-gray-400 text-sm mb-1">Failed Accounts</p>
-                  <p className="text-2xl font-bold text-prop-pink">
-                    {accounts?.filter(acc => acc.status === 'failed').length || 0}
-                  </p>
-                  <p className="text-xs text-gray-400 mt-1">
-                    Accounts that broke rules
-                  </p>
-                </div>
-                <div className="bg-prop-pink bg-opacity-20 p-3 rounded-lg">
-                  <AlertTriangle className="text-prop-pink h-6 w-6" strokeWidth={2} />
-                </div>
+          <div className="widget-container">
+            <div className="widget-content">
+              <div className="widget-left">
+                <p className="widget-label">Failed Accounts</p>
+                <p className="widget-value">
+                  {accounts?.filter(acc => acc.status === 'failed').length || 0}
+                </p>
+                <p className="widget-description">Accounts that broke rules</p>
               </div>
-            </CardContent>
-          </Card>
+              <div className="widget-icon-square">
+                <AlertTriangle className="widget-icon" />
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* Total Portfolio Value Row */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+        <div className="widget-grid mb-6">
           {/* Total Portfolio Value */}
-          <Card className="bg-dark-card border-prop-gold">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-gray-400 text-sm mb-1">Total Portfolio Value</p>
-                  <p className="text-2xl font-bold text-prop-gold">
-                    {formatCurrency(accounts?.reduce((sum, acc) => sum + acc.currentBalance, 0) || 0)}
-                  </p>
-                  <p className="text-xs text-gray-400 mt-1">
-                    Combined accounts
-                  </p>
-                </div>
-                <div className="bg-prop-gold bg-opacity-20 p-3 rounded-lg">
-                  <DollarSign className="text-prop-gold h-6 w-6" />
-                </div>
+          <div className="widget-container">
+            <div className="widget-content">
+              <div className="widget-left">
+                <p className="widget-label">Total Portfolio Value</p>
+                <p className="widget-value">
+                  {formatCurrency(accounts?.reduce((sum, acc) => sum + acc.currentBalance, 0) || 0)}
+                </p>
+                <p className="widget-description">Combined accounts</p>
               </div>
-            </CardContent>
-          </Card>
+              <div className="widget-icon-square">
+                <DollarSign className="widget-icon" />
+              </div>
+            </div>
+          </div>
 
           {/* Total Investment */}
-          <Card className="bg-dark-card border-orange-600">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-gray-400 text-sm mb-1">Total Investment</p>
-                  <p className="text-2xl font-bold text-orange-400">
-                    {formatCurrency(
-                      (accounts?.reduce((sum, acc) => sum + (acc.accountCost || 0), 0) || 0) +
-                      (accounts?.reduce((sum, acc) => sum + (acc.activationCost || 0), 0) || 0)
-                    )}
-                  </p>
-                  <p className="text-xs text-gray-400 mt-1">
-                    Account costs + activations
-                  </p>
-                </div>
-                <div className="bg-orange-600 bg-opacity-20 p-3 rounded-lg">
-                  <TrendingUp className="text-orange-400 h-6 w-6" />
-                </div>
+          <div className="widget-container">
+            <div className="widget-content">
+              <div className="widget-left">
+                <p className="widget-label">Total Investment</p>
+                <p className="widget-value">
+                  {formatCurrency(
+                    (accounts?.reduce((sum, acc) => sum + (acc.accountCost || 0), 0) || 0) +
+                    (accounts?.reduce((sum, acc) => sum + (acc.activationCost || 0), 0) || 0)
+                  )}
+                </p>
+                <p className="widget-description">Account costs + activations</p>
               </div>
-            </CardContent>
-          </Card>
+              <div className="widget-icon-square">
+                <TrendingUp className="widget-icon" />
+              </div>
+            </div>
+          </div>
 
           {/* Total Return */}
-          <Card className="bg-dark-card border-purple-600">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-gray-400 text-sm mb-1">Total Return</p>
-                  <p className={`text-2xl font-bold ${
-                    (accounts?.reduce((sum, acc) => sum + (acc.currentBalance - acc.startingBalance), 0) || 0) >= 0 
-                      ? 'text-success-green' 
-                      : 'text-error-red'
-                  }`}>
-                    {formatCurrency(
-                      accounts?.reduce((sum, acc) => sum + (acc.currentBalance - acc.startingBalance), 0) || 0
-                    )}
-                  </p>
-                  <p className="text-xs text-gray-400 mt-1">
-                    Profit/Loss from trading
-                  </p>
-                </div>
-                <div className="bg-purple-600 bg-opacity-20 p-3 rounded-lg">
-                  <TrendingUp className="text-purple-400 h-6 w-6" />
-                </div>
+          <div className="widget-container">
+            <div className="widget-content">
+              <div className="widget-left">
+                <p className="widget-label">Total Return</p>
+                <p className="widget-value">
+                  {formatCurrency(
+                    accounts?.reduce((sum, acc) => sum + (acc.currentBalance - acc.startingBalance), 0) || 0
+                  )}
+                </p>
+                <p className="widget-description">Profit/Loss from trading</p>
               </div>
-            </CardContent>
-          </Card>
+              <div className="widget-icon-square">
+                <TrendingUp className="widget-icon" />
+              </div>
+            </div>
+          </div>
         </div>
 
 
