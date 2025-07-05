@@ -71,6 +71,12 @@
   justify-content: space-between;
 }
 
+.widget-content.flex-col {
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+}
+
 .widget-left {
   display: flex;
   flex-direction: column;

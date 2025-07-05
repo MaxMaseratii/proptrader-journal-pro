@@ -1272,53 +1272,48 @@ export default function Dashboard() {
           </Card>
 
           {/* Disciplined Score */}
-          <Card className="bg-dark-card border-primary">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-gray-400 text-sm mb-1">Disciplined Score</p>
-                  <div className="flex items-center space-x-2">
-                    <p className={`text-2xl font-bold ${getScoreColor(combinedAnalytics?.disciplinedScore || 0)}`}>
-                      {Math.round(combinedAnalytics?.disciplinedScore || 0)}
-                    </p>
-                    <Badge className={`${getGradeColor(
-                      (combinedAnalytics?.disciplinedScore || 0) >= 95 ? 'A+' :
-                      (combinedAnalytics?.disciplinedScore || 0) >= 90 ? 'A' :
-                      (combinedAnalytics?.disciplinedScore || 0) >= 80 ? 'B' :
-                      (combinedAnalytics?.disciplinedScore || 0) >= 70 ? 'C' :
-                      (combinedAnalytics?.disciplinedScore || 0) >= 60 ? 'D' : 'F'
-                    )} text-white`}>
-                      {(combinedAnalytics?.disciplinedScore || 0) >= 95 ? 'A+' :
-                       (combinedAnalytics?.disciplinedScore || 0) >= 90 ? 'A' :
-                       (combinedAnalytics?.disciplinedScore || 0) >= 80 ? 'B' :
-                       (combinedAnalytics?.disciplinedScore || 0) >= 70 ? 'C' :
-                       (combinedAnalytics?.disciplinedScore || 0) >= 60 ? 'D' : 'F'}
-                    </Badge>
-                  </div>
-                  <p className="text-xs text-gray-400 mt-1">
-                    98% risk compliance / 100% trade limits
+          <div className="widget-container">
+            <div className="widget-content">
+              <div className="widget-left">
+                <p className="widget-label">Disciplined Score</p>
+                <div className="flex items-center space-x-2">
+                  <p className={`text-2xl font-bold ${getScoreColor(combinedAnalytics?.disciplinedScore || 0)}`}>
+                    {Math.round(combinedAnalytics?.disciplinedScore || 0)}
                   </p>
+                  <Badge className={`${getGradeColor(
+                    (combinedAnalytics?.disciplinedScore || 0) >= 95 ? 'A+' :
+                    (combinedAnalytics?.disciplinedScore || 0) >= 90 ? 'A' :
+                    (combinedAnalytics?.disciplinedScore || 0) >= 80 ? 'B' :
+                    (combinedAnalytics?.disciplinedScore || 0) >= 70 ? 'C' :
+                    (combinedAnalytics?.disciplinedScore || 0) >= 60 ? 'D' : 'F'
+                  )} text-white`}>
+                    {(combinedAnalytics?.disciplinedScore || 0) >= 95 ? 'A+' :
+                     (combinedAnalytics?.disciplinedScore || 0) >= 90 ? 'A' :
+                     (combinedAnalytics?.disciplinedScore || 0) >= 80 ? 'B' :
+                     (combinedAnalytics?.disciplinedScore || 0) >= 70 ? 'C' :
+                     (combinedAnalytics?.disciplinedScore || 0) >= 60 ? 'D' : 'F'}
+                  </Badge>
                 </div>
-                <div className="bg-primary bg-opacity-20 p-3 rounded-lg">
-                  <Brain className="text-primary h-6 w-6" />
-                </div>
+                <p className="widget-description">
+                  98% risk compliance / 100% trade limits
+                </p>
               </div>
-            </CardContent>
-          </Card>
+              <div className="widget-icon-square">
+                <Brain className="widget-icon" />
+              </div>
+            </div>
+          </div>
         </div>
 
-        {/* Second Row: Risk Alert, Payout Status */}
+        {/* Risk Alert and Disciplined Trading Analysis */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
           {/* Risk Alert - Top 3 Critical Accounts */}
-          <Card className="bg-dark-card border-warning-orange">
-            <CardContent className="p-6">
-              <div className="flex items-center mb-4">
-                <div className="bg-warning-orange bg-opacity-20 p-2 rounded-lg mr-3">
-                  <AlertTriangle className="text-warning-orange h-5 w-5" />
-                </div>
-                <h3 className="text-lg font-semibold text-gradient-rainbow">Risk Alert</h3>
+          <div className="widget-container">
+            <div className="widget-content flex-col">
+              <div className="widget-left mb-4">
+                <p className="widget-label">Risk Alert</p>
+                <p className="widget-description">3 Most Critical Accounts</p>
               </div>
-              <p className="text-gray-300 mb-4">3 Most Critical Accounts</p>
               <div className="space-y-3">
                 {accounts && trades ? (
                   accounts
@@ -1363,18 +1358,16 @@ export default function Dashboard() {
                   <p className="text-gray-400 text-sm">No accounts to monitor</p>
                 )}
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
 
-          {/* TopStep Payout Status */}
-          <Card className="bg-dark-card border-blue-600">
-            <CardContent className="p-6">
+          {/* Payout Status */}
+          <div className="widget-container">
+            <div className="widget-content flex-col">
               <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center">
-                  <div className="bg-blue-600 bg-opacity-20 p-2 rounded-lg mr-3">
-                    <DollarSign className="text-blue-400 h-5 w-5" />
-                  </div>
-                  <h3 className="text-lg font-semibold text-gradient-rainbow">Payout Status</h3>
+                <div className="widget-left">
+                  <p className="widget-label">Payout Status</p>
+                  <p className="widget-description">Track payout eligibility</p>
                 </div>
                 <Select value={selectedAccountId?.toString() || ''} onValueChange={(value) => setSelectedAccountId(Number(value))}>
                   <SelectTrigger className="w-48 bg-gray-800 border-gray-600 text-white text-sm">
@@ -1497,30 +1490,34 @@ export default function Dashboard() {
                   </div>
                 );
               })()}
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         </div>
 
 
 
         {/* Charts Section */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-          <Card className="bg-dark-card border-dark-border hover-glow smooth-transition">
-            <CardHeader>
-              <CardTitle className="text-gradient-rainbow">Account Equity Curve</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="h-64">
+          {/* Account Equity Curve */}
+          <div className="widget-container">
+            <div className="widget-content flex-col">
+              <div className="widget-left mb-4">
+                <p className="widget-label">Account Equity Curve</p>
+                <p className="widget-description">Portfolio growth over time</p>
+              </div>
+              <div className="h-64 w-full">
                 <EquityChart data={getEquityData()} />
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
 
-          <Card className="bg-dark-card border-dark-border hover-glow smooth-transition">
-            <CardHeader>
-              <CardTitle className="text-gradient-rainbow">Weekly Performance</CardTitle>
-            </CardHeader>
-            <CardContent>
+          {/* Weekly Performance */}
+          <div className="widget-container">
+            <div className="widget-content flex-col">
+              <div className="widget-left mb-4">
+                <p className="widget-label">Weekly Performance</p>
+                <p className="widget-description">This week's trading results</p>
+              </div>
               <div className="grid grid-cols-7 gap-1 mb-4">
                 {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
                   <div key={day} className="text-center text-sm font-medium text-gray-400 p-2">
@@ -1582,76 +1579,81 @@ export default function Dashboard() {
                   });
                 })()}
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         </div>
 
 
 
-        {/* Daily Journal Quick Entry */}
-        <Card className="bg-dark-card border-dark-border hover-glow smooth-transition">
-          <CardHeader>
-            <div className="flex items-center justify-between">
-              <div className="flex items-center">
-                <div className="bg-accent-orange bg-opacity-20 p-2 rounded-lg mr-3">
-                  <Target className="text-accent-orange h-5 w-5" />
-                </div>
-                <CardTitle className="text-gradient-rainbow">Daily Trading Journal</CardTitle>
-              </div>
-              <Link href="/journal">
-                <Button variant="ghost" className="text-primary hover:text-blue-400">
-                  View Full Journal
-                </Button>
-              </Link>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div>
-                <label className="block text-sm font-medium text-gray-400 mb-2">What went wrong today?</label>
-                <Textarea 
-                  className="bg-dark-surface border-dark-border resize-none" 
-                  rows={3} 
-                  placeholder="Reflect on mistakes and lessons learned..."
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-400 mb-2">What went right today?</label>
-                <Textarea 
-                  className="bg-dark-surface border-dark-border resize-none" 
-                  rows={3} 
-                  placeholder="Note successful strategies and decisions..."
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-400 mb-2">Tomorrow's improvement plan</label>
-                <Textarea 
-                  className="bg-dark-surface border-dark-border resize-none" 
-                  rows={3} 
-                  placeholder="Set goals for tomorrow's session..."
-                />
-              </div>
-            </div>
-            
-            <div className="flex justify-end mt-4">
-              <Button className="bg-accent-orange hover:bg-orange-600">
-                Save Journal Entry
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* TASK 4: Enhanced Trade Analysis Calendar - Unique Design */}
+        {/* Daily Trading Journal */}
         <div className="mb-8">
           <h2 className="text-xl font-bold text-gradient-rainbow mb-6 flex items-center border-b border-gray-700 pb-3">
-            <Calendar className="mr-3 h-5 w-5 text-prop-tiffany" />
+            <Target className="mr-3 h-5 w-5 text-prop-gold" />
+            Daily Trading Journal
+          </h2>
+          <div className="widget-container">
+            <div className="widget-content flex-col">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                <div>
+                  <label className="block text-sm font-medium text-gray-400 mb-2">What went wrong today?</label>
+                  <Textarea 
+                    className="bg-dark-surface border-dark-border resize-none" 
+                    rows={3} 
+                    placeholder="Reflect on mistakes and lessons learned..."
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-400 mb-2">What went right today?</label>
+                  <Textarea 
+                    className="bg-dark-surface border-dark-border resize-none" 
+                    rows={3} 
+                    placeholder="Note successful strategies and decisions..."
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-400 mb-2">Tomorrow's improvement plan</label>
+                  <Textarea 
+                    className="bg-dark-surface border-dark-border resize-none" 
+                    rows={3} 
+                    placeholder="Set goals for tomorrow's session..."
+                  />
+                </div>
+              </div>
+              <div className="flex justify-between items-center">
+                <Link href="/journal">
+                  <Button variant="ghost" className="text-primary hover:text-blue-400">
+                    View Full Journal
+                  </Button>
+                </Link>
+                <Button className="bg-accent-orange hover:bg-orange-600">
+                  Save Journal Entry
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Trade Analysis Calendar */}
+        <div className="mb-8">
+          <h2 className="text-xl font-bold text-gradient-rainbow mb-6 flex items-center border-b border-gray-700 pb-3">
+            <Calendar className="mr-3 h-5 w-5 text-prop-gold" />
             Trade Analysis Calendar
           </h2>
-          <TradeAnalysisCalendar 
-            trades={trades || []} 
-            accounts={accounts || []}
-            viewMode={timePeriod}
-          />
+          <div className="widget-container">
+            <div className="widget-content flex-col">
+              <div className="widget-left mb-4">
+                <p className="widget-label">Calendar View</p>
+                <p className="widget-description">Track trades across time periods</p>
+              </div>
+              <div className="w-full">
+                <TradeAnalysisCalendar 
+                  trades={trades || []} 
+                  accounts={accounts || []}
+                  viewMode={timePeriod}
+                />
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </>
