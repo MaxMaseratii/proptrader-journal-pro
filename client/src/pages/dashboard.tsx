@@ -854,164 +854,142 @@ export default function Dashboard() {
 
 
         {/* Investment Tracking & Working Hours Summary */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
-          <Card className="bg-dark-card border-green-600">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-gray-400 text-sm mb-1">Total Spent on Accounts</p>
-                  <p className="text-2xl font-bold text-prop-gold">
-                    {formatCurrency(accounts?.reduce((sum, acc) => sum + (acc.accountCost || 0), 0) || 0)}
-                  </p>
-                  <p className="text-xs text-gray-400 mt-1">
-                    Purchase costs for all accounts
-                  </p>
-                </div>
-                <div className="bg-green-600 bg-opacity-20 p-3 rounded-lg">
-                  <DollarSign className="text-green-400 h-6 w-6" />
-                </div>
+        <div className="widget-grid mb-6">
+          <div className="widget-container">
+            <div className="widget-content">
+              <div className="widget-left">
+                <p className="widget-label">Total Spent on Accounts</p>
+                <p className="widget-value">
+                  {formatCurrency(accounts?.reduce((sum, acc) => sum + (acc.accountCost || 0), 0) || 0)}
+                </p>
+                <p className="widget-description">Purchase costs for all accounts</p>
               </div>
-            </CardContent>
-          </Card>
+              <div className="widget-icon-square">
+                <DollarSign className="widget-icon" />
+              </div>
+            </div>
+          </div>
 
-          <Card className="bg-dark-card border-blue-600">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-gray-400 text-sm mb-1">Activation Costs</p>
-                  <p className="text-2xl font-bold text-prop-tiffany">
-                    {formatCurrency(accounts?.reduce((sum, acc) => sum + (acc.activationCost || 0), 0) || 0)}
-                  </p>
-                  <p className="text-xs text-gray-400 mt-1">
-                    Activation fees paid/required
-                  </p>
-                </div>
-                <div className="bg-blue-600 bg-opacity-20 p-3 rounded-lg">
-                  <Shield className="text-blue-400 h-6 w-6" />
-                </div>
+          <div className="widget-container">
+            <div className="widget-content">
+              <div className="widget-left">
+                <p className="widget-label">Activation Costs</p>
+                <p className="widget-value">
+                  {formatCurrency(accounts?.reduce((sum, acc) => sum + (acc.activationCost || 0), 0) || 0)}
+                </p>
+                <p className="widget-description">Activation fees paid/required</p>
               </div>
-            </CardContent>
-          </Card>
+              <div className="widget-icon-square">
+                <Shield className="widget-icon" />
+              </div>
+            </div>
+          </div>
 
-          <Card className="bg-dark-card border-orange-600">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-gray-400 text-sm mb-1">Total Combined</p>
-                  <p className="text-2xl font-bold text-prop-blue">
-                    {formatCurrency(
-                      (accounts?.reduce((sum, acc) => sum + (acc.accountCost || 0), 0) || 0) +
-                      (accounts?.reduce((sum, acc) => sum + (acc.activationCost || 0), 0) || 0)
-                    )}
-                  </p>
-                  <p className="text-xs text-gray-400 mt-1">
-                    Total investment in trading
-                  </p>
-                </div>
-                <div className="bg-orange-600 bg-opacity-20 p-3 rounded-lg">
-                  <TrendingUp className="text-orange-400 h-6 w-6" />
-                </div>
+          <div className="widget-container">
+            <div className="widget-content">
+              <div className="widget-left">
+                <p className="widget-label">Total Combined</p>
+                <p className="widget-value">
+                  {formatCurrency(
+                    (accounts?.reduce((sum, acc) => sum + (acc.accountCost || 0), 0) || 0) +
+                    (accounts?.reduce((sum, acc) => sum + (acc.activationCost || 0), 0) || 0)
+                  )}
+                </p>
+                <p className="widget-description">Total investment in trading</p>
               </div>
-            </CardContent>
-          </Card>
+              <div className="widget-icon-square">
+                <TrendingUp className="widget-icon" />
+              </div>
+            </div>
+          </div>
 
-          <Card className="bg-dark-card border-purple-600">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-gray-400 text-sm mb-1">Total Payout</p>
-                  <p className={`text-2xl font-bold ${calculateTotalAvailablePayouts() > 0 ? 'text-prop-green' : 'text-prop-gold'}`}>
-                    {formatCurrency(calculateTotalAvailablePayouts())}
-                  </p>
-                  <p className="text-xs text-gray-400 mt-1">
-                    Received payouts
-                  </p>
-                </div>
-                <div className="bg-purple-600 bg-opacity-20 p-3 rounded-lg">
-                  <DollarSign className="text-purple-400 h-6 w-6" />
-                </div>
+          <div className="widget-container">
+            <div className="widget-content">
+              <div className="widget-left">
+                <p className="widget-label">Total Payout</p>
+                <p className={`widget-value ${calculateTotalAvailablePayouts() > 0 ? 'text-green-400' : 'text-prop-gold'}`}>
+                  {formatCurrency(calculateTotalAvailablePayouts())}
+                </p>
+                <p className="widget-description">Received payouts</p>
               </div>
-            </CardContent>
-          </Card>
+              <div className="widget-icon-square">
+                <DollarSign className="widget-icon" />
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* Working Hours & Profitability Summary - Under Investment Tracking */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <Card className="bg-dark-card border-cyan-600">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-gray-400 text-sm mb-1">Total Working Hours</p>
-                  <p className="text-2xl font-bold text-cyan-400">
-                    {((trades?.length || 0) * 2.5).toFixed(1)} Hrs
-                  </p>
-                  <p className="text-xs text-gray-400 mt-1">
-                    Based on {trades?.length || 0} trades × 2.5 Hrs avg duration
-                  </p>
-                </div>
-                <div className="bg-cyan-600 bg-opacity-20 p-3 rounded-lg">
-                  <Calendar className="text-cyan-400 h-6 w-6" />
-                </div>
+        <div className="widget-grid mb-8">
+          <div className="widget-container">
+            <div className="widget-content">
+              <div className="widget-left">
+                <p className="widget-label">Total Working Hours</p>
+                <p className="widget-value">
+                  {((trades?.length || 0) * 2.5).toFixed(1)} Hrs
+                </p>
+                <p className="widget-description">
+                  Based on {trades?.length || 0} trades × 2.5 Hrs avg duration
+                </p>
               </div>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-dark-card border-indigo-600">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-gray-400 text-sm mb-1">Average Hours Per Day</p>
-                  <p className="text-2xl font-bold text-indigo-400">
-                    {(() => {
-                      const totalMinutes = ((trades?.length || 0) * 2.5 * 60) / 30;
-                      if (totalMinutes < 60) {
-                        return `${Math.round(totalMinutes)} Min`;
-                      } else {
-                        return `${(totalMinutes / 60).toFixed(1)} Hrs`;
-                      }
-                    })()}
-                  </p>
-                  <p className="text-xs text-gray-400 mt-1">
-                    Based on 30-day trading period
-                  </p>
-                </div>
-                <div className="bg-indigo-600 bg-opacity-20 p-3 rounded-lg">
-                  <Calendar className="text-indigo-400 h-6 w-6" />
-                </div>
+              <div className="widget-icon-square">
+                <Calendar className="widget-icon" />
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
 
-          <Card className="bg-dark-card border-emerald-600">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-gray-400 text-sm mb-1">Profitability</p>
+          <div className="widget-container">
+            <div className="widget-content">
+              <div className="widget-left">
+                <p className="widget-label">Average Hours Per Day</p>
+                <p className="widget-value">
                   {(() => {
-                    const totalSpent = (accounts?.reduce((sum, acc) => sum + (acc.accountCost || 0), 0) || 0) +
-                                      (accounts?.reduce((sum, acc) => sum + (acc.activationCost || 0), 0) || 0);
-                    const totalPayout = 0; // This would come from actual payout data
-                    const difference = totalPayout - totalSpent;
-                    const isProfit = difference >= 0;
-                    
-                    return (
-                      <>
-                        <p className={`text-2xl font-bold ${isProfit ? 'text-emerald-400' : 'text-red-400'}`}>
-                          {isProfit ? '+' : ''}{formatCurrency(difference)}
-                        </p>
-                        <p className="text-xs text-gray-400 mt-1">
-                          {isProfit ? 'Profitable' : 'Loss'} • {formatCurrency(totalPayout)} vs {formatCurrency(totalSpent)}
-                        </p>
-                      </>
-                    );
+                    const totalMinutes = ((trades?.length || 0) * 2.5 * 60) / 30;
+                    if (totalMinutes < 60) {
+                      return `${Math.round(totalMinutes)} Min`;
+                    } else {
+                      return `${(totalMinutes / 60).toFixed(1)} Hrs`;
+                    }
                   })()}
-                </div>
-                <div className="bg-emerald-600 bg-opacity-20 p-3 rounded-lg">
-                  <TrendingUp className="text-emerald-400 h-6 w-6" />
-                </div>
+                </p>
+                <p className="widget-description">
+                  Based on 30-day trading period
+                </p>
               </div>
-            </CardContent>
-          </Card>
+              <div className="widget-icon-square">
+                <Calendar className="widget-icon" />
+              </div>
+            </div>
+          </div>
+
+          <div className="widget-container">
+            <div className="widget-content">
+              <div className="widget-left">
+                <p className="widget-label">Profitability</p>
+                {(() => {
+                  const totalSpent = (accounts?.reduce((sum, acc) => sum + (acc.accountCost || 0), 0) || 0) +
+                                    (accounts?.reduce((sum, acc) => sum + (acc.activationCost || 0), 0) || 0);
+                  const totalPayout = 0; // This would come from actual payout data
+                  const difference = totalPayout - totalSpent;
+                  const isProfit = difference >= 0;
+                  
+                  return (
+                    <>
+                      <p className={`widget-value ${isProfit ? 'text-green-400' : 'text-red-400'}`}>
+                        {isProfit ? '+' : ''}{formatCurrency(difference)}
+                      </p>
+                      <p className="widget-description">
+                        {isProfit ? 'Profitable' : 'Loss'} • {formatCurrency(totalPayout)} vs {formatCurrency(totalSpent)}
+                      </p>
+                    </>
+                  );
+                })()}
+              </div>
+              <div className="widget-icon-square">
+                <TrendingUp className="widget-icon" />
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* Add Investment Tracking Controls */}
