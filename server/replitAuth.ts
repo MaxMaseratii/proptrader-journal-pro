@@ -27,7 +27,7 @@ export function getSession() {
   const pgStore = connectPg(session);
   const sessionStore = new pgStore({
     conString: process.env.DATABASE_URL,
-    createTableIfMissing: false,
+    createTableIfMissing: true,
     ttl: sessionTtl,
     tableName: "sessions",
   });
@@ -38,8 +38,9 @@ export function getSession() {
     saveUninitialized: false,
     cookie: {
       httpOnly: true,
-      secure: true,
+      secure: process.env.NODE_ENV === 'production',
       maxAge: sessionTtl,
+      sameSite: 'lax',
     },
   });
 }
@@ -84,6 +85,7 @@ export async function setupAuth(app: Express) {
     verified(null, user);
   };
 
+  // Add strategy for each domain
   for (const domain of process.env
     .REPLIT_DOMAINS!.split(",")) {
     const strategy = new Strategy(
@@ -96,6 +98,20 @@ export async function setupAuth(app: Express) {
       verify,
     );
     passport.use(strategy);
+  }
+
+  // Also add strategy for localhost development
+  if (process.env.NODE_ENV === 'development') {
+    const devStrategy = new Strategy(
+      {
+        name: `replitauth:localhost`,
+        config,
+        scope: "openid email profile offline_access",
+        callbackURL: `http://localhost:5000/api/callback`,
+      },
+      verify,
+    );
+    passport.use(devStrategy);
   }
 
   passport.serializeUser((user: Express.User, cb) => cb(null, user));

@@ -104,6 +104,20 @@ The application uses PostgreSQL with four main tables:
 - Replit-specific plugins for development environment
 - Error handling and logging middleware
 
+## Authentication Requirements
+
+**IMPORTANT**: The application must be accessed through the official Replit domain URL for authentication to work properly. The authentication system will NOT work on localhost or preview URLs.
+
+- ✅ **Correct**: Access via `https://[repl-id].replit.dev` or official domain
+- ❌ **Will not work**: `localhost:5000` or other local URLs
+- ❌ **Will not work**: Preview URLs that don't match the registered domain
+
+### Authentication Setup Complete
+- ✅ Replit Auth integration configured
+- ✅ PostgreSQL session storage enabled
+- ✅ Domain-specific authentication strategies registered
+- ✅ Session security configured for production
+
 ## Changelog
 
 ```
