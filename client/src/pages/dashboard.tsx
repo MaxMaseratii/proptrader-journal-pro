@@ -1094,89 +1094,97 @@ export default function Dashboard() {
 
         {/* FIRST ROW: Active Accounts & Recent Trades */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-          <Card className="bg-dark-card border-dark-border hover-glow smooth-transition">
-            <CardHeader>
-              <CardTitle className="text-gradient-rainbow">Active Accounts</CardTitle>
-              <p className="text-gray-400 text-sm">Prop firm challenge and funded accounts</p>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {accounts?.map((account) => (
-                <div key={account.id} className="flex items-center justify-between p-4 bg-dark-surface rounded-lg border border-dark-border">
-                  <div className="flex items-center">
-                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center mr-4 ${
-                      account.type === 'funded' ? 'bg-success-green' : 
-                      account.currentBalance < account.startingBalance * 0.95 ? 'bg-warning-orange' : 'bg-primary'
-                    }`}>
-                      {account.type === 'funded' ? (
-                        <Target className="text-white h-5 w-5" />
-                      ) : account.currentBalance < account.startingBalance * 0.95 ? (
-                        <AlertTriangle className="text-white h-5 w-5" />
-                      ) : (
-                        <TrendingDown className="text-white h-5 w-5" />
-                      )}
+          <div className="widget-container">
+            <div className="widget-content flex-col">
+              <div className="widget-left mb-4">
+                <p className="widget-label">Active Accounts</p>
+                <p className="widget-description">Prop firm challenge and funded accounts</p>
+              </div>
+              <div className="space-y-4 w-full">
+                {accounts?.map((account) => (
+                  <div key={account.id} className="flex items-center justify-between p-4 bg-dark-surface rounded-lg border border-prop-gold/20">
+                    <div className="flex items-center">
+                      <div className={`w-10 h-10 rounded-lg flex items-center justify-center mr-4 ${
+                        account.type === 'funded' ? 'bg-success-green' : 
+                        account.currentBalance < account.startingBalance * 0.95 ? 'bg-warning-orange' : 'bg-primary'
+                      }`}>
+                        {account.type === 'funded' ? (
+                          <Target className="text-white h-5 w-5" />
+                        ) : account.currentBalance < account.startingBalance * 0.95 ? (
+                          <AlertTriangle className="text-white h-5 w-5" />
+                        ) : (
+                          <TrendingDown className="text-white h-5 w-5" />
+                        )}
+                      </div>
+                      <div>
+                        <p className="font-medium text-white">{account.name}</p>
+                        <p className="text-sm text-gray-400">{account.type} • {account.firm}</p>
+                      </div>
                     </div>
-                    <div>
-                      <p className="font-medium text-white">{account.name}</p>
-                      <p className="text-sm text-gray-400">{account.type} • {account.firm}</p>
+                    <div className="text-right">
+                      <p className="font-bold text-white">{formatCurrency(account.currentBalance)}</p>
+                      <p className={`text-sm ${
+                        account.currentBalance >= account.startingBalance ? 'text-success-green' : 'text-error-red'
+                      }`}>
+                        {account.currentBalance >= account.startingBalance ? '+' : ''}{formatCurrency(account.currentBalance - account.startingBalance)}
+                      </p>
                     </div>
                   </div>
-                  <div className="text-right">
-                    <p className="font-bold text-white">{formatCurrency(account.currentBalance)}</p>
-                    <p className={`text-sm ${
-                      account.currentBalance >= account.startingBalance ? 'text-success-green' : 'text-error-red'
-                    }`}>
-                      {account.currentBalance >= account.startingBalance ? '+' : ''}{formatCurrency(account.currentBalance - account.startingBalance)}
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </CardContent>
-          </Card>
+                ))}
+              </div>
+            </div>
+          </div>
 
-          <Card className="bg-dark-card border-dark-border hover-glow smooth-transition">
-            <CardHeader>
-              <CardTitle className="text-gradient-rainbow">Recent Trades</CardTitle>
-              <p className="text-gray-400 text-sm">Latest trading activity</p>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {trades?.slice(0, 5).map((trade) => (
-                <div key={trade.id} className="flex items-center justify-between p-4 bg-dark-surface rounded-lg border border-dark-border">
-                  <div className="flex items-center">
-                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center mr-4 ${
-                      trade.pnl > 0 ? 'bg-success-green' : trade.pnl < 0 ? 'bg-error-red' : 'bg-gray-600'
-                    }`}>
-                      {trade.pnl > 0 ? (
-                        <TrendingUp className="text-white h-5 w-5" />
-                      ) : trade.pnl < 0 ? (
-                        <TrendingDown className="text-white h-5 w-5" />
-                      ) : (
-                        <Target className="text-white h-5 w-5" />
-                      )}
+          <div className="widget-container">
+            <div className="widget-content flex-col">
+              <div className="widget-left mb-4">
+                <p className="widget-label">Recent Trades</p>
+                <p className="widget-description">Latest trading activity</p>
+              </div>
+              <div className="space-y-4 w-full">
+                {trades?.slice(0, 5).map((trade) => (
+                  <div key={trade.id} className="flex items-center justify-between p-4 bg-dark-surface rounded-lg border border-prop-gold/20">
+                    <div className="flex items-center">
+                      <div className={`w-10 h-10 rounded-lg flex items-center justify-center mr-4 ${
+                        trade.pnl > 0 ? 'bg-success-green' : trade.pnl < 0 ? 'bg-error-red' : 'bg-gray-600'
+                      }`}>
+                        {trade.pnl > 0 ? (
+                          <TrendingUp className="text-white h-5 w-5" />
+                        ) : trade.pnl < 0 ? (
+                          <TrendingDown className="text-white h-5 w-5" />
+                        ) : (
+                          <Target className="text-white h-5 w-5" />
+                        )}
+                      </div>
+                      <div>
+                        <p className="font-medium text-white">{trade.symbol}</p>
+                        <p className="text-sm text-gray-400">{trade.side} • {trade.date}</p>
+                      </div>
                     </div>
-                    <div>
-                      <p className="font-medium text-white">{trade.symbol}</p>
-                      <p className="text-sm text-gray-400">{trade.side} • {trade.date}</p>
+                    <div className="text-right">
+                      <p className={`font-bold ${
+                        trade.pnl > 0 ? 'text-success-green' : trade.pnl < 0 ? 'text-error-red' : 'text-gray-400'
+                      }`}>
+                        {formatCurrency(trade.pnl)}
+                      </p>
+                      <p className="text-sm text-gray-400">{trade.quantity} shares</p>
                     </div>
                   </div>
-                  <div className="text-right">
-                    <p className={`font-bold ${
-                      trade.pnl > 0 ? 'text-success-green' : trade.pnl < 0 ? 'text-error-red' : 'text-gray-400'
-                    }`}>
-                      {formatCurrency(trade.pnl)}
-                    </p>
-                    <p className="text-sm text-gray-400">{trade.quantity} shares</p>
-                  </div>
-                </div>
-              ))}
-            </CardContent>
-          </Card>
+                ))}
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* Active Account Disciplined Analysis Row */}
-        <div className="grid grid-cols-1 gap-6 mb-6">
-          <Card className="bg-dark-card border-indigo-600">
-            <CardContent className="p-6">
-              <div className="text-center">
+        <div className="mb-6">
+          <div className="widget-container">
+            <div className="widget-content flex-col">
+              <div className="widget-left mb-4">
+                <p className="widget-label">Account Discipline Analysis</p>
+                <p className="widget-description">Performance by account</p>
+              </div>
+              <div className="w-full">
                 {accounts && accounts.length > 0 && trades && trades.length > 0 ? (
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     {accounts.map(account => {
@@ -1184,7 +1192,7 @@ export default function Dashboard() {
                       const disciplinedAnalysis = calculateDisciplinedScore(account, accountTrades);
                       
                       return (
-                        <div key={account.id} className="text-center p-4 bg-gray-800 rounded-lg">
+                        <div key={account.id} className="text-center p-4 bg-dark-surface rounded-lg border border-prop-gold/20">
                           <p className="text-xs text-gray-400 mb-1">{account.name}</p>
                           <p className={`text-2xl font-bold mb-1 ${getGradeColor(disciplinedAnalysis.scoreGrade)}`}>
                             {disciplinedAnalysis.disciplinedScore.toFixed(0)}%
@@ -1203,51 +1211,47 @@ export default function Dashboard() {
                   <p className="text-gray-400">No trading data available for disciplined score analysis</p>
                 )}
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         </div>
 
         {/* First Row: Risk Management, Daily Trade Limit, Disciplined Score */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+        <div className="widget-grid mb-6">
           {/* Risk Management */}
-          <Card className="bg-dark-card border-warning-orange">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-gray-400 text-sm mb-1">Risk Management</p>
-                  <p className="text-2xl font-bold text-warning-orange">
-                    {formatCurrency(500)}
-                  </p>
-                  <p className="text-xs text-gray-400 mt-1">
-                    Per trade / {formatCurrency(1500)} daily limit
-                  </p>
-                </div>
-                <div className="bg-warning-orange bg-opacity-20 p-3 rounded-lg">
-                  <Shield className="text-warning-orange h-6 w-6" />
-                </div>
+          <div className="widget-container">
+            <div className="widget-content">
+              <div className="widget-left">
+                <p className="widget-label">Risk Management</p>
+                <p className="widget-value text-warning-orange">
+                  {formatCurrency(500)}
+                </p>
+                <p className="widget-description">
+                  Per trade / {formatCurrency(1500)} daily limit
+                </p>
               </div>
-            </CardContent>
-          </Card>
+              <div className="widget-icon-square">
+                <Shield className="widget-icon" />
+              </div>
+            </div>
+          </div>
 
           {/* Daily Trade Limit */}
-          <Card className="bg-dark-card border-cyan-600">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-gray-400 text-sm mb-1">Daily Trade Limit</p>
-                  <p className="text-2xl font-bold text-cyan-400">
-                    {trades?.filter(t => t.date === new Date().toISOString().split('T')[0]).length || 0} / 5
-                  </p>
-                  <p className="text-xs text-gray-400 mt-1">
-                    Current trades today / Maximum allowed
-                  </p>
-                </div>
-                <div className="bg-cyan-600 bg-opacity-20 p-3 rounded-lg">
-                  <BarChart3 className="text-cyan-400 h-6 w-6" />
-                </div>
+          <div className="widget-container">
+            <div className="widget-content">
+              <div className="widget-left">
+                <p className="widget-label">Daily Trade Limit</p>
+                <p className="widget-value">
+                  {trades?.filter(t => t.date === new Date().toISOString().split('T')[0]).length || 0} / 5
+                </p>
+                <p className="widget-description">
+                  Current trades today / Maximum allowed
+                </p>
               </div>
-            </CardContent>
-          </Card>
+              <div className="widget-icon-square">
+                <BarChart3 className="widget-icon" />
+              </div>
+            </div>
+          </div>
 
           {/* Disciplined Score */}
           <div className="widget-container">

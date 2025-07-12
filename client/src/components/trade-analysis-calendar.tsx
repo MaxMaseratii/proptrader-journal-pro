@@ -268,35 +268,35 @@ export default function TradeAnalysisCalendar({ trades, accounts, viewMode = 'mo
             ))}
           </div>
           
-          <div className="grid grid-cols-7 gap-2">
+          <div className="grid grid-cols-7 gap-1">
             {calendarDays.map((day, index) => (
               <div
                 key={index}
                 className={`
-                  relative min-h-[80px] p-2 rounded-lg border transition-all duration-200 hover:scale-105
-                  ${day.isCurrentMonth ? 'border-gray-600' : 'border-gray-800 opacity-30'}
+                  relative min-h-[60px] p-1 rounded-lg border transition-all duration-200 hover:scale-105
+                  ${day.isCurrentMonth ? 'border-prop-gold/30' : 'border-gray-800 opacity-30'}
                   ${day.tradeCount > 0 
                     ? day.pnl >= 0 
                       ? 'bg-prop-green/20 border-prop-green/50' 
                       : 'bg-prop-pink/20 border-prop-pink/50'
                     : 'bg-gray-800/30'
                   }
-                  ${day.tradeCount > 0 ? 'cursor-pointer hover:border-prop-gold' : ''}
+                  ${day.tradeCount > 0 ? 'cursor-pointer hover:border-prop-gold hover:shadow-lg hover:shadow-prop-gold/20' : ''}
                 `}
               >
-                <div className="text-sm font-medium text-white mb-1">
+                <div className="text-xs font-medium text-white mb-1">
                   {day.dayNumber}
                 </div>
                 
                 {day.tradeCount > 0 && (
                   <div className="space-y-1">
                     <div className={`text-xs font-bold ${
-                      day.pnl >= 0 ? 'text-prop-green' : 'text-red-400'
+                      day.pnl >= 0 ? 'text-green-400' : 'text-red-400'
                     }`}>
                       {formatCurrency(day.pnl)}
                     </div>
                     <div className="text-xs text-gray-300">
-                      {day.tradeCount} trade{day.tradeCount !== 1 ? 's' : ''}
+                      {day.tradeCount}T
                     </div>
                   </div>
                 )}
