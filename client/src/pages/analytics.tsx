@@ -12,7 +12,7 @@ import { Label } from "@/components/ui/label";
 import { formatCurrency, formatPercentage, formatDate } from "@/lib/utils";
 import { calculateDisciplinedScore, type DisciplinedAnalysis } from "@/lib/disciplined-score";
 import { EquityChart, MonthlyPerformanceChart } from "@/components/chart-components";
-import DisciplineAnalyzer from "@/components/discipline-analyzer";
+import EnhancedDisciplineAnalyzer from "@/components/enhanced-discipline-analyzer";
 import { 
   TrendingUp, 
   TrendingDown, 
@@ -429,10 +429,11 @@ export default function Analytics() {
         </Card>
 
         <Tabs value={analysisType} onValueChange={(value: any) => setAnalysisType(value)}>
-          <TabsList className="grid w-full grid-cols-3 bg-gray-800">
+          <TabsList className="grid w-full grid-cols-4 bg-gray-800">
             <TabsTrigger value="overview">Overview</TabsTrigger>
             <TabsTrigger value="detailed">Detailed Analysis</TabsTrigger>
             <TabsTrigger value="comparison">Comparison</TabsTrigger>
+            <TabsTrigger value="discipline">Discipline Analysis</TabsTrigger>
           </TabsList>
 
           <TabsContent value="overview" className="space-y-6">
@@ -997,6 +998,13 @@ export default function Analytics() {
             )}
           </TabsContent>
 
+          <TabsContent value="discipline" className="space-y-6">
+            <EnhancedDisciplineAnalyzer 
+              trades={filteredData.trades || []} 
+              accounts={filteredData.accounts || []} 
+              selectedAccountId={selectedAccount !== "all" ? parseInt(selectedAccount) : undefined}
+            />
+          </TabsContent>
 
         </Tabs>
       </div>

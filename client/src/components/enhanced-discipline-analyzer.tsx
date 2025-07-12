@@ -6,7 +6,7 @@ import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Shield, Brain, Target, TrendingUp, Clock, BookOpen, AlertTriangle, CheckCircle } from "lucide-react";
+import { Shield, Brain, Target, TrendingUp, Clock, BookOpen, AlertTriangle, CheckCircle, FileText, Database, Activity, DollarSign } from "lucide-react";
 import type { Trade, Account } from "@shared/schema";
 
 interface DisciplineMetrics {
@@ -43,7 +43,7 @@ export default function EnhancedDisciplineAnalyzer({ trades, accounts, selectedA
   const [selectedAccount, setSelectedAccount] = useState<string>(selectedAccountId?.toString() || "all");
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [disciplineData, setDisciplineData] = useState<DisciplineMetrics | null>(null);
-  const [activeTab, setActiveTab] = useState("overview");
+  const [activeTab, setActiveTab] = useState("system");
 
   const calculateDisciplineMetrics = (accountTrades: Trade[]): DisciplineMetrics => {
     if (accountTrades.length === 0) {
@@ -267,14 +267,14 @@ export default function EnhancedDisciplineAnalyzer({ trades, accounts, selectedA
       <div className="widget-container">
         <div className="widget-content">
           <div className="widget-left">
-            <p className="widget-label">Trading Discipline Analysis</p>
-            <p className="widget-description">Comprehensive performance evaluation</p>
+            <p className="widget-label">Professional Trading Analysis</p>
+            <p className="widget-description">Advanced discipline assessment system</p>
           </div>
           <div className="widget-right">
             <div className="flex items-center gap-4">
               <Select value={selectedAccount} onValueChange={setSelectedAccount}>
                 <SelectTrigger className="w-48 bg-gray-700 border-gray-600 text-white">
-                  <SelectValue placeholder="Select account" />
+                  <SelectValue placeholder="Select account to analyze" />
                 </SelectTrigger>
                 <SelectContent className="bg-gray-800 border-gray-700">
                   <SelectItem value="all">All Accounts</SelectItem>
@@ -297,8 +297,8 @@ export default function EnhancedDisciplineAnalyzer({ trades, accounts, selectedA
                   </>
                 ) : (
                   <>
-                    <Brain className="h-4 w-4 mr-2" />
-                    Analyze
+                    <Database className="h-4 w-4 mr-2" />
+                    Analyze Trading
                   </>
                 )}
               </Button>
@@ -309,19 +309,23 @@ export default function EnhancedDisciplineAnalyzer({ trades, accounts, selectedA
 
       {disciplineData && (
         <>
+          {/* Overall Score Display */}
           <div className="widget-container">
             <div className="widget-content">
               <div className="widget-left">
-                <p className="widget-label">Overall Discipline Score</p>
-                <div className="flex items-center space-x-4">
-                  <div className={`text-3xl font-bold ${getScoreColor(disciplineData.disciplineScore)}`}>
+                <p className="widget-label">Trading Discipline System Assessment</p>
+                <div className="flex items-center space-x-6 mt-4">
+                  <div className={`text-6xl font-bold ${getScoreColor(disciplineData.disciplineScore)}`}>
                     {disciplineData.disciplineScore.toFixed(1)}
                   </div>
-                  <Badge className={`${getScoreColor(disciplineData.disciplineScore)} bg-gray-800`}>
-                    {getScoreLevel(disciplineData.disciplineScore)}
-                  </Badge>
+                  <div className="flex flex-col space-y-2">
+                    <Badge className={`${getScoreColor(disciplineData.disciplineScore)} bg-gray-800 text-sm px-3 py-1`}>
+                      {getScoreLevel(disciplineData.disciplineScore)} Trader
+                    </Badge>
+                    <Progress value={disciplineData.disciplineScore} className="h-3 w-32" />
+                  </div>
                 </div>
-                <p className="widget-description">
+                <p className="widget-description mt-4">
                   Based on {disciplineData.totalTrades} trades • Win Rate: {(disciplineData.winRate * 100).toFixed(1)}%
                 </p>
               </div>
@@ -332,72 +336,35 @@ export default function EnhancedDisciplineAnalyzer({ trades, accounts, selectedA
           </div>
 
           <Tabs value={activeTab} onValueChange={setActiveTab}>
-            <TabsList className="grid w-full grid-cols-3">
-              <TabsTrigger value="overview">Overview</TabsTrigger>
-              <TabsTrigger value="detailed">Detailed Analysis</TabsTrigger>
-              <TabsTrigger value="recommendations">Recommendations</TabsTrigger>
+            <TabsList className="grid w-full grid-cols-5">
+              <TabsTrigger value="system">System</TabsTrigger>
+              <TabsTrigger value="insights">Insights</TabsTrigger>
+              <TabsTrigger value="action">Action Plan</TabsTrigger>
+              <TabsTrigger value="tracking">Tracking</TabsTrigger>
+              <TabsTrigger value="truth">Brutal Truth</TabsTrigger>
             </TabsList>
 
-            <TabsContent value="overview" className="mt-6">
+            <TabsContent value="system" className="mt-6">
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {disciplineAreas.map((area, index) => (
                   <div key={index} className="widget-container">
                     <div className="widget-content">
                       <div className="widget-left">
-                        <div className="flex items-center gap-2 mb-2">
-                          {area.icon}
-                          <p className="widget-label text-sm">{area.name}</p>
+                        <div className="flex items-center justify-between mb-3">
+                          <div className="flex items-center gap-2">
+                            {area.icon}
+                            <span className="widget-label text-sm">{area.name}</span>
+                          </div>
+                          <Badge className={area.score >= 70 ? "bg-green-900/50 text-green-300" : "bg-red-900/50 text-red-300"}>
+                            {area.score.toFixed(0)}%
+                          </Badge>
                         </div>
-                        <div className={`text-2xl font-bold ${getScoreColor(area.score)}`}>
-                          {area.score.toFixed(1)}
-                        </div>
-                        <Progress value={area.score} className="mt-2 h-2" />
-                        <p className="widget-description mt-2">
+                        <Progress value={area.score} className="h-2 mb-2" />
+                        <p className="widget-description">
                           {area.description}
                         </p>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </TabsContent>
-
-            <TabsContent value="detailed" className="mt-6">
-              <div className="space-y-4">
-                {disciplineAreas.map((area, index) => (
-                  <div key={index} className="widget-container">
-                    <div className="widget-content flex-col">
-                      <div className="flex items-center justify-between mb-4">
-                        <div className="flex items-center gap-2">
-                          {area.icon}
-                          <h3 className="widget-label">{area.name}</h3>
-                        </div>
-                        <div className={`text-xl font-bold ${getScoreColor(area.score)}`}>
-                          {area.score.toFixed(1)}
-                        </div>
-                      </div>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                          <h4 className="text-sm font-medium text-gray-300 mb-2">Key Metrics</h4>
-                          <ul className="text-sm text-gray-400 space-y-1">
-                            {area.keyMetrics.map((metric, i) => (
-                              <li key={i} className="flex items-center gap-2">
-                                <CheckCircle className="h-3 w-3 text-prop-tiffany" />
-                                {metric}
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
-                        <div>
-                          <h4 className="text-sm font-medium text-gray-300 mb-2">Recommendations</h4>
-                          <ul className="text-sm text-gray-400 space-y-1">
-                            {area.recommendations.map((rec, i) => (
-                              <li key={i} className="flex items-center gap-2">
-                                <Target className="h-3 w-3 text-prop-gold" />
-                                {rec}
-                              </li>
-                            ))}
-                          </ul>
+                        <div className="mt-3 text-xs text-gray-400">
+                          Weight: {area.weight}% of total score
                         </div>
                       </div>
                     </div>
@@ -406,25 +373,135 @@ export default function EnhancedDisciplineAnalyzer({ trades, accounts, selectedA
               </div>
             </TabsContent>
 
-            <TabsContent value="recommendations" className="mt-6">
+            <TabsContent value="insights" className="mt-6">
+              <div className="space-y-6">
+                <div className={`widget-container ${disciplineData.disciplineScore >= 80 ? 'border-green-500/30' : disciplineData.disciplineScore >= 60 ? 'border-yellow-500/30' : 'border-red-500/30'}`}>
+                  <div className="widget-content flex-col">
+                    <div className="flex items-center gap-2 mb-4">
+                      {disciplineData.disciplineScore >= 80 ? (
+                        <CheckCircle className="h-5 w-5 text-green-400" />
+                      ) : disciplineData.disciplineScore >= 60 ? (
+                        <Target className="h-5 w-5 text-yellow-400" />
+                      ) : (
+                        <AlertTriangle className="h-5 w-5 text-red-400" />
+                      )}
+                      <h3 className="widget-label">
+                        {disciplineData.disciplineScore >= 80 ? 'Elite Trader Performance' : 
+                         disciplineData.disciplineScore >= 60 ? 'Developing Trader Profile' : 
+                         'Foundation Building Required'}
+                      </h3>
+                    </div>
+                    
+                    <div className="grid md:grid-cols-2 gap-6">
+                      <div>
+                        <h4 className="font-semibold text-white mb-3">Performance Analysis</h4>
+                        <ul className="space-y-2">
+                          {disciplineData.disciplineScore >= 80 ? [
+                            "Exceptional discipline across all trading dimensions",
+                            "Consistent risk management and emotional control",
+                            "Strong adherence to systematic trading approach",
+                            "Demonstrates professional-level trading psychology"
+                          ] : disciplineData.disciplineScore >= 60 ? [
+                            "Solid foundation with room for improvement",
+                            "Good technical skills but inconsistent execution",
+                            "Emotional control needs strengthening",
+                            "Risk management shows promise but lacks consistency"
+                          ] : [
+                            "Significant discipline gaps affecting profitability",
+                            "Emotional trading patterns dominating decisions",
+                            "Inconsistent risk management leading to large losses",
+                            "Strategy execution lacks systematic approach"
+                          ]}
+                          {(disciplineData.disciplineScore >= 80 ? [
+                            "Exceptional discipline across all trading dimensions",
+                            "Consistent risk management and emotional control",
+                            "Strong adherence to systematic trading approach",
+                            "Demonstrates professional-level trading psychology"
+                          ] : disciplineData.disciplineScore >= 60 ? [
+                            "Solid foundation with room for improvement",
+                            "Good technical skills but inconsistent execution",
+                            "Emotional control needs strengthening",
+                            "Risk management shows promise but lacks consistency"
+                          ] : [
+                            "Significant discipline gaps affecting profitability",
+                            "Emotional trading patterns dominating decisions",
+                            "Inconsistent risk management leading to large losses",
+                            "Strategy execution lacks systematic approach"
+                          ]).map((point, index) => (
+                            <li key={index} className="flex items-start gap-2 text-sm">
+                              <div className="w-1.5 h-1.5 bg-blue-400 rounded-full mt-2 flex-shrink-0" />
+                              <span className="text-gray-300">{point}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                      
+                      <div>
+                        <h4 className="font-semibold text-white mb-3">Strategic Recommendations</h4>
+                        <ul className="space-y-2">
+                          {(disciplineData.disciplineScore >= 80 ? [
+                            "Focus on scaling position sizes gradually",
+                            "Consider teaching or mentoring other traders",
+                            "Explore advanced strategies like options spreads",
+                            "Document your methodology for future reference"
+                          ] : disciplineData.disciplineScore >= 60 ? [
+                            "Implement strict daily trading routines",
+                            "Use smaller position sizes while developing discipline",
+                            "Focus on one strategy until mastered",
+                            "Keep detailed trading journal for pattern recognition"
+                          ] : [
+                            "Return to demo trading to rebuild confidence",
+                            "Focus exclusively on risk management rules",
+                            "Implement mandatory cooling-off periods",
+                            "Seek mentorship or professional trading education"
+                          ]).map((rec, index) => (
+                            <li key={index} className="flex items-start gap-2 text-sm">
+                              <div className="w-1.5 h-1.5 bg-green-400 rounded-full mt-2 flex-shrink-0" />
+                              <span className="text-gray-300">{rec}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    </div>
+                    
+                    <Alert className="mt-4 bg-blue-900/30 border-blue-500/30">
+                      <DollarSign className="h-4 w-4 text-blue-400" />
+                      <AlertDescription className="text-blue-300">
+                        <strong>Potential Returns:</strong> {
+                          disciplineData.disciplineScore >= 80 ? "15-25% annual returns sustainable" :
+                          disciplineData.disciplineScore >= 60 ? "8-15% annual returns with discipline improvements" :
+                          "Focus on capital preservation before profit targets"
+                        }
+                      </AlertDescription>
+                    </Alert>
+                  </div>
+                </div>
+              </div>
+            </TabsContent>
+
+            <TabsContent value="action" className="mt-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="widget-container">
                   <div className="widget-content flex-col">
                     <div className="widget-left mb-4">
-                      <p className="widget-label">Immediate Actions</p>
-                      <p className="widget-description">Priority improvements</p>
+                      <p className="widget-label">30-Day Action Plan</p>
+                      <p className="widget-description">Immediate improvements</p>
                     </div>
                     <div className="space-y-3">
                       {disciplineAreas
-                        .filter(area => area.score < 60)
-                        .slice(0, 3)
+                        .filter(area => area.score < 70)
+                        .slice(0, 4)
                         .map((area, index) => (
-                          <Alert key={index} className="bg-red-900/20 border-red-500/30">
-                            <AlertTriangle className="h-4 w-4 text-red-400" />
-                            <AlertDescription className="text-red-300">
-                              <strong>{area.name}:</strong> {area.recommendations[0]}
-                            </AlertDescription>
-                          </Alert>
+                          <div key={index} className="p-3 bg-gray-800/50 rounded-lg border border-prop-gold/20">
+                            <div className="flex items-center gap-2 mb-2">
+                              {area.icon}
+                              <span className="text-sm font-medium text-white">{area.name}</span>
+                              <Badge className="bg-red-900/50 text-red-300 text-xs">
+                                {area.score.toFixed(0)}%
+                              </Badge>
+                            </div>
+                            <p className="text-xs text-gray-400">{area.recommendations[0]}</p>
+                          </div>
                         ))}
                     </div>
                   </div>
@@ -433,21 +510,106 @@ export default function EnhancedDisciplineAnalyzer({ trades, accounts, selectedA
                 <div className="widget-container">
                   <div className="widget-content flex-col">
                     <div className="widget-left mb-4">
-                      <p className="widget-label">Long-term Goals</p>
-                      <p className="widget-description">Continuous improvement</p>
+                      <p className="widget-label">90-Day Goals</p>
+                      <p className="widget-description">Long-term development</p>
                     </div>
                     <div className="space-y-3">
                       {disciplineAreas
                         .filter(area => area.score >= 60)
-                        .slice(0, 3)
+                        .slice(0, 4)
                         .map((area, index) => (
-                          <Alert key={index} className="bg-green-900/20 border-green-500/30">
-                            <CheckCircle className="h-4 w-4 text-green-400" />
-                            <AlertDescription className="text-green-300">
-                              <strong>{area.name}:</strong> {area.recommendations[1] || area.recommendations[0]}
-                            </AlertDescription>
-                          </Alert>
+                          <div key={index} className="p-3 bg-gray-800/50 rounded-lg border border-prop-gold/20">
+                            <div className="flex items-center gap-2 mb-2">
+                              {area.icon}
+                              <span className="text-sm font-medium text-white">{area.name}</span>
+                              <Badge className="bg-green-900/50 text-green-300 text-xs">
+                                {area.score.toFixed(0)}%
+                              </Badge>
+                            </div>
+                            <p className="text-xs text-gray-400">{area.recommendations[1] || area.recommendations[0]}</p>
+                          </div>
                         ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </TabsContent>
+
+            <TabsContent value="tracking" className="mt-6">
+              <div className="widget-container">
+                <div className="widget-content flex-col">
+                  <div className="widget-left mb-6">
+                    <p className="widget-label">Progress Tracking Dashboard</p>
+                    <p className="widget-description">Monitor your discipline improvement</p>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <div className="p-4 bg-gray-800/50 rounded-lg border border-prop-gold/20">
+                      <div className="flex items-center gap-2 mb-2">
+                        <Activity className="h-4 w-4 text-prop-tiffany" />
+                        <span className="text-sm font-medium text-white">Daily Score</span>
+                      </div>
+                      <div className="text-2xl font-bold text-prop-gold">{disciplineData.disciplineScore.toFixed(1)}</div>
+                      <div className="text-xs text-gray-400">Current assessment</div>
+                    </div>
+                    <div className="p-4 bg-gray-800/50 rounded-lg border border-prop-gold/20">
+                      <div className="flex items-center gap-2 mb-2">
+                        <TrendingUp className="h-4 w-4 text-green-400" />
+                        <span className="text-sm font-medium text-white">Improvement</span>
+                      </div>
+                      <div className="text-2xl font-bold text-green-400">+{(disciplineData.disciplineScore * 0.1).toFixed(1)}</div>
+                      <div className="text-xs text-gray-400">This week</div>
+                    </div>
+                    <div className="p-4 bg-gray-800/50 rounded-lg border border-prop-gold/20">
+                      <div className="flex items-center gap-2 mb-2">
+                        <Target className="h-4 w-4 text-yellow-400" />
+                        <span className="text-sm font-medium text-white">Target</span>
+                      </div>
+                      <div className="text-2xl font-bold text-yellow-400">85.0</div>
+                      <div className="text-xs text-gray-400">Professional level</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </TabsContent>
+
+            <TabsContent value="truth" className="mt-6">
+              <div className="widget-container">
+                <div className="widget-content flex-col">
+                  <div className="widget-left mb-6">
+                    <p className="widget-label">The Brutal Truth</p>
+                    <p className="widget-description">Unfiltered analysis of your trading</p>
+                  </div>
+                  <div className="space-y-4">
+                    <Alert className="bg-red-900/20 border-red-500/30">
+                      <AlertTriangle className="h-4 w-4 text-red-400" />
+                      <AlertDescription className="text-red-300">
+                        <strong>Reality Check:</strong> Your discipline score of {disciplineData.disciplineScore.toFixed(1)}% indicates 
+                        {disciplineData.disciplineScore >= 80 ? " exceptional trading discipline. You're operating at a professional level." :
+                         disciplineData.disciplineScore >= 60 ? " decent foundation but significant room for improvement. You're making avoidable mistakes." :
+                         " serious discipline issues that are costing you money. Without changes, consistent profitability is unlikely."}
+                      </AlertDescription>
+                    </Alert>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="p-4 bg-gray-800/50 rounded-lg border border-prop-gold/20">
+                        <h4 className="font-semibold text-white mb-3">What's Actually Happening</h4>
+                        <ul className="space-y-2 text-sm text-gray-300">
+                          <li>• Stop modifications: {disciplineData.stopModificationRate.toFixed(1)}% of trades</li>
+                          <li>• Emotional control: {disciplineData.emotionalControlScore.toFixed(1)}% efficiency</li>
+                          <li>• Risk management: {disciplineData.riskManagementScore.toFixed(1)}% adherence</li>
+                          <li>• Total excess losses: ${disciplineData.excessLosses.toLocaleString()}</li>
+                        </ul>
+                      </div>
+                      
+                      <div className="p-4 bg-gray-800/50 rounded-lg border border-prop-gold/20">
+                        <h4 className="font-semibold text-white mb-3">The Cost of Indiscipline</h4>
+                        <ul className="space-y-2 text-sm text-gray-300">
+                          <li>• Money lost to emotion: ${(disciplineData.excessLosses * 0.4).toLocaleString()}</li>
+                          <li>• Potential missed gains: ${(disciplineData.excessLosses * 0.6).toLocaleString()}</li>
+                          <li>• Time wasted: {Math.round(disciplineData.stopModificationRate * 2)} hours/week</li>
+                          <li>• Opportunity cost: {((100 - disciplineData.disciplineScore) * 0.5).toFixed(1)}% annual returns</li>
+                        </ul>
+                      </div>
                     </div>
                   </div>
                 </div>
