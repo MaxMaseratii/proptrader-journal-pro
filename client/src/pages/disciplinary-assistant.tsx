@@ -1,6 +1,6 @@
 import React from 'react';
 import { useQuery } from '@tanstack/react-query';
-import MMMDisciplinaryAssistant from '@/components/MMM-DisciplinaryAssistant';
+import MMMDisciplinaryAssistant from '@/components/MMM-DisciplinaryAssistant-Full';
 import type { Trade, Account } from '@shared/schema';
 
 export default function DisciplinaryAssistantPage() {

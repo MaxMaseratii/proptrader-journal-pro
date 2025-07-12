@@ -6,7 +6,7 @@ import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Shield, Brain, Target, TrendingUp, Clock, BookOpen, AlertTriangle, CheckCircle, Activity, DollarSign, Database, Eye, Users, BarChart3, Calendar, FileText, Zap, RefreshCw, Star, TrendingDown, Award, Flame, Crosshair, Timer, Lightbulb, ChevronRight, X } from "lucide-react";
+import { Shield, Brain, Target, TrendingUp, Clock, BookOpen, AlertTriangle, CheckCircle, Activity, DollarSign, Database, Eye, Users, BarChart3, Calendar, FileText, Zap, RefreshCw, Star, TrendingDown, Award, Flame, Crosshair, Timer, Lightbulb, ChevronRight, X, Settings } from "lucide-react";
 import type { Trade, Account } from "@shared/schema";
 
 interface DisciplineMetrics {
@@ -101,7 +101,9 @@ export default function MMMDisciplinaryAssistant({ trades, accounts, selectedAcc
   const [selectedAccount, setSelectedAccount] = useState<string>(selectedAccountId?.toString() || "all");
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [disciplineData, setDisciplineData] = useState<DisciplineMetrics | null>(null);
-  const [activeTab, setActiveTab] = useState("overview");
+  const [tradingPatterns, setTradingPatterns] = useState<TradingPattern | null>(null);
+  const [psychologicalProfile, setPsychologicalProfile] = useState<PsychologicalProfile | null>(null);
+  const [activeTab, setActiveTab] = useState("system");
 
   const calculateComprehensiveDisciplineMetrics = (accountTrades: Trade[]): DisciplineMetrics => {
     if (accountTrades.length === 0) {
@@ -246,6 +248,8 @@ export default function MMMDisciplinaryAssistant({ trades, accounts, selectedAcc
 
     // Learning score with comprehensive improvement tracking
     const quarterSize = Math.floor(totalTrades / 4);
+    let learningScore = 60;
+    
     if (quarterSize > 0) {
       const q1Trades = accountTrades.slice(0, quarterSize);
       const q4Trades = accountTrades.slice(-quarterSize);
@@ -259,14 +263,10 @@ export default function MMMDisciplinaryAssistant({ trades, accounts, selectedAcc
       const winRateImprovement = (q4WinRate - q1WinRate) * 100;
       const profitabilityImprovement = q1AvgWin > 0 ? ((q4AvgWin - q1AvgWin) / q1AvgWin) * 100 : 0;
       
-      const learningScore = Math.min(100, Math.max(0, 
+      learningScore = Math.min(100, Math.max(0, 
         60 + (winRateImprovement * 2) + (profitabilityImprovement * 0.5)
       ));
     }
-
-    const learningScore = Math.min(100, Math.max(0, 
-      60 + (quarterSize > 0 ? 0 : 0) // Will be calculated above if quarterSize > 0
-    ));
 
     // Overall discipline score (weighted average with advanced factors)
     const disciplineScore = (
@@ -503,9 +503,6 @@ export default function MMMDisciplinaryAssistant({ trades, accounts, selectedAcc
     };
   };
 
-  const [tradingPatterns, setTradingPatterns] = useState<TradingPattern | null>(null);
-  const [psychologicalProfile, setPsychologicalProfile] = useState<PsychologicalProfile | null>(null);
-
   const analyzeTrading = async () => {
     setIsAnalyzing(true);
     try {
@@ -736,371 +733,476 @@ export default function MMMDisciplinaryAssistant({ trades, accounts, selectedAcc
     return "Novice";
   };
 
-  const getInsightLevel = (score: number) => {
-    if (score >= 80) return "elite";
-    if (score >= 60) return "intermediate";
-    return "developing";
-  };
-
-  const insights = {
-    elite: {
-      title: "Elite Trader Performance",
-      color: "text-green-400",
-      bgColor: "bg-green-900/20 border-green-500/30",
-      icon: <CheckCircle className="h-5 w-5 text-green-400" />,
-      analysis: [
-        "Exceptional discipline across all trading dimensions",
-        "Consistent risk management and emotional control",
-        "Strong adherence to systematic trading approach",
-        "Demonstrates professional-level trading psychology"
-      ],
-      recommendations: [
-        "Focus on scaling position sizes gradually",
-        "Consider teaching or mentoring other traders",
-        "Explore advanced strategies like options spreads",
-        "Document your methodology for future reference"
-      ],
-      potentialGains: "15-25% annual returns sustainable"
-    },
-    intermediate: {
-      title: "Developing Trader Profile",
-      color: "text-yellow-400",
-      bgColor: "bg-yellow-900/20 border-yellow-500/30",
-      icon: <Target className="h-5 w-5 text-yellow-400" />,
-      analysis: [
-        "Solid foundation with room for improvement",
-        "Good technical skills but inconsistent execution",
-        "Emotional control needs strengthening",
-        "Risk management shows promise but lacks consistency"
-      ],
-      recommendations: [
-        "Implement strict daily trading routines",
-        "Use smaller position sizes while developing discipline",
-        "Focus on one strategy until mastered",
-        "Keep detailed trading journal for pattern recognition"
-      ],
-      potentialGains: "8-15% annual returns with discipline improvements"
-    },
-    developing: {
-      title: "Foundation Building Required",
-      color: "text-red-400",
-      bgColor: "bg-red-900/20 border-red-500/30",
-      icon: <AlertTriangle className="h-5 w-5 text-red-400" />,
-      analysis: [
-        "Significant discipline gaps affecting profitability",
-        "Emotional trading patterns dominating decisions",
-        "Inconsistent risk management leading to large losses",
-        "Strategy execution lacks systematic approach"
-      ],
-      recommendations: [
-        "Return to demo trading to rebuild confidence",
-        "Focus exclusively on risk management rules",
-        "Implement mandatory cooling-off periods",
-        "Seek mentorship or professional trading education"
-      ],
-      potentialGains: "Focus on capital preservation before profit targets"
-    }
-  };
-
-  const currentInsight = disciplineData ? insights[getInsightLevel(disciplineData.disciplineScore)] : null;
-
   return (
     <div className="space-y-6">
-      {/* Header Section */}
-      <div className="widget-container">
-        <div className="widget-content">
-          <div className="widget-left">
-            <p className="widget-label">MMM DISCIPLINARY ASSISTANT</p>
-            <p className="widget-description">Advanced Professional Trading Psychology Analysis</p>
+      {/* Header */}
+      <div className="bg-gradient-to-r from-prop-gradient-start to-prop-gradient-end border border-prop-gold/20 rounded-2xl p-6">
+        <div className="flex items-center space-x-4">
+          <div className="bg-prop-gradient-gold p-3 rounded-xl">
+            <Settings className="h-6 w-6 text-black" />
           </div>
-          <div className="widget-right">
-            <div className="flex items-center gap-4">
-              <Select value={selectedAccount} onValueChange={setSelectedAccount}>
-                <SelectTrigger className="w-48 bg-gray-700 border-gray-600 text-white">
-                  <SelectValue placeholder="Select account to analyze" />
-                </SelectTrigger>
-                <SelectContent className="bg-gray-800 border-gray-700">
-                  <SelectItem value="all">All Accounts</SelectItem>
-                  {accounts.map(account => (
-                    <SelectItem key={account.id} value={account.id.toString()}>
-                      {account.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <Button 
-                onClick={analyzeTrading} 
-                disabled={isAnalyzing}
-                className="bg-gradient-to-r from-prop-gold to-prop-tiffany hover:from-prop-gold/80 hover:to-prop-tiffany/80"
-              >
-                {isAnalyzing ? (
-                  <>
-                    <Brain className="h-4 w-4 mr-2 animate-spin" />
-                    Analyzing Psychology...
-                  </>
-                ) : (
-                  <>
-                    <Database className="h-4 w-4 mr-2" />
-                    Run Analysis
-                  </>
-                )}
-              </Button>
-            </div>
+          <div>
+            <h1 className="text-2xl font-bold text-gradient-rainbow">MMM DISCIPLINARY ASSISTANT</h1>
+            <p className="text-gray-300">Advanced Trading Psychology Analysis & Discipline Coaching</p>
           </div>
         </div>
       </div>
 
-      {/* Main Score Display */}
-      {disciplineData && (
-        <div className="widget-container">
-          <div className="widget-content">
-            <div className="widget-left">
-              <p className="widget-label">Trading Discipline Assessment</p>
-              <div className="flex items-center space-x-6 mt-4">
-                <div className={`text-6xl font-bold ${getScoreColor(disciplineData.disciplineScore)}`}>
-                  {disciplineData.disciplineScore.toFixed(1)}
-                </div>
-                <div className="flex flex-col space-y-2">
-                  <Badge className={`${getScoreColor(disciplineData.disciplineScore)} bg-gray-800 text-sm px-3 py-1`}>
-                    {getScoreLevel(disciplineData.disciplineScore)} Trader
-                  </Badge>
-                  <Progress value={disciplineData.disciplineScore} className="h-3 w-32" />
-                </div>
-              </div>
-              <p className="widget-description mt-4">
-                Based on {disciplineData.totalTrades} trades • Win Rate: {(disciplineData.winRate * 100).toFixed(1)}%
-              </p>
-            </div>
-            <div className="widget-icon-square">
-              <Brain className="widget-icon" />
-            </div>
+      {/* Account Selection */}
+      <Card className="bg-prop-card border-prop-gold/20">
+        <CardHeader>
+          <CardTitle className="text-prop-gold">Select Trading Account</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex items-center space-x-4">
+            <Select value={selectedAccount} onValueChange={setSelectedAccount}>
+              <SelectTrigger className="w-64">
+                <SelectValue placeholder="Choose account..." />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Accounts</SelectItem>
+                {accounts.map(account => (
+                  <SelectItem key={account.id} value={account.id.toString()}>
+                    {account.name} ({account.type})
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <Button 
+              onClick={analyzeTrading} 
+              disabled={isAnalyzing}
+              className="bg-prop-gradient-gold text-black hover:bg-prop-gold/90"
+            >
+              {isAnalyzing ? (
+                <>
+                  <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
+                  Analyzing...
+                </>
+              ) : (
+                <>
+                  <Brain className="h-4 w-4 mr-2" />
+                  Analyze Trading Discipline
+                </>
+              )}
+            </Button>
           </div>
-        </div>
-      )}
+        </CardContent>
+      </Card>
 
-      {/* Tabbed Analysis */}
+      {/* Analysis Results */}
       {disciplineData && (
-        <Tabs value={activeTab} onValueChange={setActiveTab}>
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="grid w-full grid-cols-5">
-            <TabsTrigger value="overview">System</TabsTrigger>
+            <TabsTrigger value="system">System</TabsTrigger>
             <TabsTrigger value="insights">Insights</TabsTrigger>
             <TabsTrigger value="action">Action Plan</TabsTrigger>
             <TabsTrigger value="tracking">Tracking</TabsTrigger>
             <TabsTrigger value="truth">Brutal Truth</TabsTrigger>
           </TabsList>
 
-          <TabsContent value="overview" className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {disciplineAreas.map((area, index) => (
-                <div key={index} className="widget-container">
-                  <div className="widget-content">
-                    <div className="widget-left">
-                      <div className="flex items-center justify-between mb-3">
-                        <div className="flex items-center gap-2">
-                          {area.icon}
-                          <span className="widget-label text-sm">{area.name}</span>
-                        </div>
-                        <Badge className={area.score >= 70 ? "bg-green-900/50 text-green-300" : "bg-red-900/50 text-red-300"}>
-                          {area.score.toFixed(0)}%
-                        </Badge>
-                      </div>
-                      <Progress value={area.score} className="h-2 mb-2" />
-                      <p className="widget-description">
-                        {area.description}
-                      </p>
-                      <div className="mt-3 text-xs text-gray-400">
-                        Weight: {area.weight}% of total score
-                      </div>
-                    </div>
+          <TabsContent value="system" className="space-y-6">
+            {/* Overall Score */}
+            <Card className="bg-prop-card border-prop-gold/20">
+              <CardHeader>
+                <CardTitle className="text-prop-gold flex items-center">
+                  <Activity className="h-5 w-5 mr-2" />
+                  Overall Discipline Score
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-center">
+                  <div className="text-5xl font-bold text-gradient-rainbow mb-2">
+                    {disciplineData.disciplineScore.toFixed(1)}
+                  </div>
+                  <div className="text-lg text-gray-400">out of 100</div>
+                  <div className="mt-4">
+                    <Badge variant="outline" className={`${getScoreColor(disciplineData.disciplineScore)} border-current`}>
+                      {getScoreLevel(disciplineData.disciplineScore)}
+                    </Badge>
                   </div>
                 </div>
+              </CardContent>
+            </Card>
+
+            {/* Discipline Areas */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {disciplineAreas.map((area) => (
+                <Card key={area.name} className="bg-prop-card border-prop-gold/20 hover:border-prop-gold/40 transition-all">
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-prop-gold flex items-center text-lg">
+                      {area.icon}
+                      <span className="ml-2">{area.name}</span>
+                      <span className="ml-auto text-sm font-normal">({area.weight}%)</span>
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm text-gray-400">Score</span>
+                        <span className={`font-bold ${getScoreColor(area.score)}`}>
+                          {area.score.toFixed(1)}
+                        </span>
+                      </div>
+                      <Progress value={area.score} className="h-2" />
+                      <p className="text-sm text-gray-300">{area.description}</p>
+                    </div>
+                  </CardContent>
+                </Card>
               ))}
             </div>
           </TabsContent>
 
           <TabsContent value="insights" className="space-y-6">
-            {currentInsight && (
-              <div className={`widget-container ${currentInsight.bgColor.replace('bg-', 'border-').replace('/20', '/30')}`}>
-                <div className="widget-content flex-col">
-                  <div className="flex items-center gap-2 mb-4">
-                    {currentInsight.icon}
-                    <h3 className="widget-label">{currentInsight.title}</h3>
-                  </div>
-                  
-                  <div className="grid md:grid-cols-2 gap-6">
-                    <div>
-                      <h4 className="font-semibold text-white mb-3">Performance Analysis</h4>
-                      <ul className="space-y-2">
-                        {currentInsight.analysis.map((point, index) => (
-                          <li key={index} className="flex items-start gap-2 text-sm">
-                            <div className="w-1.5 h-1.5 bg-blue-400 rounded-full mt-2 flex-shrink-0" />
-                            <span className="text-gray-300">{point}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                    
-                    <div>
-                      <h4 className="font-semibold text-white mb-3">Strategic Recommendations</h4>
-                      <ul className="space-y-2">
-                        {currentInsight.recommendations.map((rec, index) => (
-                          <li key={index} className="flex items-start gap-2 text-sm">
-                            <div className="w-1.5 h-1.5 bg-green-400 rounded-full mt-2 flex-shrink-0" />
-                            <span className="text-gray-300">{rec}</span>
-                          </li>
-                        ))}
-                      </ul>
+            {/* Trader Profile */}
+            {disciplineData && (
+              <Card className={`bg-prop-card border-prop-gold/20 ${getTraderProfile(disciplineData.disciplineScore).borderColor}`}>
+                <CardHeader>
+                  <CardTitle className="text-prop-gold flex items-center">
+                    <Star className="h-5 w-5 mr-2" />
+                    Trader Profile Analysis
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className={`p-6 rounded-xl ${getTraderProfile(disciplineData.disciplineScore).bgColor}`}>
+                    <div className="text-center space-y-4">
+                      <div className={`text-2xl font-bold ${getTraderProfile(disciplineData.disciplineScore).color}`}>
+                        {getTraderProfile(disciplineData.disciplineScore).level}
+                      </div>
+                      <p className="text-gray-300 text-lg">
+                        {getTraderProfile(disciplineData.disciplineScore).description}
+                      </p>
                     </div>
                   </div>
-                  
-                  <Alert className="mt-4 bg-blue-900/30 border-blue-500/30">
-                    <DollarSign className="h-4 w-4 text-blue-400" />
-                    <AlertDescription className="text-blue-300">
-                      <strong>Potential Returns:</strong> {currentInsight.potentialGains}
-                    </AlertDescription>
-                  </Alert>
-                </div>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Trading Patterns */}
+            {tradingPatterns && (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <Card className="bg-prop-card border-prop-gold/20">
+                  <CardHeader>
+                    <CardTitle className="text-prop-gold flex items-center">
+                      <TrendingDown className="h-5 w-5 mr-2" />
+                      Behavioral Patterns
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="space-y-3">
+                      <div className="flex justify-between">
+                        <span className="text-sm text-gray-400">Revenge Trading</span>
+                        <span className={`font-bold ${tradingPatterns.revengeTrading > 10 ? 'text-red-400' : 'text-green-400'}`}>
+                          {tradingPatterns.revengeTrading.toFixed(1)}%
+                        </span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-sm text-gray-400">FOMO Trades</span>
+                        <span className={`font-bold ${tradingPatterns.fomoTrades > 15 ? 'text-red-400' : 'text-green-400'}`}>
+                          {tradingPatterns.fomoTrades.toFixed(1)}%
+                        </span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-sm text-gray-400">Stop Loss Violations</span>
+                        <span className={`font-bold ${tradingPatterns.stopLossViolations > 20 ? 'text-red-400' : 'text-green-400'}`}>
+                          {tradingPatterns.stopLossViolations.toFixed(1)}%
+                        </span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-sm text-gray-400">Overtrading Frequency</span>
+                        <span className={`font-bold ${tradingPatterns.overTradingFrequency > 20 ? 'text-red-400' : 'text-green-400'}`}>
+                          {tradingPatterns.overTradingFrequency.toFixed(1)}%
+                        </span>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card className="bg-prop-card border-prop-gold/20">
+                  <CardHeader>
+                    <CardTitle className="text-prop-gold flex items-center">
+                      <Timer className="h-5 w-5 mr-2" />
+                      Time-of-Day Patterns
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="space-y-3">
+                      {Object.entries(tradingPatterns.timeOfDayPatterns).map(([timeSlot, count]) => (
+                        <div key={timeSlot} className="flex justify-between">
+                          <span className="text-sm text-gray-400">{timeSlot}</span>
+                          <span className="font-bold text-prop-gold">{count} trades</span>
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
               </div>
+            )}
+
+            {/* Psychological Profile */}
+            {psychologicalProfile && (
+              <Card className="bg-prop-card border-prop-gold/20">
+                <CardHeader>
+                  <CardTitle className="text-prop-gold flex items-center">
+                    <Brain className="h-5 w-5 mr-2" />
+                    Psychological Profile
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div className="text-center space-y-2">
+                      <div className="text-2xl font-bold text-prop-gold">
+                        {psychologicalProfile.disciplineIndex.toFixed(0)}
+                      </div>
+                      <div className="text-sm text-gray-400">Discipline Index</div>
+                    </div>
+                    <div className="text-center space-y-2">
+                      <div className="text-2xl font-bold text-prop-gold">
+                        {psychologicalProfile.emotionalStability.toFixed(0)}
+                      </div>
+                      <div className="text-sm text-gray-400">Emotional Stability</div>
+                    </div>
+                    <div className="text-center space-y-2">
+                      <div className="text-2xl font-bold text-prop-gold">
+                        {psychologicalProfile.fearIndex.toFixed(0)}
+                      </div>
+                      <div className="text-sm text-gray-400">Fear Index</div>
+                    </div>
+                    <div className="text-center space-y-2">
+                      <div className="text-2xl font-bold text-prop-gold">
+                        {psychologicalProfile.greedIndex.toFixed(0)}
+                      </div>
+                      <div className="text-sm text-gray-400">Greed Index</div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
             )}
           </TabsContent>
 
           <TabsContent value="action" className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="widget-container">
-                <div className="widget-content flex-col">
-                  <div className="widget-left mb-4">
-                    <p className="widget-label">30-Day Action Plan</p>
-                    <p className="widget-description">Immediate improvements</p>
-                  </div>
-                  <div className="space-y-3">
-                    {disciplineAreas
-                      .filter(area => area.score < 70)
-                      .slice(0, 4)
-                      .map((area, index) => (
-                        <div key={index} className="p-3 bg-gray-800/50 rounded-lg border border-prop-gold/20">
-                          <div className="flex items-center gap-2 mb-2">
-                            {area.icon}
-                            <span className="text-sm font-medium text-white">{area.name}</span>
-                            <Badge className="bg-red-900/50 text-red-300 text-xs">
-                              {area.score.toFixed(0)}%
-                            </Badge>
-                          </div>
-                          <p className="text-xs text-gray-400">{area.recommendations[0]}</p>
+            {/* Action Plan */}
+            {disciplineData && (
+              <Card className="bg-prop-card border-prop-gold/20">
+                <CardHeader>
+                  <CardTitle className="text-prop-gold flex items-center">
+                    <Target className="h-5 w-5 mr-2" />
+                    30-Day Action Plan
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    {getActionPlan(disciplineData).map((plan, index) => (
+                      <div key={index} className="border border-prop-gold/20 rounded-lg p-4 hover:border-prop-gold/40 transition-colors">
+                        <div className="flex items-center justify-between mb-2">
+                          <Badge variant="outline" className={`${plan.priority === 'HIGH' ? 'text-red-400 border-red-400' : 'text-yellow-400 border-yellow-400'}`}>
+                            {plan.priority} PRIORITY
+                          </Badge>
+                          <span className="text-sm text-gray-400">{plan.timeline}</span>
                         </div>
-                      ))}
+                        <h4 className="font-bold text-prop-gold mb-2">{plan.area}</h4>
+                        <p className="text-gray-300 mb-2">{plan.action}</p>
+                        <p className="text-sm text-gray-400">{plan.impact}</p>
+                      </div>
+                    ))}
                   </div>
-                </div>
-              </div>
+                </CardContent>
+              </Card>
+            )}
 
-              <div className="widget-container">
-                <div className="widget-content flex-col">
-                  <div className="widget-left mb-4">
-                    <p className="widget-label">90-Day Goals</p>
-                    <p className="widget-description">Long-term development</p>
-                  </div>
-                  <div className="space-y-3">
-                    {disciplineAreas
-                      .filter(area => area.score >= 60)
-                      .slice(0, 4)
-                      .map((area, index) => (
-                        <div key={index} className="p-3 bg-gray-800/50 rounded-lg border border-prop-gold/20">
-                          <div className="flex items-center gap-2 mb-2">
-                            {area.icon}
-                            <span className="text-sm font-medium text-white">{area.name}</span>
-                            <Badge className="bg-green-900/50 text-green-300 text-xs">
-                              {area.score.toFixed(0)}%
-                            </Badge>
-                          </div>
-                          <p className="text-xs text-gray-400">{area.recommendations[1] || area.recommendations[0]}</p>
+            {/* Recommendations */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {disciplineAreas.slice(0, 4).map((area) => (
+                <Card key={area.name} className="bg-prop-card border-prop-gold/20">
+                  <CardHeader>
+                    <CardTitle className="text-prop-gold flex items-center text-lg">
+                      {area.icon}
+                      <span className="ml-2">{area.name}</span>
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-3">
+                      {area.recommendations.map((rec, index) => (
+                        <div key={index} className="flex items-start space-x-2">
+                          <ChevronRight className="h-4 w-4 text-prop-gold mt-0.5 flex-shrink-0" />
+                          <span className="text-sm text-gray-300">{rec}</span>
                         </div>
                       ))}
-                  </div>
-                </div>
-              </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
             </div>
           </TabsContent>
 
           <TabsContent value="tracking" className="space-y-6">
-            <div className="widget-container">
-              <div className="widget-content flex-col">
-                <div className="widget-left mb-6">
-                  <p className="widget-label">Progress Tracking Dashboard</p>
-                  <p className="widget-description">Monitor your discipline improvement</p>
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  <div className="p-4 bg-gray-800/50 rounded-lg border border-prop-gold/20">
-                    <div className="flex items-center gap-2 mb-2">
-                      <Activity className="h-4 w-4 text-prop-tiffany" />
-                      <span className="text-sm font-medium text-white">Daily Score</span>
+            {/* Progress Tracking Dashboard */}
+            <Card className="bg-prop-card border-prop-gold/20">
+              <CardHeader>
+                <CardTitle className="text-prop-gold flex items-center">
+                  <BarChart3 className="h-5 w-5 mr-2" />
+                  Progress Tracking Dashboard
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="text-center space-y-2">
+                    <div className="text-3xl font-bold text-prop-gold">
+                      {disciplineData.totalTrades}
                     </div>
-                    <div className="text-2xl font-bold text-prop-gold">{disciplineData.disciplineScore.toFixed(1)}</div>
-                    <div className="text-xs text-gray-400">Current assessment</div>
+                    <div className="text-sm text-gray-400">Total Trades Analyzed</div>
                   </div>
-                  <div className="p-4 bg-gray-800/50 rounded-lg border border-prop-gold/20">
-                    <div className="flex items-center gap-2 mb-2">
-                      <TrendingUp className="h-4 w-4 text-green-400" />
-                      <span className="text-sm font-medium text-white">Improvement</span>
+                  <div className="text-center space-y-2">
+                    <div className="text-3xl font-bold text-prop-gold">
+                      {(disciplineData.winRate * 100).toFixed(1)}%
                     </div>
-                    <div className="text-2xl font-bold text-green-400">+{(disciplineData.disciplineScore * 0.1).toFixed(1)}</div>
-                    <div className="text-xs text-gray-400">This week</div>
+                    <div className="text-sm text-gray-400">Win Rate</div>
                   </div>
-                  <div className="p-4 bg-gray-800/50 rounded-lg border border-prop-gold/20">
-                    <div className="flex items-center gap-2 mb-2">
-                      <Target className="h-4 w-4 text-yellow-400" />
-                      <span className="text-sm font-medium text-white">Target</span>
+                  <div className="text-center space-y-2">
+                    <div className="text-3xl font-bold text-prop-gold">
+                      {disciplineData.disciplineScore.toFixed(1)}
                     </div>
-                    <div className="text-2xl font-bold text-yellow-400">85.0</div>
-                    <div className="text-xs text-gray-400">Professional level</div>
+                    <div className="text-sm text-gray-400">Current Score</div>
                   </div>
                 </div>
-              </div>
+              </CardContent>
+            </Card>
+
+            {/* Key Metrics */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <Card className="bg-prop-card border-prop-gold/20">
+                <CardHeader>
+                  <CardTitle className="text-prop-gold">Key Performance Metrics</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <div className="flex justify-between">
+                    <span className="text-sm text-gray-400">Stop Modification Rate</span>
+                    <span className={`font-bold ${disciplineData.stopModificationRate > 25 ? 'text-red-400' : 'text-green-400'}`}>
+                      {disciplineData.stopModificationRate.toFixed(1)}%
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-sm text-gray-400">Excess Losses</span>
+                    <span className="font-bold text-red-400">
+                      ${disciplineData.excessLosses.toFixed(2)}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-sm text-gray-400">Risk Management</span>
+                    <span className={`font-bold ${getScoreColor(disciplineData.riskManagementScore)}`}>
+                      {disciplineData.riskManagementScore.toFixed(1)}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-sm text-gray-400">Emotional Control</span>
+                    <span className={`font-bold ${getScoreColor(disciplineData.emotionalControlScore)}`}>
+                      {disciplineData.emotionalControlScore.toFixed(1)}
+                    </span>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-prop-card border-prop-gold/20">
+                <CardHeader>
+                  <CardTitle className="text-prop-gold">Weekly Goals</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-gray-400">Discipline Score Target</span>
+                    <span className="font-bold text-prop-gold">+5 points</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-gray-400">Revenge Trades</span>
+                    <span className="font-bold text-prop-gold">&lt; 5%</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-gray-400">Stop Loss Adherence</span>
+                    <span className="font-bold text-prop-gold">100%</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-gray-400">Journal Entries</span>
+                    <span className="font-bold text-prop-gold">Daily</span>
+                  </div>
+                </CardContent>
+              </Card>
             </div>
           </TabsContent>
 
           <TabsContent value="truth" className="space-y-6">
-            <div className="widget-container">
-              <div className="widget-content flex-col">
-                <div className="widget-left mb-6">
-                  <p className="widget-label">The Brutal Truth</p>
-                  <p className="widget-description">Unfiltered analysis of your trading</p>
-                </div>
-                <div className="space-y-4">
-                  <Alert className="bg-red-900/20 border-red-500/30">
-                    <AlertTriangle className="h-4 w-4 text-red-400" />
-                    <AlertDescription className="text-red-300">
-                      <strong>Reality Check:</strong> Your discipline score of {disciplineData.disciplineScore.toFixed(1)}% indicates 
-                      {disciplineData.disciplineScore >= 80 ? " exceptional trading discipline. You're operating at a professional level." :
-                       disciplineData.disciplineScore >= 60 ? " decent foundation but significant room for improvement. You're making avoidable mistakes." :
-                       " serious discipline issues that are costing you money. Without changes, consistent profitability is unlikely."}
-                    </AlertDescription>
-                  </Alert>
-                  
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="p-4 bg-gray-800/50 rounded-lg border border-prop-gold/20">
-                      <h4 className="font-semibold text-white mb-3">What's Actually Happening</h4>
-                      <ul className="space-y-2 text-sm text-gray-300">
-                        <li>• Stop modifications: {disciplineData.stopModificationRate.toFixed(1)}% of trades</li>
-                        <li>• Emotional control: {disciplineData.emotionalControlScore.toFixed(1)}% efficiency</li>
-                        <li>• Risk management: {disciplineData.riskManagementScore.toFixed(1)}% adherence</li>
-                        <li>• Total excess losses: ${disciplineData.excessLosses.toLocaleString()}</li>
-                      </ul>
+            {/* Brutal Truth Analysis */}
+            {disciplineData && tradingPatterns && (
+              <Card className="bg-prop-card border-red-400/30">
+                <CardHeader>
+                  <CardTitle className="text-red-400 flex items-center">
+                    <AlertTriangle className="h-5 w-5 mr-2" />
+                    Brutal Truth Analysis
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-6">
+                    <div className="bg-red-500/10 border border-red-400/30 rounded-lg p-4">
+                      <h4 className="font-bold text-red-400 mb-2">REALITY CHECK</h4>
+                      <p className="text-gray-300">
+                        Your current discipline level is costing you real money. Below are the harsh truths about your trading behavior.
+                      </p>
                     </div>
-                    
-                    <div className="p-4 bg-gray-800/50 rounded-lg border border-prop-gold/20">
-                      <h4 className="font-semibold text-white mb-3">The Cost of Indiscipline</h4>
-                      <ul className="space-y-2 text-sm text-gray-300">
-                        <li>• Money lost to emotion: ${(disciplineData.excessLosses * 0.4).toLocaleString()}</li>
-                        <li>• Potential missed gains: ${(disciplineData.excessLosses * 0.6).toLocaleString()}</li>
-                        <li>• Time wasted: {Math.round(disciplineData.stopModificationRate * 2)} hours/week</li>
-                        <li>• Opportunity cost: {((100 - disciplineData.disciplineScore) * 0.5).toFixed(1)}% annual returns</li>
-                      </ul>
+
+                    <div className="space-y-4">
+                      {getBrutalTruthAnalysis(disciplineData, tradingPatterns).map((analysis, index) => (
+                        <div key={index} className="border border-red-400/20 rounded-lg p-4 hover:border-red-400/40 transition-colors">
+                          <div className="flex items-start space-x-3">
+                            <X className="h-5 w-5 text-red-400 mt-0.5 flex-shrink-0" />
+                            <div className="space-y-2">
+                              <h4 className="font-bold text-red-400">{analysis.truth}</h4>
+                              <p className="text-gray-300">{analysis.impact}</p>
+                              <div className="bg-green-500/10 border border-green-400/30 rounded-md p-2">
+                                <p className="text-sm text-green-400">{analysis.solution}</p>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* Cost Analysis */}
+                    <div className="bg-yellow-500/10 border border-yellow-400/30 rounded-lg p-4">
+                      <h4 className="font-bold text-yellow-400 mb-2">FINANCIAL IMPACT</h4>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <div className="text-2xl font-bold text-red-400">
+                            ${(disciplineData.excessLosses * 12).toFixed(0)}
+                          </div>
+                          <div className="text-sm text-gray-400">Estimated Annual Loss from Poor Discipline</div>
+                        </div>
+                        <div>
+                          <div className="text-2xl font-bold text-green-400">
+                            ${(disciplineData.excessLosses * 12 * 0.7).toFixed(0)}
+                          </div>
+                          <div className="text-sm text-gray-400">Potential Annual Savings with Better Discipline</div>
+                        </div>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </div>
-            </div>
+                </CardContent>
+              </Card>
+            )}
           </TabsContent>
         </Tabs>
+      )}
+
+      {/* No Data State */}
+      {!disciplineData && !isAnalyzing && (
+        <Card className="bg-prop-card border-prop-gold/20">
+          <CardContent className="text-center py-12">
+            <Database className="h-12 w-12 text-prop-gold mx-auto mb-4" />
+            <h3 className="text-xl font-bold mb-2">No Trading Data Available</h3>
+            <p className="text-gray-400 mb-6">
+              Import your trading data to get started with comprehensive discipline analysis
+            </p>
+            <Button className="bg-prop-gradient-gold text-black hover:bg-prop-gold/90">
+              Import Trading Data
+            </Button>
+          </CardContent>
+        </Card>
       )}
     </div>
   );
