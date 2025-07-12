@@ -1,17 +1,19 @@
 import React, { useState } from 'react';
 import { TradingViewChart } from './TradingViewChart';
-import type { Trade } from "@shared/schema";
+import type { Trade, Account } from "@shared/schema";
 import { Grid3X3, Grid2X2, Square, BarChart3 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 interface ChartGridProps {
   trades: Trade[];
+  accounts: Account[];
   symbols: string[];
   gridSize?: 1 | 2 | 4;
 }
 
 export const ChartGrid: React.FC<ChartGridProps> = ({
   trades,
+  accounts,
   symbols,
   gridSize: initialGridSize = 2
 }) => {
@@ -95,6 +97,7 @@ export const ChartGrid: React.FC<ChartGridProps> = ({
       {gridSize === 1 && (
         <TradingViewChart
           trades={getTradesForSymbol(selectedSymbol)}
+          accounts={accounts}
           symbol={selectedSymbol}
           height={500}
         />
@@ -109,6 +112,7 @@ export const ChartGrid: React.FC<ChartGridProps> = ({
               <TradingViewChart
                 key={symbol}
                 trades={symbolTrades}
+                accounts={accounts}
                 symbol={symbol}
                 height={gridSize === 4 ? 250 : 300}
               />

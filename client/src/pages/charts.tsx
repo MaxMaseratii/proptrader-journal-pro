@@ -152,6 +152,7 @@ export default function Charts() {
         <TabsContent value="grid" className="space-y-6">
           <ChartGrid 
             trades={trades} 
+            accounts={accounts}
             symbols={uniqueSymbols.slice(0, 8)} 
             gridSize={uniqueSymbols.length >= 4 ? 4 : 2}
           />

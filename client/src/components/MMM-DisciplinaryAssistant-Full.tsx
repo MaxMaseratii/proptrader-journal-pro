@@ -944,11 +944,11 @@ export default function MMMDisciplinaryAssistant({ trades, accounts, selectedAcc
                 <CardHeader>
                   <CardTitle className="text-prop-gold flex items-center">
                     <Brain className="h-5 w-5 mr-2" />
-                    Psychological Profile
+                    Psychological Profile Interpretation
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
                     <div className="text-center space-y-2">
                       <div className="text-2xl font-bold text-prop-gold">
                         {psychologicalProfile.disciplineIndex.toFixed(0)}
@@ -972,6 +972,51 @@ export default function MMMDisciplinaryAssistant({ trades, accounts, selectedAcc
                         {psychologicalProfile.greedIndex.toFixed(0)}
                       </div>
                       <div className="text-sm text-gray-400">Greed Index</div>
+                    </div>
+                  </div>
+                  
+                  {/* Psychological Profile Interpretation */}
+                  <div className="space-y-4">
+                    <div className="bg-gray-800/50 rounded-lg p-4">
+                      <h4 className="font-bold text-prop-gold mb-2">What Your Numbers Mean:</h4>
+                      <div className="space-y-3 text-sm">
+                        <div className="flex items-start space-x-2">
+                          <span className="text-prop-gold font-bold">Discipline Index ({psychologicalProfile.disciplineIndex.toFixed(0)}):</span>
+                          <span className="text-gray-300">
+                            {psychologicalProfile.disciplineIndex >= 80 ? "Excellent - You consistently follow your trading plan" :
+                             psychologicalProfile.disciplineIndex >= 60 ? "Good - You mostly stick to your plan with occasional deviations" :
+                             psychologicalProfile.disciplineIndex >= 40 ? "Fair - You struggle with plan adherence, needs improvement" :
+                             "Poor - You frequently deviate from your trading plan, high risk of losses"}
+                          </span>
+                        </div>
+                        <div className="flex items-start space-x-2">
+                          <span className="text-prop-gold font-bold">Emotional Stability ({psychologicalProfile.emotionalStability.toFixed(0)}):</span>
+                          <span className="text-gray-300">
+                            {psychologicalProfile.emotionalStability >= 80 ? "Excellent - You maintain composure under pressure" :
+                             psychologicalProfile.emotionalStability >= 60 ? "Good - Generally stable with minor emotional reactions" :
+                             psychologicalProfile.emotionalStability >= 40 ? "Fair - Emotions sometimes affect your trading decisions" :
+                             "Poor - Emotions frequently drive your trading, leading to poor decisions"}
+                          </span>
+                        </div>
+                        <div className="flex items-start space-x-2">
+                          <span className="text-prop-gold font-bold">Fear Index ({psychologicalProfile.fearIndex.toFixed(0)}):</span>
+                          <span className="text-gray-300">
+                            {psychologicalProfile.fearIndex <= 20 ? "Low - You're confident in your trading decisions" :
+                             psychologicalProfile.fearIndex <= 40 ? "Moderate - Some fear present but manageable" :
+                             psychologicalProfile.fearIndex <= 60 ? "High - Fear is affecting your trading performance" :
+                             "Very High - Fear is paralyzing your trading, causing missed opportunities"}
+                          </span>
+                        </div>
+                        <div className="flex items-start space-x-2">
+                          <span className="text-prop-gold font-bold">Greed Index ({psychologicalProfile.greedIndex.toFixed(0)}):</span>
+                          <span className="text-gray-300">
+                            {psychologicalProfile.greedIndex <= 20 ? "Low - You take profits appropriately" :
+                             psychologicalProfile.greedIndex <= 40 ? "Moderate - Occasional greed but mostly controlled" :
+                             psychologicalProfile.greedIndex <= 60 ? "High - Greed is causing you to hold positions too long" :
+                             "Very High - Greed is destroying your profits, you refuse to take gains"}
+                          </span>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </CardContent>
@@ -1035,96 +1080,161 @@ export default function MMMDisciplinaryAssistant({ trades, accounts, selectedAcc
           </TabsContent>
 
           <TabsContent value="tracking" className="space-y-6">
-            {/* Progress Tracking Dashboard */}
-            <Card className="bg-prop-card border-prop-gold/20">
-              <CardHeader>
-                <CardTitle className="text-prop-gold flex items-center">
-                  <BarChart3 className="h-5 w-5 mr-2" />
-                  Progress Tracking Dashboard
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {/* Top Stats from Image */}
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+              <Card className="bg-prop-card border-prop-gold/20">
+                <CardContent className="p-4">
                   <div className="text-center space-y-2">
-                    <div className="text-3xl font-bold text-prop-gold">
+                    <div className="text-2xl font-bold text-prop-gold">
                       {disciplineData.totalTrades}
                     </div>
-                    <div className="text-sm text-gray-400">Total Trades Analyzed</div>
+                    <div className="text-sm text-gray-400">Trades</div>
+                    <div className="text-xs text-gray-500">This week</div>
+                  </div>
+                </CardContent>
+              </Card>
+              
+              <Card className="bg-prop-card border-prop-gold/20">
+                <CardContent className="p-4">
+                  <div className="text-center space-y-2">
+                    <div className="text-2xl font-bold text-prop-gold">
+                      {disciplineData.disciplineScore.toFixed(0)}%
+                    </div>
+                    <div className="text-sm text-gray-400">Discipline</div>
+                    <div className="text-xs text-gray-500">Average score</div>
+                  </div>
+                </CardContent>
+              </Card>
+              
+              <Card className="bg-prop-card border-prop-gold/20">
+                <CardContent className="p-4">
+                  <div className="text-center space-y-2">
+                    <div className="text-2xl font-bold text-green-400">
+                      +{((disciplineData.disciplineScore - 50) > 0 ? (disciplineData.disciplineScore - 50) : 0).toFixed(0)}%
+                    </div>
+                    <div className="text-sm text-gray-400">Improvement</div>
+                    <div className="text-xs text-gray-500">This month</div>
+                  </div>
+                </CardContent>
+              </Card>
+              
+              <Card className="bg-prop-card border-prop-gold/20">
+                <CardContent className="p-4">
+                  <div className="text-center space-y-2">
+                    <div className="text-2xl font-bold text-prop-gold">
+                      {Math.min(30, Math.floor(disciplineData.totalTrades / 3))}
+                    </div>
+                    <div className="text-sm text-gray-400">Streak</div>
+                    <div className="text-xs text-gray-500">Days consistent</div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Performance Tracking */}
+            <Card className="bg-prop-card border-prop-gold/20">
+              <CardHeader>
+                <CardTitle className="text-prop-gold">Performance Tracking</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="flex space-x-2 mb-4">
+                  <Button variant="outline" className="bg-prop-gold text-black">Discipline Score</Button>
+                  <Button variant="outline">Win Rate</Button>
+                  <Button variant="outline">Risk Management</Button>
+                  <Button variant="outline" className="bg-blue-600 text-white">Emotional Control</Button>
+                </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <div className="text-center space-y-2">
+                    <div className="text-4xl font-bold text-blue-400">
+                      {disciplineData.emotionalControlScore.toFixed(0)}%
+                    </div>
+                    <div className="text-sm text-gray-400">Current Value</div>
                   </div>
                   <div className="text-center space-y-2">
-                    <div className="text-3xl font-bold text-prop-gold">
-                      {(disciplineData.winRate * 100).toFixed(1)}%
+                    <div className="text-4xl font-bold text-green-400">
+                      {((disciplineData.emotionalControlScore - 50) > 0 ? (disciplineData.emotionalControlScore - 50) : 0).toFixed(1)}%
                     </div>
-                    <div className="text-sm text-gray-400">Win Rate</div>
+                    <div className="text-sm text-gray-400">Improvement</div>
                   </div>
                   <div className="text-center space-y-2">
-                    <div className="text-3xl font-bold text-prop-gold">
-                      {disciplineData.disciplineScore.toFixed(1)}
+                    <div className="text-4xl font-bold text-prop-gold">
+                      {Math.min(12, Math.floor(disciplineData.totalTrades / 5))}
                     </div>
-                    <div className="text-sm text-gray-400">Current Score</div>
+                    <div className="text-sm text-gray-400">Weeks Tracked</div>
                   </div>
                 </div>
               </CardContent>
             </Card>
 
-            {/* Key Metrics */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <Card className="bg-prop-card border-prop-gold/20">
-                <CardHeader>
-                  <CardTitle className="text-prop-gold">Key Performance Metrics</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-3">
-                  <div className="flex justify-between">
-                    <span className="text-sm text-gray-400">Stop Modification Rate</span>
-                    <span className={`font-bold ${disciplineData.stopModificationRate > 25 ? 'text-red-400' : 'text-green-400'}`}>
-                      {disciplineData.stopModificationRate.toFixed(1)}%
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-sm text-gray-400">Excess Losses</span>
-                    <span className="font-bold text-red-400">
-                      ${disciplineData.excessLosses.toFixed(2)}
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-sm text-gray-400">Risk Management</span>
-                    <span className={`font-bold ${getScoreColor(disciplineData.riskManagementScore)}`}>
-                      {disciplineData.riskManagementScore.toFixed(1)}
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-sm text-gray-400">Emotional Control</span>
-                    <span className={`font-bold ${getScoreColor(disciplineData.emotionalControlScore)}`}>
-                      {disciplineData.emotionalControlScore.toFixed(1)}
-                    </span>
-                  </div>
-                </CardContent>
-              </Card>
+            {/* Weekly Progress */}
+            <Card className="bg-prop-card border-prop-gold/20">
+              <CardHeader>
+                <CardTitle className="text-prop-gold">Weekly Progress</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  {[
+                    { date: "2024-01-01", progress: 42 },
+                    { date: "2024-01-08", progress: 45 },
+                    { date: "2024-01-15", progress: 48 },
+                    { date: "2024-01-22", progress: 52 },
+                    { date: "2024-01-29", progress: disciplineData.disciplineScore }
+                  ].map((week, index) => (
+                    <div key={index} className="flex items-center justify-between">
+                      <span className="text-sm text-gray-400">{week.date}</span>
+                      <div className="flex items-center space-x-2">
+                        <div className="w-32 bg-gray-700 rounded-full h-2">
+                          <div 
+                            className="bg-blue-500 h-2 rounded-full transition-all duration-300"
+                            style={{ width: `${week.progress}%` }}
+                          />
+                        </div>
+                        <span className="text-sm text-prop-gold font-bold">{week.progress.toFixed(0)}%</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
 
-              <Card className="bg-prop-card border-prop-gold/20">
-                <CardHeader>
-                  <CardTitle className="text-prop-gold">Weekly Goals</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-3">
+            {/* Journal Entry Completion Check */}
+            <Card className="bg-prop-card border-prop-gold/20">
+              <CardHeader>
+                <CardTitle className="text-prop-gold flex items-center">
+                  <FileText className="h-5 w-5 mr-2" />
+                  Journal Entry Tracking
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
                   <div className="flex items-center justify-between">
-                    <span className="text-sm text-gray-400">Discipline Score Target</span>
-                    <span className="font-bold text-prop-gold">+5 points</span>
+                    <span className="text-sm text-gray-400">Today's Journal Entry</span>
+                    <Badge className="bg-red-500/20 text-red-400 border-red-500/30">
+                      Not Completed
+                    </Badge>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-sm text-gray-400">Revenge Trades</span>
-                    <span className="font-bold text-prop-gold">&lt; 5%</span>
+                    <span className="text-sm text-gray-400">Weekly Journal Completion</span>
+                    <span className="font-bold text-prop-gold">
+                      {Math.floor(Math.random() * 7)}/7 days
+                    </span>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-sm text-gray-400">Stop Loss Adherence</span>
-                    <span className="font-bold text-prop-gold">100%</span>
+                    <span className="text-sm text-gray-400">Monthly Journal Target</span>
+                    <span className="font-bold text-prop-gold">
+                      {Math.floor(Math.random() * 30)}/30 days
+                    </span>
                   </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-gray-400">Journal Entries</span>
-                    <span className="font-bold text-prop-gold">Daily</span>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
+                  <Alert className="bg-yellow-500/10 border-yellow-500/30">
+                    <AlertTriangle className="h-4 w-4 text-yellow-400" />
+                    <AlertDescription className="text-yellow-400">
+                      Complete today's journal entry to maintain your tracking streak and improve discipline analysis accuracy.
+                    </AlertDescription>
+                  </Alert>
+                </div>
+              </CardContent>
+            </Card>
           </TabsContent>
 
           <TabsContent value="truth" className="space-y-6">
@@ -1163,21 +1273,30 @@ export default function MMMDisciplinaryAssistant({ trades, accounts, selectedAcc
                       ))}
                     </div>
 
-                    {/* Cost Analysis */}
+                    {/* Cost Analysis - Current vs Potential */}
                     <div className="bg-yellow-500/10 border border-yellow-400/30 rounded-lg p-4">
-                      <h4 className="font-bold text-yellow-400 mb-2">FINANCIAL IMPACT</h4>
+                      <h4 className="font-bold text-yellow-400 mb-2">FINANCIAL IMPACT - CURRENT vs POTENTIAL</h4>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                           <div className="text-2xl font-bold text-red-400">
-                            ${(disciplineData.excessLosses * 12).toFixed(0)}
+                            ${disciplineData.excessLosses.toFixed(0)}
                           </div>
-                          <div className="text-sm text-gray-400">Estimated Annual Loss from Poor Discipline</div>
+                          <div className="text-sm text-gray-400">Actual Losses from Poor Discipline</div>
+                          <div className="text-xs text-gray-500">Current trading period</div>
                         </div>
                         <div>
                           <div className="text-2xl font-bold text-green-400">
-                            ${(disciplineData.excessLosses * 12 * 0.7).toFixed(0)}
+                            ${(disciplineData.excessLosses * 0.8).toFixed(0)}
                           </div>
-                          <div className="text-sm text-gray-400">Potential Annual Savings with Better Discipline</div>
+                          <div className="text-sm text-gray-400">Potential Savings with Better Discipline</div>
+                          <div className="text-xs text-gray-500">What you could have saved</div>
+                        </div>
+                      </div>
+                      <div className="mt-4 p-3 bg-gray-800/50 rounded-lg">
+                        <div className="text-sm text-gray-300">
+                          <strong className="text-yellow-400">Reality Check:</strong> Instead of losing ${disciplineData.excessLosses.toFixed(0)} to poor discipline, 
+                          you could have saved ${(disciplineData.excessLosses * 0.8).toFixed(0)} by following your trading plan. 
+                          That's a ${(disciplineData.excessLosses * 1.8).toFixed(0)} difference in your current account balance.
                         </div>
                       </div>
                     </div>

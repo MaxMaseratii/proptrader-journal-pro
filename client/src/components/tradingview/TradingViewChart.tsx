@@ -1,8 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react';
-import type { Trade } from "@shared/schema";
+import type { Trade, Account } from "@shared/schema";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 interface TradingViewChartProps {
   trades: Trade[];
+  accounts: Account[];
   symbol: string;
   height?: number;
   theme?: 'light' | 'dark';
@@ -17,12 +20,19 @@ interface HoverInfo {
 
 export const TradingViewChart: React.FC<TradingViewChartProps> = ({
   trades,
+  accounts,
   symbol,
   height = 400,
   theme = 'dark'
 }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [hoverInfo, setHoverInfo] = useState<HoverInfo>({ trade: {} as Trade, x: 0, y: 0, visible: false });
+  const [selectedAccount, setSelectedAccount] = useState<string>("all");
+  
+  // Filter trades by selected account
+  const filteredTrades = selectedAccount === "all" 
+    ? trades 
+    : trades.filter(trade => trade.accountId === parseInt(selectedAccount));
 
   // Format currency for display
   const formatCurrency = (amount: number) => {
@@ -67,7 +77,7 @@ export const TradingViewChart: React.FC<TradingViewChartProps> = ({
   };
 
   useEffect(() => {
-    if (!canvasRef.current || !trades.length) return;
+    if (!canvasRef.current || !filteredTrades.length) return;
 
     const canvas = canvasRef.current;
     const ctx = canvas.getContext('2d');
@@ -95,7 +105,7 @@ export const TradingViewChart: React.FC<TradingViewChartProps> = ({
     ctx.fillRect(0, 0, rect.width, height);
 
     // Process trade data
-    const sortedTrades = [...trades].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+    const sortedTrades = [...filteredTrades].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
     if (sortedTrades.length === 0) return;
 
     const prices = sortedTrades.map(t => t.exitPrice || t.entryPrice);
@@ -170,31 +180,51 @@ export const TradingViewChart: React.FC<TradingViewChartProps> = ({
     ctx.fillStyle = theme === 'dark' ? 'rgba(180, 180, 180, 0.4)' : 'rgba(180, 180, 180, 0.7)';
     ctx.fillText(symbol || 'PropTraderJournal', padding, height - padding / 2);
 
-  }, [trades, symbol, height, theme]);
+  }, [filteredTrades, symbol, height, theme, selectedAccount]);
 
-  const profitableTrades = trades.filter(t => (t.pnl || 0) > 0).length;
-  const winRate = trades.length > 0 ? (profitableTrades / trades.length * 100).toFixed(1) : '0';
+  const profitableTrades = filteredTrades.filter(t => (t.pnl || 0) > 0).length;
+  const winRate = filteredTrades.length > 0 ? (profitableTrades / filteredTrades.length * 100).toFixed(1) : '0';
 
   return (
-    <div className="w-full bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 rounded-lg p-4 border border-gray-700">
-      <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-semibold text-white flex items-center">
-          <span className="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-            {symbol}
-          </span>
-          <span className="text-gray-400 ml-2 text-sm">Price Chart</span>
-        </h3>
-        <div className="flex items-center gap-4 text-sm">
-          <div className="text-gray-400">
-            Trades: <span className="text-white font-medium">{trades.length}</span>
-          </div>
-          <div className="text-gray-400">
-            Win Rate: <span className={`font-medium ${parseFloat(winRate) >= 50 ? 'text-green-400' : 'text-red-400'}`}>
-              {winRate}%
+    <Card className="bg-prop-card border-prop-gold/20">
+      <CardHeader>
+        <CardTitle className="text-prop-gold flex items-center justify-between">
+          <div className="flex items-center">
+            <span className="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+              {symbol}
             </span>
+            <span className="text-gray-400 ml-2 text-sm">Price Chart</span>
+          </div>
+          <div className="flex items-center gap-4">
+            <Select value={selectedAccount} onValueChange={setSelectedAccount}>
+              <SelectTrigger className="w-48">
+                <SelectValue placeholder="Select account..." />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Accounts</SelectItem>
+                {accounts.map(account => (
+                  <SelectItem key={account.id} value={account.id.toString()}>
+                    {account.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-4 text-sm">
+            <div className="text-gray-400">
+              Trades: <span className="text-white font-medium">{filteredTrades.length}</span>
+            </div>
+            <div className="text-gray-400">
+              Win Rate: <span className={`font-medium ${parseFloat(winRate) >= 50 ? 'text-green-400' : 'text-red-400'}`}>
+                {winRate}%
+              </span>
+            </div>
           </div>
         </div>
-      </div>
       
       <div className="relative">
         <canvas
@@ -248,20 +278,21 @@ export const TradingViewChart: React.FC<TradingViewChartProps> = ({
         )}
       </div>
       
-      <div className="flex justify-center mt-4 space-x-6 text-xs text-gray-400">
-        <div className="flex items-center">
-          <div className="w-3 h-3 bg-green-500 rounded-full mr-2"></div>
-          Profitable Trade
+        <div className="flex justify-center mt-4 space-x-6 text-xs text-gray-400">
+          <div className="flex items-center">
+            <div className="w-3 h-3 bg-green-500 rounded-full mr-2"></div>
+            Profitable Trade
+          </div>
+          <div className="flex items-center">
+            <div className="w-3 h-3 bg-red-500 rounded-full mr-2"></div>
+            Loss Trade
+          </div>
+          <div className="flex items-center">
+            <div className="w-3 h-3 bg-gray-500 rounded-full mr-2"></div>
+            Breakeven Trade
+          </div>
         </div>
-        <div className="flex items-center">
-          <div className="w-3 h-3 bg-red-500 rounded-full mr-2"></div>
-          Loss Trade
-        </div>
-        <div className="flex items-center">
-          <div className="w-3 h-3 bg-gray-500 rounded-full mr-2"></div>
-          Breakeven Trade
-        </div>
-      </div>
-    </div>
+      </CardContent>
+    </Card>
   );
 };

@@ -38,15 +38,14 @@ const navItems = [
   { href: "/projections", label: "Target & Risk Management Planning", icon: TrendingUp, section: "main" },
   { href: "/trades", label: "Trades", icon: BarChart3, section: "main" },
   { href: "/charts", label: "Trading Charts", icon: TrendingUp, section: "main" },
-  { href: "/discipline-analysis", label: "Discipline Analysis", icon: Brain, section: "main" },
   { href: "/disciplinary-assistant", label: "MMM DISCIPLINARY ASSISTANT", icon: Settings, section: "main" },
   { href: "/journal", label: "Trading Journal", icon: Book, section: "main" },
   { href: "/spending", label: "Prop Spending", icon: CreditCard, section: "main" },
   { href: "/payouts", label: "Payouts", icon: DollarSign, section: "main" },
   { href: "/risk-management", label: "Risk Management", icon: Shield, section: "main" },
-  { href: "/achievements", label: "Achievement", icon: Trophy, section: "analytics" },
-  { href: "/analytics", label: "Advanced Analytics", icon: Brain, section: "analytics" },
-  { href: "/reports", label: "Reports", icon: Calendar, section: "analytics" },
+  { href: "/achievements", label: "Achievement", icon: Trophy, section: "main" },
+  { href: "/analytics", label: "Advanced Analytics", icon: Brain, section: "main" },
+  { href: "/reports", label: "Reports", icon: Calendar, section: "profile" },
 ];
 
 export default function Sidebar() {
@@ -54,7 +53,7 @@ export default function Sidebar() {
   const { user } = useAuth();
 
   const mainItems = navItems.filter(item => item.section === "main");
-  const analyticsItems = navItems.filter(item => item.section === "analytics");
+  const profileItems = navItems.filter(item => item.section === "profile");
 
   return (
     <aside className="w-64 bg-prop-gradient-main border-r border-prop-gold/20 flex-shrink-0">
@@ -93,95 +92,88 @@ export default function Sidebar() {
           ))}
         </ul>
         
-        <div className="px-6 mt-8 mb-4">
-          <h3 className="text-xs font-medium text-gray-400 uppercase tracking-wider">Analytics</h3>
-        </div>
-        <ul className="space-y-1 px-4">
-          {analyticsItems.map(({ href, label, icon: Icon }) => (
-            <li key={href}>
-              <Link href={href} className={cn(
-                "flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer",
-                location === href 
-                  ? "bg-primary text-white" 
-                  : "text-gray-300 hover:bg-dark-card"
-              )}>
-                <Icon className="mr-3 h-4 w-4" />
-                {label}
-              </Link>
-            </li>
-          ))}
-          
-          {/* User Profile with just initials */}
-          <li>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button 
-                  variant="ghost" 
-                  className="w-full flex items-center justify-start px-3 py-2 text-sm font-medium text-gray-300 hover:bg-dark-card rounded-lg"
-                >
-                  <div className="mr-3 h-4 w-4 bg-prop-gradient-gold rounded-full flex items-center justify-center text-xs font-bold text-black">
-                    {user ? (
-                      (user as any)?.firstName?.charAt(0) || 
-                      (user as any)?.email?.charAt(0).toUpperCase() || 'U'
-                    ) : 'U'}
-                  </div>
-                  Profile
-                </Button>
-              </DropdownMenuTrigger>
-              
-              <DropdownMenuContent 
-                className="w-64 bg-dark-card border-prop-gold/20 shadow-xl" 
-                align="start"
-                side="right"
+        {/* User Profile with just initials */}
+        <div className="px-4 mt-8">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button 
+                variant="ghost" 
+                className="w-full flex items-center justify-start px-3 py-2 text-sm font-medium text-gray-300 hover:bg-dark-card rounded-lg"
               >
-                <DropdownMenuLabel className="text-prop-gold">My Account</DropdownMenuLabel>
-                <DropdownMenuSeparator className="bg-prop-gold/20" />
-                
+                <div className="mr-3 h-4 w-4 bg-prop-gradient-gold rounded-full flex items-center justify-center text-xs font-bold text-black">
+                  {user ? (
+                    (user as any)?.firstName?.charAt(0) || 
+                    (user as any)?.email?.charAt(0).toUpperCase() || 'U'
+                  ) : 'U'}
+                </div>
+                Profile
+              </Button>
+            </DropdownMenuTrigger>
+            
+            <DropdownMenuContent 
+              className="w-64 bg-dark-card border-prop-gold/20 shadow-xl" 
+              align="start"
+              side="right"
+            >
+              <DropdownMenuLabel className="text-prop-gold">My Account</DropdownMenuLabel>
+              <DropdownMenuSeparator className="bg-prop-gold/20" />
+              
+              <DropdownMenuItem 
+                className="text-gray-300 hover:bg-dark-surface cursor-pointer"
+                onClick={() => window.location.href = '/profile'}
+              >
+                <User className="mr-2 h-4 w-4 text-blue-400" />
+                Profile Settings
+              </DropdownMenuItem>
+              
+              <DropdownMenuItem 
+                className="text-gray-300 hover:bg-dark-surface cursor-pointer"
+              >
+                <Shield className="mr-2 h-4 w-4 text-blue-500" />
+                Account Management
+              </DropdownMenuItem>
+              
+              <DropdownMenuItem 
+                className="text-gray-300 hover:bg-dark-surface cursor-pointer"
+              >
+                <CreditCard className="mr-2 h-4 w-4 text-green-400" />
+                Billing & Subscription
+              </DropdownMenuItem>
+              
+              <DropdownMenuItem 
+                className="text-gray-300 hover:bg-dark-surface cursor-pointer"
+              >
+                <Shield className="mr-2 h-4 w-4 text-yellow-400" />
+                Security Settings
+              </DropdownMenuItem>
+              
+              <DropdownMenuSeparator className="bg-prop-gold/20" />
+              
+              {/* Reports moved to profile section */}
+              {profileItems.map(({ href, label, icon: Icon }) => (
                 <DropdownMenuItem 
+                  key={href}
                   className="text-gray-300 hover:bg-dark-surface cursor-pointer"
-                  onClick={() => window.location.href = '/profile'}
+                  onClick={() => window.location.href = href}
                 >
-                  <User className="mr-2 h-4 w-4 text-blue-400" />
-                  Profile Settings
+                  <Icon className="mr-2 h-4 w-4 text-prop-gold" />
+                  {label}
                 </DropdownMenuItem>
-                
-                <DropdownMenuItem 
-                  className="text-gray-300 hover:bg-dark-surface cursor-pointer"
-                >
-                  <Shield className="mr-2 h-4 w-4 text-blue-500" />
-                  Account Management
-                </DropdownMenuItem>
-                
-                <DropdownMenuItem 
-                  className="text-gray-300 hover:bg-dark-surface cursor-pointer"
-                >
-                  <CreditCard className="mr-2 h-4 w-4 text-green-400" />
-                  Billing & Subscription
-                </DropdownMenuItem>
-                
-                <DropdownMenuItem 
-                  className="text-gray-300 hover:bg-dark-surface cursor-pointer"
-                >
-                  <Shield className="mr-2 h-4 w-4 text-yellow-400" />
-                  Security Settings
-                </DropdownMenuItem>
-                
-                <DropdownMenuSeparator className="bg-prop-gold/20" />
-                
-                <DropdownMenuItem 
-                  className="text-red-400 hover:bg-red-600/20 cursor-pointer"
-                  onClick={() => window.location.href = '/api/logout'}
-                >
-                  <LogOut className="mr-2 h-4 w-4 text-red-400" />
-                  Sign Out
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </li>
-        </ul>
+              ))}
+              
+              <DropdownMenuSeparator className="bg-prop-gold/20" />
+              
+              <DropdownMenuItem 
+                className="text-red-400 hover:bg-red-600/20 cursor-pointer"
+                onClick={() => window.location.href = '/api/logout'}
+              >
+                <LogOut className="mr-2 h-4 w-4 text-red-400" />
+                Sign Out
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
       </nav>
-      
-
     </aside>
   );
 }
