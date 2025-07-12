@@ -23,6 +23,7 @@ import AdvancedDashboard from "@/pages/advanced-dashboard";
 import TradingCompanion from "@/pages/trading-companion";
 
 import DisciplineAnalysis from "@/pages/discipline-analysis";
+import DisciplinaryAssistant from "@/pages/disciplinary-assistant";
 import Charts from "@/pages/charts";
 import Sidebar from "@/components/sidebar";
 import NotFound from "@/pages/not-found";
@@ -66,6 +67,7 @@ function Router() {
           <Route path="/charts" component={Charts} />
 
           <Route path="/discipline-analysis" component={DisciplineAnalysis} />
+          <Route path="/disciplinary-assistant" component={DisciplinaryAssistant} />
           <Route path="/profile" component={Profile} />
           <Route component={NotFound} />
         </Switch>

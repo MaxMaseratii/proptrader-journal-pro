@@ -39,6 +39,7 @@ const navItems = [
   { href: "/trades", label: "Trades", icon: BarChart3, section: "main" },
   { href: "/charts", label: "Trading Charts", icon: TrendingUp, section: "main" },
   { href: "/discipline-analysis", label: "Discipline Analysis", icon: Brain, section: "main" },
+  { href: "/disciplinary-assistant", label: "MMM DISCIPLINARY ASSISTANT", icon: Settings, section: "main" },
   { href: "/journal", label: "Trading Journal", icon: Book, section: "main" },
   { href: "/spending", label: "Prop Spending", icon: CreditCard, section: "main" },
   { href: "/payouts", label: "Payouts", icon: DollarSign, section: "main" },
