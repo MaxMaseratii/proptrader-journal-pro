@@ -14,12 +14,13 @@ import { useToast } from "@/hooks/use-toast";
 import type { Account } from "@shared/schema";
 
 interface AccountManagementProps {
-  account: Account;
+  accounts: Account[];
 }
 
-export default function AccountManagement({ account }: AccountManagementProps) {
+export default function AccountManagement({ accounts }: AccountManagementProps) {
   const [resetCost, setResetCost] = useState(0);
   const [isResetDialogOpen, setIsResetDialogOpen] = useState(false);
+  const [selectedAccount, setSelectedAccount] = useState<Account | null>(null);
   const { toast } = useToast();
 
   const resetAccountMutation = useMutation({
@@ -99,7 +100,7 @@ export default function AccountManagement({ account }: AccountManagementProps) {
     }
   };
 
-  const getMaxTradesIndicator = () => {
+  const getMaxTradesIndicator = (account: Account) => {
     if (account.maxTradesPerDay && account.maxTradesPerDay > 0) {
       return (
         <div className="text-sm text-amber-400 flex items-center gap-1">
@@ -115,11 +116,11 @@ export default function AccountManagement({ account }: AccountManagementProps) {
     );
   };
 
-  const shouldShowResetIndicator = () => {
+  const shouldShowResetIndicator = (account: Account) => {
     return account.resetCount && account.resetCount > 0;
   };
 
-  const getPayoutEligibility = () => {
+  const getPayoutEligibility = (account: Account) => {
     // Challenge accounts: Cannot qualify for payout
     if (account.type === 'challenge') {
       return {
@@ -175,103 +176,117 @@ export default function AccountManagement({ account }: AccountManagementProps) {
     };
   };
 
+  if (accounts.length === 0) {
+    return (
+      <div className="text-center py-8">
+        <p className="text-gray-400">No accounts created yet. Create your first account to get started.</p>
+      </div>
+    );
+  }
+
   return (
-    <Card className="bg-gray-800 border-gray-700 hover:border-gray-600 transition-colors">
-      <CardHeader className="pb-4">
-        <div className="flex items-center justify-between">
-          <div>
-            <CardTitle className="text-lg text-white mb-2">{account.name}</CardTitle>
-            <div className="flex items-center gap-3">
-              {getStatusBadge(account.status)}
-              <Badge variant="outline" className="text-blue-400 border-blue-400">
-                {account.firm}
-              </Badge>
-              {shouldShowResetIndicator() && (
-                <Badge className="bg-orange-600 text-white">
-                  Reset #{account.resetCount}
-                </Badge>
-              )}
-            </div>
-          </div>
-          <div className="flex items-center gap-2">
-            {/* Reset Account */}
-            <Dialog open={isResetDialogOpen} onOpenChange={setIsResetDialogOpen}>
-              <DialogTrigger asChild>
-                <Button 
-                  variant="outline" 
-                  size="sm" 
-                  className="border-orange-600 text-orange-400 hover:bg-orange-600 hover:text-white"
-                  disabled={account.status === 'withdrawn'}
-                >
-                  <RotateCcw className="h-4 w-4" />
-                </Button>
-              </DialogTrigger>
-              <DialogContent className="bg-gray-900 border-gray-700">
-                <DialogHeader>
-                  <DialogTitle className="text-white flex items-center gap-2">
-                    <RotateCcw className="h-5 w-5 text-orange-400" />
-                    Reset Account
-                  </DialogTitle>
-                </DialogHeader>
-                <div className="space-y-4">
-                  <div className="bg-orange-900/30 border border-orange-600/30 rounded-lg p-4">
-                    <p className="text-orange-300 text-sm">
-                      This will restart your account balance to {formatCurrency(account.startingBalance)} 
-                      and reset all PnL calculations. This action cannot be undone.
-                    </p>
-                  </div>
-                  <div className="space-y-2">
-                    <Label className="text-gray-300">Reset Cost (optional)</Label>
-                    <Input
-                      type="number"
-                      step="0.01"
-                      value={resetCost}
-                      onChange={(e) => setResetCost(parseFloat(e.target.value) || 0)}
-                      className="bg-gray-700 border-gray-600 text-white"
-                      placeholder="0.00"
-                    />
-                    <p className="text-xs text-gray-400">
-                      Enter the cost for resetting this account (if applicable)
-                    </p>
-                  </div>
-                  <div className="flex justify-end gap-3">
+    <div className="space-y-4">
+      {accounts.map((account) => (
+        <Card key={account.id} className="bg-gray-800 border-gray-700 hover:border-gray-600 transition-colors">
+          <CardHeader className="pb-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle className="text-lg text-white mb-2">{account.name}</CardTitle>
+                <div className="flex items-center gap-3">
+                  {getStatusBadge(account.status)}
+                  <Badge variant="outline" className="text-blue-400 border-blue-400">
+                    {account.firm}
+                  </Badge>
+                  {shouldShowResetIndicator(account) && (
+                    <Badge className="bg-orange-600 text-white">
+                      Reset #{account.resetCount}
+                    </Badge>
+                  )}
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                {/* Reset Account */}
+                <Dialog open={isResetDialogOpen && selectedAccount?.id === account.id} onOpenChange={(open) => {
+                  setIsResetDialogOpen(open);
+                  if (open) setSelectedAccount(account);
+                  else setSelectedAccount(null);
+                }}>
+                  <DialogTrigger asChild>
                     <Button 
                       variant="outline" 
-                      onClick={() => setIsResetDialogOpen(false)}
-                      className="border-gray-600 text-gray-300 hover:bg-gray-700"
+                      size="sm" 
+                      className="border-orange-600 text-orange-400 hover:bg-orange-600 hover:text-white"
+                      disabled={account.status === 'withdrawn'}
                     >
-                      Cancel
+                      <RotateCcw className="h-4 w-4" />
                     </Button>
-                    <Button 
-                      onClick={() => resetAccountMutation.mutate({ id: account.id, resetCost })}
-                      disabled={resetAccountMutation.isPending}
-                      className="bg-orange-600 hover:bg-orange-700 text-white"
-                    >
-                      {resetAccountMutation.isPending ? "Resetting..." : "Reset Account"}
-                    </Button>
-                  </div>
-                </div>
-              </DialogContent>
-            </Dialog>
+                  </DialogTrigger>
+                  <DialogContent className="bg-gray-900 border-gray-700">
+                    <DialogHeader>
+                      <DialogTitle className="text-white flex items-center gap-2">
+                        <RotateCcw className="h-5 w-5 text-orange-400" />
+                        Reset Account
+                      </DialogTitle>
+                    </DialogHeader>
+                    <div className="space-y-4">
+                      <div className="bg-orange-900/30 border border-orange-600/30 rounded-lg p-4">
+                        <p className="text-orange-300 text-sm">
+                          This will restart your account balance to {formatCurrency(account.startingBalance)} 
+                          and reset all PnL calculations. This action cannot be undone.
+                        </p>
+                      </div>
+                      <div className="space-y-2">
+                        <Label className="text-gray-300">Reset Cost (optional)</Label>
+                        <Input
+                          type="number"
+                          step="0.01"
+                          value={resetCost}
+                          onChange={(e) => setResetCost(parseFloat(e.target.value) || 0)}
+                          className="bg-gray-700 border-gray-600 text-white"
+                          placeholder="0.00"
+                        />
+                        <p className="text-xs text-gray-400">
+                          Enter the cost for resetting this account (if applicable)
+                        </p>
+                      </div>
+                      <div className="flex justify-end gap-3">
+                        <Button 
+                          variant="outline" 
+                          onClick={() => setIsResetDialogOpen(false)}
+                          className="border-gray-600 text-gray-300 hover:bg-gray-700"
+                        >
+                          Cancel
+                        </Button>
+                        <Button 
+                          onClick={() => resetAccountMutation.mutate({ id: account.id, resetCost })}
+                          disabled={resetAccountMutation.isPending}
+                          className="bg-orange-600 hover:bg-orange-700 text-white"
+                        >
+                          {resetAccountMutation.isPending ? "Resetting..." : "Reset Account"}
+                        </Button>
+                      </div>
+                    </div>
+                  </DialogContent>
+                </Dialog>
 
-            {/* Withdraw Account */}
-            <AlertDialog>
-              <AlertDialogTrigger asChild>
-                <Button 
-                  variant="outline" 
-                  size="sm" 
-                  className="border-purple-600 text-purple-400 hover:bg-purple-600 hover:text-white"
-                  disabled={account.status === 'withdrawn'}
-                >
-                  <LogOut className="h-4 w-4" />
-                </Button>
-              </AlertDialogTrigger>
-              <AlertDialogContent className="bg-gray-900 border-gray-700">
-                <AlertDialogHeader>
-                  <AlertDialogTitle className="text-white flex items-center gap-2">
-                    <LogOut className="h-5 w-5 text-purple-400" />
-                    Withdraw Account
-                  </AlertDialogTitle>
+                {/* Withdraw Account */}
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      className="border-purple-600 text-purple-400 hover:bg-purple-600 hover:text-white"
+                      disabled={account.status === 'withdrawn'}
+                    >
+                      <LogOut className="h-4 w-4" />
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent className="bg-gray-900 border-gray-700">
+                    <AlertDialogHeader>
+                      <AlertDialogTitle className="text-white flex items-center gap-2">
+                        <LogOut className="h-5 w-5 text-purple-400" />
+                        Withdraw Account
+                      </AlertDialogTitle>
                   <AlertDialogDescription className="text-gray-300">
                     This will mark the account as "Withdrawn" and stop active trading. 
                     You can reactivate it later if needed.
@@ -308,74 +323,76 @@ export default function AccountManagement({ account }: AccountManagementProps) {
                     <Trash2 className="h-5 w-5 text-red-400" />
                     Delete Account
                   </AlertDialogTitle>
-                  <AlertDialogDescription className="text-gray-300">
-                    This will permanently delete the account and all associated trades, 
-                    journal entries, and statistics. This action cannot be undone.
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                  <AlertDialogCancel className="border-gray-600 text-gray-300 hover:bg-gray-700">
-                    Cancel
-                  </AlertDialogCancel>
-                  <AlertDialogAction 
-                    onClick={() => deleteAccountMutation.mutate(account.id)}
-                    className="bg-red-600 hover:bg-red-700 text-white"
-                  >
-                    Delete Account
-                  </AlertDialogAction>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
-          </div>
-        </div>
-      </CardHeader>
-      
-      <CardContent>
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <p className="text-gray-400 text-sm">Current Balance</p>
-            <p className="text-2xl font-bold text-white">
-              {formatCurrency(account.currentBalance)}
-            </p>
-          </div>
-          <div>
-            <p className="text-gray-400 text-sm">Profit Target</p>
-            <p className="text-2xl font-bold text-green-400">
-              {formatCurrency(account.profitTarget)}
-            </p>
-          </div>
-          <div>
-            <p className="text-gray-400 text-sm">Max Drawdown</p>
-            <p className="text-xl font-bold text-red-400">
-              {formatCurrency(account.maxDrawdown)}
-            </p>
-          </div>
-          <div>
-            <p className="text-gray-400 text-sm">Daily Loss Limit</p>
-            <p className="text-xl font-bold text-orange-400">
-              {account.dailyLossLimit ? formatCurrency(account.dailyLossLimit) : "None"}
-            </p>
-          </div>
-        </div>
+                      <AlertDialogDescription className="text-gray-300">
+                        This will permanently delete the account and all associated trades, 
+                        journal entries, and statistics. This action cannot be undone.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel className="border-gray-600 text-gray-300 hover:bg-gray-700">
+                        Cancel
+                      </AlertDialogCancel>
+                      <AlertDialogAction 
+                        onClick={() => deleteAccountMutation.mutate(account.id)}
+                        className="bg-red-600 hover:bg-red-700 text-white"
+                      >
+                        Delete Account
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+              </div>
+            </div>
+          </CardHeader>
+          
+          <CardContent>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <p className="text-gray-400 text-sm">Current Balance</p>
+                <p className="text-2xl font-bold text-white">
+                  {formatCurrency(account.currentBalance)}
+                </p>
+              </div>
+              <div>
+                <p className="text-gray-400 text-sm">Profit Target</p>
+                <p className="text-2xl font-bold text-green-400">
+                  {formatCurrency(account.profitTarget)}
+                </p>
+              </div>
+              <div>
+                <p className="text-gray-400 text-sm">Max Drawdown</p>
+                <p className="text-xl font-bold text-red-400">
+                  {formatCurrency(account.maxDrawdown)}
+                </p>
+              </div>
+              <div>
+                <p className="text-gray-400 text-sm">Daily Loss Limit</p>
+                <p className="text-xl font-bold text-orange-400">
+                  {account.dailyLossLimit ? formatCurrency(account.dailyLossLimit) : "None"}
+                </p>
+              </div>
+            </div>
 
-        <div className="mt-4 pt-4 border-t border-gray-700">
-          {getMaxTradesIndicator()}
-          
-          {account.accountCost && (
-            <div className="flex items-center justify-between mt-2 text-sm">
-              <span className="text-gray-400">Account Cost:</span>
-              <span className="text-white">{formatCurrency(account.accountCost)}</span>
+            <div className="mt-4 pt-4 border-t border-gray-700">
+              {getMaxTradesIndicator(account)}
+              
+              {account.accountCost && (
+                <div className="flex items-center justify-between mt-2 text-sm">
+                  <span className="text-gray-400">Account Cost:</span>
+                  <span className="text-white">{formatCurrency(account.accountCost)}</span>
+                </div>
+              )}
+              
+              {account.resetCount && account.resetCount > 0 && account.totalResetsCost && (
+                <div className="flex items-center justify-between mt-1 text-sm">
+                  <span className="text-gray-400">Total Reset Costs:</span>
+                  <span className="text-orange-400">{formatCurrency(account.totalResetsCost)}</span>
+                </div>
+              )}
             </div>
-          )}
-          
-          {account.resetCount && account.resetCount > 0 && account.totalResetsCost && (
-            <div className="flex items-center justify-between mt-1 text-sm">
-              <span className="text-gray-400">Total Reset Costs:</span>
-              <span className="text-orange-400">{formatCurrency(account.totalResetsCost)}</span>
-            </div>
-          )}
-        </div>
-      </CardContent>
-    </Card>
+          </CardContent>
+        </Card>
+      ))}
+    </div>
   );
 }
