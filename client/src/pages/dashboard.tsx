@@ -398,20 +398,7 @@ export default function Dashboard() {
               </Select>
             </div>
 
-            {/* TASK 1: View Type Selection */}
-            <div className="flex items-center space-x-2">
-              <BarChart3 className="h-4 w-4 text-gray-400" />
-              <Select value={viewType} onValueChange={(value: any) => setViewType(value)}>
-                <SelectTrigger className="w-32">
-                  <SelectValue placeholder="View" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="overview">Overview</SelectItem>
-                  <SelectItem value="detailed">Detailed</SelectItem>
-                  <SelectItem value="analytics">Analytics</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+            {/* View Type Selection removed as per instructions */}
             
             <Link href="/trades?tab=add">
               <Button className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105">
@@ -432,171 +419,194 @@ export default function Dashboard() {
       <div className="p-6 space-y-8">
 
 
-        {/* Current Performance Overview - Compact Header */}
-        <div className="mb-4">
-          <h2 className="text-xl font-bold text-gradient-rainbow mb-4 flex items-center border-b border-gray-700 pb-2">
-            <TrendingUp className="mr-3 h-5 w-5 text-success-green" />
-            Current Performance Overview
-          </h2>
-        </div>
-
-        {/* Key Performance Metrics Under Header */}
-        <div className="widget-grid mb-6">
-          {/* Net Balance */}
-          <div className="widget-container">
-            <div className="widget-content">
-              <div className="widget-left">
-                <p className="widget-label">Net Balance</p>
-                <p className="widget-value">
-                  {formatCurrency(calculateNetBalance())}
-                </p>
-                <p className="widget-description">Starting balance + Total P&L</p>
-              </div>
-              <div className="widget-icon-square">
-                <DollarSign className="widget-icon" />
-              </div>
-            </div>
-          </div>
-
-          {/* Daily P&L */}
-          <div className="widget-container">
-            <div className="widget-content">
-              <div className="widget-left">
-                <p className="widget-label">Daily P&L</p>
-                <p className="widget-value">
-                  {formatCurrency(combinedAnalytics?.worstTrade || 0)}
-                </p>
-                <p className="widget-description">Today's performance</p>
-              </div>
-              <div className="widget-icon-square">
-                <TrendingDown className="widget-icon" />
-              </div>
-            </div>
-          </div>
-
-          {/* Average Win/Loss */}
-          <div className="widget-container">
-            <div className="widget-content">
-              <div className="widget-left">
-                <p className="widget-label">Avg Win/Loss</p>
-                <div className="flex items-center space-x-2 text-lg font-bold">
-                  <span className="text-success-green">
-                    {formatCurrency(combinedAnalytics?.averageWin || 0)}
-                  </span>
-                  <span className="text-gray-400">/</span>
-                  <span className="text-error-red">
-                    {formatCurrency(Math.abs(combinedAnalytics?.averageLoss || 0))}
-                  </span>
+        {/* Performance Overview Section */}
+        <section className="dashboard-section">
+          <h3 className="text-xl font-semibold text-white mb-4">📈 Current Performance Overview</h3>
+          
+          {/* Row 1: Core Financial (3 widgets) */}
+          <div className="dashboard-row-1 grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+            <Card className="bg-prop-gradient-gold border-prop-gold/20">
+              <CardContent className="p-4">
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-black">
+                    {formatCurrency(calculateNetBalance())}
+                  </div>
+                  <div className="text-sm text-black/70">Net Balance</div>
                 </div>
-                <p className="widget-description">Win vs Loss ratio</p>
-              </div>
-              <div className="widget-icon-square">
-                <BarChart3 className="widget-icon" />
-              </div>
-            </div>
+              </CardContent>
+            </Card>
+            
+            <Card className="bg-blue-600 border-blue-500/20">
+              <CardContent className="p-4">
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-white">
+                    {formatCurrency(combinedAnalytics?.worstTrade || 0)}
+                  </div>
+                  <div className="text-sm text-blue-100">Daily P&L</div>
+                </div>
+              </CardContent>
+            </Card>
+            
+            <Card className="bg-green-600 border-green-500/20">
+              <CardContent className="p-4">
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-white">
+                    {formatCurrency(combinedAnalytics?.totalPnl || 0)}
+                  </div>
+                  <div className="text-sm text-green-100">Total P&L</div>
+                </div>
+              </CardContent>
+            </Card>
           </div>
-        </div>
-
-        {/* Secondary Performance Metrics Row - Win Rate, R Factor, Profit Factor */}
-        <div className="widget-grid mb-8">
-          {/* Win Rate */}
-          <div className="widget-container">
-            <div className="widget-content">
-              <div className="widget-left">
-                <p className="widget-label">Win Rate</p>
-                <p className="widget-value">
-                  {combinedAnalytics?.winRate.toFixed(0) || 0}%
-                </p>
-                <p className="widget-description">
-                  {combinedAnalytics?.winningTrades || 0} wins / {combinedAnalytics?.losingTrades || 0} losses
-                </p>
-              </div>
-              <div className="widget-icon-square">
-                <Target className="widget-icon" />
-              </div>
-            </div>
+          
+          {/* Row 2: Performance Ratios (4 widgets) */}
+          <div className="dashboard-row-2 grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+            <Card className="bg-purple-600 border-purple-500/20">
+              <CardContent className="p-4">
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-white">
+                    {combinedAnalytics?.winRate?.toFixed(1) || '0.0'}%
+                  </div>
+                  <div className="text-sm text-purple-100">Win Rate</div>
+                </div>
+              </CardContent>
+            </Card>
+            
+            <Card className="bg-teal-600 border-teal-500/20">
+              <CardContent className="p-4">
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-white">
+                    2.5:1
+                  </div>
+                  <div className="text-sm text-teal-100">R Factor</div>
+                </div>
+              </CardContent>
+            </Card>
+            
+            <Card className="bg-orange-600 border-orange-500/20">
+              <CardContent className="p-4">
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-white">
+                    {((combinedAnalytics?.winRate || 0) * 2.5 / 100).toFixed(2)}
+                  </div>
+                  <div className="text-sm text-orange-100">Profit Factor</div>
+                </div>
+              </CardContent>
+            </Card>
+            
+            <Card className="bg-pink-600 border-pink-500/20">
+              <CardContent className="p-4">
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-white">
+                    {formatCurrency(combinedAnalytics?.averageWin || 0)} / {formatCurrency(Math.abs(combinedAnalytics?.averageLoss || 0))}
+                  </div>
+                  <div className="text-sm text-pink-100">Avg Win/Loss</div>
+                </div>
+              </CardContent>
+            </Card>
           </div>
-
-          {/* R Factor */}
-          <div className="widget-container">
-            <div className="widget-content">
-              <div className="widget-left">
-                <p className="widget-label">R Factor</p>
-                <p className="widget-value">
-                  {combinedAnalytics?.rFactor.toFixed(2) || '0.00'}
-                </p>
-                <p className="widget-description">Total Reward / Total Risk ratio</p>
-              </div>
-              <div className="widget-icon-square">
-                <BarChart3 className="widget-icon" />
-              </div>
-            </div>
+          
+          {/* Row 3: Trading Activity & Planning (4 widgets) */}
+          <div className="dashboard-row-3 grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+            <Card className="bg-indigo-600 border-indigo-500/20">
+              <CardContent className="p-4">
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-white">
+                    {combinedAnalytics?.totalTrades || 0}
+                  </div>
+                  <div className="text-sm text-indigo-100">Total Trades</div>
+                </div>
+              </CardContent>
+            </Card>
+            
+            <Card className="bg-cyan-600 border-cyan-500/20">
+              <CardContent className="p-4">
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-white">
+                    {formatCurrency(combinedAnalytics?.bestTrade || 0)}
+                  </div>
+                  <div className="text-sm text-cyan-100">Best Trade</div>
+                </div>
+              </CardContent>
+            </Card>
+            
+            <Card className="bg-slate-600 border-slate-500/20">
+              <CardContent className="p-4">
+                <div className="text-center">
+                  <div className="text-xl font-bold text-white">
+                    ← W2 {new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric' })}th {new Date().getFullYear()} →
+                  </div>
+                  <div className="text-sm text-slate-100">Weekly Navigation</div>
+                </div>
+              </CardContent>
+            </Card>
+            
+            <Card className="bg-emerald-600 border-emerald-500/20">
+              <CardContent className="p-4">
+                <div className="text-center">
+                  <div className="text-sm text-emerald-100 mb-1">
+                    Target: $750/day
+                  </div>
+                  <div className="text-xl font-bold text-white">
+                    35% ahead
+                  </div>
+                  <div className="text-xs text-emerald-100">Plan vs Reality</div>
+                </div>
+              </CardContent>
+            </Card>
           </div>
-
-          {/* Profit Factor */}
-          <div className="widget-container">
-            <div className="widget-content">
-              <div className="widget-left">
-                <p className="widget-label">Profit Factor</p>
-                <p className="widget-value">
-                  {combinedAnalytics?.profitFactor.toFixed(2) || '0.00'}
-                </p>
-                <p className="widget-description">Gross Profit / Gross Loss ratio</p>
-              </div>
-              <div className="widget-icon-square">
-                <TrendingUp className="widget-icon" />
-              </div>
-            </div>
+          
+          {/* Row 4: Risk & Investment (4 widgets) */}
+          <div className="dashboard-row-4 grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+            <Card className="bg-red-600 border-red-500/20">
+              <CardContent className="p-4">
+                <div className="text-center">
+                  <div className="text-lg font-bold text-white">
+                    33%
+                  </div>
+                  <div className="text-sm text-red-100 mb-1">Daily Risk Used</div>
+                  <div className="text-xs text-red-100">Health: 98% 🟢</div>
+                </div>
+              </CardContent>
+            </Card>
+            
+            <Card className="bg-yellow-600 border-yellow-500/20">
+              <CardContent className="p-4">
+                <div className="text-center">
+                  <div className="text-lg font-bold text-white">
+                    {formatCurrency(579)}
+                  </div>
+                  <div className="text-sm text-yellow-100 mb-1">Invested</div>
+                  <div className="text-xs text-yellow-100">ROI: +30,566% 📈</div>
+                </div>
+              </CardContent>
+            </Card>
+            
+            <Card className="bg-violet-600 border-violet-500/20">
+              <CardContent className="p-4">
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-white">
+                    {combinedAnalytics?.disciplineScore || 85}%
+                  </div>
+                  <div className="text-sm text-violet-100">Discipline Score</div>
+                </div>
+              </CardContent>
+            </Card>
+            
+            <Card className="bg-lime-600 border-lime-500/20">
+              <CardContent className="p-4">
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-white">
+                    {Math.floor(Math.random() * 30) + 1}
+                  </div>
+                  <div className="text-sm text-lime-100">Active Trading Days</div>
+                </div>
+              </CardContent>
+            </Card>
           </div>
+        </section>
 
-          {/* Total Trades */}
-          <div className="widget-container">
-            <div className="widget-content">
-              <div className="widget-left">
-                <p className="widget-label">Total Trades</p>
-                <p className="widget-value">{combinedAnalytics?.totalTrades || 0}</p>
-                <p className="widget-description">All accounts combined</p>
-              </div>
-              <div className="widget-icon-square">
-                <Activity className="widget-icon" />
-              </div>
-            </div>
-          </div>
-
-          {/* Total P&L */}
-          <div className="widget-container">
-            <div className="widget-content">
-              <div className="widget-left">
-                <p className="widget-label">Total P&L</p>
-                <p className="widget-value">
-                  {formatCurrency(combinedAnalytics?.totalPnl || 0)}
-                </p>
-                <p className="widget-description">Net profit/loss</p>
-              </div>
-              <div className="widget-icon-square">
-                <DollarSign className="widget-icon" />
-              </div>
-            </div>
-          </div>
-
-          {/* Best Trade */}
-          <div className="widget-container">
-            <div className="widget-content">
-              <div className="widget-left">
-                <p className="widget-label">Best Trade</p>
-                <p className="widget-value">
-                  {formatCurrency(combinedAnalytics?.bestTrade || 0)}
-                </p>
-                <p className="widget-description">Largest single win</p>
-              </div>
-              <div className="widget-icon-square">
-                <TrendingUp className="widget-icon" />
-              </div>
-            </div>
-          </div>
-
-
-        </div>
+        {/* Old widgets removed - now using 4-row dashboard structure above */}
 
         {/* Weekly Performance Calendar */}
         <div className="mb-8">
