@@ -20,6 +20,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ message: "Failed to fetch user" });
     }
   });
+
+  app.patch('/api/auth/user', isAuthenticated, async (req: any, res) => {
+    try {
+      const { personalHourlyWage } = req.body;
+      
+      await storage.updateUser(req.user.claims.sub, { personalHourlyWage });
+      res.json({ message: "Profile updated successfully" });
+    } catch (error) {
+      console.error("Error updating user profile:", error);
+      res.status(500).json({ message: "Failed to update profile" });
+    }
+  });
   // Account routes
   app.get("/api/accounts", isAuthenticated, async (req, res) => {
     try {

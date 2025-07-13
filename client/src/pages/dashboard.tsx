@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Link } from "wouter";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -14,6 +14,8 @@ import { Label } from "@/components/ui/label";
 import { EquityChart, MonthlyPerformanceChart } from "@/components/chart-components";
 import { formatCurrency, formatPercentage, formatDate } from "@/lib/utils";
 import { calculateDisciplinedScore, getScoreColor, getGradeColor } from "@/lib/disciplined-score";
+import { apiRequest } from "@/lib/queryClient";
+import { useToast } from "@/hooks/use-toast";
 
 // Color coding utility function
 const getValueColor = (value: number) => {
@@ -85,7 +87,7 @@ export default function Dashboard() {
   });
   const [calendarDate, setCalendarDate] = useState(new Date());
   const [showProfileSettings, setShowProfileSettings] = useState(false);
-  const [hourlyWage, setHourlyWage] = useState(25);
+  const [hourlyWage, setHourlyWage] = useState(user?.personalHourlyWage || 25);
   const [timePeriod, setTimePeriod] = useState<'daily' | 'weekly' | 'monthly' | 'yearly'>('monthly');
   const [accountSelectionMode, setAccountSelectionMode] = useState<'all' | 'single' | 'multiple'>(() => {
     const saved = localStorage.getItem('dashboard-account-selection-mode');
@@ -105,6 +107,33 @@ export default function Dashboard() {
 
   const { data: user } = useQuery({
     queryKey: ["/api/auth/user"],
+  });
+
+  const queryClient = useQueryClient();
+  const { toast } = useToast();
+
+  const updateHourlyWageMutation = useMutation({
+    mutationFn: async (hourlyWage: number) => {
+      return await apiRequest("/api/auth/user", {
+        method: "PUT",
+        body: { personalHourlyWage: hourlyWage },
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
+      toast({
+        title: "Success",
+        description: "Hourly wage updated successfully",
+      });
+      setShowProfileSettings(false);
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to update hourly wage",
+        variant: "destructive",
+      });
+    },
   });
 
   // Initialize selectedAccountIds with first account when none selected
@@ -135,6 +164,13 @@ export default function Dashboard() {
   React.useEffect(() => {
     localStorage.setItem('dashboard-account-selection-mode', accountSelectionMode);
   }, [accountSelectionMode]);
+
+  // Update hourly wage when user data changes
+  React.useEffect(() => {
+    if (user?.personalHourlyWage) {
+      setHourlyWage(user.personalHourlyWage);
+    }
+  }, [user?.personalHourlyWage]);
 
   // Calculate combined combinedAnalytics for selected accounts
   const combinedAnalytics = useMemo(() => {
@@ -1860,6 +1896,51 @@ export default function Dashboard() {
           </div>
         </div>
       </div>
+
+      {/* Hourly Wage Settings Modal */}
+      <Dialog open={showProfileSettings} onOpenChange={setShowProfileSettings}>
+        <DialogContent className="bg-gray-900 border-gray-700 text-white">
+          <DialogHeader>
+            <DialogTitle className="text-prop-gold">Personal Hourly Wage Settings</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <Label htmlFor="hourlyWage" className="text-sm font-medium text-gray-300">
+                Target Hourly Wage ($)
+              </Label>
+              <Input
+                id="hourlyWage"
+                type="number"
+                value={hourlyWage}
+                onChange={(e) => setHourlyWage(Number(e.target.value))}
+                className="mt-1 bg-gray-800 border-gray-600 text-white"
+                placeholder="Enter hourly wage (e.g., 25)"
+                min="1"
+                step="0.01"
+              />
+              <p className="text-sm text-gray-400 mt-2">
+                This sets your personal hourly wage target for performance comparison
+              </p>
+            </div>
+            <div className="flex justify-end space-x-3">
+              <Button
+                variant="outline"
+                onClick={() => setShowProfileSettings(false)}
+                className="border-gray-600 text-gray-300"
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={() => updateHourlyWageMutation.mutate(hourlyWage)}
+                disabled={updateHourlyWageMutation.isPending}
+                className="bg-prop-gold text-gray-900 hover:bg-prop-gold/90"
+              >
+                {updateHourlyWageMutation.isPending ? "Saving..." : "Save"}
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </>
   );
 }
