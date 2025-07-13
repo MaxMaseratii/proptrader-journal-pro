@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -14,10 +15,12 @@ import {
   BookOpen,
   Sparkles,
   Crown,
-  Gem
+  Gem,
+  ArrowRight
 } from "lucide-react";
 
 export default function Welcome() {
+  const [showComparison, setShowComparison] = useState(false);
   const features = [
     {
       icon: Target,
@@ -241,7 +244,7 @@ export default function Welcome() {
                   <span className="text-gray-400">/month</span>
                 </div>
                 <div className="mt-2">
-                  <Badge className="bg-success-green text-white text-xs">15 Days Free Trial</Badge>
+                  <Badge className="bg-success-green text-white text-xs">7 Days Free Trial</Badge>
                 </div>
               </CardHeader>
               <CardContent className="p-8 pt-0">
@@ -256,11 +259,15 @@ export default function Welcome() {
                   </li>
                   <li className="flex items-center">
                     <CheckCircle className="w-5 h-5 text-prop-green mr-3" />
-                    <span className="text-gray-300">Trade Journal</span>
+                    <span className="text-gray-300">Professional Trade Journal</span>
                   </li>
                   <li className="flex items-center">
                     <CheckCircle className="w-5 h-5 text-prop-green mr-3" />
-                    <span className="text-gray-300">CSV Import</span>
+                    <span className="text-gray-300">CSV Import & Export</span>
+                  </li>
+                  <li className="flex items-center">
+                    <CheckCircle className="w-5 h-5 text-prop-green mr-3" />
+                    <span className="text-gray-300">Basic Risk Alerts</span>
                   </li>
                 </ul>
                 <div className="space-y-3">
@@ -300,7 +307,7 @@ export default function Welcome() {
                   <span className="text-gray-400">/month</span>
                 </div>
                 <div className="mt-2">
-                  <Badge className="bg-prop-gradient-gold text-white text-xs">15 Days Free Trial</Badge>
+                  <Badge className="bg-prop-gradient-gold text-white text-xs">7 Days Free Trial</Badge>
                 </div>
               </CardHeader>
               <CardContent className="p-8 pt-0">
@@ -319,7 +326,11 @@ export default function Welcome() {
                   </li>
                   <li className="flex items-center">
                     <CheckCircle className="w-5 h-5 text-prop-gold mr-3" />
-                    <span className="text-gray-300">Performance Optimization</span>
+                    <span className="text-gray-300">Discipline Score Tracking</span>
+                  </li>
+                  <li className="flex items-center">
+                    <CheckCircle className="w-5 h-5 text-prop-gold mr-3" />
+                    <span className="text-gray-300">Daily Risk Management</span>
                   </li>
                   <li className="flex items-center">
                     <CheckCircle className="w-5 h-5 text-prop-gold mr-3" />
@@ -357,7 +368,7 @@ export default function Welcome() {
                   <span className="text-gray-400">/month</span>
                 </div>
                 <div className="mt-2">
-                  <Badge className="bg-prop-gradient-pink text-white text-xs">15 Days Free Trial</Badge>
+                  <Badge className="bg-prop-gradient-pink text-white text-xs">7 Days Free Trial</Badge>
                 </div>
               </CardHeader>
               <CardContent className="p-8 pt-0">
@@ -368,15 +379,19 @@ export default function Welcome() {
                   </li>
                   <li className="flex items-center">
                     <CheckCircle className="w-5 h-5 text-prop-pink mr-3" />
-                    <span className="text-gray-300">Advanced Analytics & Reports</span>
+                    <span className="text-gray-300">AI Trading Insights (Marthy AI)</span>
                   </li>
                   <li className="flex items-center">
                     <CheckCircle className="w-5 h-5 text-prop-pink mr-3" />
-                    <span className="text-gray-300">AI Trading Insights</span>
+                    <span className="text-gray-300">Advanced Discipline Analysis</span>
                   </li>
                   <li className="flex items-center">
                     <CheckCircle className="w-5 h-5 text-prop-pink mr-3" />
-                    <span className="text-gray-300">Risk Management Tools</span>
+                    <span className="text-gray-300">Behavioral Analysis & Alerts</span>
+                  </li>
+                  <li className="flex items-center">
+                    <CheckCircle className="w-5 h-5 text-prop-pink mr-3" />
+                    <span className="text-gray-300">Custom Risk Parameters</span>
                   </li>
                   <li className="flex items-center">
                     <CheckCircle className="w-5 h-5 text-prop-pink mr-3" />
@@ -401,6 +416,105 @@ export default function Welcome() {
               </CardContent>
             </Card>
           </div>
+          
+          {/* Plan Comparison Button */}
+          <div className="text-center mt-12">
+            <Button 
+              onClick={() => setShowComparison(!showComparison)}
+              variant="outline"
+              className="border-prop-gold text-prop-gold hover:bg-prop-gold hover:text-black smooth-transition"
+            >
+              {showComparison ? "Hide" : "Compare Plans"} 
+              <ArrowRight className="ml-2 h-4 w-4" />
+            </Button>
+          </div>
+
+          {/* Plan Comparison Table */}
+          {showComparison && (
+            <div className="mt-8 bg-prop-card rounded-xl border border-prop-gold/20 p-6">
+              <h3 className="text-2xl font-bold text-prop-gold mb-6 text-center">Feature Comparison</h3>
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead>
+                    <tr className="border-b border-prop-gold/20">
+                      <th className="text-left p-4 text-gray-300">Feature</th>
+                      <th className="text-center p-4 text-prop-green">Basic</th>
+                      <th className="text-center p-4 text-prop-gold">Pro</th>
+                      <th className="text-center p-4 text-prop-pink">Premium</th>
+                    </tr>
+                  </thead>
+                  <tbody className="text-gray-300">
+                    <tr className="border-b border-dark-border">
+                      <td className="p-4 font-medium">Trading Accounts</td>
+                      <td className="text-center p-4">5</td>
+                      <td className="text-center p-4">10</td>
+                      <td className="text-center p-4">Unlimited</td>
+                    </tr>
+                    <tr className="border-b border-dark-border">
+                      <td className="p-4 font-medium">Trade Journal</td>
+                      <td className="text-center p-4"><CheckCircle className="h-5 w-5 text-prop-green mx-auto" /></td>
+                      <td className="text-center p-4"><CheckCircle className="h-5 w-5 text-prop-gold mx-auto" /></td>
+                      <td className="text-center p-4"><CheckCircle className="h-5 w-5 text-prop-pink mx-auto" /></td>
+                    </tr>
+                    <tr className="border-b border-dark-border">
+                      <td className="p-4 font-medium">Performance Analytics</td>
+                      <td className="text-center p-4">Basic</td>
+                      <td className="text-center p-4">Advanced</td>
+                      <td className="text-center p-4">Advanced</td>
+                    </tr>
+                    <tr className="border-b border-dark-border">
+                      <td className="p-4 font-medium">Risk Management Tools</td>
+                      <td className="text-center p-4">Basic Alerts</td>
+                      <td className="text-center p-4"><CheckCircle className="h-5 w-5 text-prop-gold mx-auto" /></td>
+                      <td className="text-center p-4"><CheckCircle className="h-5 w-5 text-prop-pink mx-auto" /></td>
+                    </tr>
+                    <tr className="border-b border-dark-border">
+                      <td className="p-4 font-medium">Discipline Score Tracking</td>
+                      <td className="text-center p-4">❌</td>
+                      <td className="text-center p-4"><CheckCircle className="h-5 w-5 text-prop-gold mx-auto" /></td>
+                      <td className="text-center p-4"><CheckCircle className="h-5 w-5 text-prop-pink mx-auto" /></td>
+                    </tr>
+                    <tr className="border-b border-dark-border">
+                      <td className="p-4 font-medium">Daily Risk Management</td>
+                      <td className="text-center p-4">❌</td>
+                      <td className="text-center p-4"><CheckCircle className="h-5 w-5 text-prop-gold mx-auto" /></td>
+                      <td className="text-center p-4"><CheckCircle className="h-5 w-5 text-prop-pink mx-auto" /></td>
+                    </tr>
+                    <tr className="border-b border-dark-border">
+                      <td className="p-4 font-medium">AI Trading Insights (Marthy AI)</td>
+                      <td className="text-center p-4">❌</td>
+                      <td className="text-center p-4">❌</td>
+                      <td className="text-center p-4"><CheckCircle className="h-5 w-5 text-prop-pink mx-auto" /></td>
+                    </tr>
+                    <tr className="border-b border-dark-border">
+                      <td className="p-4 font-medium">Advanced Discipline Analysis</td>
+                      <td className="text-center p-4">❌</td>
+                      <td className="text-center p-4">❌</td>
+                      <td className="text-center p-4"><CheckCircle className="h-5 w-5 text-prop-pink mx-auto" /></td>
+                    </tr>
+                    <tr className="border-b border-dark-border">
+                      <td className="p-4 font-medium">Behavioral Analysis & Alerts</td>
+                      <td className="text-center p-4">❌</td>
+                      <td className="text-center p-4">❌</td>
+                      <td className="text-center p-4"><CheckCircle className="h-5 w-5 text-prop-pink mx-auto" /></td>
+                    </tr>
+                    <tr className="border-b border-dark-border">
+                      <td className="p-4 font-medium">Custom Risk Parameters</td>
+                      <td className="text-center p-4">❌</td>
+                      <td className="text-center p-4">❌</td>
+                      <td className="text-center p-4"><CheckCircle className="h-5 w-5 text-prop-pink mx-auto" /></td>
+                    </tr>
+                    <tr>
+                      <td className="p-4 font-medium">Support Level</td>
+                      <td className="text-center p-4">Standard</td>
+                      <td className="text-center p-4">Priority</td>
+                      <td className="text-center p-4">Premium</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
         </div>
       </section>
 
