@@ -124,6 +124,7 @@ export default function Projections() {
       stopLossPoints: 10,
       payoutFrequency: "monthly",
       minimumPayoutAmount: 100,
+      maxNetBalanceForPayout: null,
       profitSplit: 80,
       bufferPercentage: 5.0,
       daysRequiredForPayout: 5,
@@ -1230,6 +1231,64 @@ export default function Projections() {
                                   <SelectItem value="on-demand" className="text-white hover:bg-gray-600">On-demand</SelectItem>
                                 </SelectContent>
                               </Select>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={accountForm.control}
+                          name="maximumPayoutPercentage"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="text-white font-medium">Maximum Payout Percentage (%)</FormLabel>
+                              <FormControl>
+                                <Input 
+                                  type="number" 
+                                  {...field} 
+                                  value={field.value || ""}
+                                  onChange={(e) => field.onChange(e.target.value === "" ? null : parseFloat(e.target.value))}
+                                  className="bg-gray-700 border-gray-600 text-white placeholder-gray-400"
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={accountForm.control}
+                          name="minimumPayoutAmount"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="text-white font-medium">Minimum Payout Amount ($)</FormLabel>
+                              <FormControl>
+                                <Input 
+                                  type="number" 
+                                  {...field} 
+                                  value={field.value || ""}
+                                  onChange={(e) => field.onChange(e.target.value === "" ? null : parseFloat(e.target.value))}
+                                  className="bg-gray-700 border-gray-600 text-white placeholder-gray-400"
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={accountForm.control}
+                          name="maxNetBalanceForPayout"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="text-white font-medium">Max Net Balance for Payout ($)</FormLabel>
+                              <FormControl>
+                                <Input 
+                                  type="number" 
+                                  {...field} 
+                                  value={field.value || ""}
+                                  onChange={(e) => field.onChange(e.target.value === "" ? null : parseFloat(e.target.value))}
+                                  className="bg-gray-700 border-gray-600 text-white placeholder-gray-400"
+                                  placeholder="Leave blank for no limit"
+                                />
+                              </FormControl>
                               <FormMessage />
                             </FormItem>
                           )}

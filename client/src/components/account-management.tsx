@@ -130,16 +130,48 @@ export default function AccountManagement({ accounts }: AccountManagementProps) 
       };
     }
 
-    // Funded accounts: Must meet buffer requirements
+    // Only funded and live accounts are eligible for payouts
+    if (account.type !== 'funded' && account.type !== 'live') {
+      return {
+        eligible: false,
+        reason: "Account type not eligible for payouts",
+        color: "text-gray-400"
+      };
+    }
+
+    const currentProfit = account.currentBalance - account.startingBalance;
+    const minimumPayoutAmount = account.minimumPayoutAmount || 0;
+    const maxNetBalanceForPayout = account.maxNetBalanceForPayout;
+    const daysRequiredForPayout = account.daysRequiredForPayout || 0;
+    const payoutFrequency = account.payoutFrequency || 'monthly';
+
+    // Check minimum payout amount
+    if (currentProfit < minimumPayoutAmount) {
+      return {
+        eligible: false,
+        reason: `Minimum payout amount not met (Need: ${formatCurrency(minimumPayoutAmount)})`,
+        color: "text-yellow-400"
+      };
+    }
+
+    // Check maximum net balance limit
+    if (maxNetBalanceForPayout && currentProfit > maxNetBalanceForPayout) {
+      return {
+        eligible: false,
+        reason: `Exceeds max net balance limit (${formatCurrency(maxNetBalanceForPayout)})`,
+        color: "text-red-400"
+      };
+    }
+
+    // Funded accounts: Must meet buffer requirements and trading days
     if (account.type === 'funded') {
       const profitTarget = account.profitTarget || 0;
       const bufferAmount = profitTarget * ((account.bufferPercentage || 0) / 100);
-      const currentProfit = account.currentBalance - account.startingBalance;
       
       if (currentProfit >= bufferAmount && account.status === 'active') {
         return {
           eligible: true,
-          reason: `Eligible for payout (Buffer: ${formatCurrency(bufferAmount)} met)`,
+          reason: `Eligible for ${payoutFrequency} payout (${daysRequiredForPayout} days required)`,
           color: "text-green-400"
         };
       } else {
@@ -153,11 +185,10 @@ export default function AccountManagement({ accounts }: AccountManagementProps) 
 
     // Live accounts: On-demand payout
     if (account.type === 'live') {
-      const currentProfit = account.currentBalance - account.startingBalance;
       if (currentProfit > 0 && account.status === 'active') {
         return {
           eligible: true,
-          reason: "On-demand payout available",
+          reason: `On-demand payout available (${payoutFrequency})`,
           color: "text-green-400"
         };
       } else {

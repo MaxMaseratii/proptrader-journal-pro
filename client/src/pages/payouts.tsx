@@ -122,6 +122,9 @@ export default function Payouts() {
   const calculatePayoutMetrics = (): PayoutMetrics | null => {
     if (!selectedAccount || !trades) return null;
 
+    // Check if account type is eligible for payout
+    const isEligibleAccountType = selectedAccount.type === 'funded' || selectedAccount.type === 'live';
+    
     const totalProfit = Math.max(0, selectedAccount.currentBalance - selectedAccount.startingBalance);
     const profitableTrades = trades.filter(trade => trade.pnl > 0);
     const totalPnL = trades.reduce((sum, trade) => sum + trade.pnl, 0);
@@ -138,6 +141,7 @@ export default function Payouts() {
     const daysRequired = selectedAccount.daysRequiredForPayout || 0;
     const winningDayMinimum = selectedAccount.winningDayMinimum || 0;
     const minimumPayoutAmount = selectedAccount.minimumPayoutAmount || 0;
+    const maxNetBalanceForPayout = selectedAccount.maxNetBalanceForPayout;
     
     // Check profitable days based on user-entered minimum
     const profitableDaysAboveMinimum = dailyPnLValues.filter(dayPnL => dayPnL >= winningDayMinimum).length;
@@ -150,6 +154,10 @@ export default function Payouts() {
     const tradingDays = Object.keys(dailyPnL).length;
     const meetsTradingDaysRule = tradingDays >= daysRequired;
 
+    // Check all payout eligibility requirements
+    const meetsMinimumPayoutAmount = totalProfit >= minimumPayoutAmount;
+    const meetsMaxNetBalanceLimit = !maxNetBalanceForPayout || totalProfit <= maxNetBalanceForPayout;
+
     // Calculate available payout using user-entered profit split and buffer settings
     const profitSplit = selectedAccount.profitSplit ? (selectedAccount.profitSplit / 100) : 0;
     const bufferPercentage = selectedAccount.bufferPercentage ? (selectedAccount.bufferPercentage / 100) : 0;
@@ -159,9 +167,14 @@ export default function Payouts() {
     const bufferAmount = selectedAccount.profitTarget * bufferPercentage;
     const profitAboveBuffer = Math.max(0, totalProfit - bufferAmount);
     
-    // Calculate available payout with user settings
-    const availablePayout = selectedAccount.type === 'funded' ? 
-      Math.max(0, profitAboveBuffer * profitSplit * maxPayoutPercentage) : 0;
+    // Calculate available payout with user settings - only if all requirements are met
+    const availablePayout = (
+      isEligibleAccountType && 
+      meetsTradingDaysRule && 
+      meetsWinningDaysRule && 
+      meetsMinimumPayoutAmount && 
+      meetsMaxNetBalanceLimit
+    ) ? Math.max(0, profitAboveBuffer * profitSplit * maxPayoutPercentage) : 0;
 
     // Next payout date based on user-entered frequency
     const nextPayoutDate = new Date();
@@ -195,7 +208,7 @@ export default function Payouts() {
       requiredTradingDays: daysRequired,
       winningDayMinimum,
       minimumPayoutAmount,
-      nextPayoutDate: meetsTradingDaysRule && meetsWinningDaysRule && totalProfit >= minimumPayoutAmount ? 
+      nextPayoutDate: isEligibleAccountType && meetsTradingDaysRule && meetsWinningDaysRule && meetsMinimumPayoutAmount && meetsMaxNetBalanceLimit ? 
         nextPayoutDate.toISOString().split('T')[0] : null,
     };
   };

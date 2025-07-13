@@ -303,6 +303,16 @@ Changelog:
   * Added persistent account selection that maintains last selection until user changes it
   * Ensured all widgets (except Payout Status) use filtered data based on global account selection
   * Fixed account selection logic to work with single selectedAccountIds state for consistency
+- July 13, 2025. Enhanced Payout Eligibility System with New Requirements:
+  * Added "Max Net Balance for Payout" field to account creation form and database schema
+  * Implemented comprehensive payout eligibility checks for Total Days Required, Payout Frequency, and Max Net Balance
+  * Enhanced payout eligibility system to properly handle account type transitions (Challenge → Funded → Payout eligible)
+  * Updated dashboard Payout Status widget to include new progress indicators for minimum payout amount and max net balance limit
+  * Challenge accounts now display "Focus on passing challenge" message instead of payout eligibility
+  * Only Funded and Live accounts are eligible for payouts with proper requirement checks
+  * Updated AccountManagement component to show dynamic payout eligibility based on new requirements
+  * Modified Payouts page to respect all new payout requirements and account type restrictions
+  * All payout displays now use fully dynamic account-specific rules without any static fallback values
 - July 3, 2025. Critical Fix: Initial vs Final SL/TP Differentiation:
   * Completely redesigned CSV import algorithm to properly distinguish between initial and final stop loss/take profit levels
   * Enhanced trade entry forms to clearly label fields as "price levels" with explanatory text

@@ -1544,10 +1544,32 @@ export default function Dashboard() {
                 const selectedAccount = accounts?.find(acc => acc.id === payoutStatusAccountId);
                 if (!selectedAccount) return null;
                 
+                // Check if account type is eligible for payout
+                const isEligibleAccountType = selectedAccount.type === 'funded' || selectedAccount.type === 'live';
+                
+                if (!isEligibleAccountType) {
+                  return (
+                    <div className="space-y-4">
+                      <div className="text-center p-4 rounded-lg bg-gray-800">
+                        <p className="text-xl font-bold text-gray-400">
+                          {selectedAccount.type === 'challenge' ? 'CHALLENGE ACCOUNT' : 'NOT ELIGIBLE'}
+                        </p>
+                        <p className="text-sm text-gray-400 mt-2">
+                          {selectedAccount.type === 'challenge' 
+                            ? 'Focus on passing the challenge. Payouts available after funded.'
+                            : 'Account type not eligible for payouts'}
+                        </p>
+                      </div>
+                    </div>
+                  );
+                }
+                
                 const accountTrades = trades?.filter(t => t.accountId === selectedAccount.id) || [];
                 // Use actual account-specific payout rules from database
                 const requiredDays = selectedAccount.daysRequiredForPayout || 0;
                 const winningDayMinimum = selectedAccount.winningDayMinimum || 0;
+                const minimumPayoutAmount = selectedAccount.minimumPayoutAmount || 0;
+                const maxNetBalanceForPayout = selectedAccount.maxNetBalanceForPayout;
                 
                 const winningTrades = accountTrades.filter(t => (t.pnl || 0) >= winningDayMinimum);
                 const totalProfit = selectedAccount.currentBalance - selectedAccount.startingBalance;
@@ -1559,8 +1581,10 @@ export default function Dashboard() {
                 const profitTargetMet = totalProfit >= (selectedAccount.profitTarget || 0);
                 const daysRequirementMet = daysTraded >= requiredDays;
                 const drawdownSafe = !isInDrawdown;
+                const minimumPayoutMet = totalProfit >= minimumPayoutAmount;
+                const maxNetBalanceMet = !maxNetBalanceForPayout || totalProfit <= maxNetBalanceForPayout;
                 
-                const isReady = profitTargetMet && daysRequirementMet && drawdownSafe && winningDays >= requiredDays;
+                const isReady = profitTargetMet && daysRequirementMet && drawdownSafe && winningDays >= requiredDays && minimumPayoutMet && maxNetBalanceMet;
                 
                 return (
                   <div className="space-y-4">
@@ -1642,6 +1666,44 @@ export default function Dashboard() {
                         </div>
                       </div>
                       
+                      {/* Minimum Payout Amount */}
+                      <div>
+                        <div className="flex justify-between text-sm mb-2">
+                          <span className="text-gray-300">Minimum Payout Amount</span>
+                          <span className={minimumPayoutMet ? 'text-green-400' : 'text-orange-400'}>
+                            {formatCurrency(totalProfit)} / {formatCurrency(minimumPayoutAmount)}
+                          </span>
+                        </div>
+                        <div className="w-full bg-gray-700 rounded-full h-3">
+                          <div 
+                            className={`h-3 rounded-full transition-all duration-300 ${
+                              minimumPayoutMet ? 'bg-green-400' : 'bg-orange-400'
+                            }`}
+                            style={{ width: `${Math.min((totalProfit / (minimumPayoutAmount || 1)) * 100, 100)}%` }}
+                          ></div>
+                        </div>
+                      </div>
+
+                      {/* Max Net Balance for Payout */}
+                      {maxNetBalanceForPayout && (
+                        <div>
+                          <div className="flex justify-between text-sm mb-2">
+                            <span className="text-gray-300">Max Net Balance Limit</span>
+                            <span className={maxNetBalanceMet ? 'text-green-400' : 'text-red-400'}>
+                              {formatCurrency(totalProfit)} / {formatCurrency(maxNetBalanceForPayout)}
+                            </span>
+                          </div>
+                          <div className="w-full bg-gray-700 rounded-full h-3">
+                            <div 
+                              className={`h-3 rounded-full transition-all duration-300 ${
+                                maxNetBalanceMet ? 'bg-green-400' : 'bg-red-400'
+                              }`}
+                              style={{ width: `${Math.min((totalProfit / (maxNetBalanceForPayout || 1)) * 100, 100)}%` }}
+                            ></div>
+                          </div>
+                        </div>
+                      )}
+
                       {/* Drawdown Status */}
                       <div className="flex justify-between items-center">
                         <span className="text-gray-300">Drawdown Status</span>
