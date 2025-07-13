@@ -87,7 +87,7 @@ export default function Dashboard() {
   });
   const [calendarDate, setCalendarDate] = useState(new Date());
   const [showProfileSettings, setShowProfileSettings] = useState(false);
-  const [hourlyWage, setHourlyWage] = useState(user?.personalHourlyWage || 25);
+  const [hourlyWage, setHourlyWage] = useState(25);
   const [timePeriod, setTimePeriod] = useState<'daily' | 'weekly' | 'monthly' | 'yearly'>('monthly');
   const [accountSelectionMode, setAccountSelectionMode] = useState<'all' | 'single' | 'multiple'>(() => {
     const saved = localStorage.getItem('dashboard-account-selection-mode');
@@ -282,6 +282,15 @@ export default function Dashboard() {
     return totalNetBalance;
   };
 
+  // Helper function to calculate net balance for a specific account
+  const calculateAccountNetBalance = (account: Account) => {
+    const accountTrades = trades?.filter(t => t.accountId === account.id) || [];
+    const totalPnL = accountTrades.reduce((sum, trade) => sum + (trade.pnl || 0), 0);
+    return account.startingBalance + totalPnL;
+  };
+
+
+
   // Calculate total available payouts based on actual account requirements
   const calculateTotalAvailablePayouts = () => {
     if (!accounts || !trades) return 0;
@@ -292,7 +301,8 @@ export default function Dashboard() {
       if (account.type !== 'funded') return; // Only funded accounts have payouts
       
       const accountTrades = trades.filter(t => t.accountId === account.id);
-      const currentProfit = account.currentBalance - account.startingBalance;
+      const netBalance = calculateAccountNetBalance(account);
+      const currentProfit = netBalance - account.startingBalance;
       
       // Check payout requirements - use actual user-entered values
       const daysRequired = account.daysRequiredForPayout || 0;
@@ -666,41 +676,7 @@ export default function Dashboard() {
             </div>
           </div>
 
-          {/* Active Accounts & Disciplinary Score Widget */}
-          <div className="widget-container">
-            <div className="widget-content">
-              <div className="widget-left">
-                <p className="widget-label">Active Accounts & Disciplinary Score</p>
-                <div className="flex items-center space-x-3 mb-2">
-                  <div className="flex items-center space-x-2">
-                    <div className="w-3 h-3 bg-yellow-400 rounded-full"></div>
-                    <span className="text-white font-semibold">
-                      {accounts?.find(acc => acc.id === selectedAccountIds[0])?.name || 'Max Maserati'}
-                    </span>
-                  </div>
-                  <div className="text-white text-sm">
-                    {formatCurrency(
-                      accounts?.find(acc => acc.id === selectedAccountIds[0])?.startingBalance || 25000
-                    )}
-                  </div>
-                </div>
-                <div className="discipline-score-display">
-                  <div className="bg-yellow-500 text-black font-bold px-3 py-1 rounded mb-1">
-                    {Math.round(combinedAnalytics?.disciplineScore || 86)}%
-                  </div>
-                  <div className="bg-yellow-600 text-white font-bold px-3 py-1 rounded text-sm">
-                    Grade B
-                  </div>
-                </div>
-                <p className="widget-description text-xs mt-1">
-                  {combinedAnalytics?.totalTrades || 14} trades • 0 violations
-                </p>
-              </div>
-              <div className="widget-icon-square">
-                <Users className="widget-icon" />
-              </div>
-            </div>
-          </div>
+
 
           {/* Plan vs Reality Widget */}
           <div className="widget-container">
@@ -777,19 +753,7 @@ export default function Dashboard() {
             </div>
           </div>
 
-          {/* Discipline Score Widget */}
-          <div className="widget-container">
-            <div className="widget-content">
-              <div className="widget-left">
-                <p className="widget-label">Discipline Score</p>
-                <p className="widget-value">{Math.round(combinedAnalytics?.disciplinedScore || 86)} B</p>
-                <p className="widget-description">98% risk compliance / 100% trade limits</p>
-              </div>
-              <div className="widget-icon-square">
-                <Brain className="widget-icon" />
-              </div>
-            </div>
-          </div>
+
 
           {/* Active Trading Days Widget */}
           <div className="widget-container">
@@ -1406,44 +1370,7 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* Active Account Disciplined Analysis Row */}
-        <div className="mb-6">
-          <div className="widget-container">
-            <div className="widget-content flex-col">
-              <div className="widget-left mb-4">
-                <p className="widget-label">Account Discipline Analysis</p>
-                <p className="widget-description">Performance by account</p>
-              </div>
-              <div className="w-full">
-                {accounts && accounts.length > 0 && trades && trades.length > 0 ? (
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    {accounts.map(account => {
-                      const accountTrades = trades.filter(t => t.accountId === account.id);
-                      const disciplinedAnalysis = calculateDisciplinedScore(account, accountTrades);
-                      
-                      return (
-                        <div key={account.id} className="text-center p-4 bg-dark-surface rounded-lg border border-prop-gold/20">
-                          <p className="text-xs text-gray-400 mb-1">{account.name}</p>
-                          <p className={`text-2xl font-bold mb-1 ${getGradeColor(disciplinedAnalysis.scoreGrade)}`}>
-                            {disciplinedAnalysis.disciplinedScore.toFixed(0)}%
-                          </p>
-                          <p className={`text-sm font-semibold ${getGradeColor(disciplinedAnalysis.scoreGrade)}`}>
-                            Grade {disciplinedAnalysis.scoreGrade}
-                          </p>
-                          <p className="text-xs text-gray-400 mt-1">
-                            {disciplinedAnalysis.totalTrades} trades • {disciplinedAnalysis.violationsCount} violations
-                          </p>
-                        </div>
-                      );
-                    })}
-                  </div>
-                ) : (
-                  <p className="text-gray-400">No trading data available for disciplined score analysis</p>
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
+
 
 
 
