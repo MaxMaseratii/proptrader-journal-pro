@@ -733,8 +733,21 @@ export default function Dashboard() {
             <div className="widget-content">
               <div className="widget-left">
                 <p className="widget-label">Active Trading Days</p>
-                <p className="widget-value">830.0 Hrs</p>
-                <p className="widget-description">Based on {combinedAnalytics?.totalTrades || 0} trades × 2.5 Hrs avg duration</p>
+                <p className="widget-value">
+                  {(() => {
+                    const uniqueDays = new Set(trades?.map(t => t.date.split('T')[0])).size || 0;
+                    const totalHours = Math.min(uniqueDays * 8, 24 * uniqueDays); // Cap at 24 hours per day
+                    const avgHoursPerDay = uniqueDays > 0 ? (totalHours / uniqueDays).toFixed(1) : 0;
+                    return `${totalHours.toFixed(1)} Hrs`;
+                  })()}
+                </p>
+                <p className="widget-description">
+                  {(() => {
+                    const uniqueDays = new Set(trades?.map(t => t.date.split('T')[0])).size || 0;
+                    const avgHoursPerDay = uniqueDays > 0 ? (Math.min(uniqueDays * 8, 24 * uniqueDays) / uniqueDays).toFixed(1) : 0;
+                    return `${uniqueDays} trading days × ${avgHoursPerDay} hrs avg`;
+                  })()}
+                </p>
               </div>
               <div className="widget-icon-square">
                 <Calendar className="widget-icon" />
@@ -743,44 +756,7 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* Active Accounts - Moved from Account Portfolio Overview */}
-        <div className="mb-8">
-          <h2 className="text-xl font-bold text-gradient-rainbow flex items-center border-b border-gray-700 pb-3 mb-6">
-            <Wallet className="mr-3 h-5 w-5 text-blue-400" />
-            Active Accounts
-          </h2>
-          <div className="widget-container">
-            <div className="widget-content">
-              <div className="widget-left">
-                <p className="widget-label">Prop firm challenge and funded accounts</p>
-                <div className="mt-2 space-y-2">
-                  {accounts?.map(account => (
-                    <div key={account.id} className="border-b border-gray-700 pb-2">
-                      <div className="flex justify-between items-center">
-                        <div>
-                          <p className="font-medium text-white">{account.name}</p>
-                          <p className="text-sm text-gray-400">{account.type} • {account.firm}</p>
-                        </div>
-                        <div className="text-right">
-                          <p className="font-bold text-white">{formatCurrency(account.startingBalance + (trades?.filter(t => t.accountId === account.id).reduce((sum, trade) => sum + (trade.pnl || 0), 0) || 0))}</p>
-                          <p className="text-sm text-green-400">
-                            {(trades?.filter(t => t.accountId === account.id).reduce((sum, trade) => sum + (trade.pnl || 0), 0) || 0) > 0 ? 
-                              `+${formatCurrency(trades?.filter(t => t.accountId === account.id).reduce((sum, trade) => sum + (trade.pnl || 0), 0) || 0)}` : 
-                              formatCurrency(trades?.filter(t => t.accountId === account.id).reduce((sum, trade) => sum + (trade.pnl || 0), 0) || 0)
-                            }
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-              <div className="widget-icon-square">
-                <Plus className="widget-icon" />
-              </div>
-            </div>
-          </div>
-        </div>
+
 
         {/* Trading Charts Preview */}
         {trades && trades.length > 0 && (

@@ -346,6 +346,9 @@ Changelog:
   * Enhanced individual trade display with Trade Image and TradingView link buttons in trade table
   * Added conditional display for trade documentation: shows Trade Image, TradingView links, or fallback View Chart button
   * Improved trade documentation integration for disciplinary scoring analysis
+  * Fixed duplicate Active Accounts sections in dashboard - removed the one before Trading Charts Preview
+  * Corrected working hours calculation to use realistic values based on actual trading days (8 hours per day, capped at 24 hours maximum)
+  * Enhanced Active Trading Days widget to show proper calculation: unique trading days × average hours per day
 - July 3, 2025. Critical Fix: Initial vs Final SL/TP Differentiation:
   * Completely redesigned CSV import algorithm to properly distinguish between initial and final stop loss/take profit levels
   * Enhanced trade entry forms to clearly label fields as "price levels" with explanatory text
