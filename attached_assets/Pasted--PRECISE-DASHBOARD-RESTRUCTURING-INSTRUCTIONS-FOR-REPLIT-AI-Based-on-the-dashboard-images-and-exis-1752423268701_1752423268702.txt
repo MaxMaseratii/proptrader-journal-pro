@@ -1,0 +1,431 @@
+📋 PRECISE DASHBOARD RESTRUCTURING INSTRUCTIONS FOR REPLIT AI
+Based on the dashboard images and existing code, here are exact location-specific instructions:
+🎯 SECTION 1: ACCOUNTS PAGE MODIFICATIONS (accounts/page.tsx)
+📍 LOCATION: Header Section (Line ~100-120)
+tsx// CURRENT: Two separate sections
+<header className="border-b border-gray-800 bg-dark-bg sticky top-0 z-50">
+  <div className="p-6">
+    <div className="flex items-center justify-between">
+      <div>
+        <h1 className="text-2xl font-bold text-white">Trading Accounts</h1>
+        <p className="text-gray-400">Manage your prop trading accounts</p>
+      </div>
+
+// CHANGE TO: Unified section with stacked headers
+<header className="border-b border-gray-800 bg-dark-bg sticky top-0 z-50">
+  <div className="p-6">
+    <div className="flex items-center justify-between">
+      <div>
+        <h1 className="text-3xl font-bold text-gradient-rainbow">PropFirms Trading Accounts</h1>
+        <h2 className="text-lg font-medium text-gray-300 mt-1">Risk Management & Responsible Day-to-Pass Planning</h2>
+        <p className="text-gray-400 mt-2">Manage your prop trading accounts and strategic planning</p>
+      </div>
+📍 LOCATION: Remove Capital Calculation Mode (Around Line 50-80 in form)
+tsx// FIND AND DELETE this entire section:
+<div className="bg-gray-800 p-4 rounded-lg">
+  <h3 className="text-lg font-semibold text-white mb-4">Capital Calculation Mode</h3>
+  <div className="grid grid-cols-2 gap-4">
+    // Toggle between "Starting Capital" and "Max Drawdown"
+  </div>
+</div>
+
+// KEEP ONLY: Starting Capital input field (for display purposes)
+<FormField
+  control={form.control}
+  name="startingBalance"
+  render={({ field }) => (
+    <FormItem>
+      <FormLabel className="text-white font-medium">Starting Balance ($) - Display Only</FormLabel>
+      <FormControl>
+        <Input {...field} className="bg-gray-700 border-gray-600 text-white" />
+      </FormControl>
+      <p className="text-xs text-gray-400">Used for display purposes only</p>
+    </FormItem>
+  )}
+/>
+
+🎯 SECTION 2: DASHBOARD PAGE MODIFICATIONS (dashboard/page.tsx)
+📍 LOCATION: Remove Dropdown (Line ~140-165)
+tsx// FIND AND DELETE this entire section:
+<div className="flex items-center space-x-2">
+  <BarChart3 className="h-4 w-4 text-gray-400" />
+  <Select value={viewType} onValueChange={(value: any) => setViewType(value)}>
+    <SelectTrigger className="w-32">
+      <SelectValue placeholder="View" />
+    </SelectTrigger>
+    <SelectContent>
+      <SelectItem value="overview">Overview</SelectItem>
+      <SelectItem value="detailed">Detailed</SelectItem>
+      <SelectItem value="analytics">Analytics</SelectItem>
+    </SelectContent>
+  </Select>
+</div>
+📍 LOCATION: Dashboard Grid Reorganization (Line ~300-500)
+CURRENT STRUCTURE:
+tsx<div className="widget-grid mb-6">
+  {/* Net Balance */}
+  {/* Daily P&L */}
+  {/* Avg Win/Loss */}
+</div>
+
+<div className="widget-grid mb-8">
+  {/* Win Rate */}
+  {/* R Factor */}
+  {/* Profit Factor */}
+  {/* Total Trades */}
+  {/* Total P&L */}
+  {/* Best Trade */}
+</div>
+CHANGE TO: 4-Row Structure
+tsx{/* Row 1: Core Financial (3 widgets) */}
+<div className="widget-grid mb-6">
+  {/* KEEP: Net Balance */}
+  <div className="widget-container">
+    <div className="widget-content">
+      <div className="widget-left">
+        <p className="widget-label">Net Balance</p>
+        <p className="widget-value">{formatCurrency(calculateNetBalance())}</p>
+        <p className="widget-description">Starting balance + Total P&L</p>
+      </div>
+      <div className="widget-icon-square">
+        <DollarSign className="widget-icon" />
+      </div>
+    </div>
+  </div>
+
+  {/* KEEP: Daily P&L */}
+  <div className="widget-container">
+    <div className="widget-content">
+      <div className="widget-left">
+        <p className="widget-label">Daily P&L</p>
+        <p className="widget-value">{formatCurrency(combinedAnalytics?.worstTrade || 0)}</p>
+        <p className="widget-description">Today's performance</p>
+      </div>
+      <div className="widget-icon-square">
+        <TrendingDown className="widget-icon" />
+      </div>
+    </div>
+  </div>
+
+  {/* MOVE: Total P&L from bottom section to here */}
+  <div className="widget-container">
+    <div className="widget-content">
+      <div className="widget-left">
+        <p className="widget-label">Total P&L</p>
+        <p className="widget-value">{formatCurrency(combinedAnalytics?.totalPnl || 0)}</p>
+        <p className="widget-description">Net profit/loss</p>
+      </div>
+      <div className="widget-icon-square">
+        <DollarSign className="widget-icon" />
+      </div>
+    </div>
+  </div>
+</div>
+
+{/* Row 2: Performance Ratios (4 widgets) */}
+<div className="widget-grid mb-6">
+  {/* MOVE: Win Rate */}
+  {/* KEEP: R Factor */}
+  {/* KEEP: Profit Factor */}
+  {/* MOVE: Avg Win/Loss from Row 1 */}
+  <div className="widget-container">
+    <div className="widget-content">
+      <div className="widget-left">
+        <p className="widget-label">Avg Win/Loss</p>
+        <div className="flex items-center space-x-2 text-lg font-bold">
+          <span className="text-success-green">{formatCurrency(combinedAnalytics?.averageWin || 0)}</span>
+          <span className="text-gray-400">/</span>
+          <span className="text-error-red">{formatCurrency(Math.abs(combinedAnalytics?.averageLoss || 0))}</span>
+        </div>
+        <p className="widget-description">Win vs Loss ratio</p>
+      </div>
+      <div className="widget-icon-square">
+        <BarChart3 className="widget-icon" />
+      </div>
+    </div>
+  </div>
+</div>
+
+{/* Row 3: Trading Activity & Planning (4 widgets) */}
+<div className="widget-grid mb-6">
+  {/* KEEP: Total Trades */}
+  {/* KEEP: Best Trade */}
+  
+  {/* ADD: Weekly Navigation Widget */}
+  <div className="widget-container">
+    <div className="widget-content">
+      <div className="weekly-navigation-header">
+        <button className="prev-week">←</button>
+        <span className="week-indicator">W2 April 9th 2024 (#14/52)</span>
+        <button className="next-week">→</button>
+      </div>
+      <div className="widget-left">
+        <p className="widget-value">$2,540.00</p>
+        <p className="widget-description">14 trades • 71% win rate</p>
+      </div>
+    </div>
+  </div>
+
+  {/* ADD: Plan vs Reality Widget */}
+  <div className="widget-container">
+    <div className="widget-content">
+      <div className="widget-left">
+        <p className="widget-label">Plan vs Reality</p>
+        <div className="target-actual-display">
+          <div className="target-line">Target: $750/day ━━━━━━━━━ 📊</div>
+          <div className="actual-line">Actual: $1,012 ━━━━━━━━━━━━ ✅</div>
+        </div>
+        <p className="widget-description">Day 2 of 14 • +35% ahead</p>
+        <p className="widget-description">Risk Used: 16.7% / 50% limit</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+{/* Row 4: Risk & Investment (4 widgets) */}
+<div className="widget-grid mb-6">
+  {/* ADD: Risk Management Widget */}
+  <div className="widget-container">
+    <div className="widget-content">
+      <div className="widget-left">
+        <p className="widget-label">Risk Management</p>
+        <p className="widget-value">Daily Risk: $500 / $1,500 (33%)</p>
+        <p className="widget-description">Max Drawdown: $2,445 / $7,500 (33%)</p>
+        <p className="widget-description">Rule Violations: 0 ⚡ | Health Score: 98% 🟢</p>
+      </div>
+      <div className="widget-icon-square">
+        <Shield className="widget-icon" />
+      </div>
+    </div>
+  </div>
+
+  {/* ADD: Investment ROI Widget */}
+  <div className="widget-container">
+    <div className="widget-content">
+      <div className="widget-left">
+        <p className="widget-label">Investment ROI</p>
+        <p className="widget-value">Invested: $579.00</p>
+        <p className="widget-description">Current Value: $177,540.00</p>
+        <p className="widget-description">ROI: +30,566% 📈 | Payouts: $0 received</p>
+      </div>
+      <div className="widget-icon-square">
+        <DollarSign className="widget-icon" />
+      </div>
+    </div>
+  </div>
+
+  {/* ADD: Discipline Score Widget */}
+  <div className="widget-container">
+    <div className="widget-content">
+      <div className="widget-left">
+        <p className="widget-label">Discipline Score</p>
+        <p className="widget-value">86 B</p>
+        <p className="widget-description">98% risk compliance / 100% trade limits</p>
+      </div>
+      <div className="widget-icon-square">
+        <Brain className="widget-icon" />
+      </div>
+    </div>
+  </div>
+
+  {/* ADD: Active Trading Days Widget */}
+  <div className="widget-container">
+    <div className="widget-content">
+      <div className="widget-left">
+        <p className="widget-label">Active Trading Days</p>
+        <p className="widget-value">830.0 Hrs</p>
+        <p className="widget-description">Based on 332 trades × 2.5 Hrs avg duration</p>
+      </div>
+      <div className="widget-icon-square">
+        <Calendar className="widget-icon" />
+      </div>
+    </div>
+  </div>
+</div>
+
+🎯 SECTION 3: DELETE REDUNDANT SECTIONS
+📍 LOCATION: Remove These Complete Sections (dashboard/page.tsx)
+DELETE Section 1: Trading Charts Preview
+tsx// FIND AND DELETE (Around Line 600-700):
+{trades && trades.length > 0 && (
+  <div className="mb-8">
+    <div className="flex items-center justify-between mb-6">
+      <h2 className="text-xl font-bold text-gradient-rainbow flex items-center border-b border-gray-700 pb-3">
+        <BarChart3 className="mr-3 h-5 w-5 text-blue-400" />
+        Trading Charts Preview
+      </h2>
+      // ... entire section
+    </div>
+  </div>
+)}
+DELETE Section 2: Account Portfolio Overview
+tsx// FIND AND DELETE (Around Line 800-900):
+<div className="mb-6 mt-12">
+  <h2 className="text-xl font-bold text-gradient-rainbow mb-6 flex items-center border-b border-gray-700 pb-3">
+    <Wallet className="mr-3 h-5 w-5 text-blue-400" />
+    Account Portfolio Overview
+  </h2>
+</div>
+// ... and all account type widgets below
+DELETE Section 3: Investment Tracking
+tsx// FIND AND DELETE (Around Line 1100-1300):
+<div className="mb-6">
+  <h2 className="text-xl font-bold text-gradient-rainbow mb-6 flex items-center border-b border-gray-700 pb-3">
+    <Shield className="mr-3 h-5 w-5 text-green-400" />
+    Investment Tracking
+  </h2>
+</div>
+// ... entire investment tracking section
+DELETE Section 4: Weekly Performance Calendar Header
+tsx// FIND AND DELETE (Around Line 1500):
+<div className="mb-8">
+  <h2 className="text-xl font-bold text-gradient-rainbow flex items-center border-b border-gray-700 pb-3 mb-6">
+    <Calendar className="mr-3 h-5 w-5 text-blue-400" />
+    Weekly Performance Calendar
+  </h2>
+  // Keep only the widget content, remove the separate header
+</div>
+
+🎯 SECTION 4: ADD ACCOUNT SELECTION FUNCTIONALITY
+📍 LOCATION: Add to State Management (Line ~50-80)
+tsx// ADD these state variables:
+const [selectedAccountIds, setSelectedAccountIds] = useState<number[]>([]);
+const [accountSelectionMode, setAccountSelectionMode] = useState<'all' | 'single' | 'multiple'>('all');
+
+// MODIFY the combinedAnalytics calculation:
+const combinedAnalytics = useMemo(() => {
+  if (!accounts || !trades) return null;
+
+  let accountsToAnalyze: Account[] = [];
+  let tradesToAnalyze: Trade[] = [];
+
+  if (accountSelectionMode === 'all') {
+    accountsToAnalyze = accounts;
+    tradesToAnalyze = trades;
+  } else {
+    const accountIdsToUse = selectedAccountIds.length > 0 ? selectedAccountIds : (accounts.length > 0 ? [accounts[0].id] : []);
+    accountsToAnalyze = accounts.filter(acc => accountIdsToUse.includes(acc.id));
+    tradesToAnalyze = trades.filter(trade => accountIdsToUse.includes(trade.accountId));
+  }
+
+  // ... rest of existing calculation logic
+}, [accounts, trades, selectedAccountIds, accountSelectionMode]);
+📍 LOCATION: Update Header Account Selection (Line ~170-200)
+tsx// REPLACE existing account selection with:
+<div className="flex items-center space-x-4">
+  <div className="flex items-center space-x-2">
+    <Filter className="h-4 w-4 text-gray-400" />
+    <Select value={accountSelectionMode} onValueChange={(value: any) => setAccountSelectionMode(value)}>
+      <SelectTrigger className="w-40">
+        <SelectValue placeholder="View mode" />
+      </SelectTrigger>
+      <SelectContent>
+        <SelectItem value="all">All Accounts</SelectItem>
+        <SelectItem value="single">Single Account</SelectItem>
+        <SelectItem value="multiple">Multiple Accounts</SelectItem>
+      </SelectContent>
+    </Select>
+  </div>
+  
+  {accountSelectionMode !== 'all' && accounts && (
+    <div className="flex items-center space-x-2">
+      {accountSelectionMode === 'single' ? (
+        <Select 
+          value={selectedAccountIds[0]?.toString() || ''} 
+          onValueChange={(value) => setSelectedAccountIds([parseInt(value)])}
+        >
+          <SelectTrigger className="w-48">
+            <SelectValue placeholder="Select account" />
+          </SelectTrigger>
+          <SelectContent>
+            {accounts.map((account) => (
+              <SelectItem key={account.id} value={account.id.toString()}>
+                {account.name} ({account.firm})
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      ) : (
+        // Multiple account selection checkboxes
+        <div className="bg-dark-card border border-dark-border rounded-md p-2 max-w-sm">
+          <p className="text-xs text-gray-400 mb-2">Select accounts:</p>
+          <div className="space-y-1 max-h-32 overflow-y-auto">
+            {accounts.map((account) => (
+              <div key={account.id} className="flex items-center space-x-2">
+                <Checkbox
+                  id={`account-${account.id}`}
+                  checked={selectedAccountIds.includes(account.id)}
+                  onCheckedChange={(checked) => {
+                    if (checked) {
+                      setSelectedAccountIds([...selectedAccountIds, account.id]);
+                    } else {
+                      setSelectedAccountIds(selectedAccountIds.filter(id => id !== account.id));
+                    }
+                  }}
+                />
+                <label htmlFor={`account-${account.id}`} className="text-xs cursor-pointer">
+                  {account.name}
+                </label>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  )}
+</div>
+
+🎯 SECTION 5: PRESERVE EXISTING UI STYLES
+📍 CRITICAL: DO NOT CHANGE These Elements
+tsx// KEEP EXACTLY AS IS:
+- All widget-container, widget-content, widget-left, widget-icon-square classes
+- All color schemes (prop-gold, prop-green, prop-pink, etc.)
+- All existing animations and hover effects
+- All existing card layouts and spacing
+- All existing typography and font sizes
+- All existing icon components and positions
+- All existing gradient backgrounds
+- The Daily Trading Journal section (unchanged)
+- The Trade Analysis Calendar section (unchanged)
+
+📝 IMPLEMENTATION CHECKLIST FOR REPLIT AI
+✅ ACCOUNTS PAGE CHANGES:
+
+ Change header to stacked "PropFirms Trading Accounts" + subtitle
+ Remove Capital Calculation Mode toggle completely
+ Keep Starting Capital as display-only field
+ Maintain all existing form functionality and styling
+
+✅ DASHBOARD PAGE CHANGES:
+
+ Remove Overview/Detailed/Analytics dropdown
+ Reorganize widgets into 4 logical rows as specified
+ Move Total P&L from bottom to Row 1, Position 3
+ Move Avg Win/Loss from Row 1 to Row 2, Position 4
+ Add Weekly Navigation widget to Row 3, Position 3
+ Add Plan vs Reality widget to Row 3, Position 4
+ Add 4 new widgets to Row 4 (Risk Management, Investment ROI, Discipline Score, Active Days)
+
+✅ SECTION DELETIONS:
+
+ Delete Trading Charts Preview section completely
+ Delete Account Portfolio Overview section completely
+ Delete Investment Tracking section completely
+ Delete Weekly Performance Calendar header (keep widget content)
+
+✅ ACCOUNT SELECTION:
+
+ Add account selection state management
+ Add dropdown for All/Single/Multiple account modes
+ Add account filtering logic to combinedAnalytics
+ Keep "Active Accounts" widget always showing all accounts
+
+✅ PRESERVE EXISTING:
+
+ Keep all existing CSS classes and styling
+ Keep all color schemes and animations
+ Keep Daily Trading Journal section unchanged
+ Keep Trade Analysis Calendar section unchanged
+ Maintain all existing functionality
+
+🎯 FINAL RESULT: Clean, unified dashboard with logical widget organization, account filtering, and preserved UI design!

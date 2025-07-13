@@ -69,7 +69,7 @@ export default function Dashboard() {
   });
   const [calendarDate, setCalendarDate] = useState(new Date());
   const [timePeriod, setTimePeriod] = useState<'daily' | 'weekly' | 'monthly' | 'yearly'>('monthly');
-  const [viewType, setViewType] = useState<'overview' | 'detailed' | 'analytics'>('overview');
+  const [accountSelectionMode, setAccountSelectionMode] = useState<'all' | 'single' | 'multiple'>('all');
 
   const { data: accounts, isLoading: accountsLoading } = useQuery<Account[]>({
     queryKey: ["/api/accounts"],
@@ -96,7 +96,7 @@ export default function Dashboard() {
     let accountsToAnalyze: Account[] = [];
     let tradesToAnalyze: Trade[] = [];
 
-    if (viewMode === 'all') {
+    if (accountSelectionMode === 'all') {
       accountsToAnalyze = accounts;
       tradesToAnalyze = trades;
     } else {
@@ -176,7 +176,7 @@ export default function Dashboard() {
       profitFactor,
       rFactor
     };
-  }, [accounts, trades, selectedAccountIds, viewMode]);
+  }, [accounts, trades, selectedAccountIds, accountSelectionMode]);
 
   const primaryAccount = accounts?.[0];
   const recentTrades = trades?.slice(0, 4) || [];
@@ -314,7 +314,7 @@ export default function Dashboard() {
             </h2>
             <p className="text-gray-400 text-base mt-2 flex items-center">
               <Target className="h-4 w-4 mr-2 text-orange-400" />
-              {viewMode === 'all' 
+              {accountSelectionMode === 'all' 
                 ? `Monitoring all ${accounts?.length ?? 0} trading accounts` 
                 : `Analyzing ${selectedAccountIds.length || (accounts && accounts.length > 0 ? 1 : 0)} selected account(s)`}
             </p>
@@ -323,7 +323,7 @@ export default function Dashboard() {
             {/* Account Selection */}
             <div className="flex items-center space-x-2">
               <Filter className="h-4 w-4 text-gray-400" />
-              <Select value={viewMode} onValueChange={(value: any) => setViewMode(value)}>
+              <Select value={accountSelectionMode} onValueChange={(value: any) => setAccountSelectionMode(value)}>
                 <SelectTrigger className="w-40">
                   <SelectValue placeholder="View mode" />
                 </SelectTrigger>
@@ -336,9 +336,9 @@ export default function Dashboard() {
             </div>
             
             {/* Account Selection Dropdown */}
-            {viewMode !== 'all' && accounts && (
+            {accountSelectionMode !== 'all' && accounts && (
               <div className="flex items-center space-x-2">
-                {viewMode === 'single' ? (
+                {accountSelectionMode === 'single' ? (
                   <Select 
                     value={selectedAccountIds[0]?.toString() || ''} 
                     onValueChange={(value) => setSelectedAccountIds([parseInt(value)])}
@@ -398,20 +398,7 @@ export default function Dashboard() {
               </Select>
             </div>
 
-            {/* TASK 1: View Type Selection */}
-            <div className="flex items-center space-x-2">
-              <BarChart3 className="h-4 w-4 text-gray-400" />
-              <Select value={viewType} onValueChange={(value: any) => setViewType(value)}>
-                <SelectTrigger className="w-32">
-                  <SelectValue placeholder="View" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="overview">Overview</SelectItem>
-                  <SelectItem value="detailed">Detailed</SelectItem>
-                  <SelectItem value="analytics">Analytics</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+
             
             <Link href="/trades?tab=add">
               <Button className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105">
@@ -440,8 +427,8 @@ export default function Dashboard() {
           </h2>
         </div>
 
-        {/* Key Performance Metrics Under Header */}
-        <div className="widget-grid mb-6">
+        {/* Row 1: Core Financial (3 widgets) */}
+        <div className="widget-grid row-1 mb-6">
           {/* Net Balance */}
           <div className="widget-container">
             <div className="widget-content">
@@ -474,96 +461,7 @@ export default function Dashboard() {
             </div>
           </div>
 
-          {/* Average Win/Loss */}
-          <div className="widget-container">
-            <div className="widget-content">
-              <div className="widget-left">
-                <p className="widget-label">Avg Win/Loss</p>
-                <div className="flex items-center space-x-2 text-lg font-bold">
-                  <span className="text-success-green">
-                    {formatCurrency(combinedAnalytics?.averageWin || 0)}
-                  </span>
-                  <span className="text-gray-400">/</span>
-                  <span className="text-error-red">
-                    {formatCurrency(Math.abs(combinedAnalytics?.averageLoss || 0))}
-                  </span>
-                </div>
-                <p className="widget-description">Win vs Loss ratio</p>
-              </div>
-              <div className="widget-icon-square">
-                <BarChart3 className="widget-icon" />
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Secondary Performance Metrics Row - Win Rate, R Factor, Profit Factor */}
-        <div className="widget-grid mb-8">
-          {/* Win Rate */}
-          <div className="widget-container">
-            <div className="widget-content">
-              <div className="widget-left">
-                <p className="widget-label">Win Rate</p>
-                <p className="widget-value">
-                  {combinedAnalytics?.winRate.toFixed(0) || 0}%
-                </p>
-                <p className="widget-description">
-                  {combinedAnalytics?.winningTrades || 0} wins / {combinedAnalytics?.losingTrades || 0} losses
-                </p>
-              </div>
-              <div className="widget-icon-square">
-                <Target className="widget-icon" />
-              </div>
-            </div>
-          </div>
-
-          {/* R Factor */}
-          <div className="widget-container">
-            <div className="widget-content">
-              <div className="widget-left">
-                <p className="widget-label">R Factor</p>
-                <p className="widget-value">
-                  {combinedAnalytics?.rFactor.toFixed(2) || '0.00'}
-                </p>
-                <p className="widget-description">Total Reward / Total Risk ratio</p>
-              </div>
-              <div className="widget-icon-square">
-                <BarChart3 className="widget-icon" />
-              </div>
-            </div>
-          </div>
-
-          {/* Profit Factor */}
-          <div className="widget-container">
-            <div className="widget-content">
-              <div className="widget-left">
-                <p className="widget-label">Profit Factor</p>
-                <p className="widget-value">
-                  {combinedAnalytics?.profitFactor.toFixed(2) || '0.00'}
-                </p>
-                <p className="widget-description">Gross Profit / Gross Loss ratio</p>
-              </div>
-              <div className="widget-icon-square">
-                <TrendingUp className="widget-icon" />
-              </div>
-            </div>
-          </div>
-
-          {/* Total Trades */}
-          <div className="widget-container">
-            <div className="widget-content">
-              <div className="widget-left">
-                <p className="widget-label">Total Trades</p>
-                <p className="widget-value">{combinedAnalytics?.totalTrades || 0}</p>
-                <p className="widget-description">All accounts combined</p>
-              </div>
-              <div className="widget-icon-square">
-                <Activity className="widget-icon" />
-              </div>
-            </div>
-          </div>
-
-          {/* Total P&L */}
+          {/* Total P&L - moved from bottom section */}
           <div className="widget-container">
             <div className="widget-content">
               <div className="widget-left">
@@ -578,6 +476,94 @@ export default function Dashboard() {
               </div>
             </div>
           </div>
+        </div>
+
+        {/* Row 2: Performance Ratios (4 widgets) */}
+        <div className="widget-grid row-2 mb-6">
+          {/* Win Rate */}
+          <div className="widget-container">
+            <div className="widget-content">
+              <div className="widget-left">
+                <p className="widget-label">Win Rate</p>
+                <p className="widget-value">
+                  {formatPercentage(combinedAnalytics?.winRate || 0)}
+                </p>
+                <p className="widget-description">Winning trades percentage</p>
+              </div>
+              <div className="widget-icon-square">
+                <Target className="widget-icon" />
+              </div>
+            </div>
+          </div>
+
+          {/* R Factor */}
+          <div className="widget-container">
+            <div className="widget-content">
+              <div className="widget-left">
+                <p className="widget-label">R Factor</p>
+                <p className="widget-value">
+                  {combinedAnalytics?.rFactor?.toFixed(2) || '0.00'}
+                </p>
+                <p className="widget-description">Risk/Reward ratio</p>
+              </div>
+              <div className="widget-icon-square">
+                <Activity className="widget-icon" />
+              </div>
+            </div>
+          </div>
+
+          {/* Profit Factor */}
+          <div className="widget-container">
+            <div className="widget-content">
+              <div className="widget-left">
+                <p className="widget-label">Profit Factor</p>
+                <p className="widget-value">
+                  {combinedAnalytics?.profitFactor?.toFixed(2) || '0.00'}
+                </p>
+                <p className="widget-description">Gross profit / gross loss</p>
+              </div>
+              <div className="widget-icon-square">
+                <TrendingUp className="widget-icon" />
+              </div>
+            </div>
+          </div>
+
+          {/* Avg Win/Loss - moved from Row 1 */}
+          <div className="widget-container">
+            <div className="widget-content">
+              <div className="widget-left">
+                <p className="widget-label">Avg Win/Loss</p>
+                <div className="flex items-center space-x-2 text-lg font-bold">
+                  <span className="text-success-green">{formatCurrency(combinedAnalytics?.averageWin || 0)}</span>
+                  <span className="text-gray-400">/</span>
+                  <span className="text-error-red">{formatCurrency(Math.abs(combinedAnalytics?.averageLoss || 0))}</span>
+                </div>
+                <p className="widget-description">Win vs Loss ratio</p>
+              </div>
+              <div className="widget-icon-square">
+                <BarChart3 className="widget-icon" />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Row 3: Trading Activity & Planning (4 widgets) */}
+        <div className="widget-grid row-3 mb-6">
+          {/* Total Trades */}
+          <div className="widget-container">
+            <div className="widget-content">
+              <div className="widget-left">
+                <p className="widget-label">Total Trades</p>
+                <p className="widget-value">
+                  {combinedAnalytics?.totalTrades || 0}
+                </p>
+                <p className="widget-description">All executed trades</p>
+              </div>
+              <div className="widget-icon-square">
+                <Activity className="widget-icon" />
+              </div>
+            </div>
+          </div>
 
           {/* Best Trade */}
           <div className="widget-container">
@@ -587,7 +573,7 @@ export default function Dashboard() {
                 <p className="widget-value">
                   {formatCurrency(combinedAnalytics?.bestTrade || 0)}
                 </p>
-                <p className="widget-description">Largest single win</p>
+                <p className="widget-description">Highest single trade profit</p>
               </div>
               <div className="widget-icon-square">
                 <TrendingUp className="widget-icon" />
@@ -595,7 +581,96 @@ export default function Dashboard() {
             </div>
           </div>
 
+          {/* Weekly Navigation Widget */}
+          <div className="widget-container">
+            <div className="widget-content">
+              <div className="widget-left">
+                <div className="weekly-navigation-header flex items-center justify-between mb-2">
+                  <button className="text-white hover:text-blue-400">←</button>
+                  <span className="text-white font-semibold">W2 {new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric' })}th {new Date().getFullYear()}</span>
+                  <button className="text-white hover:text-blue-400">→</button>
+                </div>
+                <p className="widget-value">$2,540.00</p>
+                <p className="widget-description">14 trades • 71% win rate</p>
+              </div>
+            </div>
+          </div>
 
+          {/* Plan vs Reality Widget */}
+          <div className="widget-container">
+            <div className="widget-content">
+              <div className="widget-left">
+                <p className="widget-label">Plan vs Reality</p>
+                <div className="target-actual-display space-y-1">
+                  <div className="target-line text-sm text-gray-300">Target: $750/day ━━━━━━━━━ 📊</div>
+                  <div className="actual-line text-sm text-green-400">Actual: $1,012 ━━━━━━━━━━━━ ✅</div>
+                </div>
+                <p className="widget-description">Day 2 of 14 • +35% ahead</p>
+                <p className="widget-description text-xs">Risk Used: 16.7% / 50% limit</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Row 4: Risk & Investment (4 widgets) */}
+        <div className="widget-grid row-4 mb-6">
+          {/* Risk Management Widget */}
+          <div className="widget-container">
+            <div className="widget-content">
+              <div className="widget-left">
+                <p className="widget-label">Risk Management</p>
+                <p className="widget-value">Daily Risk: $500 / $1,500 (33%)</p>
+                <p className="widget-description">Max Drawdown: $2,445 / $7,500 (33%)</p>
+                <p className="widget-description">Rule Violations: 0 ⚡ | Health Score: 98% 🟢</p>
+              </div>
+              <div className="widget-icon-square">
+                <Shield className="widget-icon" />
+              </div>
+            </div>
+          </div>
+
+          {/* Investment ROI Widget */}
+          <div className="widget-container">
+            <div className="widget-content">
+              <div className="widget-left">
+                <p className="widget-label">Investment ROI</p>
+                <p className="widget-value">Invested: $579.00</p>
+                <p className="widget-description">Current Value: $177,540.00</p>
+                <p className="widget-description">ROI: +30,566% 📈 | Payouts: $0 received</p>
+              </div>
+              <div className="widget-icon-square">
+                <DollarSign className="widget-icon" />
+              </div>
+            </div>
+          </div>
+
+          {/* Discipline Score Widget */}
+          <div className="widget-container">
+            <div className="widget-content">
+              <div className="widget-left">
+                <p className="widget-label">Discipline Score</p>
+                <p className="widget-value">{Math.round(combinedAnalytics?.disciplinedScore || 86)} B</p>
+                <p className="widget-description">98% risk compliance / 100% trade limits</p>
+              </div>
+              <div className="widget-icon-square">
+                <Brain className="widget-icon" />
+              </div>
+            </div>
+          </div>
+
+          {/* Active Trading Days Widget */}
+          <div className="widget-container">
+            <div className="widget-content">
+              <div className="widget-left">
+                <p className="widget-label">Active Trading Days</p>
+                <p className="widget-value">830.0 Hrs</p>
+                <p className="widget-description">Based on {combinedAnalytics?.totalTrades || 0} trades × 2.5 Hrs avg duration</p>
+              </div>
+              <div className="widget-icon-square">
+                <Calendar className="widget-icon" />
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* Weekly Performance Calendar */}
