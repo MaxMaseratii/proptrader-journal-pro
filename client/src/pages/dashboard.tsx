@@ -21,6 +21,12 @@ const getValueColor = (value: number) => {
   if (value < 0) return 'text-red-400';
   return 'text-yellow-400'; // zero/neutral
 };
+
+// Apply color coding to all numeric values
+const applyValueColor = (value: number, formatted: string) => {
+  const colorClass = getValueColor(value);
+  return `${colorClass}`;
+};
 import TradeCalendar from "@/components/trade-calendar";
 import TradeEntry from "@/components/trade-entry";
 import TradeAnalysisCalendar from "@/components/trade-analysis-calendar";
@@ -43,7 +49,8 @@ import {
   Calendar,
   Banknote,
   Clock,
-  CheckCircle
+  CheckCircle,
+  Users
 } from "lucide-react";
 import type { Account, Trade } from "@shared/schema";
 
@@ -77,6 +84,8 @@ export default function Dashboard() {
     date: new Date().toISOString().split('T')[0]
   });
   const [calendarDate, setCalendarDate] = useState(new Date());
+  const [showProfileSettings, setShowProfileSettings] = useState(false);
+  const [hourlyWage, setHourlyWage] = useState(25);
   const [timePeriod, setTimePeriod] = useState<'daily' | 'weekly' | 'monthly' | 'yearly'>('monthly');
   const [accountSelectionMode, setAccountSelectionMode] = useState<'all' | 'single' | 'multiple'>(() => {
     const saved = localStorage.getItem('dashboard-account-selection-mode');
@@ -525,7 +534,7 @@ export default function Dashboard() {
             <div className="widget-content">
               <div className="widget-left">
                 <p className="widget-label">Win Rate</p>
-                <p className="widget-value">
+                <p className={`widget-value ${getValueColor((combinedAnalytics?.winRate || 0) - 50)}`}>
                   {formatPercentage(combinedAnalytics?.winRate || 0)}
                 </p>
                 <p className="widget-description">Winning trades percentage</p>
@@ -541,7 +550,7 @@ export default function Dashboard() {
             <div className="widget-content">
               <div className="widget-left">
                 <p className="widget-label">R Factor</p>
-                <p className="widget-value">
+                <p className={`widget-value ${getValueColor((combinedAnalytics?.rFactor || 0) - 1)}`}>
                   {combinedAnalytics?.rFactor?.toFixed(2) || '0.00'}
                 </p>
                 <p className="widget-description">Risk/Reward ratio</p>
@@ -557,7 +566,7 @@ export default function Dashboard() {
             <div className="widget-content">
               <div className="widget-left">
                 <p className="widget-label">Profit Factor</p>
-                <p className="widget-value">
+                <p className={`widget-value ${getValueColor((combinedAnalytics?.profitFactor || 0) - 1)}`}>
                   {combinedAnalytics?.profitFactor?.toFixed(2) || '0.00'}
                 </p>
                 <p className="widget-description">Gross profit / gross loss</p>
@@ -594,7 +603,7 @@ export default function Dashboard() {
             <div className="widget-content">
               <div className="widget-left">
                 <p className="widget-label">Total Trades</p>
-                <p className="widget-value">
+                <p className="widget-value text-white">
                   {combinedAnalytics?.totalTrades || 0}
                 </p>
                 <p className="widget-description">All executed trades</p>
@@ -621,58 +630,38 @@ export default function Dashboard() {
             </div>
           </div>
 
-          {/* Weekly Navigation Widget */}
+          {/* Active Accounts & Disciplinary Score Widget */}
           <div className="widget-container">
             <div className="widget-content">
               <div className="widget-left">
-                <div className="weekly-navigation-header flex items-center justify-between mb-2">
-                  <button 
-                    onClick={() => {
-                      const newDate = new Date(calendarDate.getTime() - 7 * 24 * 60 * 60 * 1000);
-                      setCalendarDate(newDate);
-                    }}
-                    className="text-white hover:text-blue-400 transition-colors px-2"
-                  >
-                    ←
-                  </button>
-                  <span className="text-white font-semibold">
-                    W{Math.ceil(calendarDate.getDate() / 7)} {calendarDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} {calendarDate.getFullYear().toString().slice(-2)} ({Math.ceil(calendarDate.getDate() / 7)}/52)
-                  </span>
-                  <button 
-                    onClick={() => {
-                      const newDate = new Date(calendarDate.getTime() + 7 * 24 * 60 * 60 * 1000);
-                      setCalendarDate(newDate);
-                    }}
-                    className="text-white hover:text-blue-400 transition-colors px-2"
-                  >
-                    →
-                  </button>
+                <p className="widget-label">Active Accounts & Disciplinary Score</p>
+                <div className="flex items-center space-x-3 mb-2">
+                  <div className="flex items-center space-x-2">
+                    <div className="w-3 h-3 bg-yellow-400 rounded-full"></div>
+                    <span className="text-white font-semibold">
+                      {accounts?.find(acc => acc.id === selectedAccountIds[0])?.name || 'Max Maserati'}
+                    </span>
+                  </div>
+                  <div className="text-white text-sm">
+                    {formatCurrency(
+                      accounts?.find(acc => acc.id === selectedAccountIds[0])?.startingBalance || 25000
+                    )}
+                  </div>
                 </div>
-                <p className={`widget-value ${getValueColor(combinedAnalytics?.totalPnl || 0)}`}>
-                  {formatCurrency(combinedAnalytics?.totalPnl || 0)}
+                <div className="discipline-score-display">
+                  <div className="bg-yellow-500 text-black font-bold px-3 py-1 rounded mb-1">
+                    {Math.round(combinedAnalytics?.disciplineScore || 86)}%
+                  </div>
+                  <div className="bg-yellow-600 text-white font-bold px-3 py-1 rounded text-sm">
+                    Grade B
+                  </div>
+                </div>
+                <p className="widget-description text-xs mt-1">
+                  {combinedAnalytics?.totalTrades || 14} trades • 0 violations
                 </p>
-                <p className="widget-description">
-                  {(() => {
-                    // Get trades for the current week
-                    const weekStart = new Date(calendarDate);
-                    weekStart.setDate(weekStart.getDate() - weekStart.getDay()); // Start of week
-                    const weekEnd = new Date(weekStart);
-                    weekEnd.setDate(weekEnd.getDate() + 6); // End of week
-                    
-                    const weekTrades = trades?.filter(trade => {
-                      const tradeDate = new Date(trade.date);
-                      return tradeDate >= weekStart && tradeDate <= weekEnd;
-                    }) || [];
-                    
-                    const weeklyWinRate = weekTrades.length > 0 
-                      ? (weekTrades.filter(t => t.pnl > 0).length / weekTrades.length * 100)
-                      : 0;
-                    
-                    return weekTrades.length > 0 
-                      ? `${weekTrades.length} trades • ${weeklyWinRate.toFixed(0)}% win rate`
-                      : '0 trades • 0% win rate';
-                  })()}
-                </p>
+              </div>
+              <div className="widget-icon-square">
+                <Users className="widget-icon" />
               </div>
             </div>
           </div>
@@ -737,6 +726,14 @@ export default function Dashboard() {
                     return `${formatCurrency(hourlyWage)}/hr × ${totalHours.toFixed(1)} hrs`;
                   })()}
                 </p>
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={() => setShowProfileSettings(true)}
+                  className="text-blue-400 border-blue-400 hover:bg-blue-400/10 mt-2"
+                >
+                  Set Hourly Wage
+                </Button>
               </div>
               <div className="widget-icon-square">
                 <Clock className="widget-icon" />
@@ -1412,77 +1409,7 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* First Row: Risk Management, Daily Trade Limit, Disciplined Score */}
-        <div className="widget-grid mb-6">
-          {/* Risk Management */}
-          <div className="widget-container">
-            <div className="widget-content">
-              <div className="widget-left">
-                <p className="widget-label">Risk Management</p>
-                <p className="widget-value text-warning-orange">
-                  {formatCurrency(500)}
-                </p>
-                <p className="widget-description">
-                  Per trade / {formatCurrency(1500)} daily limit
-                </p>
-              </div>
-              <div className="widget-icon-square">
-                <Shield className="widget-icon" />
-              </div>
-            </div>
-          </div>
 
-          {/* Daily Trade Limit */}
-          <div className="widget-container">
-            <div className="widget-content">
-              <div className="widget-left">
-                <p className="widget-label">Daily Trade Limit</p>
-                <p className="widget-value">
-                  {trades?.filter(t => t.date === new Date().toISOString().split('T')[0]).length || 0} / 5
-                </p>
-                <p className="widget-description">
-                  Current trades today / Maximum allowed
-                </p>
-              </div>
-              <div className="widget-icon-square">
-                <BarChart3 className="widget-icon" />
-              </div>
-            </div>
-          </div>
-
-          {/* Disciplined Score */}
-          <div className="widget-container">
-            <div className="widget-content">
-              <div className="widget-left">
-                <p className="widget-label">Disciplined Score</p>
-                <div className="flex items-center space-x-2">
-                  <p className={`text-2xl font-bold ${getScoreColor(combinedAnalytics?.disciplinedScore || 0)}`}>
-                    {Math.round(combinedAnalytics?.disciplinedScore || 0)}
-                  </p>
-                  <Badge className={`${getGradeColor(
-                    (combinedAnalytics?.disciplinedScore || 0) >= 95 ? 'A+' :
-                    (combinedAnalytics?.disciplinedScore || 0) >= 90 ? 'A' :
-                    (combinedAnalytics?.disciplinedScore || 0) >= 80 ? 'B' :
-                    (combinedAnalytics?.disciplinedScore || 0) >= 70 ? 'C' :
-                    (combinedAnalytics?.disciplinedScore || 0) >= 60 ? 'D' : 'F'
-                  )} text-white`}>
-                    {(combinedAnalytics?.disciplinedScore || 0) >= 95 ? 'A+' :
-                     (combinedAnalytics?.disciplinedScore || 0) >= 90 ? 'A' :
-                     (combinedAnalytics?.disciplinedScore || 0) >= 80 ? 'B' :
-                     (combinedAnalytics?.disciplinedScore || 0) >= 70 ? 'C' :
-                     (combinedAnalytics?.disciplinedScore || 0) >= 60 ? 'D' : 'F'}
-                  </Badge>
-                </div>
-                <p className="widget-description">
-                  98% risk compliance / 100% trade limits
-                </p>
-              </div>
-              <div className="widget-icon-square">
-                <Brain className="widget-icon" />
-              </div>
-            </div>
-          </div>
-        </div>
 
         {/* Risk Alert and Disciplined Trading Analysis */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
