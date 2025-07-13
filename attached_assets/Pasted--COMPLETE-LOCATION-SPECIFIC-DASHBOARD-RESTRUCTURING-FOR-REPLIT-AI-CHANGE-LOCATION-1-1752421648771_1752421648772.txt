@@ -1,0 +1,379 @@
+# 📋 **COMPLETE LOCATION-SPECIFIC DASHBOARD RESTRUCTURING FOR REPLIT AI**
+
+## 🎯 **CHANGE LOCATION 1: SECTION FUSION (Accounts + Planning)**
+
+### **📍 WHERE TO MAKE CHANGES:**
+- **Location 1**: Current "Trading Accounts" section 
+- **Location 2**: Current "Target & Risk Management Planning" section
+
+### **🔧 WHAT TO DO:**
+```html
+<!-- BEFORE: Two separate sections -->
+<section class="accounts-section">
+  <h1>Trading Accounts</h1>
+  <!-- Account cards here -->
+</section>
+
+<section class="planning-section">
+  <h1>Target & Risk Management Planning</h1>
+  <!-- Planning tools, projection settings, etc. -->
+</section>
+
+<!-- AFTER: One unified section -->
+<section class="unified-propfirms-section">
+  <h1 class="primary-header">PropFirms Trading Accounts</h1>
+  <h2 class="secondary-header">Risk Management & Responsible Day-to-Pass Planning</h2>
+  
+  <!-- All account cards from old accounts section -->
+  <div class="account-cards-row">
+    [Live Accounts: $177,540] [Funded: $0] [Challenge: $27,540] [+ Create Account]
+  </div>
+  
+  <!-- Account Selection Status -->
+  <div class="selection-status">
+    "Analyzing 1 selected account(s)" OR "Showing combined stats for X accounts"
+  </div>
+  
+  <!-- All planning tools from old Target & Risk Management Planning -->
+  <div class="planning-tools">
+    <!-- Projection Settings -->
+    <!-- Starting Capital (display only) -->
+    <!-- Risk Per Trade, Risk-Reward Ratio, etc. -->
+    <!-- Daily Projection Timeline -->
+    <!-- BUT REMOVE: Capital Calculation Mode toggle completely -->
+  </div>
+</section>
+```
+
+### **🎯 SPECIFIC ACTIONS FOR THIS LOCATION:**
+1. **DELETE**: Entire "Target & Risk Management Planning" section
+2. **MERGE**: Content from both sections into new unified section
+3. **ADD**: Two-line header structure with primary and secondary headers
+4. **REMOVE**: Capital Calculation Mode toggle (Starting Capital/Max Drawdown choice)
+5. **KEEP**: All other planning functionality (Starting Capital input, Risk Per Trade, etc.)
+
+### **📝 STYLING FOR THIS LOCATION:**
+```css
+.primary-header {
+  font-size: larger;
+  font-weight: bold;
+  margin-bottom: 4px;
+}
+
+.secondary-header {
+  font-size: smaller;
+  color: secondary-text-color;
+  margin-top: 0;
+}
+```
+
+---
+
+## 🎯 **CHANGE LOCATION 2: DASHBOARD REORGANIZATION**
+
+### **📍 WHERE TO MAKE CHANGES:**
+- **Location**: Dashboard section with "📈 Current Performance Overview" header
+- **Keep**: All existing colors, styling, and visual design
+- **Change**: Only widget positioning and layout structure
+
+### **🔧 CURRENT DASHBOARD STRUCTURE:**
+```html
+<section class="dashboard-section">
+  <h3>📈 Current Performance Overview</h3>
+  
+  <!-- Current widget layout (to be reorganized) -->
+  <div class="current-layout">
+    <!-- Widgets scattered in current positions -->
+  </div>
+</section>
+```
+
+### **🔧 NEW DASHBOARD STRUCTURE:**
+```html
+<section class="dashboard-section">
+  <h3>📈 Current Performance Overview</h3>
+  
+  <!-- Row 1: Core Financial (3 widgets) -->
+  <div class="dashboard-row-1">
+    [Net Balance] [Daily P&L] [Total P&L] ← MOVE Total P&L from bottom-left to here
+  </div>
+  
+  <!-- Row 2: Performance Ratios (4 widgets) -->
+  <div class="dashboard-row-2">
+    [Win Rate] [R Factor] [Profit Factor] [Avg Win/Loss] ← MOVE Avg Win/Loss from Row 1
+  </div>
+  
+  <!-- Row 3: Trading Activity & Planning (4 widgets) -->
+  <div class="dashboard-row-3">
+    [Total Trades] [Best Trade] [Weekly Navigation] [Plan vs Reality] ← ADD new widgets
+  </div>
+  
+  <!-- Row 4: Risk & Investment (4 widgets) -->
+  <div class="dashboard-row-4">
+    [Risk Management] [Investment ROI] [Discipline Score] [Active Trading Days] ← NEW row
+  </div>
+</section>
+```
+
+### **🎯 SPECIFIC WIDGET MOVEMENTS FOR DASHBOARD:**
+```
+MOVE: Total P&L widget from bottom-left position → Row 1, Position 3
+MOVE: Avg Win/Loss from current Row 1 → Row 2, Position 4  
+ADD: Plan vs Reality widget → Row 3, Position 4 (NEW)
+ADD: Weekly Navigation widget → Row 3, Position 3 (MODIFIED from separate section)
+ADD: Investment ROI widget → Row 4, Position 2 (NEW)
+ADD: Risk Management widget → Row 4, Position 1 (CONSOLIDATED)
+ADD: Discipline Score widget → Row 4, Position 3 (MOVED from separate section)
+ADD: Active Trading Days widget → Row 4, Position 4 (NEW)
+```
+
+---
+
+## 🎯 **CHANGE LOCATION 3: REMOVE REDUNDANT SECTIONS**
+
+### **📍 WHERE TO DELETE ENTIRE SECTIONS:**
+
+#### **🗑️ Delete These Complete Sections:**
+```html
+<!-- LOCATION: Dashboard header area -->
+<select class="view-selector-dropdown">
+  <option>Overview</option>
+  <option>Detailed</option> 
+  <option>Analytics</option>
+</select>
+❌ DELETE COMPLETELY
+
+<!-- LOCATION: Separate portfolio section -->
+<section class="account-portfolio-overview">
+  <h3>📊 Account Portfolio Overview</h3>
+  <!-- All content here -->
+</section>
+❌ DELETE ENTIRE SECTION
+
+<!-- LOCATION: Investment tracking section -->
+<section class="investment-tracking">
+  <h3>🛡️ Investment Tracking</h3>
+  <!-- All widgets here -->
+</section>
+❌ DELETE ENTIRE SECTION
+
+<!-- LOCATION: Separate weekly calendar section -->
+<section class="weekly-performance-calendar">
+  <h3>📅 Weekly Performance Calendar</h3>
+  <!-- Calendar widget here -->
+</section>
+❌ DELETE ENTIRE SECTION
+
+<!-- LOCATION: Trading charts preview section -->
+<section class="trading-charts-preview">
+  <h3>📈 Trading Charts Preview</h3>
+  <!-- Chart previews here -->
+</section>
+❌ DELETE ENTIRE SECTION
+```
+
+### **🔄 CONSOLIDATION MAPPING:**
+```
+FROM Investment Tracking Section → TO Dashboard Row 4:
+├── Total Spent → Investment ROI widget (Row 4, Position 2)
+├── Activation Costs → Investment ROI widget (Row 4, Position 2)
+├── Profitability → Investment ROI widget (Row 4, Position 2)
+└── Working Hours → Active Trading Days widget (Row 4, Position 4)
+
+FROM Disciplined Trading Analysis → TO Dashboard Row 4:
+├── Risk Management → Risk Management widget (Row 4, Position 1)
+├── Discipline Score → Discipline Score widget (Row 4, Position 3)
+├── Account grades → Risk Management widget (Row 4, Position 1)
+└── Rule violations → Risk Management widget (Row 4, Position 1)
+
+FROM Weekly Performance Calendar → TO Dashboard Row 3:
+├── Remove separate header completely
+├── Integrate as Weekly Navigation widget (Row 3, Position 3)
+└── Use format: "← W2 April 9th 2024 (#14/52) →"
+```
+
+---
+
+## 🎯 **CHANGE LOCATION 4: ADD ACCOUNT SELECTION FUNCTIONALITY**
+
+### **📍 WHERE TO ADD FUNCTIONALITY:**
+- **Location**: Dashboard JavaScript/Logic layer
+- **Affects**: All dashboard widgets (except specified exceptions)
+
+### **🔧 ADD THIS LOGIC:**
+```javascript
+// Add to dashboard data management
+function updateDashboardData(selectedAccounts) {
+  if (selectedAccounts.length === 1) {
+    // Single account selected - show only that account's data
+    updateAllWidgets(selectedAccounts[0]);
+    updateSelectionStatus("Analyzing 1 selected account");
+  } else if (selectedAccounts.length > 1) {
+    // Multiple accounts selected - show combined data
+    updateAllWidgets(combineAccountData(selectedAccounts));
+    updateSelectionStatus(`Showing combined stats for ${selectedAccounts.length} accounts`);
+  } else {
+    // No selection or all accounts - show portfolio-wide data
+    updateAllWidgets(getAllAccountsData());
+    updateSelectionStatus("Showing all accounts");
+  }
+  
+  // EXCEPTION: Keep these widgets always showing all accounts
+  keepUnchanged(['active-accounts-count', 'failed-accounts-count', 'total-portfolio-value']);
+}
+```
+
+### **🎯 WIDGETS AFFECTED BY ACCOUNT SELECTION:**
+```
+✅ CHANGES WITH SELECTION:
+- Net Balance, Daily P&L, Total P&L
+- Win Rate, R Factor, Profit Factor, Avg Win/Loss
+- Total Trades, Best Trade
+- Plan vs Reality widget
+- Risk Management widget
+- Investment ROI widget
+- Discipline Score widget
+- Weekly Navigation data
+- All performance charts and metrics
+
+❌ ALWAYS SHOWS ALL ACCOUNTS:
+- Active Accounts count (always "2 accounts • Payout eligible")
+- Failed Accounts count 
+- Total Portfolio Value
+```
+
+---
+
+## 🎯 **CHANGE LOCATION 5: NEW WIDGET DESIGNS**
+
+### **📍 WHERE TO ADD NEW WIDGETS:**
+
+#### **🆕 Plan vs Reality Widget (Dashboard Row 3, Position 4):**
+```html
+<div class="plan-vs-reality-widget">
+  <h4>Plan vs Reality</h4>
+  
+  <div class="target-line">
+    <span>Target: $750/day</span>
+    <div class="progress-bar target">━━━━━━━━━ 📊</div>
+  </div>
+  
+  <div class="actual-line">
+    <span>Actual: $1,012</span>
+    <div class="progress-bar actual">━━━━━━━━━━━━ ✅</div>
+  </div>
+  
+  <div class="status-line">
+    <span>Day 2 of 14 • +35% ahead</span>
+    <span>Risk Used: 16.7% / 50% limit</span>
+  </div>
+</div>
+```
+
+#### **🆕 Enhanced Risk Management Widget (Dashboard Row 4, Position 1):**
+```html
+<div class="risk-management-widget">
+  <h4>Risk Management</h4>
+  
+  <div class="risk-metrics">
+    <span>Daily Risk: $500 / $1,500 (33%)</span>
+    <span>Max Drawdown: $2,445 / $7,500 (33%)</span>
+  </div>
+  
+  <div class="risk-status">
+    <span>Rule Violations: 0 ⚡</span>
+    <span>Health Score: 98% 🟢</span>
+  </div>
+</div>
+```
+
+#### **🆕 Investment ROI Widget (Dashboard Row 4, Position 2):**
+```html
+<div class="investment-roi-widget">
+  <h4>Investment ROI</h4>
+  
+  <div class="investment-data">
+    <span>Invested: $579.00</span>
+    <span>Current Value: $177,540.00</span>
+  </div>
+  
+  <div class="roi-status">
+    <span>ROI: +30,566% 📈</span>
+    <span>Payouts: $0 received</span>
+  </div>
+</div>
+```
+
+#### **🔄 Weekly Navigation Widget (Dashboard Row 3, Position 3):**
+```html
+<div class="weekly-navigation-widget">
+  <div class="week-header">
+    <button class="prev-week">←</button>
+    <span class="week-indicator">W2 April 9th 2024 (#14/52)</span>
+    <button class="next-week">→</button>
+  </div>
+  
+  <div class="week-data">
+    <span class="week-pnl">$2,540.00</span>
+    <span class="week-stats">14 trades • 71% win rate</span>
+  </div>
+</div>
+```
+
+---
+
+## 📝 **FINAL IMPLEMENTATION CHECKLIST FOR REPLIT AI**
+
+### **✅ SECTION 1 - MERGE SECTIONS:**
+- [ ] Delete "Target & Risk Management Planning" section completely
+- [ ] Merge content into "Trading Accounts" section  
+- [ ] Rename to "PropFirms Trading Accounts" with subtitle
+- [ ] Remove Capital Calculation Mode toggle
+- [ ] Keep all other planning functionality
+
+### **✅ SECTION 2 - REORGANIZE DASHBOARD:**
+- [ ] Keep all existing colors and styling
+- [ ] Move Total P&L to Row 1, Position 3
+- [ ] Move Avg Win/Loss to Row 2, Position 4
+- [ ] Add Plan vs Reality widget to Row 3, Position 4
+- [ ] Create new Row 4 with 4 new/consolidated widgets
+- [ ] Remove separate weekly calendar header
+
+### **✅ SECTION 3 - DELETE REDUNDANT SECTIONS:**
+- [ ] Remove Overview/Detailed/Analytics dropdown
+- [ ] Delete Account Portfolio Overview section
+- [ ] Delete Investment Tracking section  
+- [ ] Delete Weekly Performance Calendar section
+- [ ] Delete Trading Charts Preview section
+
+### **✅ SECTION 4 - ADD ACCOUNT SELECTION:**
+- [ ] Add dynamic filtering functionality
+- [ ] Filter all dashboard widgets based on selection
+- [ ] Keep Active Accounts widget always showing all
+- [ ] Add selection status display
+
+### **✅ SECTION 5 - ADD NEW WIDGETS:**
+- [ ] Create Plan vs Reality widget
+- [ ] Create Enhanced Risk Management widget
+- [ ] Create Investment ROI widget  
+- [ ] Modify Weekly widget with navigation
+- [ ] Use week format: "W2 April 9th 2024 (#14/52)"
+
+## 🎯 **FINAL STRUCTURE AFTER ALL CHANGES:**
+```
+PropFirms Trading Accounts
+Risk Management & Responsible Day-to-Pass Planning
+├── [Account Cards Row]
+├── [Selection Status: "Analyzing X accounts"]
+├── [Planning Tools & Settings]
+└── 📈 Performance Overview
+    ├── Row 1: [Net Balance] [Daily P&L] [Total P&L]
+    ├── Row 2: [Win Rate] [R Factor] [Profit Factor] [Avg Win/Loss]
+    ├── Row 3: [Total Trades] [Best Trade] [Weekly Nav] [Plan vs Reality]
+    └── Row 4: [Risk Mgmt] [Investment ROI] [Discipline] [Active Days]
+
+Daily Trading Journal (unchanged)
+Trade Analysis Calendar (unchanged)
+```
+
+🚀 **This provides exact locations and step-by-step instructions for each change area!**
