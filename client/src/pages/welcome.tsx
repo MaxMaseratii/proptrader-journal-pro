@@ -438,21 +438,21 @@ export default function Welcome() {
                     <div className="text-xs text-gray-300">Max Drawdown</div>
                   </div>
                   <div className="bg-gray-700 rounded p-3 text-center">
-                    <div className="text-lg font-bold text-prop-tiffany">$1,500</div>
-                    <div className="text-xs text-gray-300">Per Trade Profit</div>
+                    <div className="text-lg font-bold text-prop-pink">$500</div>
+                    <div className="text-xs text-gray-300">Risk Per Trade</div>
                   </div>
                 </div>
                 <div className="space-y-2">
                   <div className="flex justify-between items-center">
                     <span className="text-gray-300">Reward Ratio</span>
-                    <span className="text-prop-green font-bold">1:5 RR</span>
+                    <span className="text-prop-green font-bold">1:3 RR</span>
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-gray-300">Days to Target</span>
                     <span className="text-prop-tiffany font-bold">6 days</span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="text-gray-300">Daily Reward</span>
+                    <span className="text-gray-300">Daily Target</span>
                     <span className="text-prop-green font-bold">$1,500</span>
                   </div>
                   <div className="flex justify-between items-center">

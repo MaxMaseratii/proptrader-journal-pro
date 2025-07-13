@@ -256,6 +256,16 @@ Changelog:
   * Added new "Discipline Analysis" tab to Advanced Analytics page with enhanced golden widget styling
   * Replaced simple discipline scoring with comprehensive professional assessment system
   * Maintained golden widget styling consistency throughout all new components
+- July 13, 2025. Welcome Page Subscription Plan Optimization:
+  * Updated PropFirms Accounts & Risk Planning snapshot with correct financial data
+  * Fixed account size to $150K, risk per trade to $500, reward to $1,500 (1:3 RR)
+  * Corrected objective timeline to 6 days with 4 days completed (67% progress)
+  * Updated PropFirms Spending Tracker with realistic data: 5 active accounts, 9 failed accounts
+  * Added spending breakdown: $700 challenges, $750 activation, $2,500 payout, $1,050 ROI
+  * Highlighted "PROFITABLE TRADER" status in green for subscription conversion
+  * Added two new feature widgets: Daily Risk Management and Discipline Score Tracking
+  * Updated pricing structure: Basic $9.99 (5 accounts), Pro $14.99 (10 accounts), Premium $29.99 (unlimited accounts)
+  * Repositioned all plans to target individual traders rather than trading firms
 - July 13, 2025. Dashboard Restructuring and Accounts Section Migration:
   * Completed dashboard widget reorganization with new 4-row layout (3-4-4-4 widget structure)
   * Deleted Weekly Performance Calendar widget and moved Active Accounts to replace it
