@@ -125,6 +125,7 @@ export default function Projections() {
       payoutFrequency: "monthly",
       minimumPayoutAmount: 100,
       maxNetBalanceForPayout: null,
+      consistencyRulePercent: 50,
       profitSplit: 80,
       bufferPercentage: 5.0,
       daysRequiredForPayout: 5,
@@ -1267,8 +1268,12 @@ export default function Projections() {
                                   value={field.value || ""}
                                   onChange={(e) => field.onChange(e.target.value === "" ? null : parseFloat(e.target.value))}
                                   className="bg-gray-700 border-gray-600 text-white placeholder-gray-400"
+                                  placeholder="Additional profit needed after exceeding max balance"
                                 />
                               </FormControl>
+                              <p className="text-xs text-gray-400 mt-1">
+                                Amount you must make AFTER exceeding the Max Net Balance for Payout
+                              </p>
                               <FormMessage />
                             </FormItem>
                           )}
@@ -1286,9 +1291,33 @@ export default function Projections() {
                                   value={field.value || ""}
                                   onChange={(e) => field.onChange(e.target.value === "" ? null : parseFloat(e.target.value))}
                                   className="bg-gray-700 border-gray-600 text-white placeholder-gray-400"
-                                  placeholder="Leave blank for no limit"
+                                  placeholder="Amount you must exceed to get payout"
                                 />
                               </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={accountForm.control}
+                          name="consistencyRulePercent"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="text-white font-medium">Consistency Rules Percentage (%)</FormLabel>
+                              <FormControl>
+                                <Input 
+                                  type="number" 
+                                  step="0.1"
+                                  {...field} 
+                                  value={field.value || ""}
+                                  onChange={(e) => field.onChange(e.target.value === "" ? null : parseFloat(e.target.value))}
+                                  className="bg-gray-700 border-gray-600 text-white placeholder-gray-400"
+                                  placeholder="50% (best day must be below this % of profit target)"
+                                />
+                              </FormControl>
+                              <p className="text-xs text-gray-400 mt-1">
+                                Your best trading day must be below this % of your profit target. If exceeded, you'll need additional profits to pass.
+                              </p>
                               <FormMessage />
                             </FormItem>
                           )}

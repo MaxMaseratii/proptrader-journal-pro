@@ -155,8 +155,9 @@ export default function Payouts() {
     const meetsTradingDaysRule = tradingDays >= daysRequired;
 
     // Check all payout eligibility requirements
-    const meetsMinimumPayoutAmount = totalProfit >= minimumPayoutAmount;
-    const meetsMaxNetBalanceLimit = !maxNetBalanceForPayout || totalProfit <= maxNetBalanceForPayout;
+    const totalRequiredProfit = (maxNetBalanceForPayout || 0) + minimumPayoutAmount;
+    const meetsMinimumPayoutAmount = totalProfit >= totalRequiredProfit;
+    const meetsMaxNetBalanceLimit = !maxNetBalanceForPayout || totalProfit > maxNetBalanceForPayout;
 
     // Calculate available payout using user-entered profit split and buffer settings
     const profitSplit = selectedAccount.profitSplit ? (selectedAccount.profitSplit / 100) : 0;

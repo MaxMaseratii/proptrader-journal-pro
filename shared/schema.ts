@@ -62,7 +62,8 @@ export const accounts = pgTable("accounts", {
   daysRequiredForPayout: integer("days_required_for_payout"),
   winningDayMinimum: real("winning_day_minimum"),
   minimumPayoutAmount: real("minimum_payout_amount"),
-  maxNetBalanceForPayout: real("max_net_balance_for_payout"), // Maximum net balance to get payout
+  maxNetBalanceForPayout: real("max_net_balance_for_payout"),
+  consistencyRulePercent: real("consistency_rule_percent"), // Maximum net balance to get payout
   payoutFrequency: text("payout_frequency"), // 'daily', 'weekly', 'bi-weekly', 'monthly', 'on-demand'
   maximumPayoutPercentage: real("maximum_payout_percentage"),
   accountBufferRequired: boolean("account_buffer_required").default(false),

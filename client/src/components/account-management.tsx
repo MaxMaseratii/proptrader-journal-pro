@@ -145,21 +145,22 @@ export default function AccountManagement({ accounts }: AccountManagementProps) 
     const daysRequiredForPayout = account.daysRequiredForPayout || 0;
     const payoutFrequency = account.payoutFrequency || 'monthly';
 
-    // Check minimum payout amount
-    if (currentProfit < minimumPayoutAmount) {
+    // Check if profit exceeds max net balance (required first)
+    if (maxNetBalanceForPayout && currentProfit <= maxNetBalanceForPayout) {
       return {
         eligible: false,
-        reason: `Minimum payout amount not met (Need: ${formatCurrency(minimumPayoutAmount)})`,
+        reason: `Must exceed max net balance (${formatCurrency(maxNetBalanceForPayout)})`,
         color: "text-yellow-400"
       };
     }
 
-    // Check maximum net balance limit
-    if (maxNetBalanceForPayout && currentProfit > maxNetBalanceForPayout) {
+    // Check minimum payout amount AFTER exceeding max net balance
+    const totalRequiredProfit = (maxNetBalanceForPayout || 0) + minimumPayoutAmount;
+    if (currentProfit < totalRequiredProfit) {
       return {
         eligible: false,
-        reason: `Exceeds max net balance limit (${formatCurrency(maxNetBalanceForPayout)})`,
-        color: "text-red-400"
+        reason: `Need ${formatCurrency(totalRequiredProfit)} total (${formatCurrency(maxNetBalanceForPayout || 0)} + ${formatCurrency(minimumPayoutAmount)})`,
+        color: "text-yellow-400"
       };
     }
 

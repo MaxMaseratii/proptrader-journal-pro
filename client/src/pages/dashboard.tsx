@@ -1581,8 +1581,10 @@ export default function Dashboard() {
                 const profitTargetMet = totalProfit >= (selectedAccount.profitTarget || 0);
                 const daysRequirementMet = daysTraded >= requiredDays;
                 const drawdownSafe = !isInDrawdown;
-                const minimumPayoutMet = totalProfit >= minimumPayoutAmount;
-                const maxNetBalanceMet = !maxNetBalanceForPayout || totalProfit <= maxNetBalanceForPayout;
+                // Check if profit exceeds max net balance + minimum payout amount
+                const totalRequiredProfit = (maxNetBalanceForPayout || 0) + minimumPayoutAmount;
+                const minimumPayoutMet = totalProfit >= totalRequiredProfit;
+                const maxNetBalanceMet = !maxNetBalanceForPayout || totalProfit > maxNetBalanceForPayout;
                 
                 const isReady = profitTargetMet && daysRequirementMet && drawdownSafe && winningDays >= requiredDays && minimumPayoutMet && maxNetBalanceMet;
                 
@@ -1669,9 +1671,9 @@ export default function Dashboard() {
                       {/* Minimum Payout Amount */}
                       <div>
                         <div className="flex justify-between text-sm mb-2">
-                          <span className="text-gray-300">Minimum Payout Amount</span>
+                          <span className="text-gray-300">Total Required for Payout</span>
                           <span className={minimumPayoutMet ? 'text-green-400' : 'text-orange-400'}>
-                            {formatCurrency(totalProfit)} / {formatCurrency(minimumPayoutAmount)}
+                            {formatCurrency(totalProfit)} / {formatCurrency(totalRequiredProfit)}
                           </span>
                         </div>
                         <div className="w-full bg-gray-700 rounded-full h-3">
@@ -1679,18 +1681,21 @@ export default function Dashboard() {
                             className={`h-3 rounded-full transition-all duration-300 ${
                               minimumPayoutMet ? 'bg-green-400' : 'bg-orange-400'
                             }`}
-                            style={{ width: `${Math.min((totalProfit / (minimumPayoutAmount || 1)) * 100, 100)}%` }}
+                            style={{ width: `${Math.min((totalProfit / (totalRequiredProfit || 1)) * 100, 100)}%` }}
                           ></div>
                         </div>
+                        <p className="text-xs text-gray-400 mt-1">
+                          {maxNetBalanceForPayout ? `${formatCurrency(maxNetBalanceForPayout)} (max balance) + ${formatCurrency(minimumPayoutAmount)} (minimum)` : `${formatCurrency(minimumPayoutAmount)} minimum`}
+                        </p>
                       </div>
 
                       {/* Max Net Balance for Payout */}
                       {maxNetBalanceForPayout && (
                         <div>
                           <div className="flex justify-between text-sm mb-2">
-                            <span className="text-gray-300">Max Net Balance Limit</span>
+                            <span className="text-gray-300">Max Net Balance Exceeded</span>
                             <span className={maxNetBalanceMet ? 'text-green-400' : 'text-red-400'}>
-                              {formatCurrency(totalProfit)} / {formatCurrency(maxNetBalanceForPayout)}
+                              {totalProfit > maxNetBalanceForPayout ? 'Exceeded' : 'Not Exceeded'}
                             </span>
                           </div>
                           <div className="w-full bg-gray-700 rounded-full h-3">
@@ -1701,6 +1706,9 @@ export default function Dashboard() {
                               style={{ width: `${Math.min((totalProfit / (maxNetBalanceForPayout || 1)) * 100, 100)}%` }}
                             ></div>
                           </div>
+                          <p className="text-xs text-gray-400 mt-1">
+                            Must exceed ${formatCurrency(maxNetBalanceForPayout)} to be eligible for payout
+                          </p>
                         </div>
                       )}
 

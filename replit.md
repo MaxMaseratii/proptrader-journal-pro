@@ -313,6 +313,16 @@ Changelog:
   * Updated AccountManagement component to show dynamic payout eligibility based on new requirements
   * Modified Payouts page to respect all new payout requirements and account type restrictions
   * All payout displays now use fully dynamic account-specific rules without any static fallback values
+- July 13, 2025. Payout Logic Correction and Consistency Rules Addition:
+  * Corrected payout logic: Minimum Payout Amount is what you need AFTER exceeding Max Net Balance for Payout
+  * Added Consistency Rules Percentage field to account creation form under Payout Rules section
+  * Updated database schema with consistencyRulePercent field for tracking best day percentage requirements
+  * Modified payout eligibility calculations to check Max Net Balance exceeded + Minimum Payout Amount
+  * Enhanced dashboard progress indicators to show combined required profit (Max Net Balance + Minimum Payout)
+  * Updated AccountManagement and Payouts pages to use corrected payout logic
+  * Added explanatory text for Consistency Rules: "Your best trading day must be below this % of your profit target"
+  * Consistency Rules field defaults to 50% based on prop firm industry standards
+  * Fixed duplicate consistency rules fields to appear only in Payout Rules section
 - July 3, 2025. Critical Fix: Initial vs Final SL/TP Differentiation:
   * Completely redesigned CSV import algorithm to properly distinguish between initial and final stop loss/take profit levels
   * Enhanced trade entry forms to clearly label fields as "price levels" with explanatory text
