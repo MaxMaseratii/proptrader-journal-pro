@@ -72,6 +72,7 @@ export default function Accounts() {
       bufferPercentage: 5.0,
       daysRequiredForPayout: 5,
       maximumPayoutPercentage: 90,
+      winningDayMinimum: 200,
       // Trading Asset Selection
       primaryTradingAsset: "ES",
       secondaryTradingAsset: "none",
@@ -805,6 +806,82 @@ export default function Accounts() {
                                   </FormControl>
                                   <p className="text-xs text-gray-400 mt-1">
                                     Buffer percentage to maintain in account for payouts
+                                  </p>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                            
+                            <FormField
+                              control={form.control}
+                              name="daysRequiredForPayout"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel className="text-white font-medium">Trading Days Required for Payout</FormLabel>
+                                  <FormControl>
+                                    <Input 
+                                      type="number" 
+                                      min="0"
+                                      {...field} 
+                                      value={field.value || ""}
+                                      onChange={(e) => field.onChange(e.target.value === "" ? null : parseInt(e.target.value))}
+                                      className="bg-gray-700 border-gray-600 text-white placeholder-gray-400"
+                                      placeholder="e.g., 5"
+                                    />
+                                  </FormControl>
+                                  <p className="text-xs text-gray-400 mt-1">
+                                    Number of trading days required before payout eligibility
+                                  </p>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                            
+                            <FormField
+                              control={form.control}
+                              name="winningDayMinimum"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel className="text-white font-medium">Winning Day Minimum ($)</FormLabel>
+                                  <FormControl>
+                                    <Input 
+                                      type="number" 
+                                      min="0"
+                                      {...field} 
+                                      value={field.value || ""}
+                                      onChange={(e) => field.onChange(e.target.value === "" ? null : parseFloat(e.target.value))}
+                                      className="bg-gray-700 border-gray-600 text-white placeholder-gray-400"
+                                      placeholder="e.g., 200"
+                                    />
+                                  </FormControl>
+                                  <p className="text-xs text-gray-400 mt-1">
+                                    Minimum profit required per winning day for payout eligibility
+                                  </p>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                            
+                            <FormField
+                              control={form.control}
+                              name="maximumPayoutPercentage"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel className="text-white font-medium">Maximum Payout Percentage (%)</FormLabel>
+                                  <FormControl>
+                                    <Input 
+                                      type="number" 
+                                      min="0"
+                                      max="100"
+                                      {...field} 
+                                      value={field.value || ""}
+                                      onChange={(e) => field.onChange(e.target.value === "" ? null : parseFloat(e.target.value))}
+                                      className="bg-gray-700 border-gray-600 text-white placeholder-gray-400"
+                                      placeholder="e.g., 90"
+                                    />
+                                  </FormControl>
+                                  <p className="text-xs text-gray-400 mt-1">
+                                    Maximum percentage of profits that can be paid out
                                   </p>
                                   <FormMessage />
                                 </FormItem>
