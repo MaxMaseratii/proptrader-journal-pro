@@ -43,10 +43,6 @@
   margin-bottom: 1rem;
 }
 
-.dashboard-section {
-  margin-top: 1.5rem;
-}
-
 :root {
   --background: hsl(0, 0%, 3%);
   --foreground: hsl(0, 0%, 98%);

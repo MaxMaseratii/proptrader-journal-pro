@@ -624,8 +624,8 @@ export default function Projections() {
         {/* Results Panel */}
         <div className="lg:col-span-2 space-y-6">
           {/* Performance Overview Section */}
-          <section className="dashboard-section">
-            <h3 className="text-xl font-semibold text-white mb-4">📈 Current Performance Overview</h3>
+          <section className="performance-dashboard">
+            <h3 className="text-xl font-semibold text-white mb-4">Performance Overview</h3>
             
             {/* Row 1: Core Financial (3 widgets) */}
             <div className="dashboard-row-1 grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
