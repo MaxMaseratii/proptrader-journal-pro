@@ -212,13 +212,13 @@ export default function Dashboard() {
       const accountTrades = trades.filter(t => t.accountId === account.id);
       const currentProfit = account.currentBalance - account.startingBalance;
       
-      // Check payout requirements
-      const daysRequired = account.daysRequiredForPayout || 5;
-      const winningDayMinimum = account.winningDayMinimum || 200;
-      const minimumPayoutAmount = account.minimumPayoutAmount || 250;
-      const maxPayoutPercentage = (account.maximumPayoutPercentage || 90) / 100;
-      const profitSplit = (account.profitSplit || 90) / 100;
-      const bufferPercentage = (account.bufferPercentage || 5) / 100;
+      // Check payout requirements - use actual user-entered values
+      const daysRequired = account.daysRequiredForPayout || 0;
+      const winningDayMinimum = account.winningDayMinimum || 0;
+      const minimumPayoutAmount = account.minimumPayoutAmount || 0;
+      const maxPayoutPercentage = account.maximumPayoutPercentage ? (account.maximumPayoutPercentage / 100) : 1;
+      const profitSplit = account.profitSplit ? (account.profitSplit / 100) : 1;
+      const bufferPercentage = account.bufferPercentage ? (account.bufferPercentage / 100) : 0;
       
       // Calculate daily P&L
       const dailyPnL = accountTrades.reduce((acc, trade) => {

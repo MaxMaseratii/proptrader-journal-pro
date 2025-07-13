@@ -33,12 +33,14 @@ interface PayoutMetrics {
   availablePayout: number;
   totalEarnings: number;
   totalPayouts: number;
-  fiveDayEligible: boolean;
-  fiveDayRule: boolean;
-  profitableDays200Plus: number;
+  meetsTradingDaysRule: boolean;
+  meetsWinningDaysRule: boolean;
+  profitableDaysAboveMinimum: number;
   consistencyRulePercent: number | null;
   daysTraded: number;
   requiredTradingDays: number;
+  winningDayMinimum: number;
+  minimumPayoutAmount: number;
   nextPayoutDate: string | null;
 }
 
@@ -132,36 +134,69 @@ export default function Payouts() {
 
     const dailyPnLValues = Object.values(dailyPnL);
     
-    // 5-day $200+ profit rule - need 5 trading days with at least $200 profit each
-    const profitableDays200Plus = dailyPnLValues.filter(dayPnL => dayPnL >= 200).length;
-    const fiveDayRule = profitableDays200Plus >= 5;
+    // Use actual user-entered payout requirements
+    const daysRequired = selectedAccount.daysRequiredForPayout || 0;
+    const winningDayMinimum = selectedAccount.winningDayMinimum || 0;
+    const minimumPayoutAmount = selectedAccount.minimumPayoutAmount || 0;
+    
+    // Check profitable days based on user-entered minimum
+    const profitableDaysAboveMinimum = dailyPnLValues.filter(dayPnL => dayPnL >= winningDayMinimum).length;
+    const meetsWinningDaysRule = profitableDaysAboveMinimum >= daysRequired;
     
     // Check for user-defined consistency rule percentage from account settings
     const consistencyRulePercent = selectedAccount.consistencyRule ? (selectedAccount.consistencyPercentage || null) : null;
 
-    // 5-day trading requirement
+    // Trading days requirement based on user settings
     const tradingDays = Object.keys(dailyPnL).length;
-    const fiveDayEligible = tradingDays >= 5;
+    const meetsTradingDaysRule = tradingDays >= daysRequired;
 
-    // Calculate available payout (80% of profit for funded accounts)
-    const payoutPercentage = selectedAccount.type === 'funded' ? 0.8 : 0;
-    const availablePayout = Math.max(0, totalProfit * payoutPercentage);
+    // Calculate available payout using user-entered profit split and buffer settings
+    const profitSplit = selectedAccount.profitSplit ? (selectedAccount.profitSplit / 100) : 0;
+    const bufferPercentage = selectedAccount.bufferPercentage ? (selectedAccount.bufferPercentage / 100) : 0;
+    const maxPayoutPercentage = selectedAccount.maximumPayoutPercentage ? (selectedAccount.maximumPayoutPercentage / 100) : 1;
+    
+    // Calculate buffer amount
+    const bufferAmount = selectedAccount.profitTarget * bufferPercentage;
+    const profitAboveBuffer = Math.max(0, totalProfit - bufferAmount);
+    
+    // Calculate available payout with user settings
+    const availablePayout = selectedAccount.type === 'funded' ? 
+      Math.max(0, profitAboveBuffer * profitSplit * maxPayoutPercentage) : 0;
 
-    // Next payout date (assuming weekly payouts)
+    // Next payout date based on user-entered frequency
     const nextPayoutDate = new Date();
-    nextPayoutDate.setDate(nextPayoutDate.getDate() + (7 - nextPayoutDate.getDay()));
+    const payoutFrequency = selectedAccount.payoutFrequency || 'weekly';
+    switch (payoutFrequency) {
+      case 'daily':
+        nextPayoutDate.setDate(nextPayoutDate.getDate() + 1);
+        break;
+      case 'weekly':
+        nextPayoutDate.setDate(nextPayoutDate.getDate() + (7 - nextPayoutDate.getDay()));
+        break;
+      case 'bi-weekly':
+        nextPayoutDate.setDate(nextPayoutDate.getDate() + 14);
+        break;
+      case 'monthly':
+        nextPayoutDate.setMonth(nextPayoutDate.getMonth() + 1);
+        break;
+      default:
+        nextPayoutDate.setDate(nextPayoutDate.getDate() + 7);
+    }
 
     return {
       availablePayout,
       totalEarnings: totalProfit,
       totalPayouts: payoutHistory.filter(p => p.status === 'received').reduce((sum, p) => sum + p.amount, 0),
-      fiveDayEligible,
-      fiveDayRule,
-      profitableDays200Plus,
+      meetsTradingDaysRule,
+      meetsWinningDaysRule,
+      profitableDaysAboveMinimum,
       consistencyRulePercent,
       daysTraded: tradingDays,
-      requiredTradingDays: 5,
-      nextPayoutDate: fiveDayEligible && fiveDayRule ? nextPayoutDate.toISOString().split('T')[0] : null,
+      requiredTradingDays: daysRequired,
+      winningDayMinimum,
+      minimumPayoutAmount,
+      nextPayoutDate: meetsTradingDaysRule && meetsWinningDaysRule && totalProfit >= minimumPayoutAmount ? 
+        nextPayoutDate.toISOString().split('T')[0] : null,
     };
   };
 
@@ -385,29 +420,33 @@ export default function Payouts() {
                 <CardContent className="space-y-4">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center">
-                      {metrics?.fiveDayEligible ? (
+                      {metrics?.meetsTradingDaysRule ? (
                         <CheckCircle className="h-5 w-5 text-success-green mr-3" />
                       ) : (
                         <XCircle className="h-5 w-5 text-error-red mr-3" />
                       )}
-                      <span className="text-sm">5 Trading Days</span>
+                      <span className="text-sm">
+                        {metrics?.requiredTradingDays || 0} Trading Days Required
+                      </span>
                     </div>
-                    <Badge className={metrics?.fiveDayEligible ? 'bg-success-green text-white' : 'bg-error-red text-white'}>
-                      {metrics?.daysTraded || 0}/5
+                    <Badge className={metrics?.meetsTradingDaysRule ? 'bg-success-green text-white' : 'bg-error-red text-white'}>
+                      {metrics?.daysTraded || 0}/{metrics?.requiredTradingDays || 0}
                     </Badge>
                   </div>
 
                   <div className="flex items-center justify-between">
                     <div className="flex items-center">
-                      {metrics?.fiveDayRule ? (
+                      {metrics?.meetsWinningDaysRule ? (
                         <CheckCircle className="h-5 w-5 text-success-green mr-3" />
                       ) : (
                         <XCircle className="h-5 w-5 text-error-red mr-3" />
                       )}
-                      <span className="text-sm">5-Day $200+ Rule</span>
+                      <span className="text-sm">
+                        {metrics?.requiredTradingDays || 0} Days with ${metrics?.winningDayMinimum || 0}+ Profit
+                      </span>
                     </div>
-                    <Badge className={metrics?.fiveDayRule ? 'bg-success-green text-white' : 'bg-error-red text-white'}>
-                      {metrics?.profitableDays200Plus || 0}/5
+                    <Badge className={metrics?.meetsWinningDaysRule ? 'bg-success-green text-white' : 'bg-error-red text-white'}>
+                      {metrics?.profitableDaysAboveMinimum || 0}/{metrics?.requiredTradingDays || 0}
                     </Badge>
                   </div>
 
@@ -423,7 +462,7 @@ export default function Payouts() {
                     </div>
                   )}
 
-                  {(!metrics?.fiveDayEligible || !metrics?.fiveDayRule) && (
+                  {(!metrics?.meetsTradingDaysRule || !metrics?.meetsWinningDaysRule) && (
                     <div className="mt-4 p-3 bg-warning-orange bg-opacity-20 rounded-lg border border-warning-orange">
                       <div className="flex items-center">
                         <AlertCircle className="h-4 w-4 text-warning-orange mr-2" />
@@ -431,6 +470,21 @@ export default function Payouts() {
                           Complete all requirements to unlock payouts
                         </p>
                       </div>
+                    </div>
+                  )}
+
+                  {/* Show minimum payout amount requirement */}
+                  {metrics?.minimumPayoutAmount && (
+                    <div className="mt-4 p-3 bg-gray-800 rounded-lg border border-gray-700">
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm text-gray-300">Minimum Payout Amount</span>
+                        <span className="text-sm font-medium text-white">
+                          ${metrics.minimumPayoutAmount}
+                        </span>
+                      </div>
+                      <p className="text-xs text-gray-400 mt-1">
+                        Your profit must exceed this amount to request a payout.
+                      </p>
                     </div>
                   )}
                 </CardContent>
@@ -486,6 +540,53 @@ export default function Payouts() {
                     </div>
                   </div>
                   
+                  {/* Payout Settings Section */}
+                  <div className="mt-6 p-4 bg-gray-800 rounded-lg border border-gray-700">
+                    <h4 className="text-white font-medium mb-3">Your Payout Settings</h4>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <div className="flex justify-between">
+                          <span className="text-gray-400">Trading Days Required</span>
+                          <span className="font-medium text-white">
+                            {selectedAccount.daysRequiredForPayout || 'Not set'}
+                          </span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-gray-400">Winning Day Minimum</span>
+                          <span className="font-medium text-white">
+                            {selectedAccount.winningDayMinimum ? `$${selectedAccount.winningDayMinimum}` : 'Not set'}
+                          </span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-gray-400">Minimum Payout Amount</span>
+                          <span className="font-medium text-white">
+                            {selectedAccount.minimumPayoutAmount ? `$${selectedAccount.minimumPayoutAmount}` : 'Not set'}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="space-y-2">
+                        <div className="flex justify-between">
+                          <span className="text-gray-400">Payout Frequency</span>
+                          <span className="font-medium text-white capitalize">
+                            {selectedAccount.payoutFrequency || 'Not set'}
+                          </span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-gray-400">Profit Split</span>
+                          <span className="font-medium text-white">
+                            {selectedAccount.profitSplit ? `${selectedAccount.profitSplit}%` : 'Not set'}
+                          </span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-gray-400">Max Payout Percentage</span>
+                          <span className="font-medium text-white">
+                            {selectedAccount.maximumPayoutPercentage ? `${selectedAccount.maximumPayoutPercentage}%` : 'Not set'}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
                   {selectedAccount.status === 'funded' && (
                     <div className="mt-4 p-3 bg-green-900/20 rounded-lg border border-green-500/30">
                       <div className="flex items-center">
@@ -501,7 +602,7 @@ export default function Payouts() {
             </div>
 
             {/* Enhanced Payout Request Workflow */}
-            {metrics?.fiveDayEligible && metrics?.fiveDayRule && (
+            {metrics?.meetsTradingDaysRule && metrics?.meetsWinningDaysRule && (
               <Card className="bg-dark-card border-prop-gold">
                 <CardHeader>
                   <CardTitle className="flex items-center">
