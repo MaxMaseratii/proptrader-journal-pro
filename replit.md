@@ -256,6 +256,16 @@ Changelog:
   * Added new "Discipline Analysis" tab to Advanced Analytics page with enhanced golden widget styling
   * Replaced simple discipline scoring with comprehensive professional assessment system
   * Maintained golden widget styling consistency throughout all new components
+- July 13, 2025. Dashboard Restructuring and Accounts Section Migration:
+  * Completed dashboard widget reorganization with new 4-row layout (3-4-4-4 widget structure)
+  * Deleted Weekly Performance Calendar widget and moved Active Accounts to replace it
+  * Moved Account Discipline Analysis to where Active Accounts previously was located
+  * Fixed weekly navigation arrows to actually change dates when clicked with proper date formatting
+  * Fixed single account selection to show only selected account's data instead of all accounts
+  * Updated sidebar navigation from "Target & Risk Management Planning" to "PropFirms Trading Accounts"
+  * Migrated accounts section into PropFirms Trading Accounts page under "Risk Management & Responsible Day-to-Pass Planning"
+  * Removed detailed accounts display from projections page keeping only compact account cards and summary statistics
+  * Applied consistent golden widget styling throughout dashboard with proper hover effects
 - July 3, 2025. Critical Fix: Initial vs Final SL/TP Differentiation:
   * Completely redesigned CSV import algorithm to properly distinguish between initial and final stop loss/take profit levels
   * Enhanced trade entry forms to clearly label fields as "price levels" with explanatory text
