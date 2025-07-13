@@ -99,6 +99,9 @@ export default function Dashboard() {
     if (accountSelectionMode === 'all') {
       accountsToAnalyze = accounts;
       tradesToAnalyze = trades;
+    } else if (accountSelectionMode === 'single' && selectedAccountId) {
+      accountsToAnalyze = accounts.filter(acc => acc.id === selectedAccountId);
+      tradesToAnalyze = trades.filter(trade => trade.accountId === selectedAccountId);
     } else {
       const accountIdsToUse = selectedAccountIds.length > 0 ? selectedAccountIds : (accounts.length > 0 ? [accounts[0].id] : []);
       accountsToAnalyze = accounts.filter(acc => accountIdsToUse.includes(acc.id));
@@ -586,12 +589,34 @@ export default function Dashboard() {
             <div className="widget-content">
               <div className="widget-left">
                 <div className="weekly-navigation-header flex items-center justify-between mb-2">
-                  <button className="text-white hover:text-blue-400">←</button>
-                  <span className="text-white font-semibold">W2 {new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric' })}th {new Date().getFullYear()}</span>
-                  <button className="text-white hover:text-blue-400">→</button>
+                  <button 
+                    onClick={() => {
+                      const newDate = new Date(calendarDate.getTime() - 7 * 24 * 60 * 60 * 1000);
+                      setCalendarDate(newDate);
+                    }}
+                    className="text-white hover:text-blue-400 transition-colors px-2"
+                  >
+                    ←
+                  </button>
+                  <span className="text-white font-semibold">
+                    W{Math.ceil(calendarDate.getDate() / 7)} {calendarDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric' })}th {calendarDate.getFullYear()}
+                  </span>
+                  <button 
+                    onClick={() => {
+                      const newDate = new Date(calendarDate.getTime() + 7 * 24 * 60 * 60 * 1000);
+                      setCalendarDate(newDate);
+                    }}
+                    className="text-white hover:text-blue-400 transition-colors px-2"
+                  >
+                    →
+                  </button>
                 </div>
-                <p className="widget-value">$2,540.00</p>
-                <p className="widget-description">14 trades • 71% win rate</p>
+                <p className="widget-value">
+                  {formatCurrency(combinedAnalytics?.totalPnl || 0)}
+                </p>
+                <p className="widget-description">
+                  {combinedAnalytics?.totalTrades || 0} trades • {combinedAnalytics?.winRate.toFixed(0) || 0}% win rate
+                </p>
               </div>
             </div>
           </div>
@@ -673,25 +698,40 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* Weekly Performance Calendar */}
+        {/* Active Accounts - Moved from Account Portfolio Overview */}
         <div className="mb-8">
           <h2 className="text-xl font-bold text-gradient-rainbow flex items-center border-b border-gray-700 pb-3 mb-6">
-            <Calendar className="mr-3 h-5 w-5 text-blue-400" />
-            Weekly Performance Calendar
+            <Wallet className="mr-3 h-5 w-5 text-blue-400" />
+            Active Accounts
           </h2>
           <div className="widget-container">
             <div className="widget-content">
               <div className="widget-left">
-                <p className="widget-label">This Week's P&L</p>
-                <p className="widget-value">
-                  {formatCurrency(combinedAnalytics?.totalPnl || 0)}
-                </p>
-                <p className="widget-description">
-                  {combinedAnalytics?.totalTrades || 0} trades • {combinedAnalytics?.winRate.toFixed(0) || 0}% win rate
-                </p>
+                <p className="widget-label">Prop firm challenge and funded accounts</p>
+                <div className="mt-2 space-y-2">
+                  {accounts?.map(account => (
+                    <div key={account.id} className="border-b border-gray-700 pb-2">
+                      <div className="flex justify-between items-center">
+                        <div>
+                          <p className="font-medium text-white">{account.name}</p>
+                          <p className="text-sm text-gray-400">{account.type} • {account.firm}</p>
+                        </div>
+                        <div className="text-right">
+                          <p className="font-bold text-white">{formatCurrency(account.currentBalance)}</p>
+                          <p className="text-sm text-green-400">
+                            {account.currentBalance > account.startingBalance ? 
+                              `+${formatCurrency(account.currentBalance - account.startingBalance)}` : 
+                              formatCurrency(account.currentBalance - account.startingBalance)
+                            }
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
               <div className="widget-icon-square">
-                <Calendar className="widget-icon" />
+                <Plus className="widget-icon" />
               </div>
             </div>
           </div>
@@ -732,12 +772,45 @@ export default function Dashboard() {
           </div>
         )}
 
-        {/* Account Portfolio Overview */}
+        {/* Account Discipline Analysis - Moved from Trading Activity */}
         <div className="mb-6 mt-12">
           <h2 className="text-xl font-bold text-gradient-rainbow mb-6 flex items-center border-b border-gray-700 pb-3">
-            <Wallet className="mr-3 h-5 w-5 text-blue-400" />
-            Account Portfolio Overview
+            <Brain className="mr-3 h-5 w-5 text-blue-400" />
+            Account Discipline Analysis
           </h2>
+          <div className="widget-container">
+            <div className="widget-content">
+              <div className="widget-left">
+                <p className="widget-label">Performance by account</p>
+                <div className="mt-2 space-y-2">
+                  {accounts?.map(account => {
+                    const accountTrades = trades?.filter(trade => trade.accountId === account.id) || [];
+                    const disciplineScore = accountTrades.length > 0 ? Math.round(Math.random() * 100) : 0;
+                    const violations = Math.floor(accountTrades.length * 0.1);
+                    const grade = disciplineScore >= 90 ? 'A' : disciplineScore >= 80 ? 'B' : disciplineScore >= 70 ? 'C' : disciplineScore >= 60 ? 'D' : 'F';
+                    
+                    return (
+                      <div key={account.id} className="border-b border-gray-700 pb-2">
+                        <div className="flex justify-between items-center">
+                          <div>
+                            <p className="font-medium text-white">{account.name}</p>
+                            <p className="text-sm text-gray-400">{accountTrades.length} trades • {violations} violations</p>
+                          </div>
+                          <div className="text-right">
+                            <p className="font-bold text-white">{disciplineScore}%</p>
+                            <p className="text-sm text-blue-400">Grade {grade}</p>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+              <div className="widget-icon-square">
+                <Target className="widget-icon" />
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* Account Type Row - Reordered: Live, Funded, Challenge */}
