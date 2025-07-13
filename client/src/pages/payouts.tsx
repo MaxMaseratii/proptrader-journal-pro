@@ -125,7 +125,7 @@ export default function Payouts() {
     // Check if account type is eligible for payout
     const isEligibleAccountType = selectedAccount.type === 'funded' || selectedAccount.type === 'live';
     
-    const totalProfit = Math.max(0, selectedAccount.currentBalance - selectedAccount.startingBalance);
+    const totalProfit = Math.max(0, accountTrades.reduce((sum, trade) => sum + (trade.pnl || 0), 0));
     const profitableTrades = trades.filter(trade => trade.pnl > 0);
     const totalPnL = trades.reduce((sum, trade) => sum + trade.pnl, 0);
 
@@ -522,8 +522,8 @@ export default function Payouts() {
                       </div>
                       <div className="flex justify-between">
                         <span className="text-gray-400">Current Balance</span>
-                        <span className={`font-medium ${selectedAccount.currentBalance >= selectedAccount.startingBalance ? 'text-green-400' : 'text-red-400'}`}>
-                          {formatCurrency(selectedAccount.currentBalance)}
+                        <span className={`font-medium ${totalProfit >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                          {formatCurrency(selectedAccount.startingBalance + totalProfit)}
                         </span>
                       </div>
                       <div className="flex justify-between">

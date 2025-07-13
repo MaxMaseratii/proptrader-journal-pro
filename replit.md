@@ -323,6 +323,13 @@ Changelog:
   * Added explanatory text for Consistency Rules: "Your best trading day must be below this % of your profit target"
   * Consistency Rules field defaults to 50% based on prop firm industry standards
   * Fixed duplicate consistency rules fields to appear only in Payout Rules section
+- July 13, 2025. Net Balance and Consistency Rules Implementation:
+  * Added Consistency Rules Percentage field to challenge accounts in Account Info & Rules section
+  * Fixed Net Balance calculation throughout app to show starting balance + PnL from trades
+  * Removed currentBalance field from database schema - now calculated dynamically from trades
+  * Updated all dashboard widgets, account management, and payout displays to use proper net balance
+  * Consistency Rules now applies to both challenge and funded accounts during account creation
+  * Enhanced consistency rules explanatory text: "Your best trading day must be below this % of your profit target. If exceeded, you'll need additional profits to pass."
 - July 3, 2025. Critical Fix: Initial vs Final SL/TP Differentiation:
   * Completely redesigned CSV import algorithm to properly distinguish between initial and final stop loss/take profit levels
   * Enhanced trade entry forms to clearly label fields as "price levels" with explanatory text

@@ -8,7 +8,7 @@ export const accounts = pgTable("accounts", {
   type: text("type").notNull(), // 'challenge', 'funded', 'live'
   firm: text("firm").notNull(),
   startingBalance: real("starting_balance").notNull(),
-  currentBalance: real("current_balance").notNull(),
+  // currentBalance removed - now calculated as startingBalance + PnL from trades
   maxDrawdown: real("max_drawdown").notNull(),
   dailyLossLimit: real("daily_loss_limit"),
   hasDailyLossLimit: boolean("has_daily_loss_limit").default(false),

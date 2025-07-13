@@ -139,7 +139,7 @@ export default function AccountManagement({ accounts }: AccountManagementProps) 
       };
     }
 
-    const currentProfit = account.currentBalance - account.startingBalance;
+    const currentProfit = 0; // P&L is calculated from trades, not stored in currentBalance
     const minimumPayoutAmount = account.minimumPayoutAmount || 0;
     const maxNetBalanceForPayout = account.maxNetBalanceForPayout;
     const daysRequiredForPayout = account.daysRequiredForPayout || 0;
@@ -382,7 +382,7 @@ export default function AccountManagement({ accounts }: AccountManagementProps) 
               <div className="flex justify-between items-center">
                 <span className="text-gray-400 text-xs">Balance</span>
                 <span className="text-sm font-semibold text-white">
-                  {formatCurrency(account.currentBalance)}
+                  {formatCurrency(account.startingBalance)}
                 </span>
               </div>
               <div className="flex justify-between items-center">

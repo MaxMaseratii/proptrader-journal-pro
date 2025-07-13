@@ -744,11 +744,11 @@ export default function Dashboard() {
                           <p className="text-sm text-gray-400">{account.type} • {account.firm}</p>
                         </div>
                         <div className="text-right">
-                          <p className="font-bold text-white">{formatCurrency(account.currentBalance)}</p>
+                          <p className="font-bold text-white">{formatCurrency(account.startingBalance + (trades?.filter(t => t.accountId === account.id).reduce((sum, trade) => sum + (trade.pnl || 0), 0) || 0))}</p>
                           <p className="text-sm text-green-400">
-                            {account.currentBalance > account.startingBalance ? 
-                              `+${formatCurrency(account.currentBalance - account.startingBalance)}` : 
-                              formatCurrency(account.currentBalance - account.startingBalance)
+                            {(trades?.filter(t => t.accountId === account.id).reduce((sum, trade) => sum + (trade.pnl || 0), 0) || 0) > 0 ? 
+                              `+${formatCurrency(trades?.filter(t => t.accountId === account.id).reduce((sum, trade) => sum + (trade.pnl || 0), 0) || 0)}` : 
+                              formatCurrency(trades?.filter(t => t.accountId === account.id).reduce((sum, trade) => sum + (trade.pnl || 0), 0) || 0)
                             }
                           </p>
                         </div>
@@ -850,7 +850,7 @@ export default function Dashboard() {
                 <p className="widget-value">
                   {formatCurrency(
                     accounts?.filter(acc => acc.status === 'active')
-                      .reduce((sum, acc) => sum + acc.currentBalance, 0) || 0
+                      .reduce((sum, acc) => sum + acc.startingBalance + (trades?.filter(t => t.accountId === acc.id).reduce((sum, trade) => sum + (trade.pnl || 0), 0) || 0), 0) || 0
                   )}
                 </p>
                 <p className="widget-description">
@@ -871,7 +871,7 @@ export default function Dashboard() {
                 <p className="widget-value">
                   {formatCurrency(
                     accounts?.filter(acc => acc.status === 'funded')
-                      .reduce((sum, acc) => sum + acc.currentBalance, 0) || 0
+                      .reduce((sum, acc) => sum + acc.startingBalance + (trades?.filter(t => t.accountId === acc.id).reduce((sum, trade) => sum + (trade.pnl || 0), 0) || 0), 0) || 0
                   )}
                 </p>
                 <p className="widget-description">
@@ -1285,7 +1285,7 @@ export default function Dashboard() {
                       }`}>
                         {account.type === 'funded' ? (
                           <Target className="text-white h-5 w-5" />
-                        ) : account.currentBalance < account.startingBalance * 0.95 ? (
+                        ) : (account.startingBalance + (trades?.filter(t => t.accountId === account.id).reduce((sum, trade) => sum + (trade.pnl || 0), 0) || 0)) < account.startingBalance * 0.95 ? (
                           <AlertTriangle className="text-white h-5 w-5" />
                         ) : (
                           <TrendingDown className="text-white h-5 w-5" />
@@ -1297,11 +1297,11 @@ export default function Dashboard() {
                       </div>
                     </div>
                     <div className="text-right">
-                      <p className="font-bold text-white">{formatCurrency(account.currentBalance)}</p>
+                      <p className="font-bold text-white">{formatCurrency(account.startingBalance + (trades?.filter(t => t.accountId === account.id).reduce((sum, trade) => sum + (trade.pnl || 0), 0) || 0))}</p>
                       <p className={`text-sm ${
-                        account.currentBalance >= account.startingBalance ? 'text-success-green' : 'text-error-red'
+                        (trades?.filter(t => t.accountId === account.id).reduce((sum, trade) => sum + (trade.pnl || 0), 0) || 0) >= 0 ? 'text-success-green' : 'text-error-red'
                       }`}>
-                        {account.currentBalance >= account.startingBalance ? '+' : ''}{formatCurrency(account.currentBalance - account.startingBalance)}
+                        {(trades?.filter(t => t.accountId === account.id).reduce((sum, trade) => sum + (trade.pnl || 0), 0) || 0) >= 0 ? '+' : ''}{formatCurrency(trades?.filter(t => t.accountId === account.id).reduce((sum, trade) => sum + (trade.pnl || 0), 0) || 0)}
                       </p>
                     </div>
                   </div>
@@ -1572,8 +1572,8 @@ export default function Dashboard() {
                 const maxNetBalanceForPayout = selectedAccount.maxNetBalanceForPayout;
                 
                 const winningTrades = accountTrades.filter(t => (t.pnl || 0) >= winningDayMinimum);
-                const totalProfit = selectedAccount.currentBalance - selectedAccount.startingBalance;
-                const currentDrawdown = selectedAccount.maxDrawdown - (selectedAccount.startingBalance - selectedAccount.currentBalance);
+                const totalProfit = (trades?.filter(t => t.accountId === selectedAccount.id).reduce((sum, trade) => sum + (trade.pnl || 0), 0) || 0);
+                const currentDrawdown = selectedAccount.maxDrawdown - (selectedAccount.startingBalance - (selectedAccount.startingBalance + totalProfit));
                 const isInDrawdown = currentDrawdown < (selectedAccount.maxDrawdown * 0.5);
                 
                 const daysTraded = new Set(accountTrades.map(t => t.date)).size;
@@ -1598,7 +1598,7 @@ export default function Dashboard() {
                       <p className="text-sm text-gray-400 mt-2">
                         Estimated Payout: {formatCurrency((() => {
                           if (selectedAccount.type !== 'funded') return 0;
-                          const currentProfit = selectedAccount.currentBalance - selectedAccount.startingBalance;
+                          const currentProfit = totalProfit;
                           const profitSplit = (selectedAccount.profitSplit || 0) / 100;
                           const maxPayoutPercentage = (selectedAccount.maximumPayoutPercentage || 0) / 100;
                           const bufferPercentage = (selectedAccount.bufferPercentage || 0) / 100;
