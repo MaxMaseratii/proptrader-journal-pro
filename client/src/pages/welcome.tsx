@@ -20,40 +20,22 @@ import {
 export default function Welcome() {
   const features = [
     {
-      icon: BookOpen,
-      title: "Elite Trading Journal",
-      description: "Professional-grade journal designed specifically for prop trading success",
+      icon: Target,
+      title: "PropFirms Accounts & Risk Planning",
+      description: "Comprehensive account management with responsible day-to-pass planning and risk projections",
       color: "text-prop-gold"
     },
     {
-      icon: Brain,
-      title: "Advanced Analytics",
-      description: "AI-powered insights and performance metrics to optimize your trading",
+      icon: TrendingUp,
+      title: "PropFirms Spending Tracker",
+      description: "Track your investments, reset costs, and account expenses with detailed financial analytics",
       color: "text-prop-tiffany"
     },
     {
-      icon: Shield,
-      title: "Risk Management",
-      description: "Smart position sizing and drawdown protection tools",
+      icon: Brain,
+      title: "Disciplinary Assistant & Journal",
+      description: "AI-powered disciplinary analysis with professional trading journal and improvement tracking",
       color: "text-prop-green"
-    },
-    {
-      icon: Target,
-      title: "Performance Tracking",
-      description: "Real-time P&L tracking with detailed performance breakdowns",
-      color: "text-prop-blue"
-    },
-    {
-      icon: Zap,
-      title: "CSV Import",
-      description: "Seamlessly import trades from any broker or prop firm platform",
-      color: "text-prop-pink"
-    },
-    {
-      icon: BarChart3,
-      title: "Visual Reports",
-      description: "Beautiful charts and reports to showcase your trading evolution",
-      color: "text-prop-gold"
     }
   ];
 
@@ -61,7 +43,7 @@ export default function Welcome() {
     {
       name: "Alex Chen",
       title: "FTMO Funded Trader",
-      content: "PropJournal Pro helped me pass my $200K challenge. The risk management tools are incredible.",
+      content: "PropTraderJournal helped me pass my $200K challenge. The risk management tools are incredible.",
       rating: 5,
       gradient: "bg-prop-gradient-gold"
     },
@@ -391,109 +373,148 @@ export default function Welcome() {
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-5xl font-bold mb-6 text-gradient-rainbow">
-              Powerful Dashboard at Your Fingertips
+              Elite Features in Action
             </h2>
             <p className="text-xl text-gray-300">
-              See how PropJournal Pro transforms your trading data into actionable insights
+              See how PropTraderJournal transforms your prop trading journey with these powerful tools
             </p>
           </div>
           
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-16">
-            {/* Account Overview Mockup */}
+          <div className="grid grid-cols-1 gap-8 mb-16">
+            {/* PropFirms Accounts & Risk Planning */}
             <div className="bg-prop-card rounded-xl border border-prop-gold/20 p-6 hover-lift smooth-transition">
               <div className="mb-4">
-                <h3 className="text-xl font-bold text-prop-gold mb-2">Account Overview</h3>
-                <p className="text-gray-400">Real-time account monitoring and risk management</p>
+                <h3 className="text-xl font-bold text-prop-gold mb-2">PropFirms Accounts & Responsible Risk/Day-to-Pass Planning</h3>
+                <p className="text-gray-300">Comprehensive account management with intelligent risk projections and strategic planning</p>
               </div>
-              <div className="bg-gray-800 rounded-lg p-4 space-y-3">
-                <div className="flex justify-between items-center">
-                  <span className="text-gray-300">Current Balance</span>
-                  <span className="text-prop-green font-bold">$105,847.32</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-gray-300">Daily P&L</span>
-                  <span className="text-prop-green font-bold">+$2,347.89</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-gray-300">Max Drawdown</span>
-                  <span className="text-gray-300">2.3% / 10%</span>
-                </div>
-                <div className="w-full bg-gray-700 rounded-full h-2">
-                  <div className="bg-prop-green h-2 rounded-full w-2/3"></div>
+              <div className="bg-gray-800 rounded-lg p-4 space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <h4 className="text-sm font-semibold text-prop-gold">Account Overview</h4>
+                    <div className="bg-gray-700 rounded p-3 space-y-2">
+                      <div className="flex justify-between items-center">
+                        <span className="text-gray-300">FTMO Challenge #1</span>
+                        <span className="text-prop-green font-bold">$52,347</span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-gray-300">TopStep Funded</span>
+                        <span className="text-prop-green font-bold">$148,892</span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-gray-300">Risk Per Trade</span>
+                        <span className="text-prop-blue font-bold">$500</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <h4 className="text-sm font-semibold text-prop-tiffany">Projection Timeline</h4>
+                    <div className="bg-gray-700 rounded p-3 space-y-2">
+                      <div className="flex justify-between items-center">
+                        <span className="text-gray-300">Days to Target</span>
+                        <span className="text-prop-tiffany font-bold">23 days</span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-gray-300">Daily Reward</span>
+                        <span className="text-prop-green font-bold">$1,200</span>
+                      </div>
+                      <div className="w-full bg-gray-600 rounded-full h-2">
+                        <div className="bg-prop-tiffany h-2 rounded-full w-3/5"></div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
 
-            {/* Trade Analytics Mockup */}
-            <div className="bg-prop-card rounded-xl border border-prop-blue/20 p-6 hover-lift smooth-transition">
+            {/* PropFirms Spending Tracker */}
+            <div className="bg-prop-card rounded-xl border border-prop-tiffany/20 p-6 hover-lift smooth-transition">
               <div className="mb-4">
-                <h3 className="text-xl font-bold text-prop-blue mb-2">Performance Analytics</h3>
-                <p className="text-gray-400">Advanced metrics and trading statistics</p>
+                <h3 className="text-xl font-bold text-prop-tiffany mb-2">PropFirms Spending Tracker</h3>
+                <p className="text-gray-300">Track your investments, reset costs, and account expenses with detailed financial analytics</p>
               </div>
-              <div className="bg-gray-800 rounded-lg p-4 space-y-3">
-                <div className="flex justify-between items-center">
-                  <span className="text-gray-300">Win Rate</span>
-                  <span className="text-prop-blue font-bold">67.8%</span>
+              <div className="bg-gray-800 rounded-lg p-4 space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="bg-gray-700 rounded p-3 text-center">
+                    <div className="text-2xl font-bold text-prop-tiffany">$2,847</div>
+                    <div className="text-sm text-gray-300">Total Invested</div>
+                  </div>
+                  <div className="bg-gray-700 rounded p-3 text-center">
+                    <div className="text-2xl font-bold text-prop-pink">$459</div>
+                    <div className="text-sm text-gray-300">Reset Costs</div>
+                  </div>
+                  <div className="bg-gray-700 rounded p-3 text-center">
+                    <div className="text-2xl font-bold text-prop-green">$12,340</div>
+                    <div className="text-sm text-gray-300">Total Profit</div>
+                  </div>
                 </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-gray-300">Profit Factor</span>
-                  <span className="text-prop-blue font-bold">1.89</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-gray-300">Sharpe Ratio</span>
-                  <span className="text-prop-blue font-bold">2.43</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-gray-300">Total Trades</span>
-                  <span className="text-gray-300">2,847</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Risk Management Mockup */}
-            <div className="bg-prop-card rounded-xl border border-prop-pink/20 p-6 hover-lift smooth-transition">
-              <div className="mb-4">
-                <h3 className="text-xl font-bold text-prop-pink mb-2">Risk Management</h3>
-                <p className="text-gray-400">Smart position sizing and risk controls</p>
-              </div>
-              <div className="bg-gray-800 rounded-lg p-4 space-y-3">
-                <div className="flex justify-between items-center">
-                  <span className="text-gray-300">Position Size</span>
-                  <span className="text-prop-pink font-bold">$15,750</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-gray-300">Risk Per Trade</span>
-                  <span className="text-prop-pink font-bold">1.5%</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-gray-300">Stop Loss</span>
-                  <span className="text-red-400">-$1,500</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-gray-300">Take Profit</span>
-                  <span className="text-prop-green">+$4,500</span>
+                <div className="space-y-2">
+                  <div className="flex justify-between items-center">
+                    <span className="text-gray-300">FTMO $50K Challenge</span>
+                    <span className="text-prop-tiffany font-bold">$549</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-gray-300">TopStep $100K Funded</span>
+                    <span className="text-prop-tiffany font-bold">$1,299</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-gray-300">Apex $25K Challenge</span>
+                    <span className="text-prop-tiffany font-bold">$299</span>
+                  </div>
                 </div>
               </div>
             </div>
 
-            {/* Journal Entry Mockup */}
+            {/* Disciplinary Assistant & Journal */}
             <div className="bg-prop-card rounded-xl border border-prop-green/20 p-6 hover-lift smooth-transition">
               <div className="mb-4">
-                <h3 className="text-xl font-bold text-prop-green mb-2">Trading Journal</h3>
-                <p className="text-gray-400">Detailed trade analysis and reflection</p>
+                <h3 className="text-xl font-bold text-prop-green mb-2">Disciplinary Assistant & Journal</h3>
+                <p className="text-gray-300">AI-powered disciplinary analysis with professional trading journal and improvement tracking</p>
               </div>
-              <div className="bg-gray-800 rounded-lg p-4 space-y-3">
-                <div className="text-sm text-gray-300">
-                  <div className="font-semibold text-prop-green mb-1">What went right:</div>
-                  <div className="text-gray-400">Perfect entry at key support level, followed risk management rules</div>
-                </div>
-                <div className="text-sm text-gray-300">
-                  <div className="font-semibold text-red-400 mb-1">What went wrong:</div>
-                  <div className="text-gray-400">Could have held position longer for better R:R</div>
-                </div>
-                <div className="text-sm text-gray-300">
-                  <div className="font-semibold text-prop-blue mb-1">Improvement plan:</div>
-                  <div className="text-gray-400">Study market structure patterns for better exits</div>
+              <div className="bg-gray-800 rounded-lg p-4 space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-3">
+                    <h4 className="text-sm font-semibold text-prop-green">Discipline Score</h4>
+                    <div className="bg-gray-700 rounded p-3">
+                      <div className="flex justify-between items-center mb-2">
+                        <span className="text-gray-300">Overall Score</span>
+                        <span className="text-prop-green font-bold">87.3%</span>
+                      </div>
+                      <div className="w-full bg-gray-600 rounded-full h-2">
+                        <div className="bg-prop-green h-2 rounded-full w-5/6"></div>
+                      </div>
+                    </div>
+                    <div className="bg-gray-700 rounded p-3 space-y-2">
+                      <div className="flex justify-between items-center">
+                        <span className="text-gray-300">Risk Management</span>
+                        <span className="text-prop-green font-bold">92%</span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-gray-300">Emotional Control</span>
+                        <span className="text-yellow-400 font-bold">78%</span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-gray-300">Strategy Adherence</span>
+                        <span className="text-prop-green font-bold">95%</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="space-y-3">
+                    <h4 className="text-sm font-semibold text-prop-pink">Journal Insights</h4>
+                    <div className="bg-gray-700 rounded p-3 space-y-2">
+                      <div className="border-l-4 border-prop-green pl-3">
+                        <h5 className="text-xs font-semibold text-prop-green">What Went Right</h5>
+                        <p className="text-gray-300 text-xs">Perfect entry timing on EUR/USD breakout</p>
+                      </div>
+                      <div className="border-l-4 border-red-500 pl-3">
+                        <h5 className="text-xs font-semibold text-red-400">What Went Wrong</h5>
+                        <p className="text-gray-300 text-xs">Moved stop loss against me on GBP/JPY</p>
+                      </div>
+                      <div className="border-l-4 border-prop-gold pl-3">
+                        <h5 className="text-xs font-semibold text-prop-gold">AI Recommendation</h5>
+                        <p className="text-gray-300 text-xs">Stick to original stop levels, practice patience</p>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -509,7 +530,7 @@ export default function Welcome() {
               Trusted by Elite Traders
             </h2>
             <p className="text-xl text-gray-300">
-              Join thousands of successful prop traders who use PropJournal Pro
+              Join thousands of successful prop traders who use PropTraderJournal
             </p>
           </div>
 
@@ -547,7 +568,7 @@ export default function Welcome() {
           <h2 className="text-3xl font-bold mb-6 text-white">15 Days Free Trial • Cancel Anytime</h2>
           <p className="text-lg text-gray-300 mb-8 leading-relaxed">
             Start your journey risk-free with our 15-day trial period. Experience all premium features 
-            and see why thousands of prop traders choose PropJournal Pro. No commitments, no hidden fees.
+            and see why thousands of prop traders choose PropTraderJournal. No commitments, no hidden fees.
           </p>
           <div className="grid md:grid-cols-3 gap-6">
             <div className="text-center">
