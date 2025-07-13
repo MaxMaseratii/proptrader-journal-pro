@@ -746,7 +746,7 @@ export default function Projections() {
                     <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                       <div className="text-center">
                         <div className="text-lg font-bold text-green-400">
-                          {formatCurrency(selectedAccountData.account.currentBalance)}
+                          {formatCurrency(selectedAccountData.account.startingBalance + selectedAccountData.totalPnl)}
                         </div>
                         <div className="text-sm text-gray-400">Current Balance</div>
                       </div>

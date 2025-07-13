@@ -139,8 +139,7 @@ export default function Dashboard() {
 
     // Calculate combined combinedAnalytics
     const totalStartingBalance = accountsToAnalyze.reduce((sum, acc) => sum + acc.startingBalance, 0);
-    const totalCurrentBalance = accountsToAnalyze.reduce((sum, acc) => sum + acc.currentBalance, 0);
-    const totalPnl = totalCurrentBalance - totalStartingBalance;
+    const totalPnl = tradesToAnalyze.reduce((sum, trade) => sum + (trade.pnl || 0), 0);
     
     const winningTrades = tradesToAnalyze.filter(trade => trade.pnl > 0).length;
     const losingTrades = tradesToAnalyze.filter(trade => trade.pnl < 0).length;
@@ -192,9 +191,9 @@ export default function Dashboard() {
       losingTrades,
       bestTrade,
       worstTrade,
-      currentBalance: totalCurrentBalance,
+      currentBalance: totalStartingBalance + totalPnl,
       startingBalance: totalStartingBalance,
-      drawdown: totalStartingBalance - totalCurrentBalance,
+      drawdown: Math.max(0, totalStartingBalance - (totalStartingBalance + totalPnl)),
       profitTarget: totalProfitTarget,
       dailyLossLimit: totalDailyLossLimit,
       maxDrawdown: totalMaxDrawdown,
@@ -211,14 +210,14 @@ export default function Dashboard() {
   const primaryAccount = accounts?.[0];
   const recentTrades = trades?.slice(0, 4) || [];
 
-  // Calculate net balance (starting balance + total P&L from trades)
+  // Calculate net balance (starting balance + total P&L from trades) for selected accounts
   const calculateNetBalance = () => {
-    if (!accounts || !trades) return 0;
+    if (!combinedAnalytics) return 0;
     
     let totalNetBalance = 0;
     
-    accounts.forEach(account => {
-      const accountTrades = trades.filter(t => t.accountId === account.id);
+    combinedAnalytics.accounts.forEach(account => {
+      const accountTrades = trades?.filter(t => t.accountId === account.id) || [];
       const totalPnL = accountTrades.reduce((sum, trade) => sum + (trade.pnl || 0), 0);
       const netBalance = account.startingBalance + totalPnL;
       totalNetBalance += netBalance;

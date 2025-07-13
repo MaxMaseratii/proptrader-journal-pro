@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -18,9 +19,34 @@ import {
   Gem,
   ArrowRight
 } from "lucide-react";
+import { formatCurrency } from "@/lib/utils";
+import type { Account, Spending } from "@shared/schema";
 
 export default function Welcome() {
   const [showComparison, setShowComparison] = useState(false);
+  
+  // Fetch accounts and spending data for the spending tracker
+  const { data: accounts } = useQuery<Account[]>({
+    queryKey: ['/api/accounts'],
+    enabled: false // Only fetch if user is logged in
+  });
+  
+  const { data: spending } = useQuery<Spending[]>({
+    queryKey: ['/api/spending'],
+    enabled: false // Only fetch if user is logged in
+  });
+
+  // Calculate spending data for the tracker
+  const spendingData = {
+    challengeCost: spending?.filter(s => s.spendingType === 'account_purchase').reduce((sum, s) => sum + s.amount, 0) || 700,
+    activationCost: spending?.filter(s => s.spendingType === 'activation_fee').reduce((sum, s) => sum + s.amount, 0) || 750,
+    totalPayout: spending?.filter(s => s.spendingType === 'payout').reduce((sum, s) => sum + s.amount, 0) || 2500,
+    activeAccounts: accounts?.filter(a => a.status === 'active').length || 5,
+    failedAccounts: accounts?.filter(a => a.status === 'failed').length || 9,
+    totalAccounts: accounts?.length || 14,
+    totalSpent: (spending?.filter(s => s.spendingType === 'account_purchase').reduce((sum, s) => sum + s.amount, 0) || 700) + (spending?.filter(s => s.spendingType === 'activation_fee').reduce((sum, s) => sum + s.amount, 0) || 750),
+    roi: (spending?.filter(s => s.spendingType === 'payout').reduce((sum, s) => sum + s.amount, 0) || 2500) - ((spending?.filter(s => s.spendingType === 'account_purchase').reduce((sum, s) => sum + s.amount, 0) || 700) + (spending?.filter(s => s.spendingType === 'activation_fee').reduce((sum, s) => sum + s.amount, 0) || 750))
+  };
   const features = [
     {
       icon: Target,
@@ -595,15 +621,15 @@ export default function Welcome() {
               <div className="bg-gray-800 rounded-lg p-4 space-y-4">
                 <div className="grid grid-cols-3 gap-2">
                   <div className="bg-gray-700 rounded p-3 text-center">
-                    <div className="text-xl font-bold text-prop-tiffany">$700</div>
+                    <div className="text-xl font-bold text-prop-tiffany">{formatCurrency(spendingData.challengeCost)}</div>
                     <div className="text-xs text-gray-300">Challenge Cost</div>
                   </div>
                   <div className="bg-gray-700 rounded p-3 text-center">
-                    <div className="text-xl font-bold text-prop-pink">$750</div>
+                    <div className="text-xl font-bold text-prop-pink">{formatCurrency(spendingData.activationCost)}</div>
                     <div className="text-xs text-gray-300">Activation Cost</div>
                   </div>
                   <div className="bg-gray-700 rounded p-3 text-center">
-                    <div className="text-xl font-bold text-prop-green">$2,500</div>
+                    <div className="text-xl font-bold text-prop-green">{formatCurrency(spendingData.totalPayout)}</div>
                     <div className="text-xs text-gray-300">Total Payout</div>
                   </div>
                 </div>
@@ -611,28 +637,28 @@ export default function Welcome() {
                   <div className="bg-gray-700 rounded p-2">
                     <div className="flex justify-between items-center">
                       <span className="text-gray-300">Active Accounts</span>
-                      <span className="text-prop-green font-bold">5</span>
+                      <span className="text-prop-green font-bold">{spendingData.activeAccounts}</span>
                     </div>
-                    <div className="text-xs text-gray-400">5 x $50K accounts</div>
+                    <div className="text-xs text-gray-400">{spendingData.activeAccounts} accounts</div>
                   </div>
                   <div className="bg-gray-700 rounded p-2">
                     <div className="flex justify-between items-center">
                       <span className="text-gray-300">Failed Accounts</span>
-                      <span className="text-prop-pink font-bold">9</span>
+                      <span className="text-prop-pink font-bold">{spendingData.failedAccounts}</span>
                     </div>
-                    <div className="text-xs text-gray-400">9 x $50K accounts</div>
+                    <div className="text-xs text-gray-400">{spendingData.failedAccounts} accounts</div>
                   </div>
                   <div className="bg-gray-700 rounded p-2">
                     <div className="flex justify-between items-center">
                       <span className="text-gray-300">Total Accounts</span>
-                      <span className="text-prop-tiffany font-bold">14</span>
+                      <span className="text-prop-tiffany font-bold">{spendingData.totalAccounts}</span>
                     </div>
-                    <div className="text-xs text-gray-400">Overall spent: $1,450</div>
+                    <div className="text-xs text-gray-400">Overall spent: {formatCurrency(spendingData.totalSpent)}</div>
                   </div>
                 </div>
                 <div className="bg-prop-gradient-green/20 border border-prop-green/50 rounded p-3 text-center">
-                  <div className="text-lg font-bold text-prop-green">ROI: $1,050</div>
-                  <div className="text-xs text-prop-green font-bold">PROFITABLE TRADER</div>
+                  <div className="text-lg font-bold text-prop-green">ROI: {formatCurrency(spendingData.roi)}</div>
+                  <div className="text-xs text-prop-green font-bold">{spendingData.roi > 0 ? 'PROFITABLE TRADER' : 'WORKING TOWARD PROFIT'}</div>
                 </div>
               </div>
             </div>
