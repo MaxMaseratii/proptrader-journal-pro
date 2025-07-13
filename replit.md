@@ -294,6 +294,15 @@ Changelog:
   * Modified payouts page to eliminate all hardcoded fallback values and use true account-specific payout requirements
   * Verified AccountManagement component uses correct account-specific buffer and profit split calculations
   * All payout requirements now fully dynamic based on individual user input during account creation
+- July 13, 2025. Global Account Selection System with Persistence:
+  * Implemented global account selection system affecting all dashboard widgets except Payout Status
+  * Added three selection modes: Single Account, Multiple Accounts, and All Accounts with persistent localStorage
+  * Fixed Trade Analysis Calendar to respect global account selection filters
+  * Eliminated remaining hardcoded payout fallback values (90%, 5%, etc.) in dashboard estimated payout calculations
+  * Created separate independent account selection for Payout Status widget as requested
+  * Added persistent account selection that maintains last selection until user changes it
+  * Ensured all widgets (except Payout Status) use filtered data based on global account selection
+  * Fixed account selection logic to work with single selectedAccountIds state for consistency
 - July 3, 2025. Critical Fix: Initial vs Final SL/TP Differentiation:
   * Completely redesigned CSV import algorithm to properly distinguish between initial and final stop loss/take profit levels
   * Enhanced trade entry forms to clearly label fields as "price levels" with explanatory text

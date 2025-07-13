@@ -57,9 +57,11 @@ interface DashboardAnalytics {
 }
 
 export default function Dashboard() {
-  const [selectedAccountIds, setSelectedAccountIds] = useState<number[]>([]);
+  const [selectedAccountIds, setSelectedAccountIds] = useState<number[]>(() => {
+    const saved = localStorage.getItem('dashboard-selected-accounts');
+    return saved ? JSON.parse(saved) : [];
+  });
   const [viewMode, setViewMode] = useState<'single' | 'multiple' | 'all'>('all');
-  const [selectedAccountId, setSelectedAccountId] = useState<number | null>(null);
   const [showSpendingModal, setShowSpendingModal] = useState(false);
   const [spendingForm, setSpendingForm] = useState({
     type: 'spending' as 'spending' | 'payout',
@@ -69,7 +71,13 @@ export default function Dashboard() {
   });
   const [calendarDate, setCalendarDate] = useState(new Date());
   const [timePeriod, setTimePeriod] = useState<'daily' | 'weekly' | 'monthly' | 'yearly'>('monthly');
-  const [accountSelectionMode, setAccountSelectionMode] = useState<'all' | 'single' | 'multiple'>('all');
+  const [accountSelectionMode, setAccountSelectionMode] = useState<'all' | 'single' | 'multiple'>(() => {
+    const saved = localStorage.getItem('dashboard-account-selection-mode');
+    return saved ? saved as 'all' | 'single' | 'multiple' : 'all';
+  });
+  
+  // Separate state for Payout Status widget (independent from global selection)
+  const [payoutStatusAccountId, setPayoutStatusAccountId] = useState<number | null>(null);
 
   const { data: accounts, isLoading: accountsLoading } = useQuery<Account[]>({
     queryKey: ["/api/accounts"],
@@ -79,15 +87,34 @@ export default function Dashboard() {
     queryKey: ["/api/trades"],
   });
 
-  // Initialize selectedAccountId with first TopStep account
+  // Initialize selectedAccountIds with first account when none selected
   React.useEffect(() => {
-    if (accounts && !selectedAccountId) {
-      const topStepAccount = accounts.find(acc => acc.firm === 'TopStep');
-      if (topStepAccount) {
-        setSelectedAccountId(topStepAccount.id);
+    if (accounts && selectedAccountIds.length === 0 && accountSelectionMode !== 'all') {
+      const firstAccount = accounts[0];
+      if (firstAccount) {
+        setSelectedAccountIds([firstAccount.id]);
       }
     }
-  }, [accounts, selectedAccountId]);
+  }, [accounts, selectedAccountIds, accountSelectionMode]);
+
+  // Initialize payout status account
+  React.useEffect(() => {
+    if (accounts && !payoutStatusAccountId) {
+      const firstAccount = accounts[0];
+      if (firstAccount) {
+        setPayoutStatusAccountId(firstAccount.id);
+      }
+    }
+  }, [accounts, payoutStatusAccountId]);
+
+  // Persist account selection changes
+  React.useEffect(() => {
+    localStorage.setItem('dashboard-selected-accounts', JSON.stringify(selectedAccountIds));
+  }, [selectedAccountIds]);
+
+  React.useEffect(() => {
+    localStorage.setItem('dashboard-account-selection-mode', accountSelectionMode);
+  }, [accountSelectionMode]);
 
   // Calculate combined combinedAnalytics for selected accounts
   const combinedAnalytics = useMemo(() => {
@@ -99,9 +126,9 @@ export default function Dashboard() {
     if (accountSelectionMode === 'all') {
       accountsToAnalyze = accounts;
       tradesToAnalyze = trades;
-    } else if (accountSelectionMode === 'single' && selectedAccountId) {
-      accountsToAnalyze = accounts.filter(acc => acc.id === selectedAccountId);
-      tradesToAnalyze = trades.filter(trade => trade.accountId === selectedAccountId);
+    } else if (accountSelectionMode === 'single' && selectedAccountIds.length > 0) {
+      accountsToAnalyze = accounts.filter(acc => acc.id === selectedAccountIds[0]);
+      tradesToAnalyze = trades.filter(trade => trade.accountId === selectedAccountIds[0]);
     } else {
       const accountIdsToUse = selectedAccountIds.length > 0 ? selectedAccountIds : (accounts.length > 0 ? [accounts[0].id] : []);
       accountsToAnalyze = accounts.filter(acc => accountIdsToUse.includes(acc.id));
@@ -1499,7 +1526,7 @@ export default function Dashboard() {
                   <p className="widget-label">Payout Status</p>
                   <p className="widget-description">Track payout eligibility</p>
                 </div>
-                <Select value={selectedAccountId?.toString() || ''} onValueChange={(value) => setSelectedAccountId(Number(value))}>
+                <Select value={payoutStatusAccountId?.toString() || ''} onValueChange={(value) => setPayoutStatusAccountId(Number(value))}>
                   <SelectTrigger className="w-48 bg-gray-800 border-gray-600 text-white text-sm">
                     <SelectValue placeholder="Select account" />
                   </SelectTrigger>
@@ -1514,7 +1541,7 @@ export default function Dashboard() {
               </div>
               
               {(() => {
-                const selectedAccount = accounts?.find(acc => acc.id === selectedAccountId);
+                const selectedAccount = accounts?.find(acc => acc.id === payoutStatusAccountId);
                 if (!selectedAccount) return null;
                 
                 const accountTrades = trades?.filter(t => t.accountId === selectedAccount.id) || [];
@@ -1546,9 +1573,9 @@ export default function Dashboard() {
                         Estimated Payout: {formatCurrency((() => {
                           if (selectedAccount.type !== 'funded') return 0;
                           const currentProfit = selectedAccount.currentBalance - selectedAccount.startingBalance;
-                          const profitSplit = (selectedAccount.profitSplit || 90) / 100;
-                          const maxPayoutPercentage = (selectedAccount.maximumPayoutPercentage || 90) / 100;
-                          const bufferPercentage = (selectedAccount.bufferPercentage || 5) / 100;
+                          const profitSplit = (selectedAccount.profitSplit || 0) / 100;
+                          const maxPayoutPercentage = (selectedAccount.maximumPayoutPercentage || 0) / 100;
+                          const bufferPercentage = (selectedAccount.bufferPercentage || 0) / 100;
                           const profitTarget = selectedAccount.profitTarget || 0;
                           const bufferAmount = profitTarget * bufferPercentage;
                           const profitAboveBuffer = Math.max(0, currentProfit - bufferAmount);
@@ -1783,8 +1810,30 @@ export default function Dashboard() {
               </div>
               <div className="w-full">
                 <TradeAnalysisCalendar 
-                  trades={trades || []} 
-                  accounts={accounts || []}
+                  trades={(() => {
+                    if (!trades) return [];
+                    
+                    if (accountSelectionMode === 'all') {
+                      return trades;
+                    } else if (accountSelectionMode === 'single' && selectedAccountIds.length > 0) {
+                      return trades.filter(trade => trade.accountId === selectedAccountIds[0]);
+                    } else if (selectedAccountIds.length > 0) {
+                      return trades.filter(trade => selectedAccountIds.includes(trade.accountId));
+                    }
+                    return trades;
+                  })()} 
+                  accounts={(() => {
+                    if (!accounts) return [];
+                    
+                    if (accountSelectionMode === 'all') {
+                      return accounts;
+                    } else if (accountSelectionMode === 'single' && selectedAccountIds.length > 0) {
+                      return accounts.filter(acc => acc.id === selectedAccountIds[0]);
+                    } else if (selectedAccountIds.length > 0) {
+                      return accounts.filter(acc => selectedAccountIds.includes(acc.id));
+                    }
+                    return accounts;
+                  })()}
                   viewMode={timePeriod}
                 />
               </div>
