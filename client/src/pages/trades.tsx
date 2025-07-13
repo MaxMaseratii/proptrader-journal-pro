@@ -401,14 +401,38 @@ export default function Trades() {
                       {trade.finalTakeProfit ? formatPrice(trade.finalTakeProfit) : 'Not placed'}
                     </td>
                     <td className="py-3 px-4 text-center">
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => window.open(`https://www.tradingview.com/chart/?symbol=${trade.symbol}`, '_blank')}
-                        className="text-blue-400 border-blue-400 hover:bg-blue-400/20"
-                      >
-                        📈 View Chart
-                      </Button>
+                      <div className="flex flex-col gap-1">
+                        {trade.tradeImage && (
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => window.open(trade.tradeImage, '_blank')}
+                            className="text-purple-400 border-purple-400 hover:bg-purple-400/20"
+                          >
+                            🖼️ Trade Image
+                          </Button>
+                        )}
+                        {trade.tradingViewLink && (
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => window.open(trade.tradingViewLink, '_blank')}
+                            className="text-blue-400 border-blue-400 hover:bg-blue-400/20"
+                          >
+                            📈 TradingView
+                          </Button>
+                        )}
+                        {!trade.tradeImage && !trade.tradingViewLink && (
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => window.open(`https://www.tradingview.com/chart/?symbol=${trade.symbol}`, '_blank')}
+                            className="text-blue-400 border-blue-400 hover:bg-blue-400/20"
+                          >
+                            📈 View Chart
+                          </Button>
+                        )}
+                      </div>
                     </td>
                   </tr>
                 ))}

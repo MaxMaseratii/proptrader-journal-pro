@@ -817,46 +817,7 @@ export default function Dashboard() {
           </div>
         )}
 
-        {/* Account Discipline Analysis - Moved from Trading Activity */}
-        <div className="mb-6 mt-12">
-          <h2 className="text-xl font-bold text-gradient-rainbow mb-6 flex items-center border-b border-gray-700 pb-3">
-            <Brain className="mr-3 h-5 w-5 text-blue-400" />
-            Account Discipline Analysis
-          </h2>
-          <div className="widget-container">
-            <div className="widget-content">
-              <div className="widget-left">
-                <p className="widget-label">Performance by account</p>
-                <div className="mt-2 space-y-2">
-                  {accounts?.map(account => {
-                    const accountTrades = trades?.filter(trade => trade.accountId === account.id) || [];
-                    const disciplineScore = accountTrades.length > 0 ? Math.round(Math.random() * 100) : 0;
-                    const violations = Math.floor(accountTrades.length * 0.1);
-                    const grade = disciplineScore >= 90 ? 'A' : disciplineScore >= 80 ? 'B' : disciplineScore >= 70 ? 'C' : disciplineScore >= 60 ? 'D' : 'F';
-                    
-                    return (
-                      <div key={account.id} className="border-b border-gray-700 pb-2">
-                        <div className="flex justify-between items-center">
-                          <div>
-                            <p className="font-medium text-white">{account.name}</p>
-                            <p className="text-sm text-gray-400">{accountTrades.length} trades • {violations} violations</p>
-                          </div>
-                          <div className="text-right">
-                            <p className="font-bold text-white">{disciplineScore}%</p>
-                            <p className="text-sm text-blue-400">Grade {grade}</p>
-                          </div>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-              <div className="widget-icon-square">
-                <Target className="widget-icon" />
-              </div>
-            </div>
-          </div>
-        </div>
+
 
         {/* Account Type Row - Reordered: Live, Funded, Challenge */}
         <div className="widget-grid mb-6">

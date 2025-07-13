@@ -340,6 +340,12 @@ Changelog:
   * Added account selection functionality to spending page with filtering for all accounts including failed ones
   * Fixed spending records showing "Unknown" accounts by updating orphaned records to existing account IDs
   * Enhanced spending tracker on welcome page to use real database data instead of hardcoded values
+  * Removed duplicate Account Discipline Analysis section from dashboard (kept the red background version after Trading Charts)
+  * Added Consistency Rules Percentage field to Account Info & Rules section in account creation form
+  * Updated consistency rules descriptions: "pass" for Account Rules, "request a payout" for Payout Rules
+  * Enhanced individual trade display with Trade Image and TradingView link buttons in trade table
+  * Added conditional display for trade documentation: shows Trade Image, TradingView links, or fallback View Chart button
+  * Improved trade documentation integration for disciplinary scoring analysis
 - July 3, 2025. Critical Fix: Initial vs Final SL/TP Differentiation:
   * Completely redesigned CSV import algorithm to properly distinguish between initial and final stop loss/take profit levels
   * Enhanced trade entry forms to clearly label fields as "price levels" with explanatory text
