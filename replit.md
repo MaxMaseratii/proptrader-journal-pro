@@ -273,8 +273,6 @@ Changelog:
   * Removed separate accounts route from navigation and moved PropFirms Trading Accounts to top of main navigation section
   * Redesigned account widgets to be compact and scalable for 50+ accounts using responsive grid layout (1/2/3/4 columns)
   * Reduced account card size with smaller buttons, compact content display, and efficient use of space
-  * Fixed JSX syntax errors in PropFirms Trading Accounts page structure and implemented minimize buttons for both sections
-  * Updated net balance calculation to reflect selected account data instead of all accounts when specific accounts are selected
 - July 3, 2025. Critical Fix: Initial vs Final SL/TP Differentiation:
   * Completely redesigned CSV import algorithm to properly distinguish between initial and final stop loss/take profit levels
   * Enhanced trade entry forms to clearly label fields as "price levels" with explanatory text

@@ -184,18 +184,13 @@ export default function Dashboard() {
   const primaryAccount = accounts?.[0];
   const recentTrades = trades?.slice(0, 4) || [];
 
-  // Calculate net balance based on selected accounts
+  // Calculate net balance (starting balance + total P&L from trades)
   const calculateNetBalance = () => {
     if (!accounts || !trades) return 0;
     
     let totalNetBalance = 0;
     
-    // Get relevant accounts based on selection mode
-    const relevantAccounts = accountSelectionMode === 'all' 
-      ? accounts 
-      : accounts.filter(account => selectedAccountIds.includes(account.id));
-    
-    relevantAccounts.forEach(account => {
+    accounts.forEach(account => {
       const accountTrades = trades.filter(t => t.accountId === account.id);
       const totalPnL = accountTrades.reduce((sum, trade) => sum + (trade.pnl || 0), 0);
       const netBalance = account.startingBalance + totalPnL;

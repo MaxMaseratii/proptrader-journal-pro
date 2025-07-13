@@ -32,7 +32,7 @@ import {
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
 const navItems = [
-  { href: "/projections", label: "PropFirms Accounts & Responsible Risk/Day-to-Pass Planning", icon: TrendingUp, section: "main" },
+  { href: "/projections", label: "PropFirms Trading Accounts", icon: TrendingUp, section: "main" },
   { href: "/", label: "Dashboard", icon: ChartLine, section: "main" },
   { href: "/trading-companion", label: "Trading Companion", icon: Bot, section: "main" },
   { href: "/trades", label: "Trades", icon: BarChart3, section: "main" },
