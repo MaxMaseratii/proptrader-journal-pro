@@ -131,6 +131,20 @@ export default function Projections() {
       primaryTradingAsset: "ES",
       secondaryTradingAsset: "none",
       tertiaryTradingAsset: "none",
+      // Financial tracking fields
+      accountCost: null,
+      purchaseMethod: null,
+      resetCount: null,
+      totalResetsCost: null,
+      activationCost: null,
+      activationPaid: null,
+      includesActivationFee: null,
+      // Payout rule fields
+      winningDayMinimum: null,
+      // Risk management fields
+      riskPerTrade: null,
+      maxTradesPerDay: null,
+      maxPositionSize: null,
     },
   });
 
@@ -888,6 +902,417 @@ export default function Projections() {
                                   {...field} 
                                   className="bg-gray-700 border-gray-600 text-white placeholder-gray-400"
                                   placeholder="e.g., FTMO, TopStep"
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={accountForm.control}
+                          name="type"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="text-white font-medium">Account Type</FormLabel>
+                              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                <FormControl>
+                                  <SelectTrigger className="bg-gray-700 border-gray-600 text-white">
+                                    <SelectValue placeholder="Select type" />
+                                  </SelectTrigger>
+                                </FormControl>
+                                <SelectContent className="bg-gray-700 border-gray-600">
+                                  <SelectItem value="challenge" className="text-white hover:bg-gray-600">Challenge</SelectItem>
+                                  <SelectItem value="funded" className="text-white hover:bg-gray-600">Funded</SelectItem>
+                                  <SelectItem value="live" className="text-white hover:bg-gray-600">Live</SelectItem>
+                                </SelectContent>
+                              </Select>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={accountForm.control}
+                          name="status"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="text-white font-medium">Status</FormLabel>
+                              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                <FormControl>
+                                  <SelectTrigger className="bg-gray-700 border-gray-600 text-white">
+                                    <SelectValue placeholder="Select status" />
+                                  </SelectTrigger>
+                                </FormControl>
+                                <SelectContent className="bg-gray-700 border-gray-600">
+                                  <SelectItem value="active" className="text-white hover:bg-gray-600">Active</SelectItem>
+                                  <SelectItem value="passed" className="text-white hover:bg-gray-600">Passed</SelectItem>
+                                  <SelectItem value="failed" className="text-white hover:bg-gray-600">Failed</SelectItem>
+                                  <SelectItem value="withdrawn" className="text-white hover:bg-gray-600">Withdrawn</SelectItem>
+                                </SelectContent>
+                              </Select>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+                    </div>
+
+                    <div className="bg-gray-800 p-4 rounded-lg">
+                      <h3 className="text-lg font-semibold text-white mb-4">Account Rules & Limits</h3>
+                      <div className="grid grid-cols-2 gap-4">
+                        <FormField
+                          control={accountForm.control}
+                          name="startingBalance"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="text-white font-medium">Starting Balance ($)</FormLabel>
+                              <FormControl>
+                                <Input 
+                                  type="number" 
+                                  {...field} 
+                                  value={field.value || ""}
+                                  onChange={(e) => field.onChange(e.target.value === "" ? null : parseFloat(e.target.value))}
+                                  className="bg-gray-700 border-gray-600 text-white placeholder-gray-400"
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={accountForm.control}
+                          name="currentBalance"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="text-white font-medium">Current Balance ($)</FormLabel>
+                              <FormControl>
+                                <Input 
+                                  type="number" 
+                                  {...field} 
+                                  value={field.value || ""}
+                                  onChange={(e) => field.onChange(e.target.value === "" ? null : parseFloat(e.target.value))}
+                                  className="bg-gray-700 border-gray-600 text-white placeholder-gray-400"
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={accountForm.control}
+                          name="profitTarget"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="text-white font-medium">Profit Target ($)</FormLabel>
+                              <FormControl>
+                                <Input 
+                                  type="number" 
+                                  {...field} 
+                                  value={field.value || ""}
+                                  onChange={(e) => field.onChange(e.target.value === "" ? null : parseFloat(e.target.value))}
+                                  className="bg-gray-700 border-gray-600 text-white placeholder-gray-400"
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={accountForm.control}
+                          name="maxDrawdown"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="text-white font-medium">Max Drawdown ($)</FormLabel>
+                              <FormControl>
+                                <Input 
+                                  type="number" 
+                                  {...field} 
+                                  value={field.value || ""}
+                                  onChange={(e) => field.onChange(e.target.value === "" ? null : parseFloat(e.target.value))}
+                                  className="bg-gray-700 border-gray-600 text-white placeholder-gray-400"
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={accountForm.control}
+                          name="dailyLossLimit"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="text-white font-medium">Daily Loss Limit ($)</FormLabel>
+                              <FormControl>
+                                <Input 
+                                  type="number" 
+                                  {...field} 
+                                  value={field.value || ""}
+                                  onChange={(e) => field.onChange(e.target.value === "" ? null : parseFloat(e.target.value))}
+                                  className="bg-gray-700 border-gray-600 text-white placeholder-gray-400"
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+                    </div>
+                  </TabsContent>
+
+                  <TabsContent value="financial" className="space-y-6 mt-6">
+                    <div className="bg-gray-800 p-4 rounded-lg">
+                      <h3 className="text-lg font-semibold text-white mb-4">Financial Tracking</h3>
+                      <div className="grid grid-cols-2 gap-4">
+                        <FormField
+                          control={accountForm.control}
+                          name="accountCost"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="text-white font-medium">Account Cost ($)</FormLabel>
+                              <FormControl>
+                                <Input 
+                                  type="number" 
+                                  step="0.01"
+                                  {...field} 
+                                  value={field.value || ""}
+                                  onChange={(e) => field.onChange(e.target.value === "" ? null : parseFloat(e.target.value))}
+                                  className="bg-gray-700 border-gray-600 text-white placeholder-gray-400"
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={accountForm.control}
+                          name="purchaseMethod"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="text-white font-medium">Purchase Method</FormLabel>
+                              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                <FormControl>
+                                  <SelectTrigger className="bg-gray-700 border-gray-600 text-white">
+                                    <SelectValue placeholder="Select method" />
+                                  </SelectTrigger>
+                                </FormControl>
+                                <SelectContent className="bg-gray-700 border-gray-600">
+                                  <SelectItem value="credit_card" className="text-white hover:bg-gray-600">Credit Card</SelectItem>
+                                  <SelectItem value="debit_card" className="text-white hover:bg-gray-600">Debit Card</SelectItem>
+                                  <SelectItem value="paypal" className="text-white hover:bg-gray-600">PayPal</SelectItem>
+                                  <SelectItem value="crypto" className="text-white hover:bg-gray-600">Cryptocurrency</SelectItem>
+                                  <SelectItem value="bank_transfer" className="text-white hover:bg-gray-600">Bank Transfer</SelectItem>
+                                  <SelectItem value="other" className="text-white hover:bg-gray-600">Other</SelectItem>
+                                </SelectContent>
+                              </Select>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={accountForm.control}
+                          name="activationCost"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="text-white font-medium">Activation Cost ($)</FormLabel>
+                              <FormControl>
+                                <Input 
+                                  type="number" 
+                                  step="0.01"
+                                  {...field} 
+                                  value={field.value || ""}
+                                  onChange={(e) => field.onChange(e.target.value === "" ? null : parseFloat(e.target.value))}
+                                  className="bg-gray-700 border-gray-600 text-white placeholder-gray-400"
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={accountForm.control}
+                          name="resetCount"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="text-white font-medium">Reset Count</FormLabel>
+                              <FormControl>
+                                <Input 
+                                  type="number" 
+                                  {...field} 
+                                  value={field.value || ""}
+                                  onChange={(e) => field.onChange(e.target.value === "" ? null : parseInt(e.target.value))}
+                                  className="bg-gray-700 border-gray-600 text-white placeholder-gray-400"
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+                    </div>
+                  </TabsContent>
+
+                  <TabsContent value="payout" className="space-y-6 mt-6">
+                    <div className="bg-gray-800 p-4 rounded-lg">
+                      <h3 className="text-lg font-semibold text-white mb-4">Payout Configuration</h3>
+                      <div className="grid grid-cols-2 gap-4">
+                        <FormField
+                          control={accountForm.control}
+                          name="daysRequiredForPayout"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="text-white font-medium">Days Required for Payout</FormLabel>
+                              <FormControl>
+                                <Input 
+                                  type="number" 
+                                  {...field} 
+                                  value={field.value || ""}
+                                  onChange={(e) => field.onChange(e.target.value === "" ? null : parseInt(e.target.value))}
+                                  className="bg-gray-700 border-gray-600 text-white placeholder-gray-400"
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={accountForm.control}
+                          name="winningDayMinimum"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="text-white font-medium">Winning Day Minimum ($)</FormLabel>
+                              <FormControl>
+                                <Input 
+                                  type="number" 
+                                  {...field} 
+                                  value={field.value || ""}
+                                  onChange={(e) => field.onChange(e.target.value === "" ? null : parseFloat(e.target.value))}
+                                  className="bg-gray-700 border-gray-600 text-white placeholder-gray-400"
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={accountForm.control}
+                          name="profitSplit"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="text-white font-medium">Profit Split (%)</FormLabel>
+                              <FormControl>
+                                <Input 
+                                  type="number" 
+                                  {...field} 
+                                  value={field.value || ""}
+                                  onChange={(e) => field.onChange(e.target.value === "" ? null : parseFloat(e.target.value))}
+                                  className="bg-gray-700 border-gray-600 text-white placeholder-gray-400"
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={accountForm.control}
+                          name="payoutFrequency"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="text-white font-medium">Payout Frequency</FormLabel>
+                              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                <FormControl>
+                                  <SelectTrigger className="bg-gray-700 border-gray-600 text-white">
+                                    <SelectValue placeholder="Select frequency" />
+                                  </SelectTrigger>
+                                </FormControl>
+                                <SelectContent className="bg-gray-700 border-gray-600">
+                                  <SelectItem value="weekly" className="text-white hover:bg-gray-600">Weekly</SelectItem>
+                                  <SelectItem value="bi-weekly" className="text-white hover:bg-gray-600">Bi-weekly</SelectItem>
+                                  <SelectItem value="monthly" className="text-white hover:bg-gray-600">Monthly</SelectItem>
+                                  <SelectItem value="on-demand" className="text-white hover:bg-gray-600">On-demand</SelectItem>
+                                </SelectContent>
+                              </Select>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+                    </div>
+                  </TabsContent>
+
+                  <TabsContent value="risk" className="space-y-6 mt-6">
+                    <div className="bg-gray-800 p-4 rounded-lg">
+                      <h3 className="text-lg font-semibold text-white mb-4">Risk Management</h3>
+                      <div className="grid grid-cols-2 gap-4">
+                        <FormField
+                          control={accountForm.control}
+                          name="riskPerTrade"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="text-white font-medium">Risk Per Trade ($)</FormLabel>
+                              <FormControl>
+                                <Input 
+                                  type="number" 
+                                  {...field} 
+                                  value={field.value || ""}
+                                  onChange={(e) => field.onChange(e.target.value === "" ? null : parseFloat(e.target.value))}
+                                  className="bg-gray-700 border-gray-600 text-white placeholder-gray-400"
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={accountForm.control}
+                          name="maxTradesPerDay"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="text-white font-medium">Max Trades Per Day</FormLabel>
+                              <FormControl>
+                                <Input 
+                                  type="number" 
+                                  {...field} 
+                                  value={field.value || ""}
+                                  onChange={(e) => field.onChange(e.target.value === "" ? null : parseInt(e.target.value))}
+                                  className="bg-gray-700 border-gray-600 text-white placeholder-gray-400"
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={accountForm.control}
+                          name="riskPercentage"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="text-white font-medium">Risk Percentage (%)</FormLabel>
+                              <FormControl>
+                                <Input 
+                                  type="number" 
+                                  step="0.01"
+                                  {...field} 
+                                  value={field.value || ""}
+                                  onChange={(e) => field.onChange(e.target.value === "" ? null : parseFloat(e.target.value))}
+                                  className="bg-gray-700 border-gray-600 text-white placeholder-gray-400"
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={accountForm.control}
+                          name="maxPositionSize"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="text-white font-medium">Max Position Size</FormLabel>
+                              <FormControl>
+                                <Input 
+                                  type="number" 
+                                  {...field} 
+                                  value={field.value || ""}
+                                  onChange={(e) => field.onChange(e.target.value === "" ? null : parseInt(e.target.value))}
+                                  className="bg-gray-700 border-gray-600 text-white placeholder-gray-400"
                                 />
                               </FormControl>
                               <FormMessage />
