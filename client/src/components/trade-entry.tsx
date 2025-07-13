@@ -40,6 +40,8 @@ export default function TradeEntry({ accounts }: TradeEntryProps) {
     initialTakeProfit: null,
     finalStopLoss: null,
     finalTakeProfit: null,
+    tradeImage: "",
+    tradingViewLink: "",
   });
 
   const createTradeMutation = useMutation({
@@ -70,6 +72,8 @@ export default function TradeEntry({ accounts }: TradeEntryProps) {
         initialTakeProfit: null,
         finalStopLoss: null,
         finalTakeProfit: null,
+        tradeImage: "",
+        tradingViewLink: "",
       });
       toast({
         title: "Trade Added Successfully",
@@ -461,6 +465,37 @@ export default function TradeEntry({ accounts }: TradeEntryProps) {
                   </CardContent>
                 </Card>
               </div>
+
+              {/* Trade Documentation */}
+              <Card className="bg-gray-800 border-gray-700">
+                <CardHeader className="pb-4">
+                  <CardTitle className="text-lg text-white">Trade Documentation</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label className="text-gray-300 font-medium">Trade Image URL</Label>
+                      <Input 
+                        value={formData.tradeImage || ""}
+                        onChange={(e) => setFormData(prev => ({ ...prev, tradeImage: e.target.value }))}
+                        className="bg-gray-700 border-gray-600 text-white focus:border-blue-400"
+                        placeholder="https://example.com/trade-screenshot.png"
+                      />
+                      <p className="text-xs text-gray-400">Upload screenshot to image hosting service and paste URL</p>
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="text-gray-300 font-medium">TradingView Link</Label>
+                      <Input 
+                        value={formData.tradingViewLink || ""}
+                        onChange={(e) => setFormData(prev => ({ ...prev, tradingViewLink: e.target.value }))}
+                        className="bg-gray-700 border-gray-600 text-white focus:border-blue-400"
+                        placeholder="https://www.tradingview.com/x/PZiEBNk7/"
+                      />
+                      <p className="text-xs text-gray-400">Share direct link to TradingView chart</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
 
               {/* Notes */}
               <Card className="bg-gray-800 border-gray-700">

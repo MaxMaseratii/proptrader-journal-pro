@@ -32,12 +32,12 @@ import {
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
 const navItems = [
-  { href: "/projections", label: "Accounts - Risk Management & Target Projection Planning", icon: TrendingUp, section: "main" },
+  { href: "/projections", label: "Accounts  Risk Management & Target Projection Planning", icon: TrendingUp, section: "main" },
   { href: "/", label: "Dashboard", icon: ChartLine, section: "main" },
   { href: "/trading-companion", label: "Trading Companion", icon: Bot, section: "main" },
   { href: "/trades", label: "Trades", icon: BarChart3, section: "main" },
   { href: "/charts", label: "Trading Charts", icon: TrendingUp, section: "main" },
-  { href: "/disciplinary-assistant", label: "MMM DISCIPLINARY ASSISTANT", icon: Settings, section: "main" },
+  { href: "/disciplinary-assistant", label: "MMM Disciplinary Coach", icon: Settings, section: "main" },
   { href: "/journal", label: "Trading Journal", icon: Book, section: "main" },
   { href: "/spending", label: "Prop Spending", icon: CreditCard, section: "main" },
   { href: "/payouts", label: "Payouts", icon: DollarSign, section: "main" },

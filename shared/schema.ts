@@ -116,6 +116,10 @@ export const trades = pgTable("trades", {
   initialTakeProfit: real("initial_take_profit"), // Initial take profit price level set at entry
   finalStopLoss: real("final_stop_loss"), // Final stop loss price level when closed (may be different due to trailing, adjustments)
   finalTakeProfit: real("final_take_profit"), // Final take profit price level when closed (may be different due to trailing, adjustments)
+  
+  // Trade Documentation
+  tradeImage: text("trade_image"), // URL or path to uploaded trade screenshot
+  tradingViewLink: text("trading_view_link"), // Direct link to TradingView chart (e.g., https://www.tradingview.com/x/PZiEBNk7/)
 });
 
 export const journalEntries = pgTable("journal_entries", {

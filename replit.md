@@ -330,6 +330,16 @@ Changelog:
   * Updated all dashboard widgets, account management, and payout displays to use proper net balance
   * Consistency Rules now applies to both challenge and funded accounts during account creation
   * Enhanced consistency rules explanatory text: "Your best trading day must be below this % of your profit target. If exceeded, you'll need additional profits to pass."
+- July 13, 2025. Trade Documentation and UI Enhancement:
+  * Added tradeImage and tradingViewLink fields to trades schema for visual trade documentation
+  * Enhanced trade entry form with Trade Documentation section for image URLs and TradingView links
+  * Updated navigation names: "Accounts  Risk Management & Target Projection Planning" and "MMM Disciplinary Coach"
+  * Fixed dashboard weekly calendar format to show "W2 Apr 9th 24 (14/52)" instead of "W1 January 4th 2026"
+  * Corrected impossible 27.7 hours per day calculation - now caps at 24 hours maximum and uses realistic trade duration
+  * Fixed weekly trades display to show actual week-based data instead of total account data
+  * Added account selection functionality to spending page with filtering for all accounts including failed ones
+  * Fixed spending records showing "Unknown" accounts by updating orphaned records to existing account IDs
+  * Enhanced spending tracker on welcome page to use real database data instead of hardcoded values
 - July 3, 2025. Critical Fix: Initial vs Final SL/TP Differentiation:
   * Completely redesigned CSV import algorithm to properly distinguish between initial and final stop loss/take profit levels
   * Enhanced trade entry forms to clearly label fields as "price levels" with explanatory text

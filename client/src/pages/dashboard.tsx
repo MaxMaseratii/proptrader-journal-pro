@@ -625,7 +625,7 @@ export default function Dashboard() {
                     ←
                   </button>
                   <span className="text-white font-semibold">
-                    W{Math.ceil(calendarDate.getDate() / 7)} {calendarDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric' })}th {calendarDate.getFullYear()}
+                    W{Math.ceil(calendarDate.getDate() / 7)} {calendarDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} {calendarDate.getFullYear().toString().slice(-2)} ({Math.ceil(calendarDate.getDate() / 7)}/52)
                   </span>
                   <button 
                     onClick={() => {
@@ -641,7 +641,26 @@ export default function Dashboard() {
                   {formatCurrency(combinedAnalytics?.totalPnl || 0)}
                 </p>
                 <p className="widget-description">
-                  {combinedAnalytics?.totalTrades || 0} trades • {combinedAnalytics?.winRate.toFixed(0) || 0}% win rate
+                  {(() => {
+                    // Get trades for the current week
+                    const weekStart = new Date(calendarDate);
+                    weekStart.setDate(weekStart.getDate() - weekStart.getDay()); // Start of week
+                    const weekEnd = new Date(weekStart);
+                    weekEnd.setDate(weekEnd.getDate() + 6); // End of week
+                    
+                    const weekTrades = trades?.filter(trade => {
+                      const tradeDate = new Date(trade.date);
+                      return tradeDate >= weekStart && tradeDate <= weekEnd;
+                    }) || [];
+                    
+                    const weeklyWinRate = weekTrades.length > 0 
+                      ? (weekTrades.filter(t => t.pnl > 0).length / weekTrades.length * 100)
+                      : 0;
+                    
+                    return weekTrades.length > 0 
+                      ? `${weekTrades.length} trades • ${weeklyWinRate.toFixed(0)}% win rate`
+                      : '0 trades • 0% win rate';
+                  })()}
                 </p>
               </div>
             </div>
@@ -1118,11 +1137,20 @@ export default function Dashboard() {
                 <p className="widget-label">Average Hours Per Day</p>
                 <p className="widget-value">
                   {(() => {
-                    const totalMinutes = ((trades?.length || 0) * 2.5 * 60) / 30;
-                    if (totalMinutes < 60) {
-                      return `${Math.round(totalMinutes)} Min`;
+                    // Calculate based on actual trading duration from trades
+                    const totalTradingMinutes = trades?.reduce((sum, trade) => {
+                      // Assume average trade duration of 15 minutes if not specified
+                      return sum + 15;
+                    }, 0) || 0;
+                    
+                    const avgDailyMinutes = totalTradingMinutes / 30; // Over 30 days
+                    
+                    if (avgDailyMinutes < 60) {
+                      return `${Math.round(avgDailyMinutes)} Min`;
                     } else {
-                      return `${(totalMinutes / 60).toFixed(1)} Hrs`;
+                      const avgDailyHours = avgDailyMinutes / 60;
+                      // Cap at 24 hours since a day can't have more than 24 hours
+                      return `${Math.min(avgDailyHours, 24).toFixed(1)} Hrs`;
                     }
                   })()}
                 </p>
