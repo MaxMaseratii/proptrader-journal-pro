@@ -181,6 +181,36 @@ export default function Welcome() {
                 </CardContent>
               </Card>
             ))}
+            
+            {/* Daily Risk Management */}
+            <Card className="bg-prop-card hover:bg-prop-card-hover smooth-transition hover-lift border-gradient-gold">
+              <CardHeader>
+                <div className="w-12 h-12 rounded-xl bg-prop-gradient-rainbow flex items-center justify-center mb-4">
+                  <Shield className="w-6 h-6 text-white" />
+                </div>
+                <CardTitle className="text-xl text-prop-blue">Daily Risk Management</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <CardDescription className="text-gray-300 text-base leading-relaxed">
+                  Real-time daily risk monitoring with drawdown alerts and violation tracking
+                </CardDescription>
+              </CardContent>
+            </Card>
+
+            {/* Discipline Score Tracking */}
+            <Card className="bg-prop-card hover:bg-prop-card-hover smooth-transition hover-lift border-gradient-gold">
+              <CardHeader>
+                <div className="w-12 h-12 rounded-xl bg-prop-gradient-rainbow flex items-center justify-center mb-4">
+                  <Award className="w-6 h-6 text-white" />
+                </div>
+                <CardTitle className="text-xl text-prop-gold">Discipline Score Tracking</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <CardDescription className="text-gray-300 text-base leading-relaxed">
+                  Advanced discipline scoring with risk compliance and trade limits analysis
+                </CardDescription>
+              </CardContent>
+            </Card>
           </div>
         </div>
       </section>
@@ -198,7 +228,7 @@ export default function Welcome() {
           </div>
 
           <div className="grid md:grid-cols-3 gap-8">
-            {/* Free Starter */}
+            {/* Basic */}
             <Card className="bg-prop-card hover:bg-prop-card-hover smooth-transition hover-lift border-prop-green">
               <CardHeader className="text-center p-8">
                 <div className="w-16 h-16 bg-prop-gradient-green rounded-full flex items-center justify-center mx-auto mb-4">
@@ -207,7 +237,7 @@ export default function Welcome() {
                 <CardTitle className="text-2xl text-prop-green">Basic</CardTitle>
                 <CardDescription className="text-gray-300 mt-4">Perfect for new traders</CardDescription>
                 <div className="mt-6">
-                  <span className="text-4xl font-bold text-prop-green">$4.99</span>
+                  <span className="text-4xl font-bold text-prop-green">$9.99</span>
                   <span className="text-gray-400">/month</span>
                 </div>
                 <div className="mt-2">
@@ -266,18 +296,18 @@ export default function Welcome() {
                 <CardTitle className="text-2xl text-prop-gold">Pro Trader</CardTitle>
                 <CardDescription className="text-gray-300 mt-4">For serious prop traders</CardDescription>
                 <div className="mt-6">
-                  <span className="text-4xl font-bold text-prop-gold">$9.99</span>
+                  <span className="text-4xl font-bold text-prop-gold">$14.99</span>
                   <span className="text-gray-400">/month</span>
                 </div>
                 <div className="mt-2">
-                  <Badge className="bg-prop-gradient-gold text-black text-xs">15 Days Free Trial</Badge>
+                  <Badge className="bg-prop-gradient-gold text-white text-xs">15 Days Free Trial</Badge>
                 </div>
               </CardHeader>
               <CardContent className="p-8 pt-0">
                 <ul className="space-y-3 mb-8">
                   <li className="flex items-center">
                     <CheckCircle className="w-5 h-5 text-prop-gold mr-3" />
-                    <span className="text-gray-300">Unlimited Trading Accounts</span>
+                    <span className="text-gray-300">10 Trading Accounts</span>
                   </li>
                   <li className="flex items-center">
                     <CheckCircle className="w-5 h-5 text-prop-gold mr-3" />
@@ -321,9 +351,9 @@ export default function Welcome() {
                   <Gem className="w-8 h-8 text-white" />
                 </div>
                 <CardTitle className="text-2xl text-prop-pink">Premium</CardTitle>
-                <CardDescription className="text-gray-300 mt-4">For trading firms & teams</CardDescription>
+                <CardDescription className="text-gray-300 mt-4">For professional traders</CardDescription>
                 <div className="mt-6">
-                  <span className="text-4xl font-bold text-prop-pink">$14.99</span>
+                  <span className="text-4xl font-bold text-prop-pink">$29.99</span>
                   <span className="text-gray-400">/month</span>
                 </div>
                 <div className="mt-2">
@@ -334,23 +364,23 @@ export default function Welcome() {
                 <ul className="space-y-3 mb-8">
                   <li className="flex items-center">
                     <CheckCircle className="w-5 h-5 text-prop-pink mr-3" />
-                    <span className="text-gray-300">Multi-Trader Management</span>
+                    <span className="text-gray-300">Unlimited Trading Accounts</span>
                   </li>
                   <li className="flex items-center">
                     <CheckCircle className="w-5 h-5 text-prop-pink mr-3" />
-                    <span className="text-gray-300">Firm-Wide Analytics</span>
+                    <span className="text-gray-300">Advanced Analytics & Reports</span>
                   </li>
                   <li className="flex items-center">
                     <CheckCircle className="w-5 h-5 text-prop-pink mr-3" />
-                    <span className="text-gray-300">Advanced Reporting</span>
+                    <span className="text-gray-300">AI Trading Insights</span>
                   </li>
                   <li className="flex items-center">
                     <CheckCircle className="w-5 h-5 text-prop-pink mr-3" />
-                    <span className="text-gray-300">API Integration</span>
+                    <span className="text-gray-300">Risk Management Tools</span>
                   </li>
                   <li className="flex items-center">
                     <CheckCircle className="w-5 h-5 text-prop-pink mr-3" />
-                    <span className="text-gray-300">White-Label Options</span>
+                    <span className="text-gray-300">Premium Support</span>
                   </li>
                 </ul>
                 <div className="space-y-3">
@@ -396,7 +426,7 @@ export default function Welcome() {
               <div className="bg-gray-800 rounded-lg p-4 space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div className="bg-gray-700 rounded p-3 text-center">
-                    <div className="text-lg font-bold text-prop-gold">$50,000</div>
+                    <div className="text-lg font-bold text-prop-gold">$150,000</div>
                     <div className="text-xs text-gray-300">Account Size</div>
                   </div>
                   <div className="bg-gray-700 rounded p-3 text-center">
@@ -408,8 +438,8 @@ export default function Welcome() {
                     <div className="text-xs text-gray-300">Max Drawdown</div>
                   </div>
                   <div className="bg-gray-700 rounded p-3 text-center">
-                    <div className="text-lg font-bold text-prop-tiffany">$500</div>
-                    <div className="text-xs text-gray-300">Risk Per Trade</div>
+                    <div className="text-lg font-bold text-prop-tiffany">$1,500</div>
+                    <div className="text-xs text-gray-300">Per Trade Profit</div>
                   </div>
                 </div>
                 <div className="space-y-2">
@@ -419,15 +449,15 @@ export default function Welcome() {
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-gray-300">Days to Target</span>
-                    <span className="text-prop-tiffany font-bold">18 days</span>
+                    <span className="text-prop-tiffany font-bold">6 days</span>
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-gray-300">Daily Reward</span>
-                    <span className="text-prop-green font-bold">$2,500</span>
+                    <span className="text-prop-green font-bold">$1,500</span>
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-gray-300">Active Trading Days</span>
-                    <span className="text-prop-gold font-bold">12 / 18</span>
+                    <span className="text-prop-gold font-bold">4 / 6</span>
                   </div>
                 </div>
                 <div className="space-y-2">
@@ -451,44 +481,44 @@ export default function Welcome() {
               <div className="bg-gray-800 rounded-lg p-4 space-y-4">
                 <div className="grid grid-cols-3 gap-2">
                   <div className="bg-gray-700 rounded p-3 text-center">
-                    <div className="text-xl font-bold text-prop-tiffany">$3,247</div>
-                    <div className="text-xs text-gray-300">Total Invested</div>
+                    <div className="text-xl font-bold text-prop-tiffany">$700</div>
+                    <div className="text-xs text-gray-300">Challenge Cost</div>
                   </div>
                   <div className="bg-gray-700 rounded p-3 text-center">
-                    <div className="text-xl font-bold text-prop-pink">$789</div>
-                    <div className="text-xs text-gray-300">Reset Costs</div>
+                    <div className="text-xl font-bold text-prop-pink">$750</div>
+                    <div className="text-xs text-gray-300">Activation Cost</div>
                   </div>
                   <div className="bg-gray-700 rounded p-3 text-center">
-                    <div className="text-xl font-bold text-prop-green">$18,500</div>
-                    <div className="text-xs text-gray-300">Total Profit</div>
+                    <div className="text-xl font-bold text-prop-green">$2,500</div>
+                    <div className="text-xs text-gray-300">Total Payout</div>
                   </div>
                 </div>
                 <div className="space-y-2">
                   <div className="bg-gray-700 rounded p-2">
                     <div className="flex justify-between items-center">
-                      <span className="text-gray-300">FTMO $50K Challenge</span>
-                      <span className="text-prop-tiffany font-bold">$549</span>
+                      <span className="text-gray-300">Active Accounts</span>
+                      <span className="text-prop-green font-bold">5</span>
                     </div>
-                    <div className="text-xs text-gray-400">Status: Funded • Profit: $8,340</div>
+                    <div className="text-xs text-gray-400">5 x $50K accounts</div>
                   </div>
                   <div className="bg-gray-700 rounded p-2">
                     <div className="flex justify-between items-center">
-                      <span className="text-gray-300">TopStep $100K Funded</span>
-                      <span className="text-prop-tiffany font-bold">$1,299</span>
+                      <span className="text-gray-300">Failed Accounts</span>
+                      <span className="text-prop-pink font-bold">9</span>
                     </div>
-                    <div className="text-xs text-gray-400">Status: Live • Profit: $12,840</div>
+                    <div className="text-xs text-gray-400">9 x $50K accounts</div>
                   </div>
                   <div className="bg-gray-700 rounded p-2">
                     <div className="flex justify-between items-center">
-                      <span className="text-gray-300">Apex $25K Challenge</span>
-                      <span className="text-prop-tiffany font-bold">$299</span>
+                      <span className="text-gray-300">Total Accounts</span>
+                      <span className="text-prop-tiffany font-bold">14</span>
                     </div>
-                    <div className="text-xs text-gray-400">Status: Failed • Resets: 2</div>
+                    <div className="text-xs text-gray-400">Overall spent: $1,450</div>
                   </div>
                 </div>
                 <div className="bg-prop-gradient-green/20 border border-prop-green/50 rounded p-3 text-center">
-                  <div className="text-lg font-bold text-prop-green">ROI: +469%</div>
-                  <div className="text-xs text-gray-300">Return on Investment</div>
+                  <div className="text-lg font-bold text-prop-green">ROI: $1,050</div>
+                  <div className="text-xs text-prop-green font-bold">PROFITABLE TRADER</div>
                 </div>
               </div>
             </div>
