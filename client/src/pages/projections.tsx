@@ -177,21 +177,21 @@ const AccountManagement: React.FC<AccountManagementProps> = ({ accountsMinimized
                   account.status === 'failed' ? 'bg-red-500' :
                   'bg-gray-500'
                 }`}>
-                  {account.status}
+                  {account.status || 'unknown'}
                 </Badge>
               </CardHeader>
               <CardContent className="space-y-2">
                 <div className="flex justify-between text-sm">
                   <span className="text-gray-400">Balance:</span>
-                  <span className="text-white">${account.balance.toLocaleString()}</span>
+                  <span className="text-white">${(account.balance || 0).toLocaleString()}</span>
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-gray-400">Firm:</span>
-                  <span className="text-white">{account.firm}</span>
+                  <span className="text-white">{account.firm || 'N/A'}</span>
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-gray-400">Type:</span>
-                  <span className="text-white capitalize">{account.type}</span>
+                  <span className="text-white capitalize">{account.type || 'N/A'}</span>
                 </div>
               </CardContent>
             </Card>
