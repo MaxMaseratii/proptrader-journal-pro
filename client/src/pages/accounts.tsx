@@ -147,11 +147,11 @@ export default function Accounts() {
           </div>
 
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-            <DialogContent className="max-w-4xl max-h-[90vh] bg-dark-bg border-gray-700">
+            <DialogContent className="max-w-6xl max-h-[95vh] bg-dark-bg border-gray-700">
               <DialogHeader>
                 <DialogTitle className="text-white text-xl">Create New Trading Account</DialogTitle>
               </DialogHeader>
-              <ScrollArea className="max-h-[80vh] pr-4">
+              <div className="overflow-y-auto max-h-[85vh] pr-4">
                 <Form {...form}>
                   <form onSubmit={form.handleSubmit((data) => createAccountMutation.mutate(data))} className="space-y-6">
                     <Tabs defaultValue="account" className="space-y-6">
@@ -1699,20 +1699,29 @@ export default function Accounts() {
                         )}
                       </TabsContent>
 
-                      {/* Submit Button */}
-                      <div className="flex justify-end mt-8 pt-6 border-t border-gray-700">
-                        <Button 
-                          type="submit" 
-                          disabled={createAccountMutation.isPending}
-                          className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-2"
-                        >
-                          {createAccountMutation.isPending ? "Creating Account..." : "Create Account"}
-                        </Button>
-                      </div>
                     </Tabs>
+                    
+                    {/* Dialog Footer */}
+                    <div className="flex justify-end space-x-3 mt-8 pt-6 border-t border-gray-700">
+                      <Button 
+                        type="button"
+                        onClick={() => setIsDialogOpen(false)}
+                        variant="outline"
+                        className="px-6 py-2"
+                      >
+                        Cancel
+                      </Button>
+                      <Button 
+                        type="submit" 
+                        disabled={createAccountMutation.isPending}
+                        className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2"
+                      >
+                        {createAccountMutation.isPending ? "Creating Account..." : "Create Account"}
+                      </Button>
+                    </div>
                   </form>
                 </Form>
-              </ScrollArea>
+              </div>
             </DialogContent>
           </Dialog>
         </div>
