@@ -270,6 +270,9 @@ Changelog:
   * Moved entire accounts management section (including create account dialog, account management component, and all functionality) into PropFirms Trading Accounts page
   * Renamed section to "PropFirms Accounts - Risk Management & Responsible Day-to-Pass Planning"
   * Accounts section is now only accessible through PropFirms Trading Accounts navigation and no longer exists as separate page
+  * Removed separate accounts route from navigation and moved PropFirms Trading Accounts to top of main navigation section
+  * Redesigned account widgets to be compact and scalable for 50+ accounts using responsive grid layout (1/2/3/4 columns)
+  * Reduced account card size with smaller buttons, compact content display, and efficient use of space
 - July 3, 2025. Critical Fix: Initial vs Final SL/TP Differentiation:
   * Completely redesigned CSV import algorithm to properly distinguish between initial and final stop loss/take profit levels
   * Enhanced trade entry forms to clearly label fields as "price levels" with explanatory text

@@ -176,7 +176,7 @@ export default function AccountManagement({ accounts }: AccountManagementProps) 
     };
   };
 
-  if (accounts.length === 0) {
+  if (!accounts || accounts.length === 0) {
     return (
       <div className="text-center py-8">
         <p className="text-gray-400">No accounts created yet. Create your first account to get started.</p>
@@ -185,26 +185,26 @@ export default function AccountManagement({ accounts }: AccountManagementProps) 
   }
 
   return (
-    <div className="space-y-4">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
       {accounts.map((account) => (
         <Card key={account.id} className="bg-gray-800 border-gray-700 hover:border-gray-600 transition-colors">
-          <CardHeader className="pb-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <CardTitle className="text-lg text-white mb-2">{account.name}</CardTitle>
-                <div className="flex items-center gap-3">
+          <CardHeader className="pb-2">
+            <div className="flex items-start justify-between">
+              <div className="flex-1 min-w-0">
+                <CardTitle className="text-sm text-white mb-1 truncate">{account.name}</CardTitle>
+                <div className="flex items-center gap-1 flex-wrap">
                   {getStatusBadge(account.status)}
-                  <Badge variant="outline" className="text-blue-400 border-blue-400">
+                  <Badge variant="outline" className="text-xs text-blue-400 border-blue-400">
                     {account.firm}
                   </Badge>
                   {shouldShowResetIndicator(account) && (
-                    <Badge className="bg-orange-600 text-white">
+                    <Badge className="bg-orange-600 text-white text-xs">
                       Reset #{account.resetCount}
                     </Badge>
                   )}
                 </div>
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1">
                 {/* Reset Account */}
                 <Dialog open={isResetDialogOpen && selectedAccount?.id === account.id} onOpenChange={(open) => {
                   setIsResetDialogOpen(open);
@@ -215,10 +215,10 @@ export default function AccountManagement({ accounts }: AccountManagementProps) 
                     <Button 
                       variant="outline" 
                       size="sm" 
-                      className="border-orange-600 text-orange-400 hover:bg-orange-600 hover:text-white"
+                      className="border-orange-600 text-orange-400 hover:bg-orange-600 hover:text-white h-6 w-6 p-0"
                       disabled={account.status === 'withdrawn'}
                     >
-                      <RotateCcw className="h-4 w-4" />
+                      <RotateCcw className="h-3 w-3" />
                     </Button>
                   </DialogTrigger>
                   <DialogContent className="bg-gray-900 border-gray-700">
@@ -275,10 +275,10 @@ export default function AccountManagement({ accounts }: AccountManagementProps) 
                     <Button 
                       variant="outline" 
                       size="sm" 
-                      className="border-purple-600 text-purple-400 hover:bg-purple-600 hover:text-white"
+                      className="border-purple-600 text-purple-400 hover:bg-purple-600 hover:text-white h-6 w-6 p-0"
                       disabled={account.status === 'withdrawn'}
                     >
-                      <LogOut className="h-4 w-4" />
+                      <LogOut className="h-3 w-3" />
                     </Button>
                   </AlertDialogTrigger>
                   <AlertDialogContent className="bg-gray-900 border-gray-700">
@@ -345,48 +345,39 @@ export default function AccountManagement({ accounts }: AccountManagementProps) 
             </div>
           </CardHeader>
           
-          <CardContent>
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <p className="text-gray-400 text-sm">Current Balance</p>
-                <p className="text-2xl font-bold text-white">
+          <CardContent className="pt-2 pb-3">
+            <div className="space-y-2">
+              <div className="flex justify-between items-center">
+                <span className="text-gray-400 text-xs">Balance</span>
+                <span className="text-sm font-semibold text-white">
                   {formatCurrency(account.currentBalance)}
-                </p>
+                </span>
               </div>
-              <div>
-                <p className="text-gray-400 text-sm">Profit Target</p>
-                <p className="text-2xl font-bold text-green-400">
+              <div className="flex justify-between items-center">
+                <span className="text-gray-400 text-xs">Target</span>
+                <span className="text-sm font-semibold text-green-400">
                   {formatCurrency(account.profitTarget)}
-                </p>
+                </span>
               </div>
-              <div>
-                <p className="text-gray-400 text-sm">Max Drawdown</p>
-                <p className="text-xl font-bold text-red-400">
+              <div className="flex justify-between items-center">
+                <span className="text-gray-400 text-xs">Max DD</span>
+                <span className="text-sm font-semibold text-red-400">
                   {formatCurrency(account.maxDrawdown)}
-                </p>
+                </span>
               </div>
-              <div>
-                <p className="text-gray-400 text-sm">Daily Loss Limit</p>
-                <p className="text-xl font-bold text-orange-400">
-                  {account.dailyLossLimit ? formatCurrency(account.dailyLossLimit) : "None"}
-                </p>
-              </div>
-            </div>
-
-            <div className="mt-4 pt-4 border-t border-gray-700">
-              {getMaxTradesIndicator(account)}
-              
-              {account.accountCost && (
-                <div className="flex items-center justify-between mt-2 text-sm">
-                  <span className="text-gray-400">Account Cost:</span>
-                  <span className="text-white">{formatCurrency(account.accountCost)}</span>
+              {account.dailyLossLimit && (
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-400 text-xs">Daily Limit</span>
+                  <span className="text-sm font-semibold text-orange-400">
+                    {formatCurrency(account.dailyLossLimit)}
+                  </span>
                 </div>
               )}
               
-              {account.resetCount && account.resetCount > 0 && account.totalResetsCost && (
-                <div className="flex items-center justify-between mt-1 text-sm">
-                  <span className="text-gray-400">Total Reset Costs:</span>
-                  <span className="text-orange-400">{formatCurrency(account.totalResetsCost)}</span>
+              {account.accountCost && (
+                <div className="flex justify-between items-center pt-1 border-t border-gray-700">
+                  <span className="text-gray-400 text-xs">Cost</span>
+                  <span className="text-xs text-gray-300">{formatCurrency(account.accountCost)}</span>
                 </div>
               )}
             </div>

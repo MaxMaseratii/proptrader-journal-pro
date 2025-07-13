@@ -32,10 +32,9 @@ import {
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
 const navItems = [
-  { href: "/accounts", label: "Accounts", icon: Wallet, section: "main" },
+  { href: "/projections", label: "PropFirms Trading Accounts", icon: TrendingUp, section: "main" },
   { href: "/", label: "Dashboard", icon: ChartLine, section: "main" },
   { href: "/trading-companion", label: "Trading Companion", icon: Bot, section: "main" },
-  { href: "/projections", label: "PropFirms Trading Accounts", icon: TrendingUp, section: "main" },
   { href: "/trades", label: "Trades", icon: BarChart3, section: "main" },
   { href: "/charts", label: "Trading Charts", icon: TrendingUp, section: "main" },
   { href: "/disciplinary-assistant", label: "MMM DISCIPLINARY ASSISTANT", icon: Settings, section: "main" },

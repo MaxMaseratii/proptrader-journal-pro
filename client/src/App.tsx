@@ -6,7 +6,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import Dashboard from "@/pages/dashboard";
 import DashboardShowcase from "@/pages/dashboard-showcase";
 import Projections from "@/pages/projections";
-import Accounts from "@/pages/accounts";
+
 import Journal from "@/pages/journal";
 import RiskManagement from "@/pages/risk-management";
 import Performance from "@/pages/performance";
@@ -53,7 +53,7 @@ function Router() {
           <Route path="/dashboard-simple" component={DashboardShowcase} />
           <Route path="/trading-companion" component={TradingCompanion} />
           <Route path="/projections" component={Projections} />
-          <Route path="/accounts" component={Accounts} />
+
           <Route path="/csv-import" component={CsvImport} />
           <Route path="/spending" component={Spending} />
           <Route path="/journal" component={Journal} />
