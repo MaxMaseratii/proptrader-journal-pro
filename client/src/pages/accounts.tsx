@@ -14,7 +14,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { insertAccountSchema, type Account, type InsertAccount } from "@shared/schema";
 import { formatCurrency } from "@/lib/utils";
 import { apiRequest, queryClient } from "@/lib/queryClient";
-import { Plus, Calculator, TrendingUp, DollarSign, Lightbulb, RotateCcw, LogOut, Trash2, AlertTriangle, Target } from "lucide-react";
+import { Plus, Calculator, TrendingUp, DollarSign, Lightbulb, RotateCcw, LogOut, Trash2, AlertTriangle, Target, Trophy, Settings } from "lucide-react";
 import { useState, useEffect, useMemo } from "react";
 import { calculateRiskSuggestions, TRADING_ASSETS, type AssetSymbol } from "@/lib/risk-calculator";
 import { TRADING_ASSETS as ASSET_CONFIG, ASSET_CATEGORIES, getRiskSuggestion } from "@/lib/trading-assets";
@@ -66,6 +66,24 @@ export default function Accounts() {
       marginSafetyBuffer: 50.0,
       stopLossPoints: 10,
 
+      // Challenge/Evaluation Settings
+      numberOfPhases: 1,
+      phase1Target: null,
+      phase2Target: null,
+      minimumTradingDays: null,
+      timeLimit: null,
+      
+      // Drawdown Rules
+      drawdownType: "daily",
+      maxTotalLoss: null,
+      trailingThreshold: null,
+      
+      // Trading Rules
+      consistencyRule: false,
+      consistencyPercentage: null,
+      copyTradingAllowed: true,
+      newsTradingAllowed: true,
+      
       // Payout fields
       daysRequiredForPayout: 5,
       winningDayMinimum: 200,
@@ -73,6 +91,21 @@ export default function Accounts() {
       minimumPayoutAmount: 100,
       profitSplit: 80,
       maximumPayoutPercentage: 90,
+      accountBufferRequired: false,
+      bufferAmount: null,
+      bufferPercentage: null,
+      
+      // Risk Management Settings
+      riskPerTrade: null,
+      riskPercentage: null,
+      maxPositionSize: null,
+      maxTradesPerDay: 0,
+      preferredAssets: null,
+      
+      // Enhanced and Live Account Settings
+      enhancedPayoutsAvailable: false,
+      liveAccountAvailable: false,
+      transitionTrigger: null,
       // Trading Asset Selection
       primaryTradingAsset: "ES",
       secondaryTradingAsset: "none",
@@ -303,6 +336,365 @@ export default function Accounts() {
                               )}
                             />
                           </div>
+                        </div>
+
+                        {/* Challenge/Evaluation Settings */}
+                        <div className="bg-gray-800 p-4 rounded-lg">
+                          <h3 className="text-lg font-semibold text-white mb-4 flex items-center">
+                            <Trophy className="mr-2 h-5 w-5" />
+                            Challenge/Evaluation Settings
+                          </h3>
+                          
+                          <div className="grid grid-cols-3 gap-4 mb-4">
+                            <FormField
+                              control={form.control}
+                              name="numberOfPhases"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel className="text-white font-medium">Number of Phases</FormLabel>
+                                  <FormControl>
+                                    <Input 
+                                      type="number" 
+                                      min="1"
+                                      max="3"
+                                      {...field} 
+                                      value={field.value || ""} 
+                                      onChange={(e) => field.onChange(e.target.value === "" ? null : parseInt(e.target.value))}
+                                      className="bg-gray-700 border-gray-600 text-white placeholder-gray-400"
+                                      placeholder="e.g., 1"
+                                    />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                            <FormField
+                              control={form.control}
+                              name="phase1Target"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel className="text-white font-medium">Phase 1 Target ($)</FormLabel>
+                                  <FormControl>
+                                    <Input 
+                                      type="number" 
+                                      {...field} 
+                                      value={field.value || ""} 
+                                      onChange={(e) => field.onChange(e.target.value === "" ? null : parseFloat(e.target.value))}
+                                      className="bg-gray-700 border-gray-600 text-white placeholder-gray-400"
+                                      placeholder="e.g., 5000"
+                                    />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                            <FormField
+                              control={form.control}
+                              name="phase2Target"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel className="text-white font-medium">Phase 2 Target ($)</FormLabel>
+                                  <FormControl>
+                                    <Input 
+                                      type="number" 
+                                      {...field} 
+                                      value={field.value || ""} 
+                                      onChange={(e) => field.onChange(e.target.value === "" ? null : parseFloat(e.target.value))}
+                                      className="bg-gray-700 border-gray-600 text-white placeholder-gray-400"
+                                      placeholder="e.g., 2500"
+                                    />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                          </div>
+
+                          <div className="grid grid-cols-2 gap-4 mb-4">
+                            <FormField
+                              control={form.control}
+                              name="minimumTradingDays"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel className="text-white font-medium">Minimum Trading Days</FormLabel>
+                                  <FormControl>
+                                    <Input 
+                                      type="number" 
+                                      {...field} 
+                                      value={field.value || ""} 
+                                      onChange={(e) => field.onChange(e.target.value === "" ? null : parseInt(e.target.value))}
+                                      className="bg-gray-700 border-gray-600 text-white placeholder-gray-400"
+                                      placeholder="e.g., 5"
+                                    />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                            <FormField
+                              control={form.control}
+                              name="timeLimit"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel className="text-white font-medium">Time Limit (days)</FormLabel>
+                                  <FormControl>
+                                    <Input 
+                                      type="number" 
+                                      {...field} 
+                                      value={field.value || ""} 
+                                      onChange={(e) => field.onChange(e.target.value === "" ? null : parseInt(e.target.value))}
+                                      className="bg-gray-700 border-gray-600 text-white placeholder-gray-400"
+                                      placeholder="e.g., 30 (0 = unlimited)"
+                                    />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                          </div>
+                        </div>
+
+                        {/* Drawdown Rules */}
+                        <div className="bg-gray-800 p-4 rounded-lg">
+                          <h3 className="text-lg font-semibold text-white mb-4 flex items-center">
+                            <AlertTriangle className="mr-2 h-5 w-5" />
+                            Drawdown Rules
+                          </h3>
+                          
+                          <div className="grid grid-cols-3 gap-4 mb-4">
+                            <FormField
+                              control={form.control}
+                              name="drawdownType"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel className="text-white font-medium">Drawdown Type</FormLabel>
+                                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                    <FormControl>
+                                      <SelectTrigger className="bg-gray-700 border-gray-600 text-white">
+                                        <SelectValue placeholder="Select type" />
+                                      </SelectTrigger>
+                                    </FormControl>
+                                    <SelectContent className="bg-gray-700 border-gray-600">
+                                      <SelectItem value="daily" className="text-white hover:bg-gray-600">Daily</SelectItem>
+                                      <SelectItem value="unrealized" className="text-white hover:bg-gray-600">Unrealized</SelectItem>
+                                      <SelectItem value="trailing" className="text-white hover:bg-gray-600">Trailing</SelectItem>
+                                      <SelectItem value="balance_based" className="text-white hover:bg-gray-600">Balance Based</SelectItem>
+                                    </SelectContent>
+                                  </Select>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                            <FormField
+                              control={form.control}
+                              name="maxTotalLoss"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel className="text-white font-medium">Max Total Loss ($)</FormLabel>
+                                  <FormControl>
+                                    <Input 
+                                      type="number" 
+                                      {...field} 
+                                      value={field.value || ""} 
+                                      onChange={(e) => field.onChange(e.target.value === "" ? null : parseFloat(e.target.value))}
+                                      className="bg-gray-700 border-gray-600 text-white placeholder-gray-400"
+                                      placeholder="e.g., 2500"
+                                    />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                            <FormField
+                              control={form.control}
+                              name="trailingThreshold"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel className="text-white font-medium">Trailing Threshold ($)</FormLabel>
+                                  <FormControl>
+                                    <Input 
+                                      type="number" 
+                                      {...field} 
+                                      value={field.value || ""} 
+                                      onChange={(e) => field.onChange(e.target.value === "" ? null : parseFloat(e.target.value))}
+                                      className="bg-gray-700 border-gray-600 text-white placeholder-gray-400"
+                                      placeholder="e.g., 1000"
+                                    />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                          </div>
+                        </div>
+
+                        {/* Daily Loss Limit */}
+                        <div className="bg-gray-800 p-4 rounded-lg">
+                          <h3 className="text-lg font-semibold text-white mb-4">Daily Loss Limit</h3>
+                          <div className="grid grid-cols-2 gap-4 mb-4">
+                            <FormField
+                              control={form.control}
+                              name="dailyLossLimit"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel className="text-white font-medium">Daily Loss Limit ($)</FormLabel>
+                                  <FormControl>
+                                    <Input 
+                                      type="number" 
+                                      {...field} 
+                                      value={field.value || ""} 
+                                      onChange={(e) => field.onChange(e.target.value === "" ? null : parseFloat(e.target.value))}
+                                      className="bg-gray-700 border-gray-600 text-white placeholder-gray-400"
+                                      placeholder="e.g., 1000"
+                                    />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                            <FormField
+                              control={form.control}
+                              name="dailyLossLimitType"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel className="text-white font-medium">Daily Loss Limit Type</FormLabel>
+                                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                    <FormControl>
+                                      <SelectTrigger className="bg-gray-700 border-gray-600 text-white">
+                                        <SelectValue placeholder="Select type" />
+                                      </SelectTrigger>
+                                    </FormControl>
+                                    <SelectContent className="bg-gray-700 border-gray-600">
+                                      <SelectItem value="soft" className="text-white hover:bg-gray-600">Soft (Warning)</SelectItem>
+                                      <SelectItem value="hard" className="text-white hover:bg-gray-600">Hard (Violation)</SelectItem>
+                                    </SelectContent>
+                                  </Select>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                          </div>
+                          
+                          <div className="grid grid-cols-2 gap-4">
+                            <FormField
+                              control={form.control}
+                              name="consistencyPercentage"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel className="text-white font-medium">Consistency Percentage (%)</FormLabel>
+                                  <FormControl>
+                                    <Input 
+                                      type="number" 
+                                      min="0"
+                                      max="100"
+                                      {...field} 
+                                      value={field.value || ""} 
+                                      onChange={(e) => field.onChange(e.target.value === "" ? null : parseFloat(e.target.value))}
+                                      className="bg-gray-700 border-gray-600 text-white placeholder-gray-400"
+                                      placeholder="e.g., 20"
+                                    />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                          </div>
+                        </div>
+
+                        {/* Trading Rules */}
+                        <div className="bg-gray-800 p-4 rounded-lg">
+                          <h3 className="text-lg font-semibold text-white mb-4 flex items-center">
+                            <Settings className="mr-2 h-5 w-5" />
+                            Trading Rules & Permissions
+                          </h3>
+                          
+                          <div className="grid grid-cols-3 gap-4">
+                            <FormField
+                              control={form.control}
+                              name="hasDailyLossLimit"
+                              render={({ field }) => (
+                                <FormItem className="flex flex-row items-center space-x-3 space-y-0">
+                                  <FormControl>
+                                    <Checkbox 
+                                      checked={field.value}
+                                      onCheckedChange={field.onChange}
+                                      className="border-blue-400 data-[state=checked]:bg-blue-600"
+                                    />
+                                  </FormControl>
+                                  <div className="space-y-1 leading-none">
+                                    <FormLabel className="text-white font-medium">
+                                      Apply daily loss limit
+                                    </FormLabel>
+                                  </div>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                            <FormField
+                              control={form.control}
+                              name="consistencyRule"
+                              render={({ field }) => (
+                                <FormItem className="flex flex-row items-center space-x-3 space-y-0">
+                                  <FormControl>
+                                    <Checkbox 
+                                      checked={field.value}
+                                      onCheckedChange={field.onChange}
+                                      className="border-blue-400 data-[state=checked]:bg-blue-600"
+                                    />
+                                  </FormControl>
+                                  <div className="space-y-1 leading-none">
+                                    <FormLabel className="text-white font-medium">
+                                      Consistency rule
+                                    </FormLabel>
+                                  </div>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                            <FormField
+                              control={form.control}
+                              name="copyTradingAllowed"
+                              render={({ field }) => (
+                                <FormItem className="flex flex-row items-center space-x-3 space-y-0">
+                                  <FormControl>
+                                    <Checkbox 
+                                      checked={field.value}
+                                      onCheckedChange={field.onChange}
+                                      className="border-blue-400 data-[state=checked]:bg-blue-600"
+                                    />
+                                  </FormControl>
+                                  <div className="space-y-1 leading-none">
+                                    <FormLabel className="text-white font-medium">
+                                      Copy trading allowed
+                                    </FormLabel>
+                                  </div>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                            <FormField
+                              control={form.control}
+                              name="newsTradingAllowed"
+                              render={({ field }) => (
+                                <FormItem className="flex flex-row items-center space-x-3 space-y-0">
+                                  <FormControl>
+                                    <Checkbox 
+                                      checked={field.value}
+                                      onCheckedChange={field.onChange}
+                                      className="border-blue-400 data-[state=checked]:bg-blue-600"
+                                    />
+                                  </FormControl>
+                                  <div className="space-y-1 leading-none">
+                                    <FormLabel className="text-white font-medium">
+                                      News trading allowed
+                                    </FormLabel>
+                                  </div>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                          </div>
+                        </div>
 
                           <div className="mt-4">
                             <FormField
@@ -846,6 +1238,78 @@ export default function Accounts() {
                                 </FormItem>
                               )}
                             />
+                            
+                            <FormField
+                              control={form.control}
+                              name="bufferAmount"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel className="text-white font-medium">Buffer Amount ($)</FormLabel>
+                                  <FormControl>
+                                    <Input 
+                                      type="number" 
+                                      {...field} 
+                                      value={field.value || ""}
+                                      onChange={(e) => field.onChange(e.target.value === "" ? null : parseFloat(e.target.value))}
+                                      className="bg-gray-700 border-gray-600 text-white placeholder-gray-400"
+                                      placeholder="e.g., 500"
+                                    />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                            
+                            <FormField
+                              control={form.control}
+                              name="bufferPercentage"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel className="text-white font-medium">Buffer Percentage (%)</FormLabel>
+                                  <FormControl>
+                                    <Input 
+                                      type="number" 
+                                      min="0"
+                                      max="100"
+                                      step="0.1"
+                                      {...field} 
+                                      value={field.value || ""}
+                                      onChange={(e) => field.onChange(e.target.value === "" ? null : parseFloat(e.target.value))}
+                                      className="bg-gray-700 border-gray-600 text-white placeholder-gray-400"
+                                      placeholder="e.g., 5.0"
+                                    />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                          </div>
+                          
+                          <div className="mt-4">
+                            <FormField
+                              control={form.control}
+                              name="accountBufferRequired"
+                              render={({ field }) => (
+                                <FormItem className="flex flex-row items-center space-x-3 space-y-0">
+                                  <FormControl>
+                                    <Checkbox 
+                                      checked={field.value}
+                                      onCheckedChange={field.onChange}
+                                      className="border-blue-400 data-[state=checked]:bg-blue-600"
+                                    />
+                                  </FormControl>
+                                  <div className="space-y-1 leading-none">
+                                    <FormLabel className="text-white font-medium">
+                                      Account buffer required for payouts
+                                    </FormLabel>
+                                    <p className="text-sm text-blue-200">
+                                      Require maintaining a buffer amount in the account
+                                    </p>
+                                  </div>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
                           </div>
                         </div>
                       </TabsContent>
@@ -1049,6 +1513,124 @@ export default function Accounts() {
                                       ))}
                                     </SelectContent>
                                   </Select>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                          </div>
+                          
+                          <div className="grid grid-cols-2 gap-4 mt-4">
+                            <FormField
+                              control={form.control}
+                              name="riskPerTrade"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel className="text-white font-medium">Risk Per Trade ($)</FormLabel>
+                                  <FormControl>
+                                    <Input 
+                                      type="number" 
+                                      {...field} 
+                                      value={field.value || ""}
+                                      onChange={(e) => field.onChange(e.target.value === "" ? null : parseFloat(e.target.value))}
+                                      className="bg-gray-700 border-gray-600 text-white placeholder-gray-400"
+                                      placeholder="e.g., 500"
+                                    />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                            
+                            <FormField
+                              control={form.control}
+                              name="maxPositionSize"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel className="text-white font-medium">Max Position Size (contracts)</FormLabel>
+                                  <FormControl>
+                                    <Input 
+                                      type="number" 
+                                      {...field} 
+                                      value={field.value || ""}
+                                      onChange={(e) => field.onChange(e.target.value === "" ? null : parseInt(e.target.value))}
+                                      className="bg-gray-700 border-gray-600 text-white placeholder-gray-400"
+                                      placeholder="e.g., 10"
+                                    />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                          </div>
+                          
+                          <div className="grid grid-cols-2 gap-4 mt-4">
+                            <FormField
+                              control={form.control}
+                              name="enhancedPayoutsAvailable"
+                              render={({ field }) => (
+                                <FormItem className="flex flex-row items-center space-x-3 space-y-0">
+                                  <FormControl>
+                                    <Checkbox 
+                                      checked={field.value}
+                                      onCheckedChange={field.onChange}
+                                      className="border-blue-400 data-[state=checked]:bg-blue-600"
+                                    />
+                                  </FormControl>
+                                  <div className="space-y-1 leading-none">
+                                    <FormLabel className="text-white font-medium">
+                                      Enhanced payouts available
+                                    </FormLabel>
+                                    <p className="text-sm text-blue-200">
+                                      Account supports enhanced payout features
+                                    </p>
+                                  </div>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                            
+                            <FormField
+                              control={form.control}
+                              name="liveAccountAvailable"
+                              render={({ field }) => (
+                                <FormItem className="flex flex-row items-center space-x-3 space-y-0">
+                                  <FormControl>
+                                    <Checkbox 
+                                      checked={field.value}
+                                      onCheckedChange={field.onChange}
+                                      className="border-blue-400 data-[state=checked]:bg-blue-600"
+                                    />
+                                  </FormControl>
+                                  <div className="space-y-1 leading-none">
+                                    <FormLabel className="text-white font-medium">
+                                      Live account available
+                                    </FormLabel>
+                                    <p className="text-sm text-blue-200">
+                                      Account can transition to live trading
+                                    </p>
+                                  </div>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                          </div>
+                          
+                          <div className="mt-4">
+                            <FormField
+                              control={form.control}
+                              name="transitionTrigger"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel className="text-white font-medium">Transition Trigger</FormLabel>
+                                  <FormControl>
+                                    <Input 
+                                      {...field} 
+                                      value={field.value || ""}
+                                      onChange={(e) => field.onChange(e.target.value === "" ? null : e.target.value)}
+                                      className="bg-gray-700 border-gray-600 text-white placeholder-gray-400"
+                                      placeholder="e.g., profit target reached"
+                                    />
+                                  </FormControl>
                                   <FormMessage />
                                 </FormItem>
                               )}
