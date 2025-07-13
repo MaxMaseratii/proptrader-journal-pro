@@ -36,16 +36,27 @@ export default function Welcome() {
     enabled: false // Only fetch if user is logged in
   });
 
-  // Calculate spending data for the tracker
+  // Calculate spending data for the tracker (using real data from accounts and spending)
+  const challengeCost = (spending?.filter(s => s.spendingType === 'account_purchase').reduce((sum, s) => sum + s.amount, 0) || 0) + 
+                       (accounts?.reduce((sum, a) => sum + (a.accountCost || 0), 0) || 0);
+  const activationCost = (spending?.filter(s => s.spendingType === 'activation_fee').reduce((sum, s) => sum + s.amount, 0) || 0) + 
+                        (accounts?.reduce((sum, a) => sum + (a.activationCost || 0), 0) || 0);
+  const totalPayout = spending?.filter(s => s.spendingType === 'payout').reduce((sum, s) => sum + s.amount, 0) || 0;
+  const activeAccounts = accounts?.filter(a => a.status === 'active').length || 0;
+  const failedAccounts = accounts?.filter(a => a.status === 'failed').length || 0;
+  const totalAccounts = accounts?.length || 0;
+  const totalSpent = challengeCost + activationCost + (accounts?.reduce((sum, a) => sum + (a.totalResetsCost || 0), 0) || 0);
+  const roi = totalPayout - totalSpent;
+
   const spendingData = {
-    challengeCost: spending?.filter(s => s.spendingType === 'account_purchase').reduce((sum, s) => sum + s.amount, 0) || 700,
-    activationCost: spending?.filter(s => s.spendingType === 'activation_fee').reduce((sum, s) => sum + s.amount, 0) || 750,
-    totalPayout: spending?.filter(s => s.spendingType === 'payout').reduce((sum, s) => sum + s.amount, 0) || 2500,
-    activeAccounts: accounts?.filter(a => a.status === 'active').length || 5,
-    failedAccounts: accounts?.filter(a => a.status === 'failed').length || 9,
-    totalAccounts: accounts?.length || 14,
-    totalSpent: (spending?.filter(s => s.spendingType === 'account_purchase').reduce((sum, s) => sum + s.amount, 0) || 700) + (spending?.filter(s => s.spendingType === 'activation_fee').reduce((sum, s) => sum + s.amount, 0) || 750),
-    roi: (spending?.filter(s => s.spendingType === 'payout').reduce((sum, s) => sum + s.amount, 0) || 2500) - ((spending?.filter(s => s.spendingType === 'account_purchase').reduce((sum, s) => sum + s.amount, 0) || 700) + (spending?.filter(s => s.spendingType === 'activation_fee').reduce((sum, s) => sum + s.amount, 0) || 750))
+    challengeCost,
+    activationCost,
+    totalPayout,
+    activeAccounts,
+    failedAccounts,
+    totalAccounts,
+    totalSpent,
+    roi
   };
   const features = [
     {

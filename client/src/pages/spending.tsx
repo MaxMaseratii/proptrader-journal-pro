@@ -1,10 +1,14 @@
 import { useQuery } from "@tanstack/react-query";
+import { useState } from "react";
 import SpendingEntry from "@/components/spending-entry";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { formatCurrency } from "@/lib/utils";
 import { type Account, type Spending } from "@shared/schema";
 
 export default function SpendingPage() {
+  const [selectedAccountId, setSelectedAccountId] = useState<string>("all");
+  
   const { data: accounts = [], isLoading: accountsLoading } = useQuery<Account[]>({
     queryKey: ["/api/accounts"],
   });
@@ -24,15 +28,24 @@ export default function SpendingPage() {
     );
   }
 
-  // Calculate investment tracking from account data
-  const totalAccountCosts = accounts.reduce((sum, account) => sum + (account.accountCost || 0), 0);
-  const totalActivationCosts = accounts.reduce((sum, account) => sum + (account.activationCost || 0), 0);
-  const totalResetCosts = accounts.reduce((sum, account) => sum + (account.totalResetsCost || 0), 0);
+  // Filter accounts and spending records based on selection
+  const filteredAccounts = selectedAccountId === "all" 
+    ? accounts 
+    : accounts.filter(account => account.id === parseInt(selectedAccountId));
+  
+  const filteredSpendingRecords = selectedAccountId === "all" 
+    ? spendingRecords 
+    : spendingRecords.filter(record => record.accountId === parseInt(selectedAccountId));
+
+  // Calculate investment tracking from filtered account data
+  const totalAccountCosts = filteredAccounts.reduce((sum, account) => sum + (account.accountCost || 0), 0);
+  const totalActivationCosts = filteredAccounts.reduce((sum, account) => sum + (account.activationCost || 0), 0);
+  const totalResetCosts = filteredAccounts.reduce((sum, account) => sum + (account.totalResetsCost || 0), 0);
   const totalInvestmentTracking = totalAccountCosts + totalActivationCosts + totalResetCosts;
   
-  // Calculate manual spending entries
-  const totalManualSpending = spendingRecords.reduce((sum, record) => sum + record.amount, 0);
-  const spendingByType = spendingRecords.reduce((acc, record) => {
+  // Calculate manual spending entries from filtered records
+  const totalManualSpending = filteredSpendingRecords.reduce((sum, record) => sum + record.amount, 0);
+  const spendingByType = filteredSpendingRecords.reduce((acc, record) => {
     acc[record.spendingType] = (acc[record.spendingType] || 0) + record.amount;
     return acc;
   }, {} as Record<string, number>);
@@ -45,6 +58,25 @@ export default function SpendingPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold text-white">Spending Management</h1>
+        <div className="flex items-center space-x-4">
+          <Select value={selectedAccountId} onValueChange={setSelectedAccountId}>
+            <SelectTrigger className="w-64 bg-gray-800 border-gray-600 text-white">
+              <SelectValue placeholder="Select account" />
+            </SelectTrigger>
+            <SelectContent className="bg-gray-800 border-gray-600">
+              <SelectItem value="all" className="text-white hover:bg-gray-700">All Accounts</SelectItem>
+              {accounts.map((account) => (
+                <SelectItem 
+                  key={account.id} 
+                  value={account.id.toString()} 
+                  className="text-white hover:bg-gray-700"
+                >
+                  {account.name} ({account.type} - {account.status})
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
       </div>
 
       {/* Spending Overview Cards */}
@@ -139,8 +171,13 @@ export default function SpendingPage() {
           <CardTitle className="text-xl text-white">Recent Spending Records</CardTitle>
         </CardHeader>
         <CardContent>
-          {spendingRecords.length === 0 ? (
-            <p className="text-gray-400 text-center py-8">No spending records found. Add your first record above.</p>
+          {filteredSpendingRecords.length === 0 ? (
+            <p className="text-gray-400 text-center py-8">
+              {selectedAccountId === "all" 
+                ? "No spending records found. Add your first record above."
+                : "No spending records found for the selected account."
+              }
+            </p>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full">
@@ -155,7 +192,7 @@ export default function SpendingPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {spendingRecords
+                  {filteredSpendingRecords
                     .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
                     .slice(0, 10)
                     .map((record) => {
