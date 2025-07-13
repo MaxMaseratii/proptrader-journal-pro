@@ -260,53 +260,7 @@ export default function Projections() {
           
 
           
-          {/* Account Cards Row */}
-          <div className="account-cards-row flex items-center gap-4 flex-wrap">
-            <Card className="bg-green-600/20 border-green-500/30 px-4 py-2">
-              <div className="text-center">
-                <div className="text-lg font-bold text-green-400">
-                  {formatCurrency(accounts?.filter(acc => acc.type === 'funded').reduce((sum, acc) => sum + acc.currentBalance, 0) || 0)}
-                </div>
-                <div className="text-xs text-green-300">Live Accounts</div>
-              </div>
-            </Card>
-            
-            <Card className="bg-blue-600/20 border-blue-500/30 px-4 py-2">
-              <div className="text-center">
-                <div className="text-lg font-bold text-blue-400">
-                  {formatCurrency(accounts?.filter(acc => acc.type === 'challenge').reduce((sum, acc) => sum + acc.currentBalance, 0) || 0)}
-                </div>
-                <div className="text-xs text-blue-300">Challenge</div>
-              </div>
-            </Card>
-            
-            <Card className="bg-purple-600/20 border-purple-500/30 px-4 py-2">
-              <div className="text-center">
-                <div className="text-lg font-bold text-purple-400">
-                  {formatCurrency(0)}
-                </div>
-                <div className="text-xs text-purple-300">Funded</div>
-              </div>
-            </Card>
-            
-            <Button 
-              size="sm" 
-              className="bg-prop-gold hover:bg-prop-gold/80 text-black font-medium"
-              onClick={() => window.location.href = '/accounts'}
-            >
-              <Plus className="h-4 w-4 mr-1" />
-              Create Account
-            </Button>
-          </div>
-          
-          {/* Selection Status */}
-          <div className="selection-status">
-            <p className="text-sm text-gray-400">
-              {settings.mode === 'account' && settings.selectedAccountId 
-                ? `Analyzing 1 selected account` 
-                : `Showing combined stats for ${accounts?.length || 0} accounts`}
-            </p>
-          </div>
+
         </div>
       </section>
 

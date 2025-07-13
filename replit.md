@@ -264,7 +264,8 @@ Changelog:
   * Fixed single account selection to show only selected account's data instead of all accounts
   * Updated sidebar navigation from "Target & Risk Management Planning" to "PropFirms Trading Accounts"
   * Migrated accounts section into PropFirms Trading Accounts page under "Risk Management & Responsible Day-to-Pass Planning"
-  * Removed detailed accounts display from projections page keeping only compact account cards and summary statistics
+  * Completely removed all account-related content from PropFirms Trading Accounts page including detailed account cards, summary statistics, and status text
+  * PropFirms Trading Accounts page now shows only headers and projection tools with no account information displayed
   * Applied consistent golden widget styling throughout dashboard with proper hover effects
 - July 3, 2025. Critical Fix: Initial vs Final SL/TP Differentiation:
   * Completely redesigned CSV import algorithm to properly distinguish between initial and final stop loss/take profit levels
