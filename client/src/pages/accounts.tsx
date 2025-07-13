@@ -66,6 +66,13 @@ export default function Accounts() {
       marginSafetyBuffer: 50.0,
       stopLossPoints: 10,
 
+      // Payout fields
+      daysRequiredForPayout: 5,
+      winningDayMinimum: 200,
+      payoutFrequency: "monthly",
+      minimumPayoutAmount: 100,
+      profitSplit: 80,
+      maximumPayoutPercentage: 90,
       // Trading Asset Selection
       primaryTradingAsset: "ES",
       secondaryTradingAsset: "none",
@@ -115,12 +122,15 @@ export default function Accounts() {
                 <Form {...form}>
                   <form onSubmit={form.handleSubmit((data) => createAccountMutation.mutate(data))} className="space-y-6">
                     <Tabs defaultValue="account" className="space-y-6">
-                      <TabsList className="grid w-full grid-cols-3 bg-gray-800">
+                      <TabsList className="grid w-full grid-cols-4 bg-gray-800">
                         <TabsTrigger value="account" className="text-white data-[state=active]:bg-blue-600">
                           Account Info & Rules
                         </TabsTrigger>
                         <TabsTrigger value="financial" className="text-white data-[state=active]:bg-blue-600">
                           Financial Tracking
+                        </TabsTrigger>
+                        <TabsTrigger value="payout" className="text-white data-[state=active]:bg-blue-600">
+                          Payout Rules
                         </TabsTrigger>
                         <TabsTrigger value="risk" className="text-white data-[state=active]:bg-blue-600">
                           Risk Settings
@@ -696,7 +706,149 @@ export default function Accounts() {
                         </div>
                       </TabsContent>
 
-
+                      <TabsContent value="payout" className="space-y-6 mt-6">
+                        <div className="bg-gray-800 p-4 rounded-lg">
+                          <h3 className="text-lg font-semibold text-white mb-4 flex items-center">
+                            <DollarSign className="mr-2 h-5 w-5" />
+                            Payout Configuration
+                          </h3>
+                          
+                          <div className="grid grid-cols-2 gap-4">
+                            <FormField
+                              control={form.control}
+                              name="daysRequiredForPayout"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel className="text-white font-medium">Days Required for Payout</FormLabel>
+                                  <FormControl>
+                                    <Input 
+                                      type="number" 
+                                      {...field} 
+                                      value={field.value || ""}
+                                      onChange={(e) => field.onChange(e.target.value === "" ? null : parseInt(e.target.value))}
+                                      className="bg-gray-700 border-gray-600 text-white placeholder-gray-400"
+                                      placeholder="e.g., 5"
+                                    />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                            
+                            <FormField
+                              control={form.control}
+                              name="winningDayMinimum"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel className="text-white font-medium">Winning Day Minimum ($)</FormLabel>
+                                  <FormControl>
+                                    <Input 
+                                      type="number" 
+                                      {...field} 
+                                      value={field.value || ""}
+                                      onChange={(e) => field.onChange(e.target.value === "" ? null : parseFloat(e.target.value))}
+                                      className="bg-gray-700 border-gray-600 text-white placeholder-gray-400"
+                                      placeholder="e.g., 200"
+                                    />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                            
+                            <FormField
+                              control={form.control}
+                              name="payoutFrequency"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel className="text-white font-medium">Payout Frequency</FormLabel>
+                                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                    <FormControl>
+                                      <SelectTrigger className="bg-gray-700 border-gray-600 text-white">
+                                        <SelectValue placeholder="Select frequency" />
+                                      </SelectTrigger>
+                                    </FormControl>
+                                    <SelectContent className="bg-gray-700 border-gray-600">
+                                      <SelectItem value="weekly" className="text-white hover:bg-gray-600">Weekly</SelectItem>
+                                      <SelectItem value="bi-weekly" className="text-white hover:bg-gray-600">Bi-weekly</SelectItem>
+                                      <SelectItem value="monthly" className="text-white hover:bg-gray-600">Monthly</SelectItem>
+                                      <SelectItem value="on-demand" className="text-white hover:bg-gray-600">On-demand</SelectItem>
+                                    </SelectContent>
+                                  </Select>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                            
+                            <FormField
+                              control={form.control}
+                              name="minimumPayoutAmount"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel className="text-white font-medium">Minimum Payout Amount ($)</FormLabel>
+                                  <FormControl>
+                                    <Input 
+                                      type="number" 
+                                      {...field} 
+                                      value={field.value || ""}
+                                      onChange={(e) => field.onChange(e.target.value === "" ? null : parseFloat(e.target.value))}
+                                      className="bg-gray-700 border-gray-600 text-white placeholder-gray-400"
+                                      placeholder="e.g., 100"
+                                    />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                            
+                            <FormField
+                              control={form.control}
+                              name="profitSplit"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel className="text-white font-medium">Profit Split (%)</FormLabel>
+                                  <FormControl>
+                                    <Input 
+                                      type="number" 
+                                      min="0"
+                                      max="100"
+                                      {...field} 
+                                      value={field.value || ""}
+                                      onChange={(e) => field.onChange(e.target.value === "" ? null : parseFloat(e.target.value))}
+                                      className="bg-gray-700 border-gray-600 text-white placeholder-gray-400"
+                                      placeholder="e.g., 80"
+                                    />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                            
+                            <FormField
+                              control={form.control}
+                              name="maximumPayoutPercentage"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel className="text-white font-medium">Maximum Payout Percentage (%)</FormLabel>
+                                  <FormControl>
+                                    <Input 
+                                      type="number" 
+                                      min="0"
+                                      max="100"
+                                      {...field} 
+                                      value={field.value || ""}
+                                      onChange={(e) => field.onChange(e.target.value === "" ? null : parseFloat(e.target.value))}
+                                      className="bg-gray-700 border-gray-600 text-white placeholder-gray-400"
+                                      placeholder="e.g., 90"
+                                    />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                          </div>
+                        </div>
+                      </TabsContent>
 
                       <TabsContent value="risk" className="space-y-6 mt-6">
                         {/* Trading Capital Settings */}
