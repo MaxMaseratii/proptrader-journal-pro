@@ -33,9 +33,15 @@ export default function Welcome() {
     },
     {
       icon: Brain,
-      title: "Disciplinary Assistant & Journal",
-      description: "AI-powered disciplinary analysis with professional trading journal and improvement tracking",
+      title: "Disciplinary Assistant",
+      description: "AI-powered disciplinary analysis with professional trading psychology insights",
       color: "text-prop-green"
+    },
+    {
+      icon: BookOpen,
+      title: "Professional Trading Journal",
+      description: "Structured reflection system with improvement tracking and performance analysis",
+      color: "text-prop-pink"
     }
   ];
 
@@ -79,7 +85,7 @@ export default function Welcome() {
           </div>
           <Button 
             onClick={() => window.location.href = '/api/login'}
-            className="bg-prop-gradient-gold text-black font-semibold hover:scale-105 smooth-transition border-gradient-gold"
+            className="bg-prop-gradient-gold text-white font-semibold hover:scale-105 smooth-transition border-gradient-gold"
           >
             Sign In
           </Button>
@@ -111,7 +117,7 @@ export default function Welcome() {
             <Button 
               onClick={() => window.location.href = '/api/login'}
               size="lg"
-              className="bg-prop-gradient-gold text-black text-xl px-12 py-6 font-bold hover-lift smooth-transition border-gradient-gold"
+              className="bg-prop-gradient-gold text-white text-xl px-12 py-6 font-bold hover-lift smooth-transition border-gradient-gold"
             >
               <Sparkles className="w-6 h-6 mr-3" />
               Start Your Journey
@@ -380,47 +386,57 @@ export default function Welcome() {
             </p>
           </div>
           
-          <div className="grid grid-cols-1 gap-8 mb-16">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-16">
             {/* PropFirms Accounts & Risk Planning */}
             <div className="bg-prop-card rounded-xl border border-prop-gold/20 p-6 hover-lift smooth-transition">
               <div className="mb-4">
-                <h3 className="text-xl font-bold text-prop-gold mb-2">PropFirms Accounts & Responsible Risk/Day-to-Pass Planning</h3>
-                <p className="text-gray-300">Comprehensive account management with intelligent risk projections and strategic planning</p>
+                <h3 className="text-xl font-bold text-prop-gold mb-2">PropFirms Accounts & Risk Planning</h3>
+                <p className="text-gray-300">Strategic account management with intelligent risk projections</p>
               </div>
               <div className="bg-gray-800 rounded-lg p-4 space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <h4 className="text-sm font-semibold text-prop-gold">Account Overview</h4>
-                    <div className="bg-gray-700 rounded p-3 space-y-2">
-                      <div className="flex justify-between items-center">
-                        <span className="text-gray-300">FTMO Challenge #1</span>
-                        <span className="text-prop-green font-bold">$52,347</span>
-                      </div>
-                      <div className="flex justify-between items-center">
-                        <span className="text-gray-300">TopStep Funded</span>
-                        <span className="text-prop-green font-bold">$148,892</span>
-                      </div>
-                      <div className="flex justify-between items-center">
-                        <span className="text-gray-300">Risk Per Trade</span>
-                        <span className="text-prop-blue font-bold">$500</span>
-                      </div>
-                    </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="bg-gray-700 rounded p-3 text-center">
+                    <div className="text-lg font-bold text-prop-gold">$50,000</div>
+                    <div className="text-xs text-gray-300">Account Size</div>
                   </div>
-                  <div className="space-y-2">
-                    <h4 className="text-sm font-semibold text-prop-tiffany">Projection Timeline</h4>
-                    <div className="bg-gray-700 rounded p-3 space-y-2">
-                      <div className="flex justify-between items-center">
-                        <span className="text-gray-300">Days to Target</span>
-                        <span className="text-prop-tiffany font-bold">23 days</span>
-                      </div>
-                      <div className="flex justify-between items-center">
-                        <span className="text-gray-300">Daily Reward</span>
-                        <span className="text-prop-green font-bold">$1,200</span>
-                      </div>
-                      <div className="w-full bg-gray-600 rounded-full h-2">
-                        <div className="bg-prop-tiffany h-2 rounded-full w-3/5"></div>
-                      </div>
-                    </div>
+                  <div className="bg-gray-700 rounded p-3 text-center">
+                    <div className="text-lg font-bold text-prop-green">$9,000</div>
+                    <div className="text-xs text-gray-300">Target Objective</div>
+                  </div>
+                  <div className="bg-gray-700 rounded p-3 text-center">
+                    <div className="text-lg font-bold text-prop-pink">$4,500</div>
+                    <div className="text-xs text-gray-300">Max Drawdown</div>
+                  </div>
+                  <div className="bg-gray-700 rounded p-3 text-center">
+                    <div className="text-lg font-bold text-prop-tiffany">$500</div>
+                    <div className="text-xs text-gray-300">Risk Per Trade</div>
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <div className="flex justify-between items-center">
+                    <span className="text-gray-300">Reward Ratio</span>
+                    <span className="text-prop-green font-bold">1:5 RR</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-gray-300">Days to Target</span>
+                    <span className="text-prop-tiffany font-bold">18 days</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-gray-300">Daily Reward</span>
+                    <span className="text-prop-green font-bold">$2,500</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-gray-300">Active Trading Days</span>
+                    <span className="text-prop-gold font-bold">12 / 18</span>
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <div className="flex justify-between items-center">
+                    <span className="text-gray-300">Progress</span>
+                    <span className="text-prop-green font-bold">67%</span>
+                  </div>
+                  <div className="w-full bg-gray-600 rounded-full h-3">
+                    <div className="bg-prop-green h-3 rounded-full w-2/3"></div>
                   </div>
                 </div>
               </div>
@@ -430,91 +446,136 @@ export default function Welcome() {
             <div className="bg-prop-card rounded-xl border border-prop-tiffany/20 p-6 hover-lift smooth-transition">
               <div className="mb-4">
                 <h3 className="text-xl font-bold text-prop-tiffany mb-2">PropFirms Spending Tracker</h3>
-                <p className="text-gray-300">Track your investments, reset costs, and account expenses with detailed financial analytics</p>
+                <p className="text-gray-300">Complete financial overview of your trading investments</p>
               </div>
               <div className="bg-gray-800 rounded-lg p-4 space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="grid grid-cols-3 gap-2">
                   <div className="bg-gray-700 rounded p-3 text-center">
-                    <div className="text-2xl font-bold text-prop-tiffany">$2,847</div>
-                    <div className="text-sm text-gray-300">Total Invested</div>
+                    <div className="text-xl font-bold text-prop-tiffany">$3,247</div>
+                    <div className="text-xs text-gray-300">Total Invested</div>
                   </div>
                   <div className="bg-gray-700 rounded p-3 text-center">
-                    <div className="text-2xl font-bold text-prop-pink">$459</div>
-                    <div className="text-sm text-gray-300">Reset Costs</div>
+                    <div className="text-xl font-bold text-prop-pink">$789</div>
+                    <div className="text-xs text-gray-300">Reset Costs</div>
                   </div>
                   <div className="bg-gray-700 rounded p-3 text-center">
-                    <div className="text-2xl font-bold text-prop-green">$12,340</div>
-                    <div className="text-sm text-gray-300">Total Profit</div>
+                    <div className="text-xl font-bold text-prop-green">$18,500</div>
+                    <div className="text-xs text-gray-300">Total Profit</div>
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <div className="flex justify-between items-center">
-                    <span className="text-gray-300">FTMO $50K Challenge</span>
-                    <span className="text-prop-tiffany font-bold">$549</span>
+                  <div className="bg-gray-700 rounded p-2">
+                    <div className="flex justify-between items-center">
+                      <span className="text-gray-300">FTMO $50K Challenge</span>
+                      <span className="text-prop-tiffany font-bold">$549</span>
+                    </div>
+                    <div className="text-xs text-gray-400">Status: Funded • Profit: $8,340</div>
                   </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-gray-300">TopStep $100K Funded</span>
-                    <span className="text-prop-tiffany font-bold">$1,299</span>
+                  <div className="bg-gray-700 rounded p-2">
+                    <div className="flex justify-between items-center">
+                      <span className="text-gray-300">TopStep $100K Funded</span>
+                      <span className="text-prop-tiffany font-bold">$1,299</span>
+                    </div>
+                    <div className="text-xs text-gray-400">Status: Live • Profit: $12,840</div>
                   </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-gray-300">Apex $25K Challenge</span>
-                    <span className="text-prop-tiffany font-bold">$299</span>
+                  <div className="bg-gray-700 rounded p-2">
+                    <div className="flex justify-between items-center">
+                      <span className="text-gray-300">Apex $25K Challenge</span>
+                      <span className="text-prop-tiffany font-bold">$299</span>
+                    </div>
+                    <div className="text-xs text-gray-400">Status: Failed • Resets: 2</div>
                   </div>
+                </div>
+                <div className="bg-prop-gradient-green/20 border border-prop-green/50 rounded p-3 text-center">
+                  <div className="text-lg font-bold text-prop-green">ROI: +469%</div>
+                  <div className="text-xs text-gray-300">Return on Investment</div>
                 </div>
               </div>
             </div>
 
-            {/* Disciplinary Assistant & Journal */}
+            {/* Disciplinary Assistant */}
             <div className="bg-prop-card rounded-xl border border-prop-green/20 p-6 hover-lift smooth-transition">
               <div className="mb-4">
-                <h3 className="text-xl font-bold text-prop-green mb-2">Disciplinary Assistant & Journal</h3>
-                <p className="text-gray-300">AI-powered disciplinary analysis with professional trading journal and improvement tracking</p>
+                <h3 className="text-xl font-bold text-prop-green mb-2">Disciplinary Assistant</h3>
+                <p className="text-gray-300">AI-powered psychology analysis and trading discipline tracking</p>
               </div>
               <div className="bg-gray-800 rounded-lg p-4 space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="space-y-3">
-                    <h4 className="text-sm font-semibold text-prop-green">Discipline Score</h4>
-                    <div className="bg-gray-700 rounded p-3">
-                      <div className="flex justify-between items-center mb-2">
-                        <span className="text-gray-300">Overall Score</span>
-                        <span className="text-prop-green font-bold">87.3%</span>
-                      </div>
-                      <div className="w-full bg-gray-600 rounded-full h-2">
-                        <div className="bg-prop-green h-2 rounded-full w-5/6"></div>
-                      </div>
-                    </div>
-                    <div className="bg-gray-700 rounded p-3 space-y-2">
-                      <div className="flex justify-between items-center">
-                        <span className="text-gray-300">Risk Management</span>
-                        <span className="text-prop-green font-bold">92%</span>
-                      </div>
-                      <div className="flex justify-between items-center">
-                        <span className="text-gray-300">Emotional Control</span>
-                        <span className="text-yellow-400 font-bold">78%</span>
-                      </div>
-                      <div className="flex justify-between items-center">
-                        <span className="text-gray-300">Strategy Adherence</span>
-                        <span className="text-prop-green font-bold">95%</span>
-                      </div>
+                <div className="text-center">
+                  <div className="text-3xl font-bold text-prop-green">92.7%</div>
+                  <div className="text-sm text-gray-300">Overall Discipline Score</div>
+                  <div className="w-full bg-gray-600 rounded-full h-2 mt-2">
+                    <div className="bg-prop-green h-2 rounded-full w-11/12"></div>
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="bg-gray-700 rounded p-3">
+                    <div className="text-sm font-semibold text-prop-green">Risk Management</div>
+                    <div className="text-lg font-bold text-prop-green">96%</div>
+                    <div className="text-xs text-gray-400">Excellent control</div>
+                  </div>
+                  <div className="bg-gray-700 rounded p-3">
+                    <div className="text-sm font-semibold text-yellow-400">Emotional Control</div>
+                    <div className="text-lg font-bold text-yellow-400">84%</div>
+                    <div className="text-xs text-gray-400">Room for improvement</div>
+                  </div>
+                  <div className="bg-gray-700 rounded p-3">
+                    <div className="text-sm font-semibold text-prop-green">Strategy Adherence</div>
+                    <div className="text-lg font-bold text-prop-green">98%</div>
+                    <div className="text-xs text-gray-400">Outstanding</div>
+                  </div>
+                  <div className="bg-gray-700 rounded p-3">
+                    <div className="text-sm font-semibold text-prop-tiffany">Stop Loss Respect</div>
+                    <div className="text-lg font-bold text-prop-tiffany">89%</div>
+                    <div className="text-xs text-gray-400">Very good</div>
+                  </div>
+                </div>
+                <div className="bg-prop-gradient-gold/20 border border-prop-gold/50 rounded p-3">
+                  <div className="text-sm font-semibold text-prop-gold">🎯 Current Focus</div>
+                  <div className="text-xs text-gray-300">Improve patience during news events</div>
+                </div>
+              </div>
+            </div>
+
+            {/* Professional Trading Journal */}
+            <div className="bg-prop-card rounded-xl border border-prop-pink/20 p-6 hover-lift smooth-transition">
+              <div className="mb-4">
+                <h3 className="text-xl font-bold text-prop-pink mb-2">Professional Trading Journal</h3>
+                <p className="text-gray-300">Structured reflection system with performance analysis</p>
+              </div>
+              <div className="bg-gray-800 rounded-lg p-4 space-y-4">
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="bg-gray-700 rounded p-3 text-center">
+                    <div className="text-lg font-bold text-prop-pink">247</div>
+                    <div className="text-xs text-gray-300">Journal Entries</div>
+                  </div>
+                  <div className="bg-gray-700 rounded p-3 text-center">
+                    <div className="text-lg font-bold text-prop-green">89%</div>
+                    <div className="text-xs text-gray-300">Consistency Rate</div>
+                  </div>
+                </div>
+                <div className="space-y-3">
+                  <div className="bg-gray-700 rounded p-3">
+                    <div className="border-l-4 border-prop-green pl-3">
+                      <h5 className="text-xs font-semibold text-prop-green">What Went Right</h5>
+                      <p className="text-gray-300 text-xs">Perfect entry on EUR/USD breakout at 1.0850 support. Followed my 3-confirmation rule and held through minor pullback.</p>
                     </div>
                   </div>
-                  <div className="space-y-3">
-                    <h4 className="text-sm font-semibold text-prop-pink">Journal Insights</h4>
-                    <div className="bg-gray-700 rounded p-3 space-y-2">
-                      <div className="border-l-4 border-prop-green pl-3">
-                        <h5 className="text-xs font-semibold text-prop-green">What Went Right</h5>
-                        <p className="text-gray-300 text-xs">Perfect entry timing on EUR/USD breakout</p>
-                      </div>
-                      <div className="border-l-4 border-red-500 pl-3">
-                        <h5 className="text-xs font-semibold text-red-400">What Went Wrong</h5>
-                        <p className="text-gray-300 text-xs">Moved stop loss against me on GBP/JPY</p>
-                      </div>
-                      <div className="border-l-4 border-prop-gold pl-3">
-                        <h5 className="text-xs font-semibold text-prop-gold">AI Recommendation</h5>
-                        <p className="text-gray-300 text-xs">Stick to original stop levels, practice patience</p>
-                      </div>
+                  <div className="bg-gray-700 rounded p-3">
+                    <div className="border-l-4 border-red-500 pl-3">
+                      <h5 className="text-xs font-semibold text-red-400">What Went Wrong</h5>
+                      <p className="text-gray-300 text-xs">Moved stop loss from 1.0820 to 1.0810 on GBP/JPY trade, reducing my risk management edge.</p>
                     </div>
                   </div>
+                  <div className="bg-gray-700 rounded p-3">
+                    <div className="border-l-4 border-prop-gold pl-3">
+                      <h5 className="text-xs font-semibold text-prop-gold">Tomorrow's Focus</h5>
+                      <p className="text-gray-300 text-xs">Maintain original stop levels. Trust the initial analysis and avoid emotional adjustments.</p>
+                    </div>
+                  </div>
+                </div>
+                <div className="bg-prop-gradient-pink/20 border border-prop-pink/50 rounded p-3 text-center">
+                  <div className="text-sm font-semibold text-prop-pink">📈 Weekly Progress</div>
+                  <div className="text-xs text-gray-300">Discipline improved by 12% this week</div>
                 </div>
               </div>
             </div>
