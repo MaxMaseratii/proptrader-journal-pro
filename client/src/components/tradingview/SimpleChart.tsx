@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import type { Trade } from "@shared/schema";
 import { TrendingUp, TrendingDown, BarChart3 } from 'lucide-react';
 
@@ -14,6 +14,8 @@ export const SimpleChart: React.FC<SimpleChartProps> = ({
   height = 400,
 }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [hoveredTrade, setHoveredTrade] = useState<Trade | null>(null);
+  const [mousePos, setMousePos] = useState<{x: number, y: number} | null>(null);
 
   useEffect(() => {
     if (!canvasRef.current || trades.length === 0) return;

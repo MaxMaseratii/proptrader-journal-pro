@@ -14,6 +14,13 @@ import { Label } from "@/components/ui/label";
 import { EquityChart, MonthlyPerformanceChart } from "@/components/chart-components";
 import { formatCurrency, formatPercentage, formatDate } from "@/lib/utils";
 import { calculateDisciplinedScore, getScoreColor, getGradeColor } from "@/lib/disciplined-score";
+
+// Color coding utility function
+const getValueColor = (value: number) => {
+  if (value > 0) return 'text-green-400';
+  if (value < 0) return 'text-red-400';
+  return 'text-yellow-400'; // zero/neutral
+};
 import TradeCalendar from "@/components/trade-calendar";
 import TradeEntry from "@/components/trade-entry";
 import TradeAnalysisCalendar from "@/components/trade-analysis-calendar";
@@ -85,6 +92,10 @@ export default function Dashboard() {
 
   const { data: trades, isLoading: tradesLoading } = useQuery<Trade[]>({
     queryKey: ["/api/trades"],
+  });
+
+  const { data: user } = useQuery({
+    queryKey: ["/api/auth/user"],
   });
 
   // Initialize selectedAccountIds with first account when none selected
@@ -463,7 +474,7 @@ export default function Dashboard() {
             <div className="widget-content">
               <div className="widget-left">
                 <p className="widget-label">Net Balance</p>
-                <p className="widget-value">
+                <p className={`widget-value ${getValueColor(calculateNetBalance())}`}>
                   {formatCurrency(calculateNetBalance())}
                 </p>
                 <p className="widget-description">Starting balance + Total P&L</p>
@@ -479,7 +490,7 @@ export default function Dashboard() {
             <div className="widget-content">
               <div className="widget-left">
                 <p className="widget-label">Daily P&L</p>
-                <p className="widget-value">
+                <p className={`widget-value ${getValueColor(combinedAnalytics?.worstTrade || 0)}`}>
                   {formatCurrency(combinedAnalytics?.worstTrade || 0)}
                 </p>
                 <p className="widget-description">Today's performance</p>
@@ -495,7 +506,7 @@ export default function Dashboard() {
             <div className="widget-content">
               <div className="widget-left">
                 <p className="widget-label">Total P&L</p>
-                <p className="widget-value">
+                <p className={`widget-value ${getValueColor(combinedAnalytics?.totalPnl || 0)}`}>
                   {formatCurrency(combinedAnalytics?.totalPnl || 0)}
                 </p>
                 <p className="widget-description">Net profit/loss</p>
@@ -599,7 +610,7 @@ export default function Dashboard() {
             <div className="widget-content">
               <div className="widget-left">
                 <p className="widget-label">Best Trade</p>
-                <p className="widget-value">
+                <p className={`widget-value ${getValueColor(combinedAnalytics?.bestTrade || 0)}`}>
                   {formatCurrency(combinedAnalytics?.bestTrade || 0)}
                 </p>
                 <p className="widget-description">Highest single trade profit</p>
@@ -637,7 +648,7 @@ export default function Dashboard() {
                     →
                   </button>
                 </div>
-                <p className="widget-value">
+                <p className={`widget-value ${getValueColor(combinedAnalytics?.totalPnl || 0)}`}>
                   {formatCurrency(combinedAnalytics?.totalPnl || 0)}
                 </p>
                 <p className="widget-description">
@@ -699,17 +710,36 @@ export default function Dashboard() {
             </div>
           </div>
 
-          {/* Investment ROI Widget */}
+          {/* Personal Hourly Wages Widget */}
           <div className="widget-container">
             <div className="widget-content">
               <div className="widget-left">
-                <p className="widget-label">Investment ROI</p>
-                <p className="widget-value">Invested: $579.00</p>
-                <p className="widget-description">Current Value: $177,540.00</p>
-                <p className="widget-description">ROI: +30,566% 📈 | Payouts: $0 received</p>
+                <p className="widget-label">Personal Hourly Wages</p>
+                <p className="widget-value">
+                  {(() => {
+                    const hourlyWage = user?.personalHourlyWage || 25; // Default $25/hour
+                    const uniqueDays = new Set(trades?.map(t => t.date.split('T')[0])).size || 0;
+                    const totalHours = Math.min(uniqueDays * 8, 24 * uniqueDays);
+                    const requiredEarnings = totalHours * hourlyWage;
+                    const actualEarnings = combinedAnalytics?.totalPnl || 0;
+                    const isProfit = actualEarnings >= requiredEarnings;
+                    
+                    return isProfit ? 
+                      `✅ ${formatCurrency(actualEarnings)} earned` :
+                      `❌ ${formatCurrency(requiredEarnings)} needed`;
+                  })()}
+                </p>
+                <p className="widget-description">
+                  {(() => {
+                    const hourlyWage = user?.personalHourlyWage || 25;
+                    const uniqueDays = new Set(trades?.map(t => t.date.split('T')[0])).size || 0;
+                    const totalHours = Math.min(uniqueDays * 8, 24 * uniqueDays);
+                    return `${formatCurrency(hourlyWage)}/hr × ${totalHours.toFixed(1)} hrs`;
+                  })()}
+                </p>
               </div>
               <div className="widget-icon-square">
-                <DollarSign className="widget-icon" />
+                <Clock className="widget-icon" />
               </div>
             </div>
           </div>
@@ -766,19 +796,47 @@ export default function Dashboard() {
                 <BarChart3 className="mr-3 h-5 w-5 text-blue-400" />
                 Trading Charts Preview
               </h2>
-              <Link href="/charts">
-                <Button variant="outline" size="sm" className="text-blue-400 border-blue-400 hover:bg-blue-400/10">
-                  View All Charts
-                </Button>
-              </Link>
+              <div className="flex items-center space-x-4">
+                <Select value={selectedAccountIds[0]?.toString() || 'all'} onValueChange={(value) => {
+                  if (value === 'all') {
+                    setSelectedAccountIds([]);
+                    setAccountSelectionMode('all');
+                  } else {
+                    setSelectedAccountIds([parseInt(value)]);
+                    setAccountSelectionMode('single');
+                  }
+                }}>
+                  <SelectTrigger className="w-48 bg-gray-800 border-gray-600 text-white">
+                    <SelectValue placeholder="Select account" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-gray-800 border-gray-600">
+                    <SelectItem value="all" className="text-white">All Accounts</SelectItem>
+                    {accounts?.map(account => (
+                      <SelectItem key={account.id} value={account.id.toString()} className="text-white">
+                        {account.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <Link href="/charts">
+                  <Button variant="outline" size="sm" className="text-blue-400 border-blue-400 hover:bg-blue-400/10">
+                    View All Charts
+                  </Button>
+                </Link>
+              </div>
             </div>
             
             {(() => {
-              const topSymbol = Array.from(new Set(trades.map(t => t.symbol).filter(Boolean)))
+              // Filter trades based on selected accounts
+              const filteredTrades = accountSelectionMode === 'all' 
+                ? trades 
+                : trades.filter(t => selectedAccountIds.includes(t.accountId));
+              
+              const topSymbol = Array.from(new Set(filteredTrades.map(t => t.symbol).filter(Boolean)))
                 .map(symbol => ({
                   symbol,
-                  trades: trades.filter(t => t.symbol === symbol),
-                  pnl: trades.filter(t => t.symbol === symbol).reduce((sum, t) => sum + (t.pnl || 0), 0)
+                  trades: filteredTrades.filter(t => t.symbol === symbol),
+                  pnl: filteredTrades.filter(t => t.symbol === symbol).reduce((sum, t) => sum + (t.pnl || 0), 0)
                 }))
                 .sort((a, b) => b.trades.length - a.trades.length)[0];
               
