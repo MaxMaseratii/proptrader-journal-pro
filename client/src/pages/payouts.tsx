@@ -134,7 +134,7 @@ export default function Payouts() {
 
     const dailyPnLValues = Object.values(dailyPnL);
     
-    // Use actual user-entered payout requirements
+    // Use actual user-entered payout requirements (no fallback values)
     const daysRequired = selectedAccount.daysRequiredForPayout || 0;
     const winningDayMinimum = selectedAccount.winningDayMinimum || 0;
     const minimumPayoutAmount = selectedAccount.minimumPayoutAmount || 0;
