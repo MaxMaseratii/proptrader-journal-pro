@@ -666,3 +666,8 @@
     animation: slider-change 0.6s ease-out;
   }
 }
+
+/* Hide detailed accounts section */
+.detailed-accounts-section {
+  display: none !important;
+}
