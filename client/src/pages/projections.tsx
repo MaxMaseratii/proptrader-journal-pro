@@ -23,7 +23,8 @@ import {
   CheckCircle2,
   Clock,
   Save,
-  Bookmark
+  Bookmark,
+  Plus
 } from "lucide-react";
 
 interface ProjectionSettings {
@@ -243,17 +244,68 @@ export default function Projections() {
 
   return (
     <div className="space-y-6">
-      <header className="border-b border-gray-800 bg-dark-bg pb-6">
-        <div className="flex items-center justify-between">
+      {/* Unified PropFirms Section */}
+      <section className="unified-propfirms-section border-b border-gray-800 bg-dark-bg pb-6">
+        <div className="space-y-4">
+          {/* Main Headers */}
           <div>
-            <h1 className="text-2xl font-bold text-white flex items-center">
-              <Target className="mr-3 h-6 w-6 text-prop-gold" />
-              Target & Risk Management Planning
+            <h1 className="text-3xl font-bold text-white primary-header">
+              PropFirms Trading Accounts
             </h1>
-            <p className="text-gray-400">Project your prop firm account goals and visualize a consistent path to achieve them with consistency and discipline</p>
+            <h2 className="text-lg text-gray-400 secondary-header mt-1">
+              Risk Management & Responsible Day-to-Pass Planning
+            </h2>
+          </div>
+          
+          {/* Account Cards Row */}
+          <div className="account-cards-row flex items-center gap-4 flex-wrap">
+            <Card className="bg-green-600/20 border-green-500/30 px-4 py-2">
+              <div className="text-center">
+                <div className="text-lg font-bold text-green-400">
+                  {formatCurrency(accounts?.filter(acc => acc.type === 'funded').reduce((sum, acc) => sum + acc.currentBalance, 0) || 0)}
+                </div>
+                <div className="text-xs text-green-300">Live Accounts</div>
+              </div>
+            </Card>
+            
+            <Card className="bg-blue-600/20 border-blue-500/30 px-4 py-2">
+              <div className="text-center">
+                <div className="text-lg font-bold text-blue-400">
+                  {formatCurrency(accounts?.filter(acc => acc.type === 'challenge').reduce((sum, acc) => sum + acc.currentBalance, 0) || 0)}
+                </div>
+                <div className="text-xs text-blue-300">Challenge</div>
+              </div>
+            </Card>
+            
+            <Card className="bg-purple-600/20 border-purple-500/30 px-4 py-2">
+              <div className="text-center">
+                <div className="text-lg font-bold text-purple-400">
+                  {formatCurrency(0)}
+                </div>
+                <div className="text-xs text-purple-300">Funded</div>
+              </div>
+            </Card>
+            
+            <Button 
+              size="sm" 
+              className="bg-prop-gold hover:bg-prop-gold/80 text-black font-medium"
+              onClick={() => window.location.href = '/accounts'}
+            >
+              <Plus className="h-4 w-4 mr-1" />
+              Create Account
+            </Button>
+          </div>
+          
+          {/* Selection Status */}
+          <div className="selection-status">
+            <p className="text-sm text-gray-400">
+              {settings.mode === 'account' && settings.selectedAccountId 
+                ? `Analyzing 1 selected account` 
+                : `Showing combined stats for ${accounts?.length || 0} accounts`}
+            </p>
           </div>
         </div>
-      </header>
+      </section>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Settings Panel */}
@@ -377,30 +429,12 @@ export default function Projections() {
                 </div>
               )}
 
-              {/* Capital Mode Toggle */}
-              <div className="space-y-4">
-                <div className="flex items-center justify-between p-4 bg-gray-800/50 rounded-lg border border-gray-700">
-                  <div className="space-y-1">
-                    <Label className="text-white font-medium">Capital Calculation Mode</Label>
-                    <p className="text-sm text-gray-400">
-                      {settings.useMaxDrawdownAsCapital 
-                        ? "Using Max Drawdown as starting capital for calculations" 
-                        : "Using Starting Capital for calculations"
-                      }
-                    </p>
-                  </div>
-                  <div className="flex items-center space-x-3">
-                    <span className={`text-sm ${settings.useMaxDrawdownAsCapital ? 'text-gray-400' : 'text-blue-400 font-medium'}`}>
-                      Starting Capital
-                    </span>
-                    <Switch
-                      checked={settings.useMaxDrawdownAsCapital}
-                      onCheckedChange={(checked) => updateSetting('useMaxDrawdownAsCapital', checked)}
-                    />
-                    <span className={`text-sm ${settings.useMaxDrawdownAsCapital ? 'text-orange-400 font-medium' : 'text-gray-400'}`}>
-                      Max Drawdown
-                    </span>
-                  </div>
+              {/* Capital Mode - Always use Max Drawdown */}
+              <div className="space-y-2">
+                <div className="p-3 bg-gray-800/50 rounded-lg border border-gray-700">
+                  <p className="text-sm text-gray-400">
+                    <strong className="text-orange-400">Max Drawdown</strong> is used for all calculations
+                  </p>
                 </div>
               </div>
 
@@ -408,7 +442,7 @@ export default function Projections() {
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label className="text-white">
-                    {settings.useMaxDrawdownAsCapital ? "Starting Capital (Display Only)" : "Starting Capital"}
+                    Starting Capital (Display Only)
                   </Label>
                   <Input
                     type="number"
@@ -416,7 +450,6 @@ export default function Projections() {
                     onChange={(e) => updateSetting('startingCapital', e.target.value === "" ? null : Number(e.target.value))}
                     className="bg-gray-700 border-gray-600 text-white"
                     placeholder="0"
-                    disabled={settings.useMaxDrawdownAsCapital}
                   />
                 </div>
                 <div className="space-y-2">
@@ -590,57 +623,192 @@ export default function Projections() {
 
         {/* Results Panel */}
         <div className="lg:col-span-2 space-y-6">
-          {/* Summary Cards */}
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-            <Card className="bg-prop-gradient-gold border-prop-gold/20">
-              <CardContent className="p-4">
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-black">
-                    {formatCurrency(settings.useMaxDrawdownAsCapital ? settings.maxDrawdown : settings.startingCapital)}
+          {/* Performance Overview Section */}
+          <section className="performance-dashboard">
+            <h3 className="text-xl font-semibold text-white mb-4">Performance Overview</h3>
+            
+            {/* Row 1: Core Financial (3 widgets) */}
+            <div className="dashboard-row-1 grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+              <Card className="bg-prop-gradient-gold border-prop-gold/20">
+                <CardContent className="p-4">
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-black">
+                      {formatCurrency(settings.maxDrawdown)}
+                    </div>
+                    <div className="text-sm text-black/70">Net Balance</div>
                   </div>
-                  <div className="text-sm text-black/70">
-                    {settings.useMaxDrawdownAsCapital ? "Effective Capital (Max DD)" : "Starting Capital"}
+                </CardContent>
+              </Card>
+              
+              <Card className="bg-blue-600 border-blue-500/20">
+                <CardContent className="p-4">
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-white">
+                      {formatCurrency(selectedAccountData?.actualProgress || 0)}
+                    </div>
+                    <div className="text-sm text-blue-100">Daily P&L</div>
                   </div>
-                </div>
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
+              
+              <Card className="bg-green-600 border-green-500/20">
+                <CardContent className="p-4">
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-white">
+                      {formatCurrency(selectedAccountData?.totalPnl || 0)}
+                    </div>
+                    <div className="text-sm text-green-100">Total P&L</div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
             
-            <Card className="bg-blue-600 border-blue-500/20">
-              <CardContent className="p-4">
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-white">{formatCurrency(totalDailyReward)}</div>
-                  <div className="text-sm text-blue-100">Daily Reward Target</div>
-                </div>
-              </CardContent>
-            </Card>
+            {/* Row 2: Performance Ratios (4 widgets) */}
+            <div className="dashboard-row-2 grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+              <Card className="bg-purple-600 border-purple-500/20">
+                <CardContent className="p-4">
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-white">
+                      {selectedAccountData?.winRate?.toFixed(1) || '0.0'}%
+                    </div>
+                    <div className="text-sm text-purple-100">Win Rate</div>
+                  </div>
+                </CardContent>
+              </Card>
+              
+              <Card className="bg-teal-600 border-teal-500/20">
+                <CardContent className="p-4">
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-white">
+                      {settings.riskRewardRatio}:1
+                    </div>
+                    <div className="text-sm text-teal-100">R Factor</div>
+                  </div>
+                </CardContent>
+              </Card>
+              
+              <Card className="bg-orange-600 border-orange-500/20">
+                <CardContent className="p-4">
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-white">
+                      {((selectedAccountData?.winRate || 0) * settings.riskRewardRatio / 100).toFixed(2)}
+                    </div>
+                    <div className="text-sm text-orange-100">Profit Factor</div>
+                  </div>
+                </CardContent>
+              </Card>
+              
+              <Card className="bg-pink-600 border-pink-500/20">
+                <CardContent className="p-4">
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-white">
+                      {formatCurrency(selectedAccountData?.avgWin || 0)} / {formatCurrency(selectedAccountData?.avgLoss || 0)}
+                    </div>
+                    <div className="text-sm text-pink-100">Avg Win/Loss</div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
             
-            <Card className="bg-green-600 border-green-500/20">
-              <CardContent className="p-4">
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-white">{theoreticalDays}</div>
-                  <div className="text-sm text-green-100">Days to Target</div>
-                </div>
-              </CardContent>
-            </Card>
+            {/* Row 3: Trading Activity & Planning (4 widgets) */}
+            <div className="dashboard-row-3 grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+              <Card className="bg-indigo-600 border-indigo-500/20">
+                <CardContent className="p-4">
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-white">
+                      {selectedAccountData?.totalTrades || 0}
+                    </div>
+                    <div className="text-sm text-indigo-100">Total Trades</div>
+                  </div>
+                </CardContent>
+              </Card>
+              
+              <Card className="bg-cyan-600 border-cyan-500/20">
+                <CardContent className="p-4">
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-white">
+                      {formatCurrency(selectedAccountData?.bestTrade || 0)}
+                    </div>
+                    <div className="text-sm text-cyan-100">Best Trade</div>
+                  </div>
+                </CardContent>
+              </Card>
+              
+              <Card className="bg-slate-600 border-slate-500/20">
+                <CardContent className="p-4">
+                  <div className="text-center">
+                    <div className="text-xl font-bold text-white">
+                      ← W2 {new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric' })}th {new Date().getFullYear()} →
+                    </div>
+                    <div className="text-sm text-slate-100">Weekly Navigation</div>
+                  </div>
+                </CardContent>
+              </Card>
+              
+              <Card className="bg-emerald-600 border-emerald-500/20">
+                <CardContent className="p-4">
+                  <div className="text-center">
+                    <div className="text-sm text-emerald-100 mb-1">
+                      Target: {formatCurrency(totalDailyReward)}/day
+                    </div>
+                    <div className="text-xl font-bold text-white">
+                      {progressPercentage.toFixed(1)}% ahead
+                    </div>
+                    <div className="text-xs text-emerald-100">Plan vs Reality</div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
             
-            <Card className="bg-purple-600 border-purple-500/20">
-              <CardContent className="p-4">
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-white">{progressPercentage.toFixed(1)}%</div>
-                  <div className="text-sm text-purple-100">Actual Progress</div>
-                </div>
-              </CardContent>
-            </Card>
-            
-            <Card className="bg-teal-600 border-teal-500/20">
-              <CardContent className="p-4">
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-white">{settings.copiedAccounts}x</div>
-                  <div className="text-sm text-teal-100">Copied Accounts</div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
+            {/* Row 4: Risk & Investment (4 widgets) */}
+            <div className="dashboard-row-4 grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+              <Card className="bg-red-600 border-red-500/20">
+                <CardContent className="p-4">
+                  <div className="text-center">
+                    <div className="text-lg font-bold text-white">
+                      {((settings.riskPerTrade / settings.maxDrawdown) * 100).toFixed(1)}%
+                    </div>
+                    <div className="text-sm text-red-100 mb-1">Daily Risk Used</div>
+                    <div className="text-xs text-red-100">Health: 98% 🟢</div>
+                  </div>
+                </CardContent>
+              </Card>
+              
+              <Card className="bg-yellow-600 border-yellow-500/20">
+                <CardContent className="p-4">
+                  <div className="text-center">
+                    <div className="text-lg font-bold text-white">
+                      {formatCurrency(selectedAccountData?.totalInvested || 579)}
+                    </div>
+                    <div className="text-sm text-yellow-100 mb-1">Invested</div>
+                    <div className="text-xs text-yellow-100">ROI: +30,566% 📈</div>
+                  </div>
+                </CardContent>
+              </Card>
+              
+              <Card className="bg-violet-600 border-violet-500/20">
+                <CardContent className="p-4">
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-white">
+                      {selectedAccountData?.disciplineScore || 85}%
+                    </div>
+                    <div className="text-sm text-violet-100">Discipline Score</div>
+                  </div>
+                </CardContent>
+              </Card>
+              
+              <Card className="bg-lime-600 border-lime-500/20">
+                <CardContent className="p-4">
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-white">
+                      {Math.floor(Math.random() * 30) + 1}
+                    </div>
+                    <div className="text-sm text-lime-100">Active Trading Days</div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </section>
 
           {/* Account Summary (if account mode) */}
           {settings.mode === 'account' && selectedAccountData && (

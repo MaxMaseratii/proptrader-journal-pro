@@ -2,6 +2,47 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Dashboard Restructuring Styles */
+.primary-header {
+  font-size: 1.875rem;
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+}
+
+.secondary-header {
+  font-size: 1.125rem;
+  color: rgb(156, 163, 175);
+  margin-top: 0;
+}
+
+.unified-propfirms-section {
+  border-bottom: 1px solid rgb(31, 41, 55);
+  background-color: rgb(3, 7, 18);
+  padding-bottom: 1.5rem;
+}
+
+.account-cards-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.selection-status {
+  margin-top: 0.5rem;
+}
+
+.performance-dashboard {
+  margin-top: 1.5rem;
+}
+
+.dashboard-row-1,
+.dashboard-row-2,
+.dashboard-row-3,
+.dashboard-row-4 {
+  margin-bottom: 1rem;
+}
+
 :root {
   --background: hsl(0, 0%, 3%);
   --foreground: hsl(0, 0%, 98%);
