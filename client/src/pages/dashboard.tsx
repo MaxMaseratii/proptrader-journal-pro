@@ -1518,7 +1518,7 @@ export default function Dashboard() {
                 if (!selectedAccount) return null;
                 
                 const accountTrades = trades?.filter(t => t.accountId === selectedAccount.id) || [];
-                const winningTrades = accountTrades.filter(t => (t.pnl || 0) >= (selectedAccount.winningDayMinimum || 0));
+                const winningTrades = accountTrades.filter(t => (t.pnl || 0) >= (selectedAccount.winningDayMinimum || 200));
                 const totalProfit = selectedAccount.currentBalance - selectedAccount.startingBalance;
                 const currentDrawdown = selectedAccount.maxDrawdown - (selectedAccount.startingBalance - selectedAccount.currentBalance);
                 const isInDrawdown = currentDrawdown < (selectedAccount.maxDrawdown * 0.5);
@@ -1526,10 +1526,10 @@ export default function Dashboard() {
                 const daysTraded = new Set(accountTrades.map(t => t.date)).size;
                 const winningDays = winningTrades.length;
                 const profitTargetMet = totalProfit >= (selectedAccount.profitTarget || 0);
-                const daysRequirementMet = daysTraded >= (selectedAccount.daysRequiredForPayout || 0);
+                const daysRequirementMet = daysTraded >= (selectedAccount.daysRequiredForPayout || 5);
                 const drawdownSafe = !isInDrawdown;
                 
-                const isReady = profitTargetMet && daysRequirementMet && drawdownSafe && winningDays >= (selectedAccount.daysRequiredForPayout || 0);
+                const isReady = profitTargetMet && daysRequirementMet && drawdownSafe && winningDays >= (selectedAccount.daysRequiredForPayout || 5);
                 
                 return (
                   <div className="space-y-4">
@@ -1578,7 +1578,7 @@ export default function Dashboard() {
                         <div className="flex justify-between text-sm mb-2">
                           <span className="text-gray-300">Trading Days</span>
                           <span className={daysRequirementMet ? 'text-green-400' : 'text-blue-400'}>
-                            {daysTraded} / {selectedAccount.daysRequiredForPayout || 0} days
+                            {daysTraded} / {selectedAccount.daysRequiredForPayout || 5} days
                           </span>
                         </div>
                         <div className="w-full bg-gray-700 rounded-full h-3">
@@ -1586,7 +1586,7 @@ export default function Dashboard() {
                             className={`h-3 rounded-full transition-all duration-300 ${
                               daysRequirementMet ? 'bg-green-400' : 'bg-blue-400'
                             }`}
-                            style={{ width: `${Math.min((daysTraded / (selectedAccount.daysRequiredForPayout || 1)) * 100, 100)}%` }}
+                            style={{ width: `${Math.min((daysTraded / (selectedAccount.daysRequiredForPayout || 5)) * 100, 100)}%` }}
                           ></div>
                         </div>
                       </div>
@@ -1595,18 +1595,18 @@ export default function Dashboard() {
                       <div>
                         <div className="flex justify-between text-sm mb-2">
                           <span className="text-gray-300">
-                            Winning Days ({selectedAccount.winningDayMinimum ? `$${selectedAccount.winningDayMinimum}+` : 'No minimum'})
+                            Winning Days (${selectedAccount.winningDayMinimum || 200}+)
                           </span>
-                          <span className={winningDays >= (selectedAccount.daysRequiredForPayout || 0) ? 'text-green-400' : 'text-purple-400'}>
-                            {winningDays} / {selectedAccount.daysRequiredForPayout || 0} days
+                          <span className={winningDays >= (selectedAccount.daysRequiredForPayout || 5) ? 'text-green-400' : 'text-purple-400'}>
+                            {winningDays} / {selectedAccount.daysRequiredForPayout || 5} days
                           </span>
                         </div>
                         <div className="w-full bg-gray-700 rounded-full h-3">
                           <div 
                             className={`h-3 rounded-full transition-all duration-300 ${
-                              winningDays >= (selectedAccount.daysRequiredForPayout || 0) ? 'bg-green-400' : 'bg-purple-400'
+                              winningDays >= (selectedAccount.daysRequiredForPayout || 5) ? 'bg-green-400' : 'bg-purple-400'
                             }`}
-                            style={{ width: `${Math.min((winningDays / (selectedAccount.daysRequiredForPayout || 1)) * 100, 100)}%` }}
+                            style={{ width: `${Math.min((winningDays / (selectedAccount.daysRequiredForPayout || 5)) * 100, 100)}%` }}
                           ></div>
                         </div>
                       </div>
