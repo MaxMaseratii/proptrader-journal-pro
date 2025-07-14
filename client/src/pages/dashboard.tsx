@@ -114,7 +114,7 @@ export default function Dashboard() {
 
   const updateHourlyWageMutation = useMutation({
     mutationFn: async (hourlyWage: number) => {
-      return await apiRequest("/api/auth/user", "PUT", { personalHourlyWage: hourlyWage });
+      return await apiRequest("PUT", "/api/auth/user", { personalHourlyWage: hourlyWage });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
@@ -899,7 +899,7 @@ export default function Dashboard() {
                 <p className="widget-value">
                   {formatCurrency(
                     accounts?.filter(acc => acc.type === 'challenge')
-                      .reduce((sum, acc) => sum + acc.currentBalance, 0) || 0
+                      .reduce((sum, acc) => sum + calculateAccountNetBalance(acc), 0) || 0
                   )}
                 </p>
                 <p className="widget-description">
@@ -913,10 +913,8 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* Stats Row - Active accounts, Realized payouts, Failed accounts */}
+        {/* Stats Row - Realized payouts, Failed accounts */}
         <div className="widget-grid mb-6">
-
-
           {/* Realized Payouts */}
           <div className="widget-container">
             <div className="widget-content">
@@ -925,7 +923,7 @@ export default function Dashboard() {
                 <p className="widget-value">
                   {formatCurrency(
                     accounts?.filter(acc => acc.status === 'withdrawn')
-                      .reduce((sum, acc) => sum + (acc.currentBalance - acc.startingBalance), 0) || 0
+                      .reduce((sum, acc) => sum + (calculateAccountNetBalance(acc) - acc.startingBalance), 0) || 0
                   )}
                 </p>
                 <p className="widget-description">Total earnings withdrawn</p>
@@ -961,7 +959,7 @@ export default function Dashboard() {
               <div className="widget-left">
                 <p className="widget-label">Total Portfolio Value</p>
                 <p className="widget-value">
-                  {formatCurrency(accounts?.reduce((sum, acc) => sum + acc.currentBalance, 0) || 0)}
+                  {formatCurrency(accounts?.reduce((sum, acc) => sum + calculateAccountNetBalance(acc), 0) || 0)}
                 </p>
                 <p className="widget-description">Combined accounts</p>
               </div>
