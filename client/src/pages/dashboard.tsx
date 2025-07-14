@@ -114,7 +114,10 @@ export default function Dashboard() {
 
   const updateHourlyWageMutation = useMutation({
     mutationFn: async (hourlyWage: number) => {
-      return await apiRequest("PUT", "/api/auth/user", { personalHourlyWage: hourlyWage });
+      return await apiRequest("/api/auth/user", {
+        method: "PUT",
+        body: { personalHourlyWage: hourlyWage },
+      });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
@@ -716,21 +719,23 @@ export default function Dashboard() {
                 <p className="widget-value">
                   {(() => {
                     const hourlyWage = user?.personalHourlyWage || 25; // Default $25/hour
-                    const totalTrades = trades?.length || 0;
-                    const totalHours = totalTrades * 2; // 2 hours per trade on average
-                    const totalExpectedEarnings = totalHours * hourlyWage;
+                    const uniqueDays = new Set(trades?.map(t => t.date.split('T')[0])).size || 0;
+                    const totalHours = Math.min(uniqueDays * 8, 24 * uniqueDays);
+                    const requiredEarnings = totalHours * hourlyWage;
                     const actualEarnings = combinedAnalytics?.totalPnl || 0;
-                    const isProfit = actualEarnings >= totalExpectedEarnings;
+                    const isProfit = actualEarnings >= requiredEarnings;
                     
-                    return `${formatCurrency(totalExpectedEarnings)} in total`;
+                    return isProfit ? 
+                      `✅ ${formatCurrency(actualEarnings)} earned` :
+                      `❌ ${formatCurrency(requiredEarnings)} needed`;
                   })()}
                 </p>
                 <p className="widget-description">
                   {(() => {
                     const hourlyWage = user?.personalHourlyWage || 25;
-                    const totalTrades = trades?.length || 0;
-                    const totalHours = totalTrades * 2; // 2 hours per trade on average
-                    return `${formatCurrency(hourlyWage)}/hr × ${totalHours} total working hrs`;
+                    const uniqueDays = new Set(trades?.map(t => t.date.split('T')[0])).size || 0;
+                    const totalHours = Math.min(uniqueDays * 8, 24 * uniqueDays);
+                    return `${formatCurrency(hourlyWage)}/hr × ${totalHours.toFixed(1)} hrs`;
                   })()}
                 </p>
                 <Button 
@@ -739,7 +744,7 @@ export default function Dashboard() {
                   onClick={() => setShowProfileSettings(true)}
                   className="text-blue-400 border-blue-400 hover:bg-blue-400/10 mt-2"
                 >
-                  Personal Hourly Wages
+                  Set Hourly Wage
                 </Button>
               </div>
               <div className="widget-icon-square">
@@ -750,7 +755,32 @@ export default function Dashboard() {
 
 
 
-
+          {/* Active Trading Days Widget */}
+          <div className="widget-container">
+            <div className="widget-content">
+              <div className="widget-left">
+                <p className="widget-label">Active Trading Days</p>
+                <p className="widget-value">
+                  {(() => {
+                    const uniqueDays = new Set(trades?.map(t => t.date.split('T')[0])).size || 0;
+                    const totalHours = Math.min(uniqueDays * 8, 24 * uniqueDays); // Cap at 24 hours per day
+                    const avgHoursPerDay = uniqueDays > 0 ? (totalHours / uniqueDays).toFixed(1) : 0;
+                    return `${totalHours.toFixed(1)} Hrs`;
+                  })()}
+                </p>
+                <p className="widget-description">
+                  {(() => {
+                    const uniqueDays = new Set(trades?.map(t => t.date.split('T')[0])).size || 0;
+                    const avgHoursPerDay = uniqueDays > 0 ? (Math.min(uniqueDays * 8, 24 * uniqueDays) / uniqueDays).toFixed(1) : 0;
+                    return `${uniqueDays} trading days × ${avgHoursPerDay} hrs avg`;
+                  })()}
+                </p>
+              </div>
+              <div className="widget-icon-square">
+                <Calendar className="widget-icon" />
+              </div>
+            </div>
+          </div>
         </div>
 
 
@@ -872,7 +902,7 @@ export default function Dashboard() {
                 <p className="widget-value">
                   {formatCurrency(
                     accounts?.filter(acc => acc.type === 'challenge')
-                      .reduce((sum, acc) => sum + calculateAccountNetBalance(acc), 0) || 0
+                      .reduce((sum, acc) => sum + acc.currentBalance, 0) || 0
                   )}
                 </p>
                 <p className="widget-description">
@@ -886,24 +916,20 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* Stats Row - Active accounts, Disciplinary Score, Realized payouts, Failed accounts */}
+        {/* Stats Row - Active accounts, Realized payouts, Failed accounts */}
         <div className="widget-grid mb-6">
-          {/* Active Accounts & Disciplinary Score - Fused Widget */}
+          {/* Active Accounts */}
           <div className="widget-container">
             <div className="widget-content">
               <div className="widget-left">
-                <p className="widget-label">Active Accounts & Disciplinary Score</p>
+                <p className="widget-label">Active Accounts</p>
                 <p className="widget-value">
                   {accounts?.filter(acc => acc.status === 'active' || acc.status === 'funded').length || 0}
                 </p>
-                <p className="widget-description">
-                  <span className={getValueColor(combinedAnalytics?.disciplinedScore || 0)}>
-                    {(combinedAnalytics?.disciplinedScore || 0).toFixed(1)}% discipline
-                  </span>
-                </p>
+                <p className="widget-description">Currently trading</p>
               </div>
               <div className="widget-icon-square">
-                <Activity className="widget-icon" />
+                <CheckCircle className="widget-icon" />
               </div>
             </div>
           </div>
@@ -916,7 +942,7 @@ export default function Dashboard() {
                 <p className="widget-value">
                   {formatCurrency(
                     accounts?.filter(acc => acc.status === 'withdrawn')
-                      .reduce((sum, acc) => sum + (calculateAccountNetBalance(acc) - acc.startingBalance), 0) || 0
+                      .reduce((sum, acc) => sum + (acc.currentBalance - acc.startingBalance), 0) || 0
                   )}
                 </p>
                 <p className="widget-description">Total earnings withdrawn</p>
@@ -952,7 +978,7 @@ export default function Dashboard() {
               <div className="widget-left">
                 <p className="widget-label">Total Portfolio Value</p>
                 <p className="widget-value">
-                  {formatCurrency(accounts?.reduce((sum, acc) => sum + calculateAccountNetBalance(acc), 0) || 0)}
+                  {formatCurrency(accounts?.reduce((sum, acc) => sum + acc.currentBalance, 0) || 0)}
                 </p>
                 <p className="widget-description">Combined accounts</p>
               </div>
@@ -1252,39 +1278,50 @@ export default function Dashboard() {
 
 
 
+        {/* Disciplined Trading Analysis */}
+        <div className="mb-6">
+          <h2 className="text-xl font-bold text-gradient-rainbow mb-6 flex items-center border-b border-gray-700 pb-3">
+            <Brain className="mr-3 h-5 w-5 text-indigo-400" />
+            Disciplined Trading Analysis
+          </h2>
+        </div>
 
-
-        {/* FIRST ROW: Recent Trades */}
-        <div className="grid grid-cols-1 gap-6 mb-8">
+        {/* FIRST ROW: Active Accounts & Recent Trades */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
           <div className="widget-container">
             <div className="widget-content flex-col">
               <div className="widget-left mb-4">
-                <p className="widget-label">Recent Trades</p>
-                <p className="widget-description">Latest trading activity</p>
+                <p className="widget-label">Active Accounts</p>
+                <p className="widget-description">Prop firm challenge and funded accounts</p>
               </div>
               <div className="space-y-4 w-full">
-                {recentTrades?.map((trade) => (
-                  <div key={trade.id} className="flex items-center justify-between p-4 bg-dark-surface rounded-lg border border-prop-gold/20">
+                {accounts?.map((account) => (
+                  <div key={account.id} className="flex items-center justify-between p-4 bg-dark-surface rounded-lg border border-prop-gold/20">
                     <div className="flex items-center">
                       <div className={`w-10 h-10 rounded-lg flex items-center justify-center mr-4 ${
-                        trade.pnl >= 0 ? 'bg-success-green' : 'bg-error-red'
+                        account.type === 'funded' ? 'bg-success-green' : 
+                        account.currentBalance < account.startingBalance * 0.95 ? 'bg-warning-orange' : 'bg-primary'
                       }`}>
-                        {trade.pnl >= 0 ? (
-                          <TrendingUp className="text-white h-5 w-5" />
+                        {account.type === 'funded' ? (
+                          <Target className="text-white h-5 w-5" />
+                        ) : (account.startingBalance + (trades?.filter(t => t.accountId === account.id).reduce((sum, trade) => sum + (trade.pnl || 0), 0) || 0)) < account.startingBalance * 0.95 ? (
+                          <AlertTriangle className="text-white h-5 w-5" />
                         ) : (
                           <TrendingDown className="text-white h-5 w-5" />
                         )}
                       </div>
                       <div>
-                        <p className="font-medium text-white">{trade.symbol}</p>
-                        <p className="text-sm text-gray-400">{trade.side} • {new Date(trade.date).toLocaleDateString()}</p>
+                        <p className="font-medium text-white">{account.name}</p>
+                        <p className="text-sm text-gray-400">{account.type} • {account.firm}</p>
                       </div>
                     </div>
                     <div className="text-right">
-                      <p className={`font-bold ${trade.pnl >= 0 ? 'text-success-green' : 'text-error-red'}`}>
-                        {trade.pnl >= 0 ? '+' : ''}{formatCurrency(trade.pnl)}
+                      <p className="font-bold text-white">{formatCurrency(account.startingBalance + (trades?.filter(t => t.accountId === account.id).reduce((sum, trade) => sum + (trade.pnl || 0), 0) || 0))}</p>
+                      <p className={`text-sm ${
+                        (trades?.filter(t => t.accountId === account.id).reduce((sum, trade) => sum + (trade.pnl || 0), 0) || 0) >= 0 ? 'text-success-green' : 'text-error-red'
+                      }`}>
+                        {(trades?.filter(t => t.accountId === account.id).reduce((sum, trade) => sum + (trade.pnl || 0), 0) || 0) >= 0 ? '+' : ''}{formatCurrency(trades?.filter(t => t.accountId === account.id).reduce((sum, trade) => sum + (trade.pnl || 0), 0) || 0)}
                       </p>
-                      <p className="text-sm text-gray-400">{formatCurrency(trade.entryPrice)}</p>
                     </div>
                   </div>
                 ))}
@@ -1292,7 +1329,45 @@ export default function Dashboard() {
             </div>
           </div>
 
-
+          <div className="widget-container">
+            <div className="widget-content flex-col">
+              <div className="widget-left mb-4">
+                <p className="widget-label">Recent Trades</p>
+                <p className="widget-description">Latest trading activity</p>
+              </div>
+              <div className="space-y-4 w-full">
+                {trades?.slice(0, 5).map((trade) => (
+                  <div key={trade.id} className="flex items-center justify-between p-4 bg-dark-surface rounded-lg border border-prop-gold/20">
+                    <div className="flex items-center">
+                      <div className={`w-10 h-10 rounded-lg flex items-center justify-center mr-4 ${
+                        trade.pnl > 0 ? 'bg-success-green' : trade.pnl < 0 ? 'bg-error-red' : 'bg-gray-600'
+                      }`}>
+                        {trade.pnl > 0 ? (
+                          <TrendingUp className="text-white h-5 w-5" />
+                        ) : trade.pnl < 0 ? (
+                          <TrendingDown className="text-white h-5 w-5" />
+                        ) : (
+                          <Target className="text-white h-5 w-5" />
+                        )}
+                      </div>
+                      <div>
+                        <p className="font-medium text-white">{trade.symbol}</p>
+                        <p className="text-sm text-gray-400">{trade.side} • {trade.date}</p>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <p className={`font-bold ${
+                        trade.pnl > 0 ? 'text-success-green' : trade.pnl < 0 ? 'text-error-red' : 'text-gray-400'
+                      }`}>
+                        {formatCurrency(trade.pnl)}
+                      </p>
+                      <p className="text-sm text-gray-400">{trade.quantity} shares</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
         </div>
 
 
