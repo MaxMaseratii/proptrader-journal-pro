@@ -501,13 +501,13 @@ export default function Dashboard() {
         </div>
       </header>
 
-      <div className="p-6 space-y-8">
+      <div className="p-4 space-y-4">
 
 
-        {/* UNIFIED DASHBOARD: 6-ROW PROFESSIONAL LAYOUT */}
+        {/* COMPACT DASHBOARD: NO EMPTY SPACES */}
         
         {/* ROW 1: PRIMARY FINANCIAL METRICS */}
-        <div className="widget-grid row-1 mb-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 mb-3">
           {/* Net Balance */}
           <div className="widget-container">
             <div className="widget-content">
@@ -552,7 +552,7 @@ export default function Dashboard() {
             </div>
           </div>
 
-          {/* Total P&L - moved from bottom section */}
+          {/* Total P&L */}
           <div className="widget-container">
             <div className="widget-content">
               <div className="widget-left">
@@ -567,7 +567,8 @@ export default function Dashboard() {
               </div>
             </div>
           </div>
-          {/* Win Rate - Add to complete Row 1 */}
+
+          {/* Win Rate */}
           <div className="widget-container">
             <div className="widget-content">
               <div className="widget-left">
@@ -585,7 +586,7 @@ export default function Dashboard() {
         </div>
 
         {/* ROW 2: PERFORMANCE ANALYTICS */}
-        <div className="widget-grid row-2 mb-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 mb-3">
           {/* R Factor */}
           <div className="widget-container">
             <div className="widget-content">
@@ -654,7 +655,7 @@ export default function Dashboard() {
         </div>
 
         {/* ROW 3: RISK & PLANNING */}
-        <div className="widget-grid row-3 mb-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 mb-3">
           {/* Risk Management */}
           <div className="widget-container">
             <div className="widget-content">
@@ -767,7 +768,7 @@ export default function Dashboard() {
         </div>
 
         {/* ROW 4: INVESTMENT & FINANCIAL TRACKING */}
-        <div className="widget-grid row-4 mb-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 mb-3">
           {/* Investment ROI Summary */}
           <div className="widget-container">
             <div className="widget-content">
@@ -901,7 +902,7 @@ export default function Dashboard() {
         </div>
 
         {/* ROW 5: ACTIVE ACCOUNTS & ANALYSIS */}
-        <div className="widget-grid row-5 mb-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 mb-3">
           {/* Active Accounts */}
           <div className="widget-container">
             <div className="widget-content">

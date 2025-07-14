@@ -2,7 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Dashboard Restructuring Styles */
+/* Compact Dashboard Layout - NO EMPTY SPACES */
 .primary-header {
   font-size: 1.875rem;
   font-weight: 700;
@@ -36,11 +36,83 @@
   margin-top: 1.5rem;
 }
 
+/* Compact spacing for all dashboard sections */
 .dashboard-row-1,
 .dashboard-row-2,
 .dashboard-row-3,
 .dashboard-row-4 {
-  margin-bottom: 1rem;
+  margin-bottom: 0.75rem;
+}
+
+/* Ensure consistent widget heights for compact layout */
+.widget-container {
+  height: 120px;
+  min-height: 120px;
+}
+
+.widget-content {
+  height: 100%;
+  padding: 0.75rem;
+}
+
+.widget-left {
+  flex: 1;
+  min-height: 0;
+}
+
+.widget-label {
+  font-size: 0.75rem;
+  margin-bottom: 0.25rem;
+}
+
+.widget-value {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+.widget-description {
+  font-size: 0.7rem;
+  color: rgb(156, 163, 175);
+}
+
+/* Compact grid spacing */
+.grid.gap-3 {
+  gap: 0.75rem;
+}
+
+/* Compact dashboard spacing */
+.space-y-4 > :not([hidden]) ~ :not([hidden]) {
+  margin-top: 1rem;
+}
+
+/* Reduce widget content padding */
+.widget-content {
+  padding: 0.75rem;
+}
+
+/* Compact margins */
+.mb-3 {
+  margin-bottom: 0.75rem;
+}
+
+/* Ensure all content fits in widget container */
+.widget-container .widget-description {
+  font-size: 0.65rem;
+  line-height: 1.1;
+  margin-top: 0.125rem;
+}
+
+/* Compact icon sizing */
+.widget-icon-square {
+  width: 2.5rem;
+  height: 2.5rem;
+  flex-shrink: 0;
+}
+
+.widget-icon {
+  width: 1.25rem;
+  height: 1.25rem;
 }
 
 :root {
