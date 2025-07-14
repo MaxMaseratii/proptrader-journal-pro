@@ -913,8 +913,42 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* Stats Row - Realized payouts, Failed accounts */}
+        {/* Stats Row - Active accounts, Disciplinary Score, Realized payouts, Failed accounts */}
         <div className="widget-grid mb-6">
+          {/* Active Accounts */}
+          <div className="widget-container">
+            <div className="widget-content">
+              <div className="widget-left">
+                <p className="widget-label">Active Accounts</p>
+                <p className="widget-value">
+                  {accounts?.filter(acc => acc.status === 'active' || acc.status === 'funded').length || 0}
+                </p>
+                <p className="widget-description">Currently trading</p>
+              </div>
+              <div className="widget-icon-square">
+                <Activity className="widget-icon" />
+              </div>
+            </div>
+          </div>
+
+          {/* Disciplinary Score */}
+          <div className="widget-container">
+            <div className="widget-content">
+              <div className="widget-left">
+                <p className="widget-label">Disciplinary Score</p>
+                <p className="widget-value">
+                  <span className={getValueColor(combinedAnalytics?.disciplinedScore || 0)}>
+                    {(combinedAnalytics?.disciplinedScore || 0).toFixed(1)}%
+                  </span>
+                </p>
+                <p className="widget-description">Trading discipline rating</p>
+              </div>
+              <div className="widget-icon-square">
+                <Shield className="widget-icon" />
+              </div>
+            </div>
+          </div>
+
           {/* Realized Payouts */}
           <div className="widget-container">
             <div className="widget-content">
@@ -1299,45 +1333,7 @@ export default function Dashboard() {
             </div>
           </div>
 
-          <div className="widget-container">
-            <div className="widget-content flex-col">
-              <div className="widget-left mb-4">
-                <p className="widget-label">Recent Trades</p>
-                <p className="widget-description">Latest trading activity</p>
-              </div>
-              <div className="space-y-4 w-full">
-                {trades?.slice(0, 5).map((trade) => (
-                  <div key={trade.id} className="flex items-center justify-between p-4 bg-dark-surface rounded-lg border border-prop-gold/20">
-                    <div className="flex items-center">
-                      <div className={`w-10 h-10 rounded-lg flex items-center justify-center mr-4 ${
-                        trade.pnl > 0 ? 'bg-success-green' : trade.pnl < 0 ? 'bg-error-red' : 'bg-gray-600'
-                      }`}>
-                        {trade.pnl > 0 ? (
-                          <TrendingUp className="text-white h-5 w-5" />
-                        ) : trade.pnl < 0 ? (
-                          <TrendingDown className="text-white h-5 w-5" />
-                        ) : (
-                          <Target className="text-white h-5 w-5" />
-                        )}
-                      </div>
-                      <div>
-                        <p className="font-medium text-white">{trade.symbol}</p>
-                        <p className="text-sm text-gray-400">{trade.side} • {trade.date}</p>
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <p className={`font-bold ${
-                        trade.pnl > 0 ? 'text-success-green' : trade.pnl < 0 ? 'text-error-red' : 'text-gray-400'
-                      }`}>
-                        {formatCurrency(trade.pnl)}
-                      </p>
-                      <p className="text-sm text-gray-400">{trade.quantity} shares</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
+
         </div>
 
 
