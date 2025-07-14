@@ -20,6 +20,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ message: "Failed to fetch user" });
     }
   });
+
+  app.post('/api/users/update-wage', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { personalHourlyWage } = req.body;
+      
+      if (typeof personalHourlyWage !== 'number' || personalHourlyWage < 0) {
+        return res.status(400).json({ message: "Invalid hourly wage value" });
+      }
+      
+      const user = await storage.updateUserWage(userId, personalHourlyWage);
+      res.json(user);
+    } catch (error) {
+      console.error("Error updating user wage:", error);
+      res.status(500).json({ message: "Failed to update hourly wage" });
+    }
+  });
   // Account routes
   app.get("/api/accounts", isAuthenticated, async (req, res) => {
     try {

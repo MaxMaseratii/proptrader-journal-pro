@@ -51,6 +51,7 @@ export interface IStorage {
   // User operations for Replit Auth
   getUser(id: string): Promise<User | undefined>;
   upsertUser(user: UpsertUser): Promise<User>;
+  updateUserWage(userId: string, personalHourlyWage: number): Promise<User | null>;
 
   // Achievement operations
   getAchievements(userId: string): Promise<Achievement[]>;
@@ -597,6 +598,10 @@ export class MemStorage implements IStorage {
   async updateUserStats(userId: string, stats: Partial<InsertUserStats>): Promise<UserStats | undefined> {
     return undefined;
   }
+
+  async updateUserWage(userId: string, personalHourlyWage: number): Promise<User | null> {
+    return null;
+  }
 }
 
 // Switch to DatabaseStorage for authentication support
@@ -623,6 +628,18 @@ export class DatabaseStorage implements IStorage {
       })
       .returning();
     return user;
+  }
+
+  async updateUserWage(userId: string, personalHourlyWage: number): Promise<User | null> {
+    const [user] = await db
+      .update(users)
+      .set({
+        personalHourlyWage,
+        updatedAt: new Date(),
+      })
+      .where(eq(users.id, userId))
+      .returning();
+    return user || null;
   }
 
   // Account operations

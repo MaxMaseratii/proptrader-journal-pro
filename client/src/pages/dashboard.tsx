@@ -70,6 +70,8 @@ export default function Dashboard() {
   });
   const [viewMode, setViewMode] = useState<'single' | 'multiple' | 'all'>('all');
   const [showSpendingModal, setShowSpendingModal] = useState(false);
+  const [showWageModal, setShowWageModal] = useState(false);
+  const [newWage, setNewWage] = useState('');
   const [spendingForm, setSpendingForm] = useState({
     type: 'spending' as 'spending' | 'payout',
     amount: '',
@@ -716,19 +718,24 @@ export default function Dashboard() {
               <div className="widget-left">
                 <p className="widget-label">Personal Hourly Wages</p>
                 <p className={`widget-value ${getValueColor(combinedAnalytics?.totalPnl || 0)}`}>
-                  {(() => {
-                    const actualEarnings = combinedAnalytics?.totalPnl || 0;
-                    return actualEarnings >= 0 ? 
-                      `✅ ${formatCurrency(actualEarnings)} earned` :
-                      `❌ ${formatCurrency(Math.abs(actualEarnings))} lost`;
-                  })()}
+                  {formatCurrency(combinedAnalytics?.totalPnl || 0)} in total
                 </p>
-                <p className="widget-description">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    setNewWage((user?.personalHourlyWage || 25).toString());
+                    setShowWageModal(true);
+                  }}
+                  className="mb-2 text-xs bg-blue-600 hover:bg-blue-700 text-white border-blue-600"
+                >
+                  Set Hourly Wage
+                </Button>
+                <p className="widget-description text-xs">
                   {(() => {
                     const hourlyWage = user?.personalHourlyWage || 25;
                     const uniqueDays = new Set(trades?.map(t => t.date.split('T')[0])).size || 0;
                     const totalHours = uniqueDays * 8; // 8 hours per trading day
-                    const totalEarnings = hourlyWage * totalHours;
                     return `${formatCurrency(hourlyWage)}/hr × ${totalHours.toFixed(1)} hrs`;
                   })()}
                 </p>
@@ -923,53 +930,53 @@ export default function Dashboard() {
                 <p className="widget-description">Prop firm challenge and funded accounts with performance analysis</p>
               </div>
               <div className="space-y-4 w-full">
-                {accounts?.map((account) => {
-                  const accountTrades = trades?.filter(t => t.accountId === account.id) || [];
-                  const disciplinedAnalysis = calculateDisciplinedScore(account, accountTrades);
-                  const netBalance = account.startingBalance + (accountTrades.reduce((sum, trade) => sum + (trade.pnl || 0), 0) || 0);
-                  
-                  return (
-                    <div key={account.id} className="flex items-center justify-between p-4 bg-dark-surface rounded-lg border border-prop-gold/20">
-                      <div className="flex items-center">
-                        <div className={`w-10 h-10 rounded-lg flex items-center justify-center mr-4 ${
-                          account.type === 'funded' ? 'bg-success-green' : 
-                          netBalance < account.startingBalance * 0.95 ? 'bg-warning-orange' : 'bg-primary'
-                        }`}>
-                          {account.type === 'funded' ? (
-                            <Target className="text-white h-5 w-5" />
-                          ) : netBalance < account.startingBalance * 0.95 ? (
-                            <AlertTriangle className="text-white h-5 w-5" />
-                          ) : (
-                            <TrendingDown className="text-white h-5 w-5" />
-                          )}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 max-h-96 overflow-y-auto">
+                  {accounts?.map((account) => {
+                    const accountTrades = trades?.filter(t => t.accountId === account.id) || [];
+                    const disciplinedAnalysis = calculateDisciplinedScore(account, accountTrades);
+                    const netBalance = account.startingBalance + (accountTrades.reduce((sum, trade) => sum + (trade.pnl || 0), 0) || 0);
+                    
+                    return (
+                      <div key={account.id} className="flex flex-col p-3 bg-dark-surface rounded-lg border border-prop-gold/20 hover:border-prop-gold/40 transition-colors">
+                        <div className="flex items-center justify-between mb-2">
+                          <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
+                            account.type === 'funded' ? 'bg-success-green' : 
+                            netBalance < account.startingBalance * 0.95 ? 'bg-warning-orange' : 'bg-primary'
+                          }`}>
+                            {account.type === 'funded' ? (
+                              <Target className="text-white h-4 w-4" />
+                            ) : netBalance < account.startingBalance * 0.95 ? (
+                              <AlertTriangle className="text-white h-4 w-4" />
+                            ) : (
+                              <TrendingDown className="text-white h-4 w-4" />
+                            )}
+                          </div>
+                          <div className="text-center p-2 bg-gradient-to-b from-yellow-600 to-yellow-700 rounded min-w-[60px]">
+                            <p className="text-white font-bold text-sm">
+                              {disciplinedAnalysis.disciplinedScore.toFixed(0)}%
+                            </p>
+                            <p className="text-yellow-100 text-xs">
+                              {disciplinedAnalysis.scoreGrade}
+                            </p>
+                          </div>
                         </div>
-                        <div>
-                          <p className="font-medium text-white">{account.name}</p>
-                          <p className="text-sm text-gray-400">{account.type} • {account.firm}</p>
+                        <div className="flex-1">
+                          <p className="font-medium text-white text-sm truncate">{account.name}</p>
+                          <p className="text-xs text-gray-400 mb-1">{account.type} • {account.firm}</p>
                         </div>
-                      </div>
-                      <div className="flex items-center space-x-6">
-                        <div className="text-right">
-                          <p className="font-bold text-white">{formatCurrency(netBalance)}</p>
-                          <p className={`text-sm ${getValueColor(accountTrades.reduce((sum, trade) => sum + (trade.pnl || 0), 0) || 0)}`}>
+                        <div className="mt-2 pt-2 border-t border-gray-700">
+                          <p className="font-bold text-white text-sm">{formatCurrency(netBalance)}</p>
+                          <p className={`text-xs ${getValueColor(accountTrades.reduce((sum, trade) => sum + (trade.pnl || 0), 0) || 0)}`}>
                             {(accountTrades.reduce((sum, trade) => sum + (trade.pnl || 0), 0) || 0) >= 0 ? '+' : ''}{formatCurrency(accountTrades.reduce((sum, trade) => sum + (trade.pnl || 0), 0) || 0)}
                           </p>
-                        </div>
-                        <div className="text-center p-3 bg-gradient-to-b from-yellow-600 to-yellow-700 rounded-lg min-w-[100px]">
-                          <p className="text-white font-bold text-lg mb-1">
-                            {disciplinedAnalysis.disciplinedScore.toFixed(0)}%
-                          </p>
-                          <p className="text-white text-sm font-medium">
-                            Grade {disciplinedAnalysis.scoreGrade}
-                          </p>
-                          <p className="text-yellow-100 text-xs mt-1">
+                          <p className="text-xs text-gray-400 mt-1">
                             {disciplinedAnalysis.totalTrades} trades • {disciplinedAnalysis.violationsCount} violations
                           </p>
                         </div>
                       </div>
-                    </div>
-                  );
-                })}
+                    );
+                  })}
+                </div>
               </div>
             </div>
           </div>
@@ -1850,6 +1857,61 @@ export default function Dashboard() {
           </div>
         </div>
       </div>
+
+      {/* Set Hourly Wage Modal */}
+      <Dialog open={showWageModal} onOpenChange={setShowWageModal}>
+        <DialogContent className="bg-gray-800 border-gray-700 text-white">
+          <DialogHeader>
+            <DialogTitle>Set Hourly Wage</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <Label htmlFor="hourlyWage">Hourly Wage</Label>
+              <Input
+                id="hourlyWage"
+                type="number"
+                placeholder="25.00"
+                value={newWage}
+                onChange={(e) => setNewWage(e.target.value)}
+                className="bg-gray-700 border-gray-600 text-white"
+              />
+            </div>
+            <div className="flex gap-2 pt-4">
+              <Button
+                onClick={async () => {
+                  if (!newWage || isNaN(parseFloat(newWage))) return;
+                  try {
+                    await fetch('/api/users/update-wage', {
+                      method: 'POST',
+                      headers: {
+                        'Content-Type': 'application/json',
+                      },
+                      body: JSON.stringify({
+                        personalHourlyWage: parseFloat(newWage),
+                      }),
+                    });
+                    setShowWageModal(false);
+                    // Refresh user data
+                    window.location.reload();
+                  } catch (error) {
+                    console.error('Error updating wage:', error);
+                  }
+                }}
+                className="bg-blue-600 hover:bg-blue-700 flex-1"
+              >
+                Save Wage
+              </Button>
+              <Button
+                variant="outline"
+                onClick={() => setShowWageModal(false)}
+                className="border-gray-600 text-white hover:bg-gray-700"
+              >
+                Cancel
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </>
   );
 }
