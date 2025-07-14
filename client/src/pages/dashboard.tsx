@@ -888,11 +888,11 @@ export default function Dashboard() {
 
         {/* Stats Row - Active accounts, Disciplinary Score, Realized payouts, Failed accounts */}
         <div className="widget-grid mb-6">
-          {/* Active Accounts - Simple Widget */}
+          {/* Active Accounts & Disciplinary Score - Fused Widget */}
           <div className="widget-container">
             <div className="widget-content">
               <div className="widget-left">
-                <p className="widget-label">Active Accounts</p>
+                <p className="widget-label">Active Accounts & Disciplinary Score</p>
                 <p className="widget-value">
                   {accounts?.filter(acc => acc.status === 'active' || acc.status === 'funded').length || 0}
                 </p>
