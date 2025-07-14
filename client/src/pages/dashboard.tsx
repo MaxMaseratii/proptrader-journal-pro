@@ -716,23 +716,21 @@ export default function Dashboard() {
                 <p className="widget-value">
                   {(() => {
                     const hourlyWage = user?.personalHourlyWage || 25; // Default $25/hour
-                    const uniqueDays = new Set(trades?.map(t => t.date.split('T')[0])).size || 0;
-                    const totalHours = Math.min(uniqueDays * 8, 24 * uniqueDays);
-                    const requiredEarnings = totalHours * hourlyWage;
+                    const totalTrades = trades?.length || 0;
+                    const totalHours = totalTrades * 2; // 2 hours per trade on average
+                    const totalExpectedEarnings = totalHours * hourlyWage;
                     const actualEarnings = combinedAnalytics?.totalPnl || 0;
-                    const isProfit = actualEarnings >= requiredEarnings;
+                    const isProfit = actualEarnings >= totalExpectedEarnings;
                     
-                    return isProfit ? 
-                      `✅ ${formatCurrency(actualEarnings)} earned` :
-                      `❌ ${formatCurrency(requiredEarnings)} needed`;
+                    return `${formatCurrency(totalExpectedEarnings)} in total`;
                   })()}
                 </p>
                 <p className="widget-description">
                   {(() => {
                     const hourlyWage = user?.personalHourlyWage || 25;
-                    const uniqueDays = new Set(trades?.map(t => t.date.split('T')[0])).size || 0;
-                    const totalHours = Math.min(uniqueDays * 8, 24 * uniqueDays);
-                    return `${formatCurrency(hourlyWage)}/hr × ${totalHours.toFixed(1)} hrs`;
+                    const totalTrades = trades?.length || 0;
+                    const totalHours = totalTrades * 2; // 2 hours per trade on average
+                    return `${formatCurrency(hourlyWage)}/hr × ${totalHours} total working hrs`;
                   })()}
                 </p>
                 <Button 
@@ -741,7 +739,7 @@ export default function Dashboard() {
                   onClick={() => setShowProfileSettings(true)}
                   className="text-blue-400 border-blue-400 hover:bg-blue-400/10 mt-2"
                 >
-                  Set Hourly Wage
+                  Personal Hourly Wages
                 </Button>
               </div>
               <div className="widget-icon-square">
