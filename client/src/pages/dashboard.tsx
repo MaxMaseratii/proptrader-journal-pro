@@ -888,36 +888,22 @@ export default function Dashboard() {
 
         {/* Stats Row - Active accounts, Disciplinary Score, Realized payouts, Failed accounts */}
         <div className="widget-grid mb-6">
-          {/* Active Accounts */}
-          <div className="widget-container" style={{ backgroundColor: 'red', border: '2px solid yellow' }}>
+          {/* Active Accounts & Disciplinary Score Combined */}
+          <div className="widget-container">
             <div className="widget-content">
               <div className="widget-left">
                 <p className="widget-label">Active Accounts</p>
                 <p className="widget-value">
                   {accounts?.filter(acc => acc.status === 'active' || acc.status === 'funded').length || 0}
                 </p>
-                <p className="widget-description">Currently trading</p>
+                <p className="widget-description">
+                  <span className={getValueColor(combinedAnalytics?.disciplinedScore || 0)}>
+                    {(combinedAnalytics?.disciplinedScore || 0).toFixed(1)}% discipline
+                  </span>
+                </p>
               </div>
               <div className="widget-icon-square">
                 <Activity className="widget-icon" />
-              </div>
-            </div>
-          </div>
-
-          {/* Disciplinary Score */}
-          <div className="widget-container" style={{ backgroundColor: 'blue', border: '2px solid green' }}>
-            <div className="widget-content">
-              <div className="widget-left">
-                <p className="widget-label">Disciplinary Score</p>
-                <p className="widget-value">
-                  <span className={getValueColor(combinedAnalytics?.disciplinedScore || 0)}>
-                    {(combinedAnalytics?.disciplinedScore || 0).toFixed(1)}%
-                  </span>
-                </p>
-                <p className="widget-description">Trading discipline rating</p>
-              </div>
-              <div className="widget-icon-square">
-                <Shield className="widget-icon" />
               </div>
             </div>
           </div>
