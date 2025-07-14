@@ -733,8 +733,13 @@ export default function Dashboard() {
             <div className="widget-content">
               <div className="widget-left">
                 <p className="widget-label">Personal Hourly Wages</p>
-                <p className={`widget-value ${getValueColor(combinedAnalytics?.totalPnl || 0)}`}>
-                  {formatCurrency(combinedAnalytics?.totalPnl || 0)} in total
+                <p className="widget-value text-white">
+                  {(() => {
+                    const hourlyWage = user?.personalHourlyWage || 25;
+                    const totalTradingHours = 35.0;
+                    const expectedEarnings = hourlyWage * totalTradingHours;
+                    return formatCurrency(expectedEarnings);
+                  })()}
                 </p>
                 <Button
                   variant="outline"
@@ -748,14 +753,7 @@ export default function Dashboard() {
                   Set Hourly Wage
                 </Button>
                 <p className="widget-description text-xs">
-                  {(() => {
-                    const hourlyWage = user?.personalHourlyWage || 25;
-                    // Always use 35.0 hours as requested by user
-                    const totalTradingHours = 35.0;
-                    const expectedEarnings = hourlyWage * totalTradingHours;
-                    
-                    return `${formatCurrency(hourlyWage)}/hr × ${totalTradingHours.toFixed(1)} hrs = ${formatCurrency(expectedEarnings)}`;
-                  })()}
+                  Based on {user?.personalHourlyWage ? `${formatCurrency(user.personalHourlyWage)}/hr` : '$25.00/hr'} × 35.0 hours
                 </p>
               </div>
               <div className="widget-icon-square">
