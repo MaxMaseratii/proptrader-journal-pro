@@ -124,11 +124,11 @@ export const SimpleChart: React.FC<SimpleChartProps> = ({
 
   }, [trades, symbol]);
 
-  const profitableTrades = trades.filter(t => (t.pnl || 0) > 0).length;
-  const winRate = trades.length > 0 ? (profitableTrades / trades.length * 100).toFixed(1) : '0';
-  const totalPnl = trades.reduce((sum, trade) => sum + (trade.pnl || 0), 0);
+  const profitableTrades = trades?.filter(t => (t.pnl || 0) > 0).length || 0;
+  const winRate = trades && trades.length > 0 ? (profitableTrades / trades.length * 100).toFixed(1) : '0';
+  const totalPnl = trades?.reduce((sum, trade) => sum + (trade.pnl || 0), 0) || 0;
 
-  if (trades.length === 0) {
+  if (!trades || trades.length === 0) {
     return (
       <div className="w-full bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 rounded-lg p-8 text-center border border-gray-700" style={{ height: `${height}px` }}>
         <BarChart3 className="mx-auto h-12 w-12 text-gray-500 mb-4" />
