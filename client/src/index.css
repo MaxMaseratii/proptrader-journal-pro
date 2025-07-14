@@ -140,6 +140,23 @@
   line-height: 1.1;
 }
 
+/* Color overrides for widget values */
+.text-green-400 {
+  color: #34d399 !important;
+}
+
+.text-red-400 {
+  color: #f87171 !important;
+}
+
+.text-yellow-400 {
+  color: #fbbf24 !important;
+}
+
+.text-white {
+  color: #ffffff !important;
+}
+
 .widget-description {
   font-size: 12px;
   color: #9CA3AF;
