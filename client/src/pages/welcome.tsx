@@ -28,12 +28,12 @@ export default function Welcome() {
   // Fetch accounts and spending data for the spending tracker
   const { data: accounts } = useQuery<Account[]>({
     queryKey: ['/api/accounts'],
-    enabled: false // Only fetch if user is logged in
+    enabled: true // Enable fetching for authenticated users
   });
   
   const { data: spending } = useQuery<Spending[]>({
     queryKey: ['/api/spending'],
-    enabled: false // Only fetch if user is logged in
+    enabled: true // Enable fetching for authenticated users
   });
 
   // Calculate spending data for the tracker (using real data from accounts and spending)
