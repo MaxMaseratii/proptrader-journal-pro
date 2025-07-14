@@ -636,7 +636,7 @@ export default function Dashboard() {
             <div className="widget-content">
               <div className="widget-left">
                 <p className="widget-label">Best Trade</p>
-                <p className={`widget-value ${getValueColor(combinedAnalytics?.bestTrade || 0)}`}>
+                <p className={`widget-value ${(combinedAnalytics?.bestTrade || 0) > 0 ? 'text-green-400' : (combinedAnalytics?.bestTrade || 0) < 0 ? 'text-red-400' : 'text-white'}`}>
                   {formatCurrency(combinedAnalytics?.bestTrade || 0)}
                 </p>
                 <p className="widget-description">Highest single trade profit</p>
@@ -652,7 +652,7 @@ export default function Dashboard() {
             <div className="widget-content">
               <div className="widget-left">
                 <p className="widget-label">Worst Trade</p>
-                <p className={`widget-value ${getValueColor(combinedAnalytics?.worstTrade || 0)}`}>
+                <p className={`widget-value ${(combinedAnalytics?.worstTrade || 0) > 0 ? 'text-green-400' : (combinedAnalytics?.worstTrade || 0) < 0 ? 'text-red-400' : 'text-white'}`}>
                   {formatCurrency(combinedAnalytics?.worstTrade || 0)}
                 </p>
                 <p className="widget-description">Lowest single trade loss</p>
