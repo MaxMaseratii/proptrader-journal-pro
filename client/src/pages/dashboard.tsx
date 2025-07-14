@@ -114,10 +114,7 @@ export default function Dashboard() {
 
   const updateHourlyWageMutation = useMutation({
     mutationFn: async (hourlyWage: number) => {
-      return await apiRequest("/api/auth/user", {
-        method: "PUT",
-        body: { personalHourlyWage: hourlyWage },
-      });
+      return await apiRequest("/api/auth/user", "PUT", { personalHourlyWage: hourlyWage });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
@@ -918,21 +915,7 @@ export default function Dashboard() {
 
         {/* Stats Row - Active accounts, Realized payouts, Failed accounts */}
         <div className="widget-grid mb-6">
-          {/* Active Accounts */}
-          <div className="widget-container">
-            <div className="widget-content">
-              <div className="widget-left">
-                <p className="widget-label">Active Accounts</p>
-                <p className="widget-value">
-                  {accounts?.filter(acc => acc.status === 'active' || acc.status === 'funded').length || 0}
-                </p>
-                <p className="widget-description">Currently trading</p>
-              </div>
-              <div className="widget-icon-square">
-                <CheckCircle className="widget-icon" />
-              </div>
-            </div>
-          </div>
+
 
           {/* Realized Payouts */}
           <div className="widget-container">
@@ -1278,50 +1261,39 @@ export default function Dashboard() {
 
 
 
-        {/* Disciplined Trading Analysis */}
-        <div className="mb-6">
-          <h2 className="text-xl font-bold text-gradient-rainbow mb-6 flex items-center border-b border-gray-700 pb-3">
-            <Brain className="mr-3 h-5 w-5 text-indigo-400" />
-            Disciplined Trading Analysis
-          </h2>
-        </div>
 
-        {/* FIRST ROW: Active Accounts & Recent Trades */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+
+        {/* FIRST ROW: Recent Trades */}
+        <div className="grid grid-cols-1 gap-6 mb-8">
           <div className="widget-container">
             <div className="widget-content flex-col">
               <div className="widget-left mb-4">
-                <p className="widget-label">Active Accounts</p>
-                <p className="widget-description">Prop firm challenge and funded accounts</p>
+                <p className="widget-label">Recent Trades</p>
+                <p className="widget-description">Latest trading activity</p>
               </div>
               <div className="space-y-4 w-full">
-                {accounts?.map((account) => (
-                  <div key={account.id} className="flex items-center justify-between p-4 bg-dark-surface rounded-lg border border-prop-gold/20">
+                {recentTrades?.map((trade) => (
+                  <div key={trade.id} className="flex items-center justify-between p-4 bg-dark-surface rounded-lg border border-prop-gold/20">
                     <div className="flex items-center">
                       <div className={`w-10 h-10 rounded-lg flex items-center justify-center mr-4 ${
-                        account.type === 'funded' ? 'bg-success-green' : 
-                        account.currentBalance < account.startingBalance * 0.95 ? 'bg-warning-orange' : 'bg-primary'
+                        trade.pnl >= 0 ? 'bg-success-green' : 'bg-error-red'
                       }`}>
-                        {account.type === 'funded' ? (
-                          <Target className="text-white h-5 w-5" />
-                        ) : (account.startingBalance + (trades?.filter(t => t.accountId === account.id).reduce((sum, trade) => sum + (trade.pnl || 0), 0) || 0)) < account.startingBalance * 0.95 ? (
-                          <AlertTriangle className="text-white h-5 w-5" />
+                        {trade.pnl >= 0 ? (
+                          <TrendingUp className="text-white h-5 w-5" />
                         ) : (
                           <TrendingDown className="text-white h-5 w-5" />
                         )}
                       </div>
                       <div>
-                        <p className="font-medium text-white">{account.name}</p>
-                        <p className="text-sm text-gray-400">{account.type} • {account.firm}</p>
+                        <p className="font-medium text-white">{trade.symbol}</p>
+                        <p className="text-sm text-gray-400">{trade.side} • {new Date(trade.date).toLocaleDateString()}</p>
                       </div>
                     </div>
                     <div className="text-right">
-                      <p className="font-bold text-white">{formatCurrency(account.startingBalance + (trades?.filter(t => t.accountId === account.id).reduce((sum, trade) => sum + (trade.pnl || 0), 0) || 0))}</p>
-                      <p className={`text-sm ${
-                        (trades?.filter(t => t.accountId === account.id).reduce((sum, trade) => sum + (trade.pnl || 0), 0) || 0) >= 0 ? 'text-success-green' : 'text-error-red'
-                      }`}>
-                        {(trades?.filter(t => t.accountId === account.id).reduce((sum, trade) => sum + (trade.pnl || 0), 0) || 0) >= 0 ? '+' : ''}{formatCurrency(trades?.filter(t => t.accountId === account.id).reduce((sum, trade) => sum + (trade.pnl || 0), 0) || 0)}
+                      <p className={`font-bold ${trade.pnl >= 0 ? 'text-success-green' : 'text-error-red'}`}>
+                        {trade.pnl >= 0 ? '+' : ''}{formatCurrency(trade.pnl)}
                       </p>
+                      <p className="text-sm text-gray-400">{formatCurrency(trade.entryPrice)}</p>
                     </div>
                   </div>
                 ))}
