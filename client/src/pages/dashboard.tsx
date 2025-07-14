@@ -889,7 +889,7 @@ export default function Dashboard() {
         {/* Stats Row - Active accounts, Disciplinary Score, Realized payouts, Failed accounts */}
         <div className="widget-grid mb-6">
           {/* Active Accounts */}
-          <div className="widget-container">
+          <div className="widget-container" style={{ backgroundColor: 'red', border: '2px solid yellow' }}>
             <div className="widget-content">
               <div className="widget-left">
                 <p className="widget-label">Active Accounts</p>
@@ -905,7 +905,7 @@ export default function Dashboard() {
           </div>
 
           {/* Disciplinary Score */}
-          <div className="widget-container">
+          <div className="widget-container" style={{ backgroundColor: 'blue', border: '2px solid green' }}>
             <div className="widget-content">
               <div className="widget-left">
                 <p className="widget-label">Disciplinary Score</p>
