@@ -1754,11 +1754,11 @@ export default function Dashboard() {
               <div className="widget-left">
                 <p className="widget-label">Personal Hourly Wage</p>
                 <p className={`widget-value ${
-                  user?.personalHourlyWage && (totalPnl / 35.0) >= user.personalHourlyWage 
+                  user?.personalHourlyWage && ((combinedAnalytics?.totalPnl || 0) / 35.0) >= user.personalHourlyWage 
                     ? 'text-green-400' 
                     : 'text-red-400'
                 }`}>
-                  {formatCurrency(totalPnl / 35.0)}
+                  {formatCurrency((combinedAnalytics?.totalPnl || 0) / 35.0)}
                 </p>
                 <p className="widget-description">
                   Target: {formatCurrency(user?.personalHourlyWage || 25)} / 35.0 hours
