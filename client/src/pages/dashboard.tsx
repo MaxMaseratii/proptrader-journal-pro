@@ -917,35 +917,76 @@ export default function Dashboard() {
         {/* Active Account & Disciplinary Score Widget */}
         <div className="widget-grid mb-6">
           <div className="widget-container col-span-full">
-            <div className="widget-content">
-              <div className="widget-left">
-                <p className="widget-label">Active Account & Disciplinary Score</p>
-                <div className="flex items-center space-x-6 mt-2">
-                  <div className="flex items-center space-x-2">
-                    <CheckCircle className="h-5 w-5 text-green-400" />
-                    <span className="text-white font-medium">
-                      {accounts?.filter(acc => acc.status === 'active' || acc.status === 'funded').length || 0} Active
-                    </span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <Brain className="h-5 w-5 text-blue-400" />
-                    <span className={`font-bold text-lg ${getScoreColor(Math.round(combinedAnalytics?.disciplinedScore || 86))}`}>
-                      {Math.round(combinedAnalytics?.disciplinedScore || 86)}% Discipline
-                    </span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <AlertTriangle className="h-5 w-5 text-red-400" />
-                    <span className="text-white font-medium">
-                      {accounts?.filter(acc => acc.status === 'failed').length || 0} Failed
-                    </span>
+            <div className="widget-content flex-col">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {/* Active Accounts Section */}
+                <div className="widget-left">
+                  <p className="widget-label">Active Accounts</p>
+                  <p className="widget-description mb-4">Prop firm challenge and funded accounts</p>
+                  <div className="space-y-4">
+                    {accounts?.map((account) => (
+                      <div key={account.id} className="flex items-center justify-between p-4 bg-dark-surface rounded-lg border border-prop-gold/20">
+                        <div className="flex items-center">
+                          <div className={`w-10 h-10 rounded-lg flex items-center justify-center mr-4 ${
+                            account.type === 'funded' ? 'bg-success-green' : 
+                            (account.startingBalance + (trades?.filter(t => t.accountId === account.id).reduce((sum, trade) => sum + (trade.pnl || 0), 0) || 0)) < account.startingBalance * 0.95 ? 'bg-warning-orange' : 'bg-primary'
+                          }`}>
+                            {account.type === 'funded' ? (
+                              <Target className="text-white h-5 w-5" />
+                            ) : (account.startingBalance + (trades?.filter(t => t.accountId === account.id).reduce((sum, trade) => sum + (trade.pnl || 0), 0) || 0)) < account.startingBalance * 0.95 ? (
+                              <AlertTriangle className="text-white h-5 w-5" />
+                            ) : (
+                              <TrendingDown className="text-white h-5 w-5" />
+                            )}
+                          </div>
+                          <div>
+                            <p className="font-medium text-white">{account.name}</p>
+                            <p className="text-sm text-gray-400">{account.type} • {account.firm}</p>
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <p className="font-bold text-white">{formatCurrency(account.startingBalance + (trades?.filter(t => t.accountId === account.id).reduce((sum, trade) => sum + (trade.pnl || 0), 0) || 0))}</p>
+                          <p className={`text-sm ${getValueColor(trades?.filter(t => t.accountId === account.id).reduce((sum, trade) => sum + (trade.pnl || 0), 0) || 0)}`}>
+                            {(trades?.filter(t => t.accountId === account.id).reduce((sum, trade) => sum + (trade.pnl || 0), 0) || 0) >= 0 ? '+' : ''}{formatCurrency(trades?.filter(t => t.accountId === account.id).reduce((sum, trade) => sum + (trade.pnl || 0), 0) || 0)}
+                          </p>
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 </div>
-                <p className="widget-description mt-2">
-                  Trading performance and behavioral analysis • {formatCurrency(calculateTotalAvailablePayouts())} payouts ready
-                </p>
-              </div>
-              <div className="widget-icon-square">
-                <Target className="widget-icon" />
+
+                {/* Account Discipline Analysis Section */}
+                <div className="widget-left">
+                  <p className="widget-label">Account Discipline Analysis</p>
+                  <p className="widget-description mb-4">Performance by account</p>
+                  <div className="w-full">
+                    {accounts && accounts.length > 0 && trades && trades.length > 0 ? (
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {accounts.map(account => {
+                          const accountTrades = trades.filter(t => t.accountId === account.id);
+                          const disciplinedAnalysis = calculateDisciplinedScore(account, accountTrades);
+                          
+                          return (
+                            <div key={account.id} className="text-center p-4 bg-dark-surface rounded-lg border border-prop-gold/20">
+                              <p className="text-xs text-gray-400 mb-1">{account.name}</p>
+                              <p className={`text-2xl font-bold mb-1 ${getGradeColor(disciplinedAnalysis.scoreGrade)}`}>
+                                {disciplinedAnalysis.disciplinedScore.toFixed(0)}%
+                              </p>
+                              <p className={`text-sm font-semibold ${getGradeColor(disciplinedAnalysis.scoreGrade)}`}>
+                                Grade {disciplinedAnalysis.scoreGrade}
+                              </p>
+                              <p className="text-xs text-gray-400 mt-1">
+                                {disciplinedAnalysis.totalTrades} trades • {disciplinedAnalysis.violationsCount} violations
+                              </p>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    ) : (
+                      <p className="text-gray-400">No trading data available for disciplined score analysis</p>
+                    )}
+                  </div>
+                </div>
               </div>
             </div>
           </div>
