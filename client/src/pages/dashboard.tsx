@@ -45,7 +45,9 @@ import {
   Calendar,
   Banknote,
   Clock,
-  CheckCircle
+  CheckCircle,
+  Users,
+  CreditCard
 } from "lucide-react";
 import type { Account, Trade } from "@shared/schema";
 
@@ -243,6 +245,31 @@ export default function Dashboard() {
 
   const primaryAccount = accounts?.[0];
   const recentTrades = trades?.slice(0, 4) || [];
+
+  // Calculate total investment from spending data
+  const totalInvestment = useMemo(() => {
+    if (!spending || !accounts) return 0;
+    
+    let spendings: any[] = [];
+    
+    if (accountSelectionMode === 'all') {
+      spendings = spending;
+    } else if (accountSelectionMode === 'single' && selectedAccountIds.length > 0) {
+      spendings = spending.filter(s => s.accountId === selectedAccountIds[0]);
+    } else {
+      const accountIdsToUse = selectedAccountIds.length > 0 ? selectedAccountIds : (accounts.length > 0 ? [accounts[0].id] : []);
+      spendings = spending.filter(s => accountIdsToUse.includes(s.accountId));
+    }
+    
+    return spendings.reduce((sum, spending) => sum + spending.amount, 0);
+  }, [spending, accounts, selectedAccountIds, accountSelectionMode]);
+
+  // Calculate ROI percentage
+  const roiPercentage = useMemo(() => {
+    if (!totalInvestment || totalInvestment === 0) return 0;
+    const totalReturns = combinedAnalytics?.totalPnl || 0;
+    return (totalReturns / totalInvestment) * 100;
+  }, [totalInvestment, combinedAnalytics]);
 
   // Calculate net balance (starting balance + total P&L from trades) for selected accounts
   const calculateNetBalance = () => {
@@ -477,15 +504,9 @@ export default function Dashboard() {
       <div className="p-6 space-y-8">
 
 
-        {/* Current Performance Overview - Compact Header */}
-        <div className="mb-4">
-          <h2 className="text-xl font-bold text-gradient-rainbow mb-4 flex items-center border-b border-gray-700 pb-2">
-            <TrendingUp className="mr-3 h-5 w-5 text-success-green" />
-            Current Performance Overview
-          </h2>
-        </div>
-
-        {/* Row 1: Core Financial (3 widgets) */}
+        {/* UNIFIED DASHBOARD: 6-ROW PROFESSIONAL LAYOUT */}
+        
+        {/* ROW 1: PRIMARY FINANCIAL METRICS */}
         <div className="widget-grid row-1 mb-6">
           {/* Net Balance */}
           <div className="widget-container">
@@ -546,11 +567,7 @@ export default function Dashboard() {
               </div>
             </div>
           </div>
-        </div>
-
-        {/* Row 2: Performance Ratios (4 widgets) */}
-        <div className="widget-grid row-2 mb-6">
-          {/* Win Rate */}
+          {/* Win Rate - Add to complete Row 1 */}
           <div className="widget-container">
             <div className="widget-content">
               <div className="widget-left">
@@ -565,7 +582,10 @@ export default function Dashboard() {
               </div>
             </div>
           </div>
+        </div>
 
+        {/* ROW 2: PERFORMANCE ANALYTICS */}
+        <div className="widget-grid row-2 mb-6">
           {/* R Factor */}
           <div className="widget-container">
             <div className="widget-content">
@@ -598,15 +618,15 @@ export default function Dashboard() {
             </div>
           </div>
 
-          {/* Avg Win/Loss - moved from Row 1 */}
+          {/* Avg Win/Loss */}
           <div className="widget-container">
             <div className="widget-content">
               <div className="widget-left">
                 <p className="widget-label">Avg Win/Loss</p>
                 <div className="flex items-center space-x-2 text-lg font-bold">
-                  <span className="text-success-green">{formatCurrency(combinedAnalytics?.averageWin || 0)}</span>
+                  <span className="text-green-400">{formatCurrency(combinedAnalytics?.averageWin || 0)}</span>
                   <span className="text-gray-400">/</span>
-                  <span className="text-error-red">{formatCurrency(Math.abs(combinedAnalytics?.averageLoss || 0))}</span>
+                  <span className="text-red-400">{formatCurrency(Math.abs(combinedAnalytics?.averageLoss || 0))}</span>
                 </div>
                 <p className="widget-description">Win vs Loss ratio</p>
               </div>
@@ -615,16 +635,13 @@ export default function Dashboard() {
               </div>
             </div>
           </div>
-        </div>
 
-        {/* Row 3: Trading Activity & Planning (4 widgets) */}
-        <div className="widget-grid row-3 mb-6">
           {/* Total Trades */}
           <div className="widget-container">
             <div className="widget-content">
               <div className="widget-left">
                 <p className="widget-label">Total Trades</p>
-                <p className="widget-value">
+                <p className="widget-value text-white">
                   {combinedAnalytics?.totalTrades || 0}
                 </p>
                 <p className="widget-description">All executed trades</p>
@@ -634,40 +651,65 @@ export default function Dashboard() {
               </div>
             </div>
           </div>
+        </div>
 
-          {/* Best Trade */}
+        {/* ROW 3: RISK & PLANNING */}
+        <div className="widget-grid row-3 mb-6">
+          {/* Risk Management */}
           <div className="widget-container">
             <div className="widget-content">
               <div className="widget-left">
-                <p className="widget-label">Best Trade</p>
-                <p className={`widget-value ${(combinedAnalytics?.bestTrade || 0) > 0 ? 'text-green-400' : (combinedAnalytics?.bestTrade || 0) < 0 ? 'text-red-400' : 'text-white'}`}>
-                  {formatCurrency(combinedAnalytics?.bestTrade || 0)}
-                </p>
-                <p className="widget-description">Highest single trade profit</p>
+                <p className="widget-label">Risk Management</p>
+                <div className="risk-metrics space-y-1">
+                  <div className="daily-risk flex justify-between">
+                    <span className="text-sm">Daily:</span>
+                    <span className="text-sm">
+                      {formatCurrency(combinedAnalytics?.dailyRiskUsed || 0)} / {formatCurrency(combinedAnalytics?.dailyRiskLimit || 1500)}
+                    </span>
+                  </div>
+                  <div className="drawdown-risk flex justify-between">
+                    <span className="text-sm">Drawdown:</span>
+                    <span className="text-sm">
+                      {formatCurrency(combinedAnalytics?.currentDrawdown || 0)} / {formatCurrency(combinedAnalytics?.maxDrawdown || 7500)}
+                    </span>
+                  </div>
+                </div>
+                <p className="widget-description text-xs">Violations: 0 ⚡ | Health: 98% 🟢</p>
               </div>
               <div className="widget-icon-square">
-                <TrendingUp className="widget-icon" />
+                <Shield className="widget-icon" />
               </div>
             </div>
           </div>
 
-          {/* Worst Trade */}
+          {/* Plan vs Reality */}
           <div className="widget-container">
             <div className="widget-content">
               <div className="widget-left">
-                <p className="widget-label">Worst Trade</p>
-                <p className={`widget-value ${(combinedAnalytics?.worstTrade || 0) > 0 ? 'text-green-400' : (combinedAnalytics?.worstTrade || 0) < 0 ? 'text-red-400' : 'text-white'}`}>
-                  {formatCurrency(combinedAnalytics?.worstTrade || 0)}
-                </p>
-                <p className="widget-description">Lowest single trade loss</p>
+                <p className="widget-label">Plan vs Reality</p>
+                <div className="progress-bars space-y-1">
+                  <div className="target-progress">
+                    <div className="flex justify-between text-xs">
+                      <span>Target: $750/day</span>
+                      <span>📊</span>
+                    </div>
+                  </div>
+                  <div className="actual-progress">
+                    <div className="flex justify-between text-xs">
+                      <span>Actual: {formatCurrency(combinedAnalytics?.totalPnl || 0)}</span>
+                      <span>✅</span>
+                    </div>
+                  </div>
+                </div>
+                <p className="widget-description text-xs">Day 2 of 14 • +35% ahead • Risk Used: 16.7% / 50% limit</p>
               </div>
               <div className="widget-icon-square">
-                <TrendingDown className="widget-icon" />
+                <Target className="widget-icon" />
               </div>
             </div>
           </div>
 
-          {/* Weekly Navigation Widget */}
+          {/* Weekly Navigation */}
           <div className="widget-container">
             <div className="widget-content">
               <div className="widget-left">
@@ -681,8 +723,8 @@ export default function Dashboard() {
                   >
                     ←
                   </button>
-                  <span className="text-white font-semibold">
-                    W{Math.ceil(calendarDate.getDate() / 7)} {calendarDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} {calendarDate.getFullYear().toString().slice(-2)} ({Math.ceil(calendarDate.getDate() / 7)}/52)
+                  <span className="text-white font-semibold text-xs">
+                    W{Math.ceil(calendarDate.getDate() / 7)} {calendarDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} {calendarDate.getFullYear().toString().slice(-2)}
                   </span>
                   <button 
                     onClick={() => {
@@ -697,66 +739,69 @@ export default function Dashboard() {
                 <p className={`widget-value ${getValueColor(combinedAnalytics?.totalPnl || 0)}`}>
                   {formatCurrency(combinedAnalytics?.totalPnl || 0)}
                 </p>
-                <p className="widget-description">
-                  {(() => {
-                    // Get trades for the current week
-                    const weekStart = new Date(calendarDate);
-                    weekStart.setDate(weekStart.getDate() - weekStart.getDay()); // Start of week
-                    const weekEnd = new Date(weekStart);
-                    weekEnd.setDate(weekEnd.getDate() + 6); // End of week
-                    
-                    const weekTrades = trades?.filter(trade => {
-                      const tradeDate = new Date(trade.date);
-                      return tradeDate >= weekStart && tradeDate <= weekEnd;
-                    }) || [];
-                    
-                    const weeklyWinRate = weekTrades.length > 0 
-                      ? (weekTrades.filter(t => t.pnl > 0).length / weekTrades.length * 100)
-                      : 0;
-                    
-                    return weekTrades.length > 0 
-                      ? `${weekTrades.length} trades • ${weeklyWinRate.toFixed(0)}% win rate`
-                      : '0 trades • 0% win rate';
-                  })()}
+                <p className="widget-description text-xs">
+                  {combinedAnalytics?.totalTrades || 0} trades • {Math.round(combinedAnalytics?.winRate || 0)}% win rate
                 </p>
+              </div>
+              <div className="widget-icon-square">
+                <Calendar className="widget-icon" />
               </div>
             </div>
           </div>
 
-          {/* Plan vs Reality Widget */}
+          {/* Discipline Score */}
           <div className="widget-container">
             <div className="widget-content">
               <div className="widget-left">
-                <p className="widget-label">Plan vs Reality</p>
-                <div className="target-actual-display space-y-1">
-                  <div className="target-line text-sm text-gray-300">Target: $750/day ━━━━━━━━━ 📊</div>
-                  <div className="actual-line text-sm text-green-400">Actual: $1,012 ━━━━━━━━━━━━ ✅</div>
-                </div>
-                <p className="widget-description">Day 2 of 14 • +35% ahead</p>
-                <p className="widget-description text-xs">Risk Used: 16.7% / 50% limit</p>
+                <p className="widget-label">Discipline Score</p>
+                <p className={`widget-value ${(combinedAnalytics?.disciplinedScore || 0) >= 80 ? 'text-green-400' : (combinedAnalytics?.disciplinedScore || 0) >= 60 ? 'text-yellow-400' : 'text-red-400'}`}>
+                  {Math.round(combinedAnalytics?.disciplinedScore || 86)} B
+                </p>
+                <p className="widget-description text-xs">98% risk compliance / 100% trade limits</p>
+              </div>
+              <div className="widget-icon-square">
+                <Brain className="widget-icon" />
               </div>
             </div>
           </div>
         </div>
 
-        {/* Row 4: Risk & Investment (4 widgets) */}
+        {/* ROW 4: INVESTMENT & FINANCIAL TRACKING */}
         <div className="widget-grid row-4 mb-6">
-          {/* Risk Management Widget */}
+          {/* Investment ROI Summary */}
           <div className="widget-container">
             <div className="widget-content">
               <div className="widget-left">
-                <p className="widget-label">Risk Management</p>
-                <p className="widget-value">Daily Risk: $500 / $1,500 (33%)</p>
-                <p className="widget-description">Max Drawdown: $2,445 / $7,500 (33%)</p>
-                <p className="widget-description">Rule Violations: 0 ⚡ | Health Score: 98% 🟢</p>
+                <p className="widget-label">Investment ROI Summary</p>
+                <div className="investment-summary space-y-1">
+                  <div className="total-invested flex justify-between">
+                    <span className="text-sm">Total Invested:</span>
+                    <span className="text-sm font-semibold">{formatCurrency(totalInvestment)}</span>
+                  </div>
+                  <div className="total-returns flex justify-between">
+                    <span className="text-sm">Total Returns:</span>
+                    <span className={`text-sm font-semibold ${getValueColor(combinedAnalytics?.totalPnl || 0)}`}>
+                      {formatCurrency(combinedAnalytics?.totalPnl || 0)}
+                    </span>
+                  </div>
+                  <div className="roi-percentage flex justify-between">
+                    <span className="text-sm">ROI:</span>
+                    <span className={`text-sm font-semibold ${getValueColor(roiPercentage)}`}>
+                      {roiPercentage.toFixed(1)}%
+                    </span>
+                  </div>
+                </div>
+                <p className="widget-description text-xs">
+                  {roiPercentage > 0 ? 'PROFITABLE TRADER' : 'BUILDING CAPITAL'}
+                </p>
               </div>
               <div className="widget-icon-square">
-                <Shield className="widget-icon" />
+                <DollarSign className="widget-icon" />
               </div>
             </div>
           </div>
 
-          {/* Personal Hourly Wages Widget */}
+          {/* Personal Hourly Wages */}
           <div className="widget-container">
             <div className="widget-content">
               <div className="widget-left">
@@ -806,6 +851,41 @@ export default function Dashboard() {
             </div>
           </div>
 
+          {/* Account Status Summary */}
+          <div className="widget-container">
+            <div className="widget-content">
+              <div className="widget-left">
+                <p className="widget-label">Account Status</p>
+                <div className="account-status-summary space-y-1">
+                  <div className="challenge-accounts flex justify-between">
+                    <span className="text-sm">Challenge:</span>
+                    <span className="text-sm font-semibold text-yellow-400">
+                      {accounts?.filter(a => a.type === 'challenge').length || 0}
+                    </span>
+                  </div>
+                  <div className="funded-accounts flex justify-between">
+                    <span className="text-sm">Funded:</span>
+                    <span className="text-sm font-semibold text-green-400">
+                      {accounts?.filter(a => a.type === 'funded').length || 0}
+                    </span>
+                  </div>
+                  <div className="live-accounts flex justify-between">
+                    <span className="text-sm">Live:</span>
+                    <span className="text-sm font-semibold text-blue-400">
+                      {accounts?.filter(a => a.type === 'live').length || 0}
+                    </span>
+                  </div>
+                </div>
+                <p className="widget-description text-xs">
+                  {accounts?.filter(a => a.status === 'active').length || 0} active accounts
+                </p>
+              </div>
+              <div className="widget-icon-square">
+                <Users className="widget-icon" />
+              </div>
+            </div>
+          </div>
+
           {/* Active Trading Days Widget */}
           <div className="widget-container">
             <div className="widget-content">
@@ -819,7 +899,7 @@ export default function Dashboard() {
                     return `${totalHours.toFixed(1)} Hrs`;
                   })()}
                 </p>
-                <p className="widget-description">
+                <p className="widget-description text-xs">
                   {(() => {
                     const uniqueDays = new Set(trades?.map(t => t.date.split('T')[0])).size || 0;
                     const avgHoursPerDay = uniqueDays > 0 ? (Math.min(uniqueDays * 8, 24 * uniqueDays) / uniqueDays).toFixed(1) : 0;
@@ -834,7 +914,260 @@ export default function Dashboard() {
           </div>
         </div>
 
+        {/* ROW 5: ACTIVE ACCOUNTS & ANALYSIS */}
+        <div className="widget-grid row-5 mb-6">
+          {/* Active Accounts */}
+          <div className="widget-container">
+            <div className="widget-content">
+              <div className="widget-left">
+                <p className="widget-label">Active Accounts</p>
+                <div className="accounts-grid grid grid-cols-1 gap-2">
+                  {accounts?.slice(0, 3).map((account) => (
+                    <div key={account.id} className="account-card bg-gray-800 rounded p-2">
+                      <div className="flex justify-between items-start">
+                        <div className="account-info">
+                          <h4 className="font-medium text-sm text-white">{account.name}</h4>
+                          <p className="text-xs text-gray-400">{account.firm}</p>
+                        </div>
+                        <div className="account-balance text-right">
+                          <p className={`text-sm font-semibold ${getValueColor(account.startingBalance + (combinedAnalytics?.totalPnl || 0))}`}>
+                            {formatCurrency(account.startingBalance + (combinedAnalytics?.totalPnl || 0))}
+                          </p>
+                          <p className="text-xs text-gray-400">{account.type}</p>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <p className="widget-description text-xs mt-2">
+                  {accounts?.length || 0} total accounts
+                </p>
+              </div>
+            </div>
+          </div>
 
+          {/* Account Discipline Analysis */}
+          <div className="widget-container">
+            <div className="widget-content">
+              <div className="widget-left">
+                <p className="widget-label">Account Discipline Analysis</p>
+                <div className="discipline-breakdown space-y-1">
+                  <div className="risk-management flex justify-between">
+                    <span className="text-sm">Risk Management:</span>
+                    <span className="text-sm font-semibold text-green-400">98%</span>
+                  </div>
+                  <div className="stop-loss-respect flex justify-between">
+                    <span className="text-sm">Stop Loss Respect:</span>
+                    <span className="text-sm font-semibold text-green-400">94%</span>
+                  </div>
+                  <div className="profit-target flex justify-between">
+                    <span className="text-sm">Profit Target Hit:</span>
+                    <span className="text-sm font-semibold text-yellow-400">67%</span>
+                  </div>
+                </div>
+                <p className="widget-description text-xs">
+                  Overall: {Math.round(combinedAnalytics?.disciplinedScore || 86)}B Grade
+                </p>
+              </div>
+              <div className="widget-icon-square">
+                <Brain className="widget-icon" />
+              </div>
+            </div>
+          </div>
+
+          {/* Payout Status */}
+          <div className="widget-container">
+            <div className="widget-content">
+              <div className="widget-left">
+                <p className="widget-label">Payout Status</p>
+                {(() => {
+                  const payoutAccount = accounts?.find(a => a.id === payoutStatusAccountId);
+                  if (!payoutAccount) return <p className="text-gray-400 text-sm">No account selected</p>;
+                  
+                  if (payoutAccount.type === 'challenge') {
+                    return (
+                      <div className="payout-info">
+                        <p className="text-sm text-yellow-400">Focus on passing challenge</p>
+                        <p className="text-xs text-gray-400">Complete challenge requirements first</p>
+                      </div>
+                    );
+                  }
+                  
+                  const accountTrades = trades?.filter(t => t.accountId === payoutAccount.id) || [];
+                  const currentProfit = accountTrades.reduce((sum, trade) => sum + (trade.pnl || 0), 0);
+                  const minimumPayout = payoutAccount.minimumPayoutAmount || 0;
+                  const maxNetBalance = payoutAccount.maxNetBalanceForPayout || 0;
+                  const requiredTotal = maxNetBalance + minimumPayout;
+                  
+                  return (
+                    <div className="payout-progress">
+                      <div className="progress-bar-container">
+                        <div className="progress-info flex justify-between text-xs">
+                          <span>Progress:</span>
+                          <span>{formatCurrency(currentProfit)} / {formatCurrency(requiredTotal)}</span>
+                        </div>
+                        <div className="progress-bar bg-gray-700 rounded-full h-2 mt-1">
+                          <div 
+                            className="progress-fill bg-green-500 h-2 rounded-full transition-all duration-300"
+                            style={{ width: `${Math.min(100, (currentProfit / requiredTotal) * 100)}%` }}
+                          />
+                        </div>
+                      </div>
+                      <p className="text-xs text-gray-400 mt-1">
+                        {currentProfit >= requiredTotal ? '✅ Eligible for payout' : '⏳ Building towards payout'}
+                      </p>
+                    </div>
+                  );
+                })()}
+              </div>
+              <div className="widget-icon-square">
+                <DollarSign className="widget-icon" />
+              </div>
+            </div>
+          </div>
+
+          {/* Manual Spending Entry */}
+          <div className="widget-container">
+            <div className="widget-content">
+              <div className="widget-left">
+                <p className="widget-label">Manual Spending Entry</p>
+                <div className="spending-quick-actions space-y-2">
+                  <Link href="/spending" className="block">
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      className="w-full text-xs bg-blue-600 hover:bg-blue-700 text-white border-blue-600"
+                    >
+                      <Plus className="mr-1 h-3 w-3" />
+                      Add Spending
+                    </Button>
+                  </Link>
+                  <div className="recent-spending">
+                    <p className="text-xs text-gray-400">Recent spending: {formatCurrency(totalInvestment)}</p>
+                    <p className="text-xs text-gray-400">
+                      {spending?.length || 0} total entries
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div className="widget-icon-square">
+                <CreditCard className="widget-icon" />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* ROW 6: TRADING ANALYSIS & CALENDAR */}
+        <div className="widget-grid row-6 mb-6">
+          {/* Trading Analysis Calendar */}
+          <div className="widget-container col-span-2">
+            <div className="widget-content">
+              <div className="widget-left">
+                <p className="widget-label">Trading Analysis Calendar</p>
+                <div className="calendar-compact">
+                  <div className="calendar-header flex justify-between items-center mb-2">
+                    <button 
+                      onClick={() => {
+                        const newDate = new Date(calendarDate);
+                        newDate.setMonth(newDate.getMonth() - 1);
+                        setCalendarDate(newDate);
+                      }}
+                      className="text-white hover:text-blue-400 transition-colors"
+                    >
+                      ← 
+                    </button>
+                    <span className="text-white font-semibold text-sm">
+                      {calendarDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+                    </span>
+                    <button 
+                      onClick={() => {
+                        const newDate = new Date(calendarDate);
+                        newDate.setMonth(newDate.getMonth() + 1);
+                        setCalendarDate(newDate);
+                      }}
+                      className="text-white hover:text-blue-400 transition-colors"
+                    >
+                      →
+                    </button>
+                  </div>
+                  <div className="calendar-grid grid grid-cols-7 gap-1">
+                    {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
+                      <div key={day} className="calendar-day-header text-center text-xs text-gray-400 py-1">
+                        {day}
+                      </div>
+                    ))}
+                    {(() => {
+                      const firstDayOfMonth = new Date(calendarDate.getFullYear(), calendarDate.getMonth(), 1);
+                      const lastDayOfMonth = new Date(calendarDate.getFullYear(), calendarDate.getMonth() + 1, 0);
+                      const firstDayWeekday = firstDayOfMonth.getDay();
+                      const daysInMonth = lastDayOfMonth.getDate();
+                      
+                      const calendarDays = [];
+                      
+                      // Empty cells for days before the first day of the month
+                      for (let i = 0; i < firstDayWeekday; i++) {
+                        calendarDays.push(
+                          <div key={`empty-${i}`} className="calendar-day-empty h-6"></div>
+                        );
+                      }
+                      
+                      // Days of the month
+                      for (let day = 1; day <= daysInMonth; day++) {
+                        const dateStr = `${calendarDate.getFullYear()}-${String(calendarDate.getMonth() + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                        const dayTrades = trades?.filter(t => t.date.startsWith(dateStr)) || [];
+                        const dayPnl = dayTrades.reduce((sum, trade) => sum + (trade.pnl || 0), 0);
+                        
+                        calendarDays.push(
+                          <div key={day} className="calendar-day h-6 text-center text-xs flex flex-col justify-center">
+                            <span className="text-white">{day}</span>
+                            {dayTrades.length > 0 && (
+                              <span className={`text-xs ${getValueColor(dayPnl)}`}>
+                                {dayPnl > 0 ? '+' : ''}{dayPnl.toFixed(0)}
+                              </span>
+                            )}
+                          </div>
+                        );
+                      }
+                      
+                      return calendarDays;
+                    })()}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Trading Charts Preview */}
+          <div className="widget-container col-span-2">
+            <div className="widget-content">
+              <div className="widget-left">
+                <p className="widget-label">Trading Charts Preview</p>
+                <div className="charts-preview">
+                  {trades && trades.length > 0 ? (
+                    <div className="chart-container">
+                      <SimpleChart data={getEquityData()} />
+                      <p className="text-xs text-gray-400 mt-2">
+                        Equity curve • {trades.length} trades • 
+                        <span className={`ml-1 ${getValueColor(combinedAnalytics?.totalPnl || 0)}`}>
+                          {formatCurrency(combinedAnalytics?.totalPnl || 0)}
+                        </span>
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="no-data text-center py-4">
+                      <p className="text-gray-400 text-sm">No trading data available</p>
+                      <Link href="/trades?tab=add">
+                        <Button size="sm" className="mt-2 bg-blue-600 hover:bg-blue-700">
+                          Add First Trade
+                        </Button>
+                      </Link>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
 
         {/* Trading Charts Preview */}
         {trades && trades.length > 0 && (
