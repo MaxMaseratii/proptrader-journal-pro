@@ -835,21 +835,7 @@ export default function Dashboard() {
             </div>
           </div>
 
-          {/* Discipline Score Widget */}
-          <div className="widget-container">
-            <div className="widget-content">
-              <div className="widget-left">
-                <p className="widget-label">Discipline Score</p>
-                <p className={`widget-value ${(combinedAnalytics?.disciplinedScore || 0) >= 80 ? 'text-green-400' : (combinedAnalytics?.disciplinedScore || 0) >= 60 ? 'text-yellow-400' : 'text-red-400'}`}>
-                  {Math.round(combinedAnalytics?.disciplinedScore || 86)} B
-                </p>
-                <p className="widget-description">98% risk compliance / 100% trade limits</p>
-              </div>
-              <div className="widget-icon-square">
-                <Brain className="widget-icon" />
-              </div>
-            </div>
-          </div>
+
 
           {/* Account Status Summary */}
           <div className="widget-container">
@@ -1762,35 +1748,24 @@ export default function Dashboard() {
             </div>
           </div>
 
-          {/* Disciplined Score */}
+          {/* Personal Hourly Wage */}
           <div className="widget-container">
             <div className="widget-content">
               <div className="widget-left">
-                <p className="widget-label">Disciplined Score</p>
-                <div className="flex items-center space-x-2">
-                  <p className={`text-2xl font-bold ${getScoreColor(combinedAnalytics?.disciplinedScore || 0)}`}>
-                    {Math.round(combinedAnalytics?.disciplinedScore || 0)}
-                  </p>
-                  <Badge className={`${getGradeColor(
-                    (combinedAnalytics?.disciplinedScore || 0) >= 95 ? 'A+' :
-                    (combinedAnalytics?.disciplinedScore || 0) >= 90 ? 'A' :
-                    (combinedAnalytics?.disciplinedScore || 0) >= 80 ? 'B' :
-                    (combinedAnalytics?.disciplinedScore || 0) >= 70 ? 'C' :
-                    (combinedAnalytics?.disciplinedScore || 0) >= 60 ? 'D' : 'F'
-                  )} text-white`}>
-                    {(combinedAnalytics?.disciplinedScore || 0) >= 95 ? 'A+' :
-                     (combinedAnalytics?.disciplinedScore || 0) >= 90 ? 'A' :
-                     (combinedAnalytics?.disciplinedScore || 0) >= 80 ? 'B' :
-                     (combinedAnalytics?.disciplinedScore || 0) >= 70 ? 'C' :
-                     (combinedAnalytics?.disciplinedScore || 0) >= 60 ? 'D' : 'F'}
-                  </Badge>
-                </div>
+                <p className="widget-label">Personal Hourly Wage</p>
+                <p className={`widget-value ${
+                  user?.personalHourlyWage && (totalPnl / 35.0) >= user.personalHourlyWage 
+                    ? 'text-green-400' 
+                    : 'text-red-400'
+                }`}>
+                  {formatCurrency(totalPnl / 35.0)}
+                </p>
                 <p className="widget-description">
-                  98% risk compliance / 100% trade limits
+                  Target: {formatCurrency(user?.personalHourlyWage || 25)} / 35.0 hours
                 </p>
               </div>
               <div className="widget-icon-square">
-                <Brain className="widget-icon" />
+                <DollarSign className="widget-icon" />
               </div>
             </div>
           </div>
