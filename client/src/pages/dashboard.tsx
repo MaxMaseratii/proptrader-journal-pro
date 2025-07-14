@@ -17,7 +17,8 @@ import { formatCurrency, formatPercentage, formatDate } from "@/lib/utils";
 import { calculateDisciplinedScore, getScoreColor, getGradeColor } from "@/lib/disciplined-score";
 
 // Color coding utility function
-const getValueColor = (value: number) => {
+const getValueColor = (value: number, type: 'currency' | 'percentage' | 'neutral' = 'currency') => {
+  if (type === 'neutral') return 'text-white';
   if (value > 0) return 'text-green-400';
   if (value < 0) return 'text-red-400';
   return 'text-white'; // zero/neutral
@@ -343,12 +344,7 @@ export default function Dashboard() {
   };
 
   // TASK 3: Color determination function for all numbers
-  const getValueColor = (value: number, type: 'currency' | 'percentage' | 'neutral' = 'currency') => {
-    if (type === 'neutral') return 'text-prop-tiffany';
-    if (value > 0) return 'text-prop-green';
-    if (value < 0) return 'text-prop-pink';
-    return 'text-prop-gold'; // For zero values, use gold color like portfolio overview
-  };
+
 
   if (accountsLoading || tradesLoading) {
     return (
@@ -508,8 +504,20 @@ export default function Dashboard() {
             <div className="widget-content">
               <div className="widget-left">
                 <p className="widget-label">Daily P&L</p>
-                <p className={`widget-value ${getValueColor(combinedAnalytics?.worstTrade || 0)}`}>
-                  {formatCurrency(combinedAnalytics?.worstTrade || 0)}
+                <p className={`widget-value ${getValueColor(
+                  (() => {
+                    const today = new Date().toISOString().split('T')[0];
+                    const todayTrades = trades?.filter(trade => trade.date === today) || [];
+                    return todayTrades.reduce((sum, trade) => sum + trade.pnl, 0);
+                  })()
+                )}`}>
+                  {formatCurrency(
+                    (() => {
+                      const today = new Date().toISOString().split('T')[0];
+                      const todayTrades = trades?.filter(trade => trade.date === today) || [];
+                      return todayTrades.reduce((sum, trade) => sum + trade.pnl, 0);
+                    })()
+                  )}
                 </p>
                 <p className="widget-description">Today's performance</p>
               </div>
@@ -543,7 +551,7 @@ export default function Dashboard() {
             <div className="widget-content">
               <div className="widget-left">
                 <p className="widget-label">Win Rate</p>
-                <p className="widget-value">
+                <p className={`widget-value ${(combinedAnalytics?.winRate || 0) > 50 ? 'text-green-400' : (combinedAnalytics?.winRate || 0) < 50 ? 'text-red-400' : 'text-white'}`}>
                   {formatPercentage(combinedAnalytics?.winRate || 0)}
                 </p>
                 <p className="widget-description">Winning trades percentage</p>
@@ -559,7 +567,7 @@ export default function Dashboard() {
             <div className="widget-content">
               <div className="widget-left">
                 <p className="widget-label">R Factor</p>
-                <p className="widget-value">
+                <p className={`widget-value ${(combinedAnalytics?.rFactor || 0) > 1 ? 'text-green-400' : (combinedAnalytics?.rFactor || 0) < 1 ? 'text-red-400' : 'text-white'}`}>
                   {combinedAnalytics?.rFactor?.toFixed(2) || '0.00'}
                 </p>
                 <p className="widget-description">Risk/Reward ratio</p>
@@ -575,7 +583,7 @@ export default function Dashboard() {
             <div className="widget-content">
               <div className="widget-left">
                 <p className="widget-label">Profit Factor</p>
-                <p className="widget-value">
+                <p className={`widget-value ${(combinedAnalytics?.profitFactor || 0) > 1 ? 'text-green-400' : (combinedAnalytics?.profitFactor || 0) < 1 ? 'text-red-400' : 'text-white'}`}>
                   {combinedAnalytics?.profitFactor?.toFixed(2) || '0.00'}
                 </p>
                 <p className="widget-description">Gross profit / gross loss</p>
@@ -635,6 +643,22 @@ export default function Dashboard() {
               </div>
               <div className="widget-icon-square">
                 <TrendingUp className="widget-icon" />
+              </div>
+            </div>
+          </div>
+
+          {/* Worst Trade */}
+          <div className="widget-container">
+            <div className="widget-content">
+              <div className="widget-left">
+                <p className="widget-label">Worst Trade</p>
+                <p className={`widget-value ${getValueColor(combinedAnalytics?.worstTrade || 0)}`}>
+                  {formatCurrency(combinedAnalytics?.worstTrade || 0)}
+                </p>
+                <p className="widget-description">Lowest single trade loss</p>
+              </div>
+              <div className="widget-icon-square">
+                <TrendingDown className="widget-icon" />
               </div>
             </div>
           </div>
@@ -767,7 +791,9 @@ export default function Dashboard() {
             <div className="widget-content">
               <div className="widget-left">
                 <p className="widget-label">Discipline Score</p>
-                <p className="widget-value">{Math.round(combinedAnalytics?.disciplinedScore || 86)} B</p>
+                <p className={`widget-value ${(combinedAnalytics?.disciplinedScore || 0) >= 80 ? 'text-green-400' : (combinedAnalytics?.disciplinedScore || 0) >= 60 ? 'text-yellow-400' : 'text-red-400'}`}>
+                  {Math.round(combinedAnalytics?.disciplinedScore || 86)} B
+                </p>
                 <p className="widget-description">98% risk compliance / 100% trade limits</p>
               </div>
               <div className="widget-icon-square">
