@@ -105,10 +105,7 @@ export default function Dashboard() {
   // Wage update mutation
   const updateWageMutation = useMutation({
     mutationFn: async (personalHourlyWage: number) => {
-      return await apiRequest('/api/users/update-wage', {
-        method: 'POST',
-        body: { personalHourlyWage },
-      });
+      return await apiRequest('POST', '/api/users/update-wage', { personalHourlyWage });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
@@ -753,11 +750,11 @@ export default function Dashboard() {
                 <p className="widget-description text-xs">
                   {(() => {
                     const hourlyWage = user?.personalHourlyWage || 25;
-                    // Calculate total hours based on actual trades (2.5 hours per trade as shown in Total Working Hours)
-                    const totalTradingHours = (trades?.length || 0) * 2.5;
+                    // Always use 35.0 hours as requested by user
+                    const totalTradingHours = 35.0;
                     const expectedEarnings = hourlyWage * totalTradingHours;
                     
-                    return `${formatCurrency(hourlyWage)}/hr × ${totalTradingHours.toFixed(1)} hrs (Expected: ${formatCurrency(expectedEarnings)})`;
+                    return `${formatCurrency(hourlyWage)}/hr × ${totalTradingHours.toFixed(1)} hrs = ${formatCurrency(expectedEarnings)}`;
                   })()}
                 </p>
               </div>
