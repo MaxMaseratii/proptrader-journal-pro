@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Link } from "wouter";
+import { apiRequest } from "@/lib/queryClient";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -19,7 +20,7 @@ import { calculateDisciplinedScore, getScoreColor, getGradeColor } from "@/lib/d
 const getValueColor = (value: number) => {
   if (value > 0) return 'text-green-400';
   if (value < 0) return 'text-red-400';
-  return 'text-yellow-400'; // zero/neutral
+  return 'text-white'; // zero/neutral
 };
 import TradeCalendar from "@/components/trade-calendar";
 import TradeEntry from "@/components/trade-entry";
@@ -64,6 +65,7 @@ interface DashboardAnalytics {
 }
 
 export default function Dashboard() {
+  const queryClient = useQueryClient();
   const [selectedAccountIds, setSelectedAccountIds] = useState<number[]>(() => {
     const saved = localStorage.getItem('dashboard-selected-accounts');
     return saved ? JSON.parse(saved) : [];
@@ -98,6 +100,23 @@ export default function Dashboard() {
 
   const { data: user } = useQuery({
     queryKey: ["/api/auth/user"],
+  });
+
+  // Wage update mutation
+  const updateWageMutation = useMutation({
+    mutationFn: async (personalHourlyWage: number) => {
+      return await apiRequest('/api/users/update-wage', {
+        method: 'POST',
+        body: { personalHourlyWage },
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
+      setShowWageModal(false);
+    },
+    onError: (error) => {
+      console.error('Error updating wage:', error);
+    },
   });
 
   // Initialize selectedAccountIds with first account when none selected
@@ -734,9 +753,11 @@ export default function Dashboard() {
                 <p className="widget-description text-xs">
                   {(() => {
                     const hourlyWage = user?.personalHourlyWage || 25;
-                    const uniqueDays = new Set(trades?.map(t => t.date.split('T')[0])).size || 0;
-                    const totalHours = uniqueDays * 8; // 8 hours per trading day
-                    return `${formatCurrency(hourlyWage)}/hr × ${totalHours.toFixed(1)} hrs`;
+                    // Calculate total hours based on actual trades (2.5 hours per trade as shown in Total Working Hours)
+                    const totalTradingHours = (trades?.length || 0) * 2.5;
+                    const expectedEarnings = hourlyWage * totalTradingHours;
+                    
+                    return `${formatCurrency(hourlyWage)}/hr × ${totalTradingHours.toFixed(1)} hrs (Expected: ${formatCurrency(expectedEarnings)})`;
                   })()}
                 </p>
               </div>
@@ -862,7 +883,10 @@ export default function Dashboard() {
             <div className="widget-content">
               <div className="widget-left">
                 <p className="widget-label">Live Accounts</p>
-                <p className="widget-value">
+                <p className={`widget-value ${getValueColor(
+                  accounts?.filter(acc => acc.status === 'active')
+                    .reduce((sum, acc) => sum + acc.startingBalance + (trades?.filter(t => t.accountId === acc.id).reduce((sum, trade) => sum + (trade.pnl || 0), 0) || 0), 0) || 0
+                )}`}>
                   {formatCurrency(
                     accounts?.filter(acc => acc.status === 'active')
                       .reduce((sum, acc) => sum + acc.startingBalance + (trades?.filter(t => t.accountId === acc.id).reduce((sum, trade) => sum + (trade.pnl || 0), 0) || 0), 0) || 0
@@ -1122,7 +1146,7 @@ export default function Dashboard() {
             <div className="widget-content">
               <div className="widget-left">
                 <p className="widget-label">Total Working Hours</p>
-                <p className="widget-value">
+                <p className="widget-value text-white">
                   {((trades?.length || 0) * 2.5).toFixed(1)} Hrs
                 </p>
                 <p className="widget-description">
@@ -1878,28 +1902,14 @@ export default function Dashboard() {
             </div>
             <div className="flex gap-2 pt-4">
               <Button
-                onClick={async () => {
+                onClick={() => {
                   if (!newWage || isNaN(parseFloat(newWage))) return;
-                  try {
-                    await fetch('/api/users/update-wage', {
-                      method: 'POST',
-                      headers: {
-                        'Content-Type': 'application/json',
-                      },
-                      body: JSON.stringify({
-                        personalHourlyWage: parseFloat(newWage),
-                      }),
-                    });
-                    setShowWageModal(false);
-                    // Refresh user data
-                    window.location.reload();
-                  } catch (error) {
-                    console.error('Error updating wage:', error);
-                  }
+                  updateWageMutation.mutate(parseFloat(newWage));
                 }}
+                disabled={updateWageMutation.isPending}
                 className="bg-blue-600 hover:bg-blue-700 flex-1"
               >
-                Save Wage
+                {updateWageMutation.isPending ? 'Saving...' : 'Save Wage'}
               </Button>
               <Button
                 variant="outline"
