@@ -715,25 +715,20 @@ export default function Dashboard() {
             <div className="widget-content">
               <div className="widget-left">
                 <p className="widget-label">Personal Hourly Wages</p>
-                <p className="widget-value">
+                <p className={`widget-value ${getValueColor(combinedAnalytics?.totalPnl || 0)}`}>
                   {(() => {
-                    const hourlyWage = user?.personalHourlyWage || 25; // Default $25/hour
-                    const uniqueDays = new Set(trades?.map(t => t.date.split('T')[0])).size || 0;
-                    const totalHours = Math.min(uniqueDays * 8, 24 * uniqueDays);
-                    const requiredEarnings = totalHours * hourlyWage;
                     const actualEarnings = combinedAnalytics?.totalPnl || 0;
-                    const isProfit = actualEarnings >= requiredEarnings;
-                    
-                    return isProfit ? 
+                    return actualEarnings >= 0 ? 
                       `✅ ${formatCurrency(actualEarnings)} earned` :
-                      `❌ ${formatCurrency(requiredEarnings)} needed`;
+                      `❌ ${formatCurrency(Math.abs(actualEarnings))} lost`;
                   })()}
                 </p>
                 <p className="widget-description">
                   {(() => {
                     const hourlyWage = user?.personalHourlyWage || 25;
                     const uniqueDays = new Set(trades?.map(t => t.date.split('T')[0])).size || 0;
-                    const totalHours = Math.min(uniqueDays * 8, 24 * uniqueDays);
+                    const totalHours = uniqueDays * 8; // 8 hours per trading day
+                    const totalEarnings = hourlyWage * totalHours;
                     return `${formatCurrency(hourlyWage)}/hr × ${totalHours.toFixed(1)} hrs`;
                   })()}
                 </p>
@@ -919,55 +914,38 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* Stats Row - Active accounts, Realized payouts, Failed accounts */}
+        {/* Active Account & Disciplinary Score Widget */}
         <div className="widget-grid mb-6">
-          {/* Active Accounts */}
-          <div className="widget-container">
+          <div className="widget-container col-span-full">
             <div className="widget-content">
               <div className="widget-left">
-                <p className="widget-label">Active Accounts</p>
-                <p className="widget-value">
-                  {accounts?.filter(acc => acc.status === 'active' || acc.status === 'funded').length || 0}
+                <p className="widget-label">Active Account & Disciplinary Score</p>
+                <div className="flex items-center space-x-6 mt-2">
+                  <div className="flex items-center space-x-2">
+                    <CheckCircle className="h-5 w-5 text-green-400" />
+                    <span className="text-white font-medium">
+                      {accounts?.filter(acc => acc.status === 'active' || acc.status === 'funded').length || 0} Active
+                    </span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Brain className="h-5 w-5 text-blue-400" />
+                    <span className={`font-bold text-lg ${getScoreColor(Math.round(combinedAnalytics?.disciplinedScore || 86))}`}>
+                      {Math.round(combinedAnalytics?.disciplinedScore || 86)}% Discipline
+                    </span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <AlertTriangle className="h-5 w-5 text-red-400" />
+                    <span className="text-white font-medium">
+                      {accounts?.filter(acc => acc.status === 'failed').length || 0} Failed
+                    </span>
+                  </div>
+                </div>
+                <p className="widget-description mt-2">
+                  Trading performance and behavioral analysis • {formatCurrency(calculateTotalAvailablePayouts())} payouts ready
                 </p>
-                <p className="widget-description">Currently trading</p>
               </div>
               <div className="widget-icon-square">
-                <CheckCircle className="widget-icon" />
-              </div>
-            </div>
-          </div>
-
-          {/* Realized Payouts */}
-          <div className="widget-container">
-            <div className="widget-content">
-              <div className="widget-left">
-                <p className="widget-label">Realized Payouts</p>
-                <p className="widget-value">
-                  {formatCurrency(
-                    accounts?.filter(acc => acc.status === 'withdrawn')
-                      .reduce((sum, acc) => sum + (acc.currentBalance - acc.startingBalance), 0) || 0
-                  )}
-                </p>
-                <p className="widget-description">Total earnings withdrawn</p>
-              </div>
-              <div className="widget-icon-square">
-                <Banknote className="widget-icon" />
-              </div>
-            </div>
-          </div>
-
-          {/* Failed Accounts */}
-          <div className="widget-container">
-            <div className="widget-content">
-              <div className="widget-left">
-                <p className="widget-label">Failed Accounts</p>
-                <p className="widget-value">
-                  {accounts?.filter(acc => acc.status === 'failed').length || 0}
-                </p>
-                <p className="widget-description">Accounts that broke rules</p>
-              </div>
-              <div className="widget-icon-square">
-                <AlertTriangle className="widget-icon" />
+                <Target className="widget-icon" />
               </div>
             </div>
           </div>
@@ -1281,133 +1259,48 @@ export default function Dashboard() {
 
 
 
-        {/* Disciplined Trading Analysis */}
+        {/* Recent Trades Section */}
         <div className="mb-6">
           <h2 className="text-xl font-bold text-gradient-rainbow mb-6 flex items-center border-b border-gray-700 pb-3">
-            <Brain className="mr-3 h-5 w-5 text-indigo-400" />
-            Disciplined Trading Analysis
+            <Activity className="mr-3 h-5 w-5 text-green-400" />
+            Recent Trading Activity
           </h2>
         </div>
 
-        {/* FIRST ROW: Active Accounts & Recent Trades */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-          <div className="widget-container">
-            <div className="widget-content flex-col">
-              <div className="widget-left mb-4">
-                <p className="widget-label">Active Accounts</p>
-                <p className="widget-description">Prop firm challenge and funded accounts</p>
-              </div>
-              <div className="space-y-4 w-full">
-                {accounts?.map((account) => (
-                  <div key={account.id} className="flex items-center justify-between p-4 bg-dark-surface rounded-lg border border-prop-gold/20">
-                    <div className="flex items-center">
-                      <div className={`w-10 h-10 rounded-lg flex items-center justify-center mr-4 ${
-                        account.type === 'funded' ? 'bg-success-green' : 
-                        account.currentBalance < account.startingBalance * 0.95 ? 'bg-warning-orange' : 'bg-primary'
-                      }`}>
-                        {account.type === 'funded' ? (
-                          <Target className="text-white h-5 w-5" />
-                        ) : (account.startingBalance + (trades?.filter(t => t.accountId === account.id).reduce((sum, trade) => sum + (trade.pnl || 0), 0) || 0)) < account.startingBalance * 0.95 ? (
-                          <AlertTriangle className="text-white h-5 w-5" />
-                        ) : (
-                          <TrendingDown className="text-white h-5 w-5" />
-                        )}
-                      </div>
-                      <div>
-                        <p className="font-medium text-white">{account.name}</p>
-                        <p className="text-sm text-gray-400">{account.type} • {account.firm}</p>
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <p className="font-bold text-white">{formatCurrency(account.startingBalance + (trades?.filter(t => t.accountId === account.id).reduce((sum, trade) => sum + (trade.pnl || 0), 0) || 0))}</p>
-                      <p className={`text-sm ${
-                        (trades?.filter(t => t.accountId === account.id).reduce((sum, trade) => sum + (trade.pnl || 0), 0) || 0) >= 0 ? 'text-success-green' : 'text-error-red'
-                      }`}>
-                        {(trades?.filter(t => t.accountId === account.id).reduce((sum, trade) => sum + (trade.pnl || 0), 0) || 0) >= 0 ? '+' : ''}{formatCurrency(trades?.filter(t => t.accountId === account.id).reduce((sum, trade) => sum + (trade.pnl || 0), 0) || 0)}
-                      </p>
-                    </div>
-                  </div>
-                ))}
-              </div>
+        <div className="widget-container mb-6">
+          <div className="widget-content flex-col">
+            <div className="widget-left mb-4">
+              <p className="widget-label">Latest Trades</p>
+              <p className="widget-description">Most recent trading activity</p>
             </div>
-          </div>
-
-          <div className="widget-container">
-            <div className="widget-content flex-col">
-              <div className="widget-left mb-4">
-                <p className="widget-label">Recent Trades</p>
-                <p className="widget-description">Latest trading activity</p>
-              </div>
-              <div className="space-y-4 w-full">
-                {trades?.slice(0, 5).map((trade) => (
-                  <div key={trade.id} className="flex items-center justify-between p-4 bg-dark-surface rounded-lg border border-prop-gold/20">
-                    <div className="flex items-center">
-                      <div className={`w-10 h-10 rounded-lg flex items-center justify-center mr-4 ${
-                        trade.pnl > 0 ? 'bg-success-green' : trade.pnl < 0 ? 'bg-error-red' : 'bg-gray-600'
-                      }`}>
-                        {trade.pnl > 0 ? (
-                          <TrendingUp className="text-white h-5 w-5" />
-                        ) : trade.pnl < 0 ? (
-                          <TrendingDown className="text-white h-5 w-5" />
-                        ) : (
-                          <Target className="text-white h-5 w-5" />
-                        )}
-                      </div>
-                      <div>
-                        <p className="font-medium text-white">{trade.symbol}</p>
-                        <p className="text-sm text-gray-400">{trade.side} • {trade.date}</p>
-                      </div>
+            <div className="space-y-4 w-full">
+              {trades?.slice(0, 5).map((trade) => (
+                <div key={trade.id} className="flex items-center justify-between p-4 bg-dark-surface rounded-lg border border-prop-gold/20">
+                  <div className="flex items-center">
+                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center mr-4 ${
+                      trade.pnl > 0 ? 'bg-success-green' : trade.pnl < 0 ? 'bg-error-red' : 'bg-gray-600'
+                    }`}>
+                      {trade.pnl > 0 ? (
+                        <TrendingUp className="text-white h-5 w-5" />
+                      ) : trade.pnl < 0 ? (
+                        <TrendingDown className="text-white h-5 w-5" />
+                      ) : (
+                        <Target className="text-white h-5 w-5" />
+                      )}
                     </div>
-                    <div className="text-right">
-                      <p className={`font-bold ${
-                        trade.pnl > 0 ? 'text-success-green' : trade.pnl < 0 ? 'text-error-red' : 'text-gray-400'
-                      }`}>
-                        {formatCurrency(trade.pnl)}
-                      </p>
-                      <p className="text-sm text-gray-400">{trade.quantity} shares</p>
+                    <div>
+                      <p className="font-medium text-white">{trade.symbol}</p>
+                      <p className="text-sm text-gray-400">{trade.side} • {trade.date}</p>
                     </div>
                   </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Active Account Disciplined Analysis Row */}
-        <div className="mb-6">
-          <div className="widget-container">
-            <div className="widget-content flex-col">
-              <div className="widget-left mb-4">
-                <p className="widget-label">Account Discipline Analysis</p>
-                <p className="widget-description">Performance by account</p>
-              </div>
-              <div className="w-full">
-                {accounts && accounts.length > 0 && trades && trades.length > 0 ? (
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    {accounts.map(account => {
-                      const accountTrades = trades.filter(t => t.accountId === account.id);
-                      const disciplinedAnalysis = calculateDisciplinedScore(account, accountTrades);
-                      
-                      return (
-                        <div key={account.id} className="text-center p-4 bg-dark-surface rounded-lg border border-prop-gold/20">
-                          <p className="text-xs text-gray-400 mb-1">{account.name}</p>
-                          <p className={`text-2xl font-bold mb-1 ${getGradeColor(disciplinedAnalysis.scoreGrade)}`}>
-                            {disciplinedAnalysis.disciplinedScore.toFixed(0)}%
-                          </p>
-                          <p className={`text-sm font-semibold ${getGradeColor(disciplinedAnalysis.scoreGrade)}`}>
-                            Grade {disciplinedAnalysis.scoreGrade}
-                          </p>
-                          <p className="text-xs text-gray-400 mt-1">
-                            {disciplinedAnalysis.totalTrades} trades • {disciplinedAnalysis.violationsCount} violations
-                          </p>
-                        </div>
-                      );
-                    })}
+                  <div className="text-right">
+                    <p className={`font-bold ${getValueColor(trade.pnl)}`}>
+                      {formatCurrency(trade.pnl)}
+                    </p>
+                    <p className="text-sm text-gray-400">{trade.quantity} shares</p>
                   </div>
-                ) : (
-                  <p className="text-gray-400">No trading data available for disciplined score analysis</p>
-                )}
-              </div>
+                </div>
+              ))}
             </div>
           </div>
         </div>
