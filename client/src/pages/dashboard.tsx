@@ -750,32 +750,7 @@ export default function Dashboard() {
 
 
 
-          {/* Active Trading Days Widget */}
-          <div className="widget-container">
-            <div className="widget-content">
-              <div className="widget-left">
-                <p className="widget-label">Active Trading Days</p>
-                <p className="widget-value">
-                  {(() => {
-                    const uniqueDays = new Set(trades?.map(t => t.date.split('T')[0])).size || 0;
-                    const totalHours = Math.min(uniqueDays * 8, 24 * uniqueDays); // Cap at 24 hours per day
-                    const avgHoursPerDay = uniqueDays > 0 ? (totalHours / uniqueDays).toFixed(1) : 0;
-                    return `${totalHours.toFixed(1)} Hrs`;
-                  })()}
-                </p>
-                <p className="widget-description">
-                  {(() => {
-                    const uniqueDays = new Set(trades?.map(t => t.date.split('T')[0])).size || 0;
-                    const avgHoursPerDay = uniqueDays > 0 ? (Math.min(uniqueDays * 8, 24 * uniqueDays) / uniqueDays).toFixed(1) : 0;
-                    return `${uniqueDays} trading days × ${avgHoursPerDay} hrs avg`;
-                  })()}
-                </p>
-              </div>
-              <div className="widget-icon-square">
-                <Calendar className="widget-icon" />
-              </div>
-            </div>
-          </div>
+
         </div>
 
 
