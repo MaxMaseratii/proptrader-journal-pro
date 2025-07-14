@@ -888,22 +888,79 @@ export default function Dashboard() {
 
         {/* Stats Row - Active accounts, Disciplinary Score, Realized payouts, Failed accounts */}
         <div className="widget-grid mb-6">
-          {/* Active Accounts - Simple Widget */}
+          {/* Account Discipline Analysis - Combined Widget */}
           <div className="widget-container">
-            <div className="widget-content">
-              <div className="widget-left">
-                <p className="widget-label">Active Accounts</p>
-                <p className="widget-value">
-                  {accounts?.filter(acc => acc.status === 'active' || acc.status === 'funded').length || 0}
-                </p>
-                <p className="widget-description">
-                  <span className={getValueColor(combinedAnalytics?.disciplinedScore || 0)}>
-                    {(combinedAnalytics?.disciplinedScore || 0).toFixed(1)}% discipline
-                  </span>
-                </p>
+            <div className="widget-content flex-col">
+              <div className="widget-left mb-4">
+                <p className="widget-label">Account Discipline Analysis</p>
+                <p className="widget-description">Trading behavior & account activity</p>
               </div>
-              <div className="widget-icon-square">
-                <Activity className="widget-icon" />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* Active Accounts Section */}
+                <div className="bg-dark-surface rounded-lg p-4">
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center">
+                      <Activity className="h-5 w-5 text-prop-gold mr-2" />
+                      <h3 className="text-sm font-medium text-white">Active Accounts</h3>
+                    </div>
+                    <span className="text-2xl font-bold text-prop-gold">
+                      {accounts?.filter(acc => acc.status === 'active' || acc.status === 'funded').length || 0}
+                    </span>
+                  </div>
+                  <div className="text-xs text-gray-400">
+                    {accounts?.filter(acc => acc.status === 'active').length || 0} active • {accounts?.filter(acc => acc.status === 'funded').length || 0} funded
+                  </div>
+                </div>
+
+                {/* Discipline Score Section */}
+                <div className="bg-dark-surface rounded-lg p-4">
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center">
+                      <Brain className="h-5 w-5 text-prop-gold mr-2" />
+                      <h3 className="text-sm font-medium text-white">Discipline Score</h3>
+                    </div>
+                    <span className={`text-2xl font-bold ${getValueColor(combinedAnalytics?.disciplinedScore || 0)}`}>
+                      {(combinedAnalytics?.disciplinedScore || 0).toFixed(1)}%
+                    </span>
+                  </div>
+                  <div className="text-xs text-gray-400">
+                    {combinedAnalytics?.disciplinedScore >= 80 ? 'Excellent' : 
+                     combinedAnalytics?.disciplinedScore >= 60 ? 'Good' : 
+                     combinedAnalytics?.disciplinedScore >= 40 ? 'Needs Work' : 'Critical'}
+                  </div>
+                </div>
+
+                {/* Risk Violations Section */}
+                <div className="bg-dark-surface rounded-lg p-4">
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center">
+                      <AlertTriangle className="h-5 w-5 text-prop-gold mr-2" />
+                      <h3 className="text-sm font-medium text-white">Risk Violations</h3>
+                    </div>
+                    <span className="text-2xl font-bold text-red-400">
+                      {combinedAnalytics?.riskViolations || 0}
+                    </span>
+                  </div>
+                  <div className="text-xs text-gray-400">
+                    This month
+                  </div>
+                </div>
+
+                {/* Stop Loss Respect Section */}
+                <div className="bg-dark-surface rounded-lg p-4">
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center">
+                      <Shield className="h-5 w-5 text-prop-gold mr-2" />
+                      <h3 className="text-sm font-medium text-white">SL Respect</h3>
+                    </div>
+                    <span className={`text-2xl font-bold ${getValueColor(combinedAnalytics?.stopLossRespectRate || 0)}`}>
+                      {(combinedAnalytics?.stopLossRespectRate || 0).toFixed(0)}%
+                    </span>
+                  </div>
+                  <div className="text-xs text-gray-400">
+                    Stop loss adherence
+                  </div>
+                </div>
               </div>
             </div>
           </div>
