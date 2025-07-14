@@ -16,41 +16,6 @@ export const SimpleChart: React.FC<SimpleChartProps> = ({
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [hoveredTrade, setHoveredTrade] = useState<Trade | null>(null);
   const [mousePos, setMousePos] = useState<{x: number, y: number} | null>(null);
-  
-  const handleMouseMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    
-    const rect = canvas.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-    
-    setMousePos({ x, y });
-    
-    // Check if mouse is hovering over a trade point
-    const padding = 40;
-    const chartWidth = rect.width - (padding * 2);
-    
-    let closestTrade = null;
-    let minDistance = Infinity;
-    
-    trades.forEach((trade, index) => {
-      const tradeX = padding + (chartWidth * index / (trades.length - 1));
-      const distance = Math.abs(x - tradeX);
-      
-      if (distance < 20 && distance < minDistance) {
-        minDistance = distance;
-        closestTrade = trade;
-      }
-    });
-    
-    setHoveredTrade(closestTrade);
-  };
-  
-  const handleMouseLeave = () => {
-    setHoveredTrade(null);
-    setMousePos(null);
-  };
 
   useEffect(() => {
     if (!canvasRef.current || trades.length === 0) return;
@@ -174,7 +139,7 @@ export const SimpleChart: React.FC<SimpleChartProps> = ({
   }
 
   return (
-    <div className="w-full bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 rounded-lg p-4 border border-gray-700 relative">
+    <div className="w-full bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 rounded-lg p-4 border border-gray-700">
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-lg font-semibold text-white flex items-center">
           <span className="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
@@ -210,32 +175,7 @@ export const SimpleChart: React.FC<SimpleChartProps> = ({
         ref={canvasRef} 
         className="w-full rounded-lg border border-gray-600"
         style={{ height: `${height - 80}px` }}
-        onMouseMove={handleMouseMove}
-        onMouseLeave={handleMouseLeave}
       />
-      
-      {/* Hover Tooltip */}
-      {hoveredTrade && mousePos && (
-        <div 
-          className="absolute bg-gray-800 border border-gray-600 rounded-lg p-3 pointer-events-none z-10"
-          style={{
-            left: mousePos.x + 10,
-            top: mousePos.y - 50,
-            transform: 'translate(0, -50%)'
-          }}
-        >
-          <div className="text-sm text-white">
-            <div className="font-semibold">{hoveredTrade.symbol}</div>
-            <div className="text-gray-300">{new Date(hoveredTrade.date).toLocaleDateString()}</div>
-            <div className={`font-bold ${hoveredTrade.pnl && hoveredTrade.pnl > 0 ? 'text-green-400' : 'text-red-400'}`}>
-              P&L: {hoveredTrade.pnl ? `$${hoveredTrade.pnl.toFixed(2)}` : 'N/A'}
-            </div>
-            <div className="text-gray-400 text-xs">
-              Entry: ${hoveredTrade.entryPrice || 'N/A'} | Exit: ${hoveredTrade.exitPrice || 'N/A'}
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };
