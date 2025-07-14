@@ -103,6 +103,10 @@ export default function Dashboard() {
     queryKey: ["/api/auth/user"],
   });
 
+  const { data: spending } = useQuery({
+    queryKey: ["/api/spending"],
+  });
+
   // Wage update mutation
   const updateWageMutation = useMutation({
     mutationFn: async (personalHourlyWage: number) => {
@@ -1130,17 +1134,14 @@ export default function Dashboard() {
           <div className="widget-container">
             <div className="widget-content">
               <div className="widget-left">
-                <p className="widget-label">Total Combined</p>
+                <p className="widget-label">Manual Spending</p>
                 <p className="widget-value">
-                  {formatCurrency(
-                    (accounts?.reduce((sum, acc) => sum + (acc.accountCost || 0), 0) || 0) +
-                    (accounts?.reduce((sum, acc) => sum + (acc.activationCost || 0), 0) || 0)
-                  )}
+                  {formatCurrency(spending?.reduce((sum, s) => sum + s.amount, 0) || 0)}
                 </p>
-                <p className="widget-description">Total investment in trading</p>
+                <p className="widget-description">Additional manual entries</p>
               </div>
               <div className="widget-icon-square">
-                <TrendingUp className="widget-icon" />
+                <Plus className="widget-icon" />
               </div>
             </div>
           </div>
@@ -1148,14 +1149,23 @@ export default function Dashboard() {
           <div className="widget-container">
             <div className="widget-content">
               <div className="widget-left">
-                <p className="widget-label">Total Payout</p>
-                <p className={`widget-value ${calculateTotalAvailablePayouts() > 0 ? 'text-green-400' : 'text-prop-gold'}`}>
-                  {formatCurrency(calculateTotalAvailablePayouts())}
+                <p className="widget-label">Total Combined</p>
+                <p className={`widget-value ${(() => {
+                  const total = (accounts?.reduce((sum, acc) => sum + (acc.accountCost || 0), 0) || 0) +
+                               (accounts?.reduce((sum, acc) => sum + (acc.activationCost || 0), 0) || 0) +
+                               (spending?.reduce((sum, s) => sum + s.amount, 0) || 0);
+                  return total > 0 ? 'text-red-400' : 'text-white';
+                })()}`}>
+                  {formatCurrency(
+                    (accounts?.reduce((sum, acc) => sum + (acc.accountCost || 0), 0) || 0) +
+                    (accounts?.reduce((sum, acc) => sum + (acc.activationCost || 0), 0) || 0) +
+                    (spending?.reduce((sum, s) => sum + s.amount, 0) || 0)
+                  )}
                 </p>
-                <p className="widget-description">Received payouts</p>
+                <p className="widget-description">Total investment in trading</p>
               </div>
               <div className="widget-icon-square">
-                <DollarSign className="widget-icon" />
+                <TrendingUp className="widget-icon" />
               </div>
             </div>
           </div>
