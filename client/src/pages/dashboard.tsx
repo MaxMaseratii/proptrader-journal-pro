@@ -969,13 +969,15 @@ export default function Dashboard() {
                   
                   const hourlyWage = user?.personalHourlyWage || 25;
                   const uniqueDays = new Set(filteredTrades.map(t => t.date.split('T')[0])).size || 0;
-                  const totalTradingHours = uniqueDays * 8; // No cap - if 3 days, then 24 hours total
+                  const totalTradingHours = uniqueDays * 8; // 8 hours per trading day
+                  const totalPnl = filteredTrades.reduce((sum, trade) => sum + (trade.pnl || 0), 0);
                   const expectedEarnings = hourlyWage * totalTradingHours;
+                  const actualPerformance = totalPnl - expectedEarnings; // Actual PnL vs expected wages
                   
                   return (
                     <div>
-                      <p className="widget-value text-white">
-                        {formatCurrency(expectedEarnings)}
+                      <p className={`widget-value ${actualPerformance >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                        {formatCurrency(actualPerformance)}
                       </p>
                       <Button
                         variant="outline"
@@ -989,7 +991,7 @@ export default function Dashboard() {
                         Set Hourly Wage
                       </Button>
                       <p className="widget-description text-xs">
-                        Based on {user?.personalHourlyWage ? `${formatCurrency(user.personalHourlyWage)}/hr` : '$25.00/hr'} × {totalTradingHours.toFixed(1)} hours
+                        Target: {formatCurrency(expectedEarnings)} ({formatCurrency(hourlyWage)}/hr × {totalTradingHours.toFixed(1)} hours)
                       </p>
                     </div>
                   );
@@ -1805,10 +1807,23 @@ export default function Dashboard() {
               <div className="widget-left">
                 <p className="widget-label">Total Working Hours</p>
                 <p className="widget-value text-white">
-                  {((combinedAnalytics?.totalTrades || 0) * 2.5).toFixed(1)} Hrs
+                  {(() => {
+                    const filteredTrades = selectedAccountIds.length > 0
+                      ? trades?.filter(t => selectedAccountIds.includes(t.accountId)) || []
+                      : trades || [];
+                    const uniqueDays = new Set(filteredTrades.map(t => t.date.split('T')[0])).size || 0;
+                    const totalHours = uniqueDays * 8; // 8 hours per trading day
+                    return totalHours.toFixed(1);
+                  })()} Hrs
                 </p>
                 <p className="widget-description">
-                  Based on {combinedAnalytics?.totalTrades || 0} trades × 2.5 Hrs avg duration
+                  {(() => {
+                    const filteredTrades = selectedAccountIds.length > 0
+                      ? trades?.filter(t => selectedAccountIds.includes(t.accountId)) || []
+                      : trades || [];
+                    const uniqueDays = new Set(filteredTrades.map(t => t.date.split('T')[0])).size || 0;
+                    return `Based on ${uniqueDays} trading days × 8 hours per day`;
+                  })()}
                 </p>
               </div>
               <div className="widget-icon-square">
