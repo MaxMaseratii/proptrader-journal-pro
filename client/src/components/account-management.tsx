@@ -579,187 +579,214 @@ export default function AccountManagement({ accounts }: AccountManagementProps) 
                             </p>
                           </div>
                           
-                          <div className="bg-gray-800 p-4 rounded-lg">
+                          <div className="bg-gray-800 p-4 rounded-lg space-y-6">
                             <h3 className="text-lg font-semibold text-white mb-4">Configure Funded Account Settings:</h3>
+                            
+                            {/* Account Setup */}
                             <div className="space-y-4">
+                              <h4 className="text-md font-medium text-green-400">Account Setup</h4>
                               <div className="grid grid-cols-2 gap-4">
-                              <div>
-                                <Label className="text-gray-300">Starting Balance ($)</Label>
-                                <Input
-                                  type="number"
-                                  value={fundedAccountSettings.startingBalance}
-                                  onChange={(e) => setFundedAccountSettings({
-                                    ...fundedAccountSettings,
-                                    startingBalance: e.target.value
-                                  })}
-                                  className="bg-gray-700 border-gray-600 text-white"
-                                  placeholder="0"
-                                />
-                              </div>
-                              <div>
-                                <Label className="text-gray-300">Profit Target ($)</Label>
-                                <Input
-                                  type="number"
-                                  value={fundedAccountSettings.profitTarget}
-                                  onChange={(e) => setFundedAccountSettings({
-                                    ...fundedAccountSettings,
-                                    profitTarget: e.target.value
-                                  })}
-                                  className="bg-gray-700 border-gray-600 text-white"
-                                  placeholder="0"
-                                />
-                              </div>
-                              <div>
-                                <Label className="text-gray-300">Max Drawdown ($)</Label>
-                                <Input
-                                  type="number"
-                                  value={fundedAccountSettings.maxDrawdown}
-                                  onChange={(e) => setFundedAccountSettings({
-                                    ...fundedAccountSettings,
-                                    maxDrawdown: e.target.value
-                                  })}
-                                  className="bg-gray-700 border-gray-600 text-white"
-                                  placeholder="0"
-                                />
-                              </div>
-                              <div>
-                                <Label className="text-gray-300">Daily Loss Limit ($)</Label>
-                                <Input
-                                  type="number"
-                                  value={fundedAccountSettings.dailyLossLimit}
-                                  onChange={(e) => setFundedAccountSettings({
-                                    ...fundedAccountSettings,
-                                    dailyLossLimit: e.target.value
-                                  })}
-                                  className="bg-gray-700 border-gray-600 text-white"
-                                  placeholder="0"
-                                />
-                              </div>
-                              <div>
-                                <Label className="text-gray-300">Days Required for Payout</Label>
-                                <Input
-                                  type="number"
-                                  value={fundedAccountSettings.daysRequiredForPayout}
-                                  onChange={(e) => setFundedAccountSettings({
-                                    ...fundedAccountSettings,
-                                    daysRequiredForPayout: e.target.value
-                                  })}
-                                  className="bg-gray-700 border-gray-600 text-white"
-                                  placeholder="5"
-                                />
-                              </div>
-                              <div>
-                                <Label className="text-gray-300">Minimum Winning Day ($)</Label>
-                                <Input
-                                  type="number"
-                                  value={fundedAccountSettings.winningDayMinimum}
-                                  onChange={(e) => setFundedAccountSettings({
-                                    ...fundedAccountSettings,
-                                    winningDayMinimum: e.target.value
-                                  })}
-                                  className="bg-gray-700 border-gray-600 text-white"
-                                  placeholder="200"
-                                />
-                              </div>
-                              <div>
-                                <Label className="text-gray-300">Profit Split (%)</Label>
-                                <Input
-                                  type="number"
-                                  value={fundedAccountSettings.profitSplit}
-                                  onChange={(e) => setFundedAccountSettings({
-                                    ...fundedAccountSettings,
-                                    profitSplit: e.target.value
-                                  })}
-                                  className="bg-gray-700 border-gray-600 text-white"
-                                  placeholder="80"
-                                />
-                              </div>
-                              <div>
-                                <Label className="text-gray-300">Maximum Payout Allowed ($)</Label>
-                                <Input
-                                  type="number"
-                                  value={fundedAccountSettings.maximumPayoutAmount}
-                                  onChange={(e) => setFundedAccountSettings({
-                                    ...fundedAccountSettings,
-                                    maximumPayoutAmount: e.target.value
-                                  })}
-                                  className="bg-gray-700 border-gray-600 text-white"
-                                  placeholder="5000"
-                                />
-                              </div>
-                              <div>
-                                <Label className="text-gray-300">Maximum Payout Per Account ($)</Label>
-                                <Input
-                                  type="number"
-                                  value={fundedAccountSettings.maximumPayoutPerAccount}
-                                  onChange={(e) => setFundedAccountSettings({
-                                    ...fundedAccountSettings,
-                                    maximumPayoutPerAccount: e.target.value
-                                  })}
-                                  className="bg-gray-700 border-gray-600 text-white"
-                                  placeholder="10000"
-                                />
-                              </div>
-                              <div>
-                                <Label className="text-gray-300">Minimum Payout Amount ($)</Label>
-                                <Input
-                                  type="number"
-                                  value={fundedAccountSettings.minimumPayoutAmount}
-                                  onChange={(e) => setFundedAccountSettings({
-                                    ...fundedAccountSettings,
-                                    minimumPayoutAmount: e.target.value
-                                  })}
-                                  className="bg-gray-700 border-gray-600 text-white"
-                                  placeholder="100"
-                                />
-                              </div>
-                              <div>
-                                <Label className="text-gray-300">Max Net Balance for Payout ($)</Label>
-                                <Input
-                                  type="number"
-                                  value={fundedAccountSettings.maxNetBalanceForPayout}
-                                  onChange={(e) => setFundedAccountSettings({
-                                    ...fundedAccountSettings,
-                                    maxNetBalanceForPayout: e.target.value
-                                  })}
-                                  className="bg-gray-700 border-gray-600 text-white"
-                                  placeholder="2000"
-                                />
-                              </div>
-                              <div>
-                                <Label className="text-gray-300">Consistency Rules Percentage (%)</Label>
-                                <Input
-                                  type="number"
-                                  value={fundedAccountSettings.consistencyRulePercent}
-                                  onChange={(e) => setFundedAccountSettings({
-                                    ...fundedAccountSettings,
-                                    consistencyRulePercent: e.target.value
-                                  })}
-                                  className="bg-gray-700 border-gray-600 text-white"
-                                  placeholder="50"
-                                />
+                                <div>
+                                  <Label className="text-gray-300">Starting Balance ($)</Label>
+                                  <Input
+                                    type="number"
+                                    value={fundedAccountSettings.startingBalance}
+                                    onChange={(e) => setFundedAccountSettings({
+                                      ...fundedAccountSettings,
+                                      startingBalance: e.target.value
+                                    })}
+                                    className="bg-gray-700 border-gray-600 text-white"
+                                    placeholder="0"
+                                  />
+                                </div>
+                                <div>
+                                  <Label className="text-gray-300">Profit Target ($)</Label>
+                                  <Input
+                                    type="number"
+                                    value={fundedAccountSettings.profitTarget}
+                                    onChange={(e) => setFundedAccountSettings({
+                                      ...fundedAccountSettings,
+                                      profitTarget: e.target.value
+                                    })}
+                                    className="bg-gray-700 border-gray-600 text-white"
+                                    placeholder="0"
+                                  />
+                                </div>
+                                <div>
+                                  <Label className="text-gray-300">Max Drawdown ($)</Label>
+                                  <Input
+                                    type="number"
+                                    value={fundedAccountSettings.maxDrawdown}
+                                    onChange={(e) => setFundedAccountSettings({
+                                      ...fundedAccountSettings,
+                                      maxDrawdown: e.target.value
+                                    })}
+                                    className="bg-gray-700 border-gray-600 text-white"
+                                    placeholder="0"
+                                  />
+                                </div>
+                                <div>
+                                  <Label className="text-gray-300">Daily Loss Limit ($)</Label>
+                                  <Input
+                                    type="number"
+                                    value={fundedAccountSettings.dailyLossLimit}
+                                    onChange={(e) => setFundedAccountSettings({
+                                      ...fundedAccountSettings,
+                                      dailyLossLimit: e.target.value
+                                    })}
+                                    className="bg-gray-700 border-gray-600 text-white"
+                                    placeholder="0"
+                                  />
+                                </div>
                               </div>
                             </div>
-                            <div>
-                              <Label className="text-gray-300">Payout Frequency</Label>
-                              <Select value={fundedAccountSettings.payoutFrequency} onValueChange={(value) => 
-                                setFundedAccountSettings({
-                                  ...fundedAccountSettings,
-                                  payoutFrequency: value
-                                })
-                              }>
-                                <SelectTrigger className="bg-gray-700 border-gray-600 text-white">
-                                  <SelectValue />
-                                </SelectTrigger>
-                                <SelectContent className="bg-gray-700 border-gray-600">
-                                  <SelectItem value="weekly">Weekly</SelectItem>
-                                  <SelectItem value="bi-weekly">Bi-weekly</SelectItem>
-                                  <SelectItem value="monthly">Monthly</SelectItem>
-                                  <SelectItem value="on-demand">On-demand</SelectItem>
-                                </SelectContent>
-                              </Select>
+
+                            {/* Payout Settings */}
+                            <div className="space-y-4">
+                              <h4 className="text-md font-medium text-yellow-400">Payout Settings</h4>
+                              <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                  <Label className="text-gray-300">Days Required for Payout</Label>
+                                  <Input
+                                    type="number"
+                                    value={fundedAccountSettings.daysRequiredForPayout}
+                                    onChange={(e) => setFundedAccountSettings({
+                                      ...fundedAccountSettings,
+                                      daysRequiredForPayout: e.target.value
+                                    })}
+                                    className="bg-gray-700 border-gray-600 text-white"
+                                    placeholder="5"
+                                  />
+                                </div>
+                                <div>
+                                  <Label className="text-gray-300">Minimum Winning Day ($)</Label>
+                                  <Input
+                                    type="number"
+                                    value={fundedAccountSettings.winningDayMinimum}
+                                    onChange={(e) => setFundedAccountSettings({
+                                      ...fundedAccountSettings,
+                                      winningDayMinimum: e.target.value
+                                    })}
+                                    className="bg-gray-700 border-gray-600 text-white"
+                                    placeholder="200"
+                                  />
+                                </div>
+                                <div>
+                                  <Label className="text-gray-300">Profit Split (%)</Label>
+                                  <Input
+                                    type="number"
+                                    value={fundedAccountSettings.profitSplit}
+                                    onChange={(e) => setFundedAccountSettings({
+                                      ...fundedAccountSettings,
+                                      profitSplit: e.target.value
+                                    })}
+                                    className="bg-gray-700 border-gray-600 text-white"
+                                    placeholder="80"
+                                  />
+                                </div>
+                                <div>
+                                  <Label className="text-gray-300">Payout Frequency</Label>
+                                  <Select value={fundedAccountSettings.payoutFrequency} onValueChange={(value) => 
+                                    setFundedAccountSettings({
+                                      ...fundedAccountSettings,
+                                      payoutFrequency: value
+                                    })
+                                  }>
+                                    <SelectTrigger className="bg-gray-700 border-gray-600 text-white">
+                                      <SelectValue />
+                                    </SelectTrigger>
+                                    <SelectContent className="bg-gray-700 border-gray-600">
+                                      <SelectItem value="weekly">Weekly</SelectItem>
+                                      <SelectItem value="bi-weekly">Bi-weekly</SelectItem>
+                                      <SelectItem value="monthly">Monthly</SelectItem>
+                                      <SelectItem value="on-demand">On-demand</SelectItem>
+                                    </SelectContent>
+                                  </Select>
+                                </div>
+                              </div>
                             </div>
-                          </div>
+
+                            {/* Payout Limits */}
+                            <div className="space-y-4">
+                              <h4 className="text-md font-medium text-blue-400">Payout Limits</h4>
+                              <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                  <Label className="text-gray-300">Maximum Payout Allowed ($)</Label>
+                                  <Input
+                                    type="number"
+                                    value={fundedAccountSettings.maximumPayoutAmount}
+                                    onChange={(e) => setFundedAccountSettings({
+                                      ...fundedAccountSettings,
+                                      maximumPayoutAmount: e.target.value
+                                    })}
+                                    className="bg-gray-700 border-gray-600 text-white"
+                                    placeholder="5000"
+                                  />
+                                </div>
+                                <div>
+                                  <Label className="text-gray-300">Maximum Payout Per Account ($)</Label>
+                                  <Input
+                                    type="number"
+                                    value={fundedAccountSettings.maximumPayoutPerAccount}
+                                    onChange={(e) => setFundedAccountSettings({
+                                      ...fundedAccountSettings,
+                                      maximumPayoutPerAccount: e.target.value
+                                    })}
+                                    className="bg-gray-700 border-gray-600 text-white"
+                                    placeholder="10000"
+                                  />
+                                </div>
+                                <div>
+                                  <Label className="text-gray-300">Minimum Payout Amount ($)</Label>
+                                  <Input
+                                    type="number"
+                                    value={fundedAccountSettings.minimumPayoutAmount}
+                                    onChange={(e) => setFundedAccountSettings({
+                                      ...fundedAccountSettings,
+                                      minimumPayoutAmount: e.target.value
+                                    })}
+                                    className="bg-gray-700 border-gray-600 text-white"
+                                    placeholder="100"
+                                  />
+                                </div>
+                                <div>
+                                  <Label className="text-gray-300">Max Net Balance for Payout ($)</Label>
+                                  <Input
+                                    type="number"
+                                    value={fundedAccountSettings.maxNetBalanceForPayout}
+                                    onChange={(e) => setFundedAccountSettings({
+                                      ...fundedAccountSettings,
+                                      maxNetBalanceForPayout: e.target.value
+                                    })}
+                                    className="bg-gray-700 border-gray-600 text-white"
+                                    placeholder="2000"
+                                  />
+                                </div>
+                              </div>
+                            </div>
+
+                            {/* Consistency Rules */}
+                            <div className="space-y-4">
+                              <h4 className="text-md font-medium text-purple-400">Consistency Rules</h4>
+                              <div className="grid grid-cols-1 gap-4">
+                                <div>
+                                  <Label className="text-gray-300">Consistency Rules Percentage (%)</Label>
+                                  <Input
+                                    type="number"
+                                    value={fundedAccountSettings.consistencyRulePercent}
+                                    onChange={(e) => setFundedAccountSettings({
+                                      ...fundedAccountSettings,
+                                      consistencyRulePercent: e.target.value
+                                    })}
+                                    className="bg-gray-700 border-gray-600 text-white"
+                                    placeholder="50"
+                                  />
+                                  <p className="text-xs text-gray-400 mt-1">
+                                    Your best trading day must be below this % of your profit target
+                                  </p>
+                                </div>
+                              </div>
+                            </div>
                           </div>
                           <div className="flex justify-end gap-3">
                             <Button 
