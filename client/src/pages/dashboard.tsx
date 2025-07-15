@@ -709,12 +709,12 @@ export default function Dashboard() {
                         className={`
                           relative p-3 rounded-lg border transition-all duration-300 h-56
                           ${isToday 
-                            ? 'border-gold bg-gradient-to-br from-gold/20 via-gold/10 to-transparent shadow-lg shadow-gold/30' 
-                            : 'border-gray-600 bg-gradient-to-br from-gray-800/80 via-gray-700/50 to-gray-800/30'
+                            ? 'border-gold bg-gradient-to-br from-slate-800/95 via-slate-700/80 to-slate-800/90 shadow-lg shadow-gold/30' 
+                            : 'border-slate-600 bg-gradient-to-br from-slate-800/95 via-slate-700/80 to-slate-800/90'
                           }
                           ${dayTrades.length > 0 
-                            ? 'hover:scale-105 cursor-pointer hover:border-gold hover:shadow-lg hover:shadow-gold/40 hover:bg-gradient-to-br hover:from-gold/15 hover:via-gold/8 hover:to-transparent' 
-                            : 'hover:border-gray-500 hover:shadow-md hover:shadow-gray-500/20'
+                            ? 'hover:scale-105 cursor-pointer hover:border-gold hover:shadow-lg hover:shadow-gold/40 hover:bg-gradient-to-br hover:from-slate-700/90 hover:via-slate-600/70 hover:to-slate-700/85' 
+                            : 'hover:border-slate-500 hover:shadow-md hover:shadow-slate-500/20'
                           }
                         `}
                       >
@@ -737,7 +737,7 @@ export default function Dashboard() {
                             </div>
                             
                             <div className="flex justify-between">
-                              <span className="text-gray-300">Reward Ratio:</span>
+                              <span className="text-gray-300">RR:</span>
                               <span className="text-blue-300 font-medium">{avgRewardRatio.toFixed(1)} RR</span>
                             </div>
                             
