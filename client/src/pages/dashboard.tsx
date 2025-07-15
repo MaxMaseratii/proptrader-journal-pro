@@ -1036,6 +1036,11 @@ export default function Dashboard() {
                     ? trades?.filter(t => selectedAccountIds.includes(t.accountId)) || []
                     : trades || [];
                   
+                  console.log('Dashboard Discipline Widget Debug:');
+                  console.log('selectedAccountIds:', selectedAccountIds);
+                  console.log('all trades:', trades?.length);
+                  console.log('filteredTrades:', filteredTrades.length);
+                  
                   if (filteredTrades.length === 0) {
                     return (
                       <div className="discipline-breakdown space-y-1">
