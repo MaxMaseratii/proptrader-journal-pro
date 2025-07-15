@@ -798,33 +798,7 @@ export default function Dashboard() {
             </div>
           </div>
 
-          {/* Daily P&L */}
-          <div className="widget-container">
-            <div className="widget-content">
-              <div className="widget-left">
-                <p className="widget-label">Daily P&L</p>
-                <p className={`widget-value ${getValueColor(
-                  (() => {
-                    const today = new Date().toISOString().split('T')[0];
-                    const todayTrades = trades?.filter(trade => trade.date === today) || [];
-                    return todayTrades.reduce((sum, trade) => sum + trade.pnl, 0);
-                  })()
-                )}`}>
-                  {formatCurrency(
-                    (() => {
-                      const today = new Date().toISOString().split('T')[0];
-                      const todayTrades = trades?.filter(trade => trade.date === today) || [];
-                      return todayTrades.reduce((sum, trade) => sum + trade.pnl, 0);
-                    })()
-                  )}
-                </p>
-                <p className="widget-description">Today's performance</p>
-              </div>
-              <div className="widget-icon-square">
-                <TrendingDown className="widget-icon" />
-              </div>
-            </div>
-          </div>
+
 
           {/* Total P&L */}
           <div className="widget-container">
@@ -930,59 +904,9 @@ export default function Dashboard() {
 
         {/* ROW 3: RISK & PLANNING */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 mb-3">
-          {/* Risk Management */}
-          <div className="widget-container">
-            <div className="widget-content">
-              <div className="widget-left">
-                <p className="widget-label">Risk Management</p>
-                <div className="risk-metrics space-y-1">
-                  <div className="daily-risk flex justify-between">
-                    <span className="text-sm">Daily:</span>
-                    <span className="text-sm">
-                      {formatCurrency(combinedAnalytics?.dailyRiskUsed || 0)} / {formatCurrency(combinedAnalytics?.dailyRiskLimit || 0)}
-                    </span>
-                  </div>
-                  <div className="drawdown-risk flex justify-between">
-                    <span className="text-sm">Drawdown:</span>
-                    <span className="text-sm">
-                      {formatCurrency(combinedAnalytics?.currentDrawdown || 0)} / {formatCurrency(combinedAnalytics?.maxDrawdown || 0)}
-                    </span>
-                  </div>
-                </div>
-                <p className="widget-description text-xs">No data available</p>
-              </div>
-              <div className="widget-icon-square">
-                <Shield className="widget-icon" />
-              </div>
-            </div>
-          </div>
 
-          {/* Plan vs Reality */}
-          <div className="widget-container">
-            <div className="widget-content">
-              <div className="widget-left">
-                <p className="widget-label">Plan vs Reality</p>
-                <div className="progress-bars space-y-1">
-                  <div className="target-progress">
-                    <div className="flex justify-between text-xs">
-                      <span>Target: {formatCurrency(0)}/day</span>
-                      <span>📊</span>
-                    </div>
-                  </div>
-                  <div className="actual-progress">
-                    <div className="flex justify-between text-xs">
-                      <span>Actual: {formatCurrency(combinedAnalytics?.totalPnl || 0)}</span>
-                      <span>✅</span>
-                    </div>
-                  </div>
-                </div>
-                <p className="widget-description text-xs">No data available</p>
-              </div>
-              <div className="widget-icon-square">
-                <Target className="widget-icon" />
-              </div>
-            </div>
-          </div>
+
+
 
 
 
@@ -1164,83 +1088,12 @@ export default function Dashboard() {
             </div>
           </div>
 
-          {/* Active Trading Days Widget */}
-          <div className="widget-container">
-            <div className="widget-content">
-              <div className="widget-left">
-                <p className="widget-label">Active Trading Days</p>
-                {(() => {
-                  const filteredTrades = selectedAccountIds.length > 0
-                    ? trades?.filter(t => selectedAccountIds.includes(t.accountId)) || []
-                    : trades || [];
-                  
-                  if (filteredTrades.length === 0) {
-                    return (
-                      <div>
-                        <p className="widget-value text-gray-400">0 Hrs</p>
-                        <p className="widget-description text-xs">No trading activity</p>
-                      </div>
-                    );
-                  }
-                  
-                  const uniqueDays = new Set(filteredTrades.map(t => t.date.split('T')[0])).size || 0;
-                  const totalHours = Math.min(uniqueDays * 8, 24 * uniqueDays); // Cap at 24 hours per day
-                  const avgHoursPerDay = uniqueDays > 0 ? (totalHours / uniqueDays).toFixed(1) : 0;
-                  
-                  return (
-                    <div>
-                      <p className="widget-value">
-                        {totalHours.toFixed(1)} Hrs
-                      </p>
-                      <p className="widget-description text-xs">
-                        {uniqueDays} trading days × {avgHoursPerDay} hrs avg
-                      </p>
-                    </div>
-                  );
-                })()}
-              </div>
-              <div className="widget-icon-square">
-                <Calendar className="widget-icon" />
-              </div>
-            </div>
-          </div>
+
         </div>
 
         {/* ROW 5: ACTIVE ACCOUNTS & ANALYSIS */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 mb-3">
-          {/* Active Accounts */}
-          <div className="widget-container">
-            <div className="widget-content">
-              <div className="widget-left">
-                <p className="widget-label">Active Accounts</p>
-                <div className="accounts-grid grid grid-cols-1 gap-2">
-                  {combinedAnalytics?.accounts?.slice(0, 3).map((account) => {
-                    const accountTrades = trades?.filter(t => t.accountId === account.id) || [];
-                    const accountPnl = accountTrades.reduce((sum, trade) => sum + (trade.pnl || 0), 0);
-                    return (
-                      <div key={account.id} className="account-card bg-gray-800 rounded p-2">
-                        <div className="flex justify-between items-start">
-                          <div className="account-info">
-                            <h4 className="font-medium text-sm text-white">{account.name}</h4>
-                            <p className="text-xs text-gray-400">{account.firm}</p>
-                          </div>
-                          <div className="account-balance text-right">
-                            <p className={`text-sm font-semibold ${getValueColor(account.startingBalance + accountPnl)}`}>
-                              {formatCurrency(account.startingBalance + accountPnl)}
-                            </p>
-                            <p className="text-xs text-gray-400">{account.type}</p>
-                          </div>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-                <p className="widget-description text-xs mt-2">
-                  {combinedAnalytics?.accounts?.length || 0} selected accounts
-                </p>
-              </div>
-            </div>
-          </div>
+
 
           {/* Account Discipline Analysis */}
           <div className="widget-container">
@@ -1371,89 +1224,7 @@ export default function Dashboard() {
 
         {/* ROW 6: TRADING ANALYSIS & CALENDAR */}
         <div className="widget-grid row-6 mb-6">
-          {/* Trading Analysis Calendar */}
-          <div className="widget-container col-span-2">
-            <div className="widget-content">
-              <div className="widget-left">
-                <p className="widget-label">Trading Analysis Calendar</p>
-                <div className="calendar-compact">
-                  <div className="calendar-header flex justify-between items-center mb-2">
-                    <button 
-                      onClick={() => {
-                        const newDate = new Date(calendarDate);
-                        newDate.setMonth(newDate.getMonth() - 1);
-                        setCalendarDate(newDate);
-                      }}
-                      className="text-white hover:text-blue-400 transition-colors"
-                    >
-                      ← 
-                    </button>
-                    <span className="text-white font-semibold text-sm">
-                      {calendarDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
-                    </span>
-                    <button 
-                      onClick={() => {
-                        const newDate = new Date(calendarDate);
-                        newDate.setMonth(newDate.getMonth() + 1);
-                        setCalendarDate(newDate);
-                      }}
-                      className="text-white hover:text-blue-400 transition-colors"
-                    >
-                      →
-                    </button>
-                  </div>
-                  <div className="calendar-grid grid grid-cols-7 gap-1">
-                    {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
-                      <div key={day} className="calendar-day-header text-center text-xs text-gray-400 py-1">
-                        {day}
-                      </div>
-                    ))}
-                    {(() => {
-                      const firstDayOfMonth = new Date(calendarDate.getFullYear(), calendarDate.getMonth(), 1);
-                      const lastDayOfMonth = new Date(calendarDate.getFullYear(), calendarDate.getMonth() + 1, 0);
-                      const firstDayWeekday = firstDayOfMonth.getDay();
-                      const daysInMonth = lastDayOfMonth.getDate();
-                      
-                      const calendarDays = [];
-                      
-                      // Empty cells for days before the first day of the month
-                      for (let i = 0; i < firstDayWeekday; i++) {
-                        calendarDays.push(
-                          <div key={`empty-${i}`} className="calendar-day-empty h-6"></div>
-                        );
-                      }
-                      
-                      // Days of the month
-                      for (let day = 1; day <= daysInMonth; day++) {
-                        const dateStr = `${calendarDate.getFullYear()}-${String(calendarDate.getMonth() + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-                        
-                        // Filter trades by selected accounts first, then by date
-                        const filteredTrades = selectedAccountIds.length > 0
-                          ? trades?.filter(t => selectedAccountIds.includes(t.accountId)) || []
-                          : trades || [];
-                        
-                        const dayTrades = filteredTrades.filter(t => t.date.startsWith(dateStr));
-                        const dayPnl = dayTrades.reduce((sum, trade) => sum + (trade.pnl || 0), 0);
-                        
-                        calendarDays.push(
-                          <div key={day} className="calendar-day h-6 text-center text-xs flex flex-col justify-center">
-                            <span className="text-white">{day}</span>
-                            {dayTrades.length > 0 && (
-                              <span className={`text-xs ${getValueColor(dayPnl)}`}>
-                                {dayPnl > 0 ? '+' : ''}{dayPnl.toFixed(0)}
-                              </span>
-                            )}
-                          </div>
-                        );
-                      }
-                      
-                      return calendarDays;
-                    })()}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+
 
           {/* Trading Charts Preview */}
           <div className="widget-container col-span-2">
@@ -2065,43 +1836,7 @@ export default function Dashboard() {
 
         {/* First Row: Risk Management, Daily Trade Limit, Disciplined Score */}
         <div className="widget-grid mb-6">
-          {/* Risk Management */}
-          <div className="widget-container">
-            <div className="widget-content">
-              <div className="widget-left">
-                <p className="widget-label">Risk Management</p>
-                <p className="widget-value text-warning-orange">
-                  {(() => {
-                    if (selectedAccountIds.length === 0) return formatCurrency(0);
-                    if (selectedAccountIds.length === 1) {
-                      const account = accounts?.find(a => a.id === selectedAccountIds[0]);
-                      return formatCurrency(account?.riskPerTrade || 0);
-                    }
-                    // For multiple accounts, show average risk per trade
-                    const selectedAccounts = accounts?.filter(a => selectedAccountIds.includes(a.id)) || [];
-                    const totalRisk = selectedAccounts.reduce((sum, acc) => sum + (acc.riskPerTrade || 0), 0);
-                    return formatCurrency(totalRisk / selectedAccounts.length || 0);
-                  })()}
-                </p>
-                <p className="widget-description">
-                  Per trade / {(() => {
-                    if (selectedAccountIds.length === 0) return formatCurrency(0);
-                    if (selectedAccountIds.length === 1) {
-                      const account = accounts?.find(a => a.id === selectedAccountIds[0]);
-                      return formatCurrency(account?.dailyLossLimit || 0);
-                    }
-                    // For multiple accounts, show average daily limit
-                    const selectedAccounts = accounts?.filter(a => selectedAccountIds.includes(a.id)) || [];
-                    const totalLimit = selectedAccounts.reduce((sum, acc) => sum + (acc.dailyLossLimit || 0), 0);
-                    return formatCurrency(totalLimit / selectedAccounts.length || 0);
-                  })()} daily limit
-                </p>
-              </div>
-              <div className="widget-icon-square">
-                <Shield className="widget-icon" />
-              </div>
-            </div>
-          </div>
+
 
           {/* Daily Trade Limit */}
           <div className="widget-container">
