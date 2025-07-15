@@ -268,25 +268,46 @@ export default function MMMDisciplinaryAssistant({ trades, accounts, selectedAcc
       ));
     }
 
-    // Overall discipline score (weighted average with advanced factors)
-    const disciplineScore = (
-      riskManagementScore * 0.25 +
-      emotionalControlScore * 0.20 +
-      consistencyScore * 0.20 +
+    // Count failed accounts for discipline penalty calculation
+    const failedAccounts = accounts.filter(acc => acc.status === 'failed').length;
+    const totalAccountsCount = accounts.length;
+    
+    // Advanced discipline scoring with failed account integration
+    const failedAccountPenalty = failedAccounts > 0 ? Math.min(30, (failedAccounts / totalAccountsCount) * 40) : 0;
+    const failedAccountEmotionalPenalty = failedAccounts * 3; // 3 points per failed account
+    const failedAccountRiskPenalty = failedAccounts * 5; // 5 points per failed account
+    
+    // Apply failed account penalties to scores
+    const adjustedRiskManagementScore = Math.max(0, riskManagementScore - failedAccountRiskPenalty);
+    const adjustedEmotionalControlScore = Math.max(0, emotionalControlScore - failedAccountEmotionalPenalty);
+    const adjustedConsistencyScore = Math.max(0, consistencyScore - (failedAccounts * 2));
+    
+    // Overall discipline score (weighted average with advanced factors + failed account penalty)
+    const baseDisciplineScore = (
+      adjustedRiskManagementScore * 0.25 +
+      adjustedEmotionalControlScore * 0.20 +
+      adjustedConsistencyScore * 0.20 +
       marketAnalysisScore * 0.15 +
       timeManagementScore * 0.10 +
       learningScore * 0.10
     );
+    
+    const disciplineScore = Math.max(0, baseDisciplineScore - failedAccountPenalty);
+    
+    // Calculate excess losses including failed account costs
+    const tradingExcessLosses = (avgLoss * revengeTradesCount) + (avgLoss * fomoTradesCount * 0.5);
+    const failedAccountCosts = failedAccounts * 750; // Average cost per failed account
+    const totalExcessLosses = tradingExcessLosses + failedAccountCosts;
 
     return {
       totalTrades,
       winRate,
       disciplineScore,
-      riskManagementScore,
-      emotionalControlScore,
-      consistencyScore,
+      riskManagementScore: adjustedRiskManagementScore,
+      emotionalControlScore: adjustedEmotionalControlScore,
+      consistencyScore: adjustedConsistencyScore,
       stopModificationRate,
-      excessLosses: (avgLoss * revengeTradesCount) + (avgLoss * fomoTradesCount * 0.5),
+      excessLosses: totalExcessLosses,
       marketAnalysisScore,
       timeManagementScore,
       learningScore,
@@ -906,20 +927,20 @@ export default function MMMDisciplinaryAssistant({ trades, accounts, selectedAcc
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="bg-gradient-to-r from-prop-gradient-start to-prop-gradient-end border border-prop-gold/20 rounded-2xl p-6">
+      <div className="bg-dark-card border-dark-border rounded-2xl p-6 hover-glow">
         <div className="flex items-center space-x-4">
-          <div className="bg-prop-gradient-gold p-3 rounded-xl">
-            <Settings className="h-6 w-6 text-black" />
+          <div className="bg-prop-gradient-gold-discipline p-3 rounded-xl">
+            <Settings className="h-6 w-6 text-white" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-gradient-rainbow">MMM DISCIPLINARY ASSISTANT</h1>
+            <h1 className="text-2xl font-bold text-gradient-rainbow-discipline">MMM DISCIPLINARY ASSISTANT</h1>
             <p className="text-gray-300">Advanced Trading Psychology Analysis & Discipline Coaching</p>
           </div>
         </div>
       </div>
 
       {/* Account Selection */}
-      <Card className="bg-prop-card border-prop-gold/20">
+      <Card className="bg-dark-card border-dark-border hover-glow">
         <CardHeader>
           <CardTitle className="text-prop-gold">Select Trading Account</CardTitle>
         </CardHeader>
@@ -991,23 +1012,28 @@ export default function MMMDisciplinaryAssistant({ trades, accounts, selectedAcc
 
           <TabsContent value="system" className="space-y-6">
             {/* Overall Score */}
-            <Card className="bg-prop-card border-prop-gold/20">
+            <Card className="bg-dark-card border-dark-border hover-glow">
               <CardHeader>
-                <CardTitle className="text-prop-gold flex items-center">
-                  <Activity className="h-5 w-5 mr-2" />
-                  Overall Discipline Score
+                <CardTitle className="text-gradient-rainbow-discipline text-center">
+                  Trading Discipline System Assessment
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-center">
-                  <div className="text-5xl font-bold text-gradient-rainbow mb-2">
+                <div className="text-center space-y-4">
+                  <div className={`text-6xl font-bold ${disciplineData.disciplineScore >= 80 ? 'text-prop-green' : disciplineData.disciplineScore >= 60 ? 'text-prop-gold' : 'text-prop-pink'}`}>
                     {disciplineData.disciplineScore.toFixed(1)}
                   </div>
-                  <div className="text-lg text-gray-400">out of 100</div>
-                  <div className="mt-4">
-                    <Badge variant="outline" className={`${getScoreColor(disciplineData.disciplineScore)} border-current`}>
-                      {getScoreLevel(disciplineData.disciplineScore)}
-                    </Badge>
+                  <div className="text-xl text-gray-300">
+                    {disciplineData.disciplineScore >= 80 ? 'Professional' : disciplineData.disciplineScore >= 60 ? 'Developing' : 'Novice'} Trader
+                  </div>
+                  <div className="w-full bg-gray-700 rounded-full h-3">
+                    <div 
+                      className="h-3 rounded-full bg-prop-gradient-gold-discipline transition-all duration-300"
+                      style={{ width: `${disciplineData.disciplineScore}%` }}
+                    />
+                  </div>
+                  <div className="text-sm text-gray-400">
+                    Overall Discipline Assessment
                   </div>
                 </div>
               </CardContent>
@@ -1016,7 +1042,7 @@ export default function MMMDisciplinaryAssistant({ trades, accounts, selectedAcc
             {/* Discipline Areas */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {disciplineAreas.map((area) => (
-                <Card key={area.name} className="bg-prop-card border-prop-gold/20 hover:border-prop-gold/40 transition-all">
+                <Card key={area.name} className="bg-dark-card border-dark-border hover-glow">
                   <CardHeader className="pb-3">
                     <CardTitle className="text-prop-gold flex items-center text-lg">
                       {area.icon}

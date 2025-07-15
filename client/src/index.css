@@ -159,6 +159,13 @@
   --success-green: hsl(142, 76%, 36%);
   --warning-orange: hsl(25, 100%, 50%);
   --error-red: hsl(0, 84%, 60%);
+  
+  /* Discipline Analysis Colors - matching uploaded ZIP file */
+  --discipline-card: hsl(220, 26%, 14%);
+  --discipline-border: hsl(220, 13%, 26%);
+  --discipline-rainbow: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  --discipline-gold: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  --discipline-red: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
 }
 
 /* Dashboard Widget Styling */
@@ -455,6 +462,39 @@
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
+  }
+  
+  /* Discipline Analysis Specific Classes */
+  .bg-dark-card {
+    background: var(--discipline-card);
+    border: 1px solid var(--discipline-border);
+  }
+  
+  .border-dark-border {
+    border-color: var(--discipline-border);
+  }
+  
+  .text-gradient-rainbow-discipline {
+    background: var(--discipline-rainbow);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  
+  .bg-prop-gradient-gold-discipline {
+    background: var(--discipline-gold);
+  }
+  
+  .bg-prop-gradient-red-discipline {
+    background: var(--discipline-red);
+  }
+  
+  .hover-glow {
+    transition: all 0.3s ease;
+  }
+  
+  .hover-glow:hover {
+    box-shadow: 0 0 20px rgba(102, 126, 234, 0.3);
   }
 
   /* Smooth Animations */
