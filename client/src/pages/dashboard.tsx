@@ -606,7 +606,9 @@ export default function Dashboard() {
                     const today = new Date();
                     const dayOfWeek = today.getDay(); // 0 = Sunday, 1 = Monday, etc.
                     const startOfWeek = new Date(today);
-                    startOfWeek.setDate(today.getDate() - dayOfWeek);
+                    // Start week on Monday: if today is Sunday (0), go back 6 days; otherwise go back (dayOfWeek - 1) days
+                    const daysToSubtract = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
+                    startOfWeek.setDate(today.getDate() - daysToSubtract);
                     
                     const weekDays = [];
                     for (let i = 0; i < 7; i++) {
@@ -618,7 +620,7 @@ export default function Dashboard() {
                   };
 
                   const weekDays = getCurrentWeekDays();
-                  const dayLabels = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+                  const dayLabels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
                   
                   return weekDays.map((day, index) => {
                     const dayStr = day.toISOString().split('T')[0];
@@ -651,6 +653,7 @@ export default function Dashboard() {
                       : accounts || [];
                     
                     const maxDailyTrades = selectedAccounts.reduce((max, acc) => Math.max(max, acc.maxDailyTrades || 0), 0);
+                    const dailyTarget = selectedAccounts.reduce((sum, acc) => sum + (acc.profitTarget || 0), 0) / 30; // Monthly target / 30 days
                     
                     return (
                       <div 
@@ -685,6 +688,11 @@ export default function Dashboard() {
                             </div>
                             
                             <div className="flex justify-between">
+                              <span className="text-gray-400">Daily Target:</span>
+                              <span className="text-white">${dailyTarget.toFixed(2)}</span>
+                            </div>
+                            
+                            <div className="flex justify-between">
                               <span className="text-gray-400">Daily PNL:</span>
                               <span className={`font-semibold ${dayPnL >= 0 ? 'text-green-400' : 'text-red-400'}`}>
                                 {dayPnL >= 0 ? '+' : ''}${dayPnL.toFixed(2)}
@@ -702,7 +710,7 @@ export default function Dashboard() {
                             </div>
                             
                             <div className="flex justify-between">
-                              <span className="text-gray-400">Daily Discipline Score:</span>
+                              <span className="text-gray-400">Discipline Score:</span>
                               <span className="text-white">
                                 {dayTrades.length > 0 ? Math.round(Math.random() * 100) : 0}
                               </span>
