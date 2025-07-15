@@ -8,6 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Shield, Brain, Target, TrendingUp, Clock, BookOpen, AlertTriangle, CheckCircle, Activity, DollarSign, Database, Eye, Users, BarChart3, Calendar, FileText, Zap, RefreshCw, Star, TrendingDown, Award, Flame, Crosshair, Timer, Lightbulb, ChevronRight, X, Settings } from "lucide-react";
 import type { Trade, Account } from "@shared/schema";
+import { calculateComprehensiveDisciplineMetrics, type DisciplineMetrics as SharedDisciplineMetrics } from '@/lib/discipline-calculator';
 
 interface DisciplineMetrics {
   totalTrades: number;
@@ -105,7 +106,7 @@ export default function MMMDisciplinaryAssistant({ trades, accounts, selectedAcc
   const [psychologicalProfile, setPsychologicalProfile] = useState<PsychologicalProfile | null>(null);
   const [activeTab, setActiveTab] = useState("system");
 
-  const calculateComprehensiveDisciplineMetrics = (accountTrades: Trade[]): DisciplineMetrics => {
+  const calculateComprehensiveDisciplineMetricsOld = (accountTrades: Trade[]): DisciplineMetrics => {
     if (accountTrades.length === 0) {
       return {
         totalTrades: 0,
@@ -599,7 +600,7 @@ export default function MMMDisciplinaryAssistant({ trades, accounts, selectedAcc
         ? trades 
         : trades.filter(t => t.accountId === parseInt(selectedAccount));
       
-      const metrics = calculateComprehensiveDisciplineMetrics(filteredTrades);
+      const metrics = calculateComprehensiveDisciplineMetrics(filteredTrades, accounts, selectedAccount);
       const patterns = calculateTradingPatterns(filteredTrades);
       const psychology = calculatePsychologicalProfile(filteredTrades, metrics.disciplineScore);
       

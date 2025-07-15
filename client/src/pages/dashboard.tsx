@@ -15,6 +15,7 @@ import { Label } from "@/components/ui/label";
 import { EquityChart, MonthlyPerformanceChart } from "@/components/chart-components";
 import { formatCurrency, formatPercentage, formatDate } from "@/lib/utils";
 import { calculateDisciplinedScore, getScoreColor, getGradeColor } from "@/lib/disciplined-score";
+import { calculateComprehensiveDisciplineMetrics } from "@/lib/discipline-calculator";
 
 // Color coding utility function
 const getValueColor = (value: number, type: 'currency' | 'percentage' | 'neutral' = 'currency') => {
@@ -1030,7 +1031,7 @@ export default function Dashboard() {
               <div className="widget-left">
                 <p className="widget-label">Account Discipline Analysis</p>
                 {(() => {
-                  // Calculate discipline metrics using same algorithm as MMM Disciplinary Coach
+                  // Use the EXACT same discipline calculation as MMM Disciplinary Coach
                   const filteredTrades = selectedAccountIds.length > 0
                     ? trades?.filter(t => selectedAccountIds.includes(t.accountId)) || []
                     : trades || [];
@@ -1045,50 +1046,30 @@ export default function Dashboard() {
                     );
                   }
                   
-                  const totalTrades = filteredTrades.length;
-                  const winningTrades = filteredTrades.filter(t => (t.pnl || 0) > 0);
-                  const winRate = winningTrades.length / totalTrades;
-                  
-                  // Risk management analysis
-                  const overRiskedTrades = filteredTrades.filter(t => {
-                    const riskAmount = Math.abs((t.entryPrice || 0) - (t.initialStopLoss || 0)) * (t.quantity || 1);
-                    return riskAmount > 1000;
-                  }).length;
-                  
-                  const riskManagementScore = Math.max(0, 100 - (overRiskedTrades / totalTrades) * 100);
-                  
-                  // Stop loss violations
-                  const stopLossViolations = filteredTrades.filter(t => 
-                    t.initialStopLoss && t.finalStopLoss && t.initialStopLoss !== t.finalStopLoss
-                  ).length;
-                  const stopLossRespect = Math.max(0, 100 - (stopLossViolations / totalTrades) * 100);
-                  
-                  // Profit target analysis
-                  const profitTargetHits = filteredTrades.filter(t => 
-                    t.initialTakeProfit && t.exitPrice && Math.abs(t.exitPrice - t.initialTakeProfit) < 10
-                  ).length;
-                  const profitTargetHitRate = (profitTargetHits / totalTrades) * 100;
-                  
-                  const overallScore = (riskManagementScore + stopLossRespect + profitTargetHitRate) / 3;
+                  const disciplineMetrics = calculateComprehensiveDisciplineMetrics(
+                    filteredTrades,
+                    accounts || [],
+                    selectedAccountIds.length === 1 ? selectedAccountIds[0].toString() : undefined
+                  );
                   
                   return (
                     <div className="discipline-breakdown space-y-1">
                       <div className="risk-management flex justify-between">
                         <span className="text-sm">Risk Management:</span>
-                        <span className={`text-sm font-semibold ${riskManagementScore >= 80 ? 'text-green-400' : riskManagementScore >= 60 ? 'text-yellow-400' : 'text-red-400'}`}>
-                          {riskManagementScore.toFixed(0)}%
+                        <span className={`text-sm font-semibold ${disciplineMetrics.riskManagementScore >= 80 ? 'text-green-400' : disciplineMetrics.riskManagementScore >= 60 ? 'text-yellow-400' : 'text-red-400'}`}>
+                          {disciplineMetrics.riskManagementScore.toFixed(0)}%
                         </span>
                       </div>
                       <div className="stop-loss-respect flex justify-between">
-                        <span className="text-sm">Stop Loss Respect:</span>
-                        <span className={`text-sm font-semibold ${stopLossRespect >= 80 ? 'text-green-400' : stopLossRespect >= 60 ? 'text-yellow-400' : 'text-red-400'}`}>
-                          {stopLossRespect.toFixed(0)}%
+                        <span className="text-sm">Emotional Control:</span>
+                        <span className={`text-sm font-semibold ${disciplineMetrics.emotionalControlScore >= 80 ? 'text-green-400' : disciplineMetrics.emotionalControlScore >= 60 ? 'text-yellow-400' : 'text-red-400'}`}>
+                          {disciplineMetrics.emotionalControlScore.toFixed(0)}%
                         </span>
                       </div>
                       <div className="profit-target flex justify-between">
-                        <span className="text-sm">Profit Target Hit:</span>
-                        <span className={`text-sm font-semibold ${profitTargetHitRate >= 60 ? 'text-green-400' : profitTargetHitRate >= 40 ? 'text-yellow-400' : 'text-red-400'}`}>
-                          {profitTargetHitRate.toFixed(0)}%
+                        <span className="text-sm">Consistency:</span>
+                        <span className={`text-sm font-semibold ${disciplineMetrics.consistencyScore >= 60 ? 'text-green-400' : disciplineMetrics.consistencyScore >= 40 ? 'text-yellow-400' : 'text-red-400'}`}>
+                          {disciplineMetrics.consistencyScore.toFixed(0)}%
                         </span>
                       </div>
                     </div>
@@ -1102,35 +1083,20 @@ export default function Dashboard() {
                     
                     if (filteredTrades.length === 0) return 'No data';
                     
-                    const totalTrades = filteredTrades.length;
-                    const winningTrades = filteredTrades.filter(t => (t.pnl || 0) > 0);
-                    const winRate = winningTrades.length / totalTrades;
-                    
-                    const overRiskedTrades = filteredTrades.filter(t => {
-                      const riskAmount = Math.abs((t.entryPrice || 0) - (t.initialStopLoss || 0)) * (t.quantity || 1);
-                      return riskAmount > 1000;
-                    }).length;
-                    
-                    const riskManagementScore = Math.max(0, 100 - (overRiskedTrades / totalTrades) * 100);
-                    const stopLossViolations = filteredTrades.filter(t => 
-                      t.initialStopLoss && t.finalStopLoss && t.initialStopLoss !== t.finalStopLoss
-                    ).length;
-                    const stopLossRespect = Math.max(0, 100 - (stopLossViolations / totalTrades) * 100);
-                    const profitTargetHits = filteredTrades.filter(t => 
-                      t.initialTakeProfit && t.exitPrice && Math.abs(t.exitPrice - t.initialTakeProfit) < 10
-                    ).length;
-                    const profitTargetHitRate = (profitTargetHits / totalTrades) * 100;
-                    
-                    const overallScore = (riskManagementScore + stopLossRespect + profitTargetHitRate) / 3;
+                    const disciplineMetrics = calculateComprehensiveDisciplineMetrics(
+                      filteredTrades,
+                      accounts || [],
+                      selectedAccountIds.length === 1 ? selectedAccountIds[0].toString() : undefined
+                    );
                     
                     let grade = 'F';
-                    if (overallScore >= 90) grade = 'A+';
-                    else if (overallScore >= 80) grade = 'A';
-                    else if (overallScore >= 70) grade = 'B';
-                    else if (overallScore >= 60) grade = 'C';
-                    else if (overallScore >= 50) grade = 'D';
+                    if (disciplineMetrics.disciplineScore >= 90) grade = 'A+';
+                    else if (disciplineMetrics.disciplineScore >= 80) grade = 'A';
+                    else if (disciplineMetrics.disciplineScore >= 70) grade = 'B';
+                    else if (disciplineMetrics.disciplineScore >= 60) grade = 'C';
+                    else if (disciplineMetrics.disciplineScore >= 50) grade = 'D';
                     
-                    return `${overallScore.toFixed(0)}% ${grade} Grade`;
+                    return `${disciplineMetrics.disciplineScore.toFixed(0)}% ${grade} Grade`;
                   })()}
                 </p>
               </div>
