@@ -777,6 +777,53 @@ export default function Dashboard() {
           </div>
         </div>
 
+        {/* Daily Trading Journal - Moved to be right after Weekly Calendar */}
+        <div className="mb-8">
+          <h2 className="text-xl font-bold text-gradient-rainbow mb-6 flex items-center border-b border-gray-700 pb-3">
+            <Target className="mr-3 h-5 w-5 text-prop-gold" />
+            Daily Trading Journal
+          </h2>
+          <div className="widget-container">
+            <div className="widget-content flex-col">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                <div>
+                  <label className="block text-sm font-medium text-gray-400 mb-2">What went wrong today?</label>
+                  <Textarea 
+                    className="bg-dark-surface border-dark-border resize-none" 
+                    rows={3} 
+                    placeholder="Reflect on mistakes and lessons learned..."
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-400 mb-2">What went right today?</label>
+                  <Textarea 
+                    className="bg-dark-surface border-dark-border resize-none" 
+                    rows={3} 
+                    placeholder="Note successful strategies and decisions..."
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-400 mb-2">Tomorrow's improvement plan</label>
+                  <Textarea 
+                    className="bg-dark-surface border-dark-border resize-none" 
+                    rows={3} 
+                    placeholder="Set goals for tomorrow's session..."
+                  />
+                </div>
+              </div>
+              <div className="flex justify-between items-center">
+                <Link href="/journal">
+                  <Button variant="ghost" className="text-primary hover:text-blue-400">
+                    View Full Journal
+                  </Button>
+                </Link>
+                <Button className="bg-accent-orange hover:bg-orange-600">
+                  Save Journal Entry
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
 
         {/* COMPACT DASHBOARD: NO EMPTY SPACES */}
         
@@ -996,60 +1043,7 @@ export default function Dashboard() {
             </div>
           </div>
 
-          {/* Personal Hourly Wages */}
-          <div className="widget-container">
-            <div className="widget-content">
-              <div className="widget-left">
-                <p className="widget-label">Personal Hourly Wages</p>
-                {(() => {
-                  const filteredTrades = selectedAccountIds.length > 0
-                    ? trades?.filter(t => selectedAccountIds.includes(t.accountId)) || []
-                    : trades || [];
-                  
-                  if (filteredTrades.length === 0) {
-                    return (
-                      <div>
-                        <p className="widget-value text-gray-400">$0.00</p>
-                        <p className="widget-description text-xs">No trading hours logged</p>
-                      </div>
-                    );
-                  }
-                  
-                  const hourlyWage = user?.personalHourlyWage || 25;
-                  const uniqueDays = new Set(filteredTrades.map(t => t.date.split('T')[0])).size || 0;
-                  const totalTradingHours = uniqueDays * 8; // 8 hours per trading day
-                  const totalPnl = filteredTrades.reduce((sum, trade) => sum + (trade.pnl || 0), 0);
-                  const expectedEarnings = hourlyWage * totalTradingHours;
-                  const actualPerformance = totalPnl - expectedEarnings; // Actual PnL vs expected wages
-                  
-                  return (
-                    <div>
-                      <p className={`widget-value ${actualPerformance >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-                        {formatCurrency(actualPerformance)}
-                      </p>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => {
-                          setNewWage((user?.personalHourlyWage || 25).toString());
-                          setShowWageModal(true);
-                        }}
-                        className="mb-2 text-xs bg-blue-600 hover:bg-blue-700 text-white border-blue-600"
-                      >
-                        Set Hourly Wage
-                      </Button>
-                      <p className="widget-description text-xs">
-                        Target: {formatCurrency(expectedEarnings)} ({formatCurrency(hourlyWage)}/hr × {totalTradingHours.toFixed(1)} hours)
-                      </p>
-                    </div>
-                  );
-                })()}
-              </div>
-              <div className="widget-icon-square">
-                <Clock className="widget-icon" />
-              </div>
-            </div>
-          </div>
+
 
 
 
@@ -1406,7 +1400,26 @@ export default function Dashboard() {
 
         {/* Total Portfolio Value Row */}
         <div className="widget-grid mb-6">
-          {/* Total Portfolio Value */}
+
+
+
+
+
+        </div>
+
+
+
+        {/* Investment Tracking */}
+        <div className="mb-6">
+          <h2 className="text-xl font-bold text-gradient-rainbow mb-6 flex items-center border-b border-gray-700 pb-3">
+            <Shield className="mr-3 h-5 w-5 text-green-400" />
+            Investment Tracking
+          </h2>
+        </div>
+
+        {/* Investment Tracking & Working Hours Summary */}
+        <div className="widget-grid mb-6">
+          {/* Total Portfolio Value - Moved here */}
           <div className="widget-container">
             <div className="widget-content">
               <div className="widget-left">
@@ -1422,53 +1435,61 @@ export default function Dashboard() {
             </div>
           </div>
 
-          {/* Total Investment */}
+          {/* Personal Hourly Wages - Moved here */}
           <div className="widget-container">
             <div className="widget-content">
               <div className="widget-left">
-                <p className="widget-label">Total Investment</p>
-                <p className="widget-value">
-                  {formatCurrency(totalInvestment)}
-                </p>
-                <p className="widget-description">Selected accounts investment</p>
+                <p className="widget-label">Personal Hourly Wages</p>
+                {(() => {
+                  const filteredTrades = selectedAccountIds.length > 0
+                    ? trades?.filter(t => selectedAccountIds.includes(t.accountId)) || []
+                    : trades || [];
+                  
+                  if (filteredTrades.length === 0) {
+                    return (
+                      <div>
+                        <p className="widget-value text-gray-400">$0.00</p>
+                        <p className="widget-description text-xs">No trading hours logged</p>
+                      </div>
+                    );
+                  }
+                  
+                  const hourlyWage = user?.personalHourlyWage || 25;
+                  const uniqueDays = new Set(filteredTrades.map(t => t.date.split('T')[0])).size || 0;
+                  const totalTradingHours = uniqueDays * 8; // 8 hours per trading day
+                  const totalPnl = filteredTrades.reduce((sum, trade) => sum + (trade.pnl || 0), 0);
+                  const expectedEarnings = hourlyWage * totalTradingHours;
+                  const actualPerformance = totalPnl - expectedEarnings; // Actual PnL vs expected wages
+                  
+                  return (
+                    <div>
+                      <p className={`widget-value ${actualPerformance >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                        {formatCurrency(actualPerformance)}
+                      </p>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          setNewWage((user?.personalHourlyWage || 25).toString());
+                          setShowWageModal(true);
+                        }}
+                        className="mb-2 text-xs bg-blue-600 hover:bg-blue-700 text-white border-blue-600"
+                      >
+                        Set Hourly Wage
+                      </Button>
+                      <p className="widget-description text-xs">
+                        Target: {formatCurrency(expectedEarnings)} ({formatCurrency(hourlyWage)}/hr × {totalTradingHours.toFixed(1)} hours)
+                      </p>
+                    </div>
+                  );
+                })()}
               </div>
               <div className="widget-icon-square">
-                <TrendingUp className="widget-icon" />
+                <Clock className="widget-icon" />
               </div>
             </div>
           </div>
 
-          {/* Total Return */}
-          <div className="widget-container">
-            <div className="widget-content">
-              <div className="widget-left">
-                <p className="widget-label">Total Return</p>
-                <p className="widget-value">
-                  {formatCurrency(combinedAnalytics?.totalPnl || 0)}
-                </p>
-                <p className="widget-description">Profit/Loss from trading</p>
-              </div>
-              <div className="widget-icon-square">
-                <TrendingUp className="widget-icon" />
-              </div>
-            </div>
-          </div>
-        </div>
-
-
-
-        {/* Investment Tracking */}
-        <div className="mb-6">
-          <h2 className="text-xl font-bold text-gradient-rainbow mb-6 flex items-center border-b border-gray-700 pb-3">
-            <Shield className="mr-3 h-5 w-5 text-green-400" />
-            Investment Tracking
-          </h2>
-        </div>
-
-
-
-        {/* Investment Tracking & Working Hours Summary */}
-        <div className="widget-grid mb-6">
           <div className="widget-container">
             <div className="widget-content">
               <div className="widget-left">
@@ -2164,53 +2185,7 @@ export default function Dashboard() {
 
 
 
-        {/* Daily Trading Journal */}
-        <div className="mb-8">
-          <h2 className="text-xl font-bold text-gradient-rainbow mb-6 flex items-center border-b border-gray-700 pb-3">
-            <Target className="mr-3 h-5 w-5 text-prop-gold" />
-            Daily Trading Journal
-          </h2>
-          <div className="widget-container">
-            <div className="widget-content flex-col">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-                <div>
-                  <label className="block text-sm font-medium text-gray-400 mb-2">What went wrong today?</label>
-                  <Textarea 
-                    className="bg-dark-surface border-dark-border resize-none" 
-                    rows={3} 
-                    placeholder="Reflect on mistakes and lessons learned..."
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-400 mb-2">What went right today?</label>
-                  <Textarea 
-                    className="bg-dark-surface border-dark-border resize-none" 
-                    rows={3} 
-                    placeholder="Note successful strategies and decisions..."
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-400 mb-2">Tomorrow's improvement plan</label>
-                  <Textarea 
-                    className="bg-dark-surface border-dark-border resize-none" 
-                    rows={3} 
-                    placeholder="Set goals for tomorrow's session..."
-                  />
-                </div>
-              </div>
-              <div className="flex justify-between items-center">
-                <Link href="/journal">
-                  <Button variant="ghost" className="text-primary hover:text-blue-400">
-                    View Full Journal
-                  </Button>
-                </Link>
-                <Button className="bg-accent-orange hover:bg-orange-600">
-                  Save Journal Entry
-                </Button>
-              </div>
-            </div>
-          </div>
-        </div>
+
 
         {/* Trade Analysis Calendar */}
         <div className="mb-8">
