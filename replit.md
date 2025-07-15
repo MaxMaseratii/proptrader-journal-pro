@@ -417,6 +417,11 @@ Changelog:
   * Implemented proper account filtering throughout entire dashboard with immediate responsive updates
   * Resolved complete dashboard synchronization ensuring all widgets respect global account selection state
   * Dashboard now provides consistent, accurate data representation based on selected account(s)
+  * Fixed Personal Hourly Wages calculation to use correct formula (hourly wage × total working hours)
+  * Fixed Weekly Performance widget to use filtered trades based on account selection
+  * Implemented Trading Chart Preview hover functionality with mouse event handlers and trade detail tooltips
+  * Fixed Risk Management widget to use actual account data instead of hardcoded $500/$1500 values
+  * Risk Management now correctly shows account-specific risk per trade and daily loss limits
 - July 3, 2025. Critical User Experience Fixes:
   * Fixed PDF reports downloading as JSON files - now generates proper HTML reports instead of fallback JSON
   * Changed dashboard "Total Balance" display to "Net Balance" as requested by user

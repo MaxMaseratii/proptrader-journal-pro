@@ -2054,10 +2054,30 @@ export default function Dashboard() {
               <div className="widget-left">
                 <p className="widget-label">Risk Management</p>
                 <p className="widget-value text-warning-orange">
-                  {formatCurrency(500)}
+                  {(() => {
+                    if (selectedAccountIds.length === 0) return formatCurrency(0);
+                    if (selectedAccountIds.length === 1) {
+                      const account = accounts?.find(a => a.id === selectedAccountIds[0]);
+                      return formatCurrency(account?.riskPerTrade || 0);
+                    }
+                    // For multiple accounts, show average risk per trade
+                    const selectedAccounts = accounts?.filter(a => selectedAccountIds.includes(a.id)) || [];
+                    const totalRisk = selectedAccounts.reduce((sum, acc) => sum + (acc.riskPerTrade || 0), 0);
+                    return formatCurrency(totalRisk / selectedAccounts.length || 0);
+                  })()}
                 </p>
                 <p className="widget-description">
-                  Per trade / {formatCurrency(1500)} daily limit
+                  Per trade / {(() => {
+                    if (selectedAccountIds.length === 0) return formatCurrency(0);
+                    if (selectedAccountIds.length === 1) {
+                      const account = accounts?.find(a => a.id === selectedAccountIds[0]);
+                      return formatCurrency(account?.dailyLossLimit || 0);
+                    }
+                    // For multiple accounts, show average daily limit
+                    const selectedAccounts = accounts?.filter(a => selectedAccountIds.includes(a.id)) || [];
+                    const totalLimit = selectedAccounts.reduce((sum, acc) => sum + (acc.dailyLossLimit || 0), 0);
+                    return formatCurrency(totalLimit / selectedAccounts.length || 0);
+                  })()} daily limit
                 </p>
               </div>
               <div className="widget-icon-square">
