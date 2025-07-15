@@ -709,63 +709,60 @@ export default function Dashboard() {
                         className={`
                           relative p-4 rounded-lg border transition-all duration-300 h-56 overflow-hidden w-full
                           ${isToday 
-                            ? 'border-gold bg-gradient-to-br from-gray-900/90 via-gray-800/80 to-gray-900/90 shadow-lg shadow-gold/30' 
-                            : 'border-gray-600 bg-gradient-to-br from-gray-900/90 via-gray-800/80 to-gray-900/90'
+                            ? 'border-gold bg-gradient-to-br from-black/95 via-gray-900/90 to-black/95 shadow-lg shadow-gold/40' 
+                            : 'border-gray-700 bg-gradient-to-br from-black/95 via-gray-900/90 to-black/95'
                           }
-                          ${dayTrades.length > 0 
-                            ? 'hover:scale-105 cursor-pointer hover:border-gold hover:shadow-lg hover:shadow-gold/40 hover:bg-gradient-to-br hover:from-gray-800/90 hover:via-gray-700/80 hover:to-gray-800/90' 
-                            : 'hover:border-gray-500 hover:shadow-md hover:shadow-gray-500/20'
-                          }
+                          hover:border-gold hover:shadow-lg hover:shadow-gold/50 hover:bg-gradient-to-br hover:from-black/90 hover:via-gray-900/80 hover:to-black/90 cursor-pointer
                         `}
                       >
                         <div className="text-left h-full flex flex-col justify-between">
                           <div className="text-center mb-2">
-                            <div className="text-xs font-bold bg-gradient-to-r from-gold to-yellow-400 bg-clip-text text-transparent truncate">
+                            <div className="text-sm font-bold text-gold drop-shadow-lg truncate">
                               {dayLabels[index]} {day.getDate()}
                             </div>
                           </div>
                           
                           <div className="space-y-1 text-xs flex-1 overflow-hidden">
                             <div className="flex justify-between items-center">
-                              <span className="text-gray-300 truncate text-xs">Risk/Trade:</span>
-                              <span className="text-orange-300 font-medium text-xs ml-1 truncate">${avgRiskPerTrade.toFixed(0)}</span>
+                              <span className="text-gray-200 truncate text-xs">Risk/Trade:</span>
+                              <span className="text-orange-400 font-medium text-xs ml-1 truncate">${avgRiskPerTrade.toFixed(0)}</span>
                             </div>
                             
                             <div className="flex justify-between items-center">
-                              <span className="text-gray-300 truncate text-xs">Max. D Risk:</span>
-                              <span className="text-red-300 font-medium text-xs ml-1 truncate">${maxDailyRisk.toFixed(0)}</span>
+                              <span className="text-gray-200 truncate text-xs">Max. D Risk:</span>
+                              <span className="text-red-400 font-medium text-xs ml-1 truncate">${maxDailyRisk.toFixed(0)}</span>
                             </div>
                             
                             <div className="flex justify-between items-center">
-                              <span className="text-gray-300 truncate text-xs">Rewards:</span>
-                              <span className="text-blue-300 font-medium text-xs ml-1 truncate">{avgRewardRatio.toFixed(1)} RR</span>
+                              <span className="text-gray-200 truncate text-xs">Rewards:</span>
+                              <span className="text-blue-400 font-medium text-xs ml-1 truncate">{avgRewardRatio.toFixed(1)} RR</span>
                             </div>
                             
                             <div className="flex justify-between items-center">
-                              <span className="text-gray-300 truncate text-xs">Daily Target:</span>
-                              <span className="text-purple-300 font-medium text-xs ml-1 truncate">${dailyTarget.toFixed(2)}</span>
+                              <span className="text-gray-200 truncate text-xs">Daily Target:</span>
+                              <span className="text-purple-400 font-medium text-xs ml-1 truncate">${dailyTarget.toFixed(2)}</span>
                             </div>
                             
                             <div className="flex justify-between items-center">
-                              <span className="text-gray-300 truncate text-xs">Daily PNL:</span>
-                              <span className={`font-bold text-xs ml-1 truncate ${dayPnL >= 0 ? 'text-green-300' : 'text-red-300'}`}>
+                              <span className="text-gray-200 truncate text-xs">Daily PNL:</span>
+                              <span className={`font-bold text-xs ml-1 truncate ${dayPnL >= 0 ? 'text-green-400' : 'text-red-400'}`}>
                                 {dayPnL >= 0 ? '+' : ''}${dayPnL.toFixed(2)}
                               </span>
                             </div>
                             
                             <div className="flex justify-between items-center">
-                              <span className="text-gray-300 truncate text-xs">Max D Trades:</span>
-                              <span className="text-cyan-300 font-medium text-xs ml-1 truncate">{maxDailyTrades} T</span>
+                              <span className="text-gray-200 truncate text-xs">Max D Trades:</span>
+                              <span className="text-cyan-400 font-medium text-xs ml-1 truncate">{maxDailyTrades} T</span>
                             </div>
                             
                             <div className="flex justify-between items-center">
-                              <span className="text-gray-300 truncate text-xs">Total D Trades:</span>
-                              <span className="text-indigo-300 font-medium text-xs ml-1 truncate">{dayTrades.length} T</span>
+                              <span className="text-gray-200 truncate text-xs">Total D Trades:</span>
+                              <span className="text-indigo-400 font-medium text-xs ml-1 truncate">{dayTrades.length} T</span>
                             </div>
                             
                             <div className="flex justify-between items-center">
-                              <span className="text-gray-300 truncate text-xs">Disc. Score:</span>
-                              <span className="text-yellow-300 font-bold text-xs ml-1 truncate">
+                              <span className="text-gray-200 truncate text-xs">Disc. Score:</span>
+                              <span className="text-gold font-bold text-xs ml-1 truncate">
                                 {dayTrades.length > 0 ? Math.round(Math.random() * 100) : 0}
                               </span>
                             </div>
