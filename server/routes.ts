@@ -450,7 +450,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
             });
 
             // Parse trade data from completed trades CSV format
-            const symbol = (row.ContractName || row.Symbol || '').replace(/[^A-Z]/g, '');
+            const symbol = (row.ContractName || row.Symbol || 'UNKNOWN').replace(/[^A-Z]/g, '') || 'UNKNOWN';
             const side = (row.Type || row.Side || 'long').toLowerCase() === 'long' ? 'buy' : 'sell';
             const quantity = parseFloat(row.Size || row.Quantity) || 1;
             const entryPrice = parseFloat(row.EntryPrice || row['Entry Price']) || 0;
@@ -496,11 +496,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
               }
             }
 
-            // Only import trades that have valid data (skip canceled orders and orders with no prices)
-            const hasValidData = symbol && (entryPrice > 0 || exitPrice > 0);
-            const isNotCanceled = row.Status !== 'Canceled' && row.Status !== 'Cancelled';
+            // Import all trades, including those with empty symbols - let user decide what to keep
+            const shouldImport = row.Status !== 'Canceled' && row.Status !== 'Cancelled';
             
-            if (hasValidData && isNotCanceled) {
+            if (shouldImport) {
               const tradeData: InsertTrade = {
                 accountId: parseInt(accountId),
                 symbol,
@@ -518,7 +517,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
               await storage.createTrade(tradeData);
               recordsImported++;
             } else {
-              console.log(`Skipping row ${i}: symbol=${symbol}, entryPrice=${entryPrice}, exitPrice=${exitPrice}, pnl=${pnl}, status=${row.Status}`);
+              console.log(`Skipping row ${i}: status=${row.Status} (canceled order)`);
             }
 
           } catch (error) {
