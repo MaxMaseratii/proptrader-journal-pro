@@ -653,9 +653,9 @@ export default function Dashboard() {
               </button>
             </div>
           </div>
-          <div className="widget-container">
-            <div className="widget-content flex-col">
-              <div className="grid grid-cols-7 gap-4 h-full">
+          <div className="widget-container w-full">
+            <div className="widget-content flex-col w-full">
+              <div className="grid grid-cols-7 gap-1 h-full w-full">
                 {(() => {
                   const getCurrentWeekDays = () => {
                     const weekDays = [];
@@ -707,7 +707,7 @@ export default function Dashboard() {
                       <div 
                         key={index} 
                         className={`
-                          relative p-3 rounded-lg border transition-all duration-300 h-56 overflow-hidden
+                          relative p-4 rounded-lg border transition-all duration-300 h-56 overflow-hidden w-full
                           ${isToday 
                             ? 'border-gold bg-gradient-to-br from-gray-900/90 via-gray-800/80 to-gray-900/90 shadow-lg shadow-gold/30' 
                             : 'border-gray-600 bg-gradient-to-br from-gray-900/90 via-gray-800/80 to-gray-900/90'
