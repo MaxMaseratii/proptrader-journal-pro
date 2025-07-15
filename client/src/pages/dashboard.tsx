@@ -655,7 +655,7 @@ export default function Dashboard() {
           </div>
           <div className="widget-container">
             <div className="widget-content flex-col">
-              <div className="grid grid-cols-7 gap-6 h-full">
+              <div className="flex gap-8 h-full">
                 {(() => {
                   const getCurrentWeekDays = () => {
                     const weekDays = [];
@@ -707,7 +707,7 @@ export default function Dashboard() {
                       <div 
                         key={index} 
                         className={`
-                          relative p-3 rounded-lg border transition-all duration-300 h-56
+                          relative p-3 rounded-lg border transition-all duration-300 h-56 flex-1
                           ${isToday 
                             ? 'border-gold bg-gradient-to-br from-gold/20 via-gold/10 to-transparent shadow-lg shadow-gold/30' 
                             : 'border-gray-600 bg-gradient-to-br from-gray-800/80 via-gray-700/50 to-gray-800/30'
