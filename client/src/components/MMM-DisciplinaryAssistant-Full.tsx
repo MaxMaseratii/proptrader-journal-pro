@@ -478,7 +478,7 @@ export default function MMMDisciplinaryAssistant({ trades, accounts, selectedAcc
     };
   };
 
-  const calculatePsychologicalProfile = (accountTrades: Trade[]): PsychologicalProfile => {
+  const calculatePsychologicalProfile = (accountTrades: Trade[], disciplineScore: number): PsychologicalProfile => {
     if (accountTrades.length === 0) {
       return {
         overallScore: 0,
@@ -496,46 +496,59 @@ export default function MMMDisciplinaryAssistant({ trades, accounts, selectedAcc
     }
 
     const patterns = calculateTradingPatterns(accountTrades);
+    const totalPnL = accountTrades.reduce((sum, trade) => sum + trade.pnl, 0);
+    const winRate = accountTrades.filter(t => t.pnl > 0).length / accountTrades.length;
     
-    // Fear Index - based on early exits, stop loss violations, small position sizes
+    // Base psychological metrics on actual trading performance and discipline score
+    // All metrics should be consistent with the discipline score
+    
+    // Fear Index - HIGH fear means LOW confidence (losing traders have high fear)
     const fearIndex = Math.min(100, Math.max(0,
+      100 - disciplineScore + // Lower discipline = higher fear
       (patterns.stopLossViolations * 0.8) + 
       (patterns.emotionalExits * 0.6) +
-      (patterns.lossStreakExtension * 0.4)
+      (patterns.lossStreakExtension * 0.4) +
+      (totalPnL < 0 ? 30 : 0) // Add fear penalty for losing accounts
     ));
 
-    // Greed Index - based on profit target violations, position sizing after wins
+    // Greed Index - HIGH greed means profit-chasing behavior
     const greedIndex = Math.min(100, Math.max(0,
       (100 - patterns.profitTargetAchievement) * 0.6 +
       (patterns.fomoTrades * 0.8) +
-      (patterns.overTradingFrequency * 0.4)
+      (patterns.overTradingFrequency * 0.4) +
+      (patterns.revengeTrading * 0.7) +
+      (totalPnL < 0 ? 20 : 0) // Losing traders often have high greed
     ));
 
-    // Discipline Index - based on plan adherence
-    const disciplineIndex = Math.min(100, Math.max(0,
-      100 - (patterns.revengeTrading * 0.8) - (patterns.fomoTrades * 0.6) - (patterns.stopLossViolations * 0.7)
+    // Discipline Index - Should match the overall discipline score
+    const disciplineIndex = Math.min(100, Math.max(0, disciplineScore));
+
+    // Emotional Stability - Should be LOW for poor performers
+    const emotionalStability = Math.min(100, Math.max(0,
+      disciplineScore * 0.8 + // Base on discipline
+      (winRate * 30) + // Higher win rate = more stability
+      (totalPnL > 0 ? 20 : -20) // Profitable = stable, losing = unstable
     ));
 
-    // Consistency Index - based on regular patterns
+    // Consistency Index - based on regular patterns and performance
     const consistencyIndex = Math.min(100, Math.max(0,
-      patterns.riskRewardConsistency * 0.7 + 
-      (100 - patterns.overTradingFrequency) * 0.3
+      patterns.riskRewardConsistency * 0.5 + 
+      (100 - patterns.overTradingFrequency) * 0.3 +
+      (disciplineScore * 0.2) // Consistency correlates with discipline
     ));
 
-    // Learning Index - based on improvement over time
+    // Learning Index - should be LOW for poor performers
     const learningIndex = Math.min(100, Math.max(0,
-      75 - (patterns.lossStreakExtension * 0.5) + (patterns.profitTargetAchievement * 0.3)
+      disciplineScore * 0.6 + // Base on discipline
+      (patterns.profitTargetAchievement * 0.4) -
+      (patterns.lossStreakExtension * 0.5)
     ));
 
     // Market Reading Index - based on timing and success rates
-    const winRate = accountTrades.filter(t => t.pnl > 0).length / accountTrades.length;
     const marketReadingIndex = Math.min(100, Math.max(0,
-      (winRate * 70) + (patterns.profitTargetAchievement * 0.3)
-    ));
-
-    // Emotional Stability - inverse of volatility in decision making
-    const emotionalStability = Math.min(100, Math.max(0,
-      100 - (patterns.revengeTrading * 0.6) - (patterns.winStreakBreaking * 0.4) - (fearIndex * 0.3)
+      (winRate * 70) + 
+      (patterns.profitTargetAchievement * 0.3) +
+      (disciplineScore * 0.2) // Market reading correlates with discipline
     ));
 
     // Risk Tolerance - based on position sizing and risk management
@@ -588,7 +601,7 @@ export default function MMMDisciplinaryAssistant({ trades, accounts, selectedAcc
       
       const metrics = calculateComprehensiveDisciplineMetrics(filteredTrades);
       const patterns = calculateTradingPatterns(filteredTrades);
-      const psychology = calculatePsychologicalProfile(filteredTrades);
+      const psychology = calculatePsychologicalProfile(filteredTrades, metrics.disciplineScore);
       
       setDisciplineData(metrics);
       setTradingPatterns(patterns);
