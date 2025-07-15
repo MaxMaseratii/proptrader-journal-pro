@@ -825,7 +825,7 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* COMPACT DASHBOARD: NO EMPTY SPACES */}
+        {/* PROFESSIONAL DASHBOARD LAYOUT - NO EMPTY SPACES */}
         
         {/* ROW 1: PRIMARY FINANCIAL METRICS */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 mb-3">
@@ -844,9 +844,6 @@ export default function Dashboard() {
               </div>
             </div>
           </div>
-
-
-
           {/* Total P&L */}
           <div className="widget-container">
             <div className="widget-content">
@@ -858,11 +855,10 @@ export default function Dashboard() {
                 <p className="widget-description">Net profit/loss</p>
               </div>
               <div className="widget-icon-square">
-                <DollarSign className="widget-icon" />
+                <TrendingUp className="widget-icon" />
               </div>
             </div>
           </div>
-
           {/* Win Rate */}
           <div className="widget-container">
             <div className="widget-content">
@@ -878,72 +874,140 @@ export default function Dashboard() {
               </div>
             </div>
           </div>
-        </div>
-
-        {/* ROW 2: PERFORMANCE ANALYTICS */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 mb-3">
-          {/* R Factor */}
+          {/* Daily Trade Limit */}
           <div className="widget-container">
             <div className="widget-content">
               <div className="widget-left">
-                <p className="widget-label">R Factor</p>
-                <p className={`widget-value ${(combinedAnalytics?.rFactor || 0) > 1 ? 'text-green-400' : (combinedAnalytics?.rFactor || 0) < 1 ? 'text-red-400' : 'text-white'}`}>
-                  {combinedAnalytics?.rFactor?.toFixed(2) || '0.00'}
+                <p className="widget-label">Daily Trade Limit</p>
+                <p className="widget-value">
+                  {trades?.filter(t => t.date === new Date().toISOString().split('T')[0]).length || 0} / 5
                 </p>
-                <p className="widget-description">Risk/Reward ratio</p>
-              </div>
-              <div className="widget-icon-square">
-                <Activity className="widget-icon" />
-              </div>
-            </div>
-          </div>
-
-          {/* Profit Factor */}
-          <div className="widget-container">
-            <div className="widget-content">
-              <div className="widget-left">
-                <p className="widget-label">Profit Factor</p>
-                <p className={`widget-value ${(combinedAnalytics?.profitFactor || 0) > 1 ? 'text-green-400' : (combinedAnalytics?.profitFactor || 0) < 1 ? 'text-red-400' : 'text-white'}`}>
-                  {combinedAnalytics?.profitFactor?.toFixed(2) || '0.00'}
-                </p>
-                <p className="widget-description">Gross profit / gross loss</p>
-              </div>
-              <div className="widget-icon-square">
-                <TrendingUp className="widget-icon" />
-              </div>
-            </div>
-          </div>
-
-          {/* Avg Win/Loss */}
-          <div className="widget-container">
-            <div className="widget-content">
-              <div className="widget-left">
-                <p className="widget-label">Avg Win/Loss</p>
-                <div className="flex items-center space-x-2 text-lg font-bold">
-                  <span className="text-green-400">{formatCurrency(combinedAnalytics?.averageWin || 0)}</span>
-                  <span className="text-gray-400">/</span>
-                  <span className="text-red-400">{formatCurrency(Math.abs(combinedAnalytics?.averageLoss || 0))}</span>
-                </div>
-                <p className="widget-description">Win vs Loss ratio</p>
+                <p className="widget-description">Current trades today / Maximum allowed</p>
               </div>
               <div className="widget-icon-square">
                 <BarChart3 className="widget-icon" />
               </div>
             </div>
           </div>
+        </div>
 
-          {/* Total Trades */}
+        {/* ROW 2: DISCIPLINE & PERFORMANCE */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 mb-3">
+          {/* Disciplined Score */}
           <div className="widget-container">
             <div className="widget-content">
               <div className="widget-left">
-                <p className="widget-label">Total Trades</p>
-                <p className="widget-value text-white">
-                  {combinedAnalytics?.totalTrades || 0}
+                <p className="widget-label">Disc. Score</p>
+                <p className="widget-value">
+                  {combinedAnalytics?.disciplinedScore ? 
+                    `${combinedAnalytics.disciplinedScore.toFixed(1)}%` : 
+                    '0%'
+                  }
                 </p>
-                <p className="widget-description">All executed trades</p>
+                <p className="widget-description">Trading discipline rating</p>
               </div>
               <div className="widget-icon-square">
-                <Activity className="widget-icon" />
+                <Shield className="widget-icon" />
+              </div>
+            </div>
+          </div>
+          {/* Payout Status */}
+          <div className="widget-container">
+            <div className="widget-content flex-col">
+              <div className="flex items-center justify-between mb-2">
+                <p className="widget-label">Payout Status</p>
+                <Select value={payoutStatusAccountId?.toString() || ''} onValueChange={(value) => setPayoutStatusAccountId(Number(value))}>
+                  <SelectTrigger className="w-28 bg-gray-800 border-gray-600 text-white text-xs">
+                    <SelectValue placeholder="Select" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-gray-800 border-gray-600">
+                    {accounts?.map(account => (
+                      <SelectItem key={account.id} value={account.id.toString()} className="text-white">
+                        {account.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              {(() => {
+                const selectedAccount = accounts?.find(acc => acc.id === payoutStatusAccountId);
+                if (!selectedAccount) return <p className="text-sm text-gray-400">Select account</p>;
+                
+                const isEligibleAccountType = selectedAccount.type === 'funded' || selectedAccount.type === 'live';
+                
+                if (!isEligibleAccountType) {
+                  return (
+                    <div className="text-center">
+                      <p className="text-sm font-bold text-gray-400">
+                        {selectedAccount.type === 'challenge' ? 'CHALLENGE' : 'NOT ELIGIBLE'}
+                      </p>
+                      <p className="text-xs text-gray-400">
+                        {selectedAccount.type === 'challenge' ? 'Focus on challenge' : 'Not eligible'}
+                      </p>
+                    </div>
+                  );
+                }
+                
+                const accountTrades = trades?.filter(t => t.accountId === selectedAccount.id) || [];
+                const minimumPayoutAmount = selectedAccount.minimumPayoutAmount || 0;
+                const maxNetBalanceForPayout = selectedAccount.maxNetBalanceForPayout;
+                const totalProfit = accountTrades.reduce((sum, trade) => sum + (trade.pnl || 0), 0);
+                const totalRequiredProfit = (maxNetBalanceForPayout || 0) + minimumPayoutAmount;
+                const minimumPayoutMet = totalProfit >= totalRequiredProfit;
+                
+                return (
+                  <div className="space-y-2">
+                    <div className="text-center">
+                      <p className={`text-sm font-bold ${minimumPayoutMet ? 'text-green-400' : 'text-red-400'}`}>
+                        {minimumPayoutMet ? 'ELIGIBLE' : 'NOT ELIGIBLE'}
+                      </p>
+                      <p className="text-xs text-gray-400">
+                        {formatCurrency(totalProfit)} / {formatCurrency(totalRequiredProfit)}
+                      </p>
+                    </div>
+                    <div className="progress-bar bg-gray-700 rounded-full h-1">
+                      <div 
+                        className="bg-green-500 h-1 rounded-full transition-all duration-300"
+                        style={{ width: `${Math.min(100, (totalProfit / totalRequiredProfit) * 100)}%` }}
+                      />
+                    </div>
+                  </div>
+                );
+              })()}
+            </div>
+          </div>
+          {/* Weekly Performance */}
+          <div className="widget-container">
+            <div className="widget-content">
+              <div className="widget-left">
+                <p className="widget-label">Weekly Performance</p>
+                <p className="widget-value">
+                  {(() => {
+                    const filteredTrades = selectedAccountIds.length > 0
+                      ? trades?.filter(t => selectedAccountIds.includes(t.accountId)) || []
+                      : trades || [];
+                    
+                    if (filteredTrades.length === 0) {
+                      return <span className="text-gray-400">$0.00</span>;
+                    }
+                    
+                    const startOfWeek = new Date();
+                    startOfWeek.setDate(startOfWeek.getDate() - startOfWeek.getDay() + 1);
+                    startOfWeek.setHours(0, 0, 0, 0);
+                    
+                    const weeklyTrades = filteredTrades.filter(t => {
+                      const tradeDate = new Date(t.date);
+                      return tradeDate >= startOfWeek;
+                    });
+                    
+                    const weeklyPnl = weeklyTrades.reduce((sum, trade) => sum + (trade.pnl || 0), 0);
+                    return <span className={getValueColor(weeklyPnl)}>{formatCurrency(weeklyPnl)}</span>;
+                  })()}
+                </p>
+                <p className="widget-description">This week's P&L</p>
+              </div>
+              <div className="widget-icon-square">
+                <TrendingUp className="widget-icon" />
               </div>
             </div>
           </div>
