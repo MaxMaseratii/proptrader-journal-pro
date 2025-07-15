@@ -562,14 +562,14 @@ export default function AccountManagement({ accounts }: AccountManagementProps) 
                           <CheckCircle className="h-3 w-3" />
                         </Button>
                       </DialogTrigger>
-                      <DialogContent className="bg-gray-900 border-gray-700">
+                      <DialogContent className="bg-gray-900 border-gray-700 max-w-4xl max-h-[80vh] overflow-y-auto">
                         <DialogHeader>
                           <DialogTitle className="text-white flex items-center gap-2">
                             <CheckCircle className="h-5 w-5 text-green-400" />
                             Convert Challenge to Funded Account
                           </DialogTitle>
                           <DialogDescription className="text-gray-300">
-                            Configure the payout settings for your new funded account.
+                            Convert your passed challenge account to a funded account with new trading rules and payout eligibility.
                           </DialogDescription>
                         </DialogHeader>
                         <div className="space-y-4">
@@ -799,14 +799,14 @@ export default function AccountManagement({ accounts }: AccountManagementProps) 
                           <ArrowRight className="h-3 w-3" />
                         </Button>
                       </DialogTrigger>
-                      <DialogContent className="bg-gray-900 border-gray-700">
+                      <DialogContent className="bg-gray-900 border-gray-700 max-w-4xl max-h-[80vh] overflow-y-auto">
                         <DialogHeader>
                           <DialogTitle className="text-white flex items-center gap-2">
                             <ArrowRight className="h-5 w-5 text-yellow-400" />
                             Convert Funded to Live Account
                           </DialogTitle>
                           <DialogDescription className="text-gray-300">
-                            Configure the payout settings for your new live account.
+                            Configure the comprehensive payout settings for your new live account.
                           </DialogDescription>
                         </DialogHeader>
                         <div className="space-y-4">
