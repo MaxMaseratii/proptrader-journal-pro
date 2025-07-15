@@ -707,7 +707,7 @@ export default function Dashboard() {
                       <div 
                         key={index} 
                         className={`
-                          relative p-4 rounded-lg border transition-all duration-300 h-56
+                          relative p-3 rounded-lg border transition-all duration-300 h-56
                           ${isToday 
                             ? 'border-gold bg-gradient-to-br from-gold/20 via-gold/10 to-transparent shadow-lg shadow-gold/30' 
                             : 'border-gray-600 bg-gradient-to-br from-gray-800/80 via-gray-700/50 to-gray-800/30'
@@ -719,13 +719,13 @@ export default function Dashboard() {
                         `}
                       >
                         <div className="text-left h-full flex flex-col justify-between">
-                          <div className="text-center mb-3">
+                          <div className="text-center mb-2">
                             <div className="text-sm font-bold bg-gradient-to-r from-gold to-yellow-400 bg-clip-text text-transparent">
                               {dayLabels[index]} {day.getDate()}
                             </div>
                           </div>
                           
-                          <div className="space-y-1.5 text-xs">
+                          <div className="space-y-1 text-xs">
                             <div className="flex justify-between">
                               <span className="text-gray-300">Risk/Trade:</span>
                               <span className="text-orange-300 font-medium">${avgRiskPerTrade.toFixed(0)}</span>
