@@ -969,7 +969,7 @@ export default function Dashboard() {
                   
                   const hourlyWage = user?.personalHourlyWage || 25;
                   const uniqueDays = new Set(filteredTrades.map(t => t.date.split('T')[0])).size || 0;
-                  const totalTradingHours = Math.min(uniqueDays * 8, 24 * uniqueDays);
+                  const totalTradingHours = uniqueDays * 8; // No cap - if 3 days, then 24 hours total
                   const expectedEarnings = hourlyWage * totalTradingHours;
                   
                   return (
@@ -2424,7 +2424,13 @@ export default function Dashboard() {
                   
                   return weekDays.map((day, index) => {
                     const dayStr = day.toISOString().split('T')[0];
-                    const dayTrades = trades?.filter(trade => trade.date === dayStr) || [];
+                    
+                    // Filter trades based on account selection
+                    const filteredTrades = selectedAccountIds.length > 0
+                      ? trades?.filter(t => selectedAccountIds.includes(t.accountId)) || []
+                      : trades || [];
+                    
+                    const dayTrades = filteredTrades.filter(trade => trade.date === dayStr) || [];
                     const dayPnL = dayTrades.reduce((sum, trade) => sum + (trade.pnl || 0), 0);
                     const isToday = day.toDateString() === new Date().toDateString();
                     
@@ -2444,7 +2450,7 @@ export default function Dashboard() {
                           {dayTrades.length > 0 && (
                             <>
                               <div className={`text-xs font-semibold ${dayPnL >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-                                ${dayPnL >= 0 ? '+' : ''}${dayPnL.toFixed(2)}
+                                {dayPnL >= 0 ? '+' : ''}${dayPnL.toFixed(2)}
                               </div>
                               <div className="text-xs text-gray-400">
                                 {dayTrades.length} trades

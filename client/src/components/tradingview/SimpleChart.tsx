@@ -171,11 +171,79 @@ export const SimpleChart: React.FC<SimpleChartProps> = ({
           </div>
         </div>
       </div>
-      <canvas 
-        ref={canvasRef} 
-        className="w-full rounded-lg border border-gray-600"
-        style={{ height: `${height - 80}px` }}
-      />
+      <div className="relative">
+        <canvas 
+          ref={canvasRef} 
+          className="w-full rounded-lg border border-gray-600"
+          style={{ height: `${height - 80}px` }}
+          onMouseMove={(e) => {
+            if (!canvasRef.current) return;
+            
+            const rect = canvasRef.current.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            const padding = 40;
+            const chartWidth = rect.width - (padding * 2);
+            
+            // Find closest trade to mouse position
+            let closestTrade = null;
+            let minDistance = Infinity;
+            
+            trades.forEach((trade, index) => {
+              const tradeX = padding + (chartWidth * index / (trades.length - 1));
+              const distance = Math.abs(x - tradeX);
+              
+              if (distance < minDistance && distance < 20) {
+                minDistance = distance;
+                closestTrade = trade;
+              }
+            });
+            
+            if (closestTrade) {
+              setHoveredTrade(closestTrade);
+              setMousePos({ x: e.clientX, y: e.clientY });
+            } else {
+              setHoveredTrade(null);
+              setMousePos(null);
+            }
+          }}
+          onMouseLeave={() => {
+            setHoveredTrade(null);
+            setMousePos(null);
+          }}
+        />
+        
+        {/* Tooltip */}
+        {hoveredTrade && mousePos && (
+          <div 
+            className="absolute z-10 bg-gray-800 border border-gray-600 rounded-lg p-3 shadow-lg pointer-events-none"
+            style={{
+              left: mousePos.x + 10,
+              top: mousePos.y - 100,
+              transform: 'translate(-50%, 0)'
+            }}
+          >
+            <div className="text-sm">
+              <div className="font-semibold text-white mb-1">
+                {hoveredTrade.symbol} Trade
+              </div>
+              <div className="text-gray-300">
+                Date: {new Date(hoveredTrade.date).toLocaleDateString()}
+              </div>
+              <div className="text-gray-300">
+                Entry: ${hoveredTrade.entryPrice?.toFixed(2) || 'N/A'}
+              </div>
+              <div className="text-gray-300">
+                Exit: ${hoveredTrade.exitPrice?.toFixed(2) || 'N/A'}
+              </div>
+              <div className={`font-semibold ${(hoveredTrade.pnl || 0) >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                P&L: ${(hoveredTrade.pnl || 0).toFixed(2)}
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 };
