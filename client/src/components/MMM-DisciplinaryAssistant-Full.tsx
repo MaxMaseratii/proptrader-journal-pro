@@ -268,44 +268,67 @@ export default function MMMDisciplinaryAssistant({ trades, accounts, selectedAcc
       ));
     }
 
-    // Count failed accounts for discipline penalty calculation
-    const failedAccounts = accounts.filter(acc => acc.status === 'failed').length;
-    const totalAccountsCount = accounts.length;
+    // Account-specific discipline assessment
+    const selectedAccounts = accounts.filter(acc => 
+      selectedAccountId ? acc.id === parseInt(selectedAccountId) : true
+    );
     
-    // Advanced discipline scoring with failed account integration
-    const failedAccountPenalty = failedAccounts > 0 ? Math.min(30, (failedAccounts / totalAccountsCount) * 40) : 0;
-    const failedAccountEmotionalPenalty = failedAccounts * 3; // 3 points per failed account
-    const failedAccountRiskPenalty = failedAccounts * 5; // 5 points per failed account
+    // If we have a selected account, make sure we're only analyzing that account's trades
+    const currentAccount = selectedAccountId ? accounts.find(acc => acc.id === parseInt(selectedAccountId)) : null;
     
-    // Apply failed account penalties to scores
-    const adjustedRiskManagementScore = Math.max(0, riskManagementScore - failedAccountRiskPenalty);
-    const adjustedEmotionalControlScore = Math.max(0, emotionalControlScore - failedAccountEmotionalPenalty);
-    const adjustedConsistencyScore = Math.max(0, consistencyScore - (failedAccounts * 2));
+    // Calculate account status bonuses/penalties
+    let accountStatusBonus = 0;
+    let accountStatusPenalty = 0;
     
-    // Overall discipline score (weighted average with advanced factors + failed account penalty)
+    if (currentAccount) {
+      // Single account assessment
+      if (currentAccount.status === 'funded' || currentAccount.status === 'live') {
+        accountStatusBonus = 15;
+      } else if (currentAccount.status === 'failed') {
+        accountStatusPenalty = 25;
+      }
+    } else {
+      // Multi-account assessment
+      selectedAccounts.forEach(account => {
+        if (account.status === 'funded' || account.status === 'live') {
+          accountStatusBonus += 15;
+        } else if (account.status === 'failed') {
+          accountStatusPenalty += 25;
+        }
+      });
+    }
+    
+    // Apply account status adjustments (but don't let bonuses exceed reasonable limits)
+    const accountStatusAdjustment = Math.min(25, accountStatusBonus) - accountStatusPenalty;
+    
+    // Calculate trading profitability factor
+    const totalPnL = accountTrades.reduce((sum, trade) => sum + trade.pnl, 0);
+    const profitabilityBonus = totalPnL > 0 ? Math.min(20, (totalPnL / 1000) * 2) : 0;
+    
+    // Overall discipline score (weighted average with performance adjustments)
     const baseDisciplineScore = (
-      adjustedRiskManagementScore * 0.25 +
-      adjustedEmotionalControlScore * 0.20 +
-      adjustedConsistencyScore * 0.20 +
+      riskManagementScore * 0.25 +
+      emotionalControlScore * 0.20 +
+      consistencyScore * 0.20 +
       marketAnalysisScore * 0.15 +
       timeManagementScore * 0.10 +
       learningScore * 0.10
     );
     
-    const disciplineScore = Math.max(0, baseDisciplineScore - failedAccountPenalty);
+    // Apply account status and profitability adjustments
+    const disciplineScore = Math.max(0, Math.min(100, baseDisciplineScore + accountStatusAdjustment + profitabilityBonus));
     
-    // Calculate excess losses including failed account costs
+    // Calculate excess losses (actual trading losses, not account costs)
     const tradingExcessLosses = (avgLoss * revengeTradesCount) + (avgLoss * fomoTradesCount * 0.5);
-    const failedAccountCosts = failedAccounts * 750; // Average cost per failed account
-    const totalExcessLosses = tradingExcessLosses + failedAccountCosts;
+    const totalExcessLosses = Math.max(0, tradingExcessLosses);
 
     return {
       totalTrades,
       winRate,
       disciplineScore,
-      riskManagementScore: adjustedRiskManagementScore,
-      emotionalControlScore: adjustedEmotionalControlScore,
-      consistencyScore: adjustedConsistencyScore,
+      riskManagementScore,
+      emotionalControlScore,
+      consistencyScore,
       stopModificationRate,
       excessLosses: totalExcessLosses,
       marketAnalysisScore,
@@ -983,28 +1006,28 @@ export default function MMMDisciplinaryAssistant({ trades, accounts, selectedAcc
       {/* Analysis Results */}
       {disciplineData && (
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-6">
-            <TabsTrigger value="system" className="flex items-center gap-2">
+          <TabsList className="grid w-full grid-cols-6 bg-dark-card border-dark-border">
+            <TabsTrigger value="system" className="flex items-center gap-2 data-[state=active]:bg-prop-gradient-gold-discipline data-[state=active]:text-white text-prop-gold">
               <Brain className="h-4 w-4" />
-              System
+              Discipline System
             </TabsTrigger>
-            <TabsTrigger value="insights" className="flex items-center gap-2">
+            <TabsTrigger value="insights" className="flex items-center gap-2 data-[state=active]:bg-prop-gradient-gold-discipline data-[state=active]:text-white text-prop-gold">
               <TrendingUp className="h-4 w-4" />
-              Insights
+              Professional Insights
             </TabsTrigger>
-            <TabsTrigger value="redflags" className="flex items-center gap-2">
+            <TabsTrigger value="redflags" className="flex items-center gap-2 data-[state=active]:bg-prop-gradient-gold-discipline data-[state=active]:text-white text-prop-gold">
               <AlertTriangle className="h-4 w-4" />
               Red Flags
             </TabsTrigger>
-            <TabsTrigger value="mental" className="flex items-center gap-2">
+            <TabsTrigger value="mental" className="flex items-center gap-2 data-[state=active]:bg-prop-gradient-gold-discipline data-[state=active]:text-white text-prop-gold">
               <Brain className="h-4 w-4" />
               Mental Game
             </TabsTrigger>
-            <TabsTrigger value="action" className="flex items-center gap-2">
+            <TabsTrigger value="action" className="flex items-center gap-2 data-[state=active]:bg-prop-gradient-gold-discipline data-[state=active]:text-white text-prop-gold">
               <Zap className="h-4 w-4" />
               Action Plan
             </TabsTrigger>
-            <TabsTrigger value="tracking" className="flex items-center gap-2">
+            <TabsTrigger value="tracking" className="flex items-center gap-2 data-[state=active]:bg-prop-gradient-gold-discipline data-[state=active]:text-white text-prop-gold">
               <Activity className="h-4 w-4" />
               Progress
             </TabsTrigger>
