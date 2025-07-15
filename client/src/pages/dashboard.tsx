@@ -51,7 +51,9 @@ import {
   CreditCard,
   X,
   Trophy,
-  Star
+  Star,
+  ChevronLeft,
+  ChevronRight
 } from "lucide-react";
 import type { Account, Trade } from "@shared/schema";
 
@@ -76,6 +78,14 @@ export default function Dashboard() {
   const [selectedAccountIds, setSelectedAccountIds] = useState<number[]>(() => {
     const saved = localStorage.getItem('dashboard-selected-accounts');
     return saved ? JSON.parse(saved) : [];
+  });
+  const [currentWeekStart, setCurrentWeekStart] = useState<Date>(() => {
+    const today = new Date();
+    const dayOfWeek = today.getDay();
+    const daysToSubtract = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
+    const start = new Date(today);
+    start.setDate(today.getDate() - daysToSubtract);
+    return start;
   });
   const [congratulationsBanner, setCongratulationsBanner] = useState<{
     visible: boolean;
@@ -592,28 +602,66 @@ export default function Dashboard() {
 
       <div className="p-4 space-y-4">
         
-        {/* Weekly Performance Calendar - Top of Dashboard */}
-        <div className="mb-8">
-          <h2 className="text-xl font-bold text-gradient-rainbow mb-6 flex items-center border-b border-gray-700 pb-3">
-            <Calendar className="mr-3 h-5 w-5 text-prop-gold" />
-            Weekly Performance Calendar
-          </h2>
+        {/* Weekly Risk Management & Performance Calendar - Top of Dashboard */}
+        <div className="mb-12">
+          <div className="flex items-center justify-between mb-6 border-b border-gray-700 pb-3">
+            <h2 className="text-xl font-bold text-gradient-rainbow flex items-center">
+              <Calendar className="mr-3 h-5 w-5 text-prop-gold" />
+              Weekly Risk Management & Performance Calendar
+            </h2>
+            <div className="flex items-center space-x-4">
+              <button 
+                className="p-2 rounded-lg bg-gray-800 hover:bg-gray-700 border border-gray-600 transition-colors"
+                onClick={() => {
+                  // Navigate to previous week
+                  const newDate = new Date(currentWeekStart);
+                  newDate.setDate(newDate.getDate() - 7);
+                  setCurrentWeekStart(newDate);
+                }}
+              >
+                <ChevronLeft className="h-4 w-4 text-gray-400" />
+              </button>
+              <div className="text-sm text-gray-300 font-medium min-w-[200px] text-center">
+                {(() => {
+                  const weekStart = currentWeekStart || (() => {
+                    const today = new Date();
+                    const dayOfWeek = today.getDay();
+                    const daysToSubtract = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
+                    const start = new Date(today);
+                    start.setDate(today.getDate() - daysToSubtract);
+                    return start;
+                  })();
+                  
+                  const weekNumber = Math.ceil((weekStart.getTime() - new Date(weekStart.getFullYear(), 0, 1).getTime()) / (7 * 24 * 60 * 60 * 1000));
+                  const monthName = weekStart.toLocaleDateString('en-US', { month: 'long' });
+                  const day = weekStart.getDate();
+                  const year = weekStart.getFullYear();
+                  
+                  return `Week ${weekNumber} ${monthName} ${day}th ${year} (Week #${weekNumber}/52)`;
+                })()}
+              </div>
+              <button 
+                className="p-2 rounded-lg bg-gray-800 hover:bg-gray-700 border border-gray-600 transition-colors"
+                onClick={() => {
+                  // Navigate to next week
+                  const newDate = new Date(currentWeekStart);
+                  newDate.setDate(newDate.getDate() + 7);
+                  setCurrentWeekStart(newDate);
+                }}
+              >
+                <ChevronRight className="h-4 w-4 text-gray-400" />
+              </button>
+            </div>
+          </div>
           <div className="widget-container">
             <div className="widget-content flex-col">
               <div className="grid grid-cols-7 gap-2 h-full">
                 {(() => {
                   const getCurrentWeekDays = () => {
-                    const today = new Date();
-                    const dayOfWeek = today.getDay(); // 0 = Sunday, 1 = Monday, etc.
-                    const startOfWeek = new Date(today);
-                    // Start week on Monday: if today is Sunday (0), go back 6 days; otherwise go back (dayOfWeek - 1) days
-                    const daysToSubtract = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
-                    startOfWeek.setDate(today.getDate() - daysToSubtract);
-                    
                     const weekDays = [];
                     for (let i = 0; i < 7; i++) {
-                      const day = new Date(startOfWeek);
-                      day.setDate(startOfWeek.getDate() + i);
+                      const day = new Date(currentWeekStart);
+                      day.setDate(currentWeekStart.getDate() + i);
                       weekDays.push(day);
                     }
                     return weekDays;
