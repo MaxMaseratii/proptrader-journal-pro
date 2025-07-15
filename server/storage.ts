@@ -93,6 +93,9 @@ export interface IStorage {
   // Challenge-to-Funded Account Transition operations
   checkChallengeEligibility(accountId: number): Promise<{ eligible: boolean, reason?: string }>;
   convertToFundedAccount(challengeAccountId: number, fundedAccountData: Partial<InsertAccount>): Promise<{ challengeAccount: Account, fundedAccount: Account }>;
+  
+  // Funded-to-Live Account Transition operations
+  convertToLiveAccount(fundedAccountId: number, liveAccountData: Partial<InsertAccount>): Promise<{ fundedAccount: Account, liveAccount: Account }>;
 }
 
 // Production-ready DatabaseStorage implementation
@@ -508,6 +511,62 @@ export class DatabaseStorage implements IStorage {
     return { 
       challengeAccount: updatedChallengeAccount!, 
       fundedAccount 
+    };
+  }
+
+  // Convert funded account to live account
+  async convertToLiveAccount(fundedAccountId: number, liveAccountData: Partial<InsertAccount>): Promise<{ fundedAccount: Account, liveAccount: Account }> {
+    const fundedAccount = await this.getAccount(fundedAccountId);
+    if (!fundedAccount) {
+      throw new Error("Funded account not found");
+    }
+    
+    if (fundedAccount.type !== 'funded') {
+      throw new Error("Only funded accounts can be converted to live accounts");
+    }
+
+    // Create live account with new rules but same name
+    const liveAccount = await this.createAccount({
+      name: fundedAccount.name,
+      firm: fundedAccount.firm,
+      type: 'live',
+      startingBalance: fundedAccount.startingBalance, // Keep current balance
+      profitTarget: 0, // Live accounts typically don't have profit targets
+      maxDrawdown: liveAccountData.maxDrawdown || fundedAccount.maxDrawdown,
+      dailyLossLimit: liveAccountData.dailyLossLimit || fundedAccount.dailyLossLimit,
+      
+      // Live account specific settings
+      liveAccountType: liveAccountData.liveAccountType || 'prop_firm',
+      profitSplit: liveAccountData.profitSplit || 90,
+      payoutFrequency: liveAccountData.payoutFrequency || 'on-demand',
+      minimumPayoutAmount: liveAccountData.minimumPayoutAmount || 500,
+      
+      // Link to funded account
+      parentFundedId: fundedAccountId,
+      transitionStatus: 'live',
+      
+      // Copy other settings from funded account
+      primaryAsset: fundedAccount.primaryAsset,
+      secondaryAsset: fundedAccount.secondaryAsset,
+      tertiaryAsset: fundedAccount.tertiaryAsset,
+      riskPerTrade: fundedAccount.riskPerTrade,
+      riskRewardRatio: fundedAccount.riskRewardRatio,
+      copyTradingAllowed: liveAccountData.copyTradingAllowed ?? fundedAccount.copyTradingAllowed,
+      newsTradingAllowed: liveAccountData.newsTradingAllowed ?? fundedAccount.newsTradingAllowed,
+      
+      ...liveAccountData
+    });
+
+    // Update funded account to mark as converted
+    const updatedFundedAccount = await this.updateAccount(fundedAccountId, {
+      transitionStatus: 'converted',
+      liveAccountId: liveAccount.id,
+      fundedToLiveDate: new Date()
+    });
+
+    return { 
+      fundedAccount: updatedFundedAccount!, 
+      liveAccount 
     };
   }
 }

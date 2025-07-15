@@ -81,6 +81,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Convert funded account to live account
+  app.post("/api/accounts/:id/convert-to-live", isAuthenticated, async (req, res) => {
+    try {
+      const fundedAccountId = parseInt(req.params.id);
+      const liveAccountData = req.body;
+      
+      const result = await storage.convertToLiveAccount(fundedAccountId, liveAccountData);
+      res.json({
+        success: true,
+        message: "Funded account successfully converted to live account",
+        fundedAccount: result.fundedAccount,
+        liveAccount: result.liveAccount
+      });
+    } catch (error) {
+      console.error("Error converting to live account:", error);
+      res.status(500).json({ 
+        success: false, 
+        message: error instanceof Error ? error.message : "Failed to convert account" 
+      });
+    }
+  });
+
   app.get("/api/accounts/:id", isAuthenticated, async (req, res) => {
     try {
       const id = parseInt(req.params.id);

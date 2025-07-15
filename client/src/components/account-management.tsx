@@ -223,27 +223,61 @@ export default function AccountManagement({ accounts }: AccountManagementProps) 
     return 'text-gray-400';
   };
 
-  // Helper function to check if a challenge account is eligible for conversion
+  // Check if challenge account is eligible for funded conversion
   const getChallengeEligibility = (account: Account) => {
-    if (account.type !== 'challenge') return { eligible: false, reason: "Not a challenge account" };
-    if (account.transitionStatus === 'converted') return { eligible: false, reason: "Already converted" };
-    
-    // Calculate total P&L from trades for this account
     const accountTrades = trades.filter(trade => trade.accountId === account.id);
-    const totalPnl = accountTrades.reduce((sum, trade) => sum + (trade.pnl || 0), 0);
-    const currentBalance = account.startingBalance + totalPnl;
-    const profitTarget = account.profitTarget || 0;
-    const profitRequired = account.startingBalance + profitTarget;
+    const totalPnl = accountTrades.reduce((sum, trade) => sum + trade.pnl, 0);
+    const netBalance = account.startingBalance + totalPnl;
     
-    if (currentBalance >= profitRequired) {
-      return { eligible: true, reason: "Challenge passed! Ready to convert to funded account" };
-    }
+    // Check if profit target is met
+    const profitTargetMet = totalPnl >= (account.profitTarget || 0);
     
-    return { 
-      eligible: false, 
-      reason: `Need $${(profitRequired - currentBalance).toFixed(2)} more to reach profit target` 
+    // Check if minimum trading days requirement is met
+    const uniqueTradingDays = new Set(accountTrades.map(trade => trade.date)).size;
+    const minimumDaysMet = uniqueTradingDays >= (account.minimumTradingDays || 0);
+    
+    // Check if max drawdown isn't exceeded
+    const maxDrawdownNotExceeded = netBalance >= (account.startingBalance - (account.maxDrawdown || 0));
+    
+    return {
+      eligible: profitTargetMet && minimumDaysMet && maxDrawdownNotExceeded,
+      profitTargetMet,
+      minimumDaysMet,
+      maxDrawdownNotExceeded,
+      totalPnl,
+      netBalance,
+      uniqueTradingDays
     };
   };
+
+  // Check if funded account is eligible for live conversion
+  const getFundedAccountEligibility = (account: Account) => {
+    const accountTrades = trades.filter(trade => trade.accountId === account.id);
+    const totalPnl = accountTrades.reduce((sum, trade) => sum + trade.pnl, 0);
+    const netBalance = account.startingBalance + totalPnl;
+    
+    // Check if live account transition profit target is met
+    const profitTargetMet = totalPnl >= (account.liveAccountTransitionProfitTarget || 0);
+    
+    // Check if minimum trading days requirement is met
+    const uniqueTradingDays = new Set(accountTrades.map(trade => trade.date)).size;
+    const minimumDaysMet = uniqueTradingDays >= (account.liveAccountTransitionDays || 0);
+    
+    // Check if max drawdown during transition isn't exceeded
+    const maxDrawdownNotExceeded = netBalance >= (account.startingBalance - (account.liveAccountTransitionDrawdownLimit || 0));
+    
+    return {
+      eligible: profitTargetMet && minimumDaysMet && maxDrawdownNotExceeded,
+      profitTargetMet,
+      minimumDaysMet,
+      maxDrawdownNotExceeded,
+      totalPnl,
+      netBalance,
+      uniqueTradingDays
+    };
+  };
+
+
 
   const getStatusBadge = (status: string) => {
     switch (status) {
@@ -473,6 +507,251 @@ export default function AccountManagement({ accounts }: AccountManagementProps) 
                     </div>
                   </DialogContent>
                 </Dialog>
+
+                {/* Ready for Funded - Challenge to Funded Transition */}
+                {account.type === 'challenge' && account.transitionStatus !== 'converted' && (() => {
+                  const eligibility = getChallengeEligibility(account);
+                  return eligibility.eligible && (
+                    <Dialog open={isConversionDialogOpen && selectedChallengeAccount?.id === account.id} onOpenChange={(open) => {
+                      setIsConversionDialogOpen(open);
+                      if (open) setSelectedChallengeAccount(account);
+                      else setSelectedChallengeAccount(null);
+                    }}>
+                      <DialogTrigger asChild>
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          className="border-green-600 text-green-400 hover:bg-green-600 hover:text-white h-6 w-6 p-0"
+                          disabled={account.status === 'withdrawn'}
+                          title="Ready for Funded"
+                        >
+                          <CheckCircle className="h-3 w-3" />
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent className="bg-gray-900 border-gray-700">
+                        <DialogHeader>
+                          <DialogTitle className="text-white flex items-center gap-2">
+                            <CheckCircle className="h-5 w-5 text-green-400" />
+                            Convert Challenge to Funded Account
+                          </DialogTitle>
+                        </DialogHeader>
+                        <div className="space-y-4">
+                          <div className="bg-green-900/30 border border-green-600/30 rounded-lg p-4">
+                            <p className="text-green-300 text-sm">
+                              This challenge account has met all requirements and is ready to be converted to a funded account.
+                            </p>
+                          </div>
+                          <div className="space-y-4">
+                            <div className="grid grid-cols-2 gap-4">
+                              <div>
+                                <Label className="text-gray-300">Starting Balance</Label>
+                                <Input
+                                  type="number"
+                                  value={fundedAccountSettings.startingBalance}
+                                  onChange={(e) => setFundedAccountSettings({
+                                    ...fundedAccountSettings,
+                                    startingBalance: parseFloat(e.target.value) || 0
+                                  })}
+                                  className="bg-gray-700 border-gray-600 text-white"
+                                />
+                              </div>
+                              <div>
+                                <Label className="text-gray-300">Profit Target</Label>
+                                <Input
+                                  type="number"
+                                  value={fundedAccountSettings.profitTarget}
+                                  onChange={(e) => setFundedAccountSettings({
+                                    ...fundedAccountSettings,
+                                    profitTarget: parseFloat(e.target.value) || 0
+                                  })}
+                                  className="bg-gray-700 border-gray-600 text-white"
+                                />
+                              </div>
+                              <div>
+                                <Label className="text-gray-300">Max Drawdown</Label>
+                                <Input
+                                  type="number"
+                                  value={fundedAccountSettings.maxDrawdown}
+                                  onChange={(e) => setFundedAccountSettings({
+                                    ...fundedAccountSettings,
+                                    maxDrawdown: parseFloat(e.target.value) || 0
+                                  })}
+                                  className="bg-gray-700 border-gray-600 text-white"
+                                />
+                              </div>
+                              <div>
+                                <Label className="text-gray-300">Profit Split (%)</Label>
+                                <Input
+                                  type="number"
+                                  value={fundedAccountSettings.profitSplit}
+                                  onChange={(e) => setFundedAccountSettings({
+                                    ...fundedAccountSettings,
+                                    profitSplit: parseFloat(e.target.value) || 0
+                                  })}
+                                  className="bg-gray-700 border-gray-600 text-white"
+                                />
+                              </div>
+                            </div>
+                            <div>
+                              <Label className="text-gray-300">Payout Frequency</Label>
+                              <Select value={fundedAccountSettings.payoutFrequency} onValueChange={(value) => 
+                                setFundedAccountSettings({
+                                  ...fundedAccountSettings,
+                                  payoutFrequency: value
+                                })
+                              }>
+                                <SelectTrigger className="bg-gray-700 border-gray-600 text-white">
+                                  <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent className="bg-gray-700 border-gray-600">
+                                  <SelectItem value="weekly">Weekly</SelectItem>
+                                  <SelectItem value="bi-weekly">Bi-weekly</SelectItem>
+                                  <SelectItem value="monthly">Monthly</SelectItem>
+                                  <SelectItem value="on-demand">On-demand</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </div>
+                          </div>
+                          <div className="flex justify-end gap-3">
+                            <Button 
+                              variant="outline" 
+                              onClick={() => setIsConversionDialogOpen(false)}
+                              className="border-gray-600 text-gray-300 hover:bg-gray-700"
+                            >
+                              Cancel
+                            </Button>
+                            <Button 
+                              onClick={() => convertToFundedMutation.mutate(account.id)}
+                              disabled={convertToFundedMutation.isPending}
+                              className="bg-green-600 hover:bg-green-700 text-white"
+                            >
+                              {convertToFundedMutation.isPending ? "Converting..." : "Convert to Funded"}
+                            </Button>
+                          </div>
+                        </div>
+                      </DialogContent>
+                    </Dialog>
+                  );
+                })()}
+
+                {/* Ready for Live Account - Funded to Live Transition */}
+                {account.type === 'funded' && account.liveAccountTransitionEnabled && (() => {
+                  const fundedEligibility = getFundedAccountEligibility(account);
+                  return fundedEligibility.eligible && (
+                    <Dialog open={isLiveConversionDialogOpen && selectedFundedAccount?.id === account.id} onOpenChange={(open) => {
+                      setIsLiveConversionDialogOpen(open);
+                      if (open) setSelectedFundedAccount(account);
+                      else setSelectedFundedAccount(null);
+                    }}>
+                      <DialogTrigger asChild>
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          className="border-yellow-600 text-yellow-400 hover:bg-yellow-600 hover:text-white h-6 w-6 p-0"
+                          disabled={account.status === 'withdrawn'}
+                          title="Ready for Live Account"
+                        >
+                          <ArrowRight className="h-3 w-3" />
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent className="bg-gray-900 border-gray-700">
+                        <DialogHeader>
+                          <DialogTitle className="text-white flex items-center gap-2">
+                            <ArrowRight className="h-5 w-5 text-yellow-400" />
+                            Convert Funded to Live Account
+                          </DialogTitle>
+                        </DialogHeader>
+                        <div className="space-y-4">
+                          <div className="bg-yellow-900/30 border border-yellow-600/30 rounded-lg p-4">
+                            <p className="text-yellow-300 text-sm">
+                              This funded account has met all requirements and is ready to be converted to a live account.
+                            </p>
+                          </div>
+                          <div className="space-y-4">
+                            <div className="grid grid-cols-2 gap-4">
+                              <div>
+                                <Label className="text-gray-300">Account Type</Label>
+                                <Select value={liveAccountSettings.liveAccountType} onValueChange={(value) => 
+                                  setLiveAccountSettings({
+                                    ...liveAccountSettings,
+                                    liveAccountType: value
+                                  })
+                                }>
+                                  <SelectTrigger className="bg-gray-700 border-gray-600 text-white">
+                                    <SelectValue />
+                                  </SelectTrigger>
+                                  <SelectContent className="bg-gray-700 border-gray-600">
+                                    <SelectItem value="prop_firm">Prop Firm Live</SelectItem>
+                                    <SelectItem value="personal_live">Personal Live</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                              </div>
+                              <div>
+                                <Label className="text-gray-300">Profit Split (%)</Label>
+                                <Input
+                                  type="number"
+                                  value={liveAccountSettings.profitSplit}
+                                  onChange={(e) => setLiveAccountSettings({
+                                    ...liveAccountSettings,
+                                    profitSplit: parseFloat(e.target.value) || 0
+                                  })}
+                                  className="bg-gray-700 border-gray-600 text-white"
+                                />
+                              </div>
+                              <div>
+                                <Label className="text-gray-300">Payout Frequency</Label>
+                                <Select value={liveAccountSettings.payoutFrequency} onValueChange={(value) => 
+                                  setLiveAccountSettings({
+                                    ...liveAccountSettings,
+                                    payoutFrequency: value
+                                  })
+                                }>
+                                  <SelectTrigger className="bg-gray-700 border-gray-600 text-white">
+                                    <SelectValue />
+                                  </SelectTrigger>
+                                  <SelectContent className="bg-gray-700 border-gray-600">
+                                    <SelectItem value="weekly">Weekly</SelectItem>
+                                    <SelectItem value="bi-weekly">Bi-weekly</SelectItem>
+                                    <SelectItem value="monthly">Monthly</SelectItem>
+                                    <SelectItem value="on-demand">On-demand</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                              </div>
+                              <div>
+                                <Label className="text-gray-300">Minimum Payout</Label>
+                                <Input
+                                  type="number"
+                                  value={liveAccountSettings.minimumPayoutAmount}
+                                  onChange={(e) => setLiveAccountSettings({
+                                    ...liveAccountSettings,
+                                    minimumPayoutAmount: parseFloat(e.target.value) || 0
+                                  })}
+                                  className="bg-gray-700 border-gray-600 text-white"
+                                />
+                              </div>
+                            </div>
+                          </div>
+                          <div className="flex justify-end gap-3">
+                            <Button 
+                              variant="outline" 
+                              onClick={() => setIsLiveConversionDialogOpen(false)}
+                              className="border-gray-600 text-gray-300 hover:bg-gray-700"
+                            >
+                              Cancel
+                            </Button>
+                            <Button 
+                              onClick={() => convertToLiveMutation.mutate(account.id)}
+                              disabled={convertToLiveMutation.isPending}
+                              className="bg-yellow-600 hover:bg-yellow-700 text-white"
+                            >
+                              {convertToLiveMutation.isPending ? "Converting..." : "Convert to Live"}
+                            </Button>
+                          </div>
+                        </div>
+                      </DialogContent>
+                    </Dialog>
+                  );
+                })()}
 
                 {/* Withdraw Account */}
                 <AlertDialog>
