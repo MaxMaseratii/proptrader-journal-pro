@@ -653,9 +653,7 @@ export default function Dashboard() {
               </button>
             </div>
           </div>
-          <div className="widget-container">
-            <div className="widget-content flex-col">
-              <div className="grid grid-cols-7 gap-2 h-full">
+          <div className="grid grid-cols-7 gap-4 h-full">
                 {(() => {
                   const getCurrentWeekDays = () => {
                     const weekDays = [];
@@ -775,9 +773,6 @@ export default function Dashboard() {
                     );
                   });
                 })()}
-              </div>
-            </div>
-          </div>
         </div>
 
 
