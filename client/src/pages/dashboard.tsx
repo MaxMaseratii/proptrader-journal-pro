@@ -1036,21 +1036,17 @@ export default function Dashboard() {
                     ? trades?.filter(t => selectedAccountIds.includes(t.accountId)) || []
                     : trades || [];
                   
-                  console.log('Dashboard Discipline Widget Debug:');
-                  console.log('selectedAccountIds:', selectedAccountIds);
-                  console.log('all trades:', trades?.length);
-                  console.log('filteredTrades:', filteredTrades.length);
-                  
+                  // Early return for no trades
                   if (filteredTrades.length === 0) {
                     return (
                       <div className="discipline-breakdown space-y-1">
-                        <div className="text-center">
-                          <span className="text-sm text-gray-400">No trades to analyze</span>
+                        <div className="text-center py-4">
+                          <span className="text-sm text-gray-400">No trades to analyze for selected account(s)</span>
+                          <p className="text-xs text-gray-500 mt-1">Switch to an account with trading activity</p>
                         </div>
                       </div>
                     );
                   }
-                  
                   const disciplineMetrics = calculateComprehensiveDisciplineMetrics(
                     filteredTrades,
                     accounts || [],

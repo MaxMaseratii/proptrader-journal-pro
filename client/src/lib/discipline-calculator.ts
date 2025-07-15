@@ -20,12 +20,6 @@ export const calculateComprehensiveDisciplineMetrics = (
   selectedAccountId?: string
 ): DisciplineMetrics => {
   if (accountTrades.length === 0) {
-    console.log('=== DISCIPLINE CALCULATOR DEBUG ===');
-    console.log('selectedAccountId:', selectedAccountId);
-    console.log('accountTrades length:', accountTrades.length);
-    console.log('disciplineScore: 0 (no trades)');
-    console.log('=== END DEBUG ===');
-    
     return {
       totalTrades: 0,
       winRate: 0,
@@ -255,14 +249,7 @@ export const calculateComprehensiveDisciplineMetrics = (
 
 
 
-  console.log('=== DISCIPLINE CALCULATOR DEBUG ===');
-  console.log('selectedAccountId:', selectedAccountId);
-  console.log('accountTrades length:', accountTrades.length);
-  console.log('disciplineScore:', disciplineScore);
-  console.log('riskManagementScore:', riskManagementScore);
-  console.log('emotionalControlScore:', emotionalControlScore);
-  console.log('consistencyScore:', consistencyScore);
-  console.log('=== END DEBUG ===');
+
 
   return {
     totalTrades,
