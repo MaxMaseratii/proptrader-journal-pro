@@ -116,6 +116,14 @@ export default function Accounts() {
       disciplineRiskPeriod: "weekly",
       disciplineRiskPeriodDays: 5,
       maxDailyRiskBudget: 500,
+      
+      // Account lifecycle management
+      accountSource: "challenge",
+      resetCount: 0,
+      totalResetsCost: 0,
+      lifecycleStatus: "C",
+      liveAccountType: "prop_firm",
+      liveAccountConditions: null,
     },
   });
 
@@ -230,6 +238,28 @@ export default function Accounts() {
                                       <SelectItem value="challenge" className="text-white hover:bg-gray-600">Challenge</SelectItem>
                                       <SelectItem value="funded" className="text-white hover:bg-gray-600">Funded</SelectItem>
                                       <SelectItem value="live" className="text-white hover:bg-gray-600">Live</SelectItem>
+                                    </SelectContent>
+                                  </Select>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                            <FormField
+                              control={form.control}
+                              name="accountSource"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel className="text-white font-medium">Account Source</FormLabel>
+                                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                    <FormControl>
+                                      <SelectTrigger className="bg-gray-700 border-gray-600 text-white">
+                                        <SelectValue placeholder="Select source" />
+                                      </SelectTrigger>
+                                    </FormControl>
+                                    <SelectContent className="bg-gray-700 border-gray-600">
+                                      <SelectItem value="challenge" className="text-white hover:bg-gray-600">Challenge (Start with Challenge)</SelectItem>
+                                      <SelectItem value="direct_funded" className="text-white hover:bg-gray-600">Direct Funded (Skip Challenge)</SelectItem>
+                                      <SelectItem value="personal_live" className="text-white hover:bg-gray-600">Personal Live Account</SelectItem>
                                     </SelectContent>
                                   </Select>
                                   <FormMessage />

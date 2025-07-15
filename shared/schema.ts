@@ -31,8 +31,6 @@ export const accounts = pgTable("accounts", {
   // Financial Tracking
   accountCost: real("account_cost"), // Cost to purchase the account
   purchaseMethod: text("purchase_method"), // 'credit_card', 'paypal', 'crypto', 'bank_transfer', 'other'
-  resetCount: integer("reset_count").default(0), // Number of times account was reset
-  totalResetsCost: real("total_resets_cost").default(0), // Total cost of all resets
   activationCost: real("activation_cost"), // Cost to activate after passing challenge
   activationPaid: boolean("activation_paid").default(false), // Whether activation fee was paid
   includesActivationFee: boolean("includes_activation_fee").default(false), // If account cost includes activation
@@ -100,6 +98,24 @@ export const accounts = pgTable("accounts", {
   fundedAccountId: integer("funded_account_id").references(() => accounts.id), // For challenge accounts, links to funded account
   challengePassedDate: timestamp("challenge_passed_date"), // When challenge was passed
   transitionStatus: text("transition_status").default('none'), // 'none', 'eligible', 'converted', 'funded'
+  
+  // Account Type Selection and Lifecycle Management
+  accountSource: text("account_source").default('challenge'), // 'challenge', 'direct_funded', 'personal_live'
+  
+  // Account Status Tracking (for display labels)
+  resetCount: integer("reset_count").default(0), // Number of times account has been reset
+  totalResetsCost: real("total_resets_cost").default(0), // Total cost of all resets
+  
+  // Account Lifecycle Chain (for status labels like C>F>L, CR1>F, etc.)
+  lifecycleStatus: text("lifecycle_status").default('C'), // Current lifecycle status
+  
+  // Live Account Configuration
+  liveAccountType: text("live_account_type").default('prop_firm'), // 'prop_firm', 'personal_live'
+  
+  // Live Account Conditions (configured when transitioning to live)
+  liveAccountConditions: text("live_account_conditions"), // JSON string of live account conditions
+  
+
   
   createdAt: timestamp("created_at").defaultNow(),
 });

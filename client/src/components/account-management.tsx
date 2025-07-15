@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { RotateCcw, LogOut, Trash2, AlertTriangle, DollarSign, CheckCircle, ArrowRight } from "lucide-react";
@@ -27,6 +28,23 @@ export default function AccountManagement({ accounts }: AccountManagementProps) 
   const [selectedAccount, setSelectedAccount] = useState<Account | null>(null);
   const [isConversionDialogOpen, setIsConversionDialogOpen] = useState(false);
   const [selectedChallengeAccount, setSelectedChallengeAccount] = useState<Account | null>(null);
+  const [fundedAccountSettings, setFundedAccountSettings] = useState({
+    startingBalance: 50000,
+    profitTarget: 2500,
+    maxDrawdown: 4000,
+    dailyLossLimit: 2000,
+    profitSplit: 80,
+    payoutFrequency: 'weekly'
+  });
+  const [isLiveConversionDialogOpen, setIsLiveConversionDialogOpen] = useState(false);
+  const [selectedFundedAccount, setSelectedFundedAccount] = useState<Account | null>(null);
+  const [liveAccountSettings, setLiveAccountSettings] = useState({
+    liveAccountType: 'prop_firm',
+    profitSplit: 90,
+    payoutFrequency: 'on-demand',
+    minimumPayoutAmount: 500,
+    restrictions: 'Standard prop firm live account restrictions apply'
+  });
   const { toast } = useToast();
 
   const resetAccountMutation = useMutation({
@@ -94,19 +112,19 @@ export default function AccountManagement({ accounts }: AccountManagementProps) 
   const convertToFundedMutation = useMutation({
     mutationFn: async (challengeAccountId: number) => {
       return apiRequest("POST", `/api/accounts/${challengeAccountId}/convert-to-funded`, {
-        // Default funded account settings
-        startingBalance: 50000,
-        profitTarget: 2500,
-        maxDrawdown: 8,
-        dailyLossLimit: 2000,
+        // Use configured funded account settings
+        startingBalance: fundedAccountSettings.startingBalance,
+        profitTarget: fundedAccountSettings.profitTarget,
+        maxDrawdown: fundedAccountSettings.maxDrawdown,
+        dailyLossLimit: fundedAccountSettings.dailyLossLimit,
         daysRequiredForPayout: 5,
         winningDayMinimum: 200,
         minimumPayoutAmount: 100,
         maxNetBalanceForPayout: 2000,
         consistencyRulePercent: 50,
-        payoutFrequency: 'weekly',
+        payoutFrequency: fundedAccountSettings.payoutFrequency,
         maximumPayoutPercentage: 90,
-        profitSplit: 80
+        profitSplit: fundedAccountSettings.profitSplit
       });
     },
     onSuccess: (data) => {
@@ -126,6 +144,83 @@ export default function AccountManagement({ accounts }: AccountManagementProps) 
       });
     }
   });
+
+  const convertToLiveMutation = useMutation({
+    mutationFn: async (fundedAccountId: number) => {
+      return apiRequest("POST", `/api/accounts/${fundedAccountId}/convert-to-live`, {
+        // Use configured live account settings
+        liveAccountType: liveAccountSettings.liveAccountType,
+        profitSplit: liveAccountSettings.profitSplit,
+        payoutFrequency: liveAccountSettings.payoutFrequency,
+        minimumPayoutAmount: liveAccountSettings.minimumPayoutAmount,
+        restrictions: liveAccountSettings.restrictions
+      });
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ['/api/accounts'] });
+      setIsLiveConversionDialogOpen(false);
+      setSelectedFundedAccount(null);
+      toast({
+        title: "Funded Account Converted to Live!",
+        description: `Funded account converted to live account: ${data.liveAccount.name}`,
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Live Conversion Failed",
+        description: error.message || "Failed to convert funded account to live. Please try again.",
+        variant: "destructive",
+      });
+    }
+  });
+
+  // Generate lifecycle status label (C, C>F, C>F>L, CR1, CR2, DF, etc.)
+  const getLifecycleLabel = (account: Account) => {
+    const { accountSource, resetCount, type, lifecycleStatus } = account;
+    
+    // Handle direct funded accounts
+    if (accountSource === 'direct_funded') {
+      return type === 'funded' ? 'DF' : 'DF>L';
+    }
+    
+    // Handle personal live accounts
+    if (accountSource === 'personal_live') {
+      return 'PL';
+    }
+    
+    // Handle challenge-based accounts
+    let label = '';
+    
+    // Add reset count if applicable
+    if (resetCount > 0) {
+      label = `CR${resetCount}`;
+    } else {
+      label = 'C';
+    }
+    
+    // Add transitions for funded and live accounts
+    if (type === 'funded') {
+      label += '>F';
+      if (resetCount > 0) {
+        // If funded account is reset, it becomes FR1, FR2, etc.
+        label = `${label.replace('>F', '')}>FR${resetCount}`;
+      }
+    } else if (type === 'live') {
+      label += '>F>L';
+    }
+    
+    return label;
+  };
+
+  // Get color for lifecycle label
+  const getLifecycleLabelColor = (label: string) => {
+    if (label.includes('CR') || label.includes('FR')) return 'text-orange-400';
+    if (label.includes('DF')) return 'text-blue-400';
+    if (label.includes('PL')) return 'text-purple-400';
+    if (label.includes('L')) return 'text-green-400';
+    if (label.includes('F')) return 'text-yellow-400';
+    return 'text-gray-400';
+  };
 
   // Helper function to check if a challenge account is eligible for conversion
   const getChallengeEligibility = (account: Account) => {
@@ -287,7 +382,12 @@ export default function AccountManagement({ accounts }: AccountManagementProps) 
           <CardHeader className="pb-2">
             <div className="flex items-start justify-between">
               <div className="flex-1 min-w-0">
-                <CardTitle className="text-sm text-white mb-1 truncate">{account.name}</CardTitle>
+                <CardTitle className="text-sm text-white mb-1 truncate flex items-center gap-2">
+                  <span>{account.name}</span>
+                  <span className={`text-xs font-bold ${getLifecycleLabelColor(getLifecycleLabel(account))}`}>
+                    {getLifecycleLabel(account)}
+                  </span>
+                </CardTitle>
                 <div className="flex items-center gap-1 flex-wrap">
                   {getStatusBadge(account.status)}
                   <Badge variant="outline" className="text-xs text-blue-400 border-blue-400">
@@ -445,15 +545,75 @@ export default function AccountManagement({ accounts }: AccountManagementProps) 
                           🎉 Congratulations! Your challenge account has passed all requirements and is ready to be converted to a funded account.
                         </p>
                       </div>
-                      <div className="space-y-2">
-                        <h4 className="text-white font-semibold">New Funded Account Settings:</h4>
-                        <div className="text-sm text-gray-300 space-y-1">
-                          <p>• Starting Balance: $50,000</p>
-                          <p>• Profit Target: $2,500</p>
-                          <p>• Max Drawdown: 8%</p>
-                          <p>• Daily Loss Limit: $2,000</p>
-                          <p>• Profit Split: 80% (you keep 80%)</p>
-                          <p>• Payout Frequency: Weekly</p>
+                      
+                      <div className="bg-gray-800 p-4 rounded-lg space-y-4">
+                        <h4 className="text-white font-semibold">Configure Funded Account Settings:</h4>
+                        
+                        <div className="grid grid-cols-2 gap-4">
+                          <div>
+                            <Label className="text-gray-300">Starting Balance ($)</Label>
+                            <Input
+                              type="number"
+                              value={fundedAccountSettings.startingBalance}
+                              onChange={(e) => setFundedAccountSettings({...fundedAccountSettings, startingBalance: parseFloat(e.target.value) || 50000})}
+                              className="bg-gray-700 border-gray-600 text-white"
+                              placeholder="50000"
+                            />
+                          </div>
+                          <div>
+                            <Label className="text-gray-300">Profit Target ($)</Label>
+                            <Input
+                              type="number"
+                              value={fundedAccountSettings.profitTarget}
+                              onChange={(e) => setFundedAccountSettings({...fundedAccountSettings, profitTarget: parseFloat(e.target.value) || 2500})}
+                              className="bg-gray-700 border-gray-600 text-white"
+                              placeholder="2500"
+                            />
+                          </div>
+                          <div>
+                            <Label className="text-gray-300">Max Drawdown ($)</Label>
+                            <Input
+                              type="number"
+                              value={fundedAccountSettings.maxDrawdown}
+                              onChange={(e) => setFundedAccountSettings({...fundedAccountSettings, maxDrawdown: parseFloat(e.target.value) || 4000})}
+                              className="bg-gray-700 border-gray-600 text-white"
+                              placeholder="4000"
+                            />
+                          </div>
+                          <div>
+                            <Label className="text-gray-300">Daily Loss Limit ($)</Label>
+                            <Input
+                              type="number"
+                              value={fundedAccountSettings.dailyLossLimit}
+                              onChange={(e) => setFundedAccountSettings({...fundedAccountSettings, dailyLossLimit: parseFloat(e.target.value) || 2000})}
+                              className="bg-gray-700 border-gray-600 text-white"
+                              placeholder="2000"
+                            />
+                          </div>
+                          <div>
+                            <Label className="text-gray-300">Profit Split (%)</Label>
+                            <Input
+                              type="number"
+                              value={fundedAccountSettings.profitSplit}
+                              onChange={(e) => setFundedAccountSettings({...fundedAccountSettings, profitSplit: parseFloat(e.target.value) || 80})}
+                              className="bg-gray-700 border-gray-600 text-white"
+                              placeholder="80"
+                            />
+                          </div>
+                          <div>
+                            <Label className="text-gray-300">Payout Frequency</Label>
+                            <Select value={fundedAccountSettings.payoutFrequency} onValueChange={(value) => setFundedAccountSettings({...fundedAccountSettings, payoutFrequency: value})}>
+                              <SelectTrigger className="bg-gray-700 border-gray-600 text-white">
+                                <SelectValue placeholder="Select frequency" />
+                              </SelectTrigger>
+                              <SelectContent className="bg-gray-700 border-gray-600">
+                                <SelectItem value="daily" className="text-white hover:bg-gray-600">Daily</SelectItem>
+                                <SelectItem value="weekly" className="text-white hover:bg-gray-600">Weekly</SelectItem>
+                                <SelectItem value="bi-weekly" className="text-white hover:bg-gray-600">Bi-Weekly</SelectItem>
+                                <SelectItem value="monthly" className="text-white hover:bg-gray-600">Monthly</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
                         </div>
                       </div>
                       <div className="flex justify-end gap-3">
@@ -477,6 +637,124 @@ export default function AccountManagement({ accounts }: AccountManagementProps) 
                 </Dialog>
               );
             })()}
+
+            {/* Convert to Live Account (for funded accounts) */}
+            {account.type === 'funded' && (
+              <Dialog open={isLiveConversionDialogOpen && selectedFundedAccount?.id === account.id} onOpenChange={(open) => {
+                setIsLiveConversionDialogOpen(open);
+                if (open) setSelectedFundedAccount(account);
+                else setSelectedFundedAccount(null);
+              }}>
+                <DialogTrigger asChild>
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="border-purple-600 text-purple-400 hover:bg-purple-600 hover:text-white h-6 w-6 p-0"
+                  >
+                    <ArrowRight className="h-3 w-3" />
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="bg-gray-900 border-gray-700">
+                  <DialogHeader>
+                    <DialogTitle className="text-white flex items-center gap-2">
+                      <ArrowRight className="h-5 w-5 text-purple-400" />
+                      Convert to Live Account
+                    </DialogTitle>
+                  </DialogHeader>
+                  <div className="space-y-4">
+                    <div className="bg-purple-900/30 border border-purple-600/30 rounded-lg p-4">
+                      <p className="text-purple-300 text-sm">
+                        🎉 Convert your funded account to a live account with enhanced payout conditions and trading freedom.
+                      </p>
+                    </div>
+                    
+                    <div className="bg-gray-800 p-4 rounded-lg space-y-4">
+                      <h4 className="text-white font-semibold">Configure Live Account Settings:</h4>
+                      
+                      <div className="grid grid-cols-1 gap-4">
+                        <div>
+                          <Label className="text-gray-300">Account Type</Label>
+                          <Select value={liveAccountSettings.liveAccountType} onValueChange={(value) => setLiveAccountSettings({...liveAccountSettings, liveAccountType: value})}>
+                            <SelectTrigger className="bg-gray-700 border-gray-600 text-white">
+                              <SelectValue placeholder="Select account type" />
+                            </SelectTrigger>
+                            <SelectContent className="bg-gray-700 border-gray-600">
+                              <SelectItem value="prop_firm" className="text-white hover:bg-gray-600">Prop Firm Live</SelectItem>
+                              <SelectItem value="personal_live" className="text-white hover:bg-gray-600">Personal Live</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        
+                        <div>
+                          <Label className="text-gray-300">Enhanced Profit Split (%)</Label>
+                          <Input
+                            type="number"
+                            value={liveAccountSettings.profitSplit}
+                            onChange={(e) => setLiveAccountSettings({...liveAccountSettings, profitSplit: parseFloat(e.target.value) || 90})}
+                            className="bg-gray-700 border-gray-600 text-white"
+                            placeholder="90"
+                          />
+                        </div>
+                        
+                        <div>
+                          <Label className="text-gray-300">Payout Frequency</Label>
+                          <Select value={liveAccountSettings.payoutFrequency} onValueChange={(value) => setLiveAccountSettings({...liveAccountSettings, payoutFrequency: value})}>
+                            <SelectTrigger className="bg-gray-700 border-gray-600 text-white">
+                              <SelectValue placeholder="Select frequency" />
+                            </SelectTrigger>
+                            <SelectContent className="bg-gray-700 border-gray-600">
+                              <SelectItem value="on-demand" className="text-white hover:bg-gray-600">On-Demand</SelectItem>
+                              <SelectItem value="daily" className="text-white hover:bg-gray-600">Daily</SelectItem>
+                              <SelectItem value="weekly" className="text-white hover:bg-gray-600">Weekly</SelectItem>
+                              <SelectItem value="bi-weekly" className="text-white hover:bg-gray-600">Bi-Weekly</SelectItem>
+                              <SelectItem value="monthly" className="text-white hover:bg-gray-600">Monthly</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        
+                        <div>
+                          <Label className="text-gray-300">Minimum Payout Amount ($)</Label>
+                          <Input
+                            type="number"
+                            value={liveAccountSettings.minimumPayoutAmount}
+                            onChange={(e) => setLiveAccountSettings({...liveAccountSettings, minimumPayoutAmount: parseFloat(e.target.value) || 500})}
+                            className="bg-gray-700 border-gray-600 text-white"
+                            placeholder="500"
+                          />
+                        </div>
+                        
+                        <div>
+                          <Label className="text-gray-300">Trading Restrictions</Label>
+                          <Input
+                            value={liveAccountSettings.restrictions}
+                            onChange={(e) => setLiveAccountSettings({...liveAccountSettings, restrictions: e.target.value})}
+                            className="bg-gray-700 border-gray-600 text-white"
+                            placeholder="Standard prop firm live account restrictions apply"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div className="flex justify-end gap-3">
+                      <Button 
+                        variant="outline" 
+                        onClick={() => setIsLiveConversionDialogOpen(false)}
+                        className="border-gray-600 text-gray-300 hover:bg-gray-700"
+                      >
+                        Cancel
+                      </Button>
+                      <Button 
+                        onClick={() => convertToLiveMutation.mutate(account.id)}
+                        disabled={convertToLiveMutation.isPending}
+                        className="bg-purple-600 hover:bg-purple-700 text-white"
+                      >
+                        {convertToLiveMutation.isPending ? "Converting..." : "Convert to Live Account"}
+                      </Button>
+                    </div>
+                  </div>
+                </DialogContent>
+              </Dialog>
+            )}
 
             {/* Delete Account */}
             <AlertDialog>
