@@ -20,8 +20,8 @@ import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { formatCurrency, formatDate } from "@/lib/utils";
 import type { Account, Trade } from "@shared/schema";
-import { calculateRiskSuggestions, TRADING_ASSETS, type AssetSymbol } from "@/lib/risk-calculator";
-import { TRADING_ASSETS as ASSET_CONFIG, ASSET_CATEGORIES, getRiskSuggestion } from "@/lib/trading-assets";
+import { calculateRiskSuggestions, type AssetSymbol } from "@/lib/risk-calculator";
+import { TRADING_ASSETS, type TradingAsset } from "@/lib/trading-assets";
 import AccountManagement from "@/components/account-management";
 import { 
   Target, 
