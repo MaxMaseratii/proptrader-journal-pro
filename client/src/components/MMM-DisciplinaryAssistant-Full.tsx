@@ -1740,6 +1740,101 @@ export default function MMMDisciplinaryAssistant({ trades, accounts, selectedAcc
               </CardContent>
             </Card>
 
+            {/* Action Plan Progress Tracking */}
+            <Card className="bg-prop-card border-prop-gold/20">
+              <CardHeader>
+                <CardTitle className="text-prop-gold flex items-center">
+                  <Target className="h-5 w-5 mr-2" />
+                  Action Plan Progress Tracking
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-6">
+                  {/* 30-Day Action Plan Progress */}
+                  <div>
+                    <h4 className="text-white font-semibold mb-3">30-Day Foundation Plan</h4>
+                    <div className="space-y-3">
+                      {[
+                        { task: "Implement position sizing rules", completed: true, dueDate: "Day 5" },
+                        { task: "Set daily loss limits", completed: true, dueDate: "Day 7" },
+                        { task: "Practice stop-loss discipline", completed: false, dueDate: "Day 15" },
+                        { task: "Reduce revenge trading", completed: false, dueDate: "Day 20" },
+                        { task: "Improve emotional control", completed: false, dueDate: "Day 25" }
+                      ].map((item, index) => (
+                        <div key={index} className="flex items-center justify-between p-3 bg-gray-800/50 rounded-lg">
+                          <div className="flex items-center space-x-3">
+                            <input 
+                              type="checkbox" 
+                              checked={item.completed}
+                              className="w-4 h-4 text-prop-gold bg-gray-700 border-gray-600 rounded focus:ring-prop-gold"
+                              readOnly
+                            />
+                            <span className={`text-sm ${item.completed ? 'text-green-400 line-through' : 'text-gray-300'}`}>
+                              {item.task}
+                            </span>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <span className="text-xs text-gray-400">{item.dueDate}</span>
+                            <Badge className={`${item.completed ? 'bg-green-500/20 text-green-400' : 'bg-yellow-500/20 text-yellow-400'}`}>
+                              {item.completed ? 'Completed' : 'In Progress'}
+                            </Badge>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                    <div className="mt-3 text-sm text-gray-400">
+                      Progress: 2/5 tasks completed (40%)
+                    </div>
+                  </div>
+
+                  {/* 90-Day Action Plan Progress */}
+                  <div>
+                    <h4 className="text-white font-semibold mb-3">90-Day Advanced Plan</h4>
+                    <div className="space-y-3">
+                      {[
+                        { task: "Develop advanced risk management system", completed: false, dueDate: "Day 45" },
+                        { task: "Master psychological discipline", completed: false, dueDate: "Day 60" },
+                        { task: "Achieve consistent profitability", completed: false, dueDate: "Day 75" },
+                        { task: "Implement advanced strategies", completed: false, dueDate: "Day 90" }
+                      ].map((item, index) => (
+                        <div key={index} className="flex items-center justify-between p-3 bg-gray-800/50 rounded-lg">
+                          <div className="flex items-center space-x-3">
+                            <input 
+                              type="checkbox" 
+                              checked={item.completed}
+                              className="w-4 h-4 text-prop-gold bg-gray-700 border-gray-600 rounded focus:ring-prop-gold"
+                              readOnly
+                            />
+                            <span className={`text-sm ${item.completed ? 'text-green-400 line-through' : 'text-gray-300'}`}>
+                              {item.task}
+                            </span>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <span className="text-xs text-gray-400">{item.dueDate}</span>
+                            <Badge className="bg-blue-500/20 text-blue-400">
+                              Upcoming
+                            </Badge>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                    <div className="mt-3 text-sm text-gray-400">
+                      Progress: 0/4 tasks completed (0%)
+                    </div>
+                  </div>
+
+                  {/* Overall Action Plan Status */}
+                  <Alert className="bg-prop-gold/10 border-prop-gold/30">
+                    <Target className="h-4 w-4 text-prop-gold" />
+                    <AlertDescription className="text-prop-gold">
+                      <strong>Action Plan Status:</strong> You're 22% through your improvement journey. 
+                      Focus on completing stop-loss discipline practice to stay on track.
+                    </AlertDescription>
+                  </Alert>
+                </div>
+              </CardContent>
+            </Card>
+
             {/* Journal Entry Completion Check */}
             <Card className="bg-prop-card border-prop-gold/20">
               <CardHeader>
