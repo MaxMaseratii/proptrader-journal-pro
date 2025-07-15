@@ -443,7 +443,7 @@ export default function Dashboard() {
   }
 
   return (
-    <>
+    <div>
       {/* Enhanced Header */}
       <header className="bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 border-b border-gray-700 px-8 py-6">
         <div className="flex justify-between items-center">
@@ -2561,6 +2561,7 @@ export default function Dashboard() {
           </div>
         </DialogContent>
       </Dialog>
-    </>
+      </div>
+    </div>
   );
 }
