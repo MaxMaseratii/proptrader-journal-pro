@@ -216,9 +216,10 @@ export default function AccountManagement({ accounts }: AccountManagementProps) 
   const getLifecycleLabelColor = (label: string) => {
     if (label.includes('CR') || label.includes('FR')) return 'text-orange-400';
     if (label.includes('DF')) return 'text-blue-400';
-    if (label.includes('PL')) return 'text-purple-400';
-    if (label.includes('L')) return 'text-green-400';
-    if (label.includes('F')) return 'text-yellow-400';
+    if (label.includes('PL')) return 'text-yellow-400'; // Gold color for Personal Live
+    if (label.includes('L')) return 'text-yellow-400'; // Yellow for Live
+    if (label.includes('F')) return 'text-green-400'; // Green for Funded
+    if (label.includes('C')) return 'text-blue-400'; // Blue for Challenge
     return 'text-gray-400';
   };
 
@@ -535,10 +536,10 @@ export default function AccountManagement({ accounts }: AccountManagementProps) 
                         <CheckCircle className="h-5 w-5 text-green-400" />
                         Convert Challenge to Funded Account
                       </DialogTitle>
+                      <DialogDescription className="text-gray-300">
+                        Convert your passed challenge account to a funded account with new trading rules and payout eligibility.
+                      </DialogDescription>
                     </DialogHeader>
-                    <DialogDescription className="text-gray-300 sr-only">
-                      Convert your passed challenge account to a funded account with new trading rules and payout eligibility.
-                    </DialogDescription>
                     <div className="space-y-4">
                       <div className="bg-green-900/30 border border-green-600/30 rounded-lg p-4">
                         <p className="text-green-300 text-sm">
@@ -660,6 +661,9 @@ export default function AccountManagement({ accounts }: AccountManagementProps) 
                       <ArrowRight className="h-5 w-5 text-purple-400" />
                       Convert to Live Account
                     </DialogTitle>
+                    <DialogDescription className="text-gray-300">
+                      Convert your funded account to a live account with enhanced payout conditions and trading freedom.
+                    </DialogDescription>
                   </DialogHeader>
                   <div className="space-y-4">
                     <div className="bg-purple-900/30 border border-purple-600/30 rounded-lg p-4">

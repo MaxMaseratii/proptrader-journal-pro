@@ -21,6 +21,7 @@ export const accounts = pgTable("accounts", {
   riskPercentage: real("risk_percentage"), // Percentage of account to risk
   maxPositionSize: integer("max_position_size"), // Maximum contracts per trade
   maxTradesPerDay: integer("max_trades_per_day").default(0), // Maximum trades allowed per day (0 = unlimited)
+  maxRiskPerDay: real("max_risk_per_day"), // Maximum risk per day ($)
   preferredAssets: text("preferred_assets"), // JSON array of preferred trading instruments
   
   // Trading Asset Selection
@@ -64,7 +65,8 @@ export const accounts = pgTable("accounts", {
   maxNetBalanceForPayout: real("max_net_balance_for_payout"),
   consistencyRulePercent: real("consistency_rule_percent"), // Maximum net balance to get payout
   payoutFrequency: text("payout_frequency"), // 'daily', 'weekly', 'bi-weekly', 'monthly', 'on-demand'
-  maximumPayoutPercentage: real("maximum_payout_percentage"),
+  maximumPayoutAllowed: real("maximum_payout_allowed"), // Changed from percentage to dollar amount
+  maximumPayoutPerAccount: real("maximum_payout_per_account"), // Maximum payout allowed per account
   accountBufferRequired: boolean("account_buffer_required").default(false),
   bufferAmount: real("buffer_amount"),
   bufferPercentage: real("buffer_percentage"), // New field for percentage buffer

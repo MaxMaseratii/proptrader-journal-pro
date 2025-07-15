@@ -90,7 +90,8 @@ export default function Accounts() {
       payoutFrequency: "monthly",
       minimumPayoutAmount: 100,
       profitSplit: 80,
-      maximumPayoutPercentage: 90,
+      maximumPayoutAllowed: 5000,
+      maximumPayoutPerAccount: 2500,
       accountBufferRequired: false,
       bufferAmount: null,
       bufferPercentage: null,
@@ -100,6 +101,7 @@ export default function Accounts() {
       riskPercentage: null,
       maxPositionSize: null,
       maxTradesPerDay: 0,
+      maxRiskPerDay: null,
       preferredAssets: null,
       
       // Enhanced and Live Account Settings
@@ -236,8 +238,10 @@ export default function Accounts() {
                                     </FormControl>
                                     <SelectContent className="bg-gray-700 border-gray-600">
                                       <SelectItem value="challenge" className="text-white hover:bg-gray-600">Challenge</SelectItem>
-                                      <SelectItem value="funded" className="text-white hover:bg-gray-600">Funded</SelectItem>
-                                      <SelectItem value="live" className="text-white hover:bg-gray-600">Live</SelectItem>
+                                      <SelectItem value="funded" className="text-white hover:bg-gray-600">Funded (After passing challenge)</SelectItem>
+                                      <SelectItem value="direct_funded" className="text-white hover:bg-gray-600">Direct Funded (Purchased directly)</SelectItem>
+                                      <SelectItem value="live" className="text-white hover:bg-gray-600">Live Account (Funded → Live)</SelectItem>
+                                      <SelectItem value="personal_live" className="text-white hover:bg-gray-600">Personal Live (Your own account)</SelectItem>
                                     </SelectContent>
                                   </Select>
                                   <FormMessage />
@@ -452,7 +456,7 @@ export default function Accounts() {
                               name="minimumTradingDays"
                               render={({ field }) => (
                                 <FormItem>
-                                  <FormLabel className="text-white font-medium">Minimum Trading Days</FormLabel>
+                                  <FormLabel className="text-white font-medium">Minimum Trading Days Required to Pass</FormLabel>
                                   <FormControl>
                                     <Input 
                                       type="number" 
@@ -1356,20 +1360,39 @@ export default function Accounts() {
                             
                             <FormField
                               control={form.control}
-                              name="maximumPayoutPercentage"
+                              name="maximumPayoutAllowed"
                               render={({ field }) => (
                                 <FormItem>
-                                  <FormLabel className="text-white font-medium">Maximum Payout Percentage (%)</FormLabel>
+                                  <FormLabel className="text-white font-medium">Maximum Payout Allowed ($)</FormLabel>
                                   <FormControl>
                                     <Input 
                                       type="number" 
-                                      min="0"
-                                      max="100"
                                       {...field} 
                                       value={field.value || ""}
                                       onChange={(e) => field.onChange(e.target.value === "" ? null : parseFloat(e.target.value))}
                                       className="bg-gray-700 border-gray-600 text-white placeholder-gray-400"
-                                      placeholder="e.g., 90"
+                                      placeholder="e.g., 5000"
+                                    />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                            
+                            <FormField
+                              control={form.control}
+                              name="maximumPayoutPerAccount"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel className="text-white font-medium">Maximum Payout Allowed Per Account ($)</FormLabel>
+                                  <FormControl>
+                                    <Input 
+                                      type="number" 
+                                      {...field} 
+                                      value={field.value || ""}
+                                      onChange={(e) => field.onChange(e.target.value === "" ? null : parseFloat(e.target.value))}
+                                      className="bg-gray-700 border-gray-600 text-white placeholder-gray-400"
+                                      placeholder="e.g., 2500"
                                     />
                                   </FormControl>
                                   <FormMessage />
@@ -1657,7 +1680,7 @@ export default function Accounts() {
                             />
                           </div>
                           
-                          <div className="grid grid-cols-2 gap-4 mt-4">
+                          <div className="grid grid-cols-3 gap-4 mt-4">
                             <FormField
                               control={form.control}
                               name="riskPerTrade"
@@ -1672,6 +1695,27 @@ export default function Accounts() {
                                       onChange={(e) => field.onChange(e.target.value === "" ? null : parseFloat(e.target.value))}
                                       className="bg-gray-700 border-gray-600 text-white placeholder-gray-400"
                                       placeholder="e.g., 500"
+                                    />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                            
+                            <FormField
+                              control={form.control}
+                              name="maxRiskPerDay"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel className="text-white font-medium">Maximum Risk Per Day ($)</FormLabel>
+                                  <FormControl>
+                                    <Input 
+                                      type="number" 
+                                      {...field} 
+                                      value={field.value || ""}
+                                      onChange={(e) => field.onChange(e.target.value === "" ? null : parseFloat(e.target.value))}
+                                      className="bg-gray-700 border-gray-600 text-white placeholder-gray-400"
+                                      placeholder="e.g., 1000"
                                     />
                                   </FormControl>
                                   <FormMessage />
