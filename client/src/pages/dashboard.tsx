@@ -1242,35 +1242,7 @@ export default function Dashboard() {
             </div>
           </div>
 
-          {/* Manual Spending Entry */}
-          <div className="widget-container">
-            <div className="widget-content">
-              <div className="widget-left">
-                <p className="widget-label">Manual Spending Entry</p>
-                <div className="spending-quick-actions space-y-2">
-                  <Link href="/spending" className="block">
-                    <Button 
-                      variant="outline" 
-                      size="sm"
-                      className="w-full text-xs bg-blue-600 hover:bg-blue-700 text-white border-blue-600"
-                    >
-                      <Plus className="mr-1 h-3 w-3" />
-                      Add Spending
-                    </Button>
-                  </Link>
-                  <div className="recent-spending">
-                    <p className="text-xs text-gray-400">Recent spending: {formatCurrency(totalInvestment)}</p>
-                    <p className="text-xs text-gray-400">
-                      {spending?.length || 0} total entries
-                    </p>
-                  </div>
-                </div>
-              </div>
-              <div className="widget-icon-square">
-                <CreditCard className="widget-icon" />
-              </div>
-            </div>
-          </div>
+
         </div>
 
         {/* ROW 6: TRADING ANALYSIS & CALENDAR */}
@@ -1474,74 +1446,7 @@ export default function Dashboard() {
 
 
 
-        {/* Account Type Row - Reordered: Live, Funded, Challenge */}
-        <div className="widget-grid mb-6">
-          {/* Live Accounts - First Priority */}
-          <div className="widget-container">
-            <div className="widget-content">
-              <div className="widget-left">
-                <p className="widget-label">Live Accounts</p>
-                <p className={`widget-value ${getValueColor(
-                  accounts?.filter(acc => acc.status === 'active')
-                    .reduce((sum, acc) => sum + acc.startingBalance + (trades?.filter(t => t.accountId === acc.id).reduce((sum, trade) => sum + (trade.pnl || 0), 0) || 0), 0) || 0
-                )}`}>
-                  {formatCurrency(
-                    accounts?.filter(acc => acc.status === 'active')
-                      .reduce((sum, acc) => sum + acc.startingBalance + (trades?.filter(t => t.accountId === acc.id).reduce((sum, trade) => sum + (trade.pnl || 0), 0) || 0), 0) || 0
-                  )}
-                </p>
-                <p className="widget-description">
-                  {accounts?.filter(acc => acc.status === 'active').length || 0} accounts • Payout eligible
-                </p>
-              </div>
-              <div className="widget-icon-square">
-                <TrendingUp className="widget-icon" />
-              </div>
-            </div>
-          </div>
 
-          {/* Funded Accounts - Second Priority */}
-          <div className="widget-container">
-            <div className="widget-content">
-              <div className="widget-left">
-                <p className="widget-label">Funded Accounts</p>
-                <p className="widget-value">
-                  {formatCurrency(
-                    accounts?.filter(acc => acc.status === 'funded')
-                      .reduce((sum, acc) => sum + acc.startingBalance + (trades?.filter(t => t.accountId === acc.id).reduce((sum, trade) => sum + (trade.pnl || 0), 0) || 0), 0) || 0
-                  )}
-                </p>
-                <p className="widget-description">
-                  {accounts?.filter(acc => acc.status === 'funded').length || 0} accounts • Payout eligible
-                </p>
-              </div>
-              <div className="widget-icon-square">
-                <DollarSign className="widget-icon" />
-              </div>
-            </div>
-          </div>
-
-          {/* Challenge Accounts - Third Priority */}
-          <div className="widget-container">
-            <div className="widget-content">
-              <div className="widget-left">
-                <p className="widget-label">Challenge Accounts</p>
-                <p className="widget-value">
-                  {formatCurrency(
-                    accounts?.filter(acc => acc.type === 'challenge')
-                      .reduce((sum, acc) => sum + acc.currentBalance, 0) || 0
-                  )}
-                </p>
-                <p className="widget-description">
-                  {accounts?.filter(acc => acc.type === 'challenge').length || 0} accounts • No payouts
-                </p>
-              </div>
-              <div className="widget-icon-square">
-                <Target className="widget-icon" />
-              </div>
-            </div>
-          </div>
-        </div>
 
         {/* Active Accounts & Disciplinary Score Widget */}
         <div className="widget-grid mb-6">
@@ -1725,34 +1630,7 @@ export default function Dashboard() {
             </div>
           </div>
 
-          <div className="widget-container">
-            <div className="widget-content">
-              <div className="widget-left">
-                <p className="widget-label">Manual Spending</p>
-                <p className="widget-value">
-                  {formatCurrency((() => {
-                    if (!spending || !accounts) return 0;
-                    let spendings: any[] = [];
-                    
-                    if (accountSelectionMode === 'all') {
-                      spendings = spending;
-                    } else if (accountSelectionMode === 'single' && selectedAccountIds.length > 0) {
-                      spendings = spending.filter(s => s.accountId === selectedAccountIds[0]);
-                    } else {
-                      const accountIdsToUse = selectedAccountIds.length > 0 ? selectedAccountIds : (accounts.length > 0 ? [accounts[0].id] : []);
-                      spendings = spending.filter(s => accountIdsToUse.includes(s.accountId));
-                    }
-                    
-                    return spendings.reduce((sum, spending) => sum + spending.amount, 0);
-                  })())}
-                </p>
-                <p className="widget-description">Selected accounts spending</p>
-              </div>
-              <div className="widget-icon-square">
-                <Plus className="widget-icon" />
-              </div>
-            </div>
-          </div>
+
 
           <div className="widget-container">
             <div className="widget-content">
@@ -2424,82 +2302,7 @@ export default function Dashboard() {
             </div>
           </div>
 
-          {/* Weekly Performance */}
-          <div className="widget-container">
-            <div className="widget-content flex-col">
-              <div className="widget-left mb-4">
-                <p className="widget-label">Weekly Performance</p>
-                <p className="widget-description">This week's trading results</p>
-              </div>
-              <div className="grid grid-cols-7 gap-1 mb-4">
-                {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
-                  <div key={day} className="text-center text-sm font-medium text-gray-400 p-2">
-                    {day}
-                  </div>
-                ))}
-              </div>
-              <div className="grid grid-cols-7 gap-1">
-                {(() => {
-                  const getCurrentWeekDays = () => {
-                    const today = new Date();
-                    const dayOfWeek = today.getDay(); // 0 = Sunday, 1 = Monday, etc.
-                    const startOfWeek = new Date(today);
-                    startOfWeek.setDate(today.getDate() - dayOfWeek);
-                    
-                    const weekDays = [];
-                    for (let i = 0; i < 7; i++) {
-                      const day = new Date(startOfWeek);
-                      day.setDate(startOfWeek.getDate() + i);
-                      weekDays.push(day);
-                    }
-                    return weekDays;
-                  };
 
-                  const weekDays = getCurrentWeekDays();
-                  
-                  return weekDays.map((day, index) => {
-                    const dayStr = day.toISOString().split('T')[0];
-                    
-                    // Filter trades based on account selection
-                    const filteredTrades = selectedAccountIds.length > 0
-                      ? trades?.filter(t => selectedAccountIds.includes(t.accountId)) || []
-                      : trades || [];
-                    
-                    const dayTrades = filteredTrades.filter(trade => trade.date === dayStr) || [];
-                    const dayPnL = dayTrades.reduce((sum, trade) => sum + (trade.pnl || 0), 0);
-                    const isToday = day.toDateString() === new Date().toDateString();
-                    
-                    return (
-                      <div 
-                        key={index} 
-                        className={`
-                          relative p-3 rounded-lg border transition-all duration-300
-                          ${isToday ? 'border-gold bg-gold/10' : 'border-gray-700 bg-gray-800/50'}
-                          ${dayTrades.length > 0 ? 'hover:scale-105 cursor-pointer' : ''}
-                        `}
-                      >
-                        <div className="text-center">
-                          <div className="text-sm font-medium text-white mb-1">
-                            {day.getDate()}
-                          </div>
-                          {dayTrades.length > 0 && (
-                            <>
-                              <div className={`text-xs font-semibold ${dayPnL >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-                                {dayPnL >= 0 ? '+' : ''}${dayPnL.toFixed(2)}
-                              </div>
-                              <div className="text-xs text-gray-400">
-                                {dayTrades.length} trades
-                              </div>
-                            </>
-                          )}
-                        </div>
-                      </div>
-                    );
-                  });
-                })()}
-              </div>
-            </div>
-          </div>
         </div>
 
 
