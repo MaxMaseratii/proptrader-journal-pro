@@ -574,12 +574,15 @@ export default function AccountManagement({ accounts }: AccountManagementProps) 
                         </DialogHeader>
                         <div className="space-y-4">
                           <div className="bg-green-900/30 border border-green-600/30 rounded-lg p-4">
-                            <p className="text-green-300 text-sm">
-                              This challenge account has met all requirements and is ready to be converted to a funded account.
+                            <p className="text-green-300 text-sm flex items-center gap-2">
+                              🎉 Congratulations! Your challenge account has passed all requirements and is ready to be converted to a funded account.
                             </p>
                           </div>
-                          <div className="space-y-4">
-                            <div className="grid grid-cols-2 gap-4">
+                          
+                          <div className="bg-gray-800 p-4 rounded-lg">
+                            <h3 className="text-lg font-semibold text-white mb-4">Configure Funded Account Settings:</h3>
+                            <div className="space-y-4">
+                              <div className="grid grid-cols-2 gap-4">
                               <div>
                                 <Label className="text-gray-300">Starting Balance ($)</Label>
                                 <Input
@@ -756,6 +759,7 @@ export default function AccountManagement({ accounts }: AccountManagementProps) 
                                 </SelectContent>
                               </Select>
                             </div>
+                          </div>
                           </div>
                           <div className="flex justify-end gap-3">
                             <Button 
