@@ -1029,22 +1029,109 @@ export default function Dashboard() {
             <div className="widget-content">
               <div className="widget-left">
                 <p className="widget-label">Account Discipline Analysis</p>
-                <div className="discipline-breakdown space-y-1">
-                  <div className="risk-management flex justify-between">
-                    <span className="text-sm">Risk Management:</span>
-                    <span className="text-sm font-semibold text-green-400">98%</span>
-                  </div>
-                  <div className="stop-loss-respect flex justify-between">
-                    <span className="text-sm">Stop Loss Respect:</span>
-                    <span className="text-sm font-semibold text-green-400">94%</span>
-                  </div>
-                  <div className="profit-target flex justify-between">
-                    <span className="text-sm">Profit Target Hit:</span>
-                    <span className="text-sm font-semibold text-yellow-400">67%</span>
-                  </div>
-                </div>
+                {(() => {
+                  // Calculate discipline metrics using same algorithm as MMM Disciplinary Coach
+                  const filteredTrades = selectedAccountIds.length > 0
+                    ? trades?.filter(t => selectedAccountIds.includes(t.accountId)) || []
+                    : trades || [];
+                  
+                  if (filteredTrades.length === 0) {
+                    return (
+                      <div className="discipline-breakdown space-y-1">
+                        <div className="text-center">
+                          <span className="text-sm text-gray-400">No trades to analyze</span>
+                        </div>
+                      </div>
+                    );
+                  }
+                  
+                  const totalTrades = filteredTrades.length;
+                  const winningTrades = filteredTrades.filter(t => (t.pnl || 0) > 0);
+                  const winRate = winningTrades.length / totalTrades;
+                  
+                  // Risk management analysis
+                  const overRiskedTrades = filteredTrades.filter(t => {
+                    const riskAmount = Math.abs((t.entryPrice || 0) - (t.initialStopLoss || 0)) * (t.quantity || 1);
+                    return riskAmount > 1000;
+                  }).length;
+                  
+                  const riskManagementScore = Math.max(0, 100 - (overRiskedTrades / totalTrades) * 100);
+                  
+                  // Stop loss violations
+                  const stopLossViolations = filteredTrades.filter(t => 
+                    t.initialStopLoss && t.finalStopLoss && t.initialStopLoss !== t.finalStopLoss
+                  ).length;
+                  const stopLossRespect = Math.max(0, 100 - (stopLossViolations / totalTrades) * 100);
+                  
+                  // Profit target analysis
+                  const profitTargetHits = filteredTrades.filter(t => 
+                    t.initialTakeProfit && t.exitPrice && Math.abs(t.exitPrice - t.initialTakeProfit) < 10
+                  ).length;
+                  const profitTargetHitRate = (profitTargetHits / totalTrades) * 100;
+                  
+                  const overallScore = (riskManagementScore + stopLossRespect + profitTargetHitRate) / 3;
+                  
+                  return (
+                    <div className="discipline-breakdown space-y-1">
+                      <div className="risk-management flex justify-between">
+                        <span className="text-sm">Risk Management:</span>
+                        <span className={`text-sm font-semibold ${riskManagementScore >= 80 ? 'text-green-400' : riskManagementScore >= 60 ? 'text-yellow-400' : 'text-red-400'}`}>
+                          {riskManagementScore.toFixed(0)}%
+                        </span>
+                      </div>
+                      <div className="stop-loss-respect flex justify-between">
+                        <span className="text-sm">Stop Loss Respect:</span>
+                        <span className={`text-sm font-semibold ${stopLossRespect >= 80 ? 'text-green-400' : stopLossRespect >= 60 ? 'text-yellow-400' : 'text-red-400'}`}>
+                          {stopLossRespect.toFixed(0)}%
+                        </span>
+                      </div>
+                      <div className="profit-target flex justify-between">
+                        <span className="text-sm">Profit Target Hit:</span>
+                        <span className={`text-sm font-semibold ${profitTargetHitRate >= 60 ? 'text-green-400' : profitTargetHitRate >= 40 ? 'text-yellow-400' : 'text-red-400'}`}>
+                          {profitTargetHitRate.toFixed(0)}%
+                        </span>
+                      </div>
+                    </div>
+                  );
+                })()}
                 <p className="widget-description text-xs">
-                  Overall: {Math.round(combinedAnalytics?.disciplinedScore || 86)}B Grade
+                  Overall: {(() => {
+                    const filteredTrades = selectedAccountIds.length > 0
+                      ? trades?.filter(t => selectedAccountIds.includes(t.accountId)) || []
+                      : trades || [];
+                    
+                    if (filteredTrades.length === 0) return 'No data';
+                    
+                    const totalTrades = filteredTrades.length;
+                    const winningTrades = filteredTrades.filter(t => (t.pnl || 0) > 0);
+                    const winRate = winningTrades.length / totalTrades;
+                    
+                    const overRiskedTrades = filteredTrades.filter(t => {
+                      const riskAmount = Math.abs((t.entryPrice || 0) - (t.initialStopLoss || 0)) * (t.quantity || 1);
+                      return riskAmount > 1000;
+                    }).length;
+                    
+                    const riskManagementScore = Math.max(0, 100 - (overRiskedTrades / totalTrades) * 100);
+                    const stopLossViolations = filteredTrades.filter(t => 
+                      t.initialStopLoss && t.finalStopLoss && t.initialStopLoss !== t.finalStopLoss
+                    ).length;
+                    const stopLossRespect = Math.max(0, 100 - (stopLossViolations / totalTrades) * 100);
+                    const profitTargetHits = filteredTrades.filter(t => 
+                      t.initialTakeProfit && t.exitPrice && Math.abs(t.exitPrice - t.initialTakeProfit) < 10
+                    ).length;
+                    const profitTargetHitRate = (profitTargetHits / totalTrades) * 100;
+                    
+                    const overallScore = (riskManagementScore + stopLossRespect + profitTargetHitRate) / 3;
+                    
+                    let grade = 'F';
+                    if (overallScore >= 90) grade = 'A+';
+                    else if (overallScore >= 80) grade = 'A';
+                    else if (overallScore >= 70) grade = 'B';
+                    else if (overallScore >= 60) grade = 'C';
+                    else if (overallScore >= 50) grade = 'D';
+                    
+                    return `${overallScore.toFixed(0)}% ${grade} Grade`;
+                  })()}
                 </p>
               </div>
               <div className="widget-icon-square">
