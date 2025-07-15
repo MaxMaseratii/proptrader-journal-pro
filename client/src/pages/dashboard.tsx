@@ -720,7 +720,7 @@ export default function Dashboard() {
                       >
                         <div className="text-left h-full flex flex-col justify-between">
                           <div className="text-center mb-2">
-                            <div className="text-sm font-bold bg-gradient-to-r from-gold to-yellow-400 bg-clip-text text-transparent">
+                            <div className="text-sm font-bold text-gold border-b border-gold/30 pb-1">
                               {dayLabels[index]} {day.getDate()}
                             </div>
                           </div>
