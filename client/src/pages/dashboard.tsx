@@ -1049,8 +1049,15 @@ export default function Dashboard() {
                   const disciplineMetrics = calculateComprehensiveDisciplineMetrics(
                     filteredTrades,
                     accounts || [],
-                    selectedAccountIds.length === 1 ? selectedAccountIds[0].toString() : undefined
+                    selectedAccountIds.length === 1 ? selectedAccountIds[0].toString() : "all"
                   );
+                  
+                  let grade = 'F';
+                  if (disciplineMetrics.disciplineScore >= 90) grade = 'A+';
+                  else if (disciplineMetrics.disciplineScore >= 80) grade = 'A';
+                  else if (disciplineMetrics.disciplineScore >= 70) grade = 'B';
+                  else if (disciplineMetrics.disciplineScore >= 60) grade = 'C';
+                  else if (disciplineMetrics.disciplineScore >= 50) grade = 'D';
                   
                   return (
                     <div className="discipline-breakdown space-y-1">
@@ -1072,33 +1079,17 @@ export default function Dashboard() {
                           {disciplineMetrics.consistencyScore.toFixed(0)}%
                         </span>
                       </div>
+                      <div className="overall-score pt-2 border-t border-gray-700">
+                        <div className="flex justify-between">
+                          <span className="text-sm font-semibold">Overall Score:</span>
+                          <span className={`text-sm font-bold ${disciplineMetrics.disciplineScore >= 70 ? 'text-green-400' : disciplineMetrics.disciplineScore >= 50 ? 'text-yellow-400' : 'text-red-400'}`}>
+                            {disciplineMetrics.disciplineScore.toFixed(0)}% {grade} Grade
+                          </span>
+                        </div>
+                      </div>
                     </div>
                   );
                 })()}
-                <p className="widget-description text-xs">
-                  Overall: {(() => {
-                    const filteredTrades = selectedAccountIds.length > 0
-                      ? trades?.filter(t => selectedAccountIds.includes(t.accountId)) || []
-                      : trades || [];
-                    
-                    if (filteredTrades.length === 0) return 'No data';
-                    
-                    const disciplineMetrics = calculateComprehensiveDisciplineMetrics(
-                      filteredTrades,
-                      accounts || [],
-                      selectedAccountIds.length === 1 ? selectedAccountIds[0].toString() : undefined
-                    );
-                    
-                    let grade = 'F';
-                    if (disciplineMetrics.disciplineScore >= 90) grade = 'A+';
-                    else if (disciplineMetrics.disciplineScore >= 80) grade = 'A';
-                    else if (disciplineMetrics.disciplineScore >= 70) grade = 'B';
-                    else if (disciplineMetrics.disciplineScore >= 60) grade = 'C';
-                    else if (disciplineMetrics.disciplineScore >= 50) grade = 'D';
-                    
-                    return `${disciplineMetrics.disciplineScore.toFixed(0)}% ${grade} Grade`;
-                  })()}
-                </p>
               </div>
               <div className="widget-icon-square">
                 <Brain className="widget-icon" />
