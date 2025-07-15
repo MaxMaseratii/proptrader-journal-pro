@@ -591,6 +591,89 @@ export default function Dashboard() {
       )}
 
       <div className="p-4 space-y-4">
+        
+        {/* Weekly Performance Calendar - Top of Dashboard */}
+        <div className="mb-8">
+          <h2 className="text-xl font-bold text-gradient-rainbow mb-6 flex items-center border-b border-gray-700 pb-3">
+            <Calendar className="mr-3 h-5 w-5 text-prop-gold" />
+            Weekly Performance Calendar
+          </h2>
+          <div className="widget-container">
+            <div className="widget-content flex-col">
+              <div className="widget-left mb-4">
+                <p className="widget-label">Weekly Performance</p>
+                <p className="widget-description">This week's trading results</p>
+              </div>
+              <div className="grid grid-cols-7 gap-1 mb-4">
+                {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
+                  <div key={day} className="text-center text-sm font-medium text-gray-400 p-2">
+                    {day}
+                  </div>
+                ))}
+              </div>
+              <div className="grid grid-cols-7 gap-1">
+                {(() => {
+                  const getCurrentWeekDays = () => {
+                    const today = new Date();
+                    const dayOfWeek = today.getDay(); // 0 = Sunday, 1 = Monday, etc.
+                    const startOfWeek = new Date(today);
+                    startOfWeek.setDate(today.getDate() - dayOfWeek);
+                    
+                    const weekDays = [];
+                    for (let i = 0; i < 7; i++) {
+                      const day = new Date(startOfWeek);
+                      day.setDate(startOfWeek.getDate() + i);
+                      weekDays.push(day);
+                    }
+                    return weekDays;
+                  };
+
+                  const weekDays = getCurrentWeekDays();
+                  
+                  return weekDays.map((day, index) => {
+                    const dayStr = day.toISOString().split('T')[0];
+                    
+                    // Filter trades based on account selection
+                    const filteredTrades = selectedAccountIds.length > 0
+                      ? trades?.filter(t => selectedAccountIds.includes(t.accountId)) || []
+                      : trades || [];
+                    
+                    const dayTrades = filteredTrades.filter(trade => trade.date === dayStr) || [];
+                    const dayPnL = dayTrades.reduce((sum, trade) => sum + (trade.pnl || 0), 0);
+                    const isToday = day.toDateString() === new Date().toDateString();
+                    
+                    return (
+                      <div 
+                        key={index} 
+                        className={`
+                          relative p-3 rounded-lg border transition-all duration-300
+                          ${isToday ? 'border-gold bg-gold/10' : 'border-gray-700 bg-gray-800/50'}
+                          ${dayTrades.length > 0 ? 'hover:scale-105 cursor-pointer' : ''}
+                        `}
+                      >
+                        <div className="text-center">
+                          <div className="text-sm font-medium text-white mb-1">
+                            {day.getDate()}
+                          </div>
+                          {dayTrades.length > 0 && (
+                            <>
+                              <div className={`text-xs font-semibold ${dayPnL >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                                {dayPnL >= 0 ? '+' : ''}${dayPnL.toFixed(2)}
+                              </div>
+                              <div className="text-xs text-gray-400">
+                                {dayTrades.length} trades
+                              </div>
+                            </>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  });
+                })()}
+              </div>
+            </div>
+          </div>
+        </div>
 
 
         {/* COMPACT DASHBOARD: NO EMPTY SPACES */}
@@ -2227,7 +2310,7 @@ export default function Dashboard() {
 
 
         {/* Charts Section */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+        <div className="grid grid-cols-1 gap-6 mb-8">
           {/* Account Equity Curve */}
           <div className="widget-container">
             <div className="widget-content flex-col">
@@ -2237,83 +2320,6 @@ export default function Dashboard() {
               </div>
               <div className="h-64 w-full">
                 <EquityChart data={getEquityData()} />
-              </div>
-            </div>
-          </div>
-
-          {/* Weekly Performance */}
-          <div className="widget-container">
-            <div className="widget-content flex-col">
-              <div className="widget-left mb-4">
-                <p className="widget-label">Weekly Performance</p>
-                <p className="widget-description">This week's trading results</p>
-              </div>
-              <div className="grid grid-cols-7 gap-1 mb-4">
-                {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
-                  <div key={day} className="text-center text-sm font-medium text-gray-400 p-2">
-                    {day}
-                  </div>
-                ))}
-              </div>
-              <div className="grid grid-cols-7 gap-1">
-                {(() => {
-                  const getCurrentWeekDays = () => {
-                    const today = new Date();
-                    const dayOfWeek = today.getDay(); // 0 = Sunday, 1 = Monday, etc.
-                    const startOfWeek = new Date(today);
-                    startOfWeek.setDate(today.getDate() - dayOfWeek);
-                    
-                    const weekDays = [];
-                    for (let i = 0; i < 7; i++) {
-                      const day = new Date(startOfWeek);
-                      day.setDate(startOfWeek.getDate() + i);
-                      weekDays.push(day);
-                    }
-                    return weekDays;
-                  };
-
-                  const weekDays = getCurrentWeekDays();
-                  
-                  return weekDays.map((day, index) => {
-                    const dayStr = day.toISOString().split('T')[0];
-                    
-                    // Filter trades based on account selection
-                    const filteredTrades = selectedAccountIds.length > 0
-                      ? trades?.filter(t => selectedAccountIds.includes(t.accountId)) || []
-                      : trades || [];
-                    
-                    const dayTrades = filteredTrades.filter(trade => trade.date === dayStr) || [];
-                    const dayPnL = dayTrades.reduce((sum, trade) => sum + (trade.pnl || 0), 0);
-                    const isToday = day.toDateString() === new Date().toDateString();
-                    
-                    return (
-                      <div 
-                        key={index} 
-                        className={`
-                          relative p-3 rounded-lg border transition-all duration-300
-                          ${isToday ? 'border-gold bg-gold/10' : 'border-gray-700 bg-gray-800/50'}
-                          ${dayTrades.length > 0 ? 'hover:scale-105 cursor-pointer' : ''}
-                        `}
-                      >
-                        <div className="text-center">
-                          <div className="text-sm font-medium text-white mb-1">
-                            {day.getDate()}
-                          </div>
-                          {dayTrades.length > 0 && (
-                            <>
-                              <div className={`text-xs font-semibold ${dayPnL >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-                                {dayPnL >= 0 ? '+' : ''}${dayPnL.toFixed(2)}
-                              </div>
-                              <div className="text-xs text-gray-400">
-                                {dayTrades.length} trades
-                              </div>
-                            </>
-                          )}
-                        </div>
-                      </div>
-                    );
-                  });
-                })()}
               </div>
             </div>
           </div>
