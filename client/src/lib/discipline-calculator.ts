@@ -247,14 +247,7 @@ export const calculateComprehensiveDisciplineMetrics = (
   const tradingExcessLosses = (avgLoss * revengeTradesCount) + (avgLoss * fomoTradesCount * 0.5);
   const totalExcessLosses = Math.max(0, tradingExcessLosses);
 
-  console.log('=== DISCIPLINE CALCULATOR DEBUG ===');
-  console.log('selectedAccountId:', selectedAccountId);
-  console.log('accountTrades length:', accountTrades.length);
-  console.log('disciplineScore:', disciplineScore);
-  console.log('riskManagementScore:', riskManagementScore);
-  console.log('emotionalControlScore:', emotionalControlScore);
-  console.log('consistencyScore:', consistencyScore);
-  console.log('=== END DEBUG ===');
+
 
   return {
     totalTrades,
