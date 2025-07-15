@@ -799,68 +799,7 @@ export default function Dashboard() {
             </div>
           </div>
 
-          {/* Weekly Navigation */}
-          <div className="widget-container">
-            <div className="widget-content">
-              <div className="widget-left">
-                <div className="weekly-navigation-header flex items-center justify-between mb-2">
-                  <button 
-                    onClick={() => {
-                      const newDate = new Date(calendarDate.getTime() - 7 * 24 * 60 * 60 * 1000);
-                      setCalendarDate(newDate);
-                    }}
-                    className="text-white hover:text-blue-400 transition-colors px-2"
-                  >
-                    ←
-                  </button>
-                  <span className="text-white font-semibold text-xs">
-                    W{Math.ceil(calendarDate.getDate() / 7)} {calendarDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} {calendarDate.getFullYear().toString().slice(-2)}
-                  </span>
-                  <button 
-                    onClick={() => {
-                      const newDate = new Date(calendarDate.getTime() + 7 * 24 * 60 * 60 * 1000);
-                      setCalendarDate(newDate);
-                    }}
-                    className="text-white hover:text-blue-400 transition-colors px-2"
-                  >
-                    →
-                  </button>
-                </div>
-                {(() => {
-                  const filteredTrades = selectedAccountIds.length > 0
-                    ? trades?.filter(t => selectedAccountIds.includes(t.accountId)) || []
-                    : trades || [];
-                  
-                  if (filteredTrades.length === 0) {
-                    return (
-                      <div>
-                        <p className="widget-value text-gray-400">No Data</p>
-                        <p className="widget-description text-xs">No trades for selected account(s)</p>
-                      </div>
-                    );
-                  }
-                  
-                  const weeklyPnl = filteredTrades.reduce((sum, trade) => sum + (trade.pnl || 0), 0);
-                  const winRate = filteredTrades.length > 0 ? 
-                    (filteredTrades.filter(t => t.pnl > 0).length / filteredTrades.length) * 100 : 0;
-                  
-                  return (
-                    <div>
-                      <p className={`widget-value ${getValueColor(weeklyPnl)}`}>
-                        {formatCurrency(weeklyPnl)}
-                      </p>
-                      <p className="widget-description text-xs">
-                        {filteredTrades.length} trades • {Math.round(winRate)}% win rate
-                      </p>
-                    </div>
-                  );
-                })()}
-              </div>
-              <div className="widget-icon-square">
-                <Calendar className="widget-icon" />
-              </div>
-            </div>
-          </div>
+
 
           {/* Discipline Score */}
           <div className="widget-container">
@@ -2302,7 +2241,82 @@ export default function Dashboard() {
             </div>
           </div>
 
+          {/* Weekly Performance */}
+          <div className="widget-container">
+            <div className="widget-content flex-col">
+              <div className="widget-left mb-4">
+                <p className="widget-label">Weekly Performance</p>
+                <p className="widget-description">This week's trading results</p>
+              </div>
+              <div className="grid grid-cols-7 gap-1 mb-4">
+                {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
+                  <div key={day} className="text-center text-sm font-medium text-gray-400 p-2">
+                    {day}
+                  </div>
+                ))}
+              </div>
+              <div className="grid grid-cols-7 gap-1">
+                {(() => {
+                  const getCurrentWeekDays = () => {
+                    const today = new Date();
+                    const dayOfWeek = today.getDay(); // 0 = Sunday, 1 = Monday, etc.
+                    const startOfWeek = new Date(today);
+                    startOfWeek.setDate(today.getDate() - dayOfWeek);
+                    
+                    const weekDays = [];
+                    for (let i = 0; i < 7; i++) {
+                      const day = new Date(startOfWeek);
+                      day.setDate(startOfWeek.getDate() + i);
+                      weekDays.push(day);
+                    }
+                    return weekDays;
+                  };
 
+                  const weekDays = getCurrentWeekDays();
+                  
+                  return weekDays.map((day, index) => {
+                    const dayStr = day.toISOString().split('T')[0];
+                    
+                    // Filter trades based on account selection
+                    const filteredTrades = selectedAccountIds.length > 0
+                      ? trades?.filter(t => selectedAccountIds.includes(t.accountId)) || []
+                      : trades || [];
+                    
+                    const dayTrades = filteredTrades.filter(trade => trade.date === dayStr) || [];
+                    const dayPnL = dayTrades.reduce((sum, trade) => sum + (trade.pnl || 0), 0);
+                    const isToday = day.toDateString() === new Date().toDateString();
+                    
+                    return (
+                      <div 
+                        key={index} 
+                        className={`
+                          relative p-3 rounded-lg border transition-all duration-300
+                          ${isToday ? 'border-gold bg-gold/10' : 'border-gray-700 bg-gray-800/50'}
+                          ${dayTrades.length > 0 ? 'hover:scale-105 cursor-pointer' : ''}
+                        `}
+                      >
+                        <div className="text-center">
+                          <div className="text-sm font-medium text-white mb-1">
+                            {day.getDate()}
+                          </div>
+                          {dayTrades.length > 0 && (
+                            <>
+                              <div className={`text-xs font-semibold ${dayPnL >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                                {dayPnL >= 0 ? '+' : ''}${dayPnL.toFixed(2)}
+                              </div>
+                              <div className="text-xs text-gray-400">
+                                {dayTrades.length} trades
+                              </div>
+                            </>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  });
+                })()}
+              </div>
+            </div>
+          </div>
         </div>
 
 
