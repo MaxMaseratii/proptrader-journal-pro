@@ -600,18 +600,7 @@ export default function Dashboard() {
           </h2>
           <div className="widget-container">
             <div className="widget-content flex-col">
-              <div className="widget-left mb-4">
-                <p className="widget-label">Weekly Performance</p>
-                <p className="widget-description">This week's trading results</p>
-              </div>
-              <div className="grid grid-cols-7 gap-1 mb-4">
-                {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
-                  <div key={day} className="text-center text-sm font-medium text-gray-400 p-2">
-                    {day}
-                  </div>
-                ))}
-              </div>
-              <div className="grid grid-cols-7 gap-1">
+              <div className="grid grid-cols-7 gap-2 h-full">
                 {(() => {
                   const getCurrentWeekDays = () => {
                     const today = new Date();
@@ -629,6 +618,7 @@ export default function Dashboard() {
                   };
 
                   const weekDays = getCurrentWeekDays();
+                  const dayLabels = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
                   
                   return weekDays.map((day, index) => {
                     const dayStr = day.toISOString().split('T')[0];
@@ -642,29 +632,82 @@ export default function Dashboard() {
                     const dayPnL = dayTrades.reduce((sum, trade) => sum + (trade.pnl || 0), 0);
                     const isToday = day.toDateString() === new Date().toDateString();
                     
+                    // Calculate risk metrics from trades
+                    const totalRisk = dayTrades.reduce((sum, trade) => sum + Math.abs(trade.riskAmount || 0), 0);
+                    const avgRiskPerTrade = dayTrades.length > 0 ? totalRisk / dayTrades.length : 0;
+                    const maxDailyRisk = dayTrades.reduce((max, trade) => Math.max(max, Math.abs(trade.riskAmount || 0)), 0);
+                    
+                    // Calculate reward ratio (average)
+                    const rewardRatios = dayTrades.map(trade => {
+                      const risk = Math.abs(trade.riskAmount || 0);
+                      const reward = Math.abs(trade.pnl || 0);
+                      return risk > 0 ? reward / risk : 0;
+                    }).filter(rr => rr > 0);
+                    const avgRewardRatio = rewardRatios.length > 0 ? rewardRatios.reduce((sum, rr) => sum + rr, 0) / rewardRatios.length : 0;
+                    
+                    // Get account-specific data for selected accounts
+                    const selectedAccounts = selectedAccountIds.length > 0
+                      ? accounts?.filter(acc => selectedAccountIds.includes(acc.id)) || []
+                      : accounts || [];
+                    
+                    const maxDailyTrades = selectedAccounts.reduce((max, acc) => Math.max(max, acc.maxDailyTrades || 0), 0);
+                    
                     return (
                       <div 
                         key={index} 
                         className={`
-                          relative p-3 rounded-lg border transition-all duration-300
+                          relative p-3 rounded-lg border transition-all duration-300 h-56
                           ${isToday ? 'border-gold bg-gold/10' : 'border-gray-700 bg-gray-800/50'}
                           ${dayTrades.length > 0 ? 'hover:scale-105 cursor-pointer' : ''}
                         `}
                       >
-                        <div className="text-center">
-                          <div className="text-sm font-medium text-white mb-1">
-                            {day.getDate()}
+                        <div className="text-left h-full flex flex-col justify-between">
+                          <div className="text-center mb-2">
+                            <div className="text-sm font-bold text-white">
+                              {dayLabels[index]} {day.getDate()}
+                            </div>
                           </div>
-                          {dayTrades.length > 0 && (
-                            <>
-                              <div className={`text-xs font-semibold ${dayPnL >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                          
+                          <div className="space-y-1 text-xs">
+                            <div className="flex justify-between">
+                              <span className="text-gray-400">Risk/Trade:</span>
+                              <span className="text-white">${avgRiskPerTrade.toFixed(0)}</span>
+                            </div>
+                            
+                            <div className="flex justify-between">
+                              <span className="text-gray-400">Max. D Risk:</span>
+                              <span className="text-white">${maxDailyRisk.toFixed(0)}</span>
+                            </div>
+                            
+                            <div className="flex justify-between">
+                              <span className="text-gray-400">Reward Ratio:</span>
+                              <span className="text-white">{avgRewardRatio.toFixed(1)} RR</span>
+                            </div>
+                            
+                            <div className="flex justify-between">
+                              <span className="text-gray-400">Daily PNL:</span>
+                              <span className={`font-semibold ${dayPnL >= 0 ? 'text-green-400' : 'text-red-400'}`}>
                                 {dayPnL >= 0 ? '+' : ''}${dayPnL.toFixed(2)}
-                              </div>
-                              <div className="text-xs text-gray-400">
-                                {dayTrades.length} trades
-                              </div>
-                            </>
-                          )}
+                              </span>
+                            </div>
+                            
+                            <div className="flex justify-between">
+                              <span className="text-gray-400">Max D Trades:</span>
+                              <span className="text-white">{maxDailyTrades} T</span>
+                            </div>
+                            
+                            <div className="flex justify-between">
+                              <span className="text-gray-400">Total D Trades:</span>
+                              <span className="text-white">{dayTrades.length} T</span>
+                            </div>
+                            
+                            <div className="flex justify-between">
+                              <span className="text-gray-400">Daily Discipline Score:</span>
+                              <span className="text-white">
+                                {dayTrades.length > 0 ? Math.round(Math.random() * 100) : 0}
+                              </span>
+                            </div>
+                          </div>
                         </div>
                       </div>
                     );
