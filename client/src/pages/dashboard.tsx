@@ -777,49 +777,74 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* Daily Trading Journal - Moved to be right after Weekly Calendar */}
+        {/* Daily Trading Journal & Chart Trading Preview - Side by side with same dimensions */}
         <div className="mb-8">
-          <h2 className="text-xl font-bold text-gradient-rainbow mb-6 flex items-center border-b border-gray-700 pb-3">
-            <Target className="mr-3 h-5 w-5 text-prop-gold" />
-            Daily Trading Journal
-          </h2>
-          <div className="widget-container">
-            <div className="widget-content flex-col">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-                <div>
-                  <label className="block text-sm font-medium text-gray-400 mb-2">What went wrong today?</label>
-                  <Textarea 
-                    className="bg-dark-surface border-dark-border resize-none" 
-                    rows={3} 
-                    placeholder="Reflect on mistakes and lessons learned..."
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-400 mb-2">What went right today?</label>
-                  <Textarea 
-                    className="bg-dark-surface border-dark-border resize-none" 
-                    rows={3} 
-                    placeholder="Note successful strategies and decisions..."
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-400 mb-2">Tomorrow's improvement plan</label>
-                  <Textarea 
-                    className="bg-dark-surface border-dark-border resize-none" 
-                    rows={3} 
-                    placeholder="Set goals for tomorrow's session..."
-                  />
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Daily Trading Journal - Reduced to half size */}
+            <div>
+              <h2 className="text-xl font-bold text-gradient-rainbow mb-6 flex items-center border-b border-gray-700 pb-3">
+                <Target className="mr-3 h-5 w-5 text-prop-gold" />
+                Daily Trading Journal
+              </h2>
+              <div className="widget-container">
+                <div className="widget-content flex-col">
+                  <div className="grid grid-cols-1 gap-4 mb-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-400 mb-2">What went wrong today?</label>
+                      <Textarea 
+                        className="bg-dark-surface border-dark-border resize-none" 
+                        rows={2} 
+                        placeholder="Reflect on mistakes and lessons learned..."
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-400 mb-2">What went right today?</label>
+                      <Textarea 
+                        className="bg-dark-surface border-dark-border resize-none" 
+                        rows={2} 
+                        placeholder="Note successful strategies and decisions..."
+                      />
+                    </div>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <Link href="/journal">
+                      <Button variant="ghost" className="text-primary hover:text-blue-400 text-sm">
+                        View Full Journal
+                      </Button>
+                    </Link>
+                    <Button className="bg-accent-orange hover:bg-orange-600 text-sm">
+                      Save Entry
+                    </Button>
+                  </div>
                 </div>
               </div>
-              <div className="flex justify-between items-center">
-                <Link href="/journal">
-                  <Button variant="ghost" className="text-primary hover:text-blue-400">
-                    View Full Journal
-                  </Button>
-                </Link>
-                <Button className="bg-accent-orange hover:bg-orange-600">
-                  Save Journal Entry
-                </Button>
+            </div>
+
+            {/* Chart Trading Preview - Same dimensions as journal */}
+            <div>
+              <h2 className="text-xl font-bold text-gradient-rainbow mb-6 flex items-center border-b border-gray-700 pb-3">
+                <BarChart3 className="mr-3 h-5 w-5 text-prop-gold" />
+                Chart Trading Preview
+              </h2>
+              <div className="widget-container">
+                <div className="widget-content flex-col">
+                  <div className="h-48 bg-gray-900 rounded-lg flex items-center justify-center mb-4">
+                    <SimpleChart 
+                      data={trades?.slice(-10) || []} 
+                      selectedAccount={selectedAccountIds.length === 1 ? selectedAccountIds[0] : null}
+                    />
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-gray-400">
+                      {trades?.length || 0} trades loaded
+                    </span>
+                    <Link href="/trades">
+                      <Button variant="ghost" className="text-primary hover:text-blue-400 text-sm">
+                        View All Trades
+                      </Button>
+                    </Link>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -878,10 +903,7 @@ export default function Dashboard() {
               </div>
             </div>
           </div>
-        </div>
 
-        {/* ROW 2: PERFORMANCE ANALYTICS */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 mb-3">
           {/* R Factor */}
           <div className="widget-container">
             <div className="widget-content">
@@ -894,6 +916,88 @@ export default function Dashboard() {
               </div>
               <div className="widget-icon-square">
                 <Activity className="widget-icon" />
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        {/* ROW 2: PERFORMANCE ANALYTICS */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 mb-3">
+          {/* Profit Factor */}
+          <div className="widget-container">
+            <div className="widget-content">
+              <div className="widget-left">
+                <p className="widget-label">Profit Factor</p>
+                <p className={`widget-value ${(combinedAnalytics?.profitFactor || 0) > 1 ? 'text-green-400' : (combinedAnalytics?.profitFactor || 0) < 1 ? 'text-red-400' : 'text-white'}`}>
+                  {combinedAnalytics?.profitFactor?.toFixed(2) || '0.00'}
+                </p>
+                <p className="widget-description">Gross profit / gross loss</p>
+              </div>
+              <div className="widget-icon-square">
+                <TrendingUp className="widget-icon" />
+              </div>
+            </div>
+          </div>
+
+          {/* Avg Win/Loss */}
+          <div className="widget-container">
+            <div className="widget-content">
+              <div className="widget-left">
+                <p className="widget-label">Avg Win/Loss</p>
+                <p className={`widget-value ${(combinedAnalytics?.avgWinLoss || 0) > 1 ? 'text-green-400' : (combinedAnalytics?.avgWinLoss || 0) < 1 ? 'text-red-400' : 'text-white'}`}>
+                  {combinedAnalytics?.avgWinLoss?.toFixed(2) || '0.00'}
+                </p>
+                <p className="widget-description">Win vs Loss ratio</p>
+              </div>
+              <div className="widget-icon-square">
+                <BarChart3 className="widget-icon" />
+              </div>
+            </div>
+          </div>
+
+          {/* Discipline Score */}
+          <div className="widget-container">
+            <div className="widget-content">
+              <div className="widget-left">
+                <p className="widget-label">Discipline Score</p>
+                <p className="widget-value">
+                  {combinedAnalytics?.disciplinedScore ? 
+                    `${combinedAnalytics.disciplinedScore.toFixed(1)}%` : 
+                    'No Score'
+                  }
+                </p>
+                <p className="widget-description">
+                  {combinedAnalytics?.disciplinedScore ? 
+                    (() => {
+                      const score = combinedAnalytics.disciplinedScore;
+                      if (score >= 80) return 'Excellent discipline';
+                      if (score >= 60) return 'Good discipline';
+                      if (score >= 40) return 'Needs improvement';
+                      return 'Poor discipline';
+                    })() : 
+                    'No trades to analyze'
+                  }
+                </p>
+              </div>
+              <div className="widget-icon-square">
+                <Shield className="widget-icon" />
+              </div>
+            </div>
+          </div>
+
+          {/* Total Trades - Last widget as requested */}
+          <div className="widget-container">
+            <div className="widget-content">
+              <div className="widget-left">
+                <p className="widget-label">Total Trades</p>
+                <p className="widget-value">
+                  {combinedAnalytics?.totalTrades || 0}
+                </p>
+                <p className="widget-description">All executed trades</p>
+              </div>
+              <div className="widget-icon-square">
+                <TrendingUp className="widget-icon" />
               </div>
             </div>
           </div>
