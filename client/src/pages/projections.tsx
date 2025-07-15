@@ -1351,6 +1351,90 @@ export default function Projections() {
                   </TabsContent>
 
                   <TabsContent value="risk" className="space-y-6 mt-6">
+                    {/* Trading Assets Selection */}
+                    <div className="bg-gray-800 p-4 rounded-lg">
+                      <h3 className="text-lg font-semibold text-white mb-4 flex items-center">
+                        <BarChart3 className="mr-2 h-5 w-5" />
+                        Trading Assets Selection
+                      </h3>
+                      <div className="grid grid-cols-3 gap-4">
+                        <FormField
+                          control={accountForm.control}
+                          name="primaryAsset"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="text-white font-medium">Primary Asset</FormLabel>
+                              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                <FormControl>
+                                  <SelectTrigger className="bg-gray-700 border-gray-600 text-white">
+                                    <SelectValue placeholder="Select primary asset" />
+                                  </SelectTrigger>
+                                </FormControl>
+                                <SelectContent className="bg-gray-700 border-gray-600">
+                                  {TRADING_ASSETS.filter(asset => asset.isBeginnerFriendly).map((asset) => (
+                                    <SelectItem key={asset.symbol} value={asset.symbol} className="text-white hover:bg-gray-600">
+                                      {asset.symbol} - {asset.name}
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={accountForm.control}
+                          name="secondaryAsset"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="text-white font-medium">Secondary Asset</FormLabel>
+                              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                <FormControl>
+                                  <SelectTrigger className="bg-gray-700 border-gray-600 text-white">
+                                    <SelectValue placeholder="Select secondary asset" />
+                                  </SelectTrigger>
+                                </FormControl>
+                                <SelectContent className="bg-gray-700 border-gray-600">
+                                  <SelectItem value="" className="text-white hover:bg-gray-600">None</SelectItem>
+                                  {TRADING_ASSETS.map((asset) => (
+                                    <SelectItem key={asset.symbol} value={asset.symbol} className="text-white hover:bg-gray-600">
+                                      {asset.symbol} - {asset.name}
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={accountForm.control}
+                          name="tertiaryAsset"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="text-white font-medium">Tertiary Asset</FormLabel>
+                              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                <FormControl>
+                                  <SelectTrigger className="bg-gray-700 border-gray-600 text-white">
+                                    <SelectValue placeholder="Select tertiary asset" />
+                                  </SelectTrigger>
+                                </FormControl>
+                                <SelectContent className="bg-gray-700 border-gray-600">
+                                  <SelectItem value="" className="text-white hover:bg-gray-600">None</SelectItem>
+                                  {TRADING_ASSETS.map((asset) => (
+                                    <SelectItem key={asset.symbol} value={asset.symbol} className="text-white hover:bg-gray-600">
+                                      {asset.symbol} - {asset.name}
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+                    </div>
+
                     <div className="bg-gray-800 p-4 rounded-lg">
                       <h3 className="text-lg font-semibold text-white mb-4">Risk Management</h3>
                       <div className="grid grid-cols-2 gap-4">
@@ -1369,6 +1453,29 @@ export default function Projections() {
                                   className="bg-gray-700 border-gray-600 text-white placeholder-gray-400"
                                 />
                               </FormControl>
+                              {/* Risk Level Feedback */}
+                              <div className="mt-2 space-y-1">
+                                <Badge 
+                                  variant={
+                                    riskSuggestion.riskScore === 'Conservative' ? 'default' :
+                                    riskSuggestion.riskScore === 'Moderate' ? 'secondary' :
+                                    riskSuggestion.riskScore === 'Aggressive' ? 'destructive' : 'destructive'
+                                  }
+                                  className={`text-xs ${
+                                    riskSuggestion.riskScore === 'Conservative' ? 'bg-green-600 hover:bg-green-700' :
+                                    riskSuggestion.riskScore === 'Moderate' ? 'bg-yellow-600 hover:bg-yellow-700' :
+                                    riskSuggestion.riskScore === 'Aggressive' ? 'bg-orange-600 hover:bg-orange-700' :
+                                    'bg-red-600 hover:bg-red-700'
+                                  }`}
+                                >
+                                  {riskSuggestion.riskScore === 'Conservative' ? '🛡️' : 
+                                   riskSuggestion.riskScore === 'Moderate' ? '⚖️' :
+                                   riskSuggestion.riskScore === 'Aggressive' ? '⚠️' : '🚨'} {riskSuggestion.riskScore} Risk
+                                </Badge>
+                                <p className="text-xs text-gray-400">
+                                  Suggested: ${riskSuggestion.suggestedRiskPerTrade.toFixed(0)} per trade
+                                </p>
+                              </div>
                               <FormMessage />
                             </FormItem>
                           )}
@@ -1432,6 +1539,62 @@ export default function Projections() {
                           )}
                         />
                       </div>
+                    </div>
+
+                    {/* Risk Analysis and Suggestions */}
+                    {riskSuggestion.warnings.length > 0 && (
+                      <div className="bg-red-900/20 border border-red-500 p-4 rounded-lg">
+                        <h4 className="text-red-400 font-medium mb-2 flex items-center">
+                          <AlertTriangle className="mr-2 h-4 w-4" />
+                          Risk Warnings
+                        </h4>
+                        <ul className="text-sm text-red-300 space-y-1">
+                          {riskSuggestion.warnings.map((warning, index) => (
+                            <li key={index} className="flex items-start">
+                              <span className="mr-2">•</span>
+                              {warning}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+
+                    {/* Risk Analysis Details */}
+                    <div className="bg-gray-700 p-4 rounded-lg">
+                      <h4 className="text-white font-medium mb-3 flex items-center">
+                        <Lightbulb className="mr-2 h-4 w-4" />
+                        Risk Analysis & Suggestions
+                      </h4>
+                      <div className="grid grid-cols-2 gap-4 text-sm">
+                        <div>
+                          <p className="text-gray-300">Suggested Risk Per Trade</p>
+                          <p className="text-green-400 font-semibold">${riskSuggestion.suggestedRiskPerTrade.toFixed(0)}</p>
+                        </div>
+                        <div>
+                          <p className="text-gray-300">Daily Risk Budget</p>
+                          <p className="text-yellow-400 font-semibold">${riskSuggestion.dailyRiskBudget.toFixed(0)}</p>
+                        </div>
+                        <div>
+                          <p className="text-gray-300">Max Position Size</p>
+                          <p className="text-blue-400 font-semibold">{riskSuggestion.maxPositionSize}</p>
+                        </div>
+                        <div>
+                          <p className="text-gray-300">Margin Required</p>
+                          <p className="text-purple-400 font-semibold">${riskSuggestion.marginRequired.toFixed(0)}</p>
+                        </div>
+                      </div>
+                      {riskSuggestion.reasoning.length > 0 && (
+                        <div className="mt-3 pt-3 border-t border-gray-600">
+                          <ul className="text-xs text-gray-400 space-y-1">
+                            {riskSuggestion.reasoning.map((reason, index) => (
+                              <li key={index} className="flex items-start">
+                                <CheckCircle2 className="mr-2 h-3 w-3 text-green-500 flex-shrink-0 mt-0.5" />
+                                {reason}
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
                     </div>
                   </TabsContent>
                 </Tabs>
