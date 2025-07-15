@@ -754,17 +754,17 @@ export default function Dashboard() {
                   <div className="daily-risk flex justify-between">
                     <span className="text-sm">Daily:</span>
                     <span className="text-sm">
-                      {formatCurrency(combinedAnalytics?.dailyRiskUsed || 0)} / {formatCurrency(combinedAnalytics?.dailyRiskLimit || 1500)}
+                      {formatCurrency(combinedAnalytics?.dailyRiskUsed || 0)} / {formatCurrency(combinedAnalytics?.dailyRiskLimit || 0)}
                     </span>
                   </div>
                   <div className="drawdown-risk flex justify-between">
                     <span className="text-sm">Drawdown:</span>
                     <span className="text-sm">
-                      {formatCurrency(combinedAnalytics?.currentDrawdown || 0)} / {formatCurrency(combinedAnalytics?.maxDrawdown || 7500)}
+                      {formatCurrency(combinedAnalytics?.currentDrawdown || 0)} / {formatCurrency(combinedAnalytics?.maxDrawdown || 0)}
                     </span>
                   </div>
                 </div>
-                <p className="widget-description text-xs">Violations: 0 ⚡ | Health: 98% 🟢</p>
+                <p className="widget-description text-xs">No data available</p>
               </div>
               <div className="widget-icon-square">
                 <Shield className="widget-icon" />
@@ -780,7 +780,7 @@ export default function Dashboard() {
                 <div className="progress-bars space-y-1">
                   <div className="target-progress">
                     <div className="flex justify-between text-xs">
-                      <span>Target: $750/day</span>
+                      <span>Target: {formatCurrency(0)}/day</span>
                       <span>📊</span>
                     </div>
                   </div>
@@ -791,7 +791,7 @@ export default function Dashboard() {
                     </div>
                   </div>
                 </div>
-                <p className="widget-description text-xs">Day 2 of 14 • +35% ahead • Risk Used: 16.7% / 50% limit</p>
+                <p className="widget-description text-xs">No data available</p>
               </div>
               <div className="widget-icon-square">
                 <Target className="widget-icon" />
