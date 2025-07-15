@@ -47,6 +47,40 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Check challenge eligibility for conversion to funded account
+  app.get("/api/accounts/:id/challenge-eligibility", isAuthenticated, async (req, res) => {
+    try {
+      const accountId = parseInt(req.params.id);
+      const eligibility = await storage.checkChallengeEligibility(accountId);
+      res.json(eligibility);
+    } catch (error) {
+      console.error("Error checking challenge eligibility:", error);
+      res.status(500).json({ message: "Failed to check challenge eligibility" });
+    }
+  });
+
+  // Convert challenge account to funded account
+  app.post("/api/accounts/:id/convert-to-funded", isAuthenticated, async (req, res) => {
+    try {
+      const challengeAccountId = parseInt(req.params.id);
+      const fundedAccountData = req.body;
+      
+      const result = await storage.convertToFundedAccount(challengeAccountId, fundedAccountData);
+      res.json({
+        success: true,
+        message: "Challenge account successfully converted to funded account",
+        challengeAccount: result.challengeAccount,
+        fundedAccount: result.fundedAccount
+      });
+    } catch (error) {
+      console.error("Error converting to funded account:", error);
+      res.status(500).json({ 
+        success: false, 
+        message: error instanceof Error ? error.message : "Failed to convert account" 
+      });
+    }
+  });
+
   app.get("/api/accounts/:id", isAuthenticated, async (req, res) => {
     try {
       const id = parseInt(req.params.id);

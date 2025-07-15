@@ -89,6 +89,12 @@ export const accounts = pgTable("accounts", {
   liveAccountAvailable: boolean("live_account_available").default(false),
   transitionTrigger: text("transition_trigger"),
   
+  // Challenge-to-Funded Account Transition
+  parentChallengeId: integer("parent_challenge_id").references(() => accounts.id), // For funded accounts, links to original challenge
+  fundedAccountId: integer("funded_account_id").references(() => accounts.id), // For challenge accounts, links to funded account
+  challengePassedDate: timestamp("challenge_passed_date"), // When challenge was passed
+  transitionStatus: text("transition_status").default('none'), // 'none', 'eligible', 'converted', 'funded'
+  
   createdAt: timestamp("created_at").defaultNow(),
 });
 

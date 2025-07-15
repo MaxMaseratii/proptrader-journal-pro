@@ -31,7 +31,7 @@ import {
   type InsertSavedProjection,
 } from "@shared/schema";
 import { db } from "./db";
-import { eq, and, desc, asc, gte, lte } from "drizzle-orm";
+import { eq, and, desc, asc, gte, lte, sum, sql } from "drizzle-orm";
 
 // Interface for all storage operations
 export interface IStorage {
@@ -89,6 +89,10 @@ export interface IStorage {
   getSavedProjections(userId: string, accountId?: number): Promise<SavedProjection[]>;
   createSavedProjection(projection: InsertSavedProjection): Promise<SavedProjection>;
   updateSavedProjection(id: number, projection: Partial<InsertSavedProjection>, userId: string): Promise<SavedProjection | undefined>;
+  
+  // Challenge-to-Funded Account Transition operations
+  checkChallengeEligibility(accountId: number): Promise<{ eligible: boolean, reason?: string }>;
+  convertToFundedAccount(challengeAccountId: number, fundedAccountData: Partial<InsertAccount>): Promise<{ challengeAccount: Account, fundedAccount: Account }>;
 }
 
 // Production-ready DatabaseStorage implementation
@@ -373,6 +377,138 @@ export class DatabaseStorage implements IStorage {
       .where(and(eq(savedProjections.id, id), eq(savedProjections.userId, userId)))
       .returning();
     return updatedProjection || undefined;
+  }
+
+  // Challenge-to-Funded Account Transition operations
+  async checkChallengeEligibility(accountId: number): Promise<{ eligible: boolean, reason?: string }> {
+    const account = await this.getAccount(accountId);
+    if (!account) {
+      return { eligible: false, reason: "Account not found" };
+    }
+
+    if (account.type !== 'challenge') {
+      return { eligible: false, reason: "Only challenge accounts can be converted to funded accounts" };
+    }
+
+    if (account.transitionStatus === 'converted') {
+      return { eligible: false, reason: "Account has already been converted to funded" };
+    }
+
+    // Calculate current balance (starting balance + total P&L)
+    const tradesResult = await db.select({ totalPnl: sum(trades.pnl) }).from(trades)
+      .where(eq(trades.accountId, accountId));
+    
+    const totalPnl = tradesResult[0]?.totalPnl || 0;
+    const currentBalance = account.startingBalance + totalPnl;
+
+    // Check if profit target is reached
+    const profitTarget = account.profitTarget || 0;
+    const profitRequired = account.startingBalance + profitTarget;
+    
+    if (currentBalance < profitRequired) {
+      return { 
+        eligible: false, 
+        reason: `Profit target not reached. Current: $${currentBalance.toFixed(2)}, Required: $${profitRequired.toFixed(2)}` 
+      };
+    }
+
+    // Check maximum drawdown
+    const maxDrawdown = account.maxDrawdown || 0;
+    const maxDrawdownAmount = account.startingBalance * (maxDrawdown / 100);
+    const lowestBalance = account.startingBalance; // This should be calculated from daily stats
+    
+    if ((account.startingBalance - lowestBalance) > maxDrawdownAmount) {
+      return { 
+        eligible: false, 
+        reason: `Maximum drawdown exceeded. Max allowed: $${maxDrawdownAmount.toFixed(2)}` 
+      };
+    }
+
+    // Check consistency rules if enabled
+    if (account.consistencyRule && account.consistencyPercentage) {
+      const maxDailyProfitAllowed = profitTarget * (account.consistencyPercentage / 100);
+      
+      // Get daily P&L to check for consistency rule violations
+      const dailyPnlResult = await db.select({ 
+        date: trades.date, 
+        dailyPnl: sum(trades.pnl) 
+      }).from(trades)
+      .where(eq(trades.accountId, accountId))
+      .groupBy(trades.date);
+      
+      const maxDailyProfit = Math.max(...dailyPnlResult.map(d => d.dailyPnl || 0));
+      
+      if (maxDailyProfit > maxDailyProfitAllowed) {
+        return { 
+          eligible: false, 
+          reason: `Consistency rule violated. Max daily profit: $${maxDailyProfit.toFixed(2)}, Allowed: $${maxDailyProfitAllowed.toFixed(2)}` 
+        };
+      }
+    }
+
+    return { eligible: true };
+  }
+
+  async convertToFundedAccount(challengeAccountId: number, fundedAccountData: Partial<InsertAccount>): Promise<{ challengeAccount: Account, fundedAccount: Account }> {
+    const challengeAccount = await this.getAccount(challengeAccountId);
+    if (!challengeAccount) {
+      throw new Error("Challenge account not found");
+    }
+
+    const eligibility = await this.checkChallengeEligibility(challengeAccountId);
+    if (!eligibility.eligible) {
+      throw new Error(`Challenge not eligible for conversion: ${eligibility.reason}`);
+    }
+
+    // Create funded account with new rules but same name
+    const fundedAccount = await this.createAccount({
+      name: challengeAccount.name,
+      firm: challengeAccount.firm,
+      type: 'funded',
+      startingBalance: fundedAccountData.startingBalance || challengeAccount.startingBalance,
+      profitTarget: fundedAccountData.profitTarget || challengeAccount.profitTarget,
+      maxDrawdown: fundedAccountData.maxDrawdown || challengeAccount.maxDrawdown,
+      dailyLossLimit: fundedAccountData.dailyLossLimit || challengeAccount.dailyLossLimit,
+      
+      // Payout settings (specific to funded accounts)
+      daysRequiredForPayout: fundedAccountData.daysRequiredForPayout || 5,
+      winningDayMinimum: fundedAccountData.winningDayMinimum || 200,
+      minimumPayoutAmount: fundedAccountData.minimumPayoutAmount || 100,
+      maxNetBalanceForPayout: fundedAccountData.maxNetBalanceForPayout || 2000,
+      consistencyRulePercent: fundedAccountData.consistencyRulePercent || 50,
+      payoutFrequency: fundedAccountData.payoutFrequency || 'weekly',
+      maximumPayoutPercentage: fundedAccountData.maximumPayoutPercentage || 90,
+      profitSplit: fundedAccountData.profitSplit || 80,
+      
+      // Link to challenge account
+      parentChallengeId: challengeAccountId,
+      transitionStatus: 'funded',
+      
+      // Copy other settings from challenge account
+      primaryAsset: challengeAccount.primaryAsset,
+      secondaryAsset: challengeAccount.secondaryAsset,
+      tertiaryAsset: challengeAccount.tertiaryAsset,
+      riskPerTrade: challengeAccount.riskPerTrade,
+      riskRewardRatio: challengeAccount.riskRewardRatio,
+      consistencyRule: fundedAccountData.consistencyRule ?? challengeAccount.consistencyRule,
+      consistencyPercentage: fundedAccountData.consistencyPercentage ?? challengeAccount.consistencyPercentage,
+      copyTradingAllowed: fundedAccountData.copyTradingAllowed ?? challengeAccount.copyTradingAllowed,
+      newsTradingAllowed: fundedAccountData.newsTradingAllowed ?? challengeAccount.newsTradingAllowed,
+      
+      ...fundedAccountData
+    });
+
+    // Update challenge account to mark as converted
+    const updatedChallengeAccount = await this.updateAccount(challengeAccountId, {
+      transitionStatus: 'converted',
+      fundedAccountId: fundedAccount.id,
+      challengePassedDate: new Date()
+    });
+
+    return { 
+      challengeAccount: updatedChallengeAccount!, 
+      fundedAccount 
+    };
   }
 }
 

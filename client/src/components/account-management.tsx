@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
-import { RotateCcw, LogOut, Trash2, AlertTriangle, DollarSign } from "lucide-react";
+import { RotateCcw, LogOut, Trash2, AlertTriangle, DollarSign, CheckCircle, ArrowRight } from "lucide-react";
 import { formatCurrency } from "@/lib/utils";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
@@ -21,6 +21,8 @@ export default function AccountManagement({ accounts }: AccountManagementProps) 
   const [resetCost, setResetCost] = useState(0);
   const [isResetDialogOpen, setIsResetDialogOpen] = useState(false);
   const [selectedAccount, setSelectedAccount] = useState<Account | null>(null);
+  const [isConversionDialogOpen, setIsConversionDialogOpen] = useState(false);
+  const [selectedChallengeAccount, setSelectedChallengeAccount] = useState<Account | null>(null);
   const { toast } = useToast();
 
   const resetAccountMutation = useMutation({
@@ -84,6 +86,63 @@ export default function AccountManagement({ accounts }: AccountManagementProps) 
       });
     }
   });
+
+  const convertToFundedMutation = useMutation({
+    mutationFn: async (challengeAccountId: number) => {
+      return apiRequest("POST", `/api/accounts/${challengeAccountId}/convert-to-funded`, {
+        // Default funded account settings
+        startingBalance: 50000,
+        profitTarget: 2500,
+        maxDrawdown: 8,
+        dailyLossLimit: 2000,
+        daysRequiredForPayout: 5,
+        winningDayMinimum: 200,
+        minimumPayoutAmount: 100,
+        maxNetBalanceForPayout: 2000,
+        consistencyRulePercent: 50,
+        payoutFrequency: 'weekly',
+        maximumPayoutPercentage: 90,
+        profitSplit: 80
+      });
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ['/api/accounts'] });
+      setIsConversionDialogOpen(false);
+      setSelectedChallengeAccount(null);
+      toast({
+        title: "Challenge Converted Successfully!",
+        description: `Challenge account converted to funded account: ${data.fundedAccount.name}`,
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Conversion Failed",
+        description: error.message || "Failed to convert challenge account. Please try again.",
+        variant: "destructive",
+      });
+    }
+  });
+
+  // Helper function to check if a challenge account is eligible for conversion
+  const getChallengeEligibility = (account: Account) => {
+    if (account.type !== 'challenge') return { eligible: false, reason: "Not a challenge account" };
+    if (account.transitionStatus === 'converted') return { eligible: false, reason: "Already converted" };
+    
+    // This is a simplified check - the real check happens on the server
+    const totalPnl = account.totalPnl || 0;
+    const currentBalance = account.startingBalance + totalPnl;
+    const profitTarget = account.profitTarget || 0;
+    const profitRequired = account.startingBalance + profitTarget;
+    
+    if (currentBalance >= profitRequired) {
+      return { eligible: true, reason: "Challenge passed! Ready to convert to funded account" };
+    }
+    
+    return { 
+      eligible: false, 
+      reason: `Need $${(profitRequired - currentBalance).toFixed(2)} more to reach profit target` 
+    };
+  };
 
   const getStatusBadge = (status: string) => {
     switch (status) {
@@ -234,6 +293,14 @@ export default function AccountManagement({ accounts }: AccountManagementProps) 
                       Reset #{account.resetCount}
                     </Badge>
                   )}
+                  {account.type === 'challenge' && account.transitionStatus !== 'converted' && (() => {
+                    const eligibility = getChallengeEligibility(account);
+                    return eligibility.eligible && (
+                      <Badge className="bg-green-600 text-white text-xs">
+                        Ready for Funded!
+                      </Badge>
+                    );
+                  })()}
                 </div>
               </div>
               <div className="flex items-center gap-1">
@@ -337,6 +404,71 @@ export default function AccountManagement({ accounts }: AccountManagementProps) 
                 </AlertDialogFooter>
               </AlertDialogContent>
             </AlertDialog>
+
+            {/* Convert to Funded Account - only show for eligible challenge accounts */}
+            {account.type === 'challenge' && account.transitionStatus !== 'converted' && (() => {
+              const eligibility = getChallengeEligibility(account);
+              return eligibility.eligible && (
+                <Dialog open={isConversionDialogOpen && selectedChallengeAccount?.id === account.id} onOpenChange={(open) => {
+                  setIsConversionDialogOpen(open);
+                  if (open) setSelectedChallengeAccount(account);
+                  else setSelectedChallengeAccount(null);
+                }}>
+                  <DialogTrigger asChild>
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      className="border-green-600 text-green-400 hover:bg-green-600 hover:text-white h-6 w-6 p-0"
+                      title="Convert to Funded Account"
+                    >
+                      <ArrowRight className="h-3 w-3" />
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="bg-gray-900 border-gray-700">
+                    <DialogHeader>
+                      <DialogTitle className="text-white flex items-center gap-2">
+                        <CheckCircle className="h-5 w-5 text-green-400" />
+                        Convert Challenge to Funded Account
+                      </DialogTitle>
+                    </DialogHeader>
+                    <div className="space-y-4">
+                      <div className="bg-green-900/30 border border-green-600/30 rounded-lg p-4">
+                        <p className="text-green-300 text-sm">
+                          🎉 Congratulations! Your challenge account has passed all requirements and is ready to be converted to a funded account.
+                        </p>
+                      </div>
+                      <div className="space-y-2">
+                        <h4 className="text-white font-semibold">New Funded Account Settings:</h4>
+                        <div className="text-sm text-gray-300 space-y-1">
+                          <p>• Starting Balance: $50,000</p>
+                          <p>• Profit Target: $2,500</p>
+                          <p>• Max Drawdown: 8%</p>
+                          <p>• Daily Loss Limit: $2,000</p>
+                          <p>• Profit Split: 80% (you keep 80%)</p>
+                          <p>• Payout Frequency: Weekly</p>
+                        </div>
+                      </div>
+                      <div className="flex justify-end gap-3">
+                        <Button 
+                          variant="outline" 
+                          onClick={() => setIsConversionDialogOpen(false)}
+                          className="border-gray-600 text-gray-300 hover:bg-gray-700"
+                        >
+                          Cancel
+                        </Button>
+                        <Button 
+                          onClick={() => convertToFundedMutation.mutate(account.id)}
+                          disabled={convertToFundedMutation.isPending}
+                          className="bg-green-600 hover:bg-green-700 text-white"
+                        >
+                          {convertToFundedMutation.isPending ? "Converting..." : "Convert to Funded Account"}
+                        </Button>
+                      </div>
+                    </div>
+                  </DialogContent>
+                </Dialog>
+              );
+            })()}
 
             {/* Delete Account */}
             <AlertDialog>
