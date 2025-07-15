@@ -1395,7 +1395,7 @@ export default function Projections() {
                                   </SelectTrigger>
                                 </FormControl>
                                 <SelectContent className="bg-gray-700 border-gray-600">
-                                  <SelectItem value="" className="text-white hover:bg-gray-600">None</SelectItem>
+                                  <SelectItem value="none" className="text-white hover:bg-gray-600">None</SelectItem>
                                   {TRADING_ASSETS.map((asset) => (
                                     <SelectItem key={asset.symbol} value={asset.symbol} className="text-white hover:bg-gray-600">
                                       {asset.symbol} - {asset.name}
@@ -1420,7 +1420,7 @@ export default function Projections() {
                                   </SelectTrigger>
                                 </FormControl>
                                 <SelectContent className="bg-gray-700 border-gray-600">
-                                  <SelectItem value="" className="text-white hover:bg-gray-600">None</SelectItem>
+                                  <SelectItem value="none" className="text-white hover:bg-gray-600">None</SelectItem>
                                   {TRADING_ASSETS.map((asset) => (
                                     <SelectItem key={asset.symbol} value={asset.symbol} className="text-white hover:bg-gray-600">
                                       {asset.symbol} - {asset.name}
