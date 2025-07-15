@@ -924,8 +924,10 @@ export default function Projections() {
                                 </FormControl>
                                 <SelectContent className="bg-gray-700 border-gray-600">
                                   <SelectItem value="challenge" className="text-white hover:bg-gray-600">Challenge</SelectItem>
-                                  <SelectItem value="funded" className="text-white hover:bg-gray-600">Funded</SelectItem>
-                                  <SelectItem value="live" className="text-white hover:bg-gray-600">Live</SelectItem>
+                                  <SelectItem value="funded" className="text-white hover:bg-gray-600">Funded (After passing challenge)</SelectItem>
+                                  <SelectItem value="direct_funded" className="text-white hover:bg-gray-600">Direct Funded (Purchased directly)</SelectItem>
+                                  <SelectItem value="live" className="text-white hover:bg-gray-600">Live Account (Funded → Live)</SelectItem>
+                                  <SelectItem value="personal_live" className="text-white hover:bg-gray-600">Personal Live (Your own account)</SelectItem>
                                 </SelectContent>
                               </Select>
                               <FormMessage />
@@ -1262,10 +1264,10 @@ export default function Projections() {
                         />
                         <FormField
                           control={accountForm.control}
-                          name="maximumPayoutPercentage"
+                          name="maximumPayoutAllowed"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel className="text-white font-medium">Maximum Payout Percentage (%)</FormLabel>
+                              <FormLabel className="text-white font-medium">Maximum Payout Allowed ($)</FormLabel>
                               <FormControl>
                                 <Input 
                                   type="number" 
@@ -1273,6 +1275,27 @@ export default function Projections() {
                                   value={field.value || ""}
                                   onChange={(e) => field.onChange(e.target.value === "" ? null : parseFloat(e.target.value))}
                                   className="bg-gray-700 border-gray-600 text-white placeholder-gray-400"
+                                  placeholder="Maximum payout amount in dollars"
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={accountForm.control}
+                          name="maximumPayoutPerAccount"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="text-white font-medium">Maximum Payout Allowed Per Account ($)</FormLabel>
+                              <FormControl>
+                                <Input 
+                                  type="number" 
+                                  {...field} 
+                                  value={field.value || ""}
+                                  onChange={(e) => field.onChange(e.target.value === "" ? null : parseFloat(e.target.value))}
+                                  className="bg-gray-700 border-gray-600 text-white placeholder-gray-400"
+                                  placeholder="Maximum payout per account in dollars"
                                 />
                               </FormControl>
                               <FormMessage />
@@ -1532,6 +1555,26 @@ export default function Projections() {
                                   value={field.value || ""}
                                   onChange={(e) => field.onChange(e.target.value === "" ? null : parseInt(e.target.value))}
                                   className="bg-gray-700 border-gray-600 text-white placeholder-gray-400"
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={accountForm.control}
+                          name="maxRiskPerDay"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="text-white font-medium">Maximum risk per day ($)</FormLabel>
+                              <FormControl>
+                                <Input 
+                                  type="number" 
+                                  {...field} 
+                                  value={field.value || ""}
+                                  onChange={(e) => field.onChange(e.target.value === "" ? null : parseFloat(e.target.value))}
+                                  className="bg-gray-700 border-gray-600 text-white placeholder-gray-400"
+                                  placeholder="Maximum risk allowed per day"
                                 />
                               </FormControl>
                               <FormMessage />
