@@ -825,12 +825,35 @@ export default function Dashboard() {
                     →
                   </button>
                 </div>
-                <p className={`widget-value ${getValueColor(combinedAnalytics?.totalPnl || 0)}`}>
-                  {formatCurrency(combinedAnalytics?.totalPnl || 0)}
-                </p>
-                <p className="widget-description text-xs">
-                  {combinedAnalytics?.totalTrades || 0} trades • {Math.round(combinedAnalytics?.winRate || 0)}% win rate
-                </p>
+                {(() => {
+                  const filteredTrades = selectedAccountIds.length > 0
+                    ? trades?.filter(t => selectedAccountIds.includes(t.accountId)) || []
+                    : trades || [];
+                  
+                  if (filteredTrades.length === 0) {
+                    return (
+                      <div>
+                        <p className="widget-value text-gray-400">No Data</p>
+                        <p className="widget-description text-xs">No trades for selected account(s)</p>
+                      </div>
+                    );
+                  }
+                  
+                  const weeklyPnl = filteredTrades.reduce((sum, trade) => sum + (trade.pnl || 0), 0);
+                  const winRate = filteredTrades.length > 0 ? 
+                    (filteredTrades.filter(t => t.pnl > 0).length / filteredTrades.length) * 100 : 0;
+                  
+                  return (
+                    <div>
+                      <p className={`widget-value ${getValueColor(weeklyPnl)}`}>
+                        {formatCurrency(weeklyPnl)}
+                      </p>
+                      <p className="widget-description text-xs">
+                        {filteredTrades.length} trades • {Math.round(winRate)}% win rate
+                      </p>
+                    </div>
+                  );
+                })()}
               </div>
               <div className="widget-icon-square">
                 <Calendar className="widget-icon" />
@@ -843,10 +866,44 @@ export default function Dashboard() {
             <div className="widget-content">
               <div className="widget-left">
                 <p className="widget-label">Discipline Score</p>
-                <p className={`widget-value ${(combinedAnalytics?.disciplinedScore || 0) >= 80 ? 'text-green-400' : (combinedAnalytics?.disciplinedScore || 0) >= 60 ? 'text-yellow-400' : 'text-red-400'}`}>
-                  {Math.round(combinedAnalytics?.disciplinedScore || 86)} B
-                </p>
-                <p className="widget-description text-xs">98% risk compliance / 100% trade limits</p>
+                {(() => {
+                  const filteredTrades = selectedAccountIds.length > 0
+                    ? trades?.filter(t => selectedAccountIds.includes(t.accountId)) || []
+                    : trades || [];
+                  
+                  if (filteredTrades.length === 0) {
+                    return (
+                      <div>
+                        <p className="widget-value text-gray-400">No Score</p>
+                        <p className="widget-description text-xs">No trades to analyze</p>
+                      </div>
+                    );
+                  }
+                  
+                  const disciplineMetrics = calculateComprehensiveDisciplineMetrics(
+                    filteredTrades,
+                    accounts || [],
+                    selectedAccountIds.length === 1 ? selectedAccountIds[0].toString() : "all"
+                  );
+                  
+                  let grade = 'F';
+                  if (disciplineMetrics.disciplineScore >= 90) grade = 'A+';
+                  else if (disciplineMetrics.disciplineScore >= 80) grade = 'A';
+                  else if (disciplineMetrics.disciplineScore >= 70) grade = 'B';
+                  else if (disciplineMetrics.disciplineScore >= 60) grade = 'C';
+                  else if (disciplineMetrics.disciplineScore >= 50) grade = 'D';
+                  
+                  return (
+                    <div>
+                      <p className={`widget-value ${disciplineMetrics.disciplineScore >= 80 ? 'text-green-400' : disciplineMetrics.disciplineScore >= 60 ? 'text-yellow-400' : 'text-red-400'}`}>
+                        {Math.round(disciplineMetrics.disciplineScore)}% {grade}
+                      </p>
+                      <p className="widget-description text-xs">
+                        {Math.round(disciplineMetrics.riskManagementScore)}% risk • {Math.round(disciplineMetrics.consistencyScore)}% consistency
+                      </p>
+                    </div>
+                  );
+                })()}
               </div>
               <div className="widget-icon-square">
                 <Brain className="widget-icon" />
@@ -966,21 +1023,35 @@ export default function Dashboard() {
             <div className="widget-content">
               <div className="widget-left">
                 <p className="widget-label">Active Trading Days</p>
-                <p className="widget-value">
-                  {(() => {
-                    const uniqueDays = new Set(trades?.map(t => t.date.split('T')[0])).size || 0;
-                    const totalHours = Math.min(uniqueDays * 8, 24 * uniqueDays); // Cap at 24 hours per day
-                    const avgHoursPerDay = uniqueDays > 0 ? (totalHours / uniqueDays).toFixed(1) : 0;
-                    return `${totalHours.toFixed(1)} Hrs`;
-                  })()}
-                </p>
-                <p className="widget-description text-xs">
-                  {(() => {
-                    const uniqueDays = new Set(trades?.map(t => t.date.split('T')[0])).size || 0;
-                    const avgHoursPerDay = uniqueDays > 0 ? (Math.min(uniqueDays * 8, 24 * uniqueDays) / uniqueDays).toFixed(1) : 0;
-                    return `${uniqueDays} trading days × ${avgHoursPerDay} hrs avg`;
-                  })()}
-                </p>
+                {(() => {
+                  const filteredTrades = selectedAccountIds.length > 0
+                    ? trades?.filter(t => selectedAccountIds.includes(t.accountId)) || []
+                    : trades || [];
+                  
+                  if (filteredTrades.length === 0) {
+                    return (
+                      <div>
+                        <p className="widget-value text-gray-400">0 Hrs</p>
+                        <p className="widget-description text-xs">No trading activity</p>
+                      </div>
+                    );
+                  }
+                  
+                  const uniqueDays = new Set(filteredTrades.map(t => t.date.split('T')[0])).size || 0;
+                  const totalHours = Math.min(uniqueDays * 8, 24 * uniqueDays); // Cap at 24 hours per day
+                  const avgHoursPerDay = uniqueDays > 0 ? (totalHours / uniqueDays).toFixed(1) : 0;
+                  
+                  return (
+                    <div>
+                      <p className="widget-value">
+                        {totalHours.toFixed(1)} Hrs
+                      </p>
+                      <p className="widget-description text-xs">
+                        {uniqueDays} trading days × {avgHoursPerDay} hrs avg
+                      </p>
+                    </div>
+                  );
+                })()}
               </div>
               <div className="widget-icon-square">
                 <Calendar className="widget-icon" />
@@ -1237,7 +1308,13 @@ export default function Dashboard() {
                       // Days of the month
                       for (let day = 1; day <= daysInMonth; day++) {
                         const dateStr = `${calendarDate.getFullYear()}-${String(calendarDate.getMonth() + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-                        const dayTrades = trades?.filter(t => t.date.startsWith(dateStr)) || [];
+                        
+                        // Filter trades by selected accounts first, then by date
+                        const filteredTrades = selectedAccountIds.length > 0
+                          ? trades?.filter(t => selectedAccountIds.includes(t.accountId)) || []
+                          : trades || [];
+                        
+                        const dayTrades = filteredTrades.filter(t => t.date.startsWith(dateStr));
                         const dayPnl = dayTrades.reduce((sum, trade) => sum + (trade.pnl || 0), 0);
                         
                         calendarDays.push(
@@ -1868,7 +1945,21 @@ export default function Dashboard() {
               <p className="widget-description">Most recent trading activity</p>
             </div>
             <div className="space-y-4 w-full">
-              {trades?.slice(0, 5).map((trade) => (
+              {(() => {
+                const filteredTrades = selectedAccountIds.length > 0
+                  ? trades?.filter(t => selectedAccountIds.includes(t.accountId)) || []
+                  : trades || [];
+                
+                if (filteredTrades.length === 0) {
+                  return (
+                    <div className="text-center py-8">
+                      <p className="text-gray-400">No recent trading activity</p>
+                      <p className="text-gray-500 text-sm">Switch to an account with trades</p>
+                    </div>
+                  );
+                }
+                
+                return filteredTrades.slice(0, 5).map((trade) => (
                 <div key={trade.id} className="flex items-center justify-between p-4 bg-dark-surface rounded-lg border border-prop-gold/20">
                   <div className="flex items-center">
                     <div className={`w-10 h-10 rounded-lg flex items-center justify-center mr-4 ${
@@ -1894,7 +1985,8 @@ export default function Dashboard() {
                     <p className="text-sm text-gray-400">{trade.quantity} shares</p>
                   </div>
                 </div>
-              ))}
+              ));
+              })()}
             </div>
           </div>
         </div>
