@@ -443,7 +443,7 @@ export default function Dashboard() {
   }
 
   return (
-    <div>
+    <>
       {/* Enhanced Header */}
       <header className="bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 border-b border-gray-700 px-8 py-6">
         <div className="flex justify-between items-center">
@@ -600,236 +600,72 @@ export default function Dashboard() {
         </div>
       )}
 
-      <div className="p-4 space-y-6">
+      <div className="p-6 space-y-6">
         
-        {/* Key Performance Metrics Row */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          {/* Total P&L */}
-          <Card className="bg-gradient-to-br from-gray-800 to-gray-700 border-gray-600">
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-gray-400">Total P&L</p>
-                  <p className={`text-2xl font-bold ${getValueColor(
-                    trades?.reduce((sum, trade) => sum + (trade.pnl || 0), 0) || 0
-                  )}`}>
-                    {formatCurrency(trades?.reduce((sum, trade) => sum + (trade.pnl || 0), 0) || 0)}
-                  </p>
-                </div>
-                <TrendingUp className="h-8 w-8 text-green-400" />
+        {/* Weekly Risk Management & Performance Calendar - Top of Dashboard */}
+        <div className="mb-16">
+          <div className="flex items-center justify-between mb-6 border-b border-gray-700 pb-3">
+            <h2 className="text-xl font-bold text-gradient-rainbow flex items-center">
+              <Calendar className="mr-3 h-5 w-5 text-prop-gold" />
+              Weekly Risk Management & Performance Calendar
+            </h2>
+            <div className="flex items-center space-x-4">
+              <button 
+                className="p-2 rounded-lg bg-gray-800 hover:bg-gray-700 border border-gray-600 transition-colors"
+                onClick={() => {
+                  // Navigate to previous week
+                  const newDate = new Date(currentWeekStart);
+                  newDate.setDate(newDate.getDate() - 7);
+                  setCurrentWeekStart(newDate);
+                }}
+              >
+                <ChevronLeft className="h-4 w-4 text-gray-400" />
+              </button>
+              <div className="text-sm text-gray-300 font-medium min-w-[200px] text-center">
+                {(() => {
+                  const weekStart = currentWeekStart || (() => {
+                    const today = new Date();
+                    const dayOfWeek = today.getDay();
+                    const daysToSubtract = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
+                    const start = new Date(today);
+                    start.setDate(today.getDate() - daysToSubtract);
+                    return start;
+                  })();
+                  
+                  const weekNumber = Math.ceil((weekStart.getTime() - new Date(weekStart.getFullYear(), 0, 1).getTime()) / (7 * 24 * 60 * 60 * 1000));
+                  const monthName = weekStart.toLocaleDateString('en-US', { month: 'long' });
+                  const day = weekStart.getDate();
+                  const year = weekStart.getFullYear();
+                  
+                  return `Week ${weekNumber} ${monthName} ${day}th ${year} (Week #${weekNumber}/52)`;
+                })()}
               </div>
-            </CardContent>
-          </Card>
-
-          {/* Win Rate */}
-          <Card className="bg-gradient-to-br from-gray-800 to-gray-700 border-gray-600">
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-gray-400">Win Rate</p>
-                  <p className="text-2xl font-bold text-white">
-                    {trades && trades.length > 0 ? 
-                      `${((trades.filter(t => (t.pnl || 0) > 0).length / trades.length) * 100).toFixed(1)}%` : 
-                      '0%'
+              <button 
+                className="p-2 rounded-lg bg-gray-800 hover:bg-gray-700 border border-gray-600 transition-colors"
+                onClick={() => {
+                  // Navigate to next week
+                  const newDate = new Date(currentWeekStart);
+                  newDate.setDate(newDate.getDate() + 7);
+                  setCurrentWeekStart(newDate);
+                }}
+              >
+                <ChevronRight className="h-4 w-4 text-gray-400" />
+              </button>
+            </div>
+          </div>
+          <div className="widget-container">
+            <div className="widget-content flex-col">
+              <div className="flex gap-8 h-full">
+                {(() => {
+                  const getCurrentWeekDays = () => {
+                    const weekDays = [];
+                    for (let i = 0; i < 7; i++) {
+                      const day = new Date(currentWeekStart);
+                      day.setDate(currentWeekStart.getDate() + i);
+                      weekDays.push(day);
                     }
-                  </p>
-                </div>
-                <Target className="h-8 w-8 text-blue-400" />
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Total Trades */}
-          <Card className="bg-gradient-to-br from-gray-800 to-gray-700 border-gray-600">
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-gray-400">Total Trades</p>
-                  <p className="text-2xl font-bold text-white">
-                    {trades?.length || 0}
-                  </p>
-                </div>
-                <Activity className="h-8 w-8 text-purple-400" />
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Active Accounts */}
-          <Card className="bg-gradient-to-br from-gray-800 to-gray-700 border-gray-600">
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-gray-400">Active Accounts</p>
-                  <p className="text-2xl font-bold text-white">
-                    {accounts?.length || 0}
-                  </p>
-                </div>
-                <Wallet className="h-8 w-8 text-yellow-400" />
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Main Content Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Left Column - Charts */}
-          <div className="lg:col-span-2 space-y-4">
-            {/* Trading Performance Chart */}
-            <Card className="bg-gradient-to-br from-gray-800 to-gray-700 border-gray-600">
-              <CardHeader>
-                <CardTitle className="text-white flex items-center">
-                  <BarChart3 className="mr-2 h-5 w-5 text-gold" />
-                  Trading Performance
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="h-64">
-                  <SimpleChart
-                    data={trades?.map(trade => ({
-                      date: trade.date,
-                      value: trade.pnl || 0,
-                      symbol: trade.symbol,
-                      side: trade.side
-                    })) || []}
-                    height={240}
-                  />
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Recent Trades */}
-            <Card className="bg-gradient-to-br from-gray-800 to-gray-700 border-gray-600">
-              <CardHeader>
-                <CardTitle className="text-white flex items-center">
-                  <Activity className="mr-2 h-5 w-5 text-gold" />
-                  Recent Trades
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-2 max-h-64 overflow-y-auto">
-                  {trades?.slice(0, 10).map((trade, index) => (
-                    <div key={index} className="flex items-center justify-between p-2 bg-gray-700 rounded">
-                      <div className="flex items-center space-x-2">
-                        <Badge variant={trade.side === 'long' ? 'default' : 'secondary'}>
-                          {trade.side?.toUpperCase()}
-                        </Badge>
-                        <span className="text-white font-medium">{trade.symbol}</span>
-                      </div>
-                      <div className="text-right">
-                        <p className={`font-bold ${getValueColor(trade.pnl || 0)}`}>
-                          {formatCurrency(trade.pnl || 0)}
-                        </p>
-                        <p className="text-xs text-gray-400">{trade.date}</p>
-                      </div>
-                    </div>
-                  )) || (
-                    <p className="text-gray-400 text-center py-8">No trades yet</p>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Right Column - Account Info & Actions */}
-          <div className="space-y-4">
-            {/* Account Selection */}
-            <Card className="bg-gradient-to-br from-gray-800 to-gray-700 border-gray-600">
-              <CardHeader>
-                <CardTitle className="text-white flex items-center">
-                  <Filter className="mr-2 h-5 w-5 text-gold" />
-                  Account Filter
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <Select value={accountSelectionMode} onValueChange={(value: any) => setAccountSelectionMode(value)}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="View mode" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Accounts</SelectItem>
-                    <SelectItem value="single">Single Account</SelectItem>
-                    <SelectItem value="multiple">Multiple Accounts</SelectItem>
-                  </SelectContent>
-                </Select>
-
-                {accountSelectionMode === 'single' && accounts && (
-                  <Select 
-                    value={selectedAccountIds[0]?.toString() || ''} 
-                    onValueChange={(value) => setSelectedAccountIds([parseInt(value)])}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select account" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {accounts.map((account) => (
-                        <SelectItem key={account.id} value={account.id.toString()}>
-                          {account.name} ({account.firm})
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                )}
-              </CardContent>
-            </Card>
-
-            {/* Quick Actions */}
-            <Card className="bg-gradient-to-br from-gray-800 to-gray-700 border-gray-600">
-              <CardHeader>
-                <CardTitle className="text-white flex items-center">
-                  <Plus className="mr-2 h-5 w-5 text-gold" />
-                  Quick Actions
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <Link href="/trades">
-                  <Button className="w-full bg-blue-600 hover:bg-blue-700">
-                    <Plus className="mr-2 h-4 w-4" />
-                    Add Trade
-                  </Button>
-                </Link>
-                <Link href="/projections">
-                  <Button className="w-full bg-green-600 hover:bg-green-700">
-                    <Target className="mr-2 h-4 w-4" />
-                    View Projections
-                  </Button>
-                </Link>
-                <Link href="/analytics">
-                  <Button className="w-full bg-purple-600 hover:bg-purple-700">
-                    <Brain className="mr-2 h-4 w-4" />
-                    Analytics
-                  </Button>
-                </Link>
-              </CardContent>
-            </Card>
-
-            {/* Account Status */}
-            {accounts && accounts.length > 0 && (
-              <Card className="bg-gradient-to-br from-gray-800 to-gray-700 border-gray-600">
-                <CardHeader>
-                  <CardTitle className="text-white flex items-center">
-                    <Shield className="mr-2 h-5 w-5 text-gold" />
-                    Account Status
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-2">
-                    {accounts.slice(0, 3).map((account) => (
-                      <div key={account.id} className="flex items-center justify-between p-2 bg-gray-700 rounded">
-                        <div>
-                          <p className="text-white font-medium text-sm">{account.name}</p>
-                          <p className="text-xs text-gray-400">{account.firm}</p>
-                        </div>
-                        <Badge variant="outline" className="text-xs">
-                          {account.type}
-                        </Badge>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            )}
-          </div>
-        </div>
+                    return weekDays;
+                  };
 
                   const weekDays = getCurrentWeekDays();
                   const dayLabels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
@@ -871,7 +707,7 @@ export default function Dashboard() {
                       <div 
                         key={index} 
                         className={`
-                          relative p-4 rounded-lg border transition-all duration-300 h-56
+                          relative p-3 rounded-lg border transition-all duration-300 h-56 flex-1
                           ${isToday 
                             ? 'border-gold bg-gradient-to-br from-gold/20 via-gold/10 to-transparent shadow-lg shadow-gold/30' 
                             : 'border-gray-600 bg-gradient-to-br from-gray-800/80 via-gray-700/50 to-gray-800/30'
@@ -891,44 +727,44 @@ export default function Dashboard() {
                           
                           <div className="space-y-1 text-xs">
                             <div className="flex justify-between">
-                              <span className="text-gray-300">• Risk/Trade:</span>
+                              <span className="text-gray-300">Risk/Trade:</span>
                               <span className="text-orange-300 font-medium">${avgRiskPerTrade.toFixed(0)}</span>
                             </div>
                             
                             <div className="flex justify-between">
-                              <span className="text-gray-300">• Max. D Risk:</span>
+                              <span className="text-gray-300">Max. D Risk:</span>
                               <span className="text-red-300 font-medium">${maxDailyRisk.toFixed(0)}</span>
                             </div>
                             
                             <div className="flex justify-between">
-                              <span className="text-gray-300">• Reward Ratio:</span>
+                              <span className="text-gray-300">Reward Ratio:</span>
                               <span className="text-blue-300 font-medium">{avgRewardRatio.toFixed(1)} RR</span>
                             </div>
                             
                             <div className="flex justify-between">
-                              <span className="text-gray-300">• Daily Target:</span>
+                              <span className="text-gray-300">Daily Target:</span>
                               <span className="text-purple-300 font-medium">${dailyTarget.toFixed(2)}</span>
                             </div>
                             
                             <div className="flex justify-between">
-                              <span className="text-gray-300">• Daily PNL:</span>
+                              <span className="text-gray-300">Daily PNL:</span>
                               <span className={`font-bold ${dayPnL >= 0 ? 'text-green-300' : 'text-red-300'}`}>
                                 {dayPnL >= 0 ? '+' : ''}${dayPnL.toFixed(2)}
                               </span>
                             </div>
                             
                             <div className="flex justify-between">
-                              <span className="text-gray-300">• Max D Trades:</span>
+                              <span className="text-gray-300">Max D Trades:</span>
                               <span className="text-cyan-300 font-medium">{maxDailyTrades} T</span>
                             </div>
                             
                             <div className="flex justify-between">
-                              <span className="text-gray-300">• Total D Trades:</span>
+                              <span className="text-gray-300">Total D Trades:</span>
                               <span className="text-indigo-300 font-medium">{dayTrades.length} T</span>
                             </div>
                             
                             <div className="flex justify-between">
-                              <span className="text-gray-300">• Discipline Score:</span>
+                              <span className="text-gray-300">Discipline Score:</span>
                               <span className="text-yellow-300 font-bold">
                                 {dayTrades.length > 0 ? Math.round(Math.random() * 100) : 0}
                               </span>
@@ -939,6 +775,9 @@ export default function Dashboard() {
                     );
                   });
                 })()}
+              </div>
+            </div>
+          </div>
         </div>
 
 
@@ -2727,7 +2566,6 @@ export default function Dashboard() {
           </div>
         </DialogContent>
       </Dialog>
-      </div>
-    </div>
+    </>
   );
 }
