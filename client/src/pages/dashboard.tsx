@@ -47,7 +47,10 @@ import {
   Clock,
   CheckCircle,
   Users,
-  CreditCard
+  CreditCard,
+  X,
+  Trophy,
+  Star
 } from "lucide-react";
 import type { Account, Trade } from "@shared/schema";
 
@@ -73,6 +76,33 @@ export default function Dashboard() {
     const saved = localStorage.getItem('dashboard-selected-accounts');
     return saved ? JSON.parse(saved) : [];
   });
+  const [congratulationsBanner, setCongratulationsBanner] = useState<{
+    visible: boolean;
+    message: string;
+    type: 'funded' | 'live';
+    accountName: string;
+  }>(() => {
+    const saved = localStorage.getItem('congratulations-banner');
+    return saved ? JSON.parse(saved) : { visible: false, message: '', type: 'funded', accountName: '' };
+  });
+
+  // Function to show congratulations banner
+  const showCongratulationsBanner = (accountName: string, type: 'funded' | 'live') => {
+    const message = type === 'funded' 
+      ? `🎉 Congratulations! Your Challenge Account "${accountName}" has been successfully converted to a Funded Account!`
+      : `🚀 Amazing! Your Funded Account "${accountName}" has been upgraded to a Live Account!`;
+    
+    const banner = { visible: true, message, type, accountName };
+    setCongratulationsBanner(banner);
+    localStorage.setItem('congratulations-banner', JSON.stringify(banner));
+  };
+
+  // Function to close congratulations banner
+  const closeCongratulationsBanner = () => {
+    const banner = { visible: false, message: '', type: 'funded' as const, accountName: '' };
+    setCongratulationsBanner(banner);
+    localStorage.setItem('congratulations-banner', JSON.stringify(banner));
+  };
   const [viewMode, setViewMode] = useState<'single' | 'multiple' | 'all'>('all');
   const [showSpendingModal, setShowSpendingModal] = useState(false);
   const [showWageModal, setShowWageModal] = useState(false);
@@ -500,6 +530,51 @@ export default function Dashboard() {
           </div>
         </div>
       </header>
+
+      {/* Congratulations Banner */}
+      {congratulationsBanner.visible && (
+        <div className="mx-4 mt-4 mb-2">
+          <div className={`relative rounded-lg p-4 shadow-lg border-2 ${
+            congratulationsBanner.type === 'funded' 
+              ? 'bg-gradient-to-r from-green-900/50 to-emerald-900/50 border-green-500' 
+              : 'bg-gradient-to-r from-yellow-900/50 to-orange-900/50 border-yellow-500'
+          }`}>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-3">
+                <div className={`p-2 rounded-full ${
+                  congratulationsBanner.type === 'funded' 
+                    ? 'bg-green-500/20' 
+                    : 'bg-yellow-500/20'
+                }`}>
+                  {congratulationsBanner.type === 'funded' ? (
+                    <Trophy className="h-6 w-6 text-green-400" />
+                  ) : (
+                    <Star className="h-6 w-6 text-yellow-400" />
+                  )}
+                </div>
+                <div>
+                  <p className="text-white font-medium text-sm">
+                    {congratulationsBanner.message}
+                  </p>
+                  <p className="text-gray-300 text-xs mt-1">
+                    {congratulationsBanner.type === 'funded' 
+                      ? 'Your account is now eligible for payouts according to your configured payout rules.' 
+                      : 'Your live account has enhanced payout capabilities and flexibility.'}
+                  </p>
+                </div>
+              </div>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={closeCongratulationsBanner}
+                className="text-gray-300 hover:text-white hover:bg-white/10"
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="p-4 space-y-4">
 

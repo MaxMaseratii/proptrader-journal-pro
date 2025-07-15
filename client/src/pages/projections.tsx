@@ -105,11 +105,11 @@ export default function Projections() {
       firm: "",
       type: "challenge",
       status: "active",
-      startingBalance: 50000,
-      profitTarget: 5000,
-      maxDrawdown: 2000,
+      startingBalance: null,
+      profitTarget: null,
+      maxDrawdown: null,
       hasDailyLossLimit: false,
-      dailyLossLimit: 0,
+      dailyLossLimit: null,
       dailyLossLimitType: "soft",
       
       // Account Rules
@@ -117,7 +117,7 @@ export default function Projections() {
       timeLimit: null,
       daysRequiredToPass: null,
       minimumProfitTarget: null,
-      consistencyRulePercent: 50,
+      consistencyRulePercent: null,
       maximumDailyDrawdown: null,
       maximumOverallDrawdown: null,
       
@@ -137,29 +137,29 @@ export default function Projections() {
       includesActivationFee: false,
       
       // Payout rule fields
-      daysRequiredForPayout: 5,
+      daysRequiredForPayout: null,
       winningDayMinimum: null,
       payoutFrequency: "monthly",
-      minimumPayoutAmount: 100,
+      minimumPayoutAmount: null,
       maxNetBalanceForPayout: null,
-      profitSplit: 80,
+      profitSplit: null,
       maximumPayoutAllowed: null,
       maximumPayoutPerAccount: null,
       bufferAmount: null,
-      bufferPercentage: 5.0,
+      bufferPercentage: null,
       accountBufferRequired: false,
       
       // Risk management fields
-      tradingCapital: 50000,
+      tradingCapital: null,
       riskCalculationPeriod: "weekly",
       useRiskPercentage: false,
-      riskPercentage: 1.0,
-      customRiskAmount: 500,
-      riskRewardRatio: 2.0,
+      riskPercentage: null,
+      customRiskAmount: null,
+      riskRewardRatio: null,
       primaryAsset: "ES" as AssetSymbol,
       useIntradayMargins: true,
-      marginSafetyBuffer: 50.0,
-      stopLossPoints: 10,
+      marginSafetyBuffer: null,
+      stopLossPoints: null,
       riskPerTrade: null,
       maxTradesPerDay: 0,
       maxRiskPerDay: null,
@@ -170,6 +170,7 @@ export default function Projections() {
       enhancedPayoutsAvailable: false,
       liveAccountAvailable: false,
       transitionTrigger: null,
+      allowChallengePayouts: false,
       
       // Live account transition settings
       liveAccountTransitionEnabled: false,
@@ -1229,8 +1230,34 @@ export default function Projections() {
                   </TabsContent>
 
                   <TabsContent value="payout" className="space-y-6 mt-6">
+                    {/* Challenge Account Payout Rules (Some companies allow this) */}
                     <div className="bg-gray-800 p-4 rounded-lg">
-                      <h3 className="text-lg font-semibold text-white mb-4">Payout Configuration</h3>
+                      <h3 className="text-lg font-semibold text-white mb-4">Challenge Account Payout Rules</h3>
+                      <p className="text-gray-300 text-sm mb-4">Some prop firms allow payouts for challenge accounts. Configure these settings if your firm supports challenge payouts.</p>
+                      
+                      <div className="grid grid-cols-2 gap-4 mb-4">
+                        <div className="col-span-2">
+                          <FormField
+                            control={accountForm.control}
+                            name="allowChallengePayouts"
+                            render={({ field }) => (
+                              <FormItem className="flex flex-row items-center justify-between rounded-lg border border-gray-600 p-4">
+                                <div className="space-y-0.5">
+                                  <FormLabel className="text-base text-white">Allow Challenge Payouts</FormLabel>
+                                  <p className="text-sm text-gray-400">Enable payout eligibility for challenge accounts</p>
+                                </div>
+                                <FormControl>
+                                  <Switch
+                                    checked={field.value}
+                                    onCheckedChange={field.onChange}
+                                  />
+                                </FormControl>
+                              </FormItem>
+                            )}
+                          />
+                        </div>
+                      </div>
+                      
                       <div className="grid grid-cols-2 gap-4">
                         <FormField
                           control={accountForm.control}
@@ -1245,6 +1272,7 @@ export default function Projections() {
                                   value={field.value || ""}
                                   onChange={(e) => field.onChange(e.target.value === "" ? null : parseInt(e.target.value))}
                                   className="bg-gray-700 border-gray-600 text-white placeholder-gray-400"
+                                  placeholder="5"
                                 />
                               </FormControl>
                               <FormMessage />
@@ -1264,6 +1292,47 @@ export default function Projections() {
                                   value={field.value || ""}
                                   onChange={(e) => field.onChange(e.target.value === "" ? null : parseFloat(e.target.value))}
                                   className="bg-gray-700 border-gray-600 text-white placeholder-gray-400"
+                                  placeholder="200"
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={accountForm.control}
+                          name="minimumPayoutAmount"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="text-white font-medium">Minimum Payout Amount ($)</FormLabel>
+                              <FormControl>
+                                <Input 
+                                  type="number" 
+                                  {...field} 
+                                  value={field.value || ""}
+                                  onChange={(e) => field.onChange(e.target.value === "" ? null : parseFloat(e.target.value))}
+                                  className="bg-gray-700 border-gray-600 text-white placeholder-gray-400"
+                                  placeholder="100"
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={accountForm.control}
+                          name="maxNetBalanceForPayout"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="text-white font-medium">Max Net Balance for Payout ($)</FormLabel>
+                              <FormControl>
+                                <Input 
+                                  type="number" 
+                                  {...field} 
+                                  value={field.value || ""}
+                                  onChange={(e) => field.onChange(e.target.value === "" ? null : parseFloat(e.target.value))}
+                                  className="bg-gray-700 border-gray-600 text-white placeholder-gray-400"
+                                  placeholder="2000"
                                 />
                               </FormControl>
                               <FormMessage />
@@ -1283,6 +1352,67 @@ export default function Projections() {
                                   value={field.value || ""}
                                   onChange={(e) => field.onChange(e.target.value === "" ? null : parseFloat(e.target.value))}
                                   className="bg-gray-700 border-gray-600 text-white placeholder-gray-400"
+                                  placeholder="80"
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={accountForm.control}
+                          name="consistencyRulePercent"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="text-white font-medium">Consistency Rules Percentage (%)</FormLabel>
+                              <FormControl>
+                                <Input 
+                                  type="number" 
+                                  {...field} 
+                                  value={field.value || ""}
+                                  onChange={(e) => field.onChange(e.target.value === "" ? null : parseFloat(e.target.value))}
+                                  className="bg-gray-700 border-gray-600 text-white placeholder-gray-400"
+                                  placeholder="50"
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={accountForm.control}
+                          name="maximumPayoutAllowed"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="text-white font-medium">Maximum Payout Allowed ($)</FormLabel>
+                              <FormControl>
+                                <Input 
+                                  type="number" 
+                                  {...field} 
+                                  value={field.value || ""}
+                                  onChange={(e) => field.onChange(e.target.value === "" ? null : parseFloat(e.target.value))}
+                                  className="bg-gray-700 border-gray-600 text-white placeholder-gray-400"
+                                  placeholder="5000"
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={accountForm.control}
+                          name="maximumPayoutPerAccount"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="text-white font-medium">Maximum Payout Per Account ($)</FormLabel>
+                              <FormControl>
+                                <Input 
+                                  type="number" 
+                                  {...field} 
+                                  value={field.value || ""}
+                                  onChange={(e) => field.onChange(e.target.value === "" ? null : parseFloat(e.target.value))}
+                                  className="bg-gray-700 border-gray-600 text-white placeholder-gray-400"
+                                  placeholder="10000"
                                 />
                               </FormControl>
                               <FormMessage />
@@ -1312,115 +1442,59 @@ export default function Projections() {
                             </FormItem>
                           )}
                         />
-                        <FormField
-                          control={accountForm.control}
-                          name="maximumPayoutAllowed"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel className="text-white font-medium">Maximum Payout Allowed ($)</FormLabel>
-                              <FormControl>
-                                <Input 
-                                  type="number" 
-                                  {...field} 
-                                  value={field.value || ""}
-                                  onChange={(e) => field.onChange(e.target.value === "" ? null : parseFloat(e.target.value))}
-                                  className="bg-gray-700 border-gray-600 text-white placeholder-gray-400"
-                                  placeholder="Maximum payout amount in dollars"
-                                />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                        <FormField
-                          control={accountForm.control}
-                          name="maximumPayoutPerAccount"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel className="text-white font-medium">Maximum Payout Allowed Per Account ($)</FormLabel>
-                              <FormControl>
-                                <Input 
-                                  type="number" 
-                                  {...field} 
-                                  value={field.value || ""}
-                                  onChange={(e) => field.onChange(e.target.value === "" ? null : parseFloat(e.target.value))}
-                                  className="bg-gray-700 border-gray-600 text-white placeholder-gray-400"
-                                  placeholder="Maximum payout per account in dollars"
-                                />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                        <FormField
-                          control={accountForm.control}
-                          name="minimumPayoutAmount"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel className="text-white font-medium">Minimum Payout Amount ($)</FormLabel>
-                              <FormControl>
-                                <Input 
-                                  type="number" 
-                                  {...field} 
-                                  value={field.value || ""}
-                                  onChange={(e) => field.onChange(e.target.value === "" ? null : parseFloat(e.target.value))}
-                                  className="bg-gray-700 border-gray-600 text-white placeholder-gray-400"
-                                  placeholder="Additional profit needed after exceeding max balance"
-                                />
-                              </FormControl>
-                              <p className="text-xs text-gray-400 mt-1">
-                                Amount you must make AFTER exceeding the Max Net Balance for Payout
-                              </p>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                        <FormField
-                          control={accountForm.control}
-                          name="maxNetBalanceForPayout"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel className="text-white font-medium">Max Net Balance for Payout ($)</FormLabel>
-                              <FormControl>
-                                <Input 
-                                  type="number" 
-                                  {...field} 
-                                  value={field.value || ""}
-                                  onChange={(e) => field.onChange(e.target.value === "" ? null : parseFloat(e.target.value))}
-                                  className="bg-gray-700 border-gray-600 text-white placeholder-gray-400"
-                                  placeholder="Amount you must exceed to get payout"
-                                />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                        <FormField
-                          control={accountForm.control}
-                          name="consistencyRulePercent"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel className="text-white font-medium">Consistency Rules Percentage (%)</FormLabel>
-                              <FormControl>
-                                <Input 
-                                  type="number" 
-                                  step="0.1"
-                                  {...field} 
-                                  value={field.value || ""}
-                                  onChange={(e) => field.onChange(e.target.value === "" ? null : parseFloat(e.target.value))}
-                                  className="bg-gray-700 border-gray-600 text-white placeholder-gray-400"
-                                  placeholder="50% (best day must be below this % of profit target)"
-                                />
-                              </FormControl>
-                              <p className="text-xs text-gray-400 mt-1">
-                                Your best trading day must be below this % of your profit target. If exceeded, you'll need additional profits to request a payout.
-                              </p>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
                       </div>
                     </div>
+
+                    {/* Live Account Availability Settings */}
+                    <div className="bg-gray-800 p-4 rounded-lg">
+                      <h3 className="text-lg font-semibold text-white mb-4">Live Account Availability</h3>
+                      <p className="text-gray-300 text-sm mb-4">Some prop firms don't provide live accounts or have unclear rules for transitioning from funded to live accounts.</p>
+                      
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="col-span-2">
+                          <FormField
+                            control={accountForm.control}
+                            name="liveAccountAvailable"
+                            render={({ field }) => (
+                              <FormItem className="flex flex-row items-center justify-between rounded-lg border border-gray-600 p-4">
+                                <div className="space-y-0.5">
+                                  <FormLabel className="text-base text-white">Live Account Available</FormLabel>
+                                  <p className="text-sm text-gray-400">Does this prop firm offer live accounts?</p>
+                                </div>
+                                <FormControl>
+                                  <Switch
+                                    checked={field.value}
+                                    onCheckedChange={field.onChange}
+                                  />
+                                </FormControl>
+                              </FormItem>
+                            )}
+                          />
+                        </div>
+                        <div className="col-span-2">
+                          <FormField
+                            control={accountForm.control}
+                            name="liveAccountTransitionEnabled"
+                            render={({ field }) => (
+                              <FormItem className="flex flex-row items-center justify-between rounded-lg border border-gray-600 p-4">
+                                <div className="space-y-0.5">
+                                  <FormLabel className="text-base text-white">Clear Transition Rules</FormLabel>
+                                  <p className="text-sm text-gray-400">Are there clear rules for transitioning funded accounts to live accounts?</p>
+                                </div>
+                                <FormControl>
+                                  <Switch
+                                    checked={field.value}
+                                    onCheckedChange={field.onChange}
+                                  />
+                                </FormControl>
+                              </FormItem>
+                            )}
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+
                   </TabsContent>
 
                   <TabsContent value="risk" className="space-y-6 mt-6">

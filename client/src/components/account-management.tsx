@@ -14,6 +14,19 @@ import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import type { Account } from "@shared/schema";
 
+// Function to trigger congratulations banner
+const triggerCongratulationsBanner = (accountName: string, type: 'funded' | 'live') => {
+  const message = type === 'funded' 
+    ? `🎉 Congratulations! Your Challenge Account "${accountName}" has been successfully converted to a Funded Account!`
+    : `🚀 Amazing! Your Funded Account "${accountName}" has been upgraded to a Live Account!`;
+  
+  const banner = { visible: true, message, type, accountName };
+  localStorage.setItem('congratulations-banner', JSON.stringify(banner));
+  
+  // Refresh the page to show the banner
+  window.location.reload();
+};
+
 interface AccountManagementProps {
   accounts: Account[];
 }
@@ -140,11 +153,14 @@ export default function AccountManagement({ accounts }: AccountManagementProps) 
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['/api/accounts'] });
       setIsConversionDialogOpen(false);
+      const accountName = selectedChallengeAccount?.name || 'Unknown Account';
       setSelectedChallengeAccount(null);
       toast({
         title: "Challenge Converted Successfully!",
         description: `Challenge account converted to funded account: ${data.fundedAccount.name}`,
       });
+      // Trigger congratulations banner
+      triggerCongratulationsBanner(accountName, 'funded');
     },
     onError: (error: any) => {
       toast({
@@ -171,11 +187,14 @@ export default function AccountManagement({ accounts }: AccountManagementProps) 
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['/api/accounts'] });
       setIsLiveConversionDialogOpen(false);
+      const accountName = selectedFundedAccount?.name || 'Unknown Account';
       setSelectedFundedAccount(null);
       toast({
         title: "Funded Account Converted to Live!",
         description: `Funded account converted to live account: ${data.liveAccount.name}`,
       });
+      // Trigger congratulations banner
+      triggerCongratulationsBanner(accountName, 'live');
     },
     onError: (error: any) => {
       toast({
