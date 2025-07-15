@@ -43,6 +43,7 @@ export const accounts = pgTable("accounts", {
   phase2Target: real("phase2_target"),
   minimumTradingDays: integer("minimum_trading_days"),
   timeLimit: integer("time_limit"), // days, 0 = unlimited
+  daysRequiredToPass: integer("days_required_to_pass"), // Number of days required to pass the challenge
   
   // CSV Import Security
   csvAccountId: text("csv_account_id"), // Associated CSV account ID for import validation
@@ -83,6 +84,11 @@ export const accounts = pgTable("accounts", {
   useIntradayMargins: boolean("use_intraday_margins").default(true),
   marginSafetyBuffer: real("margin_safety_buffer").default(50.0), // Percentage
   stopLossPoints: integer("stop_loss_points").default(10), // Typical stop loss in points
+  
+  // Discipline Score Calculation Settings
+  disciplineRiskPeriod: text("discipline_risk_period"), // 'daily', 'weekly', 'monthly', 'custom'
+  disciplineRiskPeriodDays: integer("discipline_risk_period_days"), // Number of days for custom period
+  maxDailyRiskBudget: real("max_daily_risk_budget"), // Maximum daily risk budget for discipline scoring
   enhancedPayoutsAvailable: boolean("enhanced_payouts_available").default(false),
   
   // Live Account Settings

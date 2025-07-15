@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
@@ -18,6 +18,10 @@ interface AccountManagementProps {
 }
 
 export default function AccountManagement({ accounts }: AccountManagementProps) {
+  // Get trades data to calculate P&L
+  const { data: trades = [] } = useQuery({
+    queryKey: ['/api/trades'],
+  });
   const [resetCost, setResetCost] = useState(0);
   const [isResetDialogOpen, setIsResetDialogOpen] = useState(false);
   const [selectedAccount, setSelectedAccount] = useState<Account | null>(null);
@@ -128,8 +132,9 @@ export default function AccountManagement({ accounts }: AccountManagementProps) 
     if (account.type !== 'challenge') return { eligible: false, reason: "Not a challenge account" };
     if (account.transitionStatus === 'converted') return { eligible: false, reason: "Already converted" };
     
-    // This is a simplified check - the real check happens on the server
-    const totalPnl = account.totalPnl || 0;
+    // Calculate total P&L from trades for this account
+    const accountTrades = trades.filter(trade => trade.accountId === account.id);
+    const totalPnl = accountTrades.reduce((sum, trade) => sum + (trade.pnl || 0), 0);
     const currentBalance = account.startingBalance + totalPnl;
     const profitTarget = account.profitTarget || 0;
     const profitRequired = account.startingBalance + profitTarget;
@@ -431,6 +436,9 @@ export default function AccountManagement({ accounts }: AccountManagementProps) 
                         Convert Challenge to Funded Account
                       </DialogTitle>
                     </DialogHeader>
+                    <DialogDescription className="text-gray-300 sr-only">
+                      Convert your passed challenge account to a funded account with new trading rules and payout eligibility.
+                    </DialogDescription>
                     <div className="space-y-4">
                       <div className="bg-green-900/30 border border-green-600/30 rounded-lg p-4">
                         <p className="text-green-300 text-sm">

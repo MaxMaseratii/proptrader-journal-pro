@@ -14,7 +14,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { insertAccountSchema, type Account, type InsertAccount } from "@shared/schema";
 import { formatCurrency } from "@/lib/utils";
 import { apiRequest, queryClient } from "@/lib/queryClient";
-import { Plus, Calculator, TrendingUp, DollarSign, Lightbulb, RotateCcw, LogOut, Trash2, AlertTriangle, Target, Trophy, Settings } from "lucide-react";
+import { Plus, Calculator, TrendingUp, DollarSign, Lightbulb, RotateCcw, LogOut, Trash2, AlertTriangle, Target, Trophy, Settings, Brain } from "lucide-react";
 import { useState, useEffect, useMemo } from "react";
 import { calculateRiskSuggestions, TRADING_ASSETS, type AssetSymbol } from "@/lib/risk-calculator";
 import { TRADING_ASSETS as ASSET_CONFIG, ASSET_CATEGORIES, getRiskSuggestion } from "@/lib/trading-assets";
@@ -110,6 +110,12 @@ export default function Accounts() {
       primaryTradingAsset: "ES",
       secondaryTradingAsset: "none",
       tertiaryTradingAsset: "none",
+      
+      // New fields for discipline scoring
+      daysRequiredToPass: 5,
+      disciplineRiskPeriod: "weekly",
+      disciplineRiskPeriodDays: 5,
+      maxDailyRiskBudget: 500,
     },
   });
 
@@ -410,7 +416,7 @@ export default function Accounts() {
                             />
                           </div>
 
-                          <div className="grid grid-cols-2 gap-4 mb-4">
+                          <div className="grid grid-cols-3 gap-4 mb-4">
                             <FormField
                               control={form.control}
                               name="minimumTradingDays"
@@ -451,6 +457,108 @@ export default function Accounts() {
                                 </FormItem>
                               )}
                             />
+                            <FormField
+                              control={form.control}
+                              name="daysRequiredToPass"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel className="text-white font-medium">Days Required to Pass</FormLabel>
+                                  <FormControl>
+                                    <Input 
+                                      type="number" 
+                                      {...field} 
+                                      value={field.value || ""} 
+                                      onChange={(e) => field.onChange(e.target.value === "" ? null : parseInt(e.target.value))}
+                                      className="bg-gray-700 border-gray-600 text-white placeholder-gray-400"
+                                      placeholder="e.g., 5"
+                                    />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                          </div>
+                          
+                          {/* Discipline Scoring Settings */}
+                          <div className="bg-gray-700 p-4 rounded-lg">
+                            <h4 className="text-lg font-semibold text-white mb-4 flex items-center">
+                              <Brain className="mr-2 h-5 w-5" />
+                              Discipline Scoring Configuration
+                            </h4>
+                            <p className="text-gray-400 text-sm mb-4">
+                              Configure risk period calculations and daily risk budgets for discipline score analysis.
+                            </p>
+                            
+                            <div className="grid grid-cols-2 gap-4 mb-4">
+                              <FormField
+                                control={form.control}
+                                name="disciplineRiskPeriod"
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormLabel className="text-white font-medium">Risk Period Calculation</FormLabel>
+                                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                      <FormControl>
+                                        <SelectTrigger className="bg-gray-700 border-gray-600 text-white">
+                                          <SelectValue placeholder="Select period" />
+                                        </SelectTrigger>
+                                      </FormControl>
+                                      <SelectContent className="bg-gray-700 border-gray-600">
+                                        <SelectItem value="daily" className="text-white hover:bg-gray-600">Daily</SelectItem>
+                                        <SelectItem value="weekly" className="text-white hover:bg-gray-600">Weekly</SelectItem>
+                                        <SelectItem value="monthly" className="text-white hover:bg-gray-600">Monthly</SelectItem>
+                                        <SelectItem value="custom" className="text-white hover:bg-gray-600">Custom</SelectItem>
+                                      </SelectContent>
+                                    </Select>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+                              <FormField
+                                control={form.control}
+                                name="maxDailyRiskBudget"
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormLabel className="text-white font-medium">Maximum Daily Risk Budget ($)</FormLabel>
+                                    <FormControl>
+                                      <Input 
+                                        type="number" 
+                                        {...field} 
+                                        value={field.value || ""} 
+                                        onChange={(e) => field.onChange(e.target.value === "" ? null : parseFloat(e.target.value))}
+                                        className="bg-gray-700 border-gray-600 text-white placeholder-gray-400"
+                                        placeholder="e.g., 500"
+                                      />
+                                    </FormControl>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+                            </div>
+                            
+                            {form.watch('disciplineRiskPeriod') === 'custom' && (
+                              <div className="mb-4">
+                                <FormField
+                                  control={form.control}
+                                  name="disciplineRiskPeriodDays"
+                                  render={({ field }) => (
+                                    <FormItem>
+                                      <FormLabel className="text-white font-medium">Custom Risk Period (days)</FormLabel>
+                                      <FormControl>
+                                        <Input 
+                                          type="number" 
+                                          {...field} 
+                                          value={field.value || ""} 
+                                          onChange={(e) => field.onChange(e.target.value === "" ? null : parseInt(e.target.value))}
+                                          className="bg-gray-700 border-gray-600 text-white placeholder-gray-400"
+                                          placeholder="e.g., 5"
+                                        />
+                                      </FormControl>
+                                      <FormMessage />
+                                    </FormItem>
+                                  )}
+                                />
+                              </div>
+                            )}
                           </div>
                         </div>
 
