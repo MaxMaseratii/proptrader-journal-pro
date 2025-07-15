@@ -301,9 +301,24 @@ export default function MMMDisciplinaryAssistant({ trades, accounts, selectedAcc
     // Apply account status adjustments (but don't let bonuses exceed reasonable limits)
     const accountStatusAdjustment = Math.min(25, accountStatusBonus) - accountStatusPenalty;
     
-    // Calculate trading profitability factor
+    // Calculate comprehensive trading performance metrics
     const totalPnL = accountTrades.reduce((sum, trade) => sum + trade.pnl, 0);
-    const profitabilityBonus = totalPnL > 0 ? Math.min(20, (totalPnL / 1000) * 2) : 0;
+    const profitableTradesCount = accountTrades.filter(t => t.pnl > 0).length;
+    const losingTradesCount = accountTrades.filter(t => t.pnl < 0).length;
+    
+    // Performance-based scoring adjustments
+    let performanceMultiplier = 1.0;
+    
+    if (totalPnL > 0) {
+      // Reward profitable accounts
+      performanceMultiplier = Math.min(1.4, 1.0 + (totalPnL / 10000)); // Max 40% bonus for very profitable accounts
+    } else if (totalPnL < 0) {
+      // Penalize losing accounts
+      performanceMultiplier = Math.max(0.6, 1.0 + (totalPnL / 10000)); // Max 40% penalty for losing accounts
+    }
+    
+    // Win rate adjustment
+    const winRateMultiplier = winRate > 0.5 ? 1.0 + ((winRate - 0.5) * 0.5) : 1.0 - ((0.5 - winRate) * 0.5);
     
     // Overall discipline score (weighted average with performance adjustments)
     const baseDisciplineScore = (
@@ -315,12 +330,27 @@ export default function MMMDisciplinaryAssistant({ trades, accounts, selectedAcc
       learningScore * 0.10
     );
     
-    // Apply account status and profitability adjustments
-    const disciplineScore = Math.max(0, Math.min(100, baseDisciplineScore + accountStatusAdjustment + profitabilityBonus));
+    // Apply all performance adjustments
+    const disciplineScore = Math.max(0, Math.min(100, 
+      (baseDisciplineScore * performanceMultiplier * winRateMultiplier) + accountStatusAdjustment
+    ));
     
     // Calculate excess losses (actual trading losses, not account costs)
     const tradingExcessLosses = (avgLoss * revengeTradesCount) + (avgLoss * fomoTradesCount * 0.5);
     const totalExcessLosses = Math.max(0, tradingExcessLosses);
+
+    // Debug logging to understand the calculation
+    console.log(`Account ${selectedAccountId || 'All'} Analysis:`, {
+      totalTrades,
+      totalPnL,
+      winRate,
+      performanceMultiplier,
+      winRateMultiplier,
+      baseDisciplineScore,
+      finalDisciplineScore: disciplineScore,
+      accountStatus: currentAccount?.status || 'multiple',
+      accountStatusAdjustment
+    });
 
     return {
       totalTrades,
