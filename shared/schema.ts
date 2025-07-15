@@ -58,7 +58,8 @@ export const accounts = pgTable("accounts", {
   copyTradingAllowed: boolean("copy_trading_allowed").default(true),
   newsTradingAllowed: boolean("news_trading_allowed").default(true),
   
-  // Payout Settings (for funded accounts)
+  // Payout Settings (flexible for all account types)
+  allowChallengePayouts: boolean("allow_challenge_payouts").default(false), // Whether challenge accounts can receive payouts
   daysRequiredForPayout: integer("days_required_for_payout"),
   winningDayMinimum: real("winning_day_minimum"),
   minimumPayoutAmount: real("minimum_payout_amount"),
@@ -71,6 +72,24 @@ export const accounts = pgTable("accounts", {
   bufferAmount: real("buffer_amount"),
   bufferPercentage: real("buffer_percentage"), // New field for percentage buffer
   profitSplit: real("profit_split"),
+  
+  // Funded Account Payout Settings (separate rules for funded state)
+  fundedPayoutEnabled: boolean("funded_payout_enabled").default(true),
+  fundedDaysRequiredForPayout: integer("funded_days_required_for_payout"),
+  fundedWinningDayMinimum: real("funded_winning_day_minimum"),
+  fundedMinimumPayoutAmount: real("funded_minimum_payout_amount"),
+  fundedMaxNetBalanceForPayout: real("funded_max_net_balance_for_payout"),
+  fundedPayoutFrequency: text("funded_payout_frequency"), // 'daily', 'weekly', 'bi-weekly', 'monthly', 'on-demand'
+  fundedProfitSplit: real("funded_profit_split"),
+  
+  // Live Account Payout Settings (separate rules for live state)
+  livePayoutEnabled: boolean("live_payout_enabled").default(true),
+  liveDaysRequiredForPayout: integer("live_days_required_for_payout"),
+  liveWinningDayMinimum: real("live_winning_day_minimum"),
+  liveMinimumPayoutAmount: real("live_minimum_payout_amount"),
+  liveMaxNetBalanceForPayout: real("live_max_net_balance_for_payout"),
+  livePayoutFrequency: text("live_payout_frequency"), // 'daily', 'weekly', 'bi-weekly', 'monthly', 'on-demand'
+  liveProfitSplit: real("live_profit_split"),
   
   // Smart Position Sizing Calculator Settings
   tradingCapital: real("trading_capital"), // Trading capital for risk calculations
@@ -94,6 +113,12 @@ export const accounts = pgTable("accounts", {
   // Live Account Settings
   liveAccountAvailable: boolean("live_account_available").default(false),
   transitionTrigger: text("transition_trigger"),
+  
+  // Live Account Transition Rules
+  liveAccountTransitionEnabled: boolean("live_account_transition_enabled").default(false),
+  liveAccountTransitionProfitTarget: real("live_account_transition_profit_target"), // Profit needed to qualify for live account
+  liveAccountTransitionDays: integer("live_account_transition_days"), // Days of consistent profit needed
+  liveAccountTransitionDrawdownLimit: real("live_account_transition_drawdown_limit"), // Max drawdown allowed during transition period
   
   // Challenge-to-Funded Account Transition
   parentChallengeId: integer("parent_challenge_id").references(() => accounts.id), // For funded accounts, links to original challenge

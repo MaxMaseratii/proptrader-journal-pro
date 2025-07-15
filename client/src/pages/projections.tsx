@@ -106,12 +106,50 @@ export default function Projections() {
       type: "challenge",
       status: "active",
       startingBalance: 50000,
-      currentBalance: 50000,
       profitTarget: 5000,
       maxDrawdown: 2000,
       hasDailyLossLimit: false,
       dailyLossLimit: 0,
       dailyLossLimitType: "soft",
+      
+      // Account Rules
+      minimumTradingDays: null,
+      timeLimit: null,
+      daysRequiredToPass: null,
+      minimumProfitTarget: null,
+      consistencyRulePercent: 50,
+      maximumDailyDrawdown: null,
+      maximumOverallDrawdown: null,
+      
+      // Discipline Scoring
+      disciplineRiskPeriod: "daily",
+      disciplineRiskBudget: null,
+      disciplineOverrideRisk: false,
+      disciplineRiskOverride: null,
+      
+      // Financial tracking fields
+      accountCost: null,
+      purchaseMethod: null,
+      resetCount: 0,
+      totalResetsCost: null,
+      activationCost: null,
+      activationPaid: false,
+      includesActivationFee: false,
+      
+      // Payout rule fields
+      daysRequiredForPayout: 5,
+      winningDayMinimum: null,
+      payoutFrequency: "monthly",
+      minimumPayoutAmount: 100,
+      maxNetBalanceForPayout: null,
+      profitSplit: 80,
+      maximumPayoutAllowed: null,
+      maximumPayoutPerAccount: null,
+      bufferAmount: null,
+      bufferPercentage: 5.0,
+      accountBufferRequired: false,
+      
+      // Risk management fields
       tradingCapital: 50000,
       riskCalculationPeriod: "weekly",
       useRiskPercentage: false,
@@ -122,31 +160,43 @@ export default function Projections() {
       useIntradayMargins: true,
       marginSafetyBuffer: 50.0,
       stopLossPoints: 10,
-      payoutFrequency: "monthly",
-      minimumPayoutAmount: 100,
-      maxNetBalanceForPayout: null,
-      consistencyRulePercent: 50,
-      profitSplit: 80,
-      bufferPercentage: 5.0,
-      daysRequiredForPayout: 5,
-      maximumPayoutPercentage: 90,
-      primaryTradingAsset: "ES",
-      secondaryTradingAsset: "none",
-      tertiaryTradingAsset: "none",
-      // Financial tracking fields
-      accountCost: null,
-      purchaseMethod: null,
-      resetCount: null,
-      totalResetsCost: null,
-      activationCost: null,
-      activationPaid: null,
-      includesActivationFee: null,
-      // Payout rule fields
-      winningDayMinimum: null,
-      // Risk management fields
       riskPerTrade: null,
-      maxTradesPerDay: null,
+      maxTradesPerDay: 0,
+      maxRiskPerDay: null,
       maxPositionSize: null,
+      preferredAssets: null,
+      
+      // Enhanced and Live Account Settings
+      enhancedPayoutsAvailable: false,
+      liveAccountAvailable: false,
+      transitionTrigger: null,
+      
+      // Live account transition settings
+      liveAccountTransitionEnabled: false,
+      liveAccountTransitionProfitTarget: null,
+      liveAccountTransitionDays: null,
+      liveAccountTransitionDrawdownLimit: null,
+      
+      // Challenge Account Payout Settings
+      allowChallengePayouts: false,
+      
+      // Funded Account Payout Settings
+      fundedPayoutEnabled: false,
+      fundedDaysRequiredForPayout: null,
+      fundedWinningDayMinimum: null,
+      fundedPayoutFrequency: null,
+      fundedMinimumPayoutAmount: null,
+      fundedMaxNetBalanceForPayout: null,
+      fundedProfitSplit: null,
+      
+      // Live Account Payout Settings
+      livePayoutEnabled: false,
+      liveDaysRequiredForPayout: null,
+      liveWinningDayMinimum: null,
+      livePayoutFrequency: null,
+      liveMinimumPayoutAmount: null,
+      liveMaxNetBalanceForPayout: null,
+      liveProfitSplit: null,
     },
   });
 

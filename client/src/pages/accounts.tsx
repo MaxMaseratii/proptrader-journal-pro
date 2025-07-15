@@ -14,7 +14,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { insertAccountSchema, type Account, type InsertAccount } from "@shared/schema";
 import { formatCurrency } from "@/lib/utils";
 import { apiRequest, queryClient } from "@/lib/queryClient";
-import { Plus, Calculator, TrendingUp, DollarSign, Lightbulb, RotateCcw, LogOut, Trash2, AlertTriangle, Target, Trophy, Settings, Brain } from "lucide-react";
+import { Plus, Calculator, TrendingUp, DollarSign, Lightbulb, RotateCcw, LogOut, Trash2, AlertTriangle, Target, Trophy, Settings, Brain, ArrowRight } from "lucide-react";
 import { useState, useEffect, useMemo } from "react";
 import { calculateRiskSuggestions, TRADING_ASSETS, type AssetSymbol } from "@/lib/risk-calculator";
 import { TRADING_ASSETS as ASSET_CONFIG, ASSET_CATEGORIES, getRiskSuggestion } from "@/lib/trading-assets";
@@ -84,7 +84,8 @@ export default function Accounts() {
       copyTradingAllowed: true,
       newsTradingAllowed: true,
       
-      // Payout fields
+      // Payout fields (challenge account)
+      allowChallengePayouts: false,
       daysRequiredForPayout: 5,
       winningDayMinimum: 200,
       payoutFrequency: "monthly",
@@ -95,6 +96,24 @@ export default function Accounts() {
       accountBufferRequired: false,
       bufferAmount: null,
       bufferPercentage: null,
+      
+      // Funded account payout settings
+      fundedPayoutEnabled: true,
+      fundedDaysRequiredForPayout: 5,
+      fundedWinningDayMinimum: 200,
+      fundedMinimumPayoutAmount: 100,
+      fundedMaxNetBalanceForPayout: 2500,
+      fundedPayoutFrequency: "monthly",
+      fundedProfitSplit: 80,
+      
+      // Live account payout settings
+      livePayoutEnabled: true,
+      liveDaysRequiredForPayout: 3,
+      liveWinningDayMinimum: 100,
+      liveMinimumPayoutAmount: 50,
+      liveMaxNetBalanceForPayout: 1000,
+      livePayoutFrequency: "weekly",
+      liveProfitSplit: 90,
       
       // Risk Management Settings
       riskPerTrade: null,
@@ -108,6 +127,33 @@ export default function Accounts() {
       enhancedPayoutsAvailable: false,
       liveAccountAvailable: false,
       transitionTrigger: null,
+      
+      // Live account transition settings
+      liveAccountTransitionEnabled: false,
+      liveAccountTransitionProfitTarget: null,
+      liveAccountTransitionDays: null,
+      liveAccountTransitionDrawdownLimit: null,
+      
+      // Challenge Account Payout Settings
+      allowChallengePayouts: false,
+      
+      // Funded Account Payout Settings
+      fundedPayoutEnabled: false,
+      fundedDaysRequiredForPayout: null,
+      fundedWinningDayMinimum: null,
+      fundedPayoutFrequency: null,
+      fundedMinimumPayoutAmount: null,
+      fundedMaxNetBalanceForPayout: null,
+      fundedProfitSplit: null,
+      
+      // Live Account Payout Settings
+      livePayoutEnabled: false,
+      liveDaysRequiredForPayout: null,
+      liveWinningDayMinimum: null,
+      livePayoutFrequency: null,
+      liveMinimumPayoutAmount: null,
+      liveMaxNetBalanceForPayout: null,
+      liveProfitSplit: null,
       // Trading Asset Selection
       primaryTradingAsset: "ES",
       secondaryTradingAsset: "none",
@@ -1241,11 +1287,42 @@ export default function Accounts() {
                       </TabsContent>
 
                       <TabsContent value="payout" className="space-y-6 mt-6">
+                        {/* Challenge Account Payout Settings */}
                         <div className="bg-gray-800 p-4 rounded-lg">
                           <h3 className="text-lg font-semibold text-white mb-4 flex items-center">
-                            <DollarSign className="mr-2 h-5 w-5" />
-                            Payout Configuration
+                            <DollarSign className="mr-2 h-5 w-5 text-blue-400" />
+                            Challenge Account Payout Settings
                           </h3>
+                          <p className="text-gray-400 text-sm mb-4">
+                            Some prop firms allow payouts from challenge accounts. Configure payout rules for challenge state.
+                          </p>
+                          
+                          <div className="mb-4">
+                            <FormField
+                              control={form.control}
+                              name="allowChallengePayouts"
+                              render={({ field }) => (
+                                <FormItem className="flex flex-row items-center space-x-3 space-y-0">
+                                  <FormControl>
+                                    <Checkbox 
+                                      checked={field.value}
+                                      onCheckedChange={field.onChange}
+                                      className="border-blue-400 data-[state=checked]:bg-blue-600"
+                                    />
+                                  </FormControl>
+                                  <div className="space-y-1 leading-none">
+                                    <FormLabel className="text-white font-medium">
+                                      Allow Challenge Account Payouts
+                                    </FormLabel>
+                                    <p className="text-sm text-blue-200">
+                                      Check this if the prop firm allows payouts from challenge accounts
+                                    </p>
+                                  </div>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                          </div>
                           
                           <div className="grid grid-cols-2 gap-4">
                             <FormField
@@ -1467,6 +1544,451 @@ export default function Accounts() {
                                       Require maintaining a buffer amount in the account
                                     </p>
                                   </div>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                          </div>
+                        </div>
+                        
+                        {/* Funded Account Payout Settings */}
+                        <div className="bg-gray-800 p-4 rounded-lg">
+                          <h3 className="text-lg font-semibold text-white mb-4 flex items-center">
+                            <DollarSign className="mr-2 h-5 w-5 text-green-400" />
+                            Funded Account Payout Settings
+                          </h3>
+                          <p className="text-gray-400 text-sm mb-4">
+                            Configure payout rules when account transitions to funded status after passing challenge.
+                          </p>
+                          
+                          <div className="mb-4">
+                            <FormField
+                              control={form.control}
+                              name="fundedPayoutEnabled"
+                              render={({ field }) => (
+                                <FormItem className="flex flex-row items-center space-x-3 space-y-0">
+                                  <FormControl>
+                                    <Checkbox 
+                                      checked={field.value}
+                                      onCheckedChange={field.onChange}
+                                      className="border-green-400 data-[state=checked]:bg-green-600"
+                                    />
+                                  </FormControl>
+                                  <div className="space-y-1 leading-none">
+                                    <FormLabel className="text-white font-medium">
+                                      Enable Funded Account Payouts
+                                    </FormLabel>
+                                    <p className="text-sm text-green-200">
+                                      Allow payouts when account reaches funded status
+                                    </p>
+                                  </div>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                          </div>
+                          
+                          <div className="grid grid-cols-2 gap-4">
+                            <FormField
+                              control={form.control}
+                              name="fundedDaysRequiredForPayout"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel className="text-white font-medium">Funded Days Required for Payout</FormLabel>
+                                  <FormControl>
+                                    <Input 
+                                      type="number" 
+                                      {...field} 
+                                      value={field.value || ""}
+                                      onChange={(e) => field.onChange(e.target.value === "" ? null : parseInt(e.target.value))}
+                                      className="bg-gray-700 border-gray-600 text-white placeholder-gray-400"
+                                      placeholder="e.g., 5"
+                                    />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                            
+                            <FormField
+                              control={form.control}
+                              name="fundedWinningDayMinimum"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel className="text-white font-medium">Funded Winning Day Minimum ($)</FormLabel>
+                                  <FormControl>
+                                    <Input 
+                                      type="number" 
+                                      {...field} 
+                                      value={field.value || ""}
+                                      onChange={(e) => field.onChange(e.target.value === "" ? null : parseFloat(e.target.value))}
+                                      className="bg-gray-700 border-gray-600 text-white placeholder-gray-400"
+                                      placeholder="e.g., 200"
+                                    />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                            
+                            <FormField
+                              control={form.control}
+                              name="fundedPayoutFrequency"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel className="text-white font-medium">Funded Payout Frequency</FormLabel>
+                                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                    <FormControl>
+                                      <SelectTrigger className="bg-gray-700 border-gray-600 text-white">
+                                        <SelectValue placeholder="Select frequency" />
+                                      </SelectTrigger>
+                                    </FormControl>
+                                    <SelectContent className="bg-gray-700 border-gray-600">
+                                      <SelectItem value="weekly" className="text-white hover:bg-gray-600">Weekly</SelectItem>
+                                      <SelectItem value="bi-weekly" className="text-white hover:bg-gray-600">Bi-weekly</SelectItem>
+                                      <SelectItem value="monthly" className="text-white hover:bg-gray-600">Monthly</SelectItem>
+                                      <SelectItem value="on-demand" className="text-white hover:bg-gray-600">On-demand</SelectItem>
+                                    </SelectContent>
+                                  </Select>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                            
+                            <FormField
+                              control={form.control}
+                              name="fundedMinimumPayoutAmount"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel className="text-white font-medium">Funded Minimum Payout Amount ($)</FormLabel>
+                                  <FormControl>
+                                    <Input 
+                                      type="number" 
+                                      {...field} 
+                                      value={field.value || ""}
+                                      onChange={(e) => field.onChange(e.target.value === "" ? null : parseFloat(e.target.value))}
+                                      className="bg-gray-700 border-gray-600 text-white placeholder-gray-400"
+                                      placeholder="e.g., 100"
+                                    />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                            
+                            <FormField
+                              control={form.control}
+                              name="fundedMaxNetBalanceForPayout"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel className="text-white font-medium">Funded Max Net Balance for Payout ($)</FormLabel>
+                                  <FormControl>
+                                    <Input 
+                                      type="number" 
+                                      {...field} 
+                                      value={field.value || ""}
+                                      onChange={(e) => field.onChange(e.target.value === "" ? null : parseFloat(e.target.value))}
+                                      className="bg-gray-700 border-gray-600 text-white placeholder-gray-400"
+                                      placeholder="e.g., 2500"
+                                    />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                            
+                            <FormField
+                              control={form.control}
+                              name="fundedProfitSplit"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel className="text-white font-medium">Funded Profit Split (%)</FormLabel>
+                                  <FormControl>
+                                    <Input 
+                                      type="number" 
+                                      min="0"
+                                      max="100"
+                                      {...field} 
+                                      value={field.value || ""}
+                                      onChange={(e) => field.onChange(e.target.value === "" ? null : parseFloat(e.target.value))}
+                                      className="bg-gray-700 border-gray-600 text-white placeholder-gray-400"
+                                      placeholder="e.g., 80"
+                                    />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                          </div>
+                        </div>
+                        
+                        {/* Live Account Payout Settings */}
+                        <div className="bg-gray-800 p-4 rounded-lg">
+                          <h3 className="text-lg font-semibold text-white mb-4 flex items-center">
+                            <DollarSign className="mr-2 h-5 w-5 text-yellow-400" />
+                            Live Account Payout Settings
+                          </h3>
+                          <p className="text-gray-400 text-sm mb-4">
+                            Configure payout rules for live account status with enhanced benefits.
+                          </p>
+                          
+                          <div className="mb-4">
+                            <FormField
+                              control={form.control}
+                              name="livePayoutEnabled"
+                              render={({ field }) => (
+                                <FormItem className="flex flex-row items-center space-x-3 space-y-0">
+                                  <FormControl>
+                                    <Checkbox 
+                                      checked={field.value}
+                                      onCheckedChange={field.onChange}
+                                      className="border-yellow-400 data-[state=checked]:bg-yellow-600"
+                                    />
+                                  </FormControl>
+                                  <div className="space-y-1 leading-none">
+                                    <FormLabel className="text-white font-medium">
+                                      Enable Live Account Payouts
+                                    </FormLabel>
+                                    <p className="text-sm text-yellow-200">
+                                      Allow payouts when account reaches live status
+                                    </p>
+                                  </div>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                          </div>
+                          
+                          <div className="grid grid-cols-2 gap-4">
+                            <FormField
+                              control={form.control}
+                              name="liveDaysRequiredForPayout"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel className="text-white font-medium">Live Days Required for Payout</FormLabel>
+                                  <FormControl>
+                                    <Input 
+                                      type="number" 
+                                      {...field} 
+                                      value={field.value || ""}
+                                      onChange={(e) => field.onChange(e.target.value === "" ? null : parseInt(e.target.value))}
+                                      className="bg-gray-700 border-gray-600 text-white placeholder-gray-400"
+                                      placeholder="e.g., 3"
+                                    />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                            
+                            <FormField
+                              control={form.control}
+                              name="liveWinningDayMinimum"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel className="text-white font-medium">Live Winning Day Minimum ($)</FormLabel>
+                                  <FormControl>
+                                    <Input 
+                                      type="number" 
+                                      {...field} 
+                                      value={field.value || ""}
+                                      onChange={(e) => field.onChange(e.target.value === "" ? null : parseFloat(e.target.value))}
+                                      className="bg-gray-700 border-gray-600 text-white placeholder-gray-400"
+                                      placeholder="e.g., 100"
+                                    />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                            
+                            <FormField
+                              control={form.control}
+                              name="livePayoutFrequency"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel className="text-white font-medium">Live Payout Frequency</FormLabel>
+                                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                    <FormControl>
+                                      <SelectTrigger className="bg-gray-700 border-gray-600 text-white">
+                                        <SelectValue placeholder="Select frequency" />
+                                      </SelectTrigger>
+                                    </FormControl>
+                                    <SelectContent className="bg-gray-700 border-gray-600">
+                                      <SelectItem value="weekly" className="text-white hover:bg-gray-600">Weekly</SelectItem>
+                                      <SelectItem value="bi-weekly" className="text-white hover:bg-gray-600">Bi-weekly</SelectItem>
+                                      <SelectItem value="monthly" className="text-white hover:bg-gray-600">Monthly</SelectItem>
+                                      <SelectItem value="on-demand" className="text-white hover:bg-gray-600">On-demand</SelectItem>
+                                    </SelectContent>
+                                  </Select>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                            
+                            <FormField
+                              control={form.control}
+                              name="liveMinimumPayoutAmount"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel className="text-white font-medium">Live Minimum Payout Amount ($)</FormLabel>
+                                  <FormControl>
+                                    <Input 
+                                      type="number" 
+                                      {...field} 
+                                      value={field.value || ""}
+                                      onChange={(e) => field.onChange(e.target.value === "" ? null : parseFloat(e.target.value))}
+                                      className="bg-gray-700 border-gray-600 text-white placeholder-gray-400"
+                                      placeholder="e.g., 50"
+                                    />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                            
+                            <FormField
+                              control={form.control}
+                              name="liveMaxNetBalanceForPayout"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel className="text-white font-medium">Live Max Net Balance for Payout ($)</FormLabel>
+                                  <FormControl>
+                                    <Input 
+                                      type="number" 
+                                      {...field} 
+                                      value={field.value || ""}
+                                      onChange={(e) => field.onChange(e.target.value === "" ? null : parseFloat(e.target.value))}
+                                      className="bg-gray-700 border-gray-600 text-white placeholder-gray-400"
+                                      placeholder="e.g., 1000"
+                                    />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                            
+                            <FormField
+                              control={form.control}
+                              name="liveProfitSplit"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel className="text-white font-medium">Live Profit Split (%)</FormLabel>
+                                  <FormControl>
+                                    <Input 
+                                      type="number" 
+                                      min="0"
+                                      max="100"
+                                      {...field} 
+                                      value={field.value || ""}
+                                      onChange={(e) => field.onChange(e.target.value === "" ? null : parseFloat(e.target.value))}
+                                      className="bg-gray-700 border-gray-600 text-white placeholder-gray-400"
+                                      placeholder="e.g., 90"
+                                    />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                          </div>
+                        </div>
+                        
+                        {/* Live Account Transition Settings */}
+                        <div className="bg-gray-800 p-4 rounded-lg">
+                          <h3 className="text-lg font-semibold text-white mb-4 flex items-center">
+                            <ArrowRight className="mr-2 h-5 w-5 text-purple-400" />
+                            Live Account Transition Settings
+                          </h3>
+                          <p className="text-gray-400 text-sm mb-4">
+                            Configure requirements for transitioning from funded to live account status.
+                          </p>
+                          
+                          <div className="mb-4">
+                            <FormField
+                              control={form.control}
+                              name="liveAccountTransitionEnabled"
+                              render={({ field }) => (
+                                <FormItem className="flex flex-row items-center space-x-3 space-y-0">
+                                  <FormControl>
+                                    <Checkbox 
+                                      checked={field.value}
+                                      onCheckedChange={field.onChange}
+                                      className="border-purple-400 data-[state=checked]:bg-purple-600"
+                                    />
+                                  </FormControl>
+                                  <div className="space-y-1 leading-none">
+                                    <FormLabel className="text-white font-medium">
+                                      Enable Live Account Transition
+                                    </FormLabel>
+                                    <p className="text-sm text-purple-200">
+                                      Allow funded accounts to transition to live status
+                                    </p>
+                                  </div>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                          </div>
+                          
+                          <div className="grid grid-cols-2 gap-4">
+                            <FormField
+                              control={form.control}
+                              name="liveAccountTransitionProfitTarget"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel className="text-white font-medium">Profit Target for Live Transition ($)</FormLabel>
+                                  <FormControl>
+                                    <Input 
+                                      type="number" 
+                                      {...field} 
+                                      value={field.value || ""}
+                                      onChange={(e) => field.onChange(e.target.value === "" ? null : parseFloat(e.target.value))}
+                                      className="bg-gray-700 border-gray-600 text-white placeholder-gray-400"
+                                      placeholder="e.g., 5000"
+                                    />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                            
+                            <FormField
+                              control={form.control}
+                              name="liveAccountTransitionDays"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel className="text-white font-medium">Days Required for Live Transition</FormLabel>
+                                  <FormControl>
+                                    <Input 
+                                      type="number" 
+                                      {...field} 
+                                      value={field.value || ""}
+                                      onChange={(e) => field.onChange(e.target.value === "" ? null : parseInt(e.target.value))}
+                                      className="bg-gray-700 border-gray-600 text-white placeholder-gray-400"
+                                      placeholder="e.g., 30"
+                                    />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                            
+                            <FormField
+                              control={form.control}
+                              name="liveAccountTransitionDrawdownLimit"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel className="text-white font-medium">Max Drawdown During Transition ($)</FormLabel>
+                                  <FormControl>
+                                    <Input 
+                                      type="number" 
+                                      {...field} 
+                                      value={field.value || ""}
+                                      onChange={(e) => field.onChange(e.target.value === "" ? null : parseFloat(e.target.value))}
+                                      className="bg-gray-700 border-gray-600 text-white placeholder-gray-400"
+                                      placeholder="e.g., 1000"
+                                    />
+                                  </FormControl>
                                   <FormMessage />
                                 </FormItem>
                               )}
