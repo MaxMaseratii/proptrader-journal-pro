@@ -683,6 +683,176 @@ export default function MMMDisciplinaryAssistant({ trades, accounts, selectedAcc
     return plans;
   };
 
+  const getRedFlagsCount = (disciplineData: DisciplineMetrics, patterns: TradingPattern): number => {
+    let count = 0;
+    if (disciplineData.disciplineScore < 40) count++;
+    if (patterns.revengeTrading > 10) count++;
+    if (patterns.stopLossViolations > 25) count++;
+    if (patterns.overTradingFrequency > 30) count++;
+    if (disciplineData.excessLosses > 5000) count++;
+    if (patterns.fomoTrades > 20) count++;
+    return count;
+  };
+
+  const getRedFlagsAnalysis = (disciplineData: DisciplineMetrics, patterns: TradingPattern) => {
+    const redFlags = [];
+    
+    if (disciplineData.disciplineScore < 40) {
+      redFlags.push({
+        flag: "Critical Discipline Breakdown",
+        description: "Overall discipline score is dangerously low, indicating systematic trading plan violations",
+        action: "Immediately implement pre-trade checklist and position sizing restrictions",
+        severity: "critical"
+      });
+    }
+
+    if (patterns.revengeTrading > 10) {
+      redFlags.push({
+        flag: "Revenge Trading Pattern",
+        description: "Increasing position size after losses, indicating emotional decision-making",
+        action: "Implement mandatory 15-minute cooling-off period after each losing trade",
+        severity: "critical"
+      });
+    }
+
+    if (patterns.stopLossViolations > 25) {
+      redFlags.push({
+        flag: "Stop Loss Violations",
+        description: "Frequent modification of stop losses, reducing risk management effectiveness",
+        action: "Use automated stop loss orders that cannot be manually adjusted",
+        severity: "critical"
+      });
+    }
+
+    if (patterns.overTradingFrequency > 30) {
+      redFlags.push({
+        flag: "Overtrading",
+        description: "Trading too frequently, likely chasing market movements",
+        action: "Limit to maximum 3 trades per day with strict quality criteria",
+        severity: "warning"
+      });
+    }
+
+    if (disciplineData.excessLosses > 5000) {
+      redFlags.push({
+        flag: "Excessive Capital Loss",
+        description: "Significant losses due to discipline failures affecting account health",
+        action: "Reduce position size by 50% until discipline metrics improve",
+        severity: "critical"
+      });
+    }
+
+    if (patterns.fomoTrades > 20) {
+      redFlags.push({
+        flag: "FOMO Trading",
+        description: "Fear of missing out driving impulsive trade entries",
+        action: "Require 5-minute confirmation period before entering any trade",
+        severity: "warning"
+      });
+    }
+
+    return redFlags;
+  };
+
+  const getMentalGameAssessment = (disciplineData: DisciplineMetrics, patterns: TradingPattern) => {
+    const assessments = [];
+
+    if (patterns.revengeTrading > 15 || patterns.fomoTrades > 20) {
+      assessments.push({
+        area: "Emotional Control",
+        status: "Critical Issue",
+        indicators: [
+          "Increasing position size after losses",
+          "Quick succession trading after wins",
+          "Inability to step away from screen",
+          "Trading outside planned timeframes"
+        ],
+        intervention: "Implement mandatory breaks between trades and use position sizing rules that cannot be overridden during emotional states"
+      });
+    }
+
+    if (patterns.stopLossViolations > 25) {
+      assessments.push({
+        area: "Risk Management Psychology",
+        status: "Critical Issue",
+        indicators: [
+          "Frequent stop loss modifications",
+          "Holding losing positions too long",
+          "Justifying bad trades with new analysis",
+          "Moving stops away from entry"
+        ],
+        intervention: "Use automated stop losses and practice accepting small losses as part of the trading process"
+      });
+    }
+
+    if (patterns.overTradingFrequency > 25) {
+      assessments.push({
+        area: "Impulse Control",
+        status: "Requires Attention",
+        indicators: [
+          "Trading more than planned",
+          "Entering trades without proper setup",
+          "Difficulty waiting for ideal conditions",
+          "Constant market monitoring"
+        ],
+        intervention: "Create a pre-trade checklist and implement time-based trading restrictions"
+      });
+    }
+
+    if (disciplineData.consistencyScore < 50) {
+      assessments.push({
+        area: "Mental Consistency",
+        status: "Requires Attention",
+        indicators: [
+          "Inconsistent trade sizing",
+          "Variable risk tolerance",
+          "Changing strategies frequently",
+          "Emotional decision making"
+        ],
+        intervention: "Develop a written trading plan and review it daily before market open"
+      });
+    }
+
+    return assessments;
+  };
+
+  const getProgressMilestones = (disciplineData: DisciplineMetrics) => {
+    const milestones = [
+      {
+        title: "Discipline Foundation",
+        description: "Establish basic trading discipline and stop revenge trading",
+        target: "Score > 60",
+        timeline: "Week 1-2"
+      },
+      {
+        title: "Risk Management Mastery",
+        description: "Consistent stop loss usage and proper position sizing",
+        target: "Score > 70",
+        timeline: "Week 3-4"
+      },
+      {
+        title: "Emotional Control",
+        description: "Reduce FOMO trades and emotional decision making",
+        target: "Score > 75",
+        timeline: "Week 5-6"
+      },
+      {
+        title: "Consistency Achievement",
+        description: "Maintain consistent trading patterns and results",
+        target: "Score > 80",
+        timeline: "Week 7-8"
+      },
+      {
+        title: "Professional Trader",
+        description: "Achieve elite-level discipline and performance",
+        target: "Score > 85",
+        timeline: "Week 9-12"
+      }
+    ];
+
+    return milestones;
+  };
+
   const getBrutalTruthAnalysis = (disciplineData: DisciplineMetrics, patterns: TradingPattern) => {
     const analysis = [];
     
@@ -792,12 +962,31 @@ export default function MMMDisciplinaryAssistant({ trades, accounts, selectedAcc
       {/* Analysis Results */}
       {disciplineData && (
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-5">
-            <TabsTrigger value="system">System</TabsTrigger>
-            <TabsTrigger value="insights">Insights</TabsTrigger>
-            <TabsTrigger value="action">Action Plan</TabsTrigger>
-            <TabsTrigger value="tracking">Tracking</TabsTrigger>
-            <TabsTrigger value="truth">Brutal Truth</TabsTrigger>
+          <TabsList className="grid w-full grid-cols-6">
+            <TabsTrigger value="system" className="flex items-center gap-2">
+              <Brain className="h-4 w-4" />
+              System
+            </TabsTrigger>
+            <TabsTrigger value="insights" className="flex items-center gap-2">
+              <TrendingUp className="h-4 w-4" />
+              Insights
+            </TabsTrigger>
+            <TabsTrigger value="redflags" className="flex items-center gap-2">
+              <AlertTriangle className="h-4 w-4" />
+              Red Flags
+            </TabsTrigger>
+            <TabsTrigger value="mental" className="flex items-center gap-2">
+              <Brain className="h-4 w-4" />
+              Mental Game
+            </TabsTrigger>
+            <TabsTrigger value="action" className="flex items-center gap-2">
+              <Zap className="h-4 w-4" />
+              Action Plan
+            </TabsTrigger>
+            <TabsTrigger value="tracking" className="flex items-center gap-2">
+              <Activity className="h-4 w-4" />
+              Progress
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="system" className="space-y-6">
@@ -850,6 +1039,210 @@ export default function MMMDisciplinaryAssistant({ trades, accounts, selectedAcc
                 </Card>
               ))}
             </div>
+          </TabsContent>
+
+          <TabsContent value="redflags" className="space-y-6">
+            {/* Red Flags Assessment */}
+            <Card className="bg-prop-card border-red-400/30">
+              <CardHeader>
+                <CardTitle className="text-red-400 flex items-center">
+                  <AlertTriangle className="h-5 w-5 mr-2" />
+                  Red Flags Assessment
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-center space-y-4">
+                  <div className="text-6xl font-bold text-red-400">
+                    {getRedFlagsCount(disciplineData, tradingPatterns)}
+                  </div>
+                  <div className="text-xl text-gray-300">
+                    Critical Issues Identified
+                  </div>
+                  <div className="w-full bg-gray-700 rounded-full h-3">
+                    <div 
+                      className="h-3 rounded-full bg-gradient-to-r from-red-500 to-red-600 transition-all duration-300"
+                      style={{ width: `${Math.min(100, getRedFlagsCount(disciplineData, tradingPatterns) * 25)}%` }}
+                    />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <div className="grid md:grid-cols-2 gap-6">
+              <Card className="bg-black border-gray-700">
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-sm text-white flex items-center gap-2">
+                    <TrendingDown className="h-5 w-5 text-red-400" />
+                    Impact Analysis
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-center p-6 bg-red-900/30 rounded-lg border border-red-500/20">
+                    <div className="text-3xl font-bold text-red-400">
+                      ${disciplineData.excessLosses.toFixed(0)}
+                    </div>
+                    <div className="text-sm text-gray-400 mt-1">
+                      Estimated losses due to poor discipline
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-black border-gray-700">
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-sm text-white flex items-center gap-2">
+                    <AlertTriangle className="h-5 w-5 text-red-400" />
+                    Warning Indicators
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-2">
+                    {getRedFlagsAnalysis(disciplineData, tradingPatterns).slice(0, 3).map((flag, index) => (
+                      <div key={index} className="text-xs text-gray-300 p-2 bg-red-900/20 rounded border border-red-500/20">
+                        {flag.flag}
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            <Card className="bg-yellow-400/20 border-yellow-400 shadow-lg shadow-yellow-400/20">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-white">
+                  <AlertTriangle className="h-6 w-6 text-red-400" />
+                  Critical Red Flags Assessment
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                {getRedFlagsAnalysis(disciplineData, tradingPatterns).length > 0 ? (
+                  <div className="space-y-4">
+                    {getRedFlagsAnalysis(disciplineData, tradingPatterns).map((flag, index) => (
+                      <div key={index} className={`rounded-lg p-4 border ${
+                        flag.severity === 'critical' 
+                          ? 'bg-red-900/30 border-red-600' 
+                          : 'bg-orange-900/30 border-orange-600'
+                      }`}>
+                        <div className="flex items-start gap-3">
+                          <AlertTriangle className={`w-5 h-5 mt-1 flex-shrink-0 ${
+                            flag.severity === 'critical' ? 'text-red-400' : 'text-orange-400'
+                          }`} />
+                          <div className="flex-1">
+                            <h4 className={`font-semibold mb-2 ${
+                              flag.severity === 'critical' ? 'text-red-300' : 'text-orange-300'
+                            }`}>
+                              {flag.flag}
+                            </h4>
+                            <p className="text-gray-200 text-sm mb-2">{flag.description}</p>
+                            <p className={`text-sm font-medium ${
+                              flag.severity === 'critical' ? 'text-red-200' : 'text-orange-200'
+                            }`}>
+                              Action Required: {flag.action}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="bg-green-900/20 border border-green-700 rounded-lg p-4">
+                    <p className="text-green-200 text-center">
+                      ✅ No critical red flags identified. Continue current discipline practices.
+                    </p>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+
+            <Card className="bg-yellow-400/20 border-yellow-400 shadow-lg shadow-yellow-400/20">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-white">
+                  <X className="h-6 w-6 text-orange-400" />
+                  Overtrading Impact Analysis
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="bg-orange-900/30 rounded-lg p-4 border border-orange-600">
+                  <h4 className="font-semibold text-orange-300 mb-2">Overtrading Indicators</h4>
+                  <p className="text-gray-200 text-sm mb-2">
+                    Excessive trading frequency: {tradingPatterns.overTradingFrequency.toFixed(1)}% of days
+                  </p>
+                  <p className="text-sm font-medium text-orange-200">
+                    Recommendation: Limit to 3-5 high-quality setups per day
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="mental" className="space-y-6">
+            <Card className="bg-gray-800/50 border-gray-700 backdrop-blur-sm">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-white">
+                  <Brain className="h-6 w-6 text-purple-400" />
+                  Mental Game & Emotional Control
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                {getMentalGameAssessment(disciplineData, tradingPatterns).length > 0 ? (
+                  <div className="space-y-6">
+                    {getMentalGameAssessment(disciplineData, tradingPatterns).map((assessment, index) => (
+                      <div key={index} className="bg-purple-900/20 rounded-lg p-6 border border-purple-700">
+                        <div className="flex items-center justify-between mb-4">
+                          <h4 className="text-lg font-semibold text-white">{assessment.area}</h4>
+                          <div className={`px-3 py-1 rounded-full text-xs font-medium ${
+                            assessment.status === 'Critical Issue'
+                              ? 'bg-red-900/50 text-red-300 border border-red-600'
+                              : assessment.status === 'Requires Attention'
+                              ? 'bg-yellow-900/50 text-yellow-300 border border-yellow-600'
+                              : 'bg-blue-900/50 text-blue-300 border border-blue-600'
+                          }`}>
+                            {assessment.status}
+                          </div>
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div>
+                            <h5 className="text-purple-400 font-medium mb-2">Behavioral Indicators:</h5>
+                            <ul className="text-gray-300 text-sm space-y-2">
+                              {assessment.indicators.map((indicator, idx) => (
+                                <li key={idx} className="flex items-start gap-2">
+                                  <span className="text-purple-400 mt-1">•</span>
+                                  {indicator}
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                          <div>
+                            <h5 className="text-green-400 font-medium mb-2">Intervention Strategy:</h5>
+                            <p className="text-gray-200 text-sm bg-green-900/20 p-3 rounded border border-green-700">
+                              {assessment.intervention}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="bg-purple-900/20 border border-purple-700 rounded-lg p-4">
+                    <p className="text-purple-200 text-center">
+                      ✅ Mental game assessment shows strong emotional control. Maintain current psychological discipline.
+                    </p>
+                  </div>
+                )}
+                
+                <div className="mt-6 p-4 bg-orange-900/30 rounded-lg border border-orange-500/30">
+                  <div className="text-center">
+                    <div className="text-orange-300 font-semibold mb-2">Market Reality Check</div>
+                    <div className="text-gray-400 text-sm space-y-1">
+                      <p>• You're fighting the market instead of flowing with it</p>
+                      <p>• Original stops are hit 89.3% of the time anyway</p>
+                      <p>• Widening stops doesn't improve win rate, just increases losses</p>
+                      <p>• Emotional decisions override systematic planning</p>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
           </TabsContent>
 
           <TabsContent value="insights" className="space-y-6">
@@ -1025,58 +1418,115 @@ export default function MMMDisciplinaryAssistant({ trades, accounts, selectedAcc
           </TabsContent>
 
           <TabsContent value="action" className="space-y-6">
-            {/* Action Plan */}
-            {disciplineData && (
-              <Card className="bg-prop-card border-prop-gold/20">
-                <CardHeader>
-                  <CardTitle className="text-prop-gold flex items-center">
-                    <Target className="h-5 w-5 mr-2" />
-                    30-Day Action Plan
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
+            {/* Comprehensive Action Plan */}
+            <Card className="bg-prop-card border-prop-gold/20">
+              <CardHeader>
+                <CardTitle className="text-prop-gold flex items-center">
+                  <Target className="h-5 w-5 mr-2" />
+                  Comprehensive Improvement Plan
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {/* 30-Day Plan */}
                   <div className="space-y-4">
-                    {getActionPlan(disciplineData).map((plan, index) => (
-                      <div key={index} className="border border-prop-gold/20 rounded-lg p-4 hover:border-prop-gold/40 transition-colors">
-                        <div className="flex items-center justify-between mb-2">
-                          <Badge variant="outline" className={`${plan.priority === 'HIGH' ? 'text-red-400 border-red-400' : 'text-yellow-400 border-yellow-400'}`}>
-                            {plan.priority} PRIORITY
-                          </Badge>
-                          <span className="text-sm text-gray-400">{plan.timeline}</span>
-                        </div>
-                        <h4 className="font-bold text-prop-gold mb-2">{plan.area}</h4>
-                        <p className="text-gray-300 mb-2">{plan.action}</p>
-                        <p className="text-sm text-gray-400">{plan.impact}</p>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            )}
-
-            {/* Recommendations */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {disciplineAreas.slice(0, 4).map((area) => (
-                <Card key={area.name} className="bg-prop-card border-prop-gold/20">
-                  <CardHeader>
-                    <CardTitle className="text-prop-gold flex items-center text-lg">
-                      {area.icon}
-                      <span className="ml-2">{area.name}</span>
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
+                    <h3 className="text-lg font-semibold text-prop-gold">30-Day Foundation</h3>
                     <div className="space-y-3">
-                      {area.recommendations.map((rec, index) => (
-                        <div key={index} className="flex items-start space-x-2">
-                          <ChevronRight className="h-4 w-4 text-prop-gold mt-0.5 flex-shrink-0" />
-                          <span className="text-sm text-gray-300">{rec}</span>
+                      {getActionPlan(disciplineData).slice(0, 3).map((plan, index) => (
+                        <div key={index} className="bg-blue-900/20 border border-blue-500/30 rounded-lg p-4">
+                          <div className="flex items-center justify-between mb-2">
+                            <Badge variant="outline" className={`${plan.priority === 'HIGH' ? 'text-red-400 border-red-400' : 'text-blue-400 border-blue-400'}`}>
+                              {plan.priority} PRIORITY
+                            </Badge>
+                            <span className="text-xs text-blue-400">{plan.timeline}</span>
+                          </div>
+                          <h4 className="font-bold text-blue-300 mb-2">{plan.area}</h4>
+                          <p className="text-sm text-gray-300 mb-2">{plan.action}</p>
+                          <p className="text-xs text-gray-400">{plan.impact}</p>
                         </div>
                       ))}
                     </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
+                  </div>
+
+                  {/* 90-Day Plan */}
+                  <div className="space-y-4">
+                    <h3 className="text-lg font-semibold text-prop-gold">90-Day Mastery</h3>
+                    <div className="space-y-3">
+                      {getActionPlan(disciplineData).slice(3, 6).map((plan, index) => (
+                        <div key={index} className="bg-green-900/20 border border-green-500/30 rounded-lg p-4">
+                          <div className="flex items-center justify-between mb-2">
+                            <Badge variant="outline" className="text-green-400 border-green-400">
+                              MASTERY
+                            </Badge>
+                            <span className="text-xs text-green-400">{plan.timeline}</span>
+                          </div>
+                          <h4 className="font-bold text-green-300 mb-2">{plan.area}</h4>
+                          <p className="text-sm text-gray-300 mb-2">{plan.action}</p>
+                          <p className="text-xs text-gray-400">{plan.impact}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Priority Actions */}
+            <Card className="bg-red-900/20 border-red-500/30">
+              <CardHeader>
+                <CardTitle className="text-red-300 flex items-center">
+                  <AlertTriangle className="h-5 w-5 mr-2" />
+                  Immediate Priority Actions
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {getRedFlagsAnalysis(disciplineData, tradingPatterns).slice(0, 3).map((flag, index) => (
+                    <div key={index} className="bg-red-800/20 rounded-lg p-4">
+                      <div className="flex items-center justify-between mb-2">
+                        <h4 className="font-semibold text-red-300">{flag.flag}</h4>
+                        <Badge variant="destructive">High Priority</Badge>
+                      </div>
+                      <p className="text-sm text-gray-300 mb-3">{flag.description}</p>
+                      <div className="bg-red-700/20 rounded p-3">
+                        <p className="text-sm font-medium text-red-200">
+                          Action Required: {flag.action}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Progress Milestones */}
+            <Card className="bg-prop-card border-prop-gold/20">
+              <CardHeader>
+                <CardTitle className="text-prop-gold flex items-center">
+                  <CheckCircle className="h-5 w-5 mr-2" />
+                  Progress Milestones
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {getProgressMilestones(disciplineData).map((milestone, index) => (
+                    <div key={index} className="flex items-center space-x-4 p-3 bg-gray-800/50 rounded-lg">
+                      <div className="w-8 h-8 bg-prop-gold/20 rounded-full flex items-center justify-center">
+                        <span className="text-prop-gold text-sm font-bold">{index + 1}</span>
+                      </div>
+                      <div className="flex-1">
+                        <h4 className="font-medium text-white">{milestone.title}</h4>
+                        <p className="text-sm text-gray-400">{milestone.description}</p>
+                      </div>
+                      <div className="text-right">
+                        <div className="text-sm font-medium text-prop-gold">{milestone.target}</div>
+                        <div className="text-xs text-gray-500">{milestone.timeline}</div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
           </TabsContent>
 
           <TabsContent value="tracking" className="space-y-6">
@@ -1237,74 +1687,7 @@ export default function MMMDisciplinaryAssistant({ trades, accounts, selectedAcc
             </Card>
           </TabsContent>
 
-          <TabsContent value="truth" className="space-y-6">
-            {/* Brutal Truth Analysis */}
-            {disciplineData && tradingPatterns && (
-              <Card className="bg-prop-card border-red-400/30">
-                <CardHeader>
-                  <CardTitle className="text-red-400 flex items-center">
-                    <AlertTriangle className="h-5 w-5 mr-2" />
-                    Brutal Truth Analysis
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-6">
-                    <div className="bg-red-500/10 border border-red-400/30 rounded-lg p-4">
-                      <h4 className="font-bold text-red-400 mb-2">REALITY CHECK</h4>
-                      <p className="text-gray-300">
-                        Your current discipline level is costing you real money. Below are the harsh truths about your trading behavior.
-                      </p>
-                    </div>
 
-                    <div className="space-y-4">
-                      {getBrutalTruthAnalysis(disciplineData, tradingPatterns).map((analysis, index) => (
-                        <div key={index} className="border border-red-400/20 rounded-lg p-4 hover:border-red-400/40 transition-colors">
-                          <div className="flex items-start space-x-3">
-                            <X className="h-5 w-5 text-red-400 mt-0.5 flex-shrink-0" />
-                            <div className="space-y-2">
-                              <h4 className="font-bold text-red-400">{analysis.truth}</h4>
-                              <p className="text-gray-300">{analysis.impact}</p>
-                              <div className="bg-green-500/10 border border-green-400/30 rounded-md p-2">
-                                <p className="text-sm text-green-400">{analysis.solution}</p>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-
-                    {/* Cost Analysis - Current vs Potential */}
-                    <div className="bg-yellow-500/10 border border-yellow-400/30 rounded-lg p-4">
-                      <h4 className="font-bold text-yellow-400 mb-2">FINANCIAL IMPACT - CURRENT vs POTENTIAL</h4>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                          <div className="text-2xl font-bold text-red-400">
-                            ${disciplineData.excessLosses.toFixed(0)}
-                          </div>
-                          <div className="text-sm text-gray-400">Actual Losses from Poor Discipline</div>
-                          <div className="text-xs text-gray-500">Current trading period</div>
-                        </div>
-                        <div>
-                          <div className="text-2xl font-bold text-green-400">
-                            ${(disciplineData.excessLosses * 0.8).toFixed(0)}
-                          </div>
-                          <div className="text-sm text-gray-400">Potential Savings with Better Discipline</div>
-                          <div className="text-xs text-gray-500">What you could have saved</div>
-                        </div>
-                      </div>
-                      <div className="mt-4 p-3 bg-gray-800/50 rounded-lg">
-                        <div className="text-sm text-gray-300">
-                          <strong className="text-yellow-400">Reality Check:</strong> Instead of losing ${disciplineData.excessLosses.toFixed(0)} to poor discipline, 
-                          you could have saved ${(disciplineData.excessLosses * 0.8).toFixed(0)} by following your trading plan. 
-                          That's a ${(disciplineData.excessLosses * 1.8).toFixed(0)} difference in your current account balance.
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            )}
-          </TabsContent>
         </Tabs>
       )}
 
