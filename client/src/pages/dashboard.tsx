@@ -655,7 +655,7 @@ export default function Dashboard() {
           </div>
           <div className="widget-container">
             <div className="widget-content flex-col">
-              <div className="grid grid-cols-7 gap-6 h-full">
+              <div className="grid grid-cols-7 gap-4 h-full">
                 {(() => {
                   const getCurrentWeekDays = () => {
                     const weekDays = [];
@@ -707,25 +707,25 @@ export default function Dashboard() {
                       <div 
                         key={index} 
                         className={`
-                          relative p-4 rounded-lg border transition-all duration-300 h-64
+                          relative p-3 rounded-lg border transition-all duration-300 h-56
                           ${isToday 
-                            ? 'border-gold bg-gradient-to-br from-slate-800/95 via-slate-700/80 to-slate-800/90 shadow-lg shadow-gold/30' 
-                            : 'border-slate-600 bg-gradient-to-br from-slate-800/95 via-slate-700/80 to-slate-800/90'
+                            ? 'border-gold bg-gradient-to-br from-gold/20 via-gold/10 to-transparent shadow-lg shadow-gold/30' 
+                            : 'border-gray-600 bg-gradient-to-br from-gray-800/80 via-gray-700/50 to-gray-800/30'
                           }
                           ${dayTrades.length > 0 
-                            ? 'hover:scale-105 cursor-pointer hover:border-gold hover:shadow-lg hover:shadow-gold/40 hover:bg-gradient-to-br hover:from-slate-700/90 hover:via-slate-600/70 hover:to-slate-700/85' 
-                            : 'hover:border-slate-500 hover:shadow-md hover:shadow-slate-500/20'
+                            ? 'hover:scale-105 cursor-pointer hover:border-gold hover:shadow-lg hover:shadow-gold/40 hover:bg-gradient-to-br hover:from-gold/15 hover:via-gold/8 hover:to-transparent' 
+                            : 'hover:border-gray-500 hover:shadow-md hover:shadow-gray-500/20'
                           }
                         `}
                       >
                         <div className="text-left h-full flex flex-col justify-between">
-                          <div className="text-center mb-3">
-                            <div className="text-base font-bold text-gold border-b border-gold/30 pb-1">
+                          <div className="text-center mb-2">
+                            <div className="text-sm font-bold bg-gradient-to-r from-gold to-yellow-400 bg-clip-text text-transparent">
                               {dayLabels[index]} {day.getDate()}
                             </div>
                           </div>
                           
-                          <div className="space-y-1.5 text-sm">
+                          <div className="space-y-1 text-xs">
                             <div className="flex justify-between">
                               <span className="text-gray-300">Risk/Trade:</span>
                               <span className="text-orange-300 font-medium">${avgRiskPerTrade.toFixed(0)}</span>
@@ -737,7 +737,7 @@ export default function Dashboard() {
                             </div>
                             
                             <div className="flex justify-between">
-                              <span className="text-gray-300">REWARD:</span>
+                              <span className="text-gray-300">Reward Ratio:</span>
                               <span className="text-blue-300 font-medium">{avgRewardRatio.toFixed(1)} RR</span>
                             </div>
                             
