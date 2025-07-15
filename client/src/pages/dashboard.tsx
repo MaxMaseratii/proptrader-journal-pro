@@ -366,12 +366,24 @@ export default function Dashboard() {
     return totalPayouts;
   };
 
-  // Calculate real equity curve from trades
+  // Calculate real equity curve from filtered trades
   const getEquityData = () => {
-    if (!trades || !accounts) return [];
+    if (!trades || !accounts || !combinedAnalytics) return [];
     
-    const sortedTrades = [...trades].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-    const startingBalance = accounts.reduce((sum, acc) => sum + acc.startingBalance, 0);
+    // Use filtered trades based on account selection
+    const filteredTrades = (() => {
+      if (accountSelectionMode === 'all') {
+        return trades;
+      } else if (accountSelectionMode === 'single' && selectedAccountIds.length > 0) {
+        return trades.filter(t => t.accountId === selectedAccountIds[0]);
+      } else {
+        const accountIdsToUse = selectedAccountIds.length > 0 ? selectedAccountIds : (accounts.length > 0 ? [accounts[0].id] : []);
+        return trades.filter(t => accountIdsToUse.includes(t.accountId));
+      }
+    })();
+    
+    const sortedTrades = [...filteredTrades].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+    const startingBalance = combinedAnalytics.startingBalance;
     
     let runningBalance = startingBalance;
     const equityData = [{ date: "Start", balance: startingBalance }];
@@ -984,25 +996,29 @@ export default function Dashboard() {
               <div className="widget-left">
                 <p className="widget-label">Active Accounts</p>
                 <div className="accounts-grid grid grid-cols-1 gap-2">
-                  {accounts?.slice(0, 3).map((account) => (
-                    <div key={account.id} className="account-card bg-gray-800 rounded p-2">
-                      <div className="flex justify-between items-start">
-                        <div className="account-info">
-                          <h4 className="font-medium text-sm text-white">{account.name}</h4>
-                          <p className="text-xs text-gray-400">{account.firm}</p>
-                        </div>
-                        <div className="account-balance text-right">
-                          <p className={`text-sm font-semibold ${getValueColor(account.startingBalance + (combinedAnalytics?.totalPnl || 0))}`}>
-                            {formatCurrency(account.startingBalance + (combinedAnalytics?.totalPnl || 0))}
-                          </p>
-                          <p className="text-xs text-gray-400">{account.type}</p>
+                  {combinedAnalytics?.accounts?.slice(0, 3).map((account) => {
+                    const accountTrades = trades?.filter(t => t.accountId === account.id) || [];
+                    const accountPnl = accountTrades.reduce((sum, trade) => sum + (trade.pnl || 0), 0);
+                    return (
+                      <div key={account.id} className="account-card bg-gray-800 rounded p-2">
+                        <div className="flex justify-between items-start">
+                          <div className="account-info">
+                            <h4 className="font-medium text-sm text-white">{account.name}</h4>
+                            <p className="text-xs text-gray-400">{account.firm}</p>
+                          </div>
+                          <div className="account-balance text-right">
+                            <p className={`text-sm font-semibold ${getValueColor(account.startingBalance + accountPnl)}`}>
+                              {formatCurrency(account.startingBalance + accountPnl)}
+                            </p>
+                            <p className="text-xs text-gray-400">{account.type}</p>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
                 <p className="widget-description text-xs mt-2">
-                  {accounts?.length || 0} total accounts
+                  {combinedAnalytics?.accounts?.length || 0} selected accounts
                 </p>
               </div>
             </div>
@@ -1205,11 +1221,11 @@ export default function Dashboard() {
               <div className="widget-left">
                 <p className="widget-label">Trading Charts Preview</p>
                 <div className="charts-preview">
-                  {trades && trades.length > 0 ? (
+                  {combinedAnalytics && combinedAnalytics.totalTrades > 0 ? (
                     <div className="chart-container">
                       <SimpleChart data={getEquityData()} />
                       <p className="text-xs text-gray-400 mt-2">
-                        Equity curve • {trades.length} trades • 
+                        Equity curve • {combinedAnalytics.totalTrades} trades • 
                         <span className={`ml-1 ${getValueColor(combinedAnalytics?.totalPnl || 0)}`}>
                           {formatCurrency(combinedAnalytics?.totalPnl || 0)}
                         </span>
@@ -1217,7 +1233,7 @@ export default function Dashboard() {
                     </div>
                   ) : (
                     <div className="no-data text-center py-4">
-                      <p className="text-gray-400 text-sm">No trading data available</p>
+                      <p className="text-gray-400 text-sm">No trading data available for selected accounts</p>
                       <Link href="/trades?tab=add">
                         <Button size="sm" className="mt-2 bg-blue-600 hover:bg-blue-700">
                           Add First Trade
@@ -1232,7 +1248,7 @@ export default function Dashboard() {
         </div>
 
         {/* Trading Charts Preview */}
-        {trades && trades.length > 0 && (
+        {combinedAnalytics && combinedAnalytics.totalTrades > 0 && (
           <div className="mb-8">
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-xl font-bold text-gradient-rainbow flex items-center border-b border-gray-700 pb-3">
@@ -1375,7 +1391,7 @@ export default function Dashboard() {
               </div>
               <div className="space-y-4 w-full">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 max-h-96 overflow-y-auto">
-                  {accounts?.map((account) => {
+                  {combinedAnalytics?.accounts?.map((account) => {
                     const accountTrades = trades?.filter(t => t.accountId === account.id) || [];
                     const disciplinedAnalysis = calculateDisciplinedScore(account, accountTrades);
                     const netBalance = account.startingBalance + (accountTrades.reduce((sum, trade) => sum + (trade.pnl || 0), 0) || 0);
@@ -1434,9 +1450,9 @@ export default function Dashboard() {
               <div className="widget-left">
                 <p className="widget-label">Total Portfolio Value</p>
                 <p className="widget-value">
-                  {formatCurrency(accounts?.reduce((sum, acc) => sum + acc.currentBalance, 0) || 0)}
+                  {formatCurrency(combinedAnalytics?.currentBalance || 0)}
                 </p>
-                <p className="widget-description">Combined accounts</p>
+                <p className="widget-description">Selected accounts</p>
               </div>
               <div className="widget-icon-square">
                 <DollarSign className="widget-icon" />
@@ -1450,12 +1466,9 @@ export default function Dashboard() {
               <div className="widget-left">
                 <p className="widget-label">Total Investment</p>
                 <p className="widget-value">
-                  {formatCurrency(
-                    (accounts?.reduce((sum, acc) => sum + (acc.accountCost || 0), 0) || 0) +
-                    (accounts?.reduce((sum, acc) => sum + (acc.activationCost || 0), 0) || 0)
-                  )}
+                  {formatCurrency(totalInvestment)}
                 </p>
-                <p className="widget-description">Account costs + activations</p>
+                <p className="widget-description">Selected accounts investment</p>
               </div>
               <div className="widget-icon-square">
                 <TrendingUp className="widget-icon" />
@@ -1469,9 +1482,7 @@ export default function Dashboard() {
               <div className="widget-left">
                 <p className="widget-label">Total Return</p>
                 <p className="widget-value">
-                  {formatCurrency(
-                    accounts?.reduce((sum, acc) => sum + (acc.currentBalance - acc.startingBalance), 0) || 0
-                  )}
+                  {formatCurrency(combinedAnalytics?.totalPnl || 0)}
                 </p>
                 <p className="widget-description">Profit/Loss from trading</p>
               </div>
@@ -1531,9 +1542,23 @@ export default function Dashboard() {
               <div className="widget-left">
                 <p className="widget-label">Manual Spending</p>
                 <p className="widget-value">
-                  {formatCurrency(spending?.reduce((sum, s) => sum + s.amount, 0) || 0)}
+                  {formatCurrency((() => {
+                    if (!spending || !accounts) return 0;
+                    let spendings: any[] = [];
+                    
+                    if (accountSelectionMode === 'all') {
+                      spendings = spending;
+                    } else if (accountSelectionMode === 'single' && selectedAccountIds.length > 0) {
+                      spendings = spending.filter(s => s.accountId === selectedAccountIds[0]);
+                    } else {
+                      const accountIdsToUse = selectedAccountIds.length > 0 ? selectedAccountIds : (accounts.length > 0 ? [accounts[0].id] : []);
+                      spendings = spending.filter(s => accountIdsToUse.includes(s.accountId));
+                    }
+                    
+                    return spendings.reduce((sum, spending) => sum + spending.amount, 0);
+                  })())}
                 </p>
-                <p className="widget-description">Additional manual entries</p>
+                <p className="widget-description">Selected accounts spending</p>
               </div>
               <div className="widget-icon-square">
                 <Plus className="widget-icon" />
@@ -1546,18 +1571,48 @@ export default function Dashboard() {
               <div className="widget-left">
                 <p className="widget-label">Total Combined</p>
                 <p className={`widget-value ${(() => {
-                  const total = (accounts?.reduce((sum, acc) => sum + (acc.accountCost || 0), 0) || 0) +
-                               (accounts?.reduce((sum, acc) => sum + (acc.activationCost || 0), 0) || 0) +
-                               (spending?.reduce((sum, s) => sum + s.amount, 0) || 0);
+                  const accountCosts = combinedAnalytics?.accounts?.reduce((sum, acc) => sum + (acc.accountCost || 0), 0) || 0;
+                  const activationCosts = combinedAnalytics?.accounts?.reduce((sum, acc) => sum + (acc.activationCost || 0), 0) || 0;
+                  const manualSpending = (() => {
+                    if (!spending || !accounts) return 0;
+                    let spendings: any[] = [];
+                    
+                    if (accountSelectionMode === 'all') {
+                      spendings = spending;
+                    } else if (accountSelectionMode === 'single' && selectedAccountIds.length > 0) {
+                      spendings = spending.filter(s => s.accountId === selectedAccountIds[0]);
+                    } else {
+                      const accountIdsToUse = selectedAccountIds.length > 0 ? selectedAccountIds : (accounts.length > 0 ? [accounts[0].id] : []);
+                      spendings = spending.filter(s => accountIdsToUse.includes(s.accountId));
+                    }
+                    
+                    return spendings.reduce((sum, spending) => sum + spending.amount, 0);
+                  })();
+                  const total = accountCosts + activationCosts + manualSpending;
                   return total > 0 ? 'text-red-400' : 'text-white';
                 })()}`}>
-                  {formatCurrency(
-                    (accounts?.reduce((sum, acc) => sum + (acc.accountCost || 0), 0) || 0) +
-                    (accounts?.reduce((sum, acc) => sum + (acc.activationCost || 0), 0) || 0) +
-                    (spending?.reduce((sum, s) => sum + s.amount, 0) || 0)
-                  )}
+                  {formatCurrency((() => {
+                    const accountCosts = combinedAnalytics?.accounts?.reduce((sum, acc) => sum + (acc.accountCost || 0), 0) || 0;
+                    const activationCosts = combinedAnalytics?.accounts?.reduce((sum, acc) => sum + (acc.activationCost || 0), 0) || 0;
+                    const manualSpending = (() => {
+                      if (!spending || !accounts) return 0;
+                      let spendings: any[] = [];
+                      
+                      if (accountSelectionMode === 'all') {
+                        spendings = spending;
+                      } else if (accountSelectionMode === 'single' && selectedAccountIds.length > 0) {
+                        spendings = spending.filter(s => s.accountId === selectedAccountIds[0]);
+                      } else {
+                        const accountIdsToUse = selectedAccountIds.length > 0 ? selectedAccountIds : (accounts.length > 0 ? [accounts[0].id] : []);
+                        spendings = spending.filter(s => accountIdsToUse.includes(s.accountId));
+                      }
+                      
+                      return spendings.reduce((sum, spending) => sum + spending.amount, 0);
+                    })();
+                    return accountCosts + activationCosts + manualSpending;
+                  })())}
                 </p>
-                <p className="widget-description">Total investment in trading</p>
+                <p className="widget-description">Total selected accounts investment</p>
               </div>
               <div className="widget-icon-square">
                 <TrendingUp className="widget-icon" />
@@ -1573,10 +1628,10 @@ export default function Dashboard() {
               <div className="widget-left">
                 <p className="widget-label">Total Working Hours</p>
                 <p className="widget-value text-white">
-                  {((trades?.length || 0) * 2.5).toFixed(1)} Hrs
+                  {((combinedAnalytics?.totalTrades || 0) * 2.5).toFixed(1)} Hrs
                 </p>
                 <p className="widget-description">
-                  Based on {trades?.length || 0} trades × 2.5 Hrs avg duration
+                  Based on {combinedAnalytics?.totalTrades || 0} trades × 2.5 Hrs avg duration
                 </p>
               </div>
               <div className="widget-icon-square">
@@ -1591,8 +1646,21 @@ export default function Dashboard() {
                 <p className="widget-label">Average Hours Per Day</p>
                 <p className="widget-value">
                   {(() => {
-                    // Calculate based on actual trading duration from trades
-                    const totalTradingMinutes = trades?.reduce((sum, trade) => {
+                    // Calculate based on actual trading duration from selected accounts trades
+                    const filteredTrades = (() => {
+                      if (!trades) return [];
+                      
+                      if (accountSelectionMode === 'all') {
+                        return trades;
+                      } else if (accountSelectionMode === 'single' && selectedAccountIds.length > 0) {
+                        return trades.filter(t => t.accountId === selectedAccountIds[0]);
+                      } else {
+                        const accountIdsToUse = selectedAccountIds.length > 0 ? selectedAccountIds : (accounts && accounts.length > 0 ? [accounts[0].id] : []);
+                        return trades.filter(t => accountIdsToUse.includes(t.accountId));
+                      }
+                    })();
+                    
+                    const totalTradingMinutes = filteredTrades.reduce((sum, trade) => {
                       // Assume average trade duration of 15 minutes if not specified
                       return sum + 15;
                     }, 0) || 0;
@@ -1623,8 +1691,8 @@ export default function Dashboard() {
               <div className="widget-left">
                 <p className="widget-label">Profitability</p>
                 {(() => {
-                  const totalSpent = (accounts?.reduce((sum, acc) => sum + (acc.accountCost || 0), 0) || 0) +
-                                    (accounts?.reduce((sum, acc) => sum + (acc.activationCost || 0), 0) || 0);
+                  const totalSpent = (combinedAnalytics?.accounts?.reduce((sum, acc) => sum + (acc.accountCost || 0), 0) || 0) +
+                                    (combinedAnalytics?.accounts?.reduce((sum, acc) => sum + (acc.activationCost || 0), 0) || 0);
                   const totalPayout = 0; // This would come from actual payout data
                   const difference = totalPayout - totalSpent;
                   const isProfit = difference >= 0;
