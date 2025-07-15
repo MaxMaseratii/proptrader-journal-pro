@@ -29,20 +29,29 @@ export default function AccountManagement({ accounts }: AccountManagementProps) 
   const [isConversionDialogOpen, setIsConversionDialogOpen] = useState(false);
   const [selectedChallengeAccount, setSelectedChallengeAccount] = useState<Account | null>(null);
   const [fundedAccountSettings, setFundedAccountSettings] = useState({
-    startingBalance: 50000,
-    profitTarget: 2500,
-    maxDrawdown: 4000,
-    dailyLossLimit: 2000,
-    profitSplit: 80,
-    payoutFrequency: 'weekly'
+    startingBalance: '',
+    profitTarget: '',
+    maxDrawdown: '',
+    dailyLossLimit: '',
+    daysRequiredForPayout: '',
+    winningDayMinimum: '',
+    profitSplit: '',
+    payoutFrequency: 'weekly',
+    maximumPayoutAmount: '',
+    maximumPayoutPerAccount: '',
+    minimumPayoutAmount: '',
+    maxNetBalanceForPayout: '',
+    consistencyRulePercent: ''
   });
   const [isLiveConversionDialogOpen, setIsLiveConversionDialogOpen] = useState(false);
   const [selectedFundedAccount, setSelectedFundedAccount] = useState<Account | null>(null);
   const [liveAccountSettings, setLiveAccountSettings] = useState({
     liveAccountType: 'prop_firm',
-    profitSplit: 90,
+    profitSplit: '',
     payoutFrequency: 'on-demand',
-    minimumPayoutAmount: 500,
+    minimumPayoutAmount: '',
+    maximumPayoutAmount: '',
+    maximumPayoutPerAccount: '',
     restrictions: 'Standard prop firm live account restrictions apply'
   });
   const { toast } = useToast();
@@ -113,18 +122,19 @@ export default function AccountManagement({ accounts }: AccountManagementProps) 
     mutationFn: async (challengeAccountId: number) => {
       return apiRequest("POST", `/api/accounts/${challengeAccountId}/convert-to-funded`, {
         // Use configured funded account settings
-        startingBalance: fundedAccountSettings.startingBalance,
-        profitTarget: fundedAccountSettings.profitTarget,
-        maxDrawdown: fundedAccountSettings.maxDrawdown,
-        dailyLossLimit: fundedAccountSettings.dailyLossLimit,
-        daysRequiredForPayout: 5,
-        winningDayMinimum: 200,
-        minimumPayoutAmount: 100,
-        maxNetBalanceForPayout: 2000,
-        consistencyRulePercent: 50,
+        startingBalance: parseFloat(fundedAccountSettings.startingBalance) || 0,
+        profitTarget: parseFloat(fundedAccountSettings.profitTarget) || 0,
+        maxDrawdown: parseFloat(fundedAccountSettings.maxDrawdown) || 0,
+        dailyLossLimit: parseFloat(fundedAccountSettings.dailyLossLimit) || 0,
+        daysRequiredForPayout: parseFloat(fundedAccountSettings.daysRequiredForPayout) || 5,
+        winningDayMinimum: parseFloat(fundedAccountSettings.winningDayMinimum) || 200,
+        minimumPayoutAmount: parseFloat(fundedAccountSettings.minimumPayoutAmount) || 100,
+        maxNetBalanceForPayout: parseFloat(fundedAccountSettings.maxNetBalanceForPayout) || 2000,
+        consistencyRulePercent: parseFloat(fundedAccountSettings.consistencyRulePercent) || 50,
         payoutFrequency: fundedAccountSettings.payoutFrequency,
-        maximumPayoutPercentage: 90,
-        profitSplit: fundedAccountSettings.profitSplit
+        maximumPayoutAmount: parseFloat(fundedAccountSettings.maximumPayoutAmount) || 5000,
+        maximumPayoutPerAccount: parseFloat(fundedAccountSettings.maximumPayoutPerAccount) || 10000,
+        profitSplit: parseFloat(fundedAccountSettings.profitSplit) || 80
       });
     },
     onSuccess: (data) => {
@@ -150,9 +160,11 @@ export default function AccountManagement({ accounts }: AccountManagementProps) 
       return apiRequest("POST", `/api/accounts/${fundedAccountId}/convert-to-live`, {
         // Use configured live account settings
         liveAccountType: liveAccountSettings.liveAccountType,
-        profitSplit: liveAccountSettings.profitSplit,
+        profitSplit: parseFloat(liveAccountSettings.profitSplit) || 90,
         payoutFrequency: liveAccountSettings.payoutFrequency,
-        minimumPayoutAmount: liveAccountSettings.minimumPayoutAmount,
+        minimumPayoutAmount: parseFloat(liveAccountSettings.minimumPayoutAmount) || 500,
+        maximumPayoutAmount: parseFloat(liveAccountSettings.maximumPayoutAmount) || 10000,
+        maximumPayoutPerAccount: parseFloat(liveAccountSettings.maximumPayoutPerAccount) || 25000,
         restrictions: liveAccountSettings.restrictions
       });
     },
@@ -466,6 +478,9 @@ export default function AccountManagement({ accounts }: AccountManagementProps) 
                         <RotateCcw className="h-5 w-5 text-orange-400" />
                         Reset Account
                       </DialogTitle>
+                      <DialogDescription className="text-gray-300">
+                        This will restart your account balance and reset all P&L calculations.
+                      </DialogDescription>
                     </DialogHeader>
                     <div className="space-y-4">
                       <div className="bg-orange-900/30 border border-orange-600/30 rounded-lg p-4">
@@ -534,6 +549,9 @@ export default function AccountManagement({ accounts }: AccountManagementProps) 
                             <CheckCircle className="h-5 w-5 text-green-400" />
                             Convert Challenge to Funded Account
                           </DialogTitle>
+                          <DialogDescription className="text-gray-300">
+                            Configure the payout settings for your new funded account.
+                          </DialogDescription>
                         </DialogHeader>
                         <div className="space-y-4">
                           <div className="bg-green-900/30 border border-green-600/30 rounded-lg p-4">
@@ -544,39 +562,81 @@ export default function AccountManagement({ accounts }: AccountManagementProps) 
                           <div className="space-y-4">
                             <div className="grid grid-cols-2 gap-4">
                               <div>
-                                <Label className="text-gray-300">Starting Balance</Label>
+                                <Label className="text-gray-300">Starting Balance ($)</Label>
                                 <Input
                                   type="number"
                                   value={fundedAccountSettings.startingBalance}
                                   onChange={(e) => setFundedAccountSettings({
                                     ...fundedAccountSettings,
-                                    startingBalance: parseFloat(e.target.value) || 0
+                                    startingBalance: e.target.value
                                   })}
                                   className="bg-gray-700 border-gray-600 text-white"
+                                  placeholder="0"
                                 />
                               </div>
                               <div>
-                                <Label className="text-gray-300">Profit Target</Label>
+                                <Label className="text-gray-300">Profit Target ($)</Label>
                                 <Input
                                   type="number"
                                   value={fundedAccountSettings.profitTarget}
                                   onChange={(e) => setFundedAccountSettings({
                                     ...fundedAccountSettings,
-                                    profitTarget: parseFloat(e.target.value) || 0
+                                    profitTarget: e.target.value
                                   })}
                                   className="bg-gray-700 border-gray-600 text-white"
+                                  placeholder="0"
                                 />
                               </div>
                               <div>
-                                <Label className="text-gray-300">Max Drawdown</Label>
+                                <Label className="text-gray-300">Max Drawdown ($)</Label>
                                 <Input
                                   type="number"
                                   value={fundedAccountSettings.maxDrawdown}
                                   onChange={(e) => setFundedAccountSettings({
                                     ...fundedAccountSettings,
-                                    maxDrawdown: parseFloat(e.target.value) || 0
+                                    maxDrawdown: e.target.value
                                   })}
                                   className="bg-gray-700 border-gray-600 text-white"
+                                  placeholder="0"
+                                />
+                              </div>
+                              <div>
+                                <Label className="text-gray-300">Daily Loss Limit ($)</Label>
+                                <Input
+                                  type="number"
+                                  value={fundedAccountSettings.dailyLossLimit}
+                                  onChange={(e) => setFundedAccountSettings({
+                                    ...fundedAccountSettings,
+                                    dailyLossLimit: e.target.value
+                                  })}
+                                  className="bg-gray-700 border-gray-600 text-white"
+                                  placeholder="0"
+                                />
+                              </div>
+                              <div>
+                                <Label className="text-gray-300">Days Required for Payout</Label>
+                                <Input
+                                  type="number"
+                                  value={fundedAccountSettings.daysRequiredForPayout}
+                                  onChange={(e) => setFundedAccountSettings({
+                                    ...fundedAccountSettings,
+                                    daysRequiredForPayout: e.target.value
+                                  })}
+                                  className="bg-gray-700 border-gray-600 text-white"
+                                  placeholder="5"
+                                />
+                              </div>
+                              <div>
+                                <Label className="text-gray-300">Minimum Winning Day ($)</Label>
+                                <Input
+                                  type="number"
+                                  value={fundedAccountSettings.winningDayMinimum}
+                                  onChange={(e) => setFundedAccountSettings({
+                                    ...fundedAccountSettings,
+                                    winningDayMinimum: e.target.value
+                                  })}
+                                  className="bg-gray-700 border-gray-600 text-white"
+                                  placeholder="200"
                                 />
                               </div>
                               <div>
@@ -586,9 +646,75 @@ export default function AccountManagement({ accounts }: AccountManagementProps) 
                                   value={fundedAccountSettings.profitSplit}
                                   onChange={(e) => setFundedAccountSettings({
                                     ...fundedAccountSettings,
-                                    profitSplit: parseFloat(e.target.value) || 0
+                                    profitSplit: e.target.value
                                   })}
                                   className="bg-gray-700 border-gray-600 text-white"
+                                  placeholder="80"
+                                />
+                              </div>
+                              <div>
+                                <Label className="text-gray-300">Maximum Payout Allowed ($)</Label>
+                                <Input
+                                  type="number"
+                                  value={fundedAccountSettings.maximumPayoutAmount}
+                                  onChange={(e) => setFundedAccountSettings({
+                                    ...fundedAccountSettings,
+                                    maximumPayoutAmount: e.target.value
+                                  })}
+                                  className="bg-gray-700 border-gray-600 text-white"
+                                  placeholder="5000"
+                                />
+                              </div>
+                              <div>
+                                <Label className="text-gray-300">Maximum Payout Per Account ($)</Label>
+                                <Input
+                                  type="number"
+                                  value={fundedAccountSettings.maximumPayoutPerAccount}
+                                  onChange={(e) => setFundedAccountSettings({
+                                    ...fundedAccountSettings,
+                                    maximumPayoutPerAccount: e.target.value
+                                  })}
+                                  className="bg-gray-700 border-gray-600 text-white"
+                                  placeholder="10000"
+                                />
+                              </div>
+                              <div>
+                                <Label className="text-gray-300">Minimum Payout Amount ($)</Label>
+                                <Input
+                                  type="number"
+                                  value={fundedAccountSettings.minimumPayoutAmount}
+                                  onChange={(e) => setFundedAccountSettings({
+                                    ...fundedAccountSettings,
+                                    minimumPayoutAmount: e.target.value
+                                  })}
+                                  className="bg-gray-700 border-gray-600 text-white"
+                                  placeholder="100"
+                                />
+                              </div>
+                              <div>
+                                <Label className="text-gray-300">Max Net Balance for Payout ($)</Label>
+                                <Input
+                                  type="number"
+                                  value={fundedAccountSettings.maxNetBalanceForPayout}
+                                  onChange={(e) => setFundedAccountSettings({
+                                    ...fundedAccountSettings,
+                                    maxNetBalanceForPayout: e.target.value
+                                  })}
+                                  className="bg-gray-700 border-gray-600 text-white"
+                                  placeholder="2000"
+                                />
+                              </div>
+                              <div>
+                                <Label className="text-gray-300">Consistency Rules Percentage (%)</Label>
+                                <Input
+                                  type="number"
+                                  value={fundedAccountSettings.consistencyRulePercent}
+                                  onChange={(e) => setFundedAccountSettings({
+                                    ...fundedAccountSettings,
+                                    consistencyRulePercent: e.target.value
+                                  })}
+                                  className="bg-gray-700 border-gray-600 text-white"
+                                  placeholder="50"
                                 />
                               </div>
                             </div>
@@ -660,6 +786,9 @@ export default function AccountManagement({ accounts }: AccountManagementProps) 
                             <ArrowRight className="h-5 w-5 text-yellow-400" />
                             Convert Funded to Live Account
                           </DialogTitle>
+                          <DialogDescription className="text-gray-300">
+                            Configure the payout settings for your new live account.
+                          </DialogDescription>
                         </DialogHeader>
                         <div className="space-y-4">
                           <div className="bg-yellow-900/30 border border-yellow-600/30 rounded-lg p-4">
@@ -693,42 +822,70 @@ export default function AccountManagement({ accounts }: AccountManagementProps) 
                                   value={liveAccountSettings.profitSplit}
                                   onChange={(e) => setLiveAccountSettings({
                                     ...liveAccountSettings,
-                                    profitSplit: parseFloat(e.target.value) || 0
+                                    profitSplit: e.target.value
                                   })}
                                   className="bg-gray-700 border-gray-600 text-white"
+                                  placeholder="90"
                                 />
                               </div>
                               <div>
-                                <Label className="text-gray-300">Payout Frequency</Label>
-                                <Select value={liveAccountSettings.payoutFrequency} onValueChange={(value) => 
-                                  setLiveAccountSettings({
-                                    ...liveAccountSettings,
-                                    payoutFrequency: value
-                                  })
-                                }>
-                                  <SelectTrigger className="bg-gray-700 border-gray-600 text-white">
-                                    <SelectValue />
-                                  </SelectTrigger>
-                                  <SelectContent className="bg-gray-700 border-gray-600">
-                                    <SelectItem value="weekly">Weekly</SelectItem>
-                                    <SelectItem value="bi-weekly">Bi-weekly</SelectItem>
-                                    <SelectItem value="monthly">Monthly</SelectItem>
-                                    <SelectItem value="on-demand">On-demand</SelectItem>
-                                  </SelectContent>
-                                </Select>
-                              </div>
-                              <div>
-                                <Label className="text-gray-300">Minimum Payout</Label>
+                                <Label className="text-gray-300">Minimum Payout Amount ($)</Label>
                                 <Input
                                   type="number"
                                   value={liveAccountSettings.minimumPayoutAmount}
                                   onChange={(e) => setLiveAccountSettings({
                                     ...liveAccountSettings,
-                                    minimumPayoutAmount: parseFloat(e.target.value) || 0
+                                    minimumPayoutAmount: e.target.value
                                   })}
                                   className="bg-gray-700 border-gray-600 text-white"
+                                  placeholder="500"
                                 />
                               </div>
+                              <div>
+                                <Label className="text-gray-300">Maximum Payout Allowed ($)</Label>
+                                <Input
+                                  type="number"
+                                  value={liveAccountSettings.maximumPayoutAmount}
+                                  onChange={(e) => setLiveAccountSettings({
+                                    ...liveAccountSettings,
+                                    maximumPayoutAmount: e.target.value
+                                  })}
+                                  className="bg-gray-700 border-gray-600 text-white"
+                                  placeholder="10000"
+                                />
+                              </div>
+                              <div>
+                                <Label className="text-gray-300">Maximum Payout Per Account ($)</Label>
+                                <Input
+                                  type="number"
+                                  value={liveAccountSettings.maximumPayoutPerAccount}
+                                  onChange={(e) => setLiveAccountSettings({
+                                    ...liveAccountSettings,
+                                    maximumPayoutPerAccount: e.target.value
+                                  })}
+                                  className="bg-gray-700 border-gray-600 text-white"
+                                  placeholder="25000"
+                                />
+                              </div>
+                            </div>
+                            <div>
+                              <Label className="text-gray-300">Payout Frequency</Label>
+                              <Select value={liveAccountSettings.payoutFrequency} onValueChange={(value) => 
+                                setLiveAccountSettings({
+                                  ...liveAccountSettings,
+                                  payoutFrequency: value
+                                })
+                              }>
+                                <SelectTrigger className="bg-gray-700 border-gray-600 text-white">
+                                  <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent className="bg-gray-700 border-gray-600">
+                                  <SelectItem value="weekly">Weekly</SelectItem>
+                                  <SelectItem value="bi-weekly">Bi-weekly</SelectItem>
+                                  <SelectItem value="monthly">Monthly</SelectItem>
+                                  <SelectItem value="on-demand">On-demand</SelectItem>
+                                </SelectContent>
+                              </Select>
                             </div>
                           </div>
                           <div className="flex justify-end gap-3">
