@@ -655,7 +655,7 @@ export default function Dashboard() {
           </div>
           <div className="widget-container">
             <div className="widget-content flex-col">
-              <div className="grid grid-cols-7 gap-6 h-full">
+              <div className="grid grid-cols-7 gap-2 h-full">
                 {(() => {
                   const getCurrentWeekDays = () => {
                     const weekDays = [];
@@ -707,7 +707,7 @@ export default function Dashboard() {
                       <div 
                         key={index} 
                         className={`
-                          relative p-3 rounded-lg border transition-all duration-300 h-56
+                          relative p-4 rounded-lg border transition-all duration-300 h-56
                           ${isToday 
                             ? 'border-gold bg-gradient-to-br from-gold/20 via-gold/10 to-transparent shadow-lg shadow-gold/30' 
                             : 'border-gray-600 bg-gradient-to-br from-gray-800/80 via-gray-700/50 to-gray-800/30'
@@ -727,44 +727,44 @@ export default function Dashboard() {
                           
                           <div className="space-y-1 text-xs">
                             <div className="flex justify-between">
-                              <span className="text-gray-300">Risk/Trade:</span>
+                              <span className="text-gray-300">• Risk/Trade:</span>
                               <span className="text-orange-300 font-medium">${avgRiskPerTrade.toFixed(0)}</span>
                             </div>
                             
                             <div className="flex justify-between">
-                              <span className="text-gray-300">Max. D Risk:</span>
+                              <span className="text-gray-300">• Max. D Risk:</span>
                               <span className="text-red-300 font-medium">${maxDailyRisk.toFixed(0)}</span>
                             </div>
                             
                             <div className="flex justify-between">
-                              <span className="text-gray-300">Reward Ratio:</span>
+                              <span className="text-gray-300">• Reward Ratio:</span>
                               <span className="text-blue-300 font-medium">{avgRewardRatio.toFixed(1)} RR</span>
                             </div>
                             
                             <div className="flex justify-between">
-                              <span className="text-gray-300">Daily Target:</span>
+                              <span className="text-gray-300">• Daily Target:</span>
                               <span className="text-purple-300 font-medium">${dailyTarget.toFixed(2)}</span>
                             </div>
                             
                             <div className="flex justify-between">
-                              <span className="text-gray-300">Daily PNL:</span>
+                              <span className="text-gray-300">• Daily PNL:</span>
                               <span className={`font-bold ${dayPnL >= 0 ? 'text-green-300' : 'text-red-300'}`}>
                                 {dayPnL >= 0 ? '+' : ''}${dayPnL.toFixed(2)}
                               </span>
                             </div>
                             
                             <div className="flex justify-between">
-                              <span className="text-gray-300">Max D Trades:</span>
+                              <span className="text-gray-300">• Max D Trades:</span>
                               <span className="text-cyan-300 font-medium">{maxDailyTrades} T</span>
                             </div>
                             
                             <div className="flex justify-between">
-                              <span className="text-gray-300">Total D Trades:</span>
+                              <span className="text-gray-300">• Total D Trades:</span>
                               <span className="text-indigo-300 font-medium">{dayTrades.length} T</span>
                             </div>
                             
                             <div className="flex justify-between">
-                              <span className="text-gray-300">Discipline Score:</span>
+                              <span className="text-gray-300">• Discipline Score:</span>
                               <span className="text-yellow-300 font-bold">
                                 {dayTrades.length > 0 ? Math.round(Math.random() * 100) : 0}
                               </span>
