@@ -293,8 +293,8 @@ export const savedProjections = pgTable("saved_projections", {
   actualPnl: real("actual_pnl").default(0),
   suggestedAdjustments: text("suggested_adjustments"), // JSON string of suggestions
   hasPendingSuggestions: boolean("has_pending_suggestions").default(false),
-  createdAt: timestamp("created_at").defaultNow(),
-  updatedAt: timestamp("updated_at").defaultNow(),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
   completedAt: timestamp("completed_at"),
   lockedAt: timestamp("locked_at"),
 });
@@ -307,15 +307,13 @@ export const projectionAdjustmentHistory = pgTable("projection_adjustment_histor
   newValues: text("new_values").notNull(), // JSON string
   reason: text("reason"),
   acceptedByUser: boolean("accepted_by_user"),
-  createdAt: timestamp("created_at").defaultNow(),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 
 export const insertSavedProjectionSchema = createInsertSchema(savedProjections).omit({
   id: true,
   createdAt: true,
   updatedAt: true,
-  completedAt: true,
-  lockedAt: true,
 });
 
 export const insertProjectionAdjustmentSchema = createInsertSchema(projectionAdjustmentHistory).omit({
