@@ -429,7 +429,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         h.toLowerCase().includes('exitedat') || 
         h.toLowerCase().includes('entryprice') ||
         h.toLowerCase().includes('exitprice')
-      );
+      ) || headers.includes('P&L');
 
       if (isCompletedTradesFormat) {
         console.log("Detected completed trades CSV format");
@@ -451,27 +451,56 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
             // Parse trade data from completed trades CSV format
             const symbol = (row.ContractName || row.Symbol || '').replace(/[^A-Z]/g, '');
-            const side = row.Type?.toLowerCase() === 'long' ? 'buy' : 'sell';
-            const quantity = parseFloat(row.Size) || 1;
-            const entryPrice = parseFloat(row.EntryPrice) || 0;
-            const exitPrice = parseFloat(row.ExitPrice) || 0;
-            const pnl = parseFloat(row.PnL) || 0;
+            const side = (row.Type || row.Side || 'long').toLowerCase() === 'long' ? 'buy' : 'sell';
+            const quantity = parseFloat(row.Size || row.Quantity) || 1;
+            const entryPrice = parseFloat(row.EntryPrice || row['Entry Price']) || 0;
+            const exitPrice = parseFloat(row.ExitPrice || row['Exit Price']) || 0;
+            const pnl = parseFloat(row.PnL || row['P&L']) || 0;
             
-            // Parse entry date
+            // Parse entry date - handle multiple formats
             let date = new Date().toISOString().split('T')[0];
-            if (row.EnteredAt) {
+            const dateValue = row.EnteredAt || row.Date;
+            if (dateValue) {
               try {
-                // Handle format like "06/02/2025 10:08:05 -04:00"
-                const entryDate = new Date(row.EnteredAt);
-                if (!isNaN(entryDate.getTime())) {
-                  date = entryDate.toISOString().split('T')[0];
+                // Handle format like "6/27/25" or "2024-10-07"
+                let parsedDate;
+                if (dateValue.includes('/')) {
+                  // Handle MM/dd/yy or M/d/yy format
+                  const parts = dateValue.split('/');
+                  if (parts.length === 3) {
+                    let month = parts[0];
+                    let day = parts[1];
+                    let year = parts[2];
+                    
+                    // Convert 2-digit year to 4-digit
+                    if (year.length === 2) {
+                      year = parseInt(year) < 50 ? '20' + year : '19' + year;
+                    }
+                    
+                    // Pad month and day with zeros if needed
+                    month = month.padStart(2, '0');
+                    day = day.padStart(2, '0');
+                    
+                    parsedDate = new Date(`${year}-${month}-${day}`);
+                  }
+                } else {
+                  // Handle other formats
+                  parsedDate = new Date(dateValue);
+                }
+                
+                if (parsedDate && !isNaN(parsedDate.getTime())) {
+                  date = parsedDate.toISOString().split('T')[0];
                 }
               } catch (error) {
                 console.log("Date parsing error:", error);
               }
             }
 
-            if (symbol && entryPrice && exitPrice) {
+            // Only import trades that have valid data (skip canceled orders and orders with no prices)
+            const hasValidData = symbol && (entryPrice > 0 || exitPrice > 0);
+            const isNotCanceled = row.Status !== 'Canceled' && row.Status !== 'Cancelled';
+            
+            if (hasValidData && isNotCanceled) {
               const tradeData: InsertTrade = {
                 accountId: parseInt(accountId),
                 symbol,
@@ -489,7 +518,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
               await storage.createTrade(tradeData);
               recordsImported++;
             } else {
-              console.log(`Skipping row ${i}: symbol=${symbol}, entryPrice=${entryPrice}, exitPrice=${exitPrice}`);
+              console.log(`Skipping row ${i}: symbol=${symbol}, entryPrice=${entryPrice}, exitPrice=${exitPrice}, pnl=${pnl}, status=${row.Status}`);
             }
 
           } catch (error) {
