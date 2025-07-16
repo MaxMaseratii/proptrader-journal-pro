@@ -5,8 +5,8 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Link } from 'wouter';
 import { SimpleChart } from '@/components/tradingview/SimpleChart';
-import TradeAnalysisCalendar from '@/components/trade-analysis-calendar';
-import { calculateDisciplinedScore } from '@/lib/disciplined-score';
+import { TradeAnalysisCalendar } from '@/components/trade-analysis-calendar';
+import { calculateDisciplinedScore } from '@/lib/discipline-calculator';
 
 export default function Dashboard() {
   const [selectedAccountIds, setSelectedAccountIds] = useState<number[]>([]);
@@ -65,7 +65,7 @@ export default function Dashboard() {
   const disciplineScore = filteredAccounts.length > 0 && filteredTrades.length > 0
     ? filteredAccounts.reduce((sum, acc) => {
         const accountTrades = filteredTrades.filter(t => t.accountId === acc.id);
-        return sum + calculateDisciplinedScore(acc, trades || []).disciplinedScore;
+        return sum + calculateDisciplinedScore(acc, accountTrades);
       }, 0) / filteredAccounts.length
     : 0;
 
@@ -337,6 +337,7 @@ export default function Dashboard() {
           trades={filteredTrades} 
           accounts={filteredAccounts}
           viewMode="monthly"
+          compact={true}
         />
       </div>
 
