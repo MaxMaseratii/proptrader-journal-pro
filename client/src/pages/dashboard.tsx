@@ -874,8 +874,9 @@ export default function Dashboard() {
                   
                   if (!selectedAccount) return 'text-gray-400';
                   
-                  const disciplineMetrics = calculateComprehensiveDisciplineMetrics(selectedAccount, filteredTrades);
-                  const score = Math.round(disciplineMetrics.overallDisciplineScore * 100);
+                  const tradesArray = Array.isArray(filteredTrades) ? filteredTrades : [];
+                  const disciplineMetrics = calculateComprehensiveDisciplineMetrics(tradesArray);
+                  const score = Math.round(disciplineMetrics.disciplineScore);
                   
                   if (score >= 80) return 'text-green-400';
                   if (score >= 60) return 'text-yellow-400';
@@ -894,8 +895,9 @@ export default function Dashboard() {
                     
                     if (!selectedAccount) return '0%';
                     
-                    const disciplineMetrics = calculateComprehensiveDisciplineMetrics(selectedAccount, filteredTrades);
-                    return `${Math.round(disciplineMetrics.overallDisciplineScore * 100)}%`;
+                    const tradesArray = Array.isArray(filteredTrades) ? filteredTrades : [];
+                    const disciplineMetrics = calculateComprehensiveDisciplineMetrics(tradesArray);
+                    return `${Math.round(disciplineMetrics.disciplineScore)}%`;
                   })()}
                 </p>
                 <p className="widget-description">Trading discipline rating</p>
