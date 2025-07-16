@@ -682,10 +682,18 @@ export default function Dashboard() {
                     const dayPnL = dayTrades.reduce((sum, trade) => sum + (trade.pnl || 0), 0);
                     const isToday = day.toDateString() === new Date().toDateString();
                     
+                    // Get account-specific data for selected accounts
+                    const selectedAccounts = selectedAccountIds.length > 0
+                      ? accounts?.filter(acc => selectedAccountIds.includes(acc.id)) || []
+                      : accounts || [];
+                    
                     // Calculate risk metrics from trades
                     const totalRisk = dayTrades.reduce((sum, trade) => sum + Math.abs(trade.riskAmount || 0), 0);
-                    const avgRiskPerTrade = dayTrades.length > 0 ? totalRisk / dayTrades.length : 0;
-                    const maxDailyRisk = dayTrades.reduce((max, trade) => Math.max(max, Math.abs(trade.riskAmount || 0)), 0);
+                    const avgRiskPerTrade = dayTrades.length > 0 ? totalRisk / dayTrades.length : 
+                      selectedAccounts.length > 0 ? selectedAccounts.reduce((sum, acc) => sum + (acc.riskPerTrade || 0), 0) / selectedAccounts.length : 0;
+                    const maxDailyRisk = dayTrades.length > 0 
+                      ? dayTrades.reduce((max, trade) => Math.max(max, Math.abs(trade.riskAmount || 0)), 0)
+                      : selectedAccounts.length > 0 ? selectedAccounts.reduce((sum, acc) => sum + (acc.dailyLossLimit || 0), 0) / selectedAccounts.length : 0;
                     
                     // Calculate reward ratio (average)
                     const rewardRatios = dayTrades.map(trade => {
@@ -695,13 +703,17 @@ export default function Dashboard() {
                     }).filter(rr => rr > 0);
                     const avgRewardRatio = rewardRatios.length > 0 ? rewardRatios.reduce((sum, rr) => sum + rr, 0) / rewardRatios.length : 0;
                     
-                    // Get account-specific data for selected accounts
-                    const selectedAccounts = selectedAccountIds.length > 0
-                      ? accounts?.filter(acc => selectedAccountIds.includes(acc.id)) || []
-                      : accounts || [];
-                    
                     const maxDailyTrades = selectedAccounts.reduce((max, acc) => Math.max(max, acc.maxDailyTrades || 0), 0);
-                    const dailyTarget = selectedAccounts.reduce((sum, acc) => sum + (acc.profitTarget || 0), 0) / 30; // Monthly target / 30 days
+                    
+                    // Calculate daily target based on account risk settings and RR ratio
+                    const dailyTarget = selectedAccounts.length > 0 
+                      ? selectedAccounts.reduce((sum, acc) => {
+                          const riskPerTrade = acc.riskPerTrade || 0;
+                          const riskRewardRatio = acc.riskRewardRatio || 2.0;
+                          const maxTrades = acc.maxDailyTrades || 5;
+                          return sum + (riskPerTrade * riskRewardRatio * maxTrades);
+                        }, 0) / selectedAccounts.length
+                      : 0;
                     
                     return (
                       <div 
@@ -709,7 +721,7 @@ export default function Dashboard() {
                         className={`
                           relative p-4 rounded-lg border transition-all duration-300 h-56 overflow-hidden w-full
                           ${isToday 
-                            ? 'border-gold bg-gradient-to-br from-black/95 via-gray-900/90 to-black/95 shadow-lg shadow-gold/40' 
+                            ? 'border-teal-400 bg-gradient-to-br from-black/95 via-gray-900/90 to-black/95 shadow-lg shadow-teal-400/40' 
                             : 'border-gray-700 bg-gradient-to-br from-black/95 via-gray-900/90 to-black/95'
                           }
                           hover:border-gold hover:shadow-lg hover:shadow-gold/50 hover:bg-gradient-to-br hover:from-black/90 hover:via-gray-900/80 hover:to-black/90 cursor-pointer
@@ -735,7 +747,9 @@ export default function Dashboard() {
                             
                             <div className="flex justify-between items-center">
                               <span className="text-gray-200 truncate text-xs">Rewards:</span>
-                              <span className="text-blue-400 font-medium text-xs ml-1 truncate">{avgRewardRatio.toFixed(1)} RR</span>
+                              <span className="text-blue-400 font-medium text-xs ml-1 truncate">
+                                {avgRewardRatio.toFixed(1)}/{selectedAccounts.length > 0 ? (selectedAccounts.reduce((sum, acc) => sum + (acc.riskRewardRatio || 0), 0) / selectedAccounts.length).toFixed(1) : '0.0'}RR
+                              </span>
                             </div>
                             
                             <div className="flex justify-between items-center">
@@ -763,7 +777,14 @@ export default function Dashboard() {
                             <div className="flex justify-between items-center">
                               <span className="text-gray-200 truncate text-xs">Disc. Score:</span>
                               <span className="text-gold font-bold text-xs ml-1 truncate">
-                                {dayTrades.length > 0 ? Math.round(Math.random() * 100) : 0}
+                                {(() => {
+                                  if (dayTrades.length === 0) return 0;
+                                  // Calculate discipline score for the day based on trades
+                                  const selectedAccount = selectedAccounts[0];
+                                  if (!selectedAccount) return 0;
+                                  const dayScore = calculateComprehensiveDisciplineMetrics(selectedAccount, dayTrades);
+                                  return Math.round(dayScore.overallDisciplineScore * 100);
+                                })()}
                               </span>
                             </div>
                           </div>
