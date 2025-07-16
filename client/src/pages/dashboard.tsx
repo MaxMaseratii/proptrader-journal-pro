@@ -712,6 +712,7 @@ export default function Dashboard() {
                     const maxDailyTrades = selectedAccounts.reduce((max, acc) => Math.max(max, acc.maxDailyTrades || 0), 0);
                     
                     // Calculate daily target based on saved projections or account risk settings
+                    // Daily target = risk per trade × risk reward ratio (single trade target)
                     const dailyTarget = (() => {
                       if (projections && projections.length > 0) {
                         // Use projection data for accounts with saved projections
@@ -725,8 +726,7 @@ export default function Dashboard() {
                           return accountProjections.reduce((sum, proj) => {
                             const riskPerTrade = proj.riskPerTrade || 0;
                             const riskRewardRatio = proj.riskRewardRatio || 2.0;
-                            const maxTrades = proj.maxDailyTrades || 5;
-                            return sum + (riskPerTrade * riskRewardRatio * maxTrades);
+                            return sum + (riskPerTrade * riskRewardRatio); // Single trade target
                           }, 0) / accountProjections.length;
                         }
                       }
@@ -736,8 +736,7 @@ export default function Dashboard() {
                         ? selectedAccounts.reduce((sum, acc) => {
                             const riskPerTrade = acc.riskPerTrade || 0;
                             const riskRewardRatio = acc.riskRewardRatio || 2.0;
-                            const maxTrades = acc.maxDailyTrades || 5;
-                            return sum + (riskPerTrade * riskRewardRatio * maxTrades);
+                            return sum + (riskPerTrade * riskRewardRatio); // Single trade target
                           }, 0) / selectedAccounts.length
                         : 0;
                     })();
@@ -1997,7 +1996,7 @@ export default function Dashboard() {
                     .map(account => {
                       const accountTrades = trades.filter(t => t.accountId === account.id);
                       const totalPnl = accountTrades.reduce((sum, trade) => sum + (trade.pnl || 0), 0);
-                      const dailyLossLimit = account.maxDrawdown ? account.maxDrawdown * 0.05 : 2500; // 5% daily loss limit
+                      const dailyLossLimit = account.dailyLossLimit || (account.maxDrawdown ? account.maxDrawdown * 0.05 : 1000); // Use account's daily loss limit
                       const currentDrawdown = Math.abs(Math.min(0, totalPnl));
                       const riskPercentage = (currentDrawdown / dailyLossLimit) * 100;
                       
