@@ -150,6 +150,12 @@ export default function Dashboard() {
     queryKey: ["/api/spending"],
   });
 
+  // Query for saved projections
+  const { data: projections } = useQuery({
+    queryKey: ["/api/projections/account"],
+    enabled: !!accounts && accounts.length > 0,
+  });
+
   // Wage update mutation
   const updateWageMutation = useMutation({
     mutationFn: async (personalHourlyWage: number) => {
@@ -705,15 +711,36 @@ export default function Dashboard() {
                     
                     const maxDailyTrades = selectedAccounts.reduce((max, acc) => Math.max(max, acc.maxDailyTrades || 0), 0);
                     
-                    // Calculate daily target based on account risk settings and RR ratio
-                    const dailyTarget = selectedAccounts.length > 0 
-                      ? selectedAccounts.reduce((sum, acc) => {
-                          const riskPerTrade = acc.riskPerTrade || 0;
-                          const riskRewardRatio = acc.riskRewardRatio || 2.0;
-                          const maxTrades = acc.maxDailyTrades || 5;
-                          return sum + (riskPerTrade * riskRewardRatio * maxTrades);
-                        }, 0) / selectedAccounts.length
-                      : 0;
+                    // Calculate daily target based on saved projections or account risk settings
+                    const dailyTarget = (() => {
+                      if (projections && projections.length > 0) {
+                        // Use projection data for accounts with saved projections
+                        const accountProjections = projections.filter(p => 
+                          selectedAccountIds.length > 0 
+                            ? selectedAccountIds.includes(p.accountId)
+                            : true
+                        );
+                        
+                        if (accountProjections.length > 0) {
+                          return accountProjections.reduce((sum, proj) => {
+                            const riskPerTrade = proj.riskPerTrade || 0;
+                            const riskRewardRatio = proj.riskRewardRatio || 2.0;
+                            const maxTrades = proj.maxDailyTrades || 5;
+                            return sum + (riskPerTrade * riskRewardRatio * maxTrades);
+                          }, 0) / accountProjections.length;
+                        }
+                      }
+                      
+                      // Fallback to account settings if no projections
+                      return selectedAccounts.length > 0 
+                        ? selectedAccounts.reduce((sum, acc) => {
+                            const riskPerTrade = acc.riskPerTrade || 0;
+                            const riskRewardRatio = acc.riskRewardRatio || 2.0;
+                            const maxTrades = acc.maxDailyTrades || 5;
+                            return sum + (riskPerTrade * riskRewardRatio * maxTrades);
+                          }, 0) / selectedAccounts.length
+                        : 0;
+                    })();
                     
                     return (
                       <div 

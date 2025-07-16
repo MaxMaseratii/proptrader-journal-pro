@@ -178,9 +178,6 @@ export default function Projections() {
       liveAccountTransitionDays: null,
       liveAccountTransitionDrawdownLimit: null,
       
-      // Challenge Account Payout Settings
-      allowChallengePayouts: false,
-      
       // Funded Account Payout Settings
       fundedPayoutEnabled: false,
       fundedDaysRequiredForPayout: null,
