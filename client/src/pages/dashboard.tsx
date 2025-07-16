@@ -785,8 +785,8 @@ export default function Dashboard() {
                                   // Ensure dayTrades is an array
                                   const tradesArray = Array.isArray(dayTrades) ? dayTrades : [];
                                   if (tradesArray.length === 0) return 0;
-                                  const dayScore = calculateComprehensiveDisciplineMetrics(selectedAccount, tradesArray);
-                                  return Math.round(dayScore.overallDisciplineScore * 100);
+                                  const dayScore = calculateComprehensiveDisciplineMetrics(tradesArray);
+                                  return Math.round(dayScore.disciplineScore);
                                 })()}
                               </span>
                             </div>
