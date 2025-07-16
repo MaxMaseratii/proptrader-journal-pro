@@ -782,7 +782,10 @@ export default function Dashboard() {
                                   // Calculate discipline score for the day based on trades
                                   const selectedAccount = selectedAccounts[0];
                                   if (!selectedAccount) return 0;
-                                  const dayScore = calculateComprehensiveDisciplineMetrics(selectedAccount, dayTrades);
+                                  // Ensure dayTrades is an array
+                                  const tradesArray = Array.isArray(dayTrades) ? dayTrades : [];
+                                  if (tradesArray.length === 0) return 0;
+                                  const dayScore = calculateComprehensiveDisciplineMetrics(selectedAccount, tradesArray);
                                   return Math.round(dayScore.overallDisciplineScore * 100);
                                 })()}
                               </span>
@@ -849,6 +852,56 @@ export default function Dashboard() {
               </div>
               <div className="widget-icon-square">
                 <Target className="widget-icon" />
+              </div>
+            </div>
+          </div>
+
+          {/* Discipline Score */}
+          <div className="widget-container">
+            <div className="widget-content">
+              <div className="widget-left">
+                <p className="widget-label">Discipline Score</p>
+                <p className={`widget-value ${(() => {
+                  const filteredTrades = selectedAccountIds.length > 0
+                    ? trades?.filter(t => selectedAccountIds.includes(t.accountId)) || []
+                    : trades || [];
+                  
+                  if (filteredTrades.length === 0) return 'text-gray-400';
+                  
+                  const selectedAccount = selectedAccountIds.length > 0
+                    ? accounts?.find(a => a.id === selectedAccountIds[0])
+                    : accounts?.[0];
+                  
+                  if (!selectedAccount) return 'text-gray-400';
+                  
+                  const disciplineMetrics = calculateComprehensiveDisciplineMetrics(selectedAccount, filteredTrades);
+                  const score = Math.round(disciplineMetrics.overallDisciplineScore * 100);
+                  
+                  if (score >= 80) return 'text-green-400';
+                  if (score >= 60) return 'text-yellow-400';
+                  return 'text-red-400';
+                })()}`}>
+                  {(() => {
+                    const filteredTrades = selectedAccountIds.length > 0
+                      ? trades?.filter(t => selectedAccountIds.includes(t.accountId)) || []
+                      : trades || [];
+                    
+                    if (filteredTrades.length === 0) return '0%';
+                    
+                    const selectedAccount = selectedAccountIds.length > 0
+                      ? accounts?.find(a => a.id === selectedAccountIds[0])
+                      : accounts?.[0];
+                    
+                    if (!selectedAccount) return '0%';
+                    
+                    const disciplineMetrics = calculateComprehensiveDisciplineMetrics(selectedAccount, filteredTrades);
+                    return `${Math.round(disciplineMetrics.overallDisciplineScore * 100)}%`;
+                  })()}
+                </p>
+                <p className="widget-description">Trading discipline rating</p>
+              </div>
+              <div className="widget-icon-square">
+                <Brain className="widget-icon" />
               </div>
             </div>
           </div>
