@@ -225,23 +225,31 @@ export default function Projections() {
     },
   });
 
-  const [settings, setSettings] = useState<ProjectionSettings>({
-    mode: 'simulation',
-    selectedAccountId: null,
-    copiedAccounts: 0,
-    startingCapital: 0,
-    riskPerTrade: 0,
-    riskRewardRatio: 0,
-    profitTarget: 0,
-    maxDrawdown: 0,
-    riskCuttingPercent: 0,
-    compoundingPercent: 0,
-    maxLossPerDay: 0,
-    extraDaysIfLoss: 0,
-    useMaxDrawdownAsCapital: false,
+  const [settings, setSettings] = useState<ProjectionSettings>(() => {
+    const saved = localStorage.getItem('projectionSettings');
+    return saved ? JSON.parse(saved) : {
+      mode: 'simulation',
+      selectedAccountId: null,
+      copiedAccounts: 0,
+      startingCapital: 0,
+      riskPerTrade: 0,
+      riskRewardRatio: 0,
+      profitTarget: 0,
+      maxDrawdown: 0,
+      riskCuttingPercent: 0,
+      compoundingPercent: 0,
+      maxLossPerDay: 0,
+      extraDaysIfLoss: 0,
+      useMaxDrawdownAsCapital: false,
+    };
   });
 
   const [projectionData, setProjectionData] = useState<ProjectionDay[]>([]);
+
+  // Save settings to localStorage whenever they change
+  useEffect(() => {
+    localStorage.setItem('projectionSettings', JSON.stringify(settings));
+  }, [settings]);
 
   // Query for saved projections for the selected account
   const { data: savedProjections = [] } = useQuery({

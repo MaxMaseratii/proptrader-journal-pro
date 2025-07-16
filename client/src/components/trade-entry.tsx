@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -25,24 +25,32 @@ export default function TradeEntry({ accounts }: TradeEntryProps) {
   const { toast } = useToast();
 
   // Manual trade form state
-  const [formData, setFormData] = useState<Partial<InsertTrade>>({
-    symbol: "",
-    date: new Date().toISOString().split('T')[0],
-    side: "long",
-    quantity: 1,
-    entryPrice: 0,
-    exitPrice: null,
-    pnl: 0,
-    status: "closed",
-    notes: "",
-    orderId: "",
-    initialStopLoss: null,
-    initialTakeProfit: null,
-    finalStopLoss: null,
-    finalTakeProfit: null,
-    tradeImage: "",
-    tradingViewLink: "",
+  const [formData, setFormData] = useState<Partial<InsertTrade>>(() => {
+    const saved = localStorage.getItem('tradeFormData');
+    return saved ? JSON.parse(saved) : {
+      symbol: "",
+      date: new Date().toISOString().split('T')[0],
+      side: "long",
+      quantity: 1,
+      entryPrice: 0,
+      exitPrice: null,
+      pnl: 0,
+      status: "closed",
+      notes: "",
+      orderId: "",
+      initialStopLoss: null,
+      initialTakeProfit: null,
+      finalStopLoss: null,
+      finalTakeProfit: null,
+      tradeImage: "",
+      tradingViewLink: "",
+    };
   });
+
+  // Save form data to localStorage whenever it changes
+  useEffect(() => {
+    localStorage.setItem('tradeFormData', JSON.stringify(formData));
+  }, [formData]);
 
   const createTradeMutation = useMutation({
     mutationFn: async (data: InsertTrade) => {
@@ -57,24 +65,7 @@ export default function TradeEntry({ accounts }: TradeEntryProps) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/trades'] });
       setIsDialogOpen(false);
-      setFormData({
-        symbol: "",
-        date: new Date().toISOString().split('T')[0],
-        side: "long",
-        quantity: 1,
-        entryPrice: 0,
-        exitPrice: null,
-        pnl: 0,
-        status: "closed",
-        notes: "",
-        orderId: "",
-        initialStopLoss: null,
-        initialTakeProfit: null,
-        finalStopLoss: null,
-        finalTakeProfit: null,
-        tradeImage: "",
-        tradingViewLink: "",
-      });
+      // Don't clear form data - let user data persist unless they manually clear it
       toast({
         title: "Trade Added Successfully",
         description: "Your trade has been recorded and added to the system.",
@@ -517,22 +508,54 @@ export default function TradeEntry({ accounts }: TradeEntryProps) {
               </Card>
 
               {/* Action Buttons */}
-              <div className="flex justify-end space-x-4 pt-6 border-t border-gray-700">
+              <div className="flex justify-between pt-6 border-t border-gray-700">
                 <Button 
                   type="button" 
                   variant="outline" 
-                  onClick={() => setIsDialogOpen(false)}
+                  onClick={() => {
+                    const emptyForm = {
+                      symbol: "",
+                      date: new Date().toISOString().split('T')[0],
+                      side: "long",
+                      quantity: 1,
+                      entryPrice: 0,
+                      exitPrice: null,
+                      pnl: 0,
+                      status: "closed",
+                      notes: "",
+                      orderId: "",
+                      initialStopLoss: null,
+                      initialTakeProfit: null,
+                      finalStopLoss: null,
+                      finalTakeProfit: null,
+                      tradeImage: "",
+                      tradingViewLink: "",
+                    };
+                    setFormData(emptyForm);
+                    localStorage.setItem('tradeFormData', JSON.stringify(emptyForm));
+                  }}
                   className="border-gray-600 text-gray-300 hover:bg-gray-700"
                 >
-                  Cancel
+                  Clear Form
                 </Button>
-                <Button 
-                  type="submit" 
-                  disabled={createTradeMutation.isPending}
-                  className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white shadow-lg"
-                >
-                  {createTradeMutation.isPending ? "Adding Trade..." : "Add Trade"}
-                </Button>
+                
+                <div className="flex space-x-4">
+                  <Button 
+                    type="button" 
+                    variant="outline" 
+                    onClick={() => setIsDialogOpen(false)}
+                    className="border-gray-600 text-gray-300 hover:bg-gray-700"
+                  >
+                    Cancel
+                  </Button>
+                  <Button 
+                    type="submit" 
+                    disabled={createTradeMutation.isPending}
+                    className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white shadow-lg"
+                  >
+                    {createTradeMutation.isPending ? "Adding Trade..." : "Add Trade"}
+                  </Button>
+                </div>
               </div>
             </form>
           ) : (

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -17,15 +17,23 @@ export default function Journal() {
   const [selectedAccount, setSelectedAccount] = useState<string>("");
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [isCreating, setIsCreating] = useState(false);
-  const [formData, setFormData] = useState({
-    whatWentWrong: "",
-    whatWentRight: "",
-    improvementPlan: "",
+  const [formData, setFormData] = useState(() => {
+    const saved = localStorage.getItem('journalFormData');
+    return saved ? JSON.parse(saved) : {
+      whatWentWrong: "",
+      whatWentRight: "",
+      improvementPlan: "",
+    };
   });
 
   const { data: accounts } = useQuery<Account[]>({
     queryKey: ["/api/accounts"],
   });
+
+  // Save form data to localStorage whenever it changes
+  useEffect(() => {
+    localStorage.setItem('journalFormData', JSON.stringify(formData));
+  }, [formData]);
 
   const { data: entries, isLoading } = useQuery<JournalEntry[]>({
     queryKey: ["/api/journal", selectedAccount],
@@ -40,7 +48,9 @@ export default function Journal() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/journal"] });
       setIsCreating(false);
-      setFormData({ whatWentWrong: "", whatWentRight: "", improvementPlan: "" });
+      const emptyForm = { whatWentWrong: "", whatWentRight: "", improvementPlan: "" };
+      setFormData(emptyForm);
+      localStorage.setItem('journalFormData', JSON.stringify(emptyForm));
     },
   });
 
@@ -120,7 +130,14 @@ export default function Journal() {
                     <Button 
                       variant="outline" 
                       size="sm" 
-                      onClick={() => setIsCreating(true)}
+                      onClick={() => {
+                        setFormData({
+                          whatWentWrong: todayEntry.whatWentWrong || "",
+                          whatWentRight: todayEntry.whatWentRight || "",
+                          improvementPlan: todayEntry.improvementPlan || "",
+                        });
+                        setIsCreating(true);
+                      }}
                       className="border-dark-border"
                     >
                       Edit Entry
