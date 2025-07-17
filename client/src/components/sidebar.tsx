@@ -1,5 +1,6 @@
 import { Link, useLocation } from "wouter";
 import { cn } from "@/lib/utils";
+import { useState } from "react";
 import { 
   ChartLine, 
   Book, 
@@ -17,7 +18,9 @@ import {
   ChevronRight,
   Trophy,
   Bot,
-  Settings
+  Settings,
+  Menu,
+  X
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
@@ -50,42 +53,67 @@ const navItems = [
 export default function Sidebar() {
   const [location] = useLocation();
   const { user } = useAuth();
+  const [isCollapsed, setIsCollapsed] = useState(false);
 
   const mainItems = navItems.filter(item => item.section === "main");
   const profileItems = navItems.filter(item => item.section === "profile");
 
   return (
-    <aside className="w-64 bg-prop-gradient-main border-r border-prop-gold/20 flex-shrink-0">
+    <aside className={cn(
+      "bg-prop-gradient-main border-r border-prop-gold/20 flex-shrink-0 transition-all duration-300 ease-in-out",
+      isCollapsed ? "w-16" : "w-64"
+    )}>
       <div className="p-6 border-b border-prop-gold/20">
-        <div className="flex items-center space-x-3">
-          <div className="bg-prop-gradient-rainbow p-3 rounded-xl hover-glow smooth-transition">
-            <BookOpen className="h-6 w-6 text-white" />
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-3">
+            <div className="bg-prop-gradient-rainbow p-3 rounded-xl hover-glow smooth-transition">
+              <BookOpen className="h-6 w-6 text-white" />
+            </div>
+            {!isCollapsed && (
+              <div>
+                <h1 className="text-lg font-bold text-gradient-rainbow">PropTraderJournal</h1>
+                <p className="text-xs text-gray-400">Elite Trading Journal</p>
+              </div>
+            )}
           </div>
-          <div>
-            <h1 className="text-lg font-bold text-gradient-rainbow">PropTraderJournal</h1>
-            <p className="text-xs text-gray-400">Elite Trading Journal</p>
-          </div>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setIsCollapsed(!isCollapsed)}
+            className="text-prop-gold hover:text-white hover:bg-prop-gold/20 p-2 h-8 w-8"
+          >
+            {isCollapsed ? <ChevronRight className="h-4 w-4" /> : <X className="h-4 w-4" />}
+          </Button>
         </div>
       </div>
       
       <nav className="mt-6 flex-1 overflow-y-auto pb-20">
-        <div className="px-6 mb-4">
-          <h3 className="text-xs font-medium text-prop-gold uppercase tracking-wider">Main</h3>
-        </div>
+        {!isCollapsed && (
+          <div className="px-6 mb-4">
+            <h3 className="text-xs font-medium text-prop-gold uppercase tracking-wider">Main</h3>
+          </div>
+        )}
         <ul className="space-y-2 px-4">
           {mainItems.map(({ href, label, icon: Icon }) => (
             <li key={href}>
               <Link href={href} className={cn(
-                "flex items-center px-4 py-3 text-sm font-medium rounded-xl smooth-transition cursor-pointer group",
+                "flex items-center px-4 py-3 text-sm font-medium rounded-xl smooth-transition cursor-pointer group relative",
                 location === href 
                   ? "bg-prop-gradient-gold text-black font-bold" 
-                  : "text-gray-300 hover:bg-prop-card hover:text-prop-gold hover-scale"
+                  : "text-gray-300 hover:bg-prop-card hover:text-prop-gold hover-scale",
+                isCollapsed ? "justify-center" : ""
               )}>
                 <Icon className={cn(
-                  "mr-3 h-5 w-5 smooth-transition",
-                  location === href ? "text-black" : "text-gray-400 group-hover:text-prop-gold"
+                  "h-5 w-5 smooth-transition",
+                  location === href ? "text-black" : "text-gray-400 group-hover:text-prop-gold",
+                  !isCollapsed ? "mr-3" : ""
                 )} />
-                {label}
+                {!isCollapsed && label}
+                {isCollapsed && (
+                  <div className="absolute left-full ml-2 px-2 py-1 bg-dark-card border border-prop-gold/20 rounded-md text-xs text-gray-300 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50">
+                    {label}
+                  </div>
+                )}
               </Link>
             </li>
           ))}
@@ -97,15 +125,21 @@ export default function Sidebar() {
             <DropdownMenuTrigger asChild>
               <Button 
                 variant="ghost" 
-                className="w-full flex items-center justify-start px-3 py-2 text-sm font-medium text-gray-300 hover:bg-dark-card rounded-lg"
+                className={cn(
+                  "w-full flex items-center px-3 py-2 text-sm font-medium text-gray-300 hover:bg-dark-card rounded-lg",
+                  isCollapsed ? "justify-center" : "justify-start"
+                )}
               >
-                <div className="mr-3 h-4 w-4 bg-prop-gradient-gold rounded-full flex items-center justify-center text-xs font-bold text-black">
+                <div className={cn(
+                  "h-4 w-4 bg-prop-gradient-gold rounded-full flex items-center justify-center text-xs font-bold text-black",
+                  !isCollapsed ? "mr-3" : ""
+                )}>
                   {user ? (
                     (user as any)?.firstName?.charAt(0) || 
                     (user as any)?.email?.charAt(0).toUpperCase() || 'U'
                   ) : 'U'}
                 </div>
-                Profile
+                {!isCollapsed && "Profile"}
               </Button>
             </DropdownMenuTrigger>
             
