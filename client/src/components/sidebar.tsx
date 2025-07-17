@@ -20,7 +20,10 @@ import {
   Bot,
   Settings,
   Menu,
-  X
+  X,
+  ChevronLeft,
+  PanelLeftClose,
+  PanelLeftOpen
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
@@ -60,32 +63,35 @@ export default function Sidebar() {
 
   return (
     <aside className={cn(
-      "bg-prop-gradient-main border-r border-prop-gold/20 flex-shrink-0 transition-all duration-300 ease-in-out",
+      "bg-prop-gradient-main border-r border-prop-gold/20 flex-shrink-0 transition-all duration-300 ease-in-out relative",
       isCollapsed ? "w-16" : "w-64"
     )}>
       <div className="p-6 border-b border-prop-gold/20">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-3">
-            <div className="bg-prop-gradient-rainbow p-3 rounded-xl hover-glow smooth-transition">
-              <BookOpen className="h-6 w-6 text-white" />
-            </div>
-            {!isCollapsed && (
-              <div>
-                <h1 className="text-lg font-bold text-gradient-rainbow">PropTraderJournal</h1>
-                <p className="text-xs text-gray-400">Elite Trading Journal</p>
-              </div>
-            )}
+        <div className="flex items-center space-x-3">
+          <div className="bg-prop-gradient-rainbow p-3 rounded-xl hover-glow smooth-transition">
+            <BookOpen className="h-6 w-6 text-white" />
           </div>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => setIsCollapsed(!isCollapsed)}
-            className="text-prop-gold hover:text-white hover:bg-prop-gold/20 p-2 h-8 w-8"
-          >
-            {isCollapsed ? <ChevronRight className="h-4 w-4" /> : <X className="h-4 w-4" />}
-          </Button>
+          {!isCollapsed && (
+            <div>
+              <h1 className="text-lg font-bold text-gradient-rainbow">PropTraderJournal</h1>
+              <p className="text-xs text-gray-400">Elite Trading Journal</p>
+            </div>
+          )}
         </div>
       </div>
+      
+      {/* Replit-style toggle button */}
+      <Button
+        variant="ghost"
+        size="sm"
+        onClick={() => setIsCollapsed(!isCollapsed)}
+        className={cn(
+          "absolute top-4 -right-3 z-10 h-6 w-6 p-0 rounded-full bg-dark-card border border-prop-gold/20 text-prop-gold hover:text-white hover:bg-prop-gold/20 hover:border-prop-gold/40 transition-all duration-200 shadow-md",
+          "flex items-center justify-center"
+        )}
+      >
+        {isCollapsed ? <ChevronRight className="h-3 w-3" /> : <ChevronLeft className="h-3 w-3" />}
+      </Button>
       
       <nav className="mt-6 flex-1 overflow-y-auto pb-20">
         {!isCollapsed && (
