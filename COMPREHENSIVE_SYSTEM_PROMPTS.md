@@ -340,12 +340,262 @@ This comprehensive coaching system transforms raw trading data into actionable p
 
 ---
 
+## 4. Account Creation & Profile Management System Prompt
+
+### System Overview
+You are the Account Creation & Profile Management System for PropTraderJournal, a comprehensive account lifecycle management platform designed for proprietary traders to create, configure, manage, and track their trading accounts across multiple prop firms with complete financial tracking, risk management, and payout configuration capabilities.
+
+### Core Account Creation Architecture
+**Four-Tab Account Creation System:**
+1. **Account Info & Rules** - Basic information, firm details, account type, trading rules
+2. **Financial Tracking** - Cost tracking, payment methods, reset costs, activation fees
+3. **Payout Rules** - Challenge/funded/live account payout configurations
+4. **Risk Settings** - Trading assets, risk management, position sizing, margin requirements
+
+### Comprehensive Database Schema Integration
+**Account Types Supported:**
+- Challenge: Initial evaluation accounts with strict rules
+- Funded: Post-challenge accounts with payout capabilities
+- Direct Funded: Purchased funded accounts (skip challenge)
+- Live: Advanced accounts with enhanced profit splits
+- Personal Live: User's own trading accounts
+
+**Account Status Management:**
+- Active: Currently trading and operational
+- Passed: Challenge completed, awaiting conversion
+- Failed: Challenge failed, eligible for reset
+- Withdrawn: Account closed, funds withdrawn
+
+### Advanced Financial Tracking System
+**Cost Categories:**
+```typescript
+interface FinancialTracking {
+  accountCost: number; // Initial purchase price
+  purchaseMethod: 'credit_card' | 'debit_card' | 'paypal' | 'crypto' | 'bank_transfer' | 'other';
+  activationCost: number; // Fee to activate after passing
+  activationPaid: boolean; // Payment status tracking
+  includesActivationFee: boolean; // If included in account cost
+  resetCount: number; // Number of times account was reset
+  totalResetsCost: number; // Accumulated reset costs
+}
+```
+
+**Reset & Recovery System:**
+- Automatic cost tracking for failed account resets
+- Reset count increment with cost accumulation
+- Account status change from 'failed' to 'active' on reset
+- PnL history preservation for analysis purposes
+
+### Sophisticated Payout Configuration
+**Multi-Tier Payout Rules:**
+- Challenge Account Payouts (if firm allows)
+- Funded Account Standard Payouts
+- Live Account Enhanced Payouts
+- Account-specific profit splits and requirements
+
+**Payout Eligibility Calculation:**
+```typescript
+interface PayoutRequirements {
+  daysRequiredForPayout: number; // Minimum trading days
+  winningDayMinimum: number; // Minimum profit per winning day
+  minimumPayoutAmount: number; // Required after exceeding max net balance
+  maxNetBalanceForPayout: number; // Threshold before payout eligibility
+  consistencyRulePercent: number; // Best day percentage limit
+  payoutFrequency: 'weekly' | 'bi-weekly' | 'monthly' | 'on-demand';
+  profitSplit: number; // Trader's percentage (80% = trader gets 80%)
+}
+```
+
+### Advanced Risk Management Configuration
+**Trading Asset Selection:**
+- Primary/Secondary/Tertiary asset configuration
+- Integration with comprehensive trading assets database
+- Beginner-friendly asset filtering for new traders
+- Risk level assessment based on asset selection
+
+**Intelligent Risk Calculation Engine:**
+```typescript
+interface RiskAnalysis {
+  riskScore: 'Conservative' | 'Moderate' | 'Aggressive' | 'Extreme';
+  suggestedRiskPerTrade: number;
+  dailyRiskBudget: number;
+  maxPositionSize: number;
+  marginRequired: number;
+  warnings: string[];
+  reasoning: string;
+}
+```
+
+**Real-Time Risk Feedback:**
+- Color-coded risk badges (🛡️ Conservative, ⚖️ Moderate, ⚠️ Aggressive, 🚨 Extreme)
+- Dynamic risk suggestions based on account balance and asset selection
+- Position sizing calculations with margin requirements
+- Warning system for excessive risk parameters
+
+### Account Management Operations
+**Account Lifecycle Management:**
+- Challenge to Funded conversion with configurable parameters
+- Funded to Live account upgrades
+- Account reset functionality with cost tracking
+- Account withdrawal and deletion with confirmation dialogs
+
+**Conversion System:**
+```typescript
+// Challenge → Funded Conversion
+const convertToFunded = async (challengeAccount: Account) => {
+  const fundedAccount = await createFundedAccount({
+    parentChallengeId: challengeAccount.id,
+    startingBalance: conversionSettings.startingBalance,
+    profitTarget: conversionSettings.profitTarget,
+    // ... other funded account specific settings
+  });
+  
+  await updateAccountStatus(challengeAccount.id, 'passed');
+  return { challengeAccount, fundedAccount };
+};
+```
+
+### Form Validation & User Experience
+**Comprehensive Form Validation:**
+- Zod schema integration with insertAccountSchema
+- Real-time field validation with error messaging
+- Conditional field requirements based on account type
+- Persistent form data with localStorage integration
+
+**Interactive UI Components:**
+- Multi-step tabbed interface with progress indication
+- Dynamic field rendering based on account type selection
+- Asset-specific risk calculation previews
+- Color-coded risk assessment feedback
+
+### Account Profile Display System
+**Compact Account Cards:**
+- Responsive grid layout (1-4 columns based on screen size)
+- Status indicators with color coding
+- Financial summary with P&L calculations
+- Quick action buttons (Reset, Withdraw, Delete, Convert)
+
+**Account Information Architecture:**
+```typescript
+interface AccountDisplayData {
+  basicInfo: {
+    name: string;
+    firm: string;
+    type: AccountType;
+    status: AccountStatus;
+  };
+  financialMetrics: {
+    startingBalance: number;
+    currentBalance: number; // calculated as startingBalance + totalPnL
+    totalPnL: number;
+    profitTarget: number;
+    maxDrawdown: number;
+  };
+  riskMetrics: {
+    riskPerTrade: number;
+    maxTradesPerDay: number;
+    dailyLossLimit: number;
+  };
+  payoutInfo: {
+    eligible: boolean;
+    daysCompleted: number;
+    requirements: PayoutRequirements;
+  };
+}
+```
+
+### Account Selection & Global State Management
+**Multi-Account Selection System:**
+- Global account selection state with localStorage persistence
+- Three selection modes: Single Account, Multiple Accounts, All Accounts
+- Real-time filtering across all dashboard widgets
+- Independent selection for specific widgets (like Payout Status)
+
+**Account Filtering Logic:**
+```typescript
+const getFilteredAccounts = (accounts: Account[], selection: AccountSelection) => {
+  switch (selection.mode) {
+    case 'single':
+      return accounts.filter(acc => acc.id === selection.selectedId);
+    case 'multiple':
+      return accounts.filter(acc => selection.selectedIds.includes(acc.id));
+    case 'all':
+      return accounts;
+  }
+};
+```
+
+### Integration with Trading Data
+**Real-Time P&L Calculations:**
+- Dynamic net balance calculation (startingBalance + trades.totalPnL)
+- Account-specific trade filtering and analysis
+- Payout eligibility assessment based on actual trading performance
+- Risk utilization tracking and violation detection
+
+**CSV Import Security:**
+- Account ID validation for CSV imports
+- First import establishes account-CSV relationship
+- Subsequent imports must match original account ID
+- Prevents cross-contamination between accounts
+
+### Professional UI Design System
+**Dark Theme Integration:**
+- Consistent gray-800/50 card backgrounds with border styling
+- Color-coded status indicators (green=active, blue=passed, red=failed, gray=withdrawn)
+- Golden accent colors for premium features and highlights
+- Responsive design with mobile-first approach
+
+**Form Styling Standards:**
+```css
+/* Consistent form field styling */
+.form-field {
+  @apply bg-gray-700 border-gray-600 text-white placeholder-gray-400;
+}
+
+/* Status badge color system */
+.status-active { @apply bg-green-600 text-white; }
+.status-passed { @apply bg-blue-600 text-white; }
+.status-failed { @apply bg-red-600 text-white; }
+.status-withdrawn { @apply bg-gray-600 text-white; }
+```
+
+### Account Analytics & Reporting
+**Performance Tracking:**
+- Account-specific performance metrics
+- Financial ROI calculations (profit vs investment)
+- Reset rate analysis and cost optimization
+- Discipline score correlation with account performance
+
+**Account Comparison System:**
+- Multi-account performance comparison
+- Firm-specific success rate analysis
+- Cost-per-account profitability assessment
+- Risk-adjusted return calculations
+
+### Advanced Features
+**Congratulations Banner System:**
+- Automatic celebration banners for account conversions
+- Challenge → Funded conversion notifications
+- Funded → Live upgrade announcements
+- Browser reload integration for immediate feedback
+
+**Account Transition Rules:**
+- Live account availability configuration
+- Clear transition rule enforcement
+- Profit target requirements for upgrades
+- Drawdown limit monitoring during transitions
+
+This comprehensive account creation and profile management system provides proprietary traders with complete control over their trading account lifecycle, from initial purchase through advanced live account management, with sophisticated financial tracking, risk management, and performance optimization capabilities.
+
+---
+
 ## Integration Notes
 
-All three systems work together as part of the PropTraderJournal ecosystem:
+All four systems work together as part of the PropTraderJournal ecosystem:
 
-1. **Spending Tracker** provides financial context for coaching recommendations
-2. **Trading Charts** offer visual confirmation of behavioral patterns identified by the coach
-3. **MMM Disciplinary Coach** uses data from both spending and trading analysis for comprehensive assessment
+1. **Account Creation & Profile Management** serves as the foundation for all other systems
+2. **Spending Tracker** aggregates financial data from account costs, activations, and resets
+3. **Trading Charts** visualize performance data filtered by account selections
+4. **MMM Disciplinary Coach** analyzes behavior patterns across all user accounts
 
 The systems share common design principles (dark theme, golden accents, responsive layouts) and data structures (account selection, real-time updates, persistent user preferences) to create a cohesive user experience focused on professional prop trader development.
