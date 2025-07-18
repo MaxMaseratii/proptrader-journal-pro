@@ -16,6 +16,8 @@ import { EquityChart, MonthlyPerformanceChart } from "@/components/chart-compone
 import { formatCurrency, formatPercentage, formatDate } from "@/lib/utils";
 import { calculateDisciplinedScore, getScoreColor, getGradeColor } from "@/lib/disciplined-score";
 import { calculateComprehensiveDisciplineMetrics } from "@/lib/discipline-calculator";
+import DailyPlanningWidget from "@/components/daily-planning-widget";
+import WeeklyPerformanceOverview from "@/components/weekly-performance-overview";
 
 // Color coding utility function
 const getValueColor = (value: number, type: 'currency' | 'percentage' | 'neutral' = 'currency') => {
@@ -2264,7 +2266,55 @@ export default function Dashboard() {
           </div>
         </div>
 
-
+        {/* Daily Planning Section */}
+        <div className="mb-8">
+          <h2 className="text-xl font-bold text-gradient-rainbow mb-6 flex items-center border-b border-gray-700 pb-3">
+            <Target className="mr-3 h-5 w-5 text-prop-gold" />
+            Daily Planning
+          </h2>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <DailyPlanningWidget 
+              trades={(() => {
+                if (!trades) return [];
+                
+                if (accountSelectionMode === 'all') {
+                  return trades;
+                } else if (accountSelectionMode === 'single' && selectedAccountIds.length > 0) {
+                  return trades.filter(trade => trade.accountId === selectedAccountIds[0]);
+                } else if (selectedAccountIds.length > 0) {
+                  return trades.filter(trade => selectedAccountIds.includes(trade.accountId));
+                }
+                return trades;
+              })()} 
+              selectedAccount={(() => {
+                if (accountSelectionMode === 'single' && selectedAccountIds.length > 0) {
+                  return accounts?.find(acc => acc.id === selectedAccountIds[0]);
+                }
+                return accounts?.[0]; // Default to first account
+              })()}
+            />
+            <WeeklyPerformanceOverview 
+              trades={(() => {
+                if (!trades) return [];
+                
+                if (accountSelectionMode === 'all') {
+                  return trades;
+                } else if (accountSelectionMode === 'single' && selectedAccountIds.length > 0) {
+                  return trades.filter(trade => trade.accountId === selectedAccountIds[0]);
+                } else if (selectedAccountIds.length > 0) {
+                  return trades.filter(trade => selectedAccountIds.includes(trade.accountId));
+                }
+                return trades;
+              })()} 
+              selectedAccount={(() => {
+                if (accountSelectionMode === 'single' && selectedAccountIds.length > 0) {
+                  return accounts?.find(acc => acc.id === selectedAccountIds[0]);
+                }
+                return accounts?.[0]; // Default to first account
+              })()}
+            />
+          </div>
+        </div>
 
         {/* Daily Trading Journal */}
         <div className="mb-8">

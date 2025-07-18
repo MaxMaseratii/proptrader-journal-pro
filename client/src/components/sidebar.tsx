@@ -100,7 +100,7 @@ export default function Sidebar() {
           </div>
         )}
         <ul className="space-y-2 px-4">
-          {mainItems.map(({ href, label, icon: Icon }) => (
+          {mainItems.map(({ href, label, icon: Icon }, index) => (
             <li key={href}>
               <Link href={href} className={cn(
                 "flex items-center px-4 py-3 text-sm font-medium rounded-xl smooth-transition cursor-pointer group relative",
@@ -116,9 +116,17 @@ export default function Sidebar() {
                 )} />
                 {!isCollapsed && label}
                 {isCollapsed && (
-                  <div className="absolute left-full ml-2 px-2 py-1 bg-dark-card border border-prop-gold/20 rounded-md text-xs text-gray-300 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50">
-                    {label}
-                  </div>
+                  <>
+                    <div className="absolute left-full ml-2 px-2 py-1 bg-dark-card border border-prop-gold/20 rounded-md text-xs text-gray-300 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50">
+                      {label}
+                    </div>
+                    {/* Show first letter of first menu item when collapsed */}
+                    {index === 0 && (
+                      <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-prop-gold rounded-full flex items-center justify-center text-xs font-bold text-black">
+                        {label.charAt(0)}
+                      </div>
+                    )}
+                  </>
                 )}
               </Link>
             </li>
