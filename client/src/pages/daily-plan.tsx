@@ -53,6 +53,7 @@ const DailyPlanPage = () => {
   // Dialog states
   const [isStrategyDialogOpen, setIsStrategyDialogOpen] = useState(false);
   const [isCreatePlanDialogOpen, setIsCreatePlanDialogOpen] = useState(false);
+  const [editingStrategyId, setEditingStrategyId] = useState<number | null>(null);
   const [isCreateStrategyDialogOpen, setIsCreateStrategyDialogOpen] = useState(false);
   
   // Form data for new plan
@@ -700,28 +701,50 @@ const DailyPlanPage = () => {
               {strategies && strategies.length > 0 ? (
                 <div className="space-y-3">
                   {strategies.slice(0, 3).map((strategy) => (
-                    <div key={strategy.id} className="p-3 bg-gradient-to-r from-gray-800 to-gray-700 rounded-lg border border-yellow-400/10">
+                    <div 
+                      key={strategy.id} 
+                      className="p-3 bg-gradient-to-r from-gray-800 to-gray-700 rounded-lg border border-yellow-400/10 cursor-pointer hover:border-yellow-400/30 transition-colors"
+                      onClick={() => {
+                        setEditingStrategyId(strategy.id);
+                        setIsStrategyDialogOpen(true);
+                      }}
+                    >
                       <div className="flex items-center justify-between mb-2">
                         <div className="font-medium text-white text-sm">{strategy.name}</div>
-                        <div className={`text-xs font-bold ${
-                          (strategy.expectedValue || 0) > 0 ? 'text-green-400' : 'text-red-400'
-                        }`}>
-                          EV: ${(strategy.expectedValue || 0).toFixed(0)}
+                        <div className="flex items-center gap-2">
+                          <div className={`text-xs px-2 py-1 rounded ${
+                            strategy.isActive ? 'bg-green-900 text-green-300' : 'bg-gray-700 text-gray-400'
+                          }`}>
+                            {strategy.isActive ? 'Active' : 'Inactive'}
+                          </div>
+                          <Edit className="w-3 h-3 text-yellow-400" />
                         </div>
                       </div>
-                      <div className="grid grid-cols-3 gap-2 text-xs">
-                        <div className="text-center">
-                          <div className="text-white font-medium">${strategy.riskAmountUsd || 100}</div>
-                          <div className="text-gray-400">Risk</div>
-                        </div>
-                        <div className="text-center">
-                          <div className="text-white font-medium">1:{strategy.riskRewardRatio || 2}</div>
-                          <div className="text-gray-400">RR</div>
-                        </div>
-                        <div className="text-center">
-                          <div className="text-white font-medium">{strategy.expectedWinRate || 50}%</div>
-                          <div className="text-gray-400">WR</div>
-                        </div>
+                      
+                      <div className="space-y-1">
+                        <div className="text-xs text-gray-400 mb-1">Rules:</div>
+                        {Array.isArray(strategy.rules) && strategy.rules.length > 0 ? (
+                          <div className="space-y-1">
+                            {strategy.rules.slice(0, 2).map((rule, index) => (
+                              <div key={index} className="text-xs text-gray-300 flex items-start gap-1">
+                                <span className="text-yellow-400 mt-0.5">•</span>
+                                <span className="line-clamp-1">{rule}</span>
+                              </div>
+                            ))}
+                            {strategy.rules.length > 2 && (
+                              <div className="text-xs text-gray-500">
+                                +{strategy.rules.length - 2} more rules...
+                              </div>
+                            )}
+                          </div>
+                        ) : (
+                          <div className="text-xs text-gray-500">No rules defined</div>
+                        )}
+                      </div>
+                      
+                      <div className="text-xs text-gray-500 mt-2 flex items-center justify-between">
+                        <span>EV: ${(strategy.expectedValue || 0).toFixed(0)}</span>
+                        <span>Click to edit</span>
                       </div>
                     </div>
                   ))}
@@ -854,7 +877,10 @@ const DailyPlanPage = () => {
       </Dialog>
 
       {/* Strategy Management Dialog */}
-      <Dialog open={isStrategyDialogOpen} onOpenChange={setIsStrategyDialogOpen}>
+      <Dialog open={isStrategyDialogOpen} onOpenChange={(open) => {
+        setIsStrategyDialogOpen(open);
+        if (!open) setEditingStrategyId(null);
+      }}>
         <DialogContent className="max-w-6xl h-[80vh] bg-gradient-to-br from-gray-900 via-gray-800 to-black border border-yellow-400/20 overflow-hidden">
           <DialogHeader>
             <DialogTitle className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-yellow-600">Strategy Management</DialogTitle>
@@ -863,7 +889,13 @@ const DailyPlanPage = () => {
             </DialogDescription>
           </DialogHeader>
           <div className="overflow-y-auto h-full">
-            <StrategyManagement />
+            <StrategyManagement 
+              editStrategyId={editingStrategyId}
+              onStrategyUpdated={() => {
+                setIsStrategyDialogOpen(false);
+                setEditingStrategyId(null);
+              }}
+            />
           </div>
         </DialogContent>
       </Dialog>

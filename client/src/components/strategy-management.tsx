@@ -62,7 +62,12 @@ const tradingAssetOptions = [
   'BTC/USD', 'ETH/USD', 'Other'
 ];
 
-const StrategyManagement = () => {
+interface StrategyManagementProps {
+  editStrategyId?: number | null;
+  onStrategyUpdated?: () => void;
+}
+
+const StrategyManagement: React.FC<StrategyManagementProps> = ({ editStrategyId, onStrategyUpdated }) => {
   const queryClient = useQueryClient();
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
@@ -92,6 +97,7 @@ const StrategyManagement = () => {
       setIsEditDialogOpen(false);
       setEditingStrategy(null);
       resetForm();
+      onStrategyUpdated?.(); // Call parent callback
     },
   });
 
@@ -191,6 +197,16 @@ const StrategyManagement = () => {
       deleteStrategyMutation.mutate(strategy.id);
     }
   };
+
+  // Effect to handle external edit request
+  useEffect(() => {
+    if (editStrategyId && strategies) {
+      const strategyToEdit = strategies.find(s => s.id === editStrategyId);
+      if (strategyToEdit) {
+        openEditDialog(strategyToEdit);
+      }
+    }
+  }, [editStrategyId, strategies]);
 
   const getStrategyPerformanceColor = (expectedValue: number) => {
     if (expectedValue > 20) return 'text-green-400';
