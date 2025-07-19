@@ -62,66 +62,55 @@ const tradingAssetOptions = [
   'BTC/USD', 'ETH/USD', 'Other'
 ];
 
-interface StrategyManagementProps {
-  editStrategyId?: number | null;
-  onStrategyUpdated?: () => void;
-}
+// Move StrategyFormContent outside and memoize it
+const StrategyFormContent = React.memo(({ 
+  formData,
+  setFormData,
+  newRule,
+  setNewRule,
+  activeTab,
+  setActiveTab,
+  editingStrategy,
+  setIsCreateDialogOpen,
+  setIsEditDialogOpen,
+  setEditingStrategy,
+  resetForm,
+  handleSubmit,
+  createStrategyMutation,
+  updateStrategyMutation
+}) => {
+  // Stable event handlers with useCallback
+  const handleNameChange = useCallback((e) => {
+    setFormData(prev => ({ ...prev, name: e.target.value }));
+  }, [setFormData]);
 
-const StrategyManagement: React.FC<StrategyManagementProps> = ({ editStrategyId, onStrategyUpdated }) => {
-  const queryClient = useQueryClient();
-  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
-  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
-  const [editingStrategy, setEditingStrategy] = useState<TradingStrategy | null>(null);
-  const [formData, setFormData] = useState<StrategyFormData>(defaultFormData);
-  const [newRule, setNewRule] = useState('');
+  const handleDescriptionChange = useCallback((e) => {
+    setFormData(prev => ({ ...prev, description: e.target.value }));
+  }, [setFormData]);
 
-  // Data queries
-  const { data: strategies, isLoading } = useQuery<TradingStrategy[]>({
-    queryKey: ['/api/strategies'],
-  });
+  const handleRiskAmountChange = useCallback((e) => {
+    setFormData(prev => ({ ...prev, riskAmountUsd: parseFloat(e.target.value) || 0 }));
+  }, [setFormData]);
 
-  // Mutations
-  const createStrategyMutation = useMutation({
-    mutationFn: (data: any) => apiRequest('/api/strategies', 'POST', data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/strategies'] });
-      setIsCreateDialogOpen(false);
-      resetForm();
-    },
-  });
+  const handleRiskRewardChange = useCallback((e) => {
+    setFormData(prev => ({ ...prev, riskRewardRatio: parseFloat(e.target.value) || 0 }));
+  }, [setFormData]);
 
-  const updateStrategyMutation = useMutation({
-    mutationFn: ({ id, data }: { id: number; data: any }) => apiRequest(`/api/strategies/${id}`, 'PUT', data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/strategies'] });
-      setIsEditDialogOpen(false);
-      setEditingStrategy(null);
-      resetForm();
-      onStrategyUpdated?.(); // Call parent callback
-    },
-  });
+  const handleWinRateChange = useCallback((e) => {
+    setFormData(prev => ({ ...prev, expectedWinRate: parseFloat(e.target.value) || 0 }));
+  }, [setFormData]);
 
-  const deleteStrategyMutation = useMutation({
-    mutationFn: (id: number) => apiRequest(`/api/strategies/${id}`, 'DELETE'),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/strategies'] });
-    },
-  });
+  const handleMaxTradesChange = useCallback((e) => {
+    setFormData(prev => ({ ...prev, maxTradesPerDay: parseInt(e.target.value) || 1 }));
+  }, [setFormData]);
 
-  // Helper functions
-  const calculateExpectedValue = (winRate: number, rr: number, riskAmount: number) => {
-    // Kelly Criterion based expected value: (WinRate * RR - LossRate) * RiskAmount
-    const winRateDecimal = winRate / 100;
-    const lossRateDecimal = 1 - winRateDecimal;
-    const expectedValue = (winRateDecimal * rr - lossRateDecimal) * riskAmount;
-    return expectedValue;
-  };
+  const handleSessionTimesChange = useCallback((e) => {
+    setFormData(prev => ({ ...prev, sessionTimes: e.target.value }));
+  }, [setFormData]);
 
-  const resetForm = () => {
-    setFormData(defaultFormData);
-    setNewRule('');
-    setActiveTab("basic");
-  };
+  const handleNewRuleChange = useCallback((e) => {
+    setNewRule(e.target.value);
+  }, [setNewRule]);
 
   const addRule = useCallback(() => {
     if (newRule.trim()) {
@@ -131,9 +120,9 @@ const StrategyManagement: React.FC<StrategyManagementProps> = ({ editStrategyId,
       }));
       setNewRule('');
     }
-  }, [newRule]);
+  }, [newRule, setFormData, setNewRule]);
 
-  const removeRule = useCallback((index: number) => {
+  const removeRule = useCallback((index) => {
     setFormData(prev => {
       const newRules = prev.rules.filter((_, i) => i !== index);
       // Ensure there's always at least one empty field
@@ -145,9 +134,9 @@ const StrategyManagement: React.FC<StrategyManagementProps> = ({ editStrategyId,
         rules: newRules
       };
     });
-  }, []);
+  }, [setFormData]);
 
-  const updateRule = useCallback((index: number, value: string) => {
+  const updateRule = useCallback((index, value) => {
     setFormData(prev => {
       const newRules = prev.rules.map((rule, i) => i === index ? value : rule);
       // If the last rule has content and there's no empty rule at the end, add one
@@ -160,119 +149,46 @@ const StrategyManagement: React.FC<StrategyManagementProps> = ({ editStrategyId,
         rules: newRules
       };
     });
-  }, []);
+  }, [setFormData]);
 
-  const handleAssetToggle = useCallback((asset: string) => {
+  const handleAssetToggle = useCallback((asset) => {
     setFormData(prev => ({
       ...prev,
       tradingAssets: prev.tradingAssets.includes(asset)
         ? prev.tradingAssets.filter(a => a !== asset)
         : [...prev.tradingAssets, asset]
     }));
+  }, [setFormData]);
+
+  const calculateExpectedValue = useCallback((winRate, rr, riskAmount) => {
+    const winRateDecimal = winRate / 100;
+    const lossRateDecimal = 1 - winRateDecimal;
+    const expectedValue = (winRateDecimal * rr - lossRateDecimal) * riskAmount;
+    return expectedValue;
   }, []);
 
-  const handleSubmit = () => {
-    const expectedValue = calculateExpectedValue(
-      formData.expectedWinRate,
-      formData.riskRewardRatio,
-      formData.riskAmountUsd
-    );
-
-    const strategyData = {
-      ...formData,
-      expectedValue,
-      rules: formData.rules.filter(rule => rule.trim()),
-    };
-
-    if (editingStrategy) {
-      updateStrategyMutation.mutate({ id: editingStrategy.id, data: strategyData });
-    } else {
-      createStrategyMutation.mutate(strategyData);
-    }
-  };
-
-  const openEditDialog = (strategy: TradingStrategy) => {
-    setEditingStrategy(strategy);
-    setFormData({
-      name: strategy.name,
-      description: strategy.description || '',
-      rules: Array.isArray(strategy.rules) ? strategy.rules : [],
-      riskRewardRatio: strategy.riskRewardRatio || 2.0,
-      expectedWinRate: strategy.expectedWinRate || 50.0,
-      riskAmountUsd: strategy.riskAmountUsd || 100.0,
-      tradingAssets: Array.isArray(strategy.tradingAssets) ? strategy.tradingAssets : [],
-      sessionTimes: strategy.sessionTimes || '{"start": "09:30", "end": "16:00", "timezone": "EST"}',
-      maxTradesPerDay: strategy.maxTradesPerDay || 3,
-      isActive: strategy.isActive !== false,
-    });
-    setIsEditDialogOpen(true);
-  };
-
-  const confirmDelete = (strategy: TradingStrategy) => {
-    if (window.confirm(`Are you sure you want to delete "${strategy.name}"? This action cannot be undone.`)) {
-      deleteStrategyMutation.mutate(strategy.id);
-    }
-  };
-
-  // Effect to handle external edit request
-  useEffect(() => {
-    if (editStrategyId && strategies) {
-      const strategyToEdit = strategies.find(s => s.id === editStrategyId);
-      if (strategyToEdit) {
-        openEditDialog(strategyToEdit);
-      }
-    }
-  }, [editStrategyId, strategies]);
-
-  const getStrategyPerformanceColor = (expectedValue: number) => {
+  const getStrategyPerformanceColor = useCallback((expectedValue) => {
     if (expectedValue > 20) return 'text-green-400';
     if (expectedValue > 0) return 'text-yellow-400';
     return 'text-red-400';
-  };
+  }, []);
 
-  const [activeTab, setActiveTab] = useState("basic");
+  const handleCancel = useCallback(() => {
+    if (editingStrategy) {
+      setIsEditDialogOpen(false);
+      setEditingStrategy(null);
+    } else {
+      setIsCreateDialogOpen(false);
+    }
+    resetForm();
+  }, [editingStrategy, setIsEditDialogOpen, setEditingStrategy, setIsCreateDialogOpen, resetForm]);
 
-  // Memoized StrategyFormContent to prevent re-renders
-  const StrategyFormContent = React.memo(() => {
-    // Stable event handlers with useCallback
-    const handleNameChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-      setFormData(prev => ({ ...prev, name: e.target.value }));
-    }, []);
+  const expectedValue = useMemo(() => 
+    calculateExpectedValue(formData.expectedWinRate, formData.riskRewardRatio, formData.riskAmountUsd),
+    [formData.expectedWinRate, formData.riskRewardRatio, formData.riskAmountUsd, calculateExpectedValue]
+  );
 
-    const handleDescriptionChange = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
-      setFormData(prev => ({ ...prev, description: e.target.value }));
-    }, []);
-
-    const handleRiskAmountChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-      setFormData(prev => ({ ...prev, riskAmountUsd: parseFloat(e.target.value) || 0 }));
-    }, []);
-
-    const handleRiskRewardChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-      setFormData(prev => ({ ...prev, riskRewardRatio: parseFloat(e.target.value) || 0 }));
-    }, []);
-
-    const handleWinRateChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-      setFormData(prev => ({ ...prev, expectedWinRate: parseFloat(e.target.value) || 0 }));
-    }, []);
-
-    const handleMaxTradesChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-      setFormData(prev => ({ ...prev, maxTradesPerDay: parseInt(e.target.value) || 1 }));
-    }, []);
-
-    const handleSessionTimesChange = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
-      setFormData(prev => ({ ...prev, sessionTimes: e.target.value }));
-    }, []);
-
-    const handleNewRuleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-      setNewRule(e.target.value);
-    }, []);
-
-    const expectedValue = useMemo(() => 
-      calculateExpectedValue(formData.expectedWinRate, formData.riskRewardRatio, formData.riskAmountUsd),
-      [formData.expectedWinRate, formData.riskRewardRatio, formData.riskAmountUsd]
-    );
-
-    return (
+  return (
     <div className="space-y-6 max-h-[80vh] overflow-y-auto">
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsList className="grid w-full grid-cols-4 bg-gray-800">
@@ -341,7 +257,11 @@ const StrategyManagement: React.FC<StrategyManagementProps> = ({ editStrategyId,
                   onKeyPress={(e) => e.key === 'Enter' && addRule()}
                   autoComplete="off"
                 />
-                <Button onClick={addRule} className="bg-yellow-500 hover:bg-yellow-600 text-black" type="button">
+                <Button 
+                  onClick={addRule} 
+                  className="bg-yellow-500 hover:bg-yellow-600 text-black"
+                  type="button"
+                >
                   <Plus className="w-4 h-4" />
                 </Button>
               </div>
@@ -403,7 +323,7 @@ const StrategyManagement: React.FC<StrategyManagementProps> = ({ editStrategyId,
           <div className="p-4 bg-gray-700 rounded-lg border border-yellow-400/20">
             <div className="flex items-center justify-between">
               <span className="text-white font-medium">Expected Value per Trade:</span>
-              <span className={`text-xl font-bold ${expectedValue > 20 ? 'text-green-400' : expectedValue > 0 ? 'text-yellow-400' : 'text-red-400'}`}>
+              <span className={`text-xl font-bold ${getStrategyPerformanceColor(expectedValue)}`}>
                 ${expectedValue.toFixed(2)}
               </span>
             </div>
@@ -448,16 +368,9 @@ const StrategyManagement: React.FC<StrategyManagementProps> = ({ editStrategyId,
       <div className="flex justify-end gap-3 pt-4 border-t border-gray-600">
         <Button
           variant="outline"
-          onClick={() => {
-            if (editingStrategy) {
-              setIsEditDialogOpen(false);
-              setEditingStrategy(null);
-            } else {
-              setIsCreateDialogOpen(false);
-            }
-            resetForm();
-          }}
+          onClick={handleCancel}
           className="border-gray-600 text-gray-300"
+          type="button"
         >
           Cancel
         </Button>
@@ -465,13 +378,163 @@ const StrategyManagement: React.FC<StrategyManagementProps> = ({ editStrategyId,
           onClick={handleSubmit}
           disabled={!formData.name.trim() || createStrategyMutation.isPending || updateStrategyMutation.isPending}
           className="bg-yellow-500 hover:bg-yellow-600 text-black"
+          type="button"
         >
           {editingStrategy ? 'Update Strategy' : 'Create Strategy'}
         </Button>
       </div>
     </div>
-  )
-  });  // Close the memoized component
+  );
+});
+
+StrategyFormContent.displayName = 'StrategyFormContent';
+
+interface StrategyManagementProps {
+  editStrategyId?: number | null;
+  onStrategyUpdated?: () => void;
+}
+
+const StrategyManagement: React.FC<StrategyManagementProps> = ({ editStrategyId, onStrategyUpdated }) => {
+  const queryClient = useQueryClient();
+  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [editingStrategy, setEditingStrategy] = useState<TradingStrategy | null>(null);
+  const [formData, setFormData] = useState<StrategyFormData>(defaultFormData);
+  const [newRule, setNewRule] = useState('');
+  const [activeTab, setActiveTab] = useState("basic");
+
+  // Data queries
+  const { data: strategies, isLoading } = useQuery<TradingStrategy[]>({
+    queryKey: ['/api/strategies'],
+  });
+
+  // Mutations
+  const createStrategyMutation = useMutation({
+    mutationFn: (data: any) => apiRequest('/api/strategies', 'POST', data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/strategies'] });
+      setIsCreateDialogOpen(false);
+      resetForm();
+    },
+  });
+
+  const updateStrategyMutation = useMutation({
+    mutationFn: ({ id, data }: { id: number; data: any }) => apiRequest(`/api/strategies/${id}`, 'PUT', data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/strategies'] });
+      setIsEditDialogOpen(false);
+      setEditingStrategy(null);
+      resetForm();
+      onStrategyUpdated?.();
+    },
+  });
+
+  const deleteStrategyMutation = useMutation({
+    mutationFn: (id: number) => apiRequest(`/api/strategies/${id}`, 'DELETE'),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/strategies'] });
+    },
+  });
+
+  // Helper functions
+  const calculateExpectedValue = useCallback((winRate: number, rr: number, riskAmount: number) => {
+    const winRateDecimal = winRate / 100;
+    const lossRateDecimal = 1 - winRateDecimal;
+    const expectedValue = (winRateDecimal * rr - lossRateDecimal) * riskAmount;
+    return expectedValue;
+  }, []);
+
+  const resetForm = useCallback(() => {
+    setFormData(defaultFormData);
+    setNewRule('');
+    setActiveTab("basic");
+  }, []);
+
+  const handleSubmit = useCallback(() => {
+    const expectedValue = calculateExpectedValue(
+      formData.expectedWinRate,
+      formData.riskRewardRatio,
+      formData.riskAmountUsd
+    );
+
+    const strategyData = {
+      ...formData,
+      expectedValue,
+      rules: formData.rules.filter(rule => rule.trim()),
+    };
+
+    if (editingStrategy) {
+      updateStrategyMutation.mutate({ id: editingStrategy.id, data: strategyData });
+    } else {
+      createStrategyMutation.mutate(strategyData);
+    }
+  }, [formData, editingStrategy, calculateExpectedValue, updateStrategyMutation, createStrategyMutation]);
+
+  const openEditDialog = useCallback((strategy: TradingStrategy) => {
+    setEditingStrategy(strategy);
+    setFormData({
+      name: strategy.name,
+      description: strategy.description || '',
+      rules: Array.isArray(strategy.rules) ? strategy.rules : [],
+      riskRewardRatio: strategy.riskRewardRatio || 2.0,
+      expectedWinRate: strategy.expectedWinRate || 50.0,
+      riskAmountUsd: strategy.riskAmountUsd || 100.0,
+      tradingAssets: Array.isArray(strategy.tradingAssets) ? strategy.tradingAssets : [],
+      sessionTimes: strategy.sessionTimes || '{"start": "09:30", "end": "16:00", "timezone": "EST"}',
+      maxTradesPerDay: strategy.maxTradesPerDay || 3,
+      isActive: strategy.isActive !== false,
+    });
+    setIsEditDialogOpen(true);
+  }, []);
+
+  const confirmDelete = useCallback((strategy: TradingStrategy) => {
+    if (window.confirm(`Are you sure you want to delete "${strategy.name}"? This action cannot be undone.`)) {
+      deleteStrategyMutation.mutate(strategy.id);
+    }
+  }, [deleteStrategyMutation]);
+
+  // Effect to handle external edit request
+  useEffect(() => {
+    if (editStrategyId && strategies) {
+      const strategyToEdit = strategies.find(s => s.id === editStrategyId);
+      if (strategyToEdit) {
+        openEditDialog(strategyToEdit);
+      }
+    }
+  }, [editStrategyId, strategies, openEditDialog]);
+
+  const getStrategyPerformanceColor = useCallback((expectedValue: number) => {
+    if (expectedValue > 20) return 'text-green-400';
+    if (expectedValue > 0) return 'text-yellow-400';
+    return 'text-red-400';
+  }, []);
+
+  // Memoize strategy form props to prevent unnecessary re-renders
+  const strategyFormProps = useMemo(() => ({
+    formData,
+    setFormData,
+    newRule,
+    setNewRule,
+    activeTab,
+    setActiveTab,
+    editingStrategy,
+    setIsCreateDialogOpen,
+    setIsEditDialogOpen,
+    setEditingStrategy,
+    resetForm,
+    handleSubmit,
+    createStrategyMutation,
+    updateStrategyMutation
+  }), [
+    formData,
+    newRule,
+    activeTab,
+    editingStrategy,
+    resetForm,
+    handleSubmit,
+    createStrategyMutation,
+    updateStrategyMutation
+  ]);
 
   if (isLoading) {
     return (
@@ -504,7 +567,7 @@ const StrategyManagement: React.FC<StrategyManagementProps> = ({ editStrategyId,
                 Create a new trading strategy with rules, risk management, and performance targets.
               </DialogDescription>
             </DialogHeader>
-            <StrategyFormContent />
+            <StrategyFormContent {...strategyFormProps} />
           </DialogContent>
         </Dialog>
       </div>
@@ -634,7 +697,7 @@ const StrategyManagement: React.FC<StrategyManagementProps> = ({ editStrategyId,
                 <DialogHeader>
                   <DialogTitle className="text-yellow-400">Create New Trading Strategy</DialogTitle>
                 </DialogHeader>
-                <StrategyFormContent />
+                <StrategyFormContent {...strategyFormProps} />
               </DialogContent>
             </Dialog>
           </CardContent>
@@ -650,7 +713,7 @@ const StrategyManagement: React.FC<StrategyManagementProps> = ({ editStrategyId,
               Update your trading strategy configuration and rules.
             </DialogDescription>
           </DialogHeader>
-          <StrategyFormContent />
+          <StrategyFormContent {...strategyFormProps} />
         </DialogContent>
       </Dialog>
     </div>
