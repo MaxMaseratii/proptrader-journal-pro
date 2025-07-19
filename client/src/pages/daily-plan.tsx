@@ -90,10 +90,7 @@ const DailyPlanPage = () => {
 
   // Mutations
   const createPlanMutation = useMutation({
-    mutationFn: (data: any) => apiRequest('/api/daily-plans', {
-      method: 'POST',
-      body: JSON.stringify(data),
-    }),
+    mutationFn: (data: any) => apiRequest('/api/daily-plans', 'POST', data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/daily-plans'] });
       setIsCreatePlanDialogOpen(false);
@@ -101,10 +98,7 @@ const DailyPlanPage = () => {
   });
 
   const updatePlanMutation = useMutation({
-    mutationFn: ({ id, data }: { id: number; data: any }) => apiRequest(`/api/daily-plans/${id}`, {
-      method: 'PUT',
-      body: JSON.stringify(data),
-    }),
+    mutationFn: ({ id, data }: { id: number; data: any }) => apiRequest(`/api/daily-plans/${id}`, 'PUT', data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/daily-plans'] });
     },

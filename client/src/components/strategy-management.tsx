@@ -77,10 +77,7 @@ const StrategyManagement = () => {
 
   // Mutations
   const createStrategyMutation = useMutation({
-    mutationFn: (data: any) => apiRequest('/api/strategies', {
-      method: 'POST',
-      body: JSON.stringify(data),
-    }),
+    mutationFn: (data: any) => apiRequest('/api/strategies', 'POST', data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/strategies'] });
       setIsCreateDialogOpen(false);
@@ -89,10 +86,7 @@ const StrategyManagement = () => {
   });
 
   const updateStrategyMutation = useMutation({
-    mutationFn: ({ id, data }: { id: number; data: any }) => apiRequest(`/api/strategies/${id}`, {
-      method: 'PUT',
-      body: JSON.stringify(data),
-    }),
+    mutationFn: ({ id, data }: { id: number; data: any }) => apiRequest(`/api/strategies/${id}`, 'PUT', data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/strategies'] });
       setIsEditDialogOpen(false);
@@ -102,9 +96,7 @@ const StrategyManagement = () => {
   });
 
   const deleteStrategyMutation = useMutation({
-    mutationFn: (id: number) => apiRequest(`/api/strategies/${id}`, {
-      method: 'DELETE',
-    }),
+    mutationFn: (id: number) => apiRequest(`/api/strategies/${id}`, 'DELETE'),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/strategies'] });
     },
