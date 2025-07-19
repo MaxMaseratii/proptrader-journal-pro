@@ -7,7 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
 import { apiRequest } from '@/lib/queryClient';
@@ -120,6 +120,7 @@ const StrategyManagement: React.FC<StrategyManagementProps> = ({ editStrategyId,
   const resetForm = () => {
     setFormData(defaultFormData);
     setNewRule('');
+    setActiveTab("basic");
   };
 
   const addRule = () => {
@@ -214,9 +215,11 @@ const StrategyManagement: React.FC<StrategyManagementProps> = ({ editStrategyId,
     return 'text-red-400';
   };
 
+  const [activeTab, setActiveTab] = useState("basic");
+
   const StrategyFormContent = () => (
     <div className="space-y-6 max-h-[80vh] overflow-y-auto">
-      <Tabs defaultValue="basic" className="w-full">
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsList className="grid w-full grid-cols-4 bg-gray-800">
           <TabsTrigger value="basic">Basic Info</TabsTrigger>
           <TabsTrigger value="rules">Rules</TabsTrigger>
@@ -431,6 +434,9 @@ const StrategyManagement: React.FC<StrategyManagementProps> = ({ editStrategyId,
           <DialogContent className="max-w-4xl bg-gray-800 border-gray-700">
             <DialogHeader>
               <DialogTitle className="text-yellow-400">Create New Trading Strategy</DialogTitle>
+              <DialogDescription className="text-gray-400">
+                Create a new trading strategy with rules, risk management, and performance targets.
+              </DialogDescription>
             </DialogHeader>
             <StrategyFormContent />
           </DialogContent>
@@ -574,6 +580,9 @@ const StrategyManagement: React.FC<StrategyManagementProps> = ({ editStrategyId,
         <DialogContent className="max-w-4xl bg-gray-800 border-gray-700">
           <DialogHeader>
             <DialogTitle className="text-yellow-400">Edit Trading Strategy</DialogTitle>
+            <DialogDescription className="text-gray-400">
+              Update your trading strategy configuration and rules.
+            </DialogDescription>
           </DialogHeader>
           <StrategyFormContent />
         </DialogContent>

@@ -90,11 +90,12 @@ const DailyPlanPage = () => {
   });
 
   // Mutations
-  const createPlanMutation = useMutation({
+  const createDailyPlan = useMutation({
     mutationFn: (data: any) => apiRequest('/api/daily-plans', 'POST', data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/daily-plans'] });
       setIsCreatePlanDialogOpen(false);
+      resetPlanForm();
     },
   });
 
@@ -190,7 +191,7 @@ const DailyPlanPage = () => {
       biggestLoss: 0,
     };
 
-    createPlanMutation.mutate(planPayload);
+    createDailyPlan.mutate(planPayload);
   };
 
   // Get historical plans for the history section
