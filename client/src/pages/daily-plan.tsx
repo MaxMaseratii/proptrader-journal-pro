@@ -617,8 +617,80 @@ const DailyPlanPage = () => {
           )}
         </div>
 
-        {/* Right Column - Strategies & Journal */}
+        {/* Right Column - Strategy Performance & Saved Strategies */}
         <div className="space-y-6">
+          {/* Strategy Performance Comparison Widget */}
+          <Card className="bg-gradient-to-br from-gray-900 via-gray-800 to-black border border-yellow-400/20 shadow-xl">
+            <CardHeader>
+              <CardTitle className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-yellow-600 flex items-center gap-2">
+                <BarChart3 className="w-5 h-5 text-yellow-400" />
+                Strategy Performance Comparison
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              {strategies && strategies.length > 0 ? (
+                <div className="space-y-4">
+                  {strategies.map((strategy) => {
+                    const expectedValue = strategy.expectedValue || 0;
+                    const performanceColor = expectedValue > 20 ? 'text-green-400' : 
+                                           expectedValue > 0 ? 'text-yellow-400' : 'text-red-400';
+                    const performanceIcon = expectedValue > 20 ? '🚀' : 
+                                          expectedValue > 0 ? '📈' : '📉';
+                    
+                    return (
+                      <div key={strategy.id} className="p-4 bg-gray-800 rounded-lg border border-yellow-400/10">
+                        <div className="flex justify-between items-start mb-2">
+                          <div className="flex items-center gap-2">
+                            <span className="text-lg">{performanceIcon}</span>
+                            <h4 className="text-white font-medium">{strategy.name}</h4>
+                          </div>
+                          <div className={`text-lg font-bold ${performanceColor}`}>
+                            ${expectedValue.toFixed(2)}
+                          </div>
+                        </div>
+                        
+                        <div className="grid grid-cols-3 gap-3 text-sm">
+                          <div>
+                            <div className="text-gray-400">Win Rate</div>
+                            <div className="text-white">{strategy.expectedWinRate || 0}%</div>
+                          </div>
+                          <div>
+                            <div className="text-gray-400">RR Ratio</div>
+                            <div className="text-white">1:{strategy.riskRewardRatio || 0}</div>
+                          </div>
+                          <div>
+                            <div className="text-gray-400">Risk/Trade</div>
+                            <div className="text-white">${strategy.riskAmountUsd || 0}</div>
+                          </div>
+                        </div>
+                        
+                        <div className="mt-2 flex items-center justify-between">
+                          <div className="text-xs text-gray-500">
+                            Max: {strategy.maxTradesPerDay || 0} trades/day
+                          </div>
+                          <div className={`text-xs px-2 py-1 rounded ${
+                            strategy.isActive ? 'bg-green-900 text-green-300' : 'bg-gray-700 text-gray-400'
+                          }`}>
+                            {strategy.isActive ? 'Active' : 'Inactive'}
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              ) : (
+                <div className="text-center py-6">
+                  <Target className="w-12 h-12 text-gray-500 mx-auto mb-4" />
+                  <p className="text-gray-400 mb-4">No strategies created yet</p>
+                  <Button onClick={() => setIsStrategyDialogOpen(true)} className="bg-gradient-to-r from-yellow-400 to-yellow-600 text-black hover:from-yellow-500 hover:to-yellow-700">
+                    <Plus className="w-4 h-4 mr-2" />
+                    Create Your First Strategy
+                  </Button>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
           {/* Saved Strategies Widget */}
           <Card className="bg-gradient-to-br from-gray-900 via-gray-800 to-black border border-yellow-400/20 shadow-xl">
             <CardHeader>
@@ -688,15 +760,19 @@ const DailyPlanPage = () => {
 
 
 
-          {/* Trading Journal with Historical Entries */}
-          <Card className="bg-gradient-to-br from-gray-900 via-gray-800 to-black border border-yellow-400/20 shadow-xl">
-            <CardHeader>
-              <CardTitle className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-yellow-600 flex items-center gap-2">
-                <BookOpen className="w-5 h-5 text-yellow-400" />
-                Trading Journal & Historical Entries
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
+        </div>
+      </div>
+
+      {/* Full Width Trading Journal Section */}
+      <div className="mt-6">
+        <Card className="bg-gradient-to-br from-gray-900 via-gray-800 to-black border border-yellow-400/20 shadow-xl">
+          <CardHeader>
+            <CardTitle className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-yellow-600 flex items-center gap-2">
+              <BookOpen className="w-5 h-5 text-yellow-400" />
+              Trading Journal & Historical Entries
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
               {/* Quick Journal Entry */}
               <div className="space-y-3">
                 <div>
@@ -769,7 +845,6 @@ const DailyPlanPage = () => {
               </div>
             </CardContent>
           </Card>
-        </div>
       </div>
 
       {/* Create Strategy Dialog */}
