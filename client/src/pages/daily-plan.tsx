@@ -51,6 +51,7 @@ const DailyPlanPage = () => {
   // Dialog states
   const [isStrategyDialogOpen, setIsStrategyDialogOpen] = useState(false);
   const [isCreatePlanDialogOpen, setIsCreatePlanDialogOpen] = useState(false);
+  const [isCreateStrategyDialogOpen, setIsCreateStrategyDialogOpen] = useState(false);
   
   // Form data for new plan
   const [newPlanData, setNewPlanData] = useState({
@@ -205,7 +206,7 @@ const DailyPlanPage = () => {
   }, [dailyPlans, selectedAccount]);
 
   return (
-    <div className="p-6 space-y-6 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 min-h-screen">
+    <div className="p-6 space-y-6 bg-black min-h-screen">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
@@ -224,20 +225,29 @@ const DailyPlanPage = () => {
             type="date"
             value={selectedDate}
             onChange={(e) => setSelectedDate(e.target.value)}
-            className="bg-gray-800 border-gray-600 text-white"
+            className="bg-gray-800 border-yellow-400/20 text-white hover:border-yellow-400/40"
           />
+          
+          {/* Create Strategy Button */}
+          <Button 
+            onClick={() => setIsCreateStrategyDialogOpen(true)}
+            className="bg-gradient-to-r from-yellow-400 to-yellow-600 text-black hover:from-yellow-500 hover:to-yellow-700 border border-yellow-400/20 shadow-lg"
+          >
+            <Plus className="w-4 h-4 mr-2" />
+            Create Strategy
+          </Button>
           
           {/* Create Plan Button */}
           <Dialog open={isCreatePlanDialogOpen} onOpenChange={setIsCreatePlanDialogOpen}>
             <DialogTrigger asChild>
-              <Button className="bg-yellow-500 hover:bg-yellow-600 text-black">
+              <Button className="bg-gradient-to-r from-yellow-400 to-yellow-600 text-black hover:from-yellow-500 hover:to-yellow-700 border border-yellow-400/20 shadow-lg">
                 <Plus className="w-4 h-4 mr-2" />
                 Create Plan
               </Button>
             </DialogTrigger>
-            <DialogContent className="max-w-2xl bg-gray-800 border-gray-700">
+            <DialogContent className="max-w-2xl bg-gradient-to-br from-gray-900 via-gray-800 to-black border border-yellow-400/20">
               <DialogHeader>
-                <DialogTitle className="text-yellow-400">Create Daily Trading Plan</DialogTitle>
+                <DialogTitle className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-yellow-600">Create Daily Trading Plan</DialogTitle>
                 <DialogDescription className="text-gray-400">
                   Set up your trading plan for {new Date(selectedDate).toLocaleDateString()}
                 </DialogDescription>
@@ -249,10 +259,10 @@ const DailyPlanPage = () => {
                   <div>
                     <Label className="text-white">Trading Account</Label>
                     <Select value={selectedAccount?.toString() || ""} onValueChange={(value) => setSelectedAccount(parseInt(value))}>
-                      <SelectTrigger className="bg-gray-700 border-gray-600 text-white">
+                      <SelectTrigger className="bg-gray-800 border-yellow-400/20 text-white hover:border-yellow-400/40">
                         <SelectValue placeholder="Select account" />
                       </SelectTrigger>
-                      <SelectContent>
+                      <SelectContent className="bg-gray-800 border-yellow-400/20">
                         {accounts?.map((account) => (
                           <SelectItem key={account.id} value={account.id.toString()}>
                             {account.name} - {account.type}
@@ -275,10 +285,10 @@ const DailyPlanPage = () => {
                       </Button>
                     </div>
                     <Select value={selectedStrategy?.toString() || ""} onValueChange={(value) => setSelectedStrategy(parseInt(value))}>
-                      <SelectTrigger className="bg-gray-700 border-gray-600 text-white">
+                      <SelectTrigger className="bg-gray-800 border-yellow-400/20 text-white hover:border-yellow-400/40">
                         <SelectValue placeholder="Select strategy" />
                       </SelectTrigger>
-                      <SelectContent>
+                      <SelectContent className="bg-gray-800 border-yellow-400/20">
                         {strategies?.map((strategy) => (
                           <SelectItem key={strategy.id} value={strategy.id.toString()}>
                             {strategy.name}
@@ -297,7 +307,7 @@ const DailyPlanPage = () => {
                       type="time"
                       value={newPlanData.startTime}
                       onChange={(e) => setNewPlanData(prev => ({ ...prev, startTime: e.target.value }))}
-                      className="bg-gray-700 border-gray-600 text-white"
+                      className="bg-gray-800 border-yellow-400/20 text-white hover:border-yellow-400/40"
                     />
                   </div>
                   <div>
@@ -306,7 +316,7 @@ const DailyPlanPage = () => {
                       type="time"
                       value={newPlanData.endTime}
                       onChange={(e) => setNewPlanData(prev => ({ ...prev, endTime: e.target.value }))}
-                      className="bg-gray-700 border-gray-600 text-white"
+                      className="bg-gray-800 border-yellow-400/20 text-white hover:border-yellow-400/40"
                     />
                   </div>
                 </div>
@@ -319,7 +329,7 @@ const DailyPlanPage = () => {
                       type="number"
                       value={newPlanData.riskAmount}
                       onChange={(e) => setNewPlanData(prev => ({ ...prev, riskAmount: parseFloat(e.target.value) || 0 }))}
-                      className="bg-gray-700 border-gray-600 text-white"
+                      className="bg-gray-800 border-yellow-400/20 text-white hover:border-yellow-400/40"
                     />
                   </div>
                   <div>
@@ -328,7 +338,7 @@ const DailyPlanPage = () => {
                       type="number"
                       value={newPlanData.targetProfit}
                       onChange={(e) => setNewPlanData(prev => ({ ...prev, targetProfit: parseFloat(e.target.value) || 0 }))}
-                      className="bg-gray-700 border-gray-600 text-white"
+                      className="bg-gray-800 border-yellow-400/20 text-white hover:border-yellow-400/40"
                     />
                   </div>
                   <div>
@@ -337,7 +347,7 @@ const DailyPlanPage = () => {
                       type="number"
                       value={newPlanData.maxTrades}
                       onChange={(e) => setNewPlanData(prev => ({ ...prev, maxTrades: parseInt(e.target.value) || 0 }))}
-                      className="bg-gray-700 border-gray-600 text-white"
+                      className="bg-gray-800 border-yellow-400/20 text-white hover:border-yellow-400/40"
                     />
                   </div>
                   <div>
@@ -347,7 +357,7 @@ const DailyPlanPage = () => {
                       step="0.1"
                       value={newPlanData.riskRewardRatio}
                       onChange={(e) => setNewPlanData(prev => ({ ...prev, riskRewardRatio: parseFloat(e.target.value) || 0 }))}
-                      className="bg-gray-700 border-gray-600 text-white"
+                      className="bg-gray-800 border-yellow-400/20 text-white hover:border-yellow-400/40"
                     />
                   </div>
                 </div>
@@ -359,7 +369,7 @@ const DailyPlanPage = () => {
                     value={newPlanData.notes}
                     onChange={(e) => setNewPlanData(prev => ({ ...prev, notes: e.target.value }))}
                     placeholder="Enter your trading plan notes..."
-                    className="bg-gray-700 border-gray-600 text-white"
+                    className="bg-gray-800 border-yellow-400/20 text-white hover:border-yellow-400/40"
                   />
                 </div>
               </div>
@@ -375,7 +385,7 @@ const DailyPlanPage = () => {
                 <Button
                   onClick={createNewPlan}
                   disabled={!selectedAccount || !selectedStrategy || createPlanMutation.isPending}
-                  className="bg-yellow-500 hover:bg-yellow-600 text-black"
+                  className="bg-gradient-to-r from-yellow-400 to-yellow-600 text-black hover:from-yellow-500 hover:to-yellow-700"
                 >
                   Create Plan
                 </Button>
@@ -402,17 +412,17 @@ const DailyPlanPage = () => {
         {/* Left Column - Plan & Live Tracking */}
         <div className="lg:col-span-2 space-y-6">
           {/* Current Plan Overview */}
-          <Card className="bg-gray-800 border-gray-700">
+          <Card className="bg-gradient-to-br from-gray-900 via-gray-800 to-black border border-yellow-400/20 shadow-xl">
             <CardHeader>
-              <CardTitle className="text-yellow-400 flex items-center gap-2">
-                <Target className="w-5 h-5" />
+              <CardTitle className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-yellow-600 flex items-center gap-2">
+                <Target className="w-5 h-5 text-yellow-400" />
                 Today's Plan & Live Results
               </CardTitle>
             </CardHeader>
             <CardContent>
               {currentPlan ? (
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  <div className="text-center p-3 bg-gray-700 rounded">
+                  <div className="text-center p-3 bg-gradient-to-r from-gray-800 to-gray-700 rounded-lg border border-yellow-400/10">
                     <div className={`text-2xl font-bold ${getProgressColor(actualResults.actualPnL, currentPlan.targetProfit || 0)}`}>
                       ${actualResults.actualPnL.toFixed(2)}
                     </div>
@@ -423,7 +433,7 @@ const DailyPlanPage = () => {
                     />
                   </div>
                   
-                  <div className="text-center p-3 bg-gray-700 rounded">
+                  <div className="text-center p-3 bg-gradient-to-r from-gray-800 to-gray-700 rounded-lg border border-yellow-400/10">
                     <div className={`text-2xl font-bold ${getProgressColor(actualResults.tradesExecuted, currentPlan.maxTrades || 0)}`}>
                       {actualResults.tradesExecuted}
                     </div>
@@ -434,13 +444,13 @@ const DailyPlanPage = () => {
                     />
                   </div>
                   
-                  <div className="text-center p-3 bg-gray-700 rounded">
+                  <div className="text-center p-3 bg-gradient-to-r from-gray-800 to-gray-700 rounded-lg border border-yellow-400/10">
                     <div className="text-2xl font-bold text-white">{calculateWinRate()}%</div>
                     <div className="text-xs text-gray-400">Win Rate</div>
                     <div className="text-xs text-green-400">{actualResults.wins}W / {actualResults.losses}L</div>
                   </div>
                   
-                  <div className="text-center p-3 bg-gray-700 rounded">
+                  <div className="text-center p-3 bg-gradient-to-r from-gray-800 to-gray-700 rounded-lg border border-yellow-400/10">
                     <div className="text-2xl font-bold text-white">
                       {currentPlan.tradeTime || 'Not set'}
                     </div>
@@ -456,7 +466,7 @@ const DailyPlanPage = () => {
                 <div className="text-center py-8">
                   <Target className="w-12 h-12 text-gray-500 mx-auto mb-4" />
                   <p className="text-gray-400 mb-4">No plan created for today</p>
-                  <Button onClick={() => setIsCreatePlanDialogOpen(true)} className="bg-yellow-500 hover:bg-yellow-600 text-black">
+                  <Button onClick={() => setIsCreatePlanDialogOpen(true)} className="bg-gradient-to-r from-yellow-400 to-yellow-600 text-black hover:from-yellow-500 hover:to-yellow-700">
                     <Plus className="w-4 h-4 mr-2" />
                     Create Today's Plan
                   </Button>
@@ -465,12 +475,49 @@ const DailyPlanPage = () => {
             </CardContent>
           </Card>
 
+          {/* Historical Plans Widget */}
+          <Card className="bg-gradient-to-br from-gray-900 via-gray-800 to-black border border-yellow-400/20 shadow-xl">
+            <CardHeader>
+              <CardTitle className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-yellow-600 flex items-center gap-2">
+                <History className="w-5 h-5 text-yellow-400" />
+                Historical Trading Plans
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              {historicalPlans.length > 0 ? (
+                <div className="space-y-3">
+                  {historicalPlans.map((plan) => (
+                    <div key={plan.id} className="flex items-center justify-between p-3 bg-gradient-to-r from-gray-800 to-gray-700 rounded-lg border border-yellow-400/10">
+                      <div>
+                        <div className="text-sm font-medium text-white">{new Date(plan.date).toLocaleDateString()}</div>
+                        <div className="text-xs text-gray-400">
+                          {plan.tradesExecuted || 0} trades • {((plan.wins || 0) / Math.max(1, (plan.wins || 0) + (plan.losses || 0)) * 100).toFixed(0)}% WR
+                        </div>
+                      </div>
+                      <div className={`text-right ${
+                        (plan.actualPnL || 0) >= 0 ? 'text-green-400' : 'text-red-400'
+                      }`}>
+                        <div className="font-bold">${(plan.actualPnL || 0).toFixed(2)}</div>
+                        <div className="text-xs">P&L</div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-4">
+                  <Calendar className="w-8 h-8 text-gray-500 mx-auto mb-2" />
+                  <p className="text-gray-400 text-sm">No historical plans found</p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
           {/* Strategy Rules */}
           {selectedStrategy && strategies?.find(s => s.id === selectedStrategy) && (
-            <Card className="bg-gray-800 border-gray-700">
+            <Card className="bg-gradient-to-br from-gray-900 via-gray-800 to-black border border-yellow-400/20 shadow-xl">
               <CardHeader>
-                <CardTitle className="text-yellow-400 flex items-center gap-2">
-                  <Shield className="w-5 h-5" />
+                <CardTitle className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-yellow-600 flex items-center gap-2">
+                  <Shield className="w-5 h-5 text-yellow-400" />
                   Strategy Rules & Performance
                 </CardTitle>
               </CardHeader>
@@ -480,19 +527,19 @@ const DailyPlanPage = () => {
                   return strategy ? (
                     <div className="space-y-4">
                       <div className="grid grid-cols-4 gap-3 text-center">
-                        <div className="p-2 bg-gray-700 rounded">
+                        <div className="p-2 bg-gradient-to-r from-gray-800 to-gray-700 rounded-lg border border-yellow-400/10">
                           <div className="text-white font-bold">${strategy.riskAmountUsd || 100}</div>
                           <div className="text-xs text-gray-400">Risk</div>
                         </div>
-                        <div className="p-2 bg-gray-700 rounded">
+                        <div className="p-2 bg-gradient-to-r from-gray-800 to-gray-700 rounded-lg border border-yellow-400/10">
                           <div className="text-white font-bold">1:{strategy.riskRewardRatio || 2}</div>
                           <div className="text-xs text-gray-400">RR</div>
                         </div>
-                        <div className="p-2 bg-gray-700 rounded">
+                        <div className="p-2 bg-gradient-to-r from-gray-800 to-gray-700 rounded-lg border border-yellow-400/10">
                           <div className="text-white font-bold">{strategy.expectedWinRate || 50}%</div>
                           <div className="text-xs text-gray-400">Win Rate</div>
                         </div>
-                        <div className="p-2 bg-gray-700 rounded">
+                        <div className="p-2 bg-gradient-to-r from-gray-800 to-gray-700 rounded-lg border border-yellow-400/10">
                           <div className={`font-bold ${
                             (strategy.expectedValue || 0) > 0 ? 'text-green-400' : 'text-red-400'
                           }`}>
@@ -506,7 +553,7 @@ const DailyPlanPage = () => {
                         <div className="space-y-2">
                           <div className="text-sm font-medium text-gray-300">Rules to Follow:</div>
                           {strategy.rules.map((rule, index) => (
-                            <div key={index} className="flex items-center justify-between p-2 bg-gray-700 rounded">
+                            <div key={index} className="flex items-center justify-between p-2 bg-gradient-to-r from-gray-800 to-gray-700 rounded-lg border border-yellow-400/10">
                               <span className="text-sm text-gray-300">{rule}</span>
                               <CheckCircle className="w-4 h-4 text-gray-500" />
                             </div>
@@ -523,11 +570,78 @@ const DailyPlanPage = () => {
 
         {/* Right Column - Journal & History */}
         <div className="space-y-6">
-          {/* Trading Journal */}
-          <Card className="bg-gray-800 border-gray-700">
+          {/* Historical Strategies Widget */}
+          <Card className="bg-gradient-to-br from-gray-900 via-gray-800 to-black border border-yellow-400/20 shadow-xl">
             <CardHeader>
-              <CardTitle className="text-yellow-400 flex items-center gap-2">
-                <BookOpen className="w-5 h-5" />
+              <CardTitle className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-yellow-600 flex items-center gap-2">
+                <Brain className="w-5 h-5 text-yellow-400" />
+                Your Trading Strategies
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              {strategies && strategies.length > 0 ? (
+                <div className="space-y-3">
+                  {strategies.slice(0, 3).map((strategy) => (
+                    <div key={strategy.id} className="p-3 bg-gradient-to-r from-gray-800 to-gray-700 rounded-lg border border-yellow-400/10">
+                      <div className="flex items-center justify-between mb-2">
+                        <div className="font-medium text-white text-sm">{strategy.name}</div>
+                        <div className={`text-xs font-bold ${
+                          (strategy.expectedValue || 0) > 0 ? 'text-green-400' : 'text-red-400'
+                        }`}>
+                          EV: ${(strategy.expectedValue || 0).toFixed(0)}
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-3 gap-2 text-xs">
+                        <div className="text-center">
+                          <div className="text-white font-medium">${strategy.riskAmountUsd || 100}</div>
+                          <div className="text-gray-400">Risk</div>
+                        </div>
+                        <div className="text-center">
+                          <div className="text-white font-medium">1:{strategy.riskRewardRatio || 2}</div>
+                          <div className="text-gray-400">RR</div>
+                        </div>
+                        <div className="text-center">
+                          <div className="text-white font-medium">{strategy.expectedWinRate || 50}%</div>
+                          <div className="text-gray-400">WR</div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                  {strategies.length > 3 && (
+                    <div className="text-center">
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        onClick={() => setIsStrategyDialogOpen(true)}
+                        className="border-yellow-400/20 text-yellow-400 hover:bg-yellow-400/10"
+                      >
+                        View All {strategies.length} Strategies
+                      </Button>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div className="text-center py-4">
+                  <Brain className="w-8 h-8 text-gray-500 mx-auto mb-2" />
+                  <p className="text-gray-400 text-sm mb-3">No strategies created yet</p>
+                  <Button 
+                    onClick={() => setIsCreateStrategyDialogOpen(true)}
+                    size="sm"
+                    className="bg-gradient-to-r from-yellow-400 to-yellow-600 text-black hover:from-yellow-500 hover:to-yellow-700"
+                  >
+                    <Plus className="w-3 h-3 mr-1" />
+                    Create Strategy
+                  </Button>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Trading Journal */}
+          <Card className="bg-gradient-to-br from-gray-900 via-gray-800 to-black border border-yellow-400/20 shadow-xl">
+            <CardHeader>
+              <CardTitle className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-yellow-600 flex items-center gap-2">
+                <BookOpen className="w-5 h-5 text-yellow-400" />
                 Trading Journal
               </CardTitle>
             </CardHeader>
@@ -538,7 +652,7 @@ const DailyPlanPage = () => {
                   value={journalEntry.whatWentRight}
                   onChange={(e) => setJournalEntry(prev => ({ ...prev, whatWentRight: e.target.value }))}
                   placeholder="Record your wins and good decisions..."
-                  className="bg-gray-700 border-gray-600 text-white text-sm"
+                  className="bg-gray-800 border-yellow-400/20 text-white text-sm hover:border-yellow-400/40"
                   rows={2}
                 />
               </div>
@@ -549,7 +663,7 @@ const DailyPlanPage = () => {
                   value={journalEntry.whatWentWrong}
                   onChange={(e) => setJournalEntry(prev => ({ ...prev, whatWentWrong: e.target.value }))}
                   placeholder="Analyze mistakes and missed opportunities..."
-                  className="bg-gray-700 border-gray-600 text-white text-sm"
+                  className="bg-gray-800 border-yellow-400/20 text-white text-sm hover:border-yellow-400/40"
                   rows={2}
                 />
               </div>
@@ -560,61 +674,77 @@ const DailyPlanPage = () => {
                   value={journalEntry.lessonsLearned}
                   onChange={(e) => setJournalEntry(prev => ({ ...prev, lessonsLearned: e.target.value }))}
                   placeholder="What did you learn today?"
-                  className="bg-gray-700 border-gray-600 text-white text-sm"
+                  className="bg-gray-800 border-yellow-400/20 text-white text-sm hover:border-yellow-400/40"
                   rows={2}
                 />
               </div>
               
-              <Button className="w-full bg-yellow-500 hover:bg-yellow-600 text-black">
+              <Button className="w-full bg-gradient-to-r from-yellow-400 to-yellow-600 text-black hover:from-yellow-500 hover:to-yellow-700">
                 <Save className="w-4 h-4 mr-2" />
                 Save Journal Entry
               </Button>
             </CardContent>
           </Card>
 
-          {/* Recent History */}
-          <Card className="bg-gray-800 border-gray-700">
+          {/* Historical Journal Entries Widget */}
+          <Card className="bg-gradient-to-br from-gray-900 via-gray-800 to-black border border-yellow-400/20 shadow-xl">
             <CardHeader>
-              <CardTitle className="text-yellow-400 flex items-center gap-2">
-                <History className="w-5 h-5" />
-                Recent Plans
+              <CardTitle className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-yellow-600 flex items-center gap-2">
+                <BookOpen className="w-5 h-5 text-yellow-400" />
+                Recent Journal Entries
               </CardTitle>
             </CardHeader>
             <CardContent>
-              {historicalPlans.length > 0 ? (
-                <div className="space-y-3">
-                  {historicalPlans.map((plan) => (
-                    <div key={plan.id} className="flex items-center justify-between p-3 bg-gray-700 rounded">
-                      <div>
-                        <div className="text-sm text-white">{new Date(plan.date).toLocaleDateString()}</div>
-                        <div className="text-xs text-gray-400">
-                          {plan.tradesExecuted || 0} trades • {((plan.wins || 0) / Math.max(1, (plan.wins || 0) + (plan.losses || 0)) * 100).toFixed(0)}% WR
-                        </div>
-                      </div>
-                      <div className={`text-right ${
-                        (plan.actualPnL || 0) >= 0 ? 'text-green-400' : 'text-red-400'
-                      }`}>
-                        <div className="font-bold">${(plan.actualPnL || 0).toFixed(2)}</div>
-                        <div className="text-xs">P&L</div>
-                      </div>
-                    </div>
-                  ))}
+              <div className="space-y-3">
+                <div className="p-3 bg-gradient-to-r from-gray-800 to-gray-700 rounded-lg border border-yellow-400/10">
+                  <div className="text-sm font-medium text-white mb-1">July 18, 2025</div>
+                  <div className="text-xs text-gray-400 mb-2">Last Entry • 2 days ago</div>
+                  <div className="text-xs text-gray-300">
+                    "Followed strategy rules perfectly. Excellent risk management on ES futures..."
+                  </div>
                 </div>
-              ) : (
-                <div className="text-center py-4">
-                  <p className="text-gray-400">No historical plans found</p>
+                <div className="p-3 bg-gradient-to-r from-gray-800 to-gray-700 rounded-lg border border-yellow-400/10">
+                  <div className="text-sm font-medium text-white mb-1">July 17, 2025</div>
+                  <div className="text-xs text-gray-400 mb-2">Good Day • 3 days ago</div>
+                  <div className="text-xs text-gray-300">
+                    "Struggled with emotional control after first loss. Need to work on patience..."
+                  </div>
                 </div>
-              )}
+                <div className="text-center">
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    className="border-yellow-400/20 text-yellow-400 hover:bg-yellow-400/10"
+                  >
+                    View All Entries
+                  </Button>
+                </div>
+              </div>
             </CardContent>
           </Card>
         </div>
       </div>
 
+      {/* Create Strategy Dialog */}
+      <Dialog open={isCreateStrategyDialogOpen} onOpenChange={setIsCreateStrategyDialogOpen}>
+        <DialogContent className="max-w-3xl bg-gradient-to-br from-gray-900 via-gray-800 to-black border border-yellow-400/20 overflow-hidden">
+          <DialogHeader>
+            <DialogTitle className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-yellow-600">Create New Trading Strategy</DialogTitle>
+            <DialogDescription className="text-gray-400">
+              Create a new trading strategy with rules, risk parameters, and expected performance metrics
+            </DialogDescription>
+          </DialogHeader>
+          <div className="overflow-y-auto max-h-[70vh]">
+            <StrategyManagement />
+          </div>
+        </DialogContent>
+      </Dialog>
+
       {/* Strategy Management Dialog */}
       <Dialog open={isStrategyDialogOpen} onOpenChange={setIsStrategyDialogOpen}>
-        <DialogContent className="max-w-6xl h-[80vh] bg-gray-800 border-gray-700 overflow-hidden">
+        <DialogContent className="max-w-6xl h-[80vh] bg-gradient-to-br from-gray-900 via-gray-800 to-black border border-yellow-400/20 overflow-hidden">
           <DialogHeader>
-            <DialogTitle className="text-yellow-400">Strategy Management</DialogTitle>
+            <DialogTitle className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-yellow-600">Strategy Management</DialogTitle>
             <DialogDescription className="text-gray-400">
               Manage your trading strategies and their configurations
             </DialogDescription>
