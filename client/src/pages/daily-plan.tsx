@@ -101,7 +101,7 @@ const DailyPlanPage = () => {
 
   const { data: currentPlan } = useQuery<DailyPlan>({
     queryKey: ['/api/daily-plans/by-date', selectedDate],
-    queryFn: () => apiRequest(`/api/daily-plans/by-date?date=${selectedDate}`, { method: 'GET' }),
+    queryFn: () => fetch(`/api/daily-plans/by-date?date=${selectedDate}`).then(res => res.json()),
     enabled: !!selectedDate,
   });
 
