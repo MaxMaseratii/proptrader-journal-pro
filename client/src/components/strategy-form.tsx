@@ -5,19 +5,13 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Checkbox } from '@/components/ui/checkbox';
+
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { apiRequest } from '@/lib/queryClient';
 import { Plus, Trash2, DollarSign } from 'lucide-react';
 
-const tradingAssetOptions = [
-  'ES (S&P 500)', 'NQ (NASDAQ)', 'YM (Dow Jones)', 'RTY (Russell 2000)',
-  'CL (Crude Oil)', 'GC (Gold)', 'SI (Silver)', 'NG (Natural Gas)',
-  'EUR/USD', 'GBP/USD', 'USD/JPY', 'AUD/USD', 'USD/CAD',
-  'AAPL', 'TSLA', 'MSFT', 'GOOGL', 'AMZN', 'META', 'NVDA',
-  'BTC/USD', 'ETH/USD', 'Other'
-];
+
 
 interface StrategyFormProps {
   onClose?: () => void;
@@ -35,7 +29,9 @@ const StrategyForm: React.FC<StrategyFormProps> = ({ onClose, editStrategy }) =>
   const [riskReward, setRiskReward] = useState(editStrategy?.riskRewardRatio || 2.0);
   const [winRate, setWinRate] = useState(editStrategy?.expectedWinRate || 50);
   const [maxTrades, setMaxTrades] = useState(editStrategy?.maxTradesPerDay || 3);
-  const [assets, setAssets] = useState<string[]>(editStrategy?.tradingAssets || []);
+  const [assets, setAssets] = useState<string>(
+    editStrategy?.tradingAssets ? editStrategy.tradingAssets.join(', ') : ''
+  );
   const [startTime, setStartTime] = useState(() => {
     try {
       return editStrategy?.sessionTimes ? JSON.parse(editStrategy.sessionTimes).start : '09:30';
@@ -84,7 +80,7 @@ const StrategyForm: React.FC<StrategyFormProps> = ({ onClose, editStrategy }) =>
     setRiskReward(2.0);
     setWinRate(50);
     setMaxTrades(3);
-    setAssets([]);
+    setAssets('');
     setStartTime('09:30');
     setEndTime('16:00');
     setTimezone('EST');
@@ -106,13 +102,7 @@ const StrategyForm: React.FC<StrategyFormProps> = ({ onClose, editStrategy }) =>
     setRules(newRules);
   };
 
-  const toggleAsset = (asset: string) => {
-    if (assets.includes(asset)) {
-      setAssets(assets.filter(a => a !== asset));
-    } else {
-      setAssets([...assets, asset]);
-    }
-  };
+
 
   const calculateExpectedValue = () => {
     const winRateDecimal = winRate / 100;
@@ -136,7 +126,7 @@ const StrategyForm: React.FC<StrategyFormProps> = ({ onClose, editStrategy }) =>
       riskRewardRatio: riskReward,
       expectedWinRate: winRate,
       maxTradesPerDay: maxTrades,
-      tradingAssets: assets,
+      tradingAssets: assets.split(',').map(asset => asset.trim()).filter(asset => asset),
       sessionTimes: sessionTimesJson,
       expectedValue,
       isActive: true,
@@ -290,18 +280,15 @@ const StrategyForm: React.FC<StrategyFormProps> = ({ onClose, editStrategy }) =>
           <CardTitle className="text-yellow-400">Trading Assets</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-            {tradingAssetOptions.map(asset => (
-              <div key={asset} className="flex items-center space-x-2">
-                <Checkbox
-                  id={asset}
-                  checked={assets.includes(asset)}
-                  onCheckedChange={() => toggleAsset(asset)}
-                  className="border-gray-600"
-                />
-                <Label htmlFor={asset} className="text-sm text-gray-300">{asset}</Label>
-              </div>
-            ))}
+          <div>
+            <Label className="text-white">Trading Assets</Label>
+            <Input
+              value={assets}
+              onChange={(e) => setAssets(e.target.value)}
+              placeholder="e.g., ES, NQ, YM, RTY, EURUSD, GBPUSD, AAPL, TSLA"
+              className="bg-white border-gray-300 text-black placeholder:text-gray-500 focus:border-yellow-400 focus:ring-yellow-400"
+            />
+            <p className="text-xs text-gray-400 mt-1">Enter trading instruments separated by commas</p>
           </div>
         </CardContent>
       </Card>
