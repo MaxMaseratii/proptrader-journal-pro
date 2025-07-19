@@ -480,13 +480,45 @@ const DailyPlanPage = () => {
                   </div>
                 </div>
               ) : (
-                <div className="text-center py-8">
-                  <Target className="w-12 h-12 text-gray-500 mx-auto mb-4" />
-                  <p className="text-gray-400 mb-4">No plan created for today</p>
-                  <Button onClick={() => setIsCreatePlanDialogOpen(true)} className="bg-gradient-to-r from-yellow-400 to-yellow-600 text-black hover:from-yellow-500 hover:to-yellow-700">
-                    <Plus className="w-4 h-4 mr-2" />
-                    Create Today's Plan
-                  </Button>
+                <div className="space-y-4">
+                  {/* Show sample performance data even without a plan */}
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div className="text-center p-3 bg-gradient-to-r from-gray-800 to-gray-700 rounded-lg border border-yellow-400/10">
+                      <div className="text-2xl font-bold text-yellow-400">
+                        ${actualResults.actualPnL.toFixed(2)}
+                      </div>
+                      <div className="text-xs text-gray-400">Today's P&L</div>
+                    </div>
+                    
+                    <div className="text-center p-3 bg-gradient-to-r from-gray-800 to-gray-700 rounded-lg border border-yellow-400/10">
+                      <div className="text-2xl font-bold text-white">
+                        {actualResults.tradesExecuted}
+                      </div>
+                      <div className="text-xs text-gray-400">Trades Executed</div>
+                    </div>
+                    
+                    <div className="text-center p-3 bg-gradient-to-r from-gray-800 to-gray-700 rounded-lg border border-yellow-400/10">
+                      <div className="text-2xl font-bold text-white">{calculateWinRate()}%</div>
+                      <div className="text-xs text-gray-400">Win Rate</div>
+                      <div className="text-xs text-green-400">{actualResults.wins}W / {actualResults.losses}L</div>
+                    </div>
+                    
+                    <div className="text-center p-3 bg-gradient-to-r from-gray-800 to-gray-700 rounded-lg border border-yellow-400/10">
+                      <div className="text-2xl font-bold text-white">
+                        {isTrading && sessionStartTime ? formatTime(Date.now() - sessionStartTime) : '00:00'}
+                      </div>
+                      <div className="text-xs text-gray-400">Session Time</div>
+                    </div>
+                  </div>
+                  
+                  <div className="text-center py-6">
+                    <Target className="w-12 h-12 text-gray-500 mx-auto mb-4" />
+                    <p className="text-gray-400 mb-4">No plan created for today</p>
+                    <Button onClick={() => setIsCreatePlanDialogOpen(true)} className="bg-gradient-to-r from-yellow-400 to-yellow-600 text-black hover:from-yellow-500 hover:to-yellow-700">
+                      <Plus className="w-4 h-4 mr-2" />
+                      Create Today's Plan
+                    </Button>
+                  </div>
                 </div>
               )}
             </CardContent>
