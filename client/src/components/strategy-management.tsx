@@ -232,7 +232,7 @@ const StrategyManagement: React.FC<StrategyManagementProps> = ({ editStrategyId,
                 value={formData.name}
                 onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
                 placeholder="e.g., Scalping ES Morning Session"
-                className="bg-gray-800 border-yellow-400/20 text-white hover:border-yellow-400/40"
+                className="bg-white border-gray-300 text-black placeholder:text-gray-500 focus:border-yellow-400 focus:ring-yellow-400"
               />
             </div>
             <div>
@@ -241,7 +241,7 @@ const StrategyManagement: React.FC<StrategyManagementProps> = ({ editStrategyId,
                 value={formData.description}
                 onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
                 placeholder="Describe your trading strategy..."
-                className="bg-gray-800 border-yellow-400/20 text-white hover:border-yellow-400/40"
+                className="bg-white border-gray-300 text-black placeholder:text-gray-500 focus:border-yellow-400 focus:ring-yellow-400"
                 rows={3}
               />
             </div>
@@ -258,7 +258,7 @@ const StrategyManagement: React.FC<StrategyManagementProps> = ({ editStrategyId,
                     value={rule}
                     onChange={(e) => updateRule(index, e.target.value)}
                     placeholder="Enter a trading rule..."
-                    className="bg-gray-800 border-yellow-400/20 text-white hover:border-yellow-400/40 flex-1"
+                    className="bg-white border-gray-300 text-black placeholder:text-gray-500 focus:border-yellow-400 focus:ring-yellow-400 flex-1"
                   />
                   <Button
                     variant="ghost"
@@ -275,7 +275,7 @@ const StrategyManagement: React.FC<StrategyManagementProps> = ({ editStrategyId,
                   value={newRule}
                   onChange={(e) => setNewRule(e.target.value)}
                   placeholder="Add a new rule..."
-                  className="bg-gray-800 border-yellow-400/20 text-white hover:border-yellow-400/40 flex-1"
+                  className="bg-white border-gray-300 text-black placeholder:text-gray-500 focus:border-yellow-400 focus:ring-yellow-400 flex-1"
                   onKeyPress={(e) => e.key === 'Enter' && addRule()}
                 />
                 <Button onClick={addRule} className="bg-yellow-500 hover:bg-yellow-600 text-black">
@@ -295,7 +295,7 @@ const StrategyManagement: React.FC<StrategyManagementProps> = ({ editStrategyId,
                 step="0.01"
                 value={formData.riskAmountUsd}
                 onChange={(e) => setFormData(prev => ({ ...prev, riskAmountUsd: parseFloat(e.target.value) || 0 }))}
-                className="bg-gray-800 border-yellow-400/20 text-white hover:border-yellow-400/40"
+                className="bg-white border-gray-300 text-black placeholder:text-gray-500 focus:border-yellow-400 focus:ring-yellow-400"
               />
             </div>
             <div>
@@ -305,7 +305,7 @@ const StrategyManagement: React.FC<StrategyManagementProps> = ({ editStrategyId,
                 step="0.1"
                 value={formData.riskRewardRatio}
                 onChange={(e) => setFormData(prev => ({ ...prev, riskRewardRatio: parseFloat(e.target.value) || 0 }))}
-                className="bg-gray-800 border-yellow-400/20 text-white hover:border-yellow-400/40"
+                className="bg-white border-gray-300 text-black placeholder:text-gray-500 focus:border-yellow-400 focus:ring-yellow-400"
               />
             </div>
             <div>
@@ -317,7 +317,7 @@ const StrategyManagement: React.FC<StrategyManagementProps> = ({ editStrategyId,
                 max="100"
                 value={formData.expectedWinRate}
                 onChange={(e) => setFormData(prev => ({ ...prev, expectedWinRate: parseFloat(e.target.value) || 0 }))}
-                className="bg-gray-800 border-yellow-400/20 text-white hover:border-yellow-400/40"
+                className="bg-white border-gray-300 text-black placeholder:text-gray-500 focus:border-yellow-400 focus:ring-yellow-400"
               />
             </div>
             <div>
@@ -327,7 +327,7 @@ const StrategyManagement: React.FC<StrategyManagementProps> = ({ editStrategyId,
                 min="1"
                 value={formData.maxTradesPerDay}
                 onChange={(e) => setFormData(prev => ({ ...prev, maxTradesPerDay: parseInt(e.target.value) || 1 }))}
-                className="bg-gray-800 border-yellow-400/20 text-white hover:border-yellow-400/40"
+                className="bg-white border-gray-300 text-black placeholder:text-gray-500 focus:border-yellow-400 focus:ring-yellow-400"
               />
             </div>
           </div>
@@ -370,7 +370,7 @@ const StrategyManagement: React.FC<StrategyManagementProps> = ({ editStrategyId,
               value={formData.sessionTimes}
               onChange={(e) => setFormData(prev => ({ ...prev, sessionTimes: e.target.value }))}
               placeholder='{"start": "09:30", "end": "16:00", "timezone": "EST"}'
-              className="bg-gray-700 border-gray-600 text-white"
+              className="bg-white border-gray-300 text-black placeholder:text-gray-500 focus:border-yellow-400 focus:ring-yellow-400"
             />
             <p className="text-xs text-gray-400 mt-1">JSON format for trading session configuration</p>
           </div>

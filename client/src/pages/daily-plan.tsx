@@ -789,34 +789,43 @@ const DailyPlanPage = () => {
               <div className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div>
-                    <Label className="text-white text-sm">What went right?</Label>
+                    <Label className="text-white text-sm flex items-center gap-2">
+                      <TrendingUp className="h-4 w-4 text-green-400" />
+                      What went right?
+                    </Label>
                     <Textarea
                       value={journalEntry.whatWentRight}
                       onChange={(e) => setJournalEntry(prev => ({ ...prev, whatWentRight: e.target.value }))}
                       placeholder="Record your wins and good decisions..."
-                      className="bg-gray-800 border-yellow-400/20 text-white text-sm hover:border-yellow-400/40"
+                      className="bg-white border-gray-300 text-black placeholder:text-gray-500 focus:border-yellow-400 focus:ring-yellow-400 text-sm"
                       rows={3}
                     />
                   </div>
                   
                   <div>
-                    <Label className="text-white text-sm">What went wrong?</Label>
+                    <Label className="text-white text-sm flex items-center gap-2">
+                      <TrendingDown className="h-4 w-4 text-red-400" />
+                      What went wrong?
+                    </Label>
                     <Textarea
                       value={journalEntry.whatWentWrong}
                       onChange={(e) => setJournalEntry(prev => ({ ...prev, whatWentWrong: e.target.value }))}
                       placeholder="Analyze mistakes and missed opportunities..."
-                      className="bg-gray-800 border-yellow-400/20 text-white text-sm hover:border-yellow-400/40"
+                      className="bg-white border-gray-300 text-black placeholder:text-gray-500 focus:border-yellow-400 focus:ring-yellow-400 text-sm"
                       rows={3}
                     />
                   </div>
                   
                   <div>
-                    <Label className="text-white text-sm">Key lessons learned</Label>
+                    <Label className="text-white text-sm flex items-center gap-2">
+                      <Brain className="h-4 w-4 text-yellow-400" />
+                      Key lessons learned
+                    </Label>
                     <Textarea
                       value={journalEntry.lessonsLearned}
                       onChange={(e) => setJournalEntry(prev => ({ ...prev, lessonsLearned: e.target.value }))}
                       placeholder="What did you learn today?"
-                      className="bg-gray-800 border-yellow-400/20 text-white text-sm hover:border-yellow-400/40"
+                      className="bg-white border-gray-300 text-black placeholder:text-gray-500 focus:border-yellow-400 focus:ring-yellow-400 text-sm"
                       rows={3}
                     />
                   </div>
