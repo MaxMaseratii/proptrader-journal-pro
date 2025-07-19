@@ -747,75 +747,50 @@ export default function Dashboard() {
                       <div 
                         key={index} 
                         className={`
-                          relative p-4 rounded-lg border transition-all duration-300 h-56 overflow-hidden w-full
+                          relative p-3 rounded-lg border transition-all duration-300 h-32 overflow-hidden w-full
                           ${isToday 
-                            ? 'border-teal-400 bg-gradient-to-br from-black/95 via-gray-900/90 to-black/95 shadow-lg shadow-teal-400/40' 
-                            : 'border-gray-700 bg-gradient-to-br from-black/95 via-gray-900/90 to-black/95'
+                            ? 'border-yellow-400 bg-gradient-to-br from-gray-900/80 to-gray-800/80 shadow-lg shadow-yellow-400/20' 
+                            : 'border-gray-600 bg-gradient-to-br from-gray-900/60 to-gray-800/60'
                           }
-                          hover:border-gold hover:shadow-lg hover:shadow-gold/50 hover:bg-gradient-to-br hover:from-black/90 hover:via-gray-900/80 hover:to-black/90 cursor-pointer
+                          hover:border-yellow-400 hover:shadow-lg hover:shadow-yellow-400/30 cursor-pointer
                         `}
                       >
                         <div className="text-left h-full flex flex-col justify-between">
+                          {/* Day Header */}
                           <div className="text-center mb-2">
-                            <div className="text-sm font-bold text-gold drop-shadow-lg truncate">
+                            <div className="text-sm font-bold text-yellow-400 drop-shadow-lg">
                               {dayLabels[index]} {day.getDate()}
                             </div>
                           </div>
                           
-                          <div className="space-y-1 text-xs flex-1 overflow-hidden">
+                          {/* Simplified Metrics */}
+                          <div className="space-y-1.5 text-xs flex-1">
+                            {/* Daily P&L - Most Important */}
                             <div className="flex justify-between items-center">
-                              <span className="text-gray-200 truncate text-xs">Risk/Trade:</span>
-                              <span className="text-orange-400 font-medium text-xs ml-1 truncate">${avgRiskPerTrade.toFixed(0)}</span>
-                            </div>
-                            
-                            <div className="flex justify-between items-center">
-                              <span className="text-gray-200 truncate text-xs">Max. D Risk:</span>
-                              <span className="text-red-400 font-medium text-xs ml-1 truncate">${maxDailyRisk.toFixed(0)}</span>
-                            </div>
-                            
-                            <div className="flex justify-between items-center">
-                              <span className="text-gray-200 truncate text-xs">Rewards:</span>
-                              <span className="text-blue-400 font-medium text-xs ml-1 truncate">
-                                {avgRewardRatio.toFixed(1)}/{selectedAccounts.length > 0 ? (selectedAccounts.reduce((sum, acc) => sum + (acc.riskRewardRatio || 0), 0) / selectedAccounts.length).toFixed(1) : '0.0'}RR
+                              <span className="text-gray-300 text-xs">P&L:</span>
+                              <span className={`font-bold text-sm ${dayPnL >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                                {dayPnL >= 0 ? '+' : ''}${dayPnL.toFixed(0)}
                               </span>
                             </div>
                             
+                            {/* Trades Count */}
                             <div className="flex justify-between items-center">
-                              <span className="text-gray-200 truncate text-xs">Daily Target:</span>
-                              <span className="text-purple-400 font-medium text-xs ml-1 truncate">${dailyTarget.toFixed(2)}</span>
+                              <span className="text-gray-300 text-xs">Trades:</span>
+                              <span className="text-blue-400 font-medium text-xs">{dayTrades.length}</span>
                             </div>
                             
+                            {/* Risk Used */}
                             <div className="flex justify-between items-center">
-                              <span className="text-gray-200 truncate text-xs">Daily PNL:</span>
-                              <span className={`font-bold text-xs ml-1 truncate ${dayPnL >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-                                {dayPnL >= 0 ? '+' : ''}${dayPnL.toFixed(2)}
-                              </span>
+                              <span className="text-gray-300 text-xs">Risk:</span>
+                              <span className="text-orange-400 font-medium text-xs">${totalRisk.toFixed(0)}</span>
                             </div>
                             
+                            {/* Win Rate for the day */}
                             <div className="flex justify-between items-center">
-                              <span className="text-gray-200 truncate text-xs">Max D Trades:</span>
-                              <span className="text-cyan-400 font-medium text-xs ml-1 truncate">{maxDailyTrades} T</span>
-                            </div>
-                            
-                            <div className="flex justify-between items-center">
-                              <span className="text-gray-200 truncate text-xs">Total D Trades:</span>
-                              <span className="text-indigo-400 font-medium text-xs ml-1 truncate">{dayTrades.length} T</span>
-                            </div>
-                            
-                            <div className="flex justify-between items-center">
-                              <span className="text-gray-200 truncate text-xs">Disc. Score:</span>
-                              <span className="text-gold font-bold text-xs ml-1 truncate">
-                                {(() => {
-                                  if (dayTrades.length === 0) return 0;
-                                  // Calculate discipline score for the day based on trades
-                                  const selectedAccount = selectedAccounts[0];
-                                  if (!selectedAccount) return 0;
-                                  // Ensure dayTrades is an array
-                                  const tradesArray = Array.isArray(dayTrades) ? dayTrades : [];
-                                  if (tradesArray.length === 0) return 0;
-                                  const dayScore = calculateComprehensiveDisciplineMetrics(tradesArray);
-                                  return Math.round(dayScore.disciplineScore);
-                                })()}
+                              <span className="text-gray-300 text-xs">Win%:</span>
+                              <span className="text-purple-400 font-medium text-xs">
+                                {dayTrades.length > 0 ? 
+                                  Math.round((dayTrades.filter(t => (t.pnl || 0) > 0).length / dayTrades.length) * 100) : 0}%
                               </span>
                             </div>
                           </div>

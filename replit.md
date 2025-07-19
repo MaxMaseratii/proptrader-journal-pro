@@ -442,11 +442,13 @@ Changelog:
   * Removed duplicate simple discipline score widget that showed only percentage without detailed breakdown
   * Removed both Trading Charts Preview widgets to declutter the dashboard layout
   * Completely redesigned Weekly Risk & Performance Calendar with cleaner, less cluttered interface
-  * Enhanced weekly calendar with week navigation arrows and improved date range display
-  * Simplified daily grid layout with better visual hierarchy and reduced information density
-  * Added performance indicators and weekend highlighting for better trading pattern recognition
-  * Maintained consistent color scheme (gold/green/red) throughout the redesigned calendar
-  * Improved user experience with more focused and actionable weekly performance data
+  * Reduced daily card height from 256px to 128px for more compact layout
+  * Simplified daily metrics from 8 detailed items to 4 essential ones: P&L, Trades, Risk, Win%
+  * Enhanced visual hierarchy with larger P&L display and consistent yellow/gold color scheme
+  * Improved readability with better spacing, typography, and reduced information density
+  * Maintained week navigation arrows with proper date formatting
+  * Added yellow highlighting for today's date with subtle glow effects
+  * Improved user experience with more focused and scannable daily trading performance data
 ```
 
 ## User Preferences
