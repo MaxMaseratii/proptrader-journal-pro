@@ -9,6 +9,9 @@ import {
   achievements, 
   userStats, 
   savedProjections,
+  tradingStrategies,
+  dailyPlans,
+  strategyRuleTracking,
   type Account,
   type Trade,
   type JournalEntry,
@@ -19,6 +22,9 @@ import {
   type Achievement,
   type UserStats,
   type SavedProjection,
+  type TradingStrategy,
+  type DailyPlan,
+  type StrategyRuleTracking,
   type InsertAccount,
   type InsertTrade,
   type InsertJournalEntry,
@@ -29,6 +35,9 @@ import {
   type InsertAchievement,
   type InsertUserStats,
   type InsertSavedProjection,
+  type InsertTradingStrategy,
+  type InsertDailyPlan,
+  type InsertStrategyRuleTracking,
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, and, desc, asc, gte, lte, sum, sql } from "drizzle-orm";
@@ -96,6 +105,26 @@ export interface IStorage {
   
   // Funded-to-Live Account Transition operations
   convertToLiveAccount(fundedAccountId: number, liveAccountData: Partial<InsertAccount>): Promise<{ fundedAccount: Account, liveAccount: Account }>;
+  
+  // Trading Strategy operations
+  getTradingStrategies(userId: string): Promise<TradingStrategy[]>;
+  getTradingStrategy(id: number): Promise<TradingStrategy | undefined>;
+  createTradingStrategy(strategy: InsertTradingStrategy): Promise<TradingStrategy>;
+  updateTradingStrategy(id: number, strategy: Partial<InsertTradingStrategy>): Promise<TradingStrategy | undefined>;
+  deleteTradingStrategy(id: number): Promise<boolean>;
+  
+  // Daily Plan operations
+  getDailyPlans(userId: string, accountId?: number): Promise<DailyPlan[]>;
+  getDailyPlan(id: number): Promise<DailyPlan | undefined>;
+  getDailyPlanByDate(userId: string, date: string): Promise<DailyPlan | undefined>;
+  createDailyPlan(plan: InsertDailyPlan): Promise<DailyPlan>;
+  updateDailyPlan(id: number, plan: Partial<InsertDailyPlan>): Promise<DailyPlan | undefined>;
+  deleteDailyPlan(id: number): Promise<boolean>;
+  
+  // Strategy Rule Tracking operations
+  getStrategyRuleTracking(dailyPlanId: number): Promise<StrategyRuleTracking[]>;
+  createStrategyRuleTracking(tracking: InsertStrategyRuleTracking): Promise<StrategyRuleTracking>;
+  updateStrategyRuleTracking(id: number, tracking: Partial<InsertStrategyRuleTracking>): Promise<StrategyRuleTracking | undefined>;
 }
 
 // Production-ready DatabaseStorage implementation
@@ -568,6 +597,110 @@ export class DatabaseStorage implements IStorage {
       fundedAccount: updatedFundedAccount!, 
       liveAccount 
     };
+  }
+
+  // Trading Strategy operations
+  async getTradingStrategies(userId: string): Promise<TradingStrategy[]> {
+    return await db.select().from(tradingStrategies)
+      .where(eq(tradingStrategies.userId, userId))
+      .orderBy(desc(tradingStrategies.createdAt));
+  }
+
+  async getTradingStrategy(id: number): Promise<TradingStrategy | undefined> {
+    const [strategy] = await db.select().from(tradingStrategies).where(eq(tradingStrategies.id, id));
+    return strategy || undefined;
+  }
+
+  async createTradingStrategy(strategy: InsertTradingStrategy): Promise<TradingStrategy> {
+    const [newStrategy] = await db
+      .insert(tradingStrategies)
+      .values(strategy)
+      .returning();
+    return newStrategy;
+  }
+
+  async updateTradingStrategy(id: number, strategy: Partial<InsertTradingStrategy>): Promise<TradingStrategy | undefined> {
+    const [updatedStrategy] = await db
+      .update(tradingStrategies)
+      .set({ ...strategy, updatedAt: new Date() })
+      .where(eq(tradingStrategies.id, id))
+      .returning();
+    return updatedStrategy || undefined;
+  }
+
+  async deleteTradingStrategy(id: number): Promise<boolean> {
+    const result = await db.delete(tradingStrategies).where(eq(tradingStrategies.id, id));
+    return (result.rowCount ?? 0) > 0;
+  }
+
+  // Daily Plan operations
+  async getDailyPlans(userId: string, accountId?: number): Promise<DailyPlan[]> {
+    let query = db.select().from(dailyPlans)
+      .where(eq(dailyPlans.userId, userId));
+    
+    if (accountId) {
+      query = db.select().from(dailyPlans)
+        .where(and(eq(dailyPlans.userId, userId), eq(dailyPlans.accountId, accountId)));
+    }
+    
+    return await query.orderBy(desc(dailyPlans.date));
+  }
+
+  async getDailyPlan(id: number): Promise<DailyPlan | undefined> {
+    const [plan] = await db.select().from(dailyPlans).where(eq(dailyPlans.id, id));
+    return plan || undefined;
+  }
+
+  async getDailyPlanByDate(userId: string, date: string): Promise<DailyPlan | undefined> {
+    const [plan] = await db.select().from(dailyPlans)
+      .where(and(eq(dailyPlans.userId, userId), eq(dailyPlans.date, date)));
+    return plan || undefined;
+  }
+
+  async createDailyPlan(plan: InsertDailyPlan): Promise<DailyPlan> {
+    const [newPlan] = await db
+      .insert(dailyPlans)
+      .values(plan)
+      .returning();
+    return newPlan;
+  }
+
+  async updateDailyPlan(id: number, plan: Partial<InsertDailyPlan>): Promise<DailyPlan | undefined> {
+    const [updatedPlan] = await db
+      .update(dailyPlans)
+      .set({ ...plan, updatedAt: new Date() })
+      .where(eq(dailyPlans.id, id))
+      .returning();
+    return updatedPlan || undefined;
+  }
+
+  async deleteDailyPlan(id: number): Promise<boolean> {
+    const result = await db.delete(dailyPlans).where(eq(dailyPlans.id, id));
+    return (result.rowCount ?? 0) > 0;
+  }
+
+  // Strategy Rule Tracking operations
+  async getStrategyRuleTracking(dailyPlanId: number): Promise<StrategyRuleTracking[]> {
+    return await db.select().from(strategyRuleTracking)
+      .where(eq(strategyRuleTracking.dailyPlanId, dailyPlanId))
+      .orderBy(asc(strategyRuleTracking.createdAt));
+  }
+
+  async createStrategyRuleTracking(tracking: InsertStrategyRuleTracking): Promise<StrategyRuleTracking> {
+    const [newTracking] = await db
+      .insert(strategyRuleTracking)
+      .values(tracking)
+      .returning();
+    return newTracking;
+  }
+
+  async updateStrategyRuleTracking(id: number, tracking: Partial<InsertStrategyRuleTracking>): Promise<StrategyRuleTracking | undefined> {
+    const [updatedTracking] = await db
+      .update(strategyRuleTracking)
+      .set(tracking)
+      .where(eq(strategyRuleTracking.id, id))
+      .returning();
+    return updatedTracking || undefined;
   }
 }
 

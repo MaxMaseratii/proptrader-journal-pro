@@ -1,7 +1,16 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { insertAccountSchema, insertTradeSchema, insertJournalEntrySchema, insertSpendingSchema, type InsertTrade } from "@shared/schema";
+import { 
+  insertAccountSchema, 
+  insertTradeSchema, 
+  insertJournalEntrySchema, 
+  insertSpendingSchema, 
+  insertTradingStrategySchema, 
+  insertDailyPlanSchema, 
+  insertStrategyRuleTrackingSchema,
+  type InsertTrade 
+} from "@shared/schema";
 import { z } from "zod";
 import { setupAuth, isAuthenticated } from "./replitAuth";
 
@@ -1502,6 +1511,176 @@ Provide helpful, personalized advice based on this data. Keep responses concise 
         timestamp: new Date().toISOString(),
         fallback: true
       });
+    }
+  });
+
+  // Trading Strategy routes
+  app.get("/api/strategies", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const strategies = await storage.getTradingStrategies(userId);
+      res.json(strategies);
+    } catch (error) {
+      console.error("Error fetching strategies:", error);
+      res.status(500).json({ message: "Failed to fetch strategies" });
+    }
+  });
+
+  app.post("/api/strategies", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const validatedData = insertTradingStrategySchema.parse({ ...req.body, userId });
+      const strategy = await storage.createTradingStrategy(validatedData);
+      res.status(201).json(strategy);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Invalid strategy data", errors: error.errors });
+      }
+      console.error("Error creating strategy:", error);
+      res.status(500).json({ message: "Failed to create strategy" });
+    }
+  });
+
+  app.put("/api/strategies/:id", isAuthenticated, async (req, res) => {
+    try {
+      const strategyId = parseInt(req.params.id);
+      const strategy = await storage.updateTradingStrategy(strategyId, req.body);
+      if (!strategy) {
+        return res.status(404).json({ message: "Strategy not found" });
+      }
+      res.json(strategy);
+    } catch (error) {
+      console.error("Error updating strategy:", error);
+      res.status(500).json({ message: "Failed to update strategy" });
+    }
+  });
+
+  app.delete("/api/strategies/:id", isAuthenticated, async (req, res) => {
+    try {
+      const strategyId = parseInt(req.params.id);
+      const success = await storage.deleteTradingStrategy(strategyId);
+      if (!success) {
+        return res.status(404).json({ message: "Strategy not found" });
+      }
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error deleting strategy:", error);
+      res.status(500).json({ message: "Failed to delete strategy" });
+    }
+  });
+
+  // Daily Plan routes
+  app.get("/api/daily-plans", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const accountId = req.query.accountId ? parseInt(req.query.accountId as string) : undefined;
+      const plans = await storage.getDailyPlans(userId, accountId);
+      res.json(plans);
+    } catch (error) {
+      console.error("Error fetching daily plans:", error);
+      res.status(500).json({ message: "Failed to fetch daily plans" });
+    }
+  });
+
+  app.get("/api/daily-plans/by-date", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const date = req.query.date as string;
+      if (!date) {
+        return res.status(400).json({ message: "Date parameter is required" });
+      }
+      const plan = await storage.getDailyPlanByDate(userId, date);
+      res.json(plan);
+    } catch (error) {
+      console.error("Error fetching daily plan by date:", error);
+      res.status(500).json({ message: "Failed to fetch daily plan" });
+    }
+  });
+
+  app.post("/api/daily-plans", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const validatedData = insertDailyPlanSchema.parse({ ...req.body, userId });
+      const plan = await storage.createDailyPlan(validatedData);
+      res.status(201).json(plan);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Invalid daily plan data", errors: error.errors });
+      }
+      console.error("Error creating daily plan:", error);
+      res.status(500).json({ message: "Failed to create daily plan" });
+    }
+  });
+
+  app.put("/api/daily-plans/:id", isAuthenticated, async (req, res) => {
+    try {
+      const planId = parseInt(req.params.id);
+      const plan = await storage.updateDailyPlan(planId, req.body);
+      if (!plan) {
+        return res.status(404).json({ message: "Daily plan not found" });
+      }
+      res.json(plan);
+    } catch (error) {
+      console.error("Error updating daily plan:", error);
+      res.status(500).json({ message: "Failed to update daily plan" });
+    }
+  });
+
+  app.delete("/api/daily-plans/:id", isAuthenticated, async (req, res) => {
+    try {
+      const planId = parseInt(req.params.id);
+      const success = await storage.deleteDailyPlan(planId);
+      if (!success) {
+        return res.status(404).json({ message: "Daily plan not found" });
+      }
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error deleting daily plan:", error);
+      res.status(500).json({ message: "Failed to delete daily plan" });
+    }
+  });
+
+  // Strategy Rule Tracking routes
+  app.get("/api/daily-plans/:id/rule-tracking", isAuthenticated, async (req, res) => {
+    try {
+      const dailyPlanId = parseInt(req.params.id);
+      const tracking = await storage.getStrategyRuleTracking(dailyPlanId);
+      res.json(tracking);
+    } catch (error) {
+      console.error("Error fetching rule tracking:", error);
+      res.status(500).json({ message: "Failed to fetch rule tracking" });
+    }
+  });
+
+  app.post("/api/daily-plans/:id/rule-tracking", isAuthenticated, async (req, res) => {
+    try {
+      const dailyPlanId = parseInt(req.params.id);
+      const validatedData = insertStrategyRuleTrackingSchema.parse({ 
+        ...req.body, 
+        dailyPlanId 
+      });
+      const tracking = await storage.createStrategyRuleTracking(validatedData);
+      res.status(201).json(tracking);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Invalid rule tracking data", errors: error.errors });
+      }
+      console.error("Error creating rule tracking:", error);
+      res.status(500).json({ message: "Failed to create rule tracking" });
+    }
+  });
+
+  app.put("/api/rule-tracking/:id", isAuthenticated, async (req, res) => {
+    try {
+      const trackingId = parseInt(req.params.id);
+      const tracking = await storage.updateStrategyRuleTracking(trackingId, req.body);
+      if (!tracking) {
+        return res.status(404).json({ message: "Rule tracking not found" });
+      }
+      res.json(tracking);
+    } catch (error) {
+      console.error("Error updating rule tracking:", error);
+      res.status(500).json({ message: "Failed to update rule tracking" });
     }
   });
 

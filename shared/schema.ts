@@ -380,3 +380,103 @@ export type SavedProjection = typeof savedProjections.$inferSelect;
 export type InsertSavedProjection = z.infer<typeof insertSavedProjectionSchema>;
 export type ProjectionAdjustmentHistory = typeof projectionAdjustmentHistory.$inferSelect;
 export type InsertProjectionAdjustment = z.infer<typeof insertProjectionAdjustmentSchema>;
+
+// Trading Strategies
+export const tradingStrategies = pgTable("trading_strategies", {
+  id: serial("id").primaryKey(),
+  userId: varchar("user_id").notNull(),
+  name: text("name").notNull(),
+  description: text("description"),
+  rules: jsonb("rules").notNull(), // Array of strategy rules
+  isActive: boolean("is_active").default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Daily Plans
+export const dailyPlans = pgTable("daily_plans", {
+  id: serial("id").primaryKey(),
+  userId: varchar("user_id").notNull(),
+  accountId: integer("account_id").references(() => accounts.id),
+  strategyId: integer("strategy_id").references(() => tradingStrategies.id),
+  date: date("date").notNull(),
+  
+  // Financial Planning
+  riskAmount: real("risk_amount").notNull(),
+  targetProfit: real("target_profit").notNull(),
+  maxTrades: integer("max_trades").notNull(),
+  plannedTrades: integer("planned_trades").notNull(),
+  riskRewardRatio: real("risk_reward_ratio").notNull(),
+  maxRiskPercentage: real("max_risk_percentage"),
+  plannedHours: real("planned_hours"),
+  hourlyWage: real("hourly_wage"),
+  tradeTime: text("trade_time"), // Planned trading time
+  
+  // Actual Results
+  actualPnL: real("actual_pnl").default(0),
+  tradesExecuted: integer("trades_executed").default(0),
+  wins: integer("wins").default(0),
+  losses: integer("losses").default(0),
+  actualRR: real("actual_rr").default(0),
+  hoursWorked: real("hours_worked").default(0),
+  riskUsed: real("risk_used").default(0),
+  biggestWin: real("biggest_win").default(0),
+  biggestLoss: real("biggest_loss").default(0),
+  
+  // Journal Integration
+  whatWentWrong: text("what_went_wrong"),
+  whatWentRight: text("what_went_right"),
+  lessonsLearned: text("lessons_learned"),
+  improvementPlan: text("improvement_plan"),
+  emotionalState: text("emotional_state"),
+  marketConditions: text("market_conditions"),
+  tomorrowPlan: text("tomorrow_plan"),
+  
+  // Session Tracking
+  tradingStartTime: timestamp("trading_start_time"),
+  tradingEndTime: timestamp("trading_end_time"),
+  sessionDuration: integer("session_duration"), // in milliseconds
+  
+  // Plan Status
+  isPlanSaved: boolean("is_plan_saved").default(false),
+  isCompleted: boolean("is_completed").default(false),
+  
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Strategy Rule Adherence Tracking
+export const strategyRuleTracking = pgTable("strategy_rule_tracking", {
+  id: serial("id").primaryKey(),
+  dailyPlanId: integer("daily_plan_id").references(() => dailyPlans.id).notNull(),
+  ruleDescription: text("rule_description").notNull(),
+  isFollowed: boolean("is_followed").default(false),
+  notes: text("notes"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Insert schemas
+export const insertTradingStrategySchema = createInsertSchema(tradingStrategies).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertDailyPlanSchema = createInsertSchema(dailyPlans).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertStrategyRuleTrackingSchema = createInsertSchema(strategyRuleTracking).omit({
+  id: true,
+  createdAt: true,
+});
+
+// Types
+export type TradingStrategy = typeof tradingStrategies.$inferSelect;
+export type InsertTradingStrategy = z.infer<typeof insertTradingStrategySchema>;
+export type DailyPlan = typeof dailyPlans.$inferSelect;
+export type InsertDailyPlan = z.infer<typeof insertDailyPlanSchema>;
+export type StrategyRuleTracking = typeof strategyRuleTracking.$inferSelect;
+export type InsertStrategyRuleTracking = z.infer<typeof insertStrategyRuleTrackingSchema>;

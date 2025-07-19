@@ -23,7 +23,8 @@ import {
   X,
   ChevronLeft,
   PanelLeftClose,
-  PanelLeftOpen
+  PanelLeftOpen,
+  Target
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
@@ -40,6 +41,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 const navItems = [
   { href: "/projections", label: "Accounts  Risk Management & Target Projection Planning", icon: TrendingUp, section: "main" },
   { href: "/", label: "Dashboard", icon: ChartLine, section: "main" },
+  { href: "/daily-plan", label: "Daily Trading Plan", icon: Target, section: "main" },
   { href: "/trading-companion", label: "Trading Companion", icon: Bot, section: "main" },
   { href: "/trades", label: "Trades", icon: BarChart3, section: "main" },
   { href: "/charts", label: "Trading Charts", icon: TrendingUp, section: "main" },

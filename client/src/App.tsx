@@ -21,6 +21,7 @@ import Spending from "@/pages/spending";
 import Achievements from "@/pages/achievements";
 import AdvancedDashboard from "@/pages/advanced-dashboard";
 import TradingCompanion from "@/pages/trading-companion";
+import DailyPlan from "@/pages/daily-plan";
 
 import DisciplineAnalysis from "@/pages/discipline-analysis";
 import DisciplinaryAssistant from "@/pages/disciplinary-assistant";
@@ -51,6 +52,7 @@ function Router() {
         <Switch>
           <Route path="/" component={Dashboard} />
           <Route path="/dashboard-simple" component={DashboardShowcase} />
+          <Route path="/daily-plan" component={DailyPlan} />
           <Route path="/trading-companion" component={TradingCompanion} />
           <Route path="/projections" component={Projections} />
 
