@@ -233,7 +233,10 @@ const StrategyManagement: React.FC<StrategyManagementProps> = ({ editStrategyId,
               <Label className="text-white">Strategy Name</Label>
               <Input
                 value={formData.name}
-                onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  setFormData(prev => ({ ...prev, name: value }));
+                }}
                 placeholder="e.g., Scalping ES Morning Session"
                 className="bg-white border-gray-300 text-black placeholder:text-gray-500 focus:border-yellow-400 focus:ring-yellow-400"
               />
@@ -242,7 +245,10 @@ const StrategyManagement: React.FC<StrategyManagementProps> = ({ editStrategyId,
               <Label className="text-white">Description</Label>
               <Textarea
                 value={formData.description}
-                onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  setFormData(prev => ({ ...prev, description: value }));
+                }}
                 placeholder="Describe your trading strategy..."
                 className="bg-white border-gray-300 text-black placeholder:text-gray-500 focus:border-yellow-400 focus:ring-yellow-400"
                 rows={3}
@@ -259,7 +265,10 @@ const StrategyManagement: React.FC<StrategyManagementProps> = ({ editStrategyId,
                 <div key={index} className="flex items-center gap-2">
                   <Input
                     value={rule}
-                    onChange={(e) => updateRule(index, e.target.value)}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      updateRule(index, value);
+                    }}
                     placeholder="Enter a trading rule..."
                     className="bg-white border-gray-300 text-black placeholder:text-gray-500 focus:border-yellow-400 focus:ring-yellow-400 flex-1"
                   />
@@ -276,7 +285,10 @@ const StrategyManagement: React.FC<StrategyManagementProps> = ({ editStrategyId,
               <div className="flex items-center gap-2">
                 <Input
                   value={newRule}
-                  onChange={(e) => setNewRule(e.target.value)}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    setNewRule(value);
+                  }}
                   placeholder="Add a new rule..."
                   className="bg-white border-gray-300 text-black placeholder:text-gray-500 focus:border-yellow-400 focus:ring-yellow-400 flex-1"
                   onKeyPress={(e) => e.key === 'Enter' && addRule()}
@@ -297,7 +309,10 @@ const StrategyManagement: React.FC<StrategyManagementProps> = ({ editStrategyId,
                 type="number"
                 step="0.01"
                 value={formData.riskAmountUsd}
-                onChange={(e) => setFormData(prev => ({ ...prev, riskAmountUsd: parseFloat(e.target.value) || 0 }))}
+                onChange={(e) => {
+                  const value = parseFloat(e.target.value) || 0;
+                  setFormData(prev => ({ ...prev, riskAmountUsd: value }));
+                }}
                 className="bg-white border-gray-300 text-black placeholder:text-gray-500 focus:border-yellow-400 focus:ring-yellow-400"
               />
             </div>
@@ -307,7 +322,10 @@ const StrategyManagement: React.FC<StrategyManagementProps> = ({ editStrategyId,
                 type="number"
                 step="0.1"
                 value={formData.riskRewardRatio}
-                onChange={(e) => setFormData(prev => ({ ...prev, riskRewardRatio: parseFloat(e.target.value) || 0 }))}
+                onChange={(e) => {
+                  const value = parseFloat(e.target.value) || 0;
+                  setFormData(prev => ({ ...prev, riskRewardRatio: value }));
+                }}
                 className="bg-white border-gray-300 text-black placeholder:text-gray-500 focus:border-yellow-400 focus:ring-yellow-400"
               />
             </div>
@@ -319,7 +337,10 @@ const StrategyManagement: React.FC<StrategyManagementProps> = ({ editStrategyId,
                 min="0"
                 max="100"
                 value={formData.expectedWinRate}
-                onChange={(e) => setFormData(prev => ({ ...prev, expectedWinRate: parseFloat(e.target.value) || 0 }))}
+                onChange={(e) => {
+                  const value = parseFloat(e.target.value) || 0;
+                  setFormData(prev => ({ ...prev, expectedWinRate: value }));
+                }}
                 className="bg-white border-gray-300 text-black placeholder:text-gray-500 focus:border-yellow-400 focus:ring-yellow-400"
               />
             </div>
@@ -329,7 +350,10 @@ const StrategyManagement: React.FC<StrategyManagementProps> = ({ editStrategyId,
                 type="number"
                 min="1"
                 value={formData.maxTradesPerDay}
-                onChange={(e) => setFormData(prev => ({ ...prev, maxTradesPerDay: parseInt(e.target.value) || 1 }))}
+                onChange={(e) => {
+                  const value = parseInt(e.target.value) || 1;
+                  setFormData(prev => ({ ...prev, maxTradesPerDay: value }));
+                }}
                 className="bg-white border-gray-300 text-black placeholder:text-gray-500 focus:border-yellow-400 focus:ring-yellow-400"
               />
             </div>
@@ -371,7 +395,10 @@ const StrategyManagement: React.FC<StrategyManagementProps> = ({ editStrategyId,
             <Label className="text-white">Trading Session Times</Label>
             <Textarea
               value={formData.sessionTimes}
-              onChange={(e) => setFormData(prev => ({ ...prev, sessionTimes: e.target.value }))}
+              onChange={(e) => {
+                const value = e.target.value;
+                setFormData(prev => ({ ...prev, sessionTimes: value }));
+              }}
               placeholder='{"start": "09:30", "end": "16:00", "timezone": "EST"}'
               className="bg-white border-gray-300 text-black placeholder:text-gray-500 focus:border-yellow-400 focus:ring-yellow-400"
             />
