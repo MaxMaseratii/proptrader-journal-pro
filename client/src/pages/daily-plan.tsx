@@ -682,10 +682,7 @@ const DailyPlanPage = () => {
                 <div className="text-center py-6">
                   <Target className="w-12 h-12 text-gray-500 mx-auto mb-4" />
                   <p className="text-gray-400 mb-4">No strategies created yet</p>
-                  <Button onClick={() => setIsStrategyDialogOpen(true)} className="bg-gradient-to-r from-yellow-400 to-yellow-600 text-black hover:from-yellow-500 hover:to-yellow-700">
-                    <Plus className="w-4 h-4 mr-2" />
-                    Create Your First Strategy
-                  </Button>
+                  <p className="text-gray-500 text-sm">Create a strategy using the button above to see performance comparison</p>
                 </div>
               )}
             </CardContent>
@@ -744,15 +741,7 @@ const DailyPlanPage = () => {
               ) : (
                 <div className="text-center py-4">
                   <Brain className="w-8 h-8 text-gray-500 mx-auto mb-2" />
-                  <p className="text-gray-400 text-sm mb-3">No strategies created yet</p>
-                  <Button 
-                    onClick={() => setIsCreateStrategyDialogOpen(true)}
-                    size="sm"
-                    className="bg-gradient-to-r from-yellow-400 to-yellow-600 text-black hover:from-yellow-500 hover:to-yellow-700"
-                  >
-                    <Plus className="w-3 h-3 mr-1" />
-                    Create Strategy
-                  </Button>
+                  <p className="text-gray-400 text-sm">No strategies created yet</p>
                 </div>
               )}
             </CardContent>
@@ -773,39 +762,41 @@ const DailyPlanPage = () => {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-              {/* Quick Journal Entry */}
-              <div className="space-y-3">
-                <div>
-                  <Label className="text-white text-sm">What went right?</Label>
-                  <Textarea
-                    value={journalEntry.whatWentRight}
-                    onChange={(e) => setJournalEntry(prev => ({ ...prev, whatWentRight: e.target.value }))}
-                    placeholder="Record your wins and good decisions..."
-                    className="bg-gray-800 border-yellow-400/20 text-white text-sm hover:border-yellow-400/40"
-                    rows={2}
-                  />
-                </div>
-                
-                <div>
-                  <Label className="text-white text-sm">What went wrong?</Label>
-                  <Textarea
-                    value={journalEntry.whatWentWrong}
-                    onChange={(e) => setJournalEntry(prev => ({ ...prev, whatWentWrong: e.target.value }))}
-                    placeholder="Analyze mistakes and missed opportunities..."
-                    className="bg-gray-800 border-yellow-400/20 text-white text-sm hover:border-yellow-400/40"
-                    rows={2}
-                  />
-                </div>
-                
-                <div>
-                  <Label className="text-white text-sm">Key lessons learned</Label>
-                  <Textarea
-                    value={journalEntry.lessonsLearned}
-                    onChange={(e) => setJournalEntry(prev => ({ ...prev, lessonsLearned: e.target.value }))}
-                    placeholder="What did you learn today?"
-                    className="bg-gray-800 border-yellow-400/20 text-white text-sm hover:border-yellow-400/40"
-                    rows={2}
-                  />
+              {/* Quick Journal Entry - Compact Row Layout */}
+              <div className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div>
+                    <Label className="text-white text-sm">What went right?</Label>
+                    <Textarea
+                      value={journalEntry.whatWentRight}
+                      onChange={(e) => setJournalEntry(prev => ({ ...prev, whatWentRight: e.target.value }))}
+                      placeholder="Record your wins and good decisions..."
+                      className="bg-gray-800 border-yellow-400/20 text-white text-sm hover:border-yellow-400/40"
+                      rows={3}
+                    />
+                  </div>
+                  
+                  <div>
+                    <Label className="text-white text-sm">What went wrong?</Label>
+                    <Textarea
+                      value={journalEntry.whatWentWrong}
+                      onChange={(e) => setJournalEntry(prev => ({ ...prev, whatWentWrong: e.target.value }))}
+                      placeholder="Analyze mistakes and missed opportunities..."
+                      className="bg-gray-800 border-yellow-400/20 text-white text-sm hover:border-yellow-400/40"
+                      rows={3}
+                    />
+                  </div>
+                  
+                  <div>
+                    <Label className="text-white text-sm">Key lessons learned</Label>
+                    <Textarea
+                      value={journalEntry.lessonsLearned}
+                      onChange={(e) => setJournalEntry(prev => ({ ...prev, lessonsLearned: e.target.value }))}
+                      placeholder="What did you learn today?"
+                      className="bg-gray-800 border-yellow-400/20 text-white text-sm hover:border-yellow-400/40"
+                      rows={3}
+                    />
+                  </div>
                 </div>
                 
                 <Button className="w-full bg-gradient-to-r from-yellow-400 to-yellow-600 text-black hover:from-yellow-500 hover:to-yellow-700">
