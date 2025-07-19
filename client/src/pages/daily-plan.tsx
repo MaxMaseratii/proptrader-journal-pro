@@ -9,7 +9,9 @@ import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { apiRequest } from '@/lib/queryClient';
+import StrategyManagement from '@/components/strategy-management';
 import { 
   Target, 
   Shield, 
@@ -32,7 +34,8 @@ import {
   PauseCircle,
   Zap,
   History,
-  Plus
+  Plus,
+  Settings
 } from 'lucide-react';
 import type { Account, TradingStrategy, DailyPlan, Trade } from '@shared/schema';
 
@@ -269,17 +272,7 @@ const DailyPlanPage = () => {
     }
   };
 
-  const createNewStrategy = () => {
-    const strategyName = prompt("Enter strategy name:");
-    if (strategyName) {
-      createStrategyMutation.mutate({
-        name: strategyName,
-        description: '',
-        rules: ['Only trade during NY session', 'Max 2% risk per trade', 'Minimum 1:2 RR ratio'],
-        isActive: true,
-      });
-    }
-  };
+  const [isStrategyDialogOpen, setIsStrategyDialogOpen] = useState(false);
 
   return (
     <div className="p-6 space-y-6 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 min-h-screen">
@@ -360,14 +353,25 @@ const DailyPlanPage = () => {
                 <div>
                   <div className="flex items-center gap-2">
                     <Label className="text-white">Trading Strategy</Label>
-                    <Button 
-                      variant="ghost" 
-                      size="sm" 
-                      onClick={createNewStrategy}
-                      className="text-yellow-400 hover:text-yellow-300"
-                    >
-                      <Plus className="w-4 h-4" />
-                    </Button>
+                    <Dialog open={isStrategyDialogOpen} onOpenChange={setIsStrategyDialogOpen}>
+                      <DialogTrigger asChild>
+                        <Button 
+                          variant="ghost" 
+                          size="sm" 
+                          className="text-yellow-400 hover:text-yellow-300"
+                        >
+                          <Settings className="w-4 h-4" />
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent className="max-w-6xl h-[80vh] bg-gray-800 border-gray-700 overflow-hidden">
+                        <DialogHeader>
+                          <DialogTitle className="text-yellow-400">Strategy Management</DialogTitle>
+                        </DialogHeader>
+                        <div className="overflow-y-auto h-full">
+                          <StrategyManagement />
+                        </div>
+                      </DialogContent>
+                    </Dialog>
                   </div>
                   <Select value={selectedStrategy?.toString() || ""} onValueChange={(value) => setSelectedStrategy(parseInt(value))}>
                     <SelectTrigger className="bg-gray-700 border-gray-600 text-white">
@@ -376,11 +380,55 @@ const DailyPlanPage = () => {
                     <SelectContent>
                       {strategies?.map((strategy) => (
                         <SelectItem key={strategy.id} value={strategy.id.toString()}>
-                          {strategy.name}
+                          <div className="flex items-center justify-between w-full">
+                            <span>{strategy.name}</span>
+                            <div className="flex items-center gap-2 text-xs">
+                              <span className="text-gray-400">RR: 1:{strategy.riskRewardRatio || 2}</span>
+                              <span className="text-gray-400">WR: {strategy.expectedWinRate || 50}%</span>
+                              <span className={`font-medium ${
+                                (strategy.expectedValue || 0) > 0 ? 'text-green-400' : 'text-red-400'
+                              }`}>
+                                EV: ${(strategy.expectedValue || 0).toFixed(0)}
+                              </span>
+                            </div>
+                          </div>
                         </SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
+                  
+                  {/* Strategy Performance Display */}
+                  {selectedStrategy && strategies?.find(s => s.id === selectedStrategy) && (
+                    <div className="mt-2 p-3 bg-gray-700 rounded-lg border border-yellow-400/20">
+                      {(() => {
+                        const strategy = strategies.find(s => s.id === selectedStrategy);
+                        return strategy ? (
+                          <div className="grid grid-cols-4 gap-3 text-center">
+                            <div>
+                              <div className="text-white font-bold">${strategy.riskAmountUsd || 100}</div>
+                              <div className="text-xs text-gray-400">Risk</div>
+                            </div>
+                            <div>
+                              <div className="text-white font-bold">1:{strategy.riskRewardRatio || 2}</div>
+                              <div className="text-xs text-gray-400">RR</div>
+                            </div>
+                            <div>
+                              <div className="text-white font-bold">{strategy.expectedWinRate || 50}%</div>
+                              <div className="text-xs text-gray-400">Win Rate</div>
+                            </div>
+                            <div>
+                              <div className={`font-bold ${
+                                (strategy.expectedValue || 0) > 0 ? 'text-green-400' : 'text-red-400'
+                              }`}>
+                                ${(strategy.expectedValue || 0).toFixed(2)}
+                              </div>
+                              <div className="text-xs text-gray-400">Expected Value</div>
+                            </div>
+                          </div>
+                        ) : null;
+                      })()}
+                    </div>
+                  )}
                 </div>
               </CardContent>
             </Card>
@@ -535,23 +583,73 @@ const DailyPlanPage = () => {
               <CardHeader>
                 <CardTitle className="text-yellow-400 flex items-center gap-2">
                   <Shield className="w-5 h-5" />
-                  Strategy Rules
+                  Strategy Rules & Performance
                 </CardTitle>
               </CardHeader>
-              <CardContent className="space-y-2">
-                {selectedStrategy && strategies?.find(s => s.id === selectedStrategy)?.rules && 
-                  (strategies.find(s => s.id === selectedStrategy)?.rules as string[]).map((rule, index) => (
-                    <div key={index} className="flex items-center justify-between p-2 bg-gray-700 rounded">
-                      <span className="text-sm text-gray-300">{rule}</span>
-                      <div className="flex items-center gap-2">
-                        <CheckCircle className="w-4 h-4 text-gray-500" />
-                        <span className="text-xs text-gray-400">Not tracked</span>
+              <CardContent className="space-y-4">
+                {selectedStrategy && strategies?.find(s => s.id === selectedStrategy) ? (() => {
+                  const strategy = strategies.find(s => s.id === selectedStrategy);
+                  return strategy ? (
+                    <>
+                      {/* Strategy Performance Summary */}
+                      <div className="grid grid-cols-2 gap-3 mb-4">
+                        <div className="text-center p-2 bg-gray-700 rounded">
+                          <div className="text-white font-bold">${strategy.riskAmountUsd || 100}</div>
+                          <div className="text-xs text-gray-400">Risk per Trade</div>
+                        </div>
+                        <div className="text-center p-2 bg-gray-700 rounded">
+                          <div className={`font-bold ${
+                            (strategy.expectedValue || 0) > 0 ? 'text-green-400' : 'text-red-400'
+                          }`}>
+                            ${(strategy.expectedValue || 0).toFixed(2)}
+                          </div>
+                          <div className="text-xs text-gray-400">Expected Value</div>
+                        </div>
                       </div>
-                    </div>
-                  ))
-                }
-                {(!selectedStrategy || !strategies?.find(s => s.id === selectedStrategy)?.rules) && (
-                  <p className="text-gray-400 text-center py-4">Select a strategy to view rules</p>
+                      
+                      {/* Strategy Rules */}
+                      {Array.isArray(strategy.rules) && strategy.rules.length > 0 ? (
+                        <div className="space-y-2">
+                          <div className="text-sm font-medium text-gray-300">Rules to Follow:</div>
+                          {strategy.rules.map((rule, index) => (
+                            <div key={index} className="flex items-center justify-between p-2 bg-gray-700 rounded">
+                              <span className="text-sm text-gray-300">{rule}</span>
+                              <div className="flex items-center gap-2">
+                                <CheckCircle className="w-4 h-4 text-gray-500" />
+                                <span className="text-xs text-gray-400">Monitor</span>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <div className="text-center py-4">
+                          <p className="text-gray-400">No rules defined for this strategy</p>
+                          <Button 
+                            variant="outline" 
+                            size="sm" 
+                            onClick={() => setIsStrategyDialogOpen(true)}
+                            className="mt-2 border-yellow-400 text-yellow-400 hover:bg-yellow-400 hover:text-black"
+                          >
+                            <Edit className="w-4 h-4 mr-2" />
+                            Add Rules
+                          </Button>
+                        </div>
+                      )}
+                    </>
+                  ) : null;
+                })() : (
+                  <div className="text-center py-4">
+                    <p className="text-gray-400">Select a strategy to view rules and performance</p>
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      onClick={() => setIsStrategyDialogOpen(true)}
+                      className="mt-2 border-yellow-400 text-yellow-400 hover:bg-yellow-400 hover:text-black"
+                    >
+                      <Plus className="w-4 h-4 mr-2" />
+                      Create Strategy
+                    </Button>
+                  </div>
                 )}
               </CardContent>
             </Card>

@@ -388,6 +388,13 @@ export const tradingStrategies = pgTable("trading_strategies", {
   name: text("name").notNull(),
   description: text("description"),
   rules: jsonb("rules").notNull(), // Array of strategy rules
+  riskRewardRatio: real("risk_reward_ratio").default(2.0),
+  expectedWinRate: real("expected_win_rate").default(50.0), // percentage
+  riskAmountUsd: real("risk_amount_usd").default(100.0),
+  expectedValue: real("expected_value"), // calculated field: (winRate * RR - (1-winRate)) * riskAmount
+  tradingAssets: jsonb("trading_assets"), // Array of trading instruments
+  sessionTimes: text("session_times"), // JSON string for trading session times
+  maxTradesPerDay: integer("max_trades_per_day").default(3),
   isActive: boolean("is_active").default(true),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
