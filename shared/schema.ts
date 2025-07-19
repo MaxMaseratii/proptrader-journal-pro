@@ -438,6 +438,7 @@ export const dailyPlans = pgTable("daily_plans", {
   emotionalState: text("emotional_state"),
   marketConditions: text("market_conditions"),
   tomorrowPlan: text("tomorrow_plan"),
+  tradeSetupLinks: text("trade_setup_links"), // JSON array of trade setup links with descriptions
   
   // Session Tracking
   tradingStartTime: timestamp("trading_start_time"),

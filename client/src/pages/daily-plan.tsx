@@ -36,7 +36,10 @@ import {
   Zap,
   History,
   Plus,
-  Settings
+  Settings,
+  ExternalLink,
+  Link,
+  Trash2
 } from 'lucide-react';
 import type { Account, TradingStrategy, DailyPlan, Trade } from '@shared/schema';
 
@@ -68,8 +71,13 @@ const DailyPlanPage = () => {
     hourlyWage: 50,
     startTime: '09:30',
     endTime: '16:00',
-    notes: ''
+    notes: '',
+    tradeSetupLinks: []
   });
+
+  // Trade setup links state
+  const [tradeSetupLinks, setTradeSetupLinks] = useState([]);
+  const [newLinkData, setNewLinkData] = useState({ title: '', url: '' });
 
   // Journal state
   const [journalEntry, setJournalEntry] = useState({
@@ -173,6 +181,18 @@ const DailyPlanPage = () => {
     setSessionStartTime(null);
   };
 
+  // Trade setup link management functions
+  const addTradeSetupLink = () => {
+    if (newLinkData.title.trim() && newLinkData.url.trim()) {
+      setTradeSetupLinks([...tradeSetupLinks, { ...newLinkData }]);
+      setNewLinkData({ title: '', url: '' });
+    }
+  };
+
+  const removeTradeSetupLink = (index: number) => {
+    setTradeSetupLinks(tradeSetupLinks.filter((_, i) => i !== index));
+  };
+
   const createNewPlan = () => {
     const planPayload = {
       ...newPlanData,
@@ -180,6 +200,7 @@ const DailyPlanPage = () => {
       accountId: selectedAccount,
       strategyId: selectedStrategy,
       tradeTime: `${newPlanData.startTime}-${newPlanData.endTime}`,
+      tradeSetupLinks: JSON.stringify(tradeSetupLinks),
       actualPnL: 0,
       tradesExecuted: 0,
       wins: 0,
@@ -361,6 +382,59 @@ const DailyPlanPage = () => {
                       }}
                       className="bg-white border-gray-300 text-black placeholder:text-gray-500 focus:border-yellow-400 focus:ring-yellow-400"
                     />
+                  </div>
+                </div>
+
+                {/* Trade Setup Links */}
+                <div>
+                  <Label className="text-white">Trade Setup Links</Label>
+                  <div className="space-y-3">
+                    {/* Add New Link Form */}
+                    <div className="grid grid-cols-3 gap-2">
+                      <Input
+                        placeholder="Link title (e.g., ES Setup)"
+                        value={newLinkData.title}
+                        onChange={(e) => setNewLinkData(prev => ({ ...prev, title: e.target.value }))}
+                        className="bg-white border-gray-300 text-black placeholder:text-gray-500 focus:border-yellow-400 focus:ring-yellow-400"
+                      />
+                      <Input
+                        placeholder="https://..."
+                        value={newLinkData.url}
+                        onChange={(e) => setNewLinkData(prev => ({ ...prev, url: e.target.value }))}
+                        className="bg-white border-gray-300 text-black placeholder:text-gray-500 focus:border-yellow-400 focus:ring-yellow-400"
+                      />
+                      <Button
+                        onClick={addTradeSetupLink}
+                        disabled={!newLinkData.title.trim() || !newLinkData.url.trim()}
+                        className="bg-yellow-500 hover:bg-yellow-600 text-black"
+                      >
+                        <Plus className="w-4 h-4 mr-1" />
+                        Add
+                      </Button>
+                    </div>
+                    
+                    {/* Display Added Links */}
+                    {tradeSetupLinks.length > 0 && (
+                      <div className="space-y-2">
+                        {tradeSetupLinks.map((link, index) => (
+                          <div key={index} className="flex items-center justify-between p-2 bg-gray-700 rounded-lg border border-yellow-400/20">
+                            <div className="flex items-center gap-2">
+                              <Link className="w-4 h-4 text-yellow-400" />
+                              <span className="text-white font-medium">{link.title}</span>
+                              <span className="text-gray-400 text-sm">({link.url.substring(0, 30)}...)</span>
+                            </div>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => removeTradeSetupLink(index)}
+                              className="text-red-400 hover:text-red-300"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </Button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 </div>
 
