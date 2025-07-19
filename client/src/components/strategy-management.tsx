@@ -74,6 +74,15 @@ const StrategyManagement: React.FC<StrategyManagementProps> = ({ editStrategyId,
   const [editingStrategy, setEditingStrategy] = useState<TradingStrategy | null>(null);
   const [formData, setFormData] = useState<StrategyFormData>(defaultFormData);
   const [newRule, setNewRule] = useState('');
+  
+  // Individual input states to prevent re-rendering issues
+  const [localName, setLocalName] = useState(formData.name);
+  const [localDescription, setLocalDescription] = useState(formData.description);
+  const [localRiskAmount, setLocalRiskAmount] = useState(formData.riskAmountUsd.toString());
+  const [localRiskReward, setLocalRiskReward] = useState(formData.riskRewardRatio.toString());
+  const [localWinRate, setLocalWinRate] = useState(formData.expectedWinRate.toString());
+  const [localMaxTrades, setLocalMaxTrades] = useState(formData.maxTradesPerDay.toString());
+  const [localSessionTimes, setLocalSessionTimes] = useState(formData.sessionTimes);
 
   // Data queries
   const { data: strategies, isLoading } = useQuery<TradingStrategy[]>({
@@ -121,6 +130,13 @@ const StrategyManagement: React.FC<StrategyManagementProps> = ({ editStrategyId,
     setFormData(defaultFormData);
     setNewRule('');
     setActiveTab("basic");
+    setLocalName('');
+    setLocalDescription('');
+    setLocalRiskAmount('0');
+    setLocalRiskReward('2');
+    setLocalWinRate('50');
+    setLocalMaxTrades('1');
+    setLocalSessionTimes('');
   };
 
   const addRule = () => {
@@ -156,33 +172,47 @@ const StrategyManagement: React.FC<StrategyManagementProps> = ({ editStrategyId,
     }));
   };
 
-  // Stable event handlers using useCallback
+  // Stable event handlers for local inputs
   const handleNameChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData(prev => ({ ...prev, name: e.target.value }));
+    const value = e.target.value;
+    setLocalName(value);
+    setFormData(prev => ({ ...prev, name: value }));
   }, []);
 
   const handleDescriptionChange = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setFormData(prev => ({ ...prev, description: e.target.value }));
+    const value = e.target.value;
+    setLocalDescription(value);
+    setFormData(prev => ({ ...prev, description: value }));
   }, []);
 
   const handleRiskAmountChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData(prev => ({ ...prev, riskAmountUsd: parseFloat(e.target.value) || 0 }));
+    const value = e.target.value;
+    setLocalRiskAmount(value);
+    setFormData(prev => ({ ...prev, riskAmountUsd: parseFloat(value) || 0 }));
   }, []);
 
   const handleRiskRewardChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData(prev => ({ ...prev, riskRewardRatio: parseFloat(e.target.value) || 0 }));
+    const value = e.target.value;
+    setLocalRiskReward(value);
+    setFormData(prev => ({ ...prev, riskRewardRatio: parseFloat(value) || 0 }));
   }, []);
 
   const handleWinRateChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData(prev => ({ ...prev, expectedWinRate: parseFloat(e.target.value) || 0 }));
+    const value = e.target.value;
+    setLocalWinRate(value);
+    setFormData(prev => ({ ...prev, expectedWinRate: parseFloat(value) || 0 }));
   }, []);
 
   const handleMaxTradesChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData(prev => ({ ...prev, maxTradesPerDay: parseInt(e.target.value) || 1 }));
+    const value = e.target.value;
+    setLocalMaxTrades(value);
+    setFormData(prev => ({ ...prev, maxTradesPerDay: parseInt(value) || 1 }));
   }, []);
 
   const handleSessionTimesChange = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setFormData(prev => ({ ...prev, sessionTimes: e.target.value }));
+    const value = e.target.value;
+    setLocalSessionTimes(value);
+    setFormData(prev => ({ ...prev, sessionTimes: value }));
   }, []);
 
   const handleNewRuleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
@@ -274,7 +304,7 @@ const StrategyManagement: React.FC<StrategyManagementProps> = ({ editStrategyId,
             <div>
               <Label className="text-white">Strategy Name</Label>
               <Input
-                value={formData.name}
+                value={localName}
                 onChange={handleNameChange}
                 placeholder="e.g., Scalping ES Morning Session"
                 className="bg-white border-gray-300 text-black placeholder:text-gray-500 focus:border-yellow-400 focus:ring-yellow-400"
@@ -284,7 +314,7 @@ const StrategyManagement: React.FC<StrategyManagementProps> = ({ editStrategyId,
             <div>
               <Label className="text-white">Description</Label>
               <Textarea
-                value={formData.description}
+                value={localDescription}
                 onChange={handleDescriptionChange}
                 placeholder="Describe your trading strategy..."
                 className="bg-white border-gray-300 text-black placeholder:text-gray-500 focus:border-yellow-400 focus:ring-yellow-400"
@@ -342,7 +372,7 @@ const StrategyManagement: React.FC<StrategyManagementProps> = ({ editStrategyId,
               <Input
                 type="number"
                 step="0.01"
-                value={formData.riskAmountUsd}
+                value={localRiskAmount}
                 onChange={handleRiskAmountChange}
                 className="bg-white border-gray-300 text-black placeholder:text-gray-500 focus:border-yellow-400 focus:ring-yellow-400"
                 autoComplete="off"
@@ -353,7 +383,7 @@ const StrategyManagement: React.FC<StrategyManagementProps> = ({ editStrategyId,
               <Input
                 type="number"
                 step="0.1"
-                value={formData.riskRewardRatio}
+                value={localRiskReward}
                 onChange={handleRiskRewardChange}
                 className="bg-white border-gray-300 text-black placeholder:text-gray-500 focus:border-yellow-400 focus:ring-yellow-400"
                 autoComplete="off"
@@ -366,7 +396,7 @@ const StrategyManagement: React.FC<StrategyManagementProps> = ({ editStrategyId,
                 step="1"
                 min="0"
                 max="100"
-                value={formData.expectedWinRate}
+                value={localWinRate}
                 onChange={handleWinRateChange}
                 className="bg-white border-gray-300 text-black placeholder:text-gray-500 focus:border-yellow-400 focus:ring-yellow-400"
                 autoComplete="off"
@@ -377,7 +407,7 @@ const StrategyManagement: React.FC<StrategyManagementProps> = ({ editStrategyId,
               <Input
                 type="number"
                 min="1"
-                value={formData.maxTradesPerDay}
+                value={localMaxTrades}
                 onChange={handleMaxTradesChange}
                 className="bg-white border-gray-300 text-black placeholder:text-gray-500 focus:border-yellow-400 focus:ring-yellow-400"
                 autoComplete="off"
@@ -420,7 +450,7 @@ const StrategyManagement: React.FC<StrategyManagementProps> = ({ editStrategyId,
           <div>
             <Label className="text-white">Trading Session Times</Label>
             <Textarea
-              value={formData.sessionTimes}
+              value={localSessionTimes}
               onChange={handleSessionTimesChange}
               placeholder='{"start": "09:30", "end": "16:00", "timezone": "EST"}'
               className="bg-white border-gray-300 text-black placeholder:text-gray-500 focus:border-yellow-400 focus:ring-yellow-400"
