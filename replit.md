@@ -438,6 +438,15 @@ Changelog:
   * All forms now remember user input between sessions unless manually cleared
   * Fixed trade entry form to not auto-clear on successful submission - maintains user workflow
   * Production-ready data persistence system improves user experience and reduces data loss
+- July 19, 2025. Dashboard Widget Cleanup and Weekly Calendar Redesign:
+  * Removed duplicate simple discipline score widget that showed only percentage without detailed breakdown
+  * Removed both Trading Charts Preview widgets to declutter the dashboard layout
+  * Completely redesigned Weekly Risk & Performance Calendar with cleaner, less cluttered interface
+  * Enhanced weekly calendar with week navigation arrows and improved date range display
+  * Simplified daily grid layout with better visual hierarchy and reduced information density
+  * Added performance indicators and weekend highlighting for better trading pattern recognition
+  * Maintained consistent color scheme (gold/green/red) throughout the redesigned calendar
+  * Improved user experience with more focused and actionable weekly performance data
 ```
 
 ## User Preferences
