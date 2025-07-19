@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { apiRequest } from '@/lib/queryClient';
 import { Plus, Trash2, DollarSign } from 'lucide-react';
@@ -35,7 +36,27 @@ const StrategyForm: React.FC<StrategyFormProps> = ({ onClose, editStrategy }) =>
   const [winRate, setWinRate] = useState(editStrategy?.expectedWinRate || 50);
   const [maxTrades, setMaxTrades] = useState(editStrategy?.maxTradesPerDay || 3);
   const [assets, setAssets] = useState<string[]>(editStrategy?.tradingAssets || []);
-  const [sessionTimes, setSessionTimes] = useState(editStrategy?.sessionTimes || '{"start": "09:30", "end": "16:00", "timezone": "EST"}');
+  const [startTime, setStartTime] = useState(() => {
+    try {
+      return editStrategy?.sessionTimes ? JSON.parse(editStrategy.sessionTimes).start : '09:30';
+    } catch {
+      return '09:30';
+    }
+  });
+  const [endTime, setEndTime] = useState(() => {
+    try {
+      return editStrategy?.sessionTimes ? JSON.parse(editStrategy.sessionTimes).end : '16:00';
+    } catch {
+      return '16:00';
+    }
+  });
+  const [timezone, setTimezone] = useState(() => {
+    try {
+      return editStrategy?.sessionTimes ? JSON.parse(editStrategy.sessionTimes).timezone : 'EST';
+    } catch {
+      return 'EST';
+    }
+  });
 
   const createMutation = useMutation({
     mutationFn: (data: any) => apiRequest('/api/strategies', 'POST', data),
@@ -64,7 +85,9 @@ const StrategyForm: React.FC<StrategyFormProps> = ({ onClose, editStrategy }) =>
     setWinRate(50);
     setMaxTrades(3);
     setAssets([]);
-    setSessionTimes('{"start": "09:30", "end": "16:00", "timezone": "EST"}');
+    setStartTime('09:30');
+    setEndTime('16:00');
+    setTimezone('EST');
   };
 
   const addRule = () => {
@@ -99,6 +122,12 @@ const StrategyForm: React.FC<StrategyFormProps> = ({ onClose, editStrategy }) =>
 
   const handleSubmit = () => {
     const expectedValue = calculateExpectedValue();
+    const sessionTimesJson = JSON.stringify({
+      start: startTime,
+      end: endTime,
+      timezone: timezone
+    });
+    
     const strategyData = {
       name,
       description,
@@ -108,7 +137,7 @@ const StrategyForm: React.FC<StrategyFormProps> = ({ onClose, editStrategy }) =>
       expectedWinRate: winRate,
       maxTradesPerDay: maxTrades,
       tradingAssets: assets,
-      sessionTimes,
+      sessionTimes: sessionTimesJson,
       expectedValue,
       isActive: true,
     };
@@ -282,16 +311,72 @@ const StrategyForm: React.FC<StrategyFormProps> = ({ onClose, editStrategy }) =>
         <CardHeader>
           <CardTitle className="text-yellow-400">Trading Session</CardTitle>
         </CardHeader>
-        <CardContent>
-          <div>
-            <Label className="text-white">Trading Session Times</Label>
-            <Textarea
-              value={sessionTimes}
-              onChange={(e) => setSessionTimes(e.target.value)}
-              placeholder='{"start": "09:30", "end": "16:00", "timezone": "EST"}'
-              className="bg-white border-gray-300 text-black placeholder:text-gray-500 focus:border-yellow-400 focus:ring-yellow-400"
-            />
-            <p className="text-xs text-gray-400 mt-1">JSON format for trading session configuration</p>
+        <CardContent className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+              <Label className="text-white">Start Time</Label>
+              <Select value={startTime} onValueChange={setStartTime}>
+                <SelectTrigger className="bg-white border-gray-300 text-black focus:border-yellow-400 focus:ring-yellow-400">
+                  <SelectValue placeholder="Select start time" />
+                </SelectTrigger>
+                <SelectContent className="bg-white border-gray-300">
+                  <SelectItem value="04:00">04:00</SelectItem>
+                  <SelectItem value="05:00">05:00</SelectItem>
+                  <SelectItem value="06:00">06:00</SelectItem>
+                  <SelectItem value="07:00">07:00</SelectItem>
+                  <SelectItem value="08:00">08:00</SelectItem>
+                  <SelectItem value="09:00">09:00</SelectItem>
+                  <SelectItem value="09:30">09:30</SelectItem>
+                  <SelectItem value="10:00">10:00</SelectItem>
+                  <SelectItem value="11:00">11:00</SelectItem>
+                  <SelectItem value="12:00">12:00</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            
+            <div>
+              <Label className="text-white">End Time</Label>
+              <Select value={endTime} onValueChange={setEndTime}>
+                <SelectTrigger className="bg-white border-gray-300 text-black focus:border-yellow-400 focus:ring-yellow-400">
+                  <SelectValue placeholder="Select end time" />
+                </SelectTrigger>
+                <SelectContent className="bg-white border-gray-300">
+                  <SelectItem value="12:00">12:00</SelectItem>
+                  <SelectItem value="13:00">13:00</SelectItem>
+                  <SelectItem value="14:00">14:00</SelectItem>
+                  <SelectItem value="15:00">15:00</SelectItem>
+                  <SelectItem value="16:00">16:00</SelectItem>
+                  <SelectItem value="17:00">17:00</SelectItem>
+                  <SelectItem value="18:00">18:00</SelectItem>
+                  <SelectItem value="19:00">19:00</SelectItem>
+                  <SelectItem value="20:00">20:00</SelectItem>
+                  <SelectItem value="21:00">21:00</SelectItem>
+                  <SelectItem value="22:00">22:00</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            
+            <div>
+              <Label className="text-white">Timezone</Label>
+              <Select value={timezone} onValueChange={setTimezone}>
+                <SelectTrigger className="bg-white border-gray-300 text-black focus:border-yellow-400 focus:ring-yellow-400">
+                  <SelectValue placeholder="Select timezone" />
+                </SelectTrigger>
+                <SelectContent className="bg-white border-gray-300">
+                  <SelectItem value="EST">EST (Eastern)</SelectItem>
+                  <SelectItem value="CST">CST (Central)</SelectItem>
+                  <SelectItem value="MST">MST (Mountain)</SelectItem>
+                  <SelectItem value="PST">PST (Pacific)</SelectItem>
+                  <SelectItem value="GMT">GMT (London)</SelectItem>
+                  <SelectItem value="CET">CET (Europe)</SelectItem>
+                  <SelectItem value="JST">JST (Tokyo)</SelectItem>
+                  <SelectItem value="AEST">AEST (Sydney)</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+          <div className="text-xs text-gray-400">
+            Configure your preferred trading session times and timezone
           </div>
         </CardContent>
       </Card>
