@@ -233,25 +233,21 @@ const StrategyManagement: React.FC<StrategyManagementProps> = ({ editStrategyId,
               <Label className="text-white">Strategy Name</Label>
               <Input
                 value={formData.name}
-                onChange={(e) => {
-                  const value = e.target.value;
-                  setFormData(prev => ({ ...prev, name: value }));
-                }}
+                onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
                 placeholder="e.g., Scalping ES Morning Session"
                 className="bg-white border-gray-300 text-black placeholder:text-gray-500 focus:border-yellow-400 focus:ring-yellow-400"
+                autoComplete="off"
               />
             </div>
             <div>
               <Label className="text-white">Description</Label>
               <Textarea
                 value={formData.description}
-                onChange={(e) => {
-                  const value = e.target.value;
-                  setFormData(prev => ({ ...prev, description: value }));
-                }}
+                onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
                 placeholder="Describe your trading strategy..."
                 className="bg-white border-gray-300 text-black placeholder:text-gray-500 focus:border-yellow-400 focus:ring-yellow-400"
                 rows={3}
+                autoComplete="off"
               />
             </div>
           </div>
@@ -265,12 +261,10 @@ const StrategyManagement: React.FC<StrategyManagementProps> = ({ editStrategyId,
                 <div key={index} className="flex items-center gap-2">
                   <Input
                     value={rule}
-                    onChange={(e) => {
-                      const value = e.target.value;
-                      updateRule(index, value);
-                    }}
+                    onChange={(e) => updateRule(index, e.target.value)}
                     placeholder="Enter a trading rule..."
                     className="bg-white border-gray-300 text-black placeholder:text-gray-500 focus:border-yellow-400 focus:ring-yellow-400 flex-1"
+                    autoComplete="off"
                   />
                   <Button
                     variant="ghost"
@@ -285,13 +279,11 @@ const StrategyManagement: React.FC<StrategyManagementProps> = ({ editStrategyId,
               <div className="flex items-center gap-2">
                 <Input
                   value={newRule}
-                  onChange={(e) => {
-                    const value = e.target.value;
-                    setNewRule(value);
-                  }}
+                  onChange={(e) => setNewRule(e.target.value)}
                   placeholder="Add a new rule..."
                   className="bg-white border-gray-300 text-black placeholder:text-gray-500 focus:border-yellow-400 focus:ring-yellow-400 flex-1"
                   onKeyPress={(e) => e.key === 'Enter' && addRule()}
+                  autoComplete="off"
                 />
                 <Button onClick={addRule} className="bg-yellow-500 hover:bg-yellow-600 text-black">
                   <Plus className="w-4 h-4" />
@@ -309,11 +301,9 @@ const StrategyManagement: React.FC<StrategyManagementProps> = ({ editStrategyId,
                 type="number"
                 step="0.01"
                 value={formData.riskAmountUsd}
-                onChange={(e) => {
-                  const value = parseFloat(e.target.value) || 0;
-                  setFormData(prev => ({ ...prev, riskAmountUsd: value }));
-                }}
+                onChange={(e) => setFormData(prev => ({ ...prev, riskAmountUsd: parseFloat(e.target.value) || 0 }))}
                 className="bg-white border-gray-300 text-black placeholder:text-gray-500 focus:border-yellow-400 focus:ring-yellow-400"
+                autoComplete="off"
               />
             </div>
             <div>
@@ -322,11 +312,9 @@ const StrategyManagement: React.FC<StrategyManagementProps> = ({ editStrategyId,
                 type="number"
                 step="0.1"
                 value={formData.riskRewardRatio}
-                onChange={(e) => {
-                  const value = parseFloat(e.target.value) || 0;
-                  setFormData(prev => ({ ...prev, riskRewardRatio: value }));
-                }}
+                onChange={(e) => setFormData(prev => ({ ...prev, riskRewardRatio: parseFloat(e.target.value) || 0 }))}
                 className="bg-white border-gray-300 text-black placeholder:text-gray-500 focus:border-yellow-400 focus:ring-yellow-400"
+                autoComplete="off"
               />
             </div>
             <div>
@@ -337,11 +325,9 @@ const StrategyManagement: React.FC<StrategyManagementProps> = ({ editStrategyId,
                 min="0"
                 max="100"
                 value={formData.expectedWinRate}
-                onChange={(e) => {
-                  const value = parseFloat(e.target.value) || 0;
-                  setFormData(prev => ({ ...prev, expectedWinRate: value }));
-                }}
+                onChange={(e) => setFormData(prev => ({ ...prev, expectedWinRate: parseFloat(e.target.value) || 0 }))}
                 className="bg-white border-gray-300 text-black placeholder:text-gray-500 focus:border-yellow-400 focus:ring-yellow-400"
+                autoComplete="off"
               />
             </div>
             <div>
@@ -350,11 +336,9 @@ const StrategyManagement: React.FC<StrategyManagementProps> = ({ editStrategyId,
                 type="number"
                 min="1"
                 value={formData.maxTradesPerDay}
-                onChange={(e) => {
-                  const value = parseInt(e.target.value) || 1;
-                  setFormData(prev => ({ ...prev, maxTradesPerDay: value }));
-                }}
+                onChange={(e) => setFormData(prev => ({ ...prev, maxTradesPerDay: parseInt(e.target.value) || 1 }))}
                 className="bg-white border-gray-300 text-black placeholder:text-gray-500 focus:border-yellow-400 focus:ring-yellow-400"
+                autoComplete="off"
               />
             </div>
           </div>
@@ -395,12 +379,10 @@ const StrategyManagement: React.FC<StrategyManagementProps> = ({ editStrategyId,
             <Label className="text-white">Trading Session Times</Label>
             <Textarea
               value={formData.sessionTimes}
-              onChange={(e) => {
-                const value = e.target.value;
-                setFormData(prev => ({ ...prev, sessionTimes: value }));
-              }}
+              onChange={(e) => setFormData(prev => ({ ...prev, sessionTimes: e.target.value }))}
               placeholder='{"start": "09:30", "end": "16:00", "timezone": "EST"}'
               className="bg-white border-gray-300 text-black placeholder:text-gray-500 focus:border-yellow-400 focus:ring-yellow-400"
+              autoComplete="off"
             />
             <p className="text-xs text-gray-400 mt-1">JSON format for trading session configuration</p>
           </div>
