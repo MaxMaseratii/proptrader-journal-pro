@@ -1,16 +1,11 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '@/components/ui/dialog';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Checkbox } from '@/components/ui/checkbox';
 import { apiRequest } from '@/lib/queryClient';
+import StrategyForm from './strategy-form';
 import { 
   Plus, 
   Edit, 
@@ -28,39 +23,7 @@ import {
 } from 'lucide-react';
 import type { TradingStrategy } from '@shared/schema';
 
-interface StrategyFormData {
-  name: string;
-  description: string;
-  rules: string[];
-  riskRewardRatio: number;
-  expectedWinRate: number;
-  riskAmountUsd: number;
-  tradingAssets: string[];
-  sessionTimes: string;
-  maxTradesPerDay: number;
-  isActive: boolean;
-}
 
-const defaultFormData: StrategyFormData = {
-  name: '',
-  description: '',
-  rules: [''],
-  riskRewardRatio: 2.0,
-  expectedWinRate: 50.0,
-  riskAmountUsd: 100.0,
-  tradingAssets: [],
-  sessionTimes: '{"start": "09:30", "end": "16:00", "timezone": "EST"}',
-  maxTradesPerDay: 3,
-  isActive: true,
-};
-
-const tradingAssetOptions = [
-  'ES (S&P 500)', 'NQ (NASDAQ)', 'YM (Dow Jones)', 'RTY (Russell 2000)',
-  'CL (Crude Oil)', 'GC (Gold)', 'SI (Silver)', 'NG (Natural Gas)',
-  'EUR/USD', 'GBP/USD', 'USD/JPY', 'AUD/USD', 'USD/CAD',
-  'AAPL', 'TSLA', 'MSFT', 'GOOGL', 'AMZN', 'META', 'NVDA',
-  'BTC/USD', 'ETH/USD', 'Other'
-];
 
 interface StrategyManagementProps {
   editStrategyId?: number | null;
@@ -72,8 +35,6 @@ const StrategyManagement: React.FC<StrategyManagementProps> = ({ editStrategyId,
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [editingStrategy, setEditingStrategy] = useState<TradingStrategy | null>(null);
-  const [formData, setFormData] = useState<StrategyFormData>(defaultFormData);
-  const [newRule, setNewRule] = useState('');
 
   // Data queries
   const { data: strategies, isLoading } = useQuery<TradingStrategy[]>({
@@ -81,26 +42,6 @@ const StrategyManagement: React.FC<StrategyManagementProps> = ({ editStrategyId,
   });
 
   // Mutations
-  const createStrategyMutation = useMutation({
-    mutationFn: (data: any) => apiRequest('/api/strategies', 'POST', data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/strategies'] });
-      setIsCreateDialogOpen(false);
-      resetForm();
-    },
-  });
-
-  const updateStrategyMutation = useMutation({
-    mutationFn: ({ id, data }: { id: number; data: any }) => apiRequest(`/api/strategies/${id}`, 'PUT', data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/strategies'] });
-      setIsEditDialogOpen(false);
-      setEditingStrategy(null);
-      resetForm();
-      onStrategyUpdated?.(); // Call parent callback
-    },
-  });
-
   const deleteStrategyMutation = useMutation({
     mutationFn: (id: number) => apiRequest(`/api/strategies/${id}`, 'DELETE'),
     onSuccess: () => {
@@ -108,103 +49,15 @@ const StrategyManagement: React.FC<StrategyManagementProps> = ({ editStrategyId,
     },
   });
 
-  // Helper functions
   const calculateExpectedValue = (winRate: number, rr: number, riskAmount: number) => {
-    // Kelly Criterion based expected value: (WinRate * RR - LossRate) * RiskAmount
     const winRateDecimal = winRate / 100;
     const lossRateDecimal = 1 - winRateDecimal;
     const expectedValue = (winRateDecimal * rr - lossRateDecimal) * riskAmount;
     return expectedValue;
   };
 
-  const resetForm = () => {
-    setFormData(defaultFormData);
-    setNewRule('');
-    setActiveTab("basic");
-  };
-
-  const addRule = useCallback(() => {
-    if (newRule.trim()) {
-      setFormData(prev => ({
-        ...prev,
-        rules: [...prev.rules.filter(rule => rule.trim()), newRule.trim(), '']
-      }));
-      setNewRule('');
-    }
-  }, [newRule]);
-
-  const removeRule = useCallback((index: number) => {
-    setFormData(prev => {
-      const newRules = prev.rules.filter((_, i) => i !== index);
-      // Ensure there's always at least one empty field
-      if (newRules.length === 0 || newRules.every(rule => rule.trim())) {
-        newRules.push('');
-      }
-      return {
-        ...prev,
-        rules: newRules
-      };
-    });
-  }, []);
-
-  const updateRule = useCallback((index: number, value: string) => {
-    setFormData(prev => {
-      const newRules = prev.rules.map((rule, i) => i === index ? value : rule);
-      // If the last rule has content and there's no empty rule at the end, add one
-      const lastRule = newRules[newRules.length - 1];
-      if (lastRule && lastRule.trim() && index === newRules.length - 1) {
-        newRules.push('');
-      }
-      return {
-        ...prev,
-        rules: newRules
-      };
-    });
-  }, []);
-
-  const handleAssetToggle = useCallback((asset: string) => {
-    setFormData(prev => ({
-      ...prev,
-      tradingAssets: prev.tradingAssets.includes(asset)
-        ? prev.tradingAssets.filter(a => a !== asset)
-        : [...prev.tradingAssets, asset]
-    }));
-  }, []);
-
-  const handleSubmit = () => {
-    const expectedValue = calculateExpectedValue(
-      formData.expectedWinRate,
-      formData.riskRewardRatio,
-      formData.riskAmountUsd
-    );
-
-    const strategyData = {
-      ...formData,
-      expectedValue,
-      rules: formData.rules.filter(rule => rule.trim()),
-    };
-
-    if (editingStrategy) {
-      updateStrategyMutation.mutate({ id: editingStrategy.id, data: strategyData });
-    } else {
-      createStrategyMutation.mutate(strategyData);
-    }
-  };
-
   const openEditDialog = (strategy: TradingStrategy) => {
     setEditingStrategy(strategy);
-    setFormData({
-      name: strategy.name,
-      description: strategy.description || '',
-      rules: Array.isArray(strategy.rules) ? strategy.rules : [],
-      riskRewardRatio: strategy.riskRewardRatio || 2.0,
-      expectedWinRate: strategy.expectedWinRate || 50.0,
-      riskAmountUsd: strategy.riskAmountUsd || 100.0,
-      tradingAssets: Array.isArray(strategy.tradingAssets) ? strategy.tradingAssets : [],
-      sessionTimes: strategy.sessionTimes || '{"start": "09:30", "end": "16:00", "timezone": "EST"}',
-      maxTradesPerDay: strategy.maxTradesPerDay || 3,
-      isActive: strategy.isActive !== false,
-    });
     setIsEditDialogOpen(true);
   };
 
@@ -230,248 +83,7 @@ const StrategyManagement: React.FC<StrategyManagementProps> = ({ editStrategyId,
     return 'text-red-400';
   };
 
-  const [activeTab, setActiveTab] = useState("basic");
 
-  // Memoized StrategyFormContent to prevent re-renders
-  const StrategyFormContent = React.memo(() => {
-    // Stable event handlers with useCallback
-    const handleNameChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-      setFormData(prev => ({ ...prev, name: e.target.value }));
-    }, []);
-
-    const handleDescriptionChange = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
-      setFormData(prev => ({ ...prev, description: e.target.value }));
-    }, []);
-
-    const handleRiskAmountChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-      setFormData(prev => ({ ...prev, riskAmountUsd: parseFloat(e.target.value) || 0 }));
-    }, []);
-
-    const handleRiskRewardChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-      setFormData(prev => ({ ...prev, riskRewardRatio: parseFloat(e.target.value) || 0 }));
-    }, []);
-
-    const handleWinRateChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-      setFormData(prev => ({ ...prev, expectedWinRate: parseFloat(e.target.value) || 0 }));
-    }, []);
-
-    const handleMaxTradesChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-      setFormData(prev => ({ ...prev, maxTradesPerDay: parseInt(e.target.value) || 1 }));
-    }, []);
-
-    const handleSessionTimesChange = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
-      setFormData(prev => ({ ...prev, sessionTimes: e.target.value }));
-    }, []);
-
-    const handleNewRuleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-      setNewRule(e.target.value);
-    }, []);
-
-    const expectedValue = useMemo(() => 
-      calculateExpectedValue(formData.expectedWinRate, formData.riskRewardRatio, formData.riskAmountUsd),
-      [formData.expectedWinRate, formData.riskRewardRatio, formData.riskAmountUsd]
-    );
-
-    return (
-    <div className="space-y-6 max-h-[80vh] overflow-y-auto">
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid w-full grid-cols-4 bg-gray-800">
-          <TabsTrigger value="basic">Basic Info</TabsTrigger>
-          <TabsTrigger value="rules">Rules</TabsTrigger>
-          <TabsTrigger value="risk">Risk & Returns</TabsTrigger>
-          <TabsTrigger value="settings">Settings</TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="basic" className="space-y-4">
-          <div className="grid grid-cols-1 gap-4">
-            <div>
-              <Label className="text-white">Strategy Name</Label>
-              <Input
-                value={formData.name}
-                onChange={handleNameChange}
-                placeholder="e.g., Scalping ES Morning Session"
-                className="bg-white border-gray-300 text-black placeholder:text-gray-500 focus:border-yellow-400 focus:ring-yellow-400"
-                autoComplete="off"
-              />
-            </div>
-            <div>
-              <Label className="text-white">Description</Label>
-              <Textarea
-                value={formData.description}
-                onChange={handleDescriptionChange}
-                placeholder="Describe your trading strategy..."
-                className="bg-white border-gray-300 text-black placeholder:text-gray-500 focus:border-yellow-400 focus:ring-yellow-400"
-                rows={3}
-                autoComplete="off"
-              />
-            </div>
-          </div>
-        </TabsContent>
-
-        <TabsContent value="rules" className="space-y-4">
-          <div>
-            <Label className="text-white">Trading Rules</Label>
-            <div className="space-y-3">
-              {formData.rules.map((rule, index) => (
-                <div key={index} className="flex items-center gap-2">
-                  <Input
-                    value={rule}
-                    onChange={(e) => updateRule(index, e.target.value)}
-                    placeholder="Enter a trading rule..."
-                    className="bg-white border-gray-300 text-black placeholder:text-gray-500 focus:border-yellow-400 focus:ring-yellow-400 flex-1"
-                    autoComplete="off"
-                  />
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => removeRule(index)}
-                    className="text-red-400 hover:text-red-300"
-                    type="button"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </Button>
-                </div>
-              ))}
-              <div className="flex items-center gap-2">
-                <Input
-                  value={newRule}
-                  onChange={handleNewRuleChange}
-                  placeholder="Add a new rule..."
-                  className="bg-white border-gray-300 text-black placeholder:text-gray-500 focus:border-yellow-400 focus:ring-yellow-400 flex-1"
-                  onKeyPress={(e) => e.key === 'Enter' && addRule()}
-                  autoComplete="off"
-                />
-                <Button onClick={addRule} className="bg-yellow-500 hover:bg-yellow-600 text-black" type="button">
-                  <Plus className="w-4 h-4" />
-                </Button>
-              </div>
-            </div>
-          </div>
-        </TabsContent>
-
-        <TabsContent value="risk" className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <Label className="text-white">Risk Amount (USD)</Label>
-              <Input
-                type="number"
-                step="0.01"
-                value={formData.riskAmountUsd}
-                onChange={handleRiskAmountChange}
-                className="bg-white border-gray-300 text-black placeholder:text-gray-500 focus:border-yellow-400 focus:ring-yellow-400"
-                autoComplete="off"
-              />
-            </div>
-            <div>
-              <Label className="text-white">Risk-Reward Ratio</Label>
-              <Input
-                type="number"
-                step="0.1"
-                value={formData.riskRewardRatio}
-                onChange={handleRiskRewardChange}
-                className="bg-white border-gray-300 text-black placeholder:text-gray-500 focus:border-yellow-400 focus:ring-yellow-400"
-                autoComplete="off"
-              />
-            </div>
-            <div>
-              <Label className="text-white">Expected Win Rate (%)</Label>
-              <Input
-                type="number"
-                step="1"
-                min="0"
-                max="100"
-                value={formData.expectedWinRate}
-                onChange={handleWinRateChange}
-                className="bg-white border-gray-300 text-black placeholder:text-gray-500 focus:border-yellow-400 focus:ring-yellow-400"
-                autoComplete="off"
-              />
-            </div>
-            <div>
-              <Label className="text-white">Max Trades per Day</Label>
-              <Input
-                type="number"
-                min="1"
-                value={formData.maxTradesPerDay}
-                onChange={handleMaxTradesChange}
-                className="bg-white border-gray-300 text-black placeholder:text-gray-500 focus:border-yellow-400 focus:ring-yellow-400"
-                autoComplete="off"
-              />
-            </div>
-          </div>
-          
-          {/* Expected Value Display */}
-          <div className="p-4 bg-gray-700 rounded-lg border border-yellow-400/20">
-            <div className="flex items-center justify-between">
-              <span className="text-white font-medium">Expected Value per Trade:</span>
-              <span className={`text-xl font-bold ${expectedValue > 20 ? 'text-green-400' : expectedValue > 0 ? 'text-yellow-400' : 'text-red-400'}`}>
-                ${expectedValue.toFixed(2)}
-              </span>
-            </div>
-            <div className="text-sm text-gray-400 mt-2">
-              Formula: (Win Rate × RR - Loss Rate) × Risk Amount
-            </div>
-          </div>
-        </TabsContent>
-
-        <TabsContent value="settings" className="space-y-4">
-          <div>
-            <Label className="text-white">Trading Assets</Label>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mt-2">
-              {tradingAssetOptions.map(asset => (
-                <div key={asset} className="flex items-center space-x-2">
-                  <Checkbox
-                    id={asset}
-                    checked={formData.tradingAssets.includes(asset)}
-                    onCheckedChange={() => handleAssetToggle(asset)}
-                    className="border-gray-600"
-                  />
-                  <Label htmlFor={asset} className="text-sm text-gray-300">{asset}</Label>
-                </div>
-              ))}
-            </div>
-          </div>
-          
-          <div>
-            <Label className="text-white">Trading Session Times</Label>
-            <Textarea
-              value={formData.sessionTimes}
-              onChange={handleSessionTimesChange}
-              placeholder='{"start": "09:30", "end": "16:00", "timezone": "EST"}'
-              className="bg-white border-gray-300 text-black placeholder:text-gray-500 focus:border-yellow-400 focus:ring-yellow-400"
-              autoComplete="off"
-            />
-            <p className="text-xs text-gray-400 mt-1">JSON format for trading session configuration</p>
-          </div>
-        </TabsContent>
-      </Tabs>
-
-      <div className="flex justify-end gap-3 pt-4 border-t border-gray-600">
-        <Button
-          variant="outline"
-          onClick={() => {
-            if (editingStrategy) {
-              setIsEditDialogOpen(false);
-              setEditingStrategy(null);
-            } else {
-              setIsCreateDialogOpen(false);
-            }
-            resetForm();
-          }}
-          className="border-gray-600 text-gray-300"
-        >
-          Cancel
-        </Button>
-        <Button
-          onClick={handleSubmit}
-          disabled={!formData.name.trim() || createStrategyMutation.isPending || updateStrategyMutation.isPending}
-          className="bg-yellow-500 hover:bg-yellow-600 text-black"
-        >
-          {editingStrategy ? 'Update Strategy' : 'Create Strategy'}
-        </Button>
-      </div>
-    </div>
-  )
-  });  // Close the memoized component
 
   if (isLoading) {
     return (
@@ -504,7 +116,9 @@ const StrategyManagement: React.FC<StrategyManagementProps> = ({ editStrategyId,
                 Create a new trading strategy with rules, risk management, and performance targets.
               </DialogDescription>
             </DialogHeader>
-            <StrategyFormContent />
+            <StrategyForm 
+              onClose={() => setIsCreateDialogOpen(false)}
+            />
           </DialogContent>
         </Dialog>
       </div>
@@ -634,7 +248,9 @@ const StrategyManagement: React.FC<StrategyManagementProps> = ({ editStrategyId,
                 <DialogHeader>
                   <DialogTitle className="text-yellow-400">Create New Trading Strategy</DialogTitle>
                 </DialogHeader>
-                <StrategyFormContent />
+                <StrategyForm 
+                  onClose={() => setIsCreateDialogOpen(false)}
+                />
               </DialogContent>
             </Dialog>
           </CardContent>
@@ -650,7 +266,14 @@ const StrategyManagement: React.FC<StrategyManagementProps> = ({ editStrategyId,
               Update your trading strategy configuration and rules.
             </DialogDescription>
           </DialogHeader>
-          <StrategyFormContent />
+          <StrategyForm 
+            onClose={() => {
+              setIsEditDialogOpen(false);
+              setEditingStrategy(null);
+              onStrategyUpdated?.();
+            }}
+            editStrategy={editingStrategy}
+          />
         </DialogContent>
       </Dialog>
     </div>
