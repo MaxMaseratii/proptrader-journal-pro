@@ -189,11 +189,13 @@ const StrategyManagement: React.FC<StrategyManagementProps> = ({ editStrategyId,
     setNewRule(e.target.value);
   }, []);
 
-  const handleRuleChange = useCallback((index: number, value: string) => {
-    setFormData(prev => ({
-      ...prev,
-      rules: prev.rules.map((rule, i) => i === index ? value : rule)
-    }));
+  const handleRuleChange = useCallback((index: number) => {
+    return (e: React.ChangeEvent<HTMLInputElement>) => {
+      setFormData(prev => ({
+        ...prev,
+        rules: prev.rules.map((rule, i) => i === index ? e.target.value : rule)
+      }));
+    };
   }, []);
 
   const handleSubmit = () => {
@@ -301,7 +303,7 @@ const StrategyManagement: React.FC<StrategyManagementProps> = ({ editStrategyId,
                 <div key={index} className="flex items-center gap-2">
                   <Input
                     value={rule}
-                    onChange={(e) => handleRuleChange(index, e.target.value)}
+                    onChange={handleRuleChange(index)}
                     placeholder="Enter a trading rule..."
                     className="bg-white border-gray-300 text-black placeholder:text-gray-500 focus:border-yellow-400 focus:ring-yellow-400 flex-1"
                     autoComplete="off"
