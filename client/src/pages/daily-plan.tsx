@@ -297,7 +297,7 @@ const DailyPlanPage = () => {
                       type="time"
                       value={newPlanData.startTime}
                       onChange={(e) => setNewPlanData(prev => ({ ...prev, startTime: e.target.value }))}
-                      className="bg-gray-800 border-yellow-400/20 text-white hover:border-yellow-400/40"
+                      className="bg-white border-gray-300 text-black placeholder:text-gray-500 focus:border-yellow-400 focus:ring-yellow-400"
                     />
                   </div>
                   <div>
@@ -306,7 +306,7 @@ const DailyPlanPage = () => {
                       type="time"
                       value={newPlanData.endTime}
                       onChange={(e) => setNewPlanData(prev => ({ ...prev, endTime: e.target.value }))}
-                      className="bg-gray-800 border-yellow-400/20 text-white hover:border-yellow-400/40"
+                      className="bg-white border-gray-300 text-black placeholder:text-gray-500 focus:border-yellow-400 focus:ring-yellow-400"
                     />
                   </div>
                 </div>
@@ -318,8 +318,11 @@ const DailyPlanPage = () => {
                     <Input
                       type="number"
                       value={newPlanData.riskAmount}
-                      onChange={(e) => setNewPlanData(prev => ({ ...prev, riskAmount: parseFloat(e.target.value) || 0 }))}
-                      className="bg-gray-800 border-yellow-400/20 text-white hover:border-yellow-400/40"
+                      onChange={(e) => {
+                        const value = parseFloat(e.target.value) || 0;
+                        setNewPlanData(prev => ({ ...prev, riskAmount: value }));
+                      }}
+                      className="bg-white border-gray-300 text-black placeholder:text-gray-500 focus:border-yellow-400 focus:ring-yellow-400"
                     />
                   </div>
                   <div>
@@ -327,8 +330,11 @@ const DailyPlanPage = () => {
                     <Input
                       type="number"
                       value={newPlanData.targetProfit}
-                      onChange={(e) => setNewPlanData(prev => ({ ...prev, targetProfit: parseFloat(e.target.value) || 0 }))}
-                      className="bg-gray-800 border-yellow-400/20 text-white hover:border-yellow-400/40"
+                      onChange={(e) => {
+                        const value = parseFloat(e.target.value) || 0;
+                        setNewPlanData(prev => ({ ...prev, targetProfit: value }));
+                      }}
+                      className="bg-white border-gray-300 text-black placeholder:text-gray-500 focus:border-yellow-400 focus:ring-yellow-400"
                     />
                   </div>
                   <div>
@@ -336,8 +342,11 @@ const DailyPlanPage = () => {
                     <Input
                       type="number"
                       value={newPlanData.maxTrades}
-                      onChange={(e) => setNewPlanData(prev => ({ ...prev, maxTrades: parseInt(e.target.value) || 0 }))}
-                      className="bg-gray-800 border-yellow-400/20 text-white hover:border-yellow-400/40"
+                      onChange={(e) => {
+                        const value = parseInt(e.target.value) || 0;
+                        setNewPlanData(prev => ({ ...prev, maxTrades: value }));
+                      }}
+                      className="bg-white border-gray-300 text-black placeholder:text-gray-500 focus:border-yellow-400 focus:ring-yellow-400"
                     />
                   </div>
                   <div>
@@ -346,8 +355,11 @@ const DailyPlanPage = () => {
                       type="number"
                       step="0.1"
                       value={newPlanData.riskRewardRatio}
-                      onChange={(e) => setNewPlanData(prev => ({ ...prev, riskRewardRatio: parseFloat(e.target.value) || 0 }))}
-                      className="bg-gray-800 border-yellow-400/20 text-white hover:border-yellow-400/40"
+                      onChange={(e) => {
+                        const value = parseFloat(e.target.value) || 0;
+                        setNewPlanData(prev => ({ ...prev, riskRewardRatio: value }));
+                      }}
+                      className="bg-white border-gray-300 text-black placeholder:text-gray-500 focus:border-yellow-400 focus:ring-yellow-400"
                     />
                   </div>
                 </div>
@@ -359,7 +371,7 @@ const DailyPlanPage = () => {
                     value={newPlanData.notes}
                     onChange={(e) => setNewPlanData(prev => ({ ...prev, notes: e.target.value }))}
                     placeholder="Enter your trading plan notes..."
-                    className="bg-gray-800 border-yellow-400/20 text-white hover:border-yellow-400/40"
+                    className="bg-white border-gray-300 text-black placeholder:text-gray-500 focus:border-yellow-400 focus:ring-yellow-400"
                   />
                 </div>
               </div>
@@ -374,10 +386,10 @@ const DailyPlanPage = () => {
                 </Button>
                 <Button
                   onClick={createNewPlan}
-                  disabled={!selectedAccount || !selectedStrategy || createPlanMutation.isPending}
+                  disabled={!selectedAccount || !selectedStrategy || createDailyPlan.isPending}
                   className="bg-gradient-to-r from-yellow-400 to-yellow-600 text-black hover:from-yellow-500 hover:to-yellow-700"
                 >
-                  Create Plan
+                  {createDailyPlan.isPending ? 'Creating...' : 'Create Plan'}
                 </Button>
               </div>
             </DialogContent>
