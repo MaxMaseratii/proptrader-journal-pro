@@ -208,6 +208,52 @@ export default function EnhancedPayouts() {
 
   const selectedAccount = accounts?.find(a => a.id.toString() === selectedAccountId);
 
+  // Update payout rules mutation
+  const updatePayoutRulesMutation = useMutation({
+    mutationFn: async (data: { accountId: number; rules: any }) => {
+      return apiRequest("/api/accounts/" + data.accountId, "PATCH", data.rules);
+    },
+    onSuccess: () => {
+      toast({ 
+        title: "Payout Rules Updated", 
+        description: "Account payout settings have been successfully updated." 
+      });
+      setShowEditRulesDialog(false);
+      queryClient.invalidateQueries({ queryKey: ['/api/accounts'] });
+    },
+    onError: () => {
+      toast({ 
+        title: "Update Failed", 
+        description: "Failed to update payout rules. Please try again.",
+        variant: "destructive"
+      });
+    }
+  });
+
+  // Initialize editing rules when account is selected
+  useEffect(() => {
+    if (selectedAccount) {
+      setEditingRules({
+        daysRequiredForPayout: selectedAccount.daysRequiredForPayout || 5,
+        winningDayMinimum: selectedAccount.winningDayMinimum || 200,
+        profitSplit: selectedAccount.profitSplit || 80,
+        minimumPayoutAmount: selectedAccount.minimumPayoutAmount || 500,
+        maxNetBalanceForPayout: selectedAccount.maxNetBalanceForPayout || 10000,
+        payoutFrequency: selectedAccount.payoutFrequency || 'weekly',
+        consistencyRulePercent: selectedAccount.consistencyRulePercent || 50
+      });
+    }
+  }, [selectedAccount]);
+
+  const handleSavePayoutRules = () => {
+    if (!selectedAccount) return;
+    
+    updatePayoutRulesMutation.mutate({
+      accountId: selectedAccount.id,
+      rules: editingRules
+    });
+  };
+
   return (
     <div className="space-y-6 bg-black min-h-screen p-6">
       {/* Header */}
@@ -305,21 +351,7 @@ export default function EnhancedPayouts() {
         </div>
       </div>
 
-      {!selectedAccountId && (
-        <Card className="bg-gradient-to-br from-gray-900 via-gray-800 to-black border border-yellow-400/20">
-          <CardContent className="flex flex-col items-center justify-center py-12">
-            <Wallet className="w-16 h-16 text-gray-500 mb-4" />
-            <h3 className="text-xl font-semibold text-white mb-2">Select an Account</h3>
-            <p className="text-gray-400 text-center">
-              Choose a funded or live account to view payout information and manage withdrawals.
-            </p>
-          </CardContent>
-        </Card>
-      )}
-
-      {selectedAccountId && payoutMetrics && (
-        <>
-          {/* Payout Overview */}
+      {/* Payout Overview - Always show regardless of data */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <Card className="bg-gradient-to-br from-gray-900 via-gray-800 to-black border border-yellow-400/20">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -328,7 +360,7 @@ export default function EnhancedPayouts() {
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold text-yellow-400">
-                  {formatCurrency(selectedAccount?.balance || 0)}
+                  {formatCurrency(payoutMetrics?.totalBalance || selectedAccount?.startingBalance || 0)}
                 </div>
                 <p className="text-xs text-gray-400">Current account balance</p>
               </CardContent>
@@ -341,7 +373,7 @@ export default function EnhancedPayouts() {
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold text-green-400">
-                  {formatCurrency(payoutMetrics.availablePayout)}
+                  {formatCurrency(payoutMetrics?.availablePayout || 0)}
                 </div>
                 <p className="text-xs text-gray-400">{selectedAccount?.profitSplit || 80}% profit split</p>
               </CardContent>
@@ -472,10 +504,6 @@ export default function EnhancedPayouts() {
               </div>
             </CardContent>
           </Card>
-        </>
-      )}
-
-
     </div>
   );
 }
