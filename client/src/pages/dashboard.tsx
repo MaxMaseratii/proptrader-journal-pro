@@ -17,7 +17,7 @@ import { formatCurrency, formatPercentage, formatDate } from "@/lib/utils";
 import { calculateDisciplinedScore, getScoreColor, getGradeColor } from "@/lib/disciplined-score";
 import { calculateComprehensiveDisciplineMetrics } from "@/lib/discipline-calculator";
 import DailyPlanningWidget from "@/components/daily-planning-widget";
-import WeeklyPerformanceOverview from "@/components/weekly-performance-overview";
+import { AdvancedTradingCalendar } from "@/components/advanced-trading-calendar";
 
 // Color coding utility function
 const getValueColor = (value: number, type: 'currency' | 'percentage' | 'neutral' = 'currency') => {
@@ -2105,7 +2105,7 @@ export default function Dashboard() {
                 return accounts?.[0]; // Default to first account
               })()}
             />
-            <WeeklyPerformanceOverview 
+            <AdvancedTradingCalendar 
               trades={(() => {
                 if (!trades) return [];
                 
