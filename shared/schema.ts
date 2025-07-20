@@ -180,10 +180,14 @@ export const trades = pgTable("trades", {
 export const journalEntries = pgTable("journal_entries", {
   id: serial("id").primaryKey(),
   accountId: integer("account_id").references(() => accounts.id).notNull(),
+  dailyPlanId: integer("daily_plan_id").references(() => dailyPlans.id), // Link to specific daily plan
   date: date("date").notNull(),
   whatWentWrong: text("what_went_wrong"),
   whatWentRight: text("what_went_right"),
   improvementPlan: text("improvement_plan"),
+  lessonsLearned: text("lessons_learned"), // Added field that was being used
+  emotionalState: text("emotional_state"), // Added field that was being used
+  marketConditions: text("market_conditions"), // Added field that was being used
 });
 
 export const dailyStats = pgTable("daily_stats", {

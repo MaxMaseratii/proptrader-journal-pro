@@ -236,7 +236,7 @@ const DailyPlanPage = () => {
     setTradeSetupLinks(tradeSetupLinks.filter((_, i) => i !== index));
   };
 
-  // Save journal entry function - seamlessly connects to main journal system
+  // Save journal entry function - connects to specific daily plan
   const saveJournalEntry = () => {
     if (!selectedAccount) {
       console.error('No account selected for journal entry');
@@ -248,8 +248,14 @@ const DailyPlanPage = () => {
       return;
     }
 
+    // Find or get the daily plan ID for this date and account
+    const todayPlan = dailyPlans?.find(plan => 
+      plan.accountId === selectedAccount && plan.date === selectedDate
+    );
+
     const journalData = {
       accountId: selectedAccount,
+      dailyPlanId: todayPlan?.id || null, // Link to specific daily plan
       date: selectedDate,
       whatWentRight: journalEntry.whatWentRight.trim(),
       whatWentWrong: journalEntry.whatWentWrong.trim(),
@@ -259,7 +265,7 @@ const DailyPlanPage = () => {
       marketConditions: ''
     };
 
-    console.log('Saving journal entry:', journalData);
+    console.log('Saving journal entry linked to daily plan:', journalData);
     createJournalEntry.mutate(journalData);
   };
 
@@ -296,7 +302,7 @@ const DailyPlanPage = () => {
     createDailyPlan.mutate(planPayload);
   };
 
-  // Get historical plans with comprehensive data for the history section
+  // Get historical plans with comprehensive data including linked journal entries
   const historicalPlans = useMemo(() => {
     if (!dailyPlans || !selectedAccount) return [];
     
@@ -314,6 +320,12 @@ const DailyPlanPage = () => {
         trade.date === plan.date
       ) || [];
       
+      // Get journal entries for this specific daily plan
+      const dayJournalEntries = journalEntries?.filter(entry => 
+        entry.dailyPlanId === plan.id || 
+        (entry.accountId === selectedAccount && entry.date === plan.date)
+      ) || [];
+      
       // Calculate performance metrics
       const totalPnL = dayTrades.reduce((sum, trade) => sum + (trade.pnl || 0), 0);
       const winningTrades = dayTrades.filter(t => (t.pnl || 0) > 0);
@@ -324,6 +336,7 @@ const DailyPlanPage = () => {
         dayNumber: index + 1,
         strategy,
         trades: dayTrades,
+        journalEntries: dayJournalEntries,
         performance: {
           totalPnL,
           tradeCount: dayTrades.length,
@@ -333,7 +346,7 @@ const DailyPlanPage = () => {
         }
       };
     }).reverse(); // Show most recent first in display
-  }, [dailyPlans, selectedAccount, strategies, trades]);
+  }, [dailyPlans, selectedAccount, strategies, trades, journalEntries]);
 
   return (
     <div className="p-6 space-y-6 bg-black min-h-screen">
@@ -785,7 +798,7 @@ const DailyPlanPage = () => {
 
                       {/* Trades for this day */}
                       {plan.trades.length > 0 ? (
-                        <div className="bg-gray-900/50 rounded-lg p-3">
+                        <div className="bg-gray-900/50 rounded-lg p-3 mb-3">
                           <div className="text-xs font-medium text-yellow-400 mb-2">Day's Trades</div>
                           <div className="space-y-2">
                             {plan.trades.map((trade) => (
@@ -816,8 +829,49 @@ const DailyPlanPage = () => {
                           </div>
                         </div>
                       ) : (
-                        <div className="bg-gray-900/50 rounded-lg p-3 text-center">
+                        <div className="bg-gray-900/50 rounded-lg p-3 mb-3 text-center">
                           <div className="text-xs text-gray-400">No trades executed this day</div>
+                        </div>
+                      )}
+
+                      {/* Journal Entries for this specific day */}
+                      {plan.journalEntries && plan.journalEntries.length > 0 ? (
+                        <div className="bg-gray-900/50 rounded-lg p-3">
+                          <div className="text-xs font-medium text-yellow-400 mb-2">Day's Journal Reflections</div>
+                          <div className="space-y-2">
+                            {plan.journalEntries.map((entry) => (
+                              <div key={entry.id} className="bg-gray-800/50 rounded p-2 text-xs">
+                                {entry.whatWentRight && (
+                                  <div className="mb-2">
+                                    <span className="text-green-400 font-medium">✓ What went right:</span>
+                                    <div className="text-gray-300 mt-1">{entry.whatWentRight}</div>
+                                  </div>
+                                )}
+                                {entry.whatWentWrong && (
+                                  <div className="mb-2">
+                                    <span className="text-red-400 font-medium">✗ What went wrong:</span>
+                                    <div className="text-gray-300 mt-1">{entry.whatWentWrong}</div>
+                                  </div>
+                                )}
+                                {entry.lessonsLearned && (
+                                  <div className="mb-2">
+                                    <span className="text-yellow-400 font-medium">💡 Lessons learned:</span>
+                                    <div className="text-gray-300 mt-1">{entry.lessonsLearned}</div>
+                                  </div>
+                                )}
+                                {entry.improvementPlan && (
+                                  <div>
+                                    <span className="text-blue-400 font-medium">🎯 Improvement plan:</span>
+                                    <div className="text-gray-300 mt-1">{entry.improvementPlan}</div>
+                                  </div>
+                                )}
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="bg-gray-900/50 rounded-lg p-3 text-center">
+                          <div className="text-xs text-gray-400">No journal entries for this day</div>
                         </div>
                       )}
                     </div>
@@ -1111,34 +1165,49 @@ const DailyPlanPage = () => {
                 </Button>
               </div>
               
-              {/* Recent Journal Entries - Real Data */}
+              {/* Today's Journal Entry Status */}
               <div className="mt-6">
-                <div className="text-sm font-medium text-gray-300 mb-3">Recent Entries</div>
+                <div className="text-sm font-medium text-gray-300 mb-3">Today's Journal Status</div>
                 <div className="space-y-3">
-                  {journalEntries && journalEntries.length > 0 ? (
-                    journalEntries
-                      .filter(entry => !selectedAccount || entry.accountId === selectedAccount)
-                      .slice(0, 3)
-                      .map((entry, index) => (
-                        <div key={entry.id} className="p-3 bg-gradient-to-r from-gray-800 to-gray-700 rounded-lg border border-yellow-400/10">
-                          <div className="text-sm font-medium text-white mb-1">
-                            {new Date(entry.date).toLocaleDateString()}
+                  {(() => {
+                    // Check if there's already a journal entry for today's plan
+                    const todayPlan = dailyPlans?.find(plan => 
+                      plan.accountId === selectedAccount && plan.date === selectedDate
+                    );
+                    const todayJournalEntry = journalEntries?.find(entry => 
+                      entry.dailyPlanId === todayPlan?.id || 
+                      (entry.accountId === selectedAccount && entry.date === selectedDate)
+                    );
+
+                    if (todayJournalEntry) {
+                      return (
+                        <div className="p-3 bg-gradient-to-r from-green-900 to-green-800 rounded-lg border border-green-400/20">
+                          <div className="text-sm font-medium text-green-400 mb-1">✓ Journal Entry Completed</div>
+                          <div className="text-xs text-gray-300 mb-2">
+                            Connected to {todayPlan ? `DAY ${historicalPlans.findIndex(p => p.id === todayPlan.id) + 1} PLAN` : 'today\'s trading'}
                           </div>
-                          <div className="text-xs text-gray-400 mb-2">
-                            {index === 0 ? 'Latest Entry' : `${index + 1} days ago`}
-                          </div>
-                          <div className="text-xs text-gray-300">
-                            {entry.whatWentRight && `"${entry.whatWentRight.substring(0, 60)}..."`}
-                            {entry.whatWentWrong && `"${entry.whatWentWrong.substring(0, 60)}..."`}
-                            {entry.lessonsLearned && `"${entry.lessonsLearned.substring(0, 60)}..."`}
+                          <div className="text-xs text-gray-400">
+                            {todayJournalEntry.whatWentRight && `"${todayJournalEntry.whatWentRight.substring(0, 60)}..."`}
+                            {todayJournalEntry.whatWentWrong && `"${todayJournalEntry.whatWentWrong.substring(0, 60)}..."`}
+                            {todayJournalEntry.lessonsLearned && `"${todayJournalEntry.lessonsLearned.substring(0, 60)}..."`}
                           </div>
                         </div>
-                      ))
-                  ) : (
-                    <div className="text-center text-gray-400 text-sm py-4">
-                      No journal entries yet. Start by writing your first entry above.
-                    </div>
-                  )}
+                      );
+                    } else {
+                      return (
+                        <div className="p-3 bg-gradient-to-r from-yellow-900 to-yellow-800 rounded-lg border border-yellow-400/20">
+                          <div className="text-sm font-medium text-yellow-400 mb-1">⏳ Journal Entry Pending</div>
+                          <div className="text-xs text-gray-300 mb-2">
+                            {todayPlan ? `Will be linked to DAY ${historicalPlans.findIndex(p => p.id === todayPlan.id) + 1} PLAN` : 'Create a daily plan first'}
+                          </div>
+                          <div className="text-xs text-gray-400">
+                            Complete the journal entry above to connect it to today's trading plan.
+                          </div>
+                        </div>
+                      );
+                    }
+                  })()}
+                  
                   <div className="text-center">
                     <Button 
                       variant="outline" 
