@@ -256,7 +256,7 @@ export function AdvancedTradingCalendar({ trades = [], selectedAccount, classNam
       <div
         onClick={() => onClick(date)}
         className={`
-          relative p-2 rounded-md border transition-all duration-200 cursor-pointer h-16 min-w-0
+          relative p-3 rounded-md border transition-all duration-200 cursor-pointer h-24 min-w-0
           ${isSelected 
             ? 'border-amber-400 bg-gradient-to-br from-amber-900/40 via-amber-800/30 to-amber-900/40 shadow-md' 
             : isToday
@@ -380,7 +380,7 @@ export function AdvancedTradingCalendar({ trades = [], selectedAccount, classNam
                       setViewMode('monthly');
                     }}
                     className={`
-                      relative bg-gray-800/50 rounded-lg p-3 cursor-pointer transition-all duration-200 min-h-[100px]
+                      relative bg-gray-800/50 rounded-lg p-4 cursor-pointer transition-all duration-200 min-h-[120px]
                       ${isCurrentMonth ? 'ring-2 ring-teal-400 bg-teal-950/30' : ''}
                       ${isSelectedMonth ? 'ring-2 ring-amber-400 bg-amber-950/30' : ''}
                       hover:bg-gray-700/50 border border-gray-700/30
