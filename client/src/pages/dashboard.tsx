@@ -55,25 +55,316 @@ import {
   Trophy,
   Star,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  Eye,
+  EyeOff,
+  ChevronDown
 } from "lucide-react";
 import type { Account, Trade } from "@shared/schema";
 
-interface DashboardAnalytics {
-  account: Account;
-  totalPnl: number;
-  winRate: number;
-  totalTrades: number;
-  winningTrades: number;
-  losingTrades: number;
-  bestTrade: number;
-  worstTrade: number;
-  currentBalance: number;
-  drawdown: number;
-  profitTarget: number;
-  dailyLossLimit: number;
-  riskLimitUsed: number;
-}
+// TradingDashboard component - your custom calendar component
+const TradingDashboard = () => {
+  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [currentPeriod, setCurrentPeriod] = useState(new Date());
+  const [viewMode, setViewMode] = useState('weekly'); // weekly, monthly, yearly
+  const [hoveredMetric, setHoveredMetric] = useState(null);
+  const [showPeriodPicker, setShowPeriodPicker] = useState(false);
+
+  // Generate empty trading data structure for CSV population
+  const generateTradingData = (date: Date) => {
+    return {
+      date,
+      avgRiskPerTrade: 0,
+      maxDailyRisk: 0,
+      avgRewardRatio: 0,
+      targetRewardRatio: 0,
+      dailyTarget: 0,
+      dayPnL: 0,
+      maxDailyTrades: 0,
+      totalDayTrades: 0,
+      disciplineScore: 0,
+      winRate: 0
+    };
+  };
+
+  // Helper function to convert discipline score to letter grade
+  const getDisciplineGrade = (score: number) => {
+    if (score >= 90) return { grade: 'A', color: 'text-green-400' };
+    if (score >= 80) return { grade: 'B', color: 'text-green-400' };
+    if (score >= 70) return { grade: 'C', color: 'text-yellow-400' };
+    if (score >= 60) return { grade: 'D', color: 'text-orange-400' };
+    return { grade: 'F', color: 'text-red-400' };
+  };
+
+  // Calendar helper functions
+  const getWeekDays = (date: Date) => {
+    const week = [];
+    const startOfWeek = new Date(date);
+    const day = startOfWeek.getDay();
+    const diff = startOfWeek.getDate() - day;
+    startOfWeek.setDate(diff);
+
+    for (let i = 0; i < 7; i++) {
+      const weekDay = new Date(startOfWeek);
+      weekDay.setDate(startOfWeek.getDate() + i);
+      week.push(weekDay);
+    }
+    return week;
+  };
+
+  const formatPeriod = (date: Date, mode: string) => {
+    switch (mode) {
+      case 'weekly':
+        const weekStart = getWeekDays(date)[0];
+        const weekEnd = getWeekDays(date)[6];
+        if (weekStart.getMonth() === weekEnd.getMonth()) {
+          return `${weekStart.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - ${weekEnd.getDate()}, ${weekStart.getFullYear()}`;
+        }
+        return `${weekStart.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - ${weekEnd.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}, ${weekStart.getFullYear()}`;
+      case 'monthly':
+        return date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+      case 'yearly':
+        return date.getFullYear().toString();
+      default:
+        return '';
+    }
+  };
+
+  const navigatePeriod = (direction: number) => {
+    const newPeriod = new Date(currentPeriod);
+    switch (viewMode) {
+      case 'weekly':
+        newPeriod.setDate(newPeriod.getDate() + (direction * 7));
+        break;
+      case 'monthly':
+        newPeriod.setMonth(newPeriod.getMonth() + direction);
+        break;
+      case 'yearly':
+        newPeriod.setFullYear(newPeriod.getFullYear() + direction);
+        break;
+    }
+    setCurrentPeriod(newPeriod);
+  };
+
+  const selectedDayData = generateTradingData(selectedDate);
+  const isToday = selectedDate.toDateString() === new Date().toDateString();
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900 p-4 mb-6">
+      <div className="max-w-7xl mx-auto space-y-6">
+        
+        {/* Header with Navigation */}
+        <div className="flex items-center justify-between bg-gradient-to-r from-gray-800/50 to-gray-900/50 rounded-xl p-4 border border-gray-700/50">
+          <h1 className="text-2xl font-bold text-amber-400">Daily Risk Management & Performance Overview</h1>
+        </div>
+
+        {/* Main Dashboard Layout */}
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
+          
+          {/* Selected Day Detail - NOW WITH 2x3 GRID - EXPANDED */}
+          <div className="lg:col-span-2">
+            <div className={`
+              relative transition-all duration-200 rounded-lg overflow-hidden w-full
+              ${isToday 
+                ? 'bg-gradient-to-br from-teal-950/40 via-gray-900/60 to-black/80 border border-teal-400/50' 
+                : 'bg-gradient-to-br from-gray-900/40 via-gray-800/60 to-black/80 border border-gray-600/30'
+              }
+              hover:border-amber-400/60
+            `}>
+              
+              {/* Ultra Compact Layout - Full Width */}
+              <div className="p-4">
+                
+                {/* Header + PNL Combined */}
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center space-x-2">
+                    <Calendar className="w-4 h-4 text-amber-400" />
+                    <span className="text-lg font-bold text-amber-400">
+                      {selectedDate.toLocaleDateString('en-US', { weekday: 'short' })} {selectedDate.getDate()}
+                    </span>
+                    {isToday && <div className="w-2 h-2 rounded-full bg-teal-400" />}
+                  </div>
+                  <div className="bg-gray-900/80 rounded-lg px-4 py-3 border border-gray-700/50">
+                    <div className="flex items-center space-x-2">
+                      <span className="text-sm text-gray-400">Daily P&L:</span>
+                      <span className="text-lg font-bold text-green-400">+$0.00</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Compact Progress Bar with Text Inside */}
+                <div className="mb-4">
+                  <div className="relative w-3/4 bg-gray-700/50 rounded-full h-6 mx-auto">
+                    <div 
+                      className="h-6 rounded-full transition-all duration-500 flex items-center justify-center bg-green-400"
+                      style={{ width: '0%', minWidth: '120px' }}
+                    >
+                      <span className="text-xs font-medium text-black">
+                        0% of $0 target
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* 2 Rows x 4 Columns Grid - Full Width */}
+                <div className="space-y-3">
+                  
+                  {/* Row 1 */}
+                  <div className="grid grid-cols-4 gap-4">
+                    
+                    {/* Risk + Max Daily Loss Combined */}
+                    <div className="bg-black/30 rounded-lg p-4 border border-gray-700/50 relative">
+                      <div className="absolute top-3 right-3 text-xs text-red-400">Max: $0</div>
+                      <div className="text-3xl font-bold text-red-400 mb-1">$0</div>
+                      <div className="text-sm text-gray-400">Risk Per Trade</div>
+                    </div>
+
+                    {/* R:R */}
+                    <div className="bg-black/30 rounded-lg p-4 border border-gray-700/50 relative">
+                      <div className="absolute top-3 right-3 text-xs text-blue-300">Target: 0 RR</div>
+                      <div className="text-3xl font-bold text-blue-400 mb-1">0.0</div>
+                      <div className="text-sm text-gray-400">Risk:Reward</div>
+                      <div className="text-xs text-blue-300 mt-1">AVG. Ratio 1:0.0</div>
+                    </div>
+
+                    {/* Trades */}
+                    <div className="bg-black/30 rounded-lg p-4 border border-gray-700/50 relative">
+                      <div className="absolute top-3 right-3 text-xs text-purple-300">0/0</div>
+                      <div className="text-3xl font-bold text-purple-400 mb-1">0</div>
+                      <div className="w-full bg-gray-700/50 rounded-full h-1 mb-2">
+                        <div className="h-1 rounded-full bg-purple-400 transition-all duration-500" style={{ width: '0%' }} />
+                      </div>
+                      <div className="text-sm text-gray-400 mb-1">Trades Executed</div>
+                      <div className="text-xs text-gray-300">W:0 L:0</div>
+                    </div>
+
+                    {/* Hours Worked */}
+                    <div className="bg-black/30 rounded-lg p-4 border border-gray-700/50 relative">
+                      <div className="absolute top-3 right-3 text-xs text-indigo-300">
+                        <div className="flex items-center space-x-1">
+                          <div className="w-2 h-2 rounded-full bg-indigo-400"></div>
+                          <span>Plan: 0h</span>
+                        </div>
+                      </div>
+                      <div className="text-3xl font-bold text-indigo-400 mb-1">0h</div>
+                      <div className="text-sm text-gray-400 mb-1">Hours Worked</div>
+                      <div className="text-xs text-indigo-300 mb-1">Hourly wage: $0</div>
+                      <div className="text-xs text-gray-300">Total: $0 (H. Worked x H. Wage)</div>
+                    </div>
+                  </div>
+
+                  {/* Row 2 */}
+                  <div className="grid grid-cols-4 gap-4">
+                    
+                    {/* Discipline */}
+                    <div className="bg-black/30 rounded-lg p-4 border border-gray-700/50 relative">
+                      <div className="absolute top-3 right-3">
+                        <div className="px-2 py-1 rounded text-xs font-bold bg-red-500 text-white">POOR</div>
+                      </div>
+                      <div className="text-3xl font-bold text-red-400 mb-1">0% F</div>
+                      <div className="text-sm text-gray-400 mb-1">Discipline Score</div>
+                      <div className="text-xs text-gray-300">45% risk • 85% consistency</div>
+                    </div>
+
+                    {/* Risk Utilization */}
+                    <div className="bg-black/30 rounded-lg p-4 border border-gray-700/50 relative">
+                      <div className="absolute top-3 right-3 text-xs text-orange-300">Used</div>
+                      <div className="text-3xl font-bold text-orange-400 mb-1">0%</div>
+                      <div className="text-sm text-gray-400 mb-1">Risk Utilization</div>
+                      <div className="text-xs text-orange-300">Total: $0</div>
+                    </div>
+
+                    {/* Wins and Losses */}
+                    <div className="bg-black/30 rounded-lg p-4 border border-gray-700/50 relative">
+                      <div className="absolute top-3 right-3 text-xs text-green-300">W/L</div>
+                      <div className="flex items-center space-x-2 mb-1">
+                        <span className="text-lg font-bold text-green-400">W: $0</span>
+                        <span className="text-lg font-bold text-red-400">L: $0</span>
+                      </div>
+                      <div className="text-sm text-gray-400 mb-1">Total Wins and Losses</div>
+                      <div className="text-xs text-gray-300">Avg W/L $0 / $0</div>
+                    </div>
+
+                    {/* Win Rate */}
+                    <div className="bg-black/30 rounded-lg p-4 border border-gray-700/50 relative">
+                      <div className="absolute top-3 right-3 text-xs text-emerald-300">WR</div>
+                      <div className="text-3xl font-bold text-emerald-400 mb-1">0%</div>
+                      <div className="text-sm text-gray-400 mb-1">Win Rate</div>
+                      <div className="text-xs text-emerald-300">Profit Factor 0</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          {/* Calendar View - Simplified for now */}
+          <div className="lg:col-span-3">
+            <div className="bg-gradient-to-br from-gray-800/30 via-gray-900/30 to-black/30 rounded-xl p-5 border border-gray-700/50 space-y-4">
+              
+              {/* Top Row: View Tabs + Date Range + Go to Today */}
+              <div className="flex items-center justify-between w-full">
+                <div className="flex bg-gray-800/40 rounded-lg p-1 border border-gray-600/30 shadow-md">
+                  {['weekly', 'monthly', 'yearly'].map((mode) => (
+                    <button
+                      key={mode}
+                      onClick={() => setViewMode(mode)}
+                      className={`px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 capitalize ${
+                        viewMode === mode
+                          ? 'bg-amber-500 text-black shadow-md'
+                          : 'text-gray-300 hover:text-amber-400 hover:bg-gray-700/30'
+                      }`}
+                    >
+                      {mode}
+                    </button>
+                  ))}
+                </div>
+
+                <div className="flex items-center bg-gray-800/40 rounded-lg border border-gray-600/30 shadow-md overflow-hidden">
+                  <button
+                    onClick={() => navigatePeriod(-1)}
+                    className="p-2 hover:bg-gray-700/40 text-gray-400 hover:text-amber-400 transition-all duration-200"
+                  >
+                    <ChevronLeft className="w-4 h-4" />
+                  </button>
+                  
+                  <div className="px-6 py-2 border-x border-gray-600/20">
+                    <span className="text-lg font-semibold text-amber-400 min-w-48 text-center block">
+                      {formatPeriod(currentPeriod, viewMode)}
+                    </span>
+                  </div>
+                  
+                  <button
+                    onClick={() => navigatePeriod(1)}
+                    className="p-2 hover:bg-gray-700/40 text-gray-400 hover:text-amber-400 transition-all duration-200"
+                  >
+                    <ChevronRight className="w-4 h-4" />
+                  </button>
+                </div>
+                
+                <button
+                  onClick={() => {
+                    setCurrentPeriod(new Date());
+                    setSelectedDate(new Date());
+                  }}
+                  className="px-4 py-2 rounded-lg text-sm font-medium bg-teal-600/80 hover:bg-teal-600 text-white transition-all duration-200 border border-teal-500/40 shadow-md"
+                >
+                  Go to Today
+                </button>
+              </div>
+
+              {/* Simple calendar grid - placeholder for now */}
+              <div className="text-center text-gray-400 py-8">
+                Trading Calendar Coming Soon - CSV Data Will Populate Here
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 export default function Dashboard() {
   const queryClient = useQueryClient();
@@ -290,18 +581,19 @@ export default function Dashboard() {
   const totalInvestment = useMemo(() => {
     if (!spending || !accounts) return 0;
     
+    const spendingArray = Array.isArray(spending) ? spending : [];
     let spendings: any[] = [];
     
     if (accountSelectionMode === 'all') {
-      spendings = spending;
+      spendings = spendingArray;
     } else if (accountSelectionMode === 'single' && selectedAccountIds.length > 0) {
-      spendings = spending.filter(s => s.accountId === selectedAccountIds[0]);
+      spendings = spendingArray.filter((s: any) => s.accountId === selectedAccountIds[0]);
     } else {
       const accountIdsToUse = selectedAccountIds.length > 0 ? selectedAccountIds : (accounts.length > 0 ? [accounts[0].id] : []);
-      spendings = spending.filter(s => accountIdsToUse.includes(s.accountId));
+      spendings = spendingArray.filter((s: any) => accountIdsToUse.includes(s.accountId));
     }
     
-    return spendings.reduce((sum, spending) => sum + spending.amount, 0);
+    return spendings.reduce((sum, spendingItem) => sum + spendingItem.amount, 0);
   }, [spending, accounts, selectedAccountIds, accountSelectionMode]);
 
   // Calculate ROI percentage
@@ -337,13 +629,14 @@ export default function Dashboard() {
       if (account.type !== 'funded') return; // Only funded accounts have payouts
       
       const accountTrades = trades.filter(t => t.accountId === account.id);
-      const currentProfit = account.currentBalance - account.startingBalance;
+      const accountPnL = accountTrades.reduce((sum, trade) => sum + (trade.pnl || 0), 0);
+      const currentProfit = accountPnL;
       
       // Check payout requirements - use actual user-entered values
       const daysRequired = account.daysRequiredForPayout || 0;
       const winningDayMinimum = account.winningDayMinimum || 0;
       const minimumPayoutAmount = account.minimumPayoutAmount || 0;
-      const maxPayoutPercentage = account.maximumPayoutPercentage ? (account.maximumPayoutPercentage / 100) : 1;
+      const maxPayoutPercentage = account.maximumPayoutPerAccount ? (account.maximumPayoutPerAccount / 100) : 1;
       const profitSplit = account.profitSplit ? (account.profitSplit / 100) : 1;
       const bufferPercentage = account.bufferPercentage ? (account.bufferPercentage / 100) : 0;
       
@@ -605,6 +898,9 @@ export default function Dashboard() {
 
 
         {/* COMPACT DASHBOARD: NO EMPTY SPACES */}
+        
+        {/* NEW: TRADING CALENDAR COMPONENT - ROW 0 */}
+        <TradingDashboard />
         
         {/* ROW 1: PRIMARY FINANCIAL METRICS */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 mb-3">
