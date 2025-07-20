@@ -257,7 +257,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.put("/api/trades/:id", async (req, res) => {
+  app.put("/api/trades/:id", isAuthenticated, async (req, res) => {
     try {
       const id = parseInt(req.params.id);
       const validatedData = insertTradeSchema.partial().parse(req.body);

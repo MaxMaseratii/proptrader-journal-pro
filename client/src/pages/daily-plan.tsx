@@ -824,13 +824,27 @@ const DailyPlanPage = () => {
                                   <span className={`text-xs px-1.5 py-0.5 rounded ${(trade.pnl || 0) >= 0 ? 'bg-green-400/20 text-green-400' : 'bg-red-400/20 text-red-400'}`}>
                                     {(trade.pnl || 0) >= 0 ? 'WIN' : 'LOSS'}
                                   </span>
-                                  <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    className="h-6 w-6 p-0 text-blue-400 hover:text-blue-300"
-                                  >
-                                    📈
-                                  </Button>
+                                  {trade.tradingViewLink ? (
+                                    <Button
+                                      variant="ghost"
+                                      size="sm"
+                                      onClick={() => window.open(trade.tradingViewLink, '_blank')}
+                                      className="h-6 w-6 p-0 text-blue-400 hover:text-blue-300"
+                                      title="View TradingView Plan"
+                                    >
+                                      📈
+                                    </Button>
+                                  ) : (
+                                    <Button
+                                      variant="ghost"
+                                      size="sm"
+                                      onClick={() => window.open(`https://www.tradingview.com/chart/?symbol=${trade.symbol}`, '_blank')}
+                                      className="h-6 w-6 p-0 text-gray-500 hover:text-gray-400"
+                                      title="View Chart on TradingView"
+                                    >
+                                      📈
+                                    </Button>
+                                  )}
                                 </div>
                               </div>
                             ))}

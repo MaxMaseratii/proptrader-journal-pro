@@ -5,11 +5,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Calendar, CalendarDays, Download, Filter, Search, Plus } from "lucide-react";
+import { Calendar, CalendarDays, Download, Filter, Search, Plus, Edit3, Save, X } from "lucide-react";
 import { formatCurrency, formatDate } from "@/lib/utils";
 import type { Trade, Account } from "@shared/schema";
 import { useState, useMemo, useEffect } from "react";
 import { useLocation } from "wouter";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { apiRequest } from "@/lib/queryClient";
 
 // Format price levels (not currency)
 const formatPrice = (price: number): string => {
@@ -26,6 +28,8 @@ export default function Trades() {
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
   const [activeTab, setActiveTab] = useState<string>("view");
   const [location] = useLocation();
+  const [editingTradeId, setEditingTradeId] = useState<number | null>(null);
+  const [editingLink, setEditingLink] = useState<string>("");
 
   // Check if we should open the "Add Trade" tab automatically
   useEffect(() => {
@@ -42,6 +46,43 @@ export default function Trades() {
   const { data: accounts } = useQuery<Account[]>({
     queryKey: ['/api/accounts'],
   });
+
+  const queryClient = useQueryClient();
+
+  // Mutation for updating trade TradingView link
+  const updateTradeMutation = useMutation({
+    mutationFn: async ({ id, tradingViewLink }: { id: number; tradingViewLink: string }) => {
+      return await apiRequest(`/api/trades/${id}`, 'PUT', { tradingViewLink });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/trades'] });
+      setEditingTradeId(null);
+      setEditingLink("");
+    },
+    onError: (error) => {
+      console.error('Error updating trade:', error);
+      alert('Failed to update trade link');
+    }
+  });
+
+  const startEditing = (trade: Trade) => {
+    setEditingTradeId(trade.id);
+    setEditingLink(trade.tradingViewLink || "");
+  };
+
+  const saveTradeLink = () => {
+    if (editingTradeId) {
+      updateTradeMutation.mutate({ 
+        id: editingTradeId, 
+        tradingViewLink: editingLink.trim() 
+      });
+    }
+  };
+
+  const cancelEditing = () => {
+    setEditingTradeId(null);
+    setEditingLink("");
+  };
 
   // Filter and sort trades
   const filteredTrades = useMemo(() => {
@@ -436,17 +477,55 @@ export default function Trades() {
                       </div>
                     </td>
                     <td className="py-3 px-4 text-center">
-                      {trade.tradingViewLink ? (
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => window.open(trade.tradingViewLink, '_blank')}
-                          className="text-blue-400 border-blue-400 hover:bg-blue-400/20"
-                        >
-                          📈 View Plan
-                        </Button>
+                      {editingTradeId === trade.id ? (
+                        <div className="flex flex-col gap-2">
+                          <Input
+                            value={editingLink}
+                            onChange={(e) => setEditingLink(e.target.value)}
+                            placeholder="Enter TradingView link..."
+                            className="text-xs h-8"
+                          />
+                          <div className="flex gap-1">
+                            <Button
+                              size="sm"
+                              onClick={saveTradeLink}
+                              disabled={updateTradeMutation.isPending}
+                              className="bg-green-600 hover:bg-green-700 h-6 px-2"
+                            >
+                              <Save className="h-3 w-3" />
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={cancelEditing}
+                              className="h-6 px-2"
+                            >
+                              <X className="h-3 w-3" />
+                            </Button>
+                          </div>
+                        </div>
                       ) : (
-                        <span className="text-gray-500 text-xs">No link</span>
+                        <div className="flex flex-col gap-1">
+                          {trade.tradingViewLink && (
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => window.open(trade.tradingViewLink, '_blank')}
+                              className="text-blue-400 border-blue-400 hover:bg-blue-400/20 h-6 text-xs"
+                            >
+                              📈 View Plan
+                            </Button>
+                          )}
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => startEditing(trade)}
+                            className="text-yellow-400 border-yellow-400 hover:bg-yellow-400/20 h-6 text-xs"
+                          >
+                            <Edit3 className="h-3 w-3 mr-1" />
+                            {trade.tradingViewLink ? 'Edit' : 'Add'} Link
+                          </Button>
+                        </div>
                       )}
                     </td>
                   </tr>
