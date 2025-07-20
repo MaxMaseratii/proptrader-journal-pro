@@ -417,44 +417,17 @@ export function AdvancedTradingCalendar({ trades = [], selectedAccount, classNam
   };
 
   return (
-    <div className={`bg-gradient-to-br from-gray-900/80 to-gray-800/80 border border-gray-700 rounded-lg p-4 backdrop-blur-sm ${className}`}>
-      {/* Header with Navigation */}
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center gap-2">
-          <Calendar className="w-4 h-4 text-yellow-400" />
-          <h3 className="text-sm font-semibold text-white">Advanced Trading Calendar</h3>
-        </div>
-        
-        {/* Period Navigation */}
-        <div className="flex items-center space-x-4">
-          <button
-            onClick={() => navigatePeriod(-1)}
-            className="p-2 rounded-lg bg-gray-700/50 hover:bg-gray-600/50 text-gray-300 hover:text-amber-400 transition-all"
-          >
-            <ChevronLeft className="w-4 h-4" />
-          </button>
-          
-          <span className="text-sm font-medium text-gray-300 min-w-32 text-center">
-            {formatPeriod(currentPeriod, viewMode)}
-          </span>
-          
-          <button
-            onClick={() => navigatePeriod(1)}
-            className="p-2 rounded-lg bg-gray-700/50 hover:bg-gray-600/50 text-gray-300 hover:text-amber-400 transition-all"
-          >
-            <ChevronRight className="w-4 h-4" />
-          </button>
-        </div>
-      </div>
+    <div className={`bg-gradient-to-br from-gray-900/80 to-gray-800/80 border border-gray-700 rounded-lg p-6 backdrop-blur-sm ${className}`}>
 
-      {/* View Mode Tabs */}
-      <div className="flex justify-between items-center mb-4">
+      {/* NAVIGATION AND CONTROLS */}
+      <div className="flex justify-between items-center mb-6">
+        {/* View Mode Tabs */}
         <div className="flex bg-gray-800/50 rounded-lg p-1 border border-gray-700/50">
           {['weekly', 'monthly', 'yearly'].map((mode) => (
             <button
               key={mode}
               onClick={() => switchViewMode(mode)}
-              className={`px-3 py-1 rounded-md text-xs font-medium transition-all capitalize ${
+              className={`px-4 py-2 rounded-md text-sm font-medium transition-all capitalize ${
                 viewMode === mode
                   ? 'bg-amber-500 text-black'
                   : 'text-gray-400 hover:text-amber-400 hover:bg-gray-700/50'
@@ -464,41 +437,63 @@ export function AdvancedTradingCalendar({ trades = [], selectedAccount, classNam
             </button>
           ))}
         </div>
-        
-        {/* Period Summary */}
-        <div className="flex items-center space-x-3 bg-gray-800/50 rounded-lg px-3 py-2 border border-gray-700/50">
-          <div className="text-center">
-            <div className={`text-sm font-bold ${periodSummary.totalPnL >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-              {periodSummary.totalPnL >= 0 ? '+' : ''}${periodSummary.totalPnL.toFixed(0)}
-            </div>
-            <div className="text-xs text-gray-400">P&L</div>
-          </div>
-          <div className="w-px h-6 bg-gray-600"></div>
-          <div className="text-center">
-            <div className="text-sm font-bold text-emerald-400">
-              {periodSummary.winRate.toFixed(0)}%
-            </div>
-            <div className="text-xs text-gray-400">Win Rate</div>
-          </div>
-          <div className="w-px h-6 bg-gray-600"></div>
-          <div className="text-center">
-            <div className="text-sm font-bold text-purple-400">
-              {periodSummary.totalTrades}
-            </div>
-            <div className="text-xs text-gray-400">Trades</div>
-          </div>
+
+        {/* Period Navigation */}
+        <div className="flex items-center space-x-4">
+          <button
+            onClick={() => navigatePeriod(-1)}
+            className="p-2 rounded-lg bg-gray-700/50 hover:bg-gray-600/50 text-gray-300 hover:text-amber-400 transition-all"
+          >
+            <ChevronLeft className="w-5 h-5" />
+          </button>
+          
+          <span className="text-lg font-medium text-amber-400 min-w-48 text-center">
+            {formatPeriod(currentPeriod, viewMode)}
+          </span>
+          
+          <button
+            onClick={() => navigatePeriod(1)}
+            className="p-2 rounded-lg bg-gray-700/50 hover:bg-gray-600/50 text-gray-300 hover:text-amber-400 transition-all"
+          >
+            <ChevronRight className="w-5 h-5" />
+          </button>
         </div>
         
-        {/* Today Button */}
-        <button
-          onClick={() => {
-            setCurrentPeriod(new Date());
-            setSelectedDate(new Date());
-          }}
-          className="px-3 py-1 rounded-lg bg-teal-600/50 hover:bg-teal-600/70 text-teal-400 hover:text-teal-300 transition-all text-xs"
-        >
-          Today
-        </button>
+        {/* Period Summary & Today Button */}
+        <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-3 bg-gray-800/50 rounded-lg px-4 py-2 border border-gray-700/50">
+            <div className="text-center">
+              <div className={`text-sm font-bold ${periodSummary.totalPnL >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                {periodSummary.totalPnL >= 0 ? '+' : ''}${periodSummary.totalPnL.toFixed(0)}
+              </div>
+              <div className="text-xs text-gray-400">P&L</div>
+            </div>
+            <div className="w-px h-6 bg-gray-600"></div>
+            <div className="text-center">
+              <div className="text-sm font-bold text-emerald-400">
+                {periodSummary.winRate.toFixed(0)}%
+              </div>
+              <div className="text-xs text-gray-400">Win Rate</div>
+            </div>
+            <div className="w-px h-6 bg-gray-600"></div>
+            <div className="text-center">
+              <div className="text-sm font-bold text-purple-400">
+                {periodSummary.totalTrades}
+              </div>
+              <div className="text-xs text-gray-400">Trades</div>
+            </div>
+          </div>
+          
+          <button
+            onClick={() => {
+              setCurrentPeriod(new Date());
+              setSelectedDate(new Date());
+            }}
+            className="px-4 py-2 rounded-lg bg-teal-600/50 hover:bg-teal-600/70 text-teal-400 hover:text-teal-300 transition-all text-sm font-medium"
+          >
+            Go to Today
+          </button>
+        </div>
       </div>
       
       {/* Calendar Component */}

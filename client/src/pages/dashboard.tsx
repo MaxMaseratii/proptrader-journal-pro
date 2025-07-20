@@ -150,15 +150,10 @@ const TradingDashboard = () => {
   const isToday = selectedDate.toDateString() === new Date().toDateString();
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900 p-4 mb-6">
-      <div className="max-w-7xl mx-auto space-y-6">
+    <div className="w-full mb-6">
+      <div className="w-full">
         
-        {/* Header with Navigation */}
-        <div className="flex items-center justify-between bg-gradient-to-r from-gray-800/50 to-gray-900/50 rounded-xl p-4 border border-gray-700/50">
-          <h1 className="text-2xl font-bold text-amber-400">Daily Risk Management & Performance Overview</h1>
-        </div>
-
-        {/* Main Dashboard Layout - ONLY 2x4 GRID */}
+        {/* Main Dashboard Layout - ONLY 2x4 GRID - FULL WIDTH */}
         <div className="w-full">
           
           {/* Selected Day Detail - NOW WITH 2x4 GRID - FULL WIDTH */}
@@ -206,11 +201,11 @@ const TradingDashboard = () => {
                   </div>
                 </div>
 
-                {/* 2 Rows x 4 Columns Grid - Full Width */}
-                <div className="space-y-3">
+                {/* 2 Rows x 4 Columns Grid - Full Width Dashboard */}
+                <div className="space-y-4">
                   
                   {/* Row 1 */}
-                  <div className="grid grid-cols-4 gap-4">
+                  <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-4 gap-6">
                     
                     {/* Risk + Max Daily Loss Combined */}
                     <div className="bg-black/30 rounded-lg p-4 border border-gray-700/50 relative">
@@ -254,7 +249,7 @@ const TradingDashboard = () => {
                   </div>
 
                   {/* Row 2 */}
-                  <div className="grid grid-cols-4 gap-4">
+                  <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-4 gap-6">
                     
                     {/* Discipline */}
                     <div className="bg-black/30 rounded-lg p-4 border border-gray-700/50 relative">
@@ -834,8 +829,11 @@ export default function Dashboard() {
 
 
 
-        {/* COMPACT DASHBOARD: NO EMPTY SPACES */}
-        
+        {/* UNIFIED HEADER WITH NAVIGATION */}
+        <div className="flex items-center justify-between bg-gradient-to-r from-gray-800/50 to-gray-900/50 rounded-xl p-4 border border-gray-700/50 mb-6">
+          <h1 className="text-2xl font-bold text-amber-400">Daily Risk Management & Advanced Trading Calendar</h1>
+        </div>
+
         {/* ROW 0: TRADING CALENDAR COMPONENT - FULL WIDTH */}
         <TradingDashboard />
         
