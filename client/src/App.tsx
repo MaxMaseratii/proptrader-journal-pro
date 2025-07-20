@@ -10,7 +10,7 @@ import Projections from "@/pages/projections";
 import Journal from "@/pages/journal";
 import RiskManagement from "@/pages/risk-management";
 import Performance from "@/pages/performance";
-import Payouts from "@/pages/payouts";
+import EnhancedPayouts from "@/pages/enhanced-payouts";
 import Reports from "@/pages/reports";
 import Analytics from "@/pages/analytics";
 import Trades from "@/pages/trades";
@@ -61,7 +61,7 @@ function Router() {
           <Route path="/journal" component={Journal} />
           <Route path="/risk-management" component={RiskManagement} />
           <Route path="/performance" component={Performance} />
-          <Route path="/payouts" component={Payouts} />
+          <Route path="/payouts" component={EnhancedPayouts} />
           <Route path="/reports" component={Reports} />
           <Route path="/analytics" component={Analytics} />
           <Route path="/trades" component={Trades} />

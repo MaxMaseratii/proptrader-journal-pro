@@ -1,0 +1,274 @@
+import React, { useState } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Progress } from '@/components/ui/progress';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { 
+  Wallet, 
+  DollarSign, 
+  Calendar, 
+  TrendingUp,
+  CheckCircle,
+  Clock,
+  AlertCircle,
+  CreditCard,
+  Building2,
+  Globe
+} from 'lucide-react';
+
+const Payouts = () => {
+  const [payoutMethod, setPayoutMethod] = useState('');
+  const [payoutAmount, setPayoutAmount] = useState('');
+
+  const payoutData = {
+    totalBalance: 0,
+    availablePayout: 0,
+    profitSplit: 80,
+    minimumPayout: 500,
+    nextPayoutDate: '2024-01-25',
+    pendingPayouts: 0,
+    totalPayoutsReceived: 0,
+    lastPayoutDate: '2024-01-10',
+    lastPayoutAmount: 0
+  };
+
+  const payoutHistory: any[] = [];
+
+  const requirements = [
+    { 
+      name: 'Minimum Trading Days', 
+      current: 0, 
+      required: 10, 
+      completed: false,
+      description: 'Must trade at least 10 days'
+    },
+    { 
+      name: 'Profit Target', 
+      current: 0, 
+      required: 8, 
+      completed: false,
+      description: 'Achieve 8% profit target'
+    },
+    { 
+      name: 'Maximum Daily Loss', 
+      current: 0, 
+      required: 5, 
+      completed: false,
+      description: 'Never exceed 5% daily loss'
+    },
+    { 
+      name: 'Maximum Drawdown', 
+      current: 0, 
+      required: 10, 
+      completed: false,
+      description: 'Stay within 10% max drawdown'
+    }
+  ];
+
+  const eligibilityScore = (requirements.filter(req => req.completed).length / requirements.length) * 100;
+
+  return (
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div>
+          <h1 className="text-3xl font-bold text-foreground">Payouts</h1>
+          <p className="text-muted-foreground">Manage your trading profits and payout requests</p>
+        </div>
+        <Button className="bg-gold text-black hover:bg-gold/90" disabled={payoutData.availablePayout < payoutData.minimumPayout}>
+          Request Payout
+        </Button>
+      </div>
+
+      {/* Payout Overview */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <Card className="bg-gradient-to-br from-card to-muted/20 border-border/50">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Total Balance</CardTitle>
+            <Wallet className="h-4 w-4 text-gold" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-gold">${payoutData.totalBalance.toLocaleString()}</div>
+            <p className="text-xs text-muted-foreground">Current account balance</p>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-gradient-to-br from-card to-muted/20 border-border/50">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Available Payout</CardTitle>
+            <DollarSign className="h-4 w-4 text-profit" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-profit">${payoutData.availablePayout.toLocaleString()}</div>
+            <p className="text-xs text-muted-foreground">{payoutData.profitSplit}% profit split</p>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-gradient-to-br from-card to-muted/20 border-border/50">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Pending Payouts</CardTitle>
+            <Clock className="h-4 w-4 text-yellow-500" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-yellow-500">${payoutData.pendingPayouts.toLocaleString()}</div>
+            <p className="text-xs text-muted-foreground">Processing</p>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-gradient-to-br from-card to-muted/20 border-border/50">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Total Received</CardTitle>
+            <TrendingUp className="h-4 w-4 text-blue-500" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-blue-500">${payoutData.totalPayoutsReceived.toLocaleString()}</div>
+            <p className="text-xs text-muted-foreground">All time payouts</p>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Payout Eligibility */}
+      <Card className="bg-gradient-to-br from-card to-muted/20 border-border/50">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <CheckCircle className="h-5 w-5 text-gold" />
+            Payout Eligibility Status
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-6">
+            <div className="text-center">
+              <div className="text-4xl font-bold text-profit mb-2">{eligibilityScore.toFixed(0)}%</div>
+              <Badge className="bg-profit/20 text-profit border-profit">
+                Fully Eligible
+              </Badge>
+              <Progress value={eligibilityScore} className="mt-4 h-3" />
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {requirements.map((req, index) => (
+                <div key={index} className="flex items-center justify-between p-3 rounded-lg bg-muted/20">
+                  <div className="flex items-center gap-3">
+                    {req.completed ? (
+                      <CheckCircle className="h-5 w-5 text-profit" />
+                    ) : (
+                      <AlertCircle className="h-5 w-5 text-yellow-500" />
+                    )}
+                    <div>
+                      <span className="font-medium">{req.name}</span>
+                      <p className="text-xs text-muted-foreground">{req.description}</p>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <div className="font-semibold">{req.current}{req.name.includes('%') ? '%' : ''}</div>
+                    <div className="text-xs text-muted-foreground">of {req.required}{req.name.includes('%') ? '%' : ''}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Payout Request Form */}
+      <Card className="bg-gradient-to-br from-card to-muted/20 border-border/50">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <CreditCard className="h-5 w-5 text-gold" />
+            Request New Payout
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="amount">Payout Amount</Label>
+              <Input
+                id="amount"
+                type="number"
+                placeholder={`Min: $${payoutData.minimumPayout}`}
+                value={payoutAmount}
+                onChange={(e) => setPayoutAmount(e.target.value)}
+                max={payoutData.availablePayout}
+              />
+              <p className="text-xs text-muted-foreground">
+                Available: ${payoutData.availablePayout.toLocaleString()}
+              </p>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="method">Payout Method</Label>
+              <Select value={payoutMethod} onValueChange={setPayoutMethod}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select method" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="bank">
+                    <div className="flex items-center gap-2">
+                      <Building2 className="h-4 w-4" />
+                      Bank Transfer
+                    </div>
+                  </SelectItem>
+                  <SelectItem value="paypal">
+                    <div className="flex items-center gap-2">
+                      <Globe className="h-4 w-4" />
+                      PayPal
+                    </div>
+                  </SelectItem>
+                  <SelectItem value="wise">
+                    <div className="flex items-center gap-2">
+                      <CreditCard className="h-4 w-4" />
+                      Wise
+                    </div>
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
+          <Button 
+            className="w-full bg-gold text-black hover:bg-gold/90"
+            disabled={!payoutAmount || !payoutMethod || parseFloat(payoutAmount) < payoutData.minimumPayout}
+          >
+            Submit Payout Request
+          </Button>
+        </CardContent>
+      </Card>
+
+      {/* Payout History */}
+      <Card className="bg-gradient-to-br from-card to-muted/20 border-border/50">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Calendar className="h-5 w-5 text-gold" />
+            Payout History
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-3">
+            {payoutHistory.map((payout, index) => (
+              <div key={index} className="flex items-center justify-between p-3 rounded-lg bg-muted/20">
+                <div className="flex items-center gap-3">
+                  <CheckCircle className="h-5 w-5 text-profit" />
+                  <div>
+                    <div className="font-medium">${payout.amount.toLocaleString()}</div>
+                    <div className="text-sm text-muted-foreground">{payout.date}</div>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <Badge variant="outline" className="text-profit border-profit">
+                    {payout.status}
+                  </Badge>
+                  <div className="text-sm text-muted-foreground mt-1">{payout.method}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+};
+
+export default Payouts;
