@@ -31,8 +31,11 @@ import {
   Award,
   CreditCard,
   Building2,
-  Globe
+  Globe,
+  Settings,
+  Save
 } from "lucide-react";
+import { useEffect } from "react";
 import type { Account, Trade } from "@shared/schema";
 
 interface PayoutMetrics {
@@ -68,12 +71,24 @@ interface PayoutHistory {
 export default function EnhancedPayouts() {
   const [selectedAccountId, setSelectedAccountId] = useState<string>("");
   const [showRequestDialog, setShowRequestDialog] = useState(false);
+  const [showEditRulesDialog, setShowEditRulesDialog] = useState(false);
   const [payoutAmount, setPayoutAmount] = useState<number>(0);
   const [payoutMethod, setPayoutMethod] = useState<string>("");
   const [suggestedPayoutPercent, setSuggestedPayoutPercent] = useState<number>(75);
   const [payoutNotes, setPayoutNotes] = useState<string>("");
   const [firmRating, setFirmRating] = useState<number>(0);
   const [firmExperience, setFirmExperience] = useState<string>("");
+  
+  // Payout rules editing state
+  const [editingRules, setEditingRules] = useState({
+    daysRequiredForPayout: 5,
+    winningDayMinimum: 200,
+    profitSplit: 80,
+    minimumPayoutAmount: 500,
+    maxNetBalanceForPayout: 10000,
+    payoutFrequency: 'weekly',
+    consistencyRulePercent: 50
+  });
   
   const { toast } = useToast();
   const queryClient = useQueryClient();

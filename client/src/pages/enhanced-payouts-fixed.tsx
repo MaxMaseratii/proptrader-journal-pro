@@ -31,8 +31,11 @@ import {
   Award,
   CreditCard,
   Building2,
-  Globe
+  Globe,
+  Settings,
+  Save
 } from "lucide-react";
+import { useEffect } from "react";
 import type { Account, Trade } from "@shared/schema";
 
 interface PayoutMetrics {
@@ -68,12 +71,24 @@ interface PayoutHistory {
 export default function EnhancedPayouts() {
   const [selectedAccountId, setSelectedAccountId] = useState<string>("");
   const [showRequestDialog, setShowRequestDialog] = useState(false);
+  const [showEditRulesDialog, setShowEditRulesDialog] = useState(false);
   const [payoutAmount, setPayoutAmount] = useState<number>(0);
   const [payoutMethod, setPayoutMethod] = useState<string>("");
   const [suggestedPayoutPercent, setSuggestedPayoutPercent] = useState<number>(75);
   const [payoutNotes, setPayoutNotes] = useState<string>("");
   const [firmRating, setFirmRating] = useState<number>(0);
   const [firmExperience, setFirmExperience] = useState<string>("");
+  
+  // Payout rules editing state
+  const [editingRules, setEditingRules] = useState({
+    daysRequiredForPayout: 5,
+    winningDayMinimum: 200,
+    profitSplit: 80,
+    minimumPayoutAmount: 500,
+    maxNetBalanceForPayout: 10000,
+    payoutFrequency: 'weekly',
+    consistencyRulePercent: 50
+  });
   
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -193,6 +208,52 @@ export default function EnhancedPayouts() {
 
   const selectedAccount = accounts?.find(a => a.id.toString() === selectedAccountId);
 
+  // Update payout rules mutation
+  const updatePayoutRulesMutation = useMutation({
+    mutationFn: async (data: { accountId: number; rules: any }) => {
+      return apiRequest("/api/accounts/" + data.accountId, "PATCH", data.rules);
+    },
+    onSuccess: () => {
+      toast({ 
+        title: "Payout Rules Updated", 
+        description: "Account payout settings have been successfully updated." 
+      });
+      setShowEditRulesDialog(false);
+      queryClient.invalidateQueries({ queryKey: ['/api/accounts'] });
+    },
+    onError: () => {
+      toast({ 
+        title: "Update Failed", 
+        description: "Failed to update payout rules. Please try again.",
+        variant: "destructive"
+      });
+    }
+  });
+
+  // Initialize editing rules when account is selected
+  useEffect(() => {
+    if (selectedAccount) {
+      setEditingRules({
+        daysRequiredForPayout: selectedAccount.daysRequiredForPayout || 5,
+        winningDayMinimum: selectedAccount.winningDayMinimum || 200,
+        profitSplit: selectedAccount.profitSplit || 80,
+        minimumPayoutAmount: selectedAccount.minimumPayoutAmount || 500,
+        maxNetBalanceForPayout: selectedAccount.maxNetBalanceForPayout || 10000,
+        payoutFrequency: selectedAccount.payoutFrequency || 'weekly',
+        consistencyRulePercent: selectedAccount.consistencyRulePercent || 50
+      });
+    }
+  }, [selectedAccount]);
+
+  const handleSavePayoutRules = () => {
+    if (!selectedAccount) return;
+    
+    updatePayoutRulesMutation.mutate({
+      accountId: selectedAccount.id,
+      rules: editingRules
+    });
+  };
+
   return (
     <div className="space-y-6 bg-black min-h-screen p-6">
       {/* Header */}
@@ -224,6 +285,396 @@ export default function EnhancedPayouts() {
                 <Send className="w-4 h-4 mr-2" />
                 Request Payout
               </Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-2xl bg-gradient-to-br from-gray-900 via-gray-800 to-black border border-yellow-400/20">
+              <DialogHeader>
+                <DialogTitle className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-yellow-600">Request New Payout</DialogTitle>
+              </DialogHeader>
+              <div className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="amount" className="text-white">Payout Amount</Label>
+                    <Input
+                      id="amount"
+                      type="number"
+                      placeholder={`Min: ${formatCurrency(payoutMetrics?.minimumPayoutAmount || 500)}`}
+                      value={payoutAmount || ''}
+                      onChange={(e) => setPayoutAmount(Number(e.target.value))}
+                      max={payoutMetrics?.availablePayout || 0}
+                      className="bg-gray-800 border-yellow-400/20 text-white"
+                    />
+                    <p className="text-xs text-gray-400">
+                      Available: {formatCurrency(payoutMetrics?.availablePayout || 0)}
+                    </p>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="method" className="text-white">Payout Method</Label>
+                    <Select value={payoutMethod} onValueChange={setPayoutMethod}>
+                      <SelectTrigger className="bg-gray-800 border-yellow-400/20 text-white">
+                        <SelectValue placeholder="Select method" />
+                      </SelectTrigger>
+                      <SelectContent className="bg-gray-800 border-yellow-400/20">
+                        <SelectItem value="bank">
+                          <div className="flex items-center gap-2">
+                            <Building2 className="h-4 w-4" />
+                            Bank Transfer
+                          </div>
+                        </SelectItem>
+                        <SelectItem value="paypal">
+                          <div className="flex items-center gap-2">
+                            <Globe className="h-4 w-4" />
+                            PayPal
+                          </div>
+                        </SelectItem>
+                        <SelectItem value="wise">
+                          <div className="flex items-center gap-2">
+                            <CreditCard className="h-4 w-4" />
+                            Wise
+                          </div>
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+
+                <Button 
+                  className="w-full bg-gradient-to-r from-yellow-400 to-yellow-600 text-black hover:from-yellow-500 hover:to-yellow-700"
+                  disabled={!payoutAmount || !payoutMethod || (payoutMetrics && payoutAmount < payoutMetrics.minimumPayoutAmount)}
+                >
+                  <Send className="w-4 h-4 mr-2" />
+                  Submit Payout Request
+                </Button>
+              </div>
+            </DialogContent>
+          </Dialog>
+          
+          <Dialog open={showEditRulesDialog} onOpenChange={setShowEditRulesDialog}>
+                <DialogTrigger asChild>
+                  <Button 
+                    variant="outline"
+                    className="border-yellow-400/40 text-yellow-400 hover:bg-yellow-400/10"
+                    disabled={!selectedAccountId}
+                  >
+                    <Settings className="w-4 h-4 mr-2" />
+                    Edit Payout Rules
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="max-w-3xl bg-gradient-to-br from-gray-900 via-gray-800 to-black border border-yellow-400/20">
+                  <DialogHeader>
+                    <DialogTitle className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-yellow-600">
+                      Edit Payout Rules - {selectedAccount?.name}
+                    </DialogTitle>
+                  </DialogHeader>
+                  <div className="space-y-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      {/* Trading Requirements */}
+                      <div className="space-y-4">
+                        <h3 className="text-lg font-semibold text-white">Trading Requirements</h3>
+                        
+                        <div className="space-y-2">
+                          <Label className="text-white">Days Required for Payout</Label>
+                          <Input
+                            type="number"
+                            value={editingRules.daysRequiredForPayout}
+                            onChange={(e) => setEditingRules(prev => ({
+                              ...prev,
+                              daysRequiredForPayout: Number(e.target.value)
+                            }))}
+                            className="bg-gray-800 border-yellow-400/20 text-white"
+                            min={1}
+                            max={30}
+                          />
+                          <p className="text-xs text-gray-400">Minimum trading days required before payout eligibility</p>
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label className="text-white">Minimum Daily Profit ($)</Label>
+                          <Input
+                            type="number"
+                            value={editingRules.winningDayMinimum}
+                            onChange={(e) => setEditingRules(prev => ({
+                              ...prev,
+                              winningDayMinimum: Number(e.target.value)
+                            }))}
+                            className="bg-gray-800 border-yellow-400/20 text-white"
+                            min={0}
+                            step={50}
+                          />
+                          <p className="text-xs text-gray-400">Minimum profit required per qualifying trading day</p>
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label className="text-white">Consistency Rule (%)</Label>
+                          <Input
+                            type="number"
+                            value={editingRules.consistencyRulePercent}
+                            onChange={(e) => setEditingRules(prev => ({
+                              ...prev,
+                              consistencyRulePercent: Number(e.target.value)
+                            }))}
+                            className="bg-gray-800 border-yellow-400/20 text-white"
+                            min={0}
+                            max={100}
+                          />
+                          <p className="text-xs text-gray-400">Maximum percentage any single day can represent of total profit</p>
+                        </div>
+                      </div>
+
+                      {/* Payout Settings */}
+                      <div className="space-y-4">
+                        <h3 className="text-lg font-semibold text-white">Payout Settings</h3>
+                        
+                        <div className="space-y-2">
+                          <Label className="text-white">Profit Split (%)</Label>
+                          <Input
+                            type="number"
+                            value={editingRules.profitSplit}
+                            onChange={(e) => setEditingRules(prev => ({
+                              ...prev,
+                              profitSplit: Number(e.target.value)
+                            }))}
+                            className="bg-gray-800 border-yellow-400/20 text-white"
+                            min={0}
+                            max={100}
+                          />
+                          <p className="text-xs text-gray-400">Percentage of profits trader keeps after payout</p>
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label className="text-white">Minimum Payout Amount ($)</Label>
+                          <Input
+                            type="number"
+                            value={editingRules.minimumPayoutAmount}
+                            onChange={(e) => setEditingRules(prev => ({
+                              ...prev,
+                              minimumPayoutAmount: Number(e.target.value)
+                            }))}
+                            className="bg-gray-800 border-yellow-400/20 text-white"
+                            min={0}
+                            step={100}
+                          />
+                          <p className="text-xs text-gray-400">Minimum amount required to request a payout</p>
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label className="text-white">Max Net Balance for Payout ($)</Label>
+                          <Input
+                            type="number"
+                            value={editingRules.maxNetBalanceForPayout}
+                            onChange={(e) => setEditingRules(prev => ({
+                              ...prev,
+                              maxNetBalanceForPayout: Number(e.target.value)
+                            }))}
+                            className="bg-gray-800 border-yellow-400/20 text-white"
+                            min={0}
+                            step={1000}
+                          />
+                          <p className="text-xs text-gray-400">Balance threshold that must be exceeded before payouts</p>
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label className="text-white">Payout Frequency</Label>
+                          <Select 
+                            value={editingRules.payoutFrequency} 
+                            onValueChange={(value) => setEditingRules(prev => ({
+                              ...prev,
+                              payoutFrequency: value
+                            }))}
+                          >
+                            <SelectTrigger className="bg-gray-800 border-yellow-400/20 text-white">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent className="bg-gray-800 border-yellow-400/20">
+                              <SelectItem value="daily">Daily</SelectItem>
+                              <SelectItem value="weekly">Weekly</SelectItem>
+                              <SelectItem value="bi-weekly">Bi-weekly</SelectItem>
+                              <SelectItem value="monthly">Monthly</SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <p className="text-xs text-gray-400">How often payouts can be requested</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="flex justify-end space-x-3 pt-4 border-t border-gray-700">
+                      <Button 
+                        variant="outline"
+                        onClick={() => setShowEditRulesDialog(false)}
+                        className="border-gray-600 text-gray-300 hover:bg-gray-700"
+                      >
+                        Cancel
+                      </Button>
+                      <Button 
+                        onClick={handleSavePayoutRules}
+                        disabled={updatePayoutRulesMutation.isPending}
+                        className="bg-gradient-to-r from-yellow-400 to-yellow-600 text-black hover:from-yellow-500 hover:to-yellow-700"
+                      >
+                        <Save className="w-4 h-4 mr-2" />
+                        {updatePayoutRulesMutation.isPending ? "Saving..." : "Save Rules"}
+                      </Button>
+                    </div>
+                  </div>
+                </DialogContent>
+              </Dialog>
+            </DialogTrigger>
+            <DialogContent className="max-w-3xl bg-gradient-to-br from-gray-900 via-gray-800 to-black border border-yellow-400/20">
+              <DialogHeader>
+                <DialogTitle className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-yellow-600">
+                  Edit Payout Rules - {selectedAccount?.name}
+                </DialogTitle>
+              </DialogHeader>
+              <div className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {/* Trading Requirements */}
+                  <div className="space-y-4">
+                    <h3 className="text-lg font-semibold text-white">Trading Requirements</h3>
+                    
+                    <div className="space-y-2">
+                      <Label className="text-white">Days Required for Payout</Label>
+                      <Input
+                        type="number"
+                        value={editingRules.daysRequiredForPayout}
+                        onChange={(e) => setEditingRules(prev => ({
+                          ...prev,
+                          daysRequiredForPayout: Number(e.target.value)
+                        }))}
+                        className="bg-gray-800 border-yellow-400/20 text-white"
+                        min={1}
+                        max={30}
+                      />
+                      <p className="text-xs text-gray-400">Minimum trading days required before payout eligibility</p>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label className="text-white">Minimum Daily Profit ($)</Label>
+                      <Input
+                        type="number"
+                        value={editingRules.winningDayMinimum}
+                        onChange={(e) => setEditingRules(prev => ({
+                          ...prev,
+                          winningDayMinimum: Number(e.target.value)
+                        }))}
+                        className="bg-gray-800 border-yellow-400/20 text-white"
+                        min={0}
+                        step={50}
+                      />
+                      <p className="text-xs text-gray-400">Minimum profit required per qualifying trading day</p>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label className="text-white">Consistency Rule (%)</Label>
+                      <Input
+                        type="number"
+                        value={editingRules.consistencyRulePercent}
+                        onChange={(e) => setEditingRules(prev => ({
+                          ...prev,
+                          consistencyRulePercent: Number(e.target.value)
+                        }))}
+                        className="bg-gray-800 border-yellow-400/20 text-white"
+                        min={0}
+                        max={100}
+                      />
+                      <p className="text-xs text-gray-400">Maximum percentage any single day can represent of total profit</p>
+                    </div>
+                  </div>
+
+                  {/* Payout Settings */}
+                  <div className="space-y-4">
+                    <h3 className="text-lg font-semibold text-white">Payout Settings</h3>
+                    
+                    <div className="space-y-2">
+                      <Label className="text-white">Profit Split (%)</Label>
+                      <Input
+                        type="number"
+                        value={editingRules.profitSplit}
+                        onChange={(e) => setEditingRules(prev => ({
+                          ...prev,
+                          profitSplit: Number(e.target.value)
+                        }))}
+                        className="bg-gray-800 border-yellow-400/20 text-white"
+                        min={0}
+                        max={100}
+                      />
+                      <p className="text-xs text-gray-400">Percentage of profits trader keeps after payout</p>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label className="text-white">Minimum Payout Amount ($)</Label>
+                      <Input
+                        type="number"
+                        value={editingRules.minimumPayoutAmount}
+                        onChange={(e) => setEditingRules(prev => ({
+                          ...prev,
+                          minimumPayoutAmount: Number(e.target.value)
+                        }))}
+                        className="bg-gray-800 border-yellow-400/20 text-white"
+                        min={0}
+                        step={100}
+                      />
+                      <p className="text-xs text-gray-400">Minimum amount required to request a payout</p>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label className="text-white">Max Net Balance for Payout ($)</Label>
+                      <Input
+                        type="number"
+                        value={editingRules.maxNetBalanceForPayout}
+                        onChange={(e) => setEditingRules(prev => ({
+                          ...prev,
+                          maxNetBalanceForPayout: Number(e.target.value)
+                        }))}
+                        className="bg-gray-800 border-yellow-400/20 text-white"
+                        min={0}
+                        step={1000}
+                      />
+                      <p className="text-xs text-gray-400">Balance threshold that must be exceeded before payouts</p>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label className="text-white">Payout Frequency</Label>
+                      <Select 
+                        value={editingRules.payoutFrequency} 
+                        onValueChange={(value) => setEditingRules(prev => ({
+                          ...prev,
+                          payoutFrequency: value
+                        }))}
+                      >
+                        <SelectTrigger className="bg-gray-800 border-yellow-400/20 text-white">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent className="bg-gray-800 border-yellow-400/20">
+                          <SelectItem value="daily">Daily</SelectItem>
+                          <SelectItem value="weekly">Weekly</SelectItem>
+                          <SelectItem value="bi-weekly">Bi-weekly</SelectItem>
+                          <SelectItem value="monthly">Monthly</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <p className="text-xs text-gray-400">How often payouts can be requested</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex justify-end space-x-3 pt-4 border-t border-gray-700">
+                  <Button 
+                    variant="outline"
+                    onClick={() => setShowEditRulesDialog(false)}
+                    className="border-gray-600 text-gray-300 hover:bg-gray-700"
+                  >
+                    Cancel
+                  </Button>
+                  <Button 
+                    onClick={handleSavePayoutRules}
+                    disabled={updatePayoutRulesMutation.isPending}
+                    className="bg-gradient-to-r from-yellow-400 to-yellow-600 text-black hover:from-yellow-500 hover:to-yellow-700"
+                  >
+                    <Save className="w-4 h-4 mr-2" />
+                    {updatePayoutRulesMutation.isPending ? "Saving..." : "Save Rules"}
+                  </Button>
+                </div>
+              </div>
+            </DialogContent>
+          </Dialog>
             </DialogTrigger>
             <DialogContent className="max-w-2xl bg-gradient-to-br from-gray-900 via-gray-800 to-black border border-yellow-400/20">
               <DialogHeader>

@@ -138,6 +138,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.patch("/api/accounts/:id", isAuthenticated, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const validatedData = insertAccountSchema.partial().parse(req.body);
+      const account = await storage.updateAccount(id, validatedData);
+      res.json(account);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Invalid account data", errors: error.errors });
+      }
+      res.status(500).json({ message: "Failed to update account" });
+    }
+  });
+
   app.put("/api/accounts/:id", isAuthenticated, async (req, res) => {
     try {
       const id = parseInt(req.params.id);
