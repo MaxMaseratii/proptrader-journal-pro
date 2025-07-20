@@ -46,8 +46,7 @@ export default function SpendingEntry({ accounts }: SpendingEntryProps) {
 
   const mutation = useMutation({
     mutationFn: async (data: SpendingData) => {
-      const response = await apiRequest("POST", "/api/spending", data);
-      return response.json();
+      return await apiRequest("/api/spending", "POST", data);
     },
     onSuccess: () => {
       toast({
@@ -166,7 +165,7 @@ export default function SpendingEntry({ accounts }: SpendingEntryProps) {
                         <SelectValue placeholder="Select account for this expense" />
                       </SelectTrigger>
                       <SelectContent className="bg-gray-700 border-gray-600">
-                        {accounts.map((account) => (
+                        {accounts?.map((account) => (
                           <SelectItem key={account.id} value={account.id.toString()} className="text-white hover:bg-gray-600">
                             {account.name} ({account.firm})
                           </SelectItem>

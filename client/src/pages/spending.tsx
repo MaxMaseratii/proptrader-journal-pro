@@ -406,7 +406,7 @@ const Spending = () => {
       </Card>
 
       {/* Legacy Spending Entry Component */}
-      <SpendingEntry />
+      <SpendingEntry accounts={accounts} />
     </div>
   );
 };
