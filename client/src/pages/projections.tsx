@@ -591,6 +591,20 @@ export default function Projections() {
                             )}
                           />
                         </div>
+                        
+                        <FormField
+                          control={accountForm.control}
+                          name="accountGoal"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="text-white">Account Goal / Trading Plan</FormLabel>
+                              <FormControl>
+                                <Input {...field} placeholder="e.g., Pass challenge within 30 days, achieve $100k in total profits, master risk management" className="bg-gray-700 border-gray-600 text-white" />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
                       </TabsContent>
                       
                       <TabsContent value="financial" className="space-y-4">
@@ -774,124 +788,11 @@ export default function Projections() {
         </div>
         
         {!isAccountsMinimized && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {accounts.map((account) => {
-              const accountTrades = trades.filter(trade => trade.accountId === account.id);
-              const totalPnl = accountTrades.reduce((sum, trade) => sum + trade.pnl, 0);
-              const netBalance = account.startingBalance + totalPnl;
-              const riskLevel = totalPnl < -account.maxDrawdown * 0.8 ? 'high risk' : 
-                               totalPnl < -account.maxDrawdown * 0.5 ? 'moderate risk' : 'low risk';
-              
-              return (
-                <Card key={account.id} className="bg-gradient-to-br from-gray-900 via-gray-800 to-black border border-gray-600 hover:border-yellow-400/50 transition-all duration-300">
-                  <CardContent className="p-6 space-y-4">
-                    {/* Header with firm name and badges */}
-                    <div className="flex items-start justify-between">
-                      <div>
-                        <h3 className="text-white font-semibold text-lg">{account.name}</h3>
-                        <p className="text-gray-400 text-sm">{account.propFirm}</p>
-                      </div>
-                      <div className="flex gap-2">
-                        <Badge className={`${getAccountStatusColor(account.status)} text-xs`}>
-                          {account.status}
-                        </Badge>
-                        <Badge className={`${account.type === 'challenge' ? 'bg-orange-500/20 text-orange-400' : 
-                                          account.type === 'funded' ? 'bg-green-500/20 text-green-400' : 
-                                          'bg-purple-500/20 text-purple-400'} text-xs`}>
-                          {account.type}
-                        </Badge>
-                        <Badge className={`${getRiskLevelColor(riskLevel as any)} text-xs`}>
-                          {riskLevel}
-                        </Badge>
-                      </div>
-                    </div>
-                    
-                    {/* Account metrics */}
-                    <div className="grid grid-cols-2 gap-4 text-sm">
-                      <div>
-                        <p className="text-gray-400">Size:</p>
-                        <p className="text-white font-medium">{formatCurrency(account.startingBalance)}</p>
-                      </div>
-                      <div>
-                        <p className="text-gray-400">Target:</p>
-                        <p className="text-white font-medium">{formatCurrency(account.profitTarget)}</p>
-                      </div>
-                      <div>
-                        <p className="text-gray-400">Risk/Trade:</p>
-                        <p className="text-white font-medium">{formatCurrency(account.riskPerTrade || 1000)}</p>
-                      </div>
-                      <div>
-                        <p className="text-gray-400">RR Ratio:</p>
-                        <p className="text-white font-medium">{account.riskRewardRatio || 2}:1</p>
-                      </div>
-                      <div>
-                        <p className="text-gray-400">Daily Limit:</p>
-                        <p className="text-white font-medium">{formatCurrency(account.dailyLossLimit)}</p>
-                      </div>
-                      <div>
-                        <p className="text-gray-400">Asset:</p>
-                        <p className="text-white font-medium capitalize">{account.primaryAsset || 'Forex'}</p>
-                      </div>
-                    </div>
-                    
-                    {/* Payout eligibility or daily target */}
-                    {account.type === 'funded' || account.type === 'live' ? (
-                      <div className="bg-green-500/10 border border-green-500/20 rounded-lg p-3">
-                        <div className="flex items-center gap-2">
-                          <CheckCircle className="h-4 w-4 text-green-400" />
-                          <span className="text-green-400 text-sm font-medium">Payout Eligible</span>
-                        </div>
-                        <p className="text-gray-400 text-xs mt-1">
-                          Next: {new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toLocaleDateString()}
-                        </p>
-                      </div>
-                    ) : (
-                      <div className="bg-gray-800/50 rounded-lg p-3">
-                        <div className="flex justify-between items-center">
-                          <span className="text-gray-400 text-sm">Daily Target</span>
-                          <span className="text-yellow-400 font-medium">
-                            {formatCurrency((account.riskPerTrade || 1000) * (account.riskRewardRatio || 2))}
-                          </span>
-                        </div>
-                        <div className="w-full bg-gray-700 rounded-full h-2 mt-2">
-                          <div 
-                            className="bg-yellow-400 h-2 rounded-full transition-all duration-300" 
-                            style={{ width: `${Math.min((totalPnl / account.profitTarget) * 100, 100)}%` }}
-                          ></div>
-                        </div>
-                      </div>
-                    )}
-                    
-                    {/* Action buttons */}
-                    <div className="flex gap-2">
-                      <Button 
-                        size="sm" 
-                        className="flex-1 bg-yellow-400/20 border border-yellow-400/30 text-yellow-400 hover:bg-yellow-400/30"
-                      >
-                        <Calendar className="h-4 w-4 mr-1" />
-                        Trading Plan
-                      </Button>
-                      <Button 
-                        size="sm" 
-                        variant="outline" 
-                        className="border-gray-600 text-gray-400 hover:bg-gray-700"
-                      >
-                        <Settings className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              );
-            })}
-            
-            {accounts.length === 0 && (
-              <div className="col-span-full text-center py-12">
-                <Shield className="mx-auto h-12 w-12 text-gray-600 mb-4" />
-                <h3 className="text-gray-400 text-lg font-medium">No Trading Accounts</h3>
-                <p className="text-gray-500 mt-2">Create your first trading account to get started</p>
-              </div>
-            )}
-          </div>
+          <Card className="bg-gradient-to-br from-gray-900 via-gray-800 to-black border border-yellow-400/20">
+            <CardContent className="p-6">
+              <AccountManagement accounts={accounts} />
+            </CardContent>
+          </Card>
         )}
       </div>
 

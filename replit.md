@@ -533,17 +533,20 @@ Changelog:
   * Maintained gold/yellow color scheme with teal accents throughout all budget planning components
   * Enhanced user experience with real-time visual feedback for receipt selection and file management
   * Preserved all existing expense tracking functionality while adding receipt documentation capability
-- July 20, 2025. Enhanced Account Dashboard with Modern Card Design:
-  * Completely redesigned account display cards matching the trading account dashboard style from screenshot
-  * Added gradient account overview cards showing total accounts, active accounts, total investment, and passed accounts
-  * Implemented enhanced account cards with status badges (active/challenge/funded/live), risk level indicators, and Trading Plan buttons
-  * Fixed account creation form dialog with complete 4-tab structure: Account Info & Rules, Financial Tracking, Payout Rules, Risk Settings
-  * Added comprehensive account metrics display: size, target, risk/trade, RR ratio, daily limit, and asset type
-  * Implemented payout eligibility status and daily target progress bars for visual progress tracking
-  * Added Trading Plan button integration for each account card matching the screenshot design requirements
-  * Enhanced visual styling with gradient backgrounds, hover effects, and yellow accent borders throughout
-  * Preserved all existing account management functionality while upgrading the user interface design
-  * All account creation, reset, convert, withdraw, and delete functionality remains fully intact
+- July 20, 2025. Enhanced Account Dashboard with Modern Card Design and Preserved Functionality:
+  * Fixed account creation form dialog - now fully functional with complete 4-tab structure
+  * Redesigned Accounts Risk Management & Target Projection Planning page with enhanced visual interface
+  * Added gradient overview cards showing account statistics (total, active, investment, passed accounts)
+  * Enhanced account section with modern styling while preserving ALL original functionality
+  * PRESERVED: Reset button and logic for account resets with cost tracking
+  * PRESERVED: Convert Challenge to Funded Account button, form, and complete conversion logic  
+  * PRESERVED: Withdraw button and withdrawal logic with status updates
+  * PRESERVED: Delete button and account deletion logic with confirmations
+  * PRESERVED: Challenge/Funded/Live account type lettering and status logic exactly as original
+  * REMOVED: Trading Plan button as requested (account goals added to creation form instead)
+  * Added "Account Goal / Trading Plan" field to account creation form replacing separate trading plan functionality
+  * Enhanced visual styling with gradient backgrounds, hover effects, and yellow accent borders
+  * All existing account management functionality remains 100% intact and operational
 ```
 
 ## User Preferences
