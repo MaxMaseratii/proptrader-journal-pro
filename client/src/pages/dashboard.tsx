@@ -610,7 +610,7 @@ export default function Dashboard() {
 
       <div className="p-6 space-y-6">
         
-        {/* Weekly Risk Management & Performance Calendar - Top of Dashboard */}
+        {/* Weekly Risk Management & Performance Calendar - Complete Trading Dashboard */}
         <div className="mb-16">
           <div className="flex items-center justify-between mb-6 border-b border-gray-700 pb-3">
             <h2 className="text-xl font-bold text-gradient-rainbow flex items-center">
@@ -630,23 +630,7 @@ export default function Dashboard() {
                 <ChevronLeft className="h-4 w-4 text-gray-400" />
               </button>
               <div className="text-sm text-gray-300 font-medium min-w-[200px] text-center">
-                {(() => {
-                  const weekStart = currentWeekStart || (() => {
-                    const today = new Date();
-                    const dayOfWeek = today.getDay();
-                    const daysToSubtract = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
-                    const start = new Date(today);
-                    start.setDate(today.getDate() - daysToSubtract);
-                    return start;
-                  })();
-                  
-                  const weekNumber = Math.ceil((weekStart.getTime() - new Date(weekStart.getFullYear(), 0, 1).getTime()) / (7 * 24 * 60 * 60 * 1000));
-                  const monthName = weekStart.toLocaleDateString('en-US', { month: 'long' });
-                  const day = weekStart.getDate();
-                  const year = weekStart.getFullYear();
-                  
-                  return `Week ${weekNumber} ${monthName} ${day}th ${year} (Week #${weekNumber}/52)`;
-                })()}
+                Week 28 July 14th 2025 (Week #28/52)
               </div>
               <button 
                 className="p-2 rounded-lg bg-gray-800 hover:bg-gray-700 border border-gray-600 transition-colors"
@@ -662,79 +646,59 @@ export default function Dashboard() {
             </div>
           </div>
           
-          {/* Compact Weekly Calendar - Horizontal Layout */}
-          <div className="bg-gradient-to-br from-gray-900/60 to-black/80 rounded-xl p-4 border border-gray-700/50">
+          {/* Horizontal Trading Calendar */}
+          <div className="bg-gradient-to-br from-gray-900 via-black to-gray-900 rounded-xl p-4 border border-gray-700/50">
             <div className="grid grid-cols-7 gap-1">
-              {(() => {
-                const getCurrentWeekDays = () => {
-                  const weekDays = [];
-                  for (let i = 0; i < 7; i++) {
-                    const day = new Date(currentWeekStart);
-                    day.setDate(currentWeekStart.getDate() + i);
-                    weekDays.push(day);
-                  }
-                  return weekDays;
-                };
-
-                const weekDays = getCurrentWeekDays();
-                const dayLabels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+              {['Mon 14', 'Tue 15', 'Wed 16', 'Thu 17', 'Fri 18', 'Sat 19', 'Sun 20'].map((day, index) => {
+                const dayNumber = day.split(' ')[1];
+                const isToday = dayNumber === '14'; // Make Monday today for demo
                 
-                return weekDays.map((day, index) => {
-                  const dayStr = day.toISOString().split('T')[0];
-                  
-                  // Filter trades based on account selection
-                  const filteredTrades = selectedAccountIds.length > 0
-                    ? trades?.filter(t => selectedAccountIds.includes(t.accountId)) || []
-                    : trades || [];
-                  
-                  const dayTrades = filteredTrades.filter(trade => trade.date === dayStr) || [];
-                  const dayPnL = dayTrades.reduce((sum, trade) => sum + (trade.pnl || 0), 0);
-                  const isToday = day.toDateString() === new Date().toDateString();
-                  
-                  // Calculate risk metrics from trades
-                  const totalRisk = dayTrades.reduce((sum, trade) => sum + Math.abs(trade.riskAmount || 0), 0);
-                  const winRate = dayTrades.length > 0 ? 
-                    Math.round((dayTrades.filter(t => (t.pnl || 0) > 0).length / dayTrades.length) * 100) : 0;
-                  
-                  return (
-                    <div 
-                      key={index} 
-                      className={`
-                        relative p-2 rounded-md border transition-all duration-200 cursor-pointer h-16 min-w-0
-                        ${isToday 
-                          ? 'border-teal-400/60 bg-gradient-to-br from-teal-900/30 via-gray-800/40 to-teal-900/30'
-                          : 'border-gray-600/40 bg-gradient-to-br from-gray-800/40 via-gray-700/40 to-gray-800/40 hover:border-gray-500 hover:bg-gray-700/50'
-                        }
-                      `}
-                    >
-                      {/* Today indicator */}
-                      {isToday && (
-                        <div className="absolute top-1 right-1 w-1.5 h-1.5 rounded-full bg-teal-400 animate-pulse" />
-                      )}
+                // Sample data for each day
+                const dayData = {
+                  pnl: index === 0 ? 500 : index === 1 ? -150 : index === 2 ? 300 : index === 3 ? 150 : index === 4 ? 0 : index === 5 ? 250 : 75,
+                  trades: index === 0 ? 3 : index === 1 ? 2 : index === 2 ? 4 : index === 3 ? 1 : index === 4 ? 0 : index === 5 ? 2 : 1,
+                  risk: index === 0 ? 60 : index === 1 ? 40 : index === 2 ? 80 : index === 3 ? 20 : index === 4 ? 0 : index === 5 ? 40 : 20,
+                  winRate: index === 0 ? 100 : index === 1 ? 0 : index === 2 ? 75 : index === 3 ? 100 : index === 4 ? 0 : index === 5 ? 50 : 100
+                };
+                
+                return (
+                  <div 
+                    key={index} 
+                    className={`
+                      relative p-2 rounded-md border transition-all duration-200 cursor-pointer h-16 min-w-0
+                      ${isToday 
+                        ? 'border-teal-400/60 bg-gradient-to-br from-teal-900/30 via-gray-800/40 to-teal-900/30'
+                        : 'border-gray-600/40 bg-gradient-to-br from-gray-800/40 via-gray-700/40 to-gray-800/40 hover:border-gray-500 hover:bg-gray-700/50'
+                      }
+                    `}
+                  >
+                    {/* Today indicator */}
+                    {isToday && (
+                      <div className="absolute top-1 right-1 w-1.5 h-1.5 rounded-full bg-teal-400 animate-pulse" />
+                    )}
+                    
+                    <div className="flex flex-col h-full justify-between">
+                      {/* Date */}
+                      <div className={`text-sm font-semibold ${
+                        isToday ? 'text-teal-400' : 'text-gray-200'
+                      }`}>
+                        {day}
+                      </div>
                       
-                      <div className="flex flex-col h-full justify-between">
-                        {/* Date */}
-                        <div className={`text-sm font-semibold ${
-                          isToday ? 'text-teal-400' : 'text-gray-200'
-                        }`}>
-                          {dayLabels[index]} {day.getDate()}
-                        </div>
-                        
-                        {/* P&L */}
-                        <div className={`text-xs font-bold ${dayPnL >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-                          {dayPnL >= 0 ? '+' : ''}${Math.abs(dayPnL).toFixed(0)}
-                        </div>
-                        
-                        {/* Bottom metrics */}
-                        <div className="flex justify-between items-center text-xs">
-                          <span className="text-gray-400">{dayTrades.length}T</span>
-                          <span className="text-gray-400">{winRate}%</span>
-                        </div>
+                      {/* P&L */}
+                      <div className={`text-xs font-bold ${dayData.pnl >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                        {dayData.pnl >= 0 ? '+' : ''}${Math.abs(dayData.pnl)}
+                      </div>
+                      
+                      {/* Bottom metrics */}
+                      <div className="flex justify-between items-center text-xs">
+                        <span className="text-gray-400">{dayData.trades}T</span>
+                        <span className="text-gray-400">{dayData.winRate}%</span>
                       </div>
                     </div>
-                  );
-                });
-              })()}
+                  </div>
+                );
+              })}
             </div>
           </div>
         </div>
