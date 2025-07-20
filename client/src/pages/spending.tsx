@@ -35,7 +35,10 @@ import {
   Edit3,
   Trash2,
   Save,
-  X
+  X,
+  Upload,
+  Camera,
+  FileImage
 } from 'lucide-react';
 
 const Spending = () => {
@@ -52,7 +55,8 @@ const Spending = () => {
     amount: '',
     category: '',
     description: '',
-    type: 'trading' // trading or personal
+    type: 'trading', // trading or personal
+    receiptImage: null as File | null
   });
 
   const [budgetSetup, setBudgetSetup] = useState({
@@ -85,7 +89,7 @@ const Spending = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/spending"] });
-      setNewExpense({ amount: '', category: '', description: '', type: 'trading' });
+      setNewExpense({ amount: '', category: '', description: '', type: 'trading', receiptImage: null });
       toast({ title: "Expense Added", description: "Your expense has been recorded successfully." });
     },
   });
@@ -670,6 +674,50 @@ const Spending = () => {
                 onChange={(e) => setNewExpense({...newExpense, description: e.target.value})}
                 className="bg-gray-800 border-yellow-400/20 text-white"
               />
+            </div>
+
+            {/* Receipt Upload Section */}
+            <div className="space-y-2">
+              <Label className="text-white">Receipt Upload (Optional)</Label>
+              <div className="border-2 border-dashed border-yellow-400/30 rounded-lg p-6 text-center hover:border-yellow-400/50 transition-colors">
+                <input
+                  type="file"
+                  id="receipt"
+                  accept="image/*"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0] || null;
+                    setNewExpense({...newExpense, receiptImage: file});
+                  }}
+                  className="hidden"
+                />
+                <label htmlFor="receipt" className="cursor-pointer">
+                  {newExpense.receiptImage ? (
+                    <div className="space-y-2">
+                      <FileImage className="h-8 w-8 text-green-400 mx-auto" />
+                      <p className="text-green-400 font-medium">{newExpense.receiptImage.name}</p>
+                      <p className="text-sm text-gray-400">Click to change receipt</p>
+                    </div>
+                  ) : (
+                    <div className="space-y-2">
+                      <Camera className="h-8 w-8 text-yellow-400 mx-auto" />
+                      <p className="text-yellow-400 font-medium">Upload Receipt</p>
+                      <p className="text-sm text-gray-400">PNG, JPG up to 10MB</p>
+                    </div>
+                  )}
+                </label>
+              </div>
+              {newExpense.receiptImage && (
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setNewExpense({...newExpense, receiptImage: null})}
+                  className="w-full border-red-500/50 text-red-400 hover:bg-red-500/10"
+                >
+                  <X className="h-4 w-4 mr-2" />
+                  Remove Receipt
+                </Button>
+              )}
             </div>
 
             <div className="space-y-2">
