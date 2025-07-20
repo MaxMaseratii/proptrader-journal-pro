@@ -332,6 +332,58 @@ export function AdvancedTradingCalendar({ trades = [], selectedAccount, classNam
           </div>
         );
       
+      case 'yearly':
+        return (
+          <div className="space-y-3">
+            {/* Year Grid - 4x3 months */}
+            <div className="grid grid-cols-3 gap-4">
+              {getYearMonths(currentPeriod).map((month, monthIndex) => {
+                const monthData = generateTradingData(month);
+                const isCurrentMonth = month.getMonth() === new Date().getMonth() && 
+                                     month.getFullYear() === new Date().getFullYear();
+                const isSelectedMonth = month.getMonth() === selectedDate.getMonth() && 
+                                      month.getFullYear() === selectedDate.getFullYear();
+                
+                return (
+                  <div
+                    key={monthIndex}
+                    onClick={() => {
+                      setSelectedDate(new Date(month.getFullYear(), month.getMonth(), 1));
+                      setCurrentPeriod(month);
+                      setViewMode('monthly');
+                    }}
+                    className={`
+                      relative bg-gray-800/50 rounded-lg p-3 cursor-pointer transition-all duration-200 min-h-[100px]
+                      ${isCurrentMonth ? 'ring-2 ring-teal-400 bg-teal-950/30' : ''}
+                      ${isSelectedMonth ? 'ring-2 ring-amber-400 bg-amber-950/30' : ''}
+                      hover:bg-gray-700/50 border border-gray-700/30
+                    `}
+                  >
+                    {/* Month Name */}
+                    <div className="flex items-center justify-between mb-2">
+                      <span className={`text-sm font-bold ${isCurrentMonth ? 'text-teal-400' : 'text-white'}`}>
+                        {month.toLocaleDateString('en-US', { month: 'short' })}
+                      </span>
+                      {isCurrentMonth && <div className="w-2 h-2 rounded-full bg-teal-400" />}
+                    </div>
+                    
+                    {/* Month P&L */}
+                    <div className="text-xs font-medium text-green-400 mb-1">
+                      +${Math.round(monthData.dayPnL * 20)} {/* Monthly estimate */}
+                    </div>
+                    
+                    {/* Month Stats */}
+                    <div className="text-xs text-gray-400 space-y-1">
+                      <div>{Math.round(monthData.totalDayTrades * 20)}T</div>
+                      <div className="text-emerald-400">{monthData.winRate}%</div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        );
+      
       default:
         return null;
     }
@@ -371,7 +423,7 @@ export function AdvancedTradingCalendar({ trades = [], selectedAccount, classNam
       {/* View Mode Tabs */}
       <div className="flex justify-between items-center mb-4">
         <div className="flex bg-gray-800/50 rounded-lg p-1 border border-gray-700/50">
-          {['weekly', 'monthly'].map((mode) => (
+          {['weekly', 'monthly', 'yearly'].map((mode) => (
             <button
               key={mode}
               onClick={() => switchViewMode(mode)}

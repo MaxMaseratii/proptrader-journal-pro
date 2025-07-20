@@ -994,7 +994,19 @@ export default function Dashboard() {
         {/* NEW: TRADING CALENDAR COMPONENT - ROW 0 */}
         <TradingDashboard />
         
-        {/* ROW 1: PRIMARY FINANCIAL METRICS */}
+        {/* ROW 1: ADVANCED TRADING CALENDAR - FULL WIDTH */}
+        <div className="w-full">
+          <AdvancedTradingCalendar 
+            trades={selectedAccountIds.length > 0
+              ? trades?.filter(t => selectedAccountIds.includes(t.accountId)) || []
+              : trades || []
+            }
+            selectedAccount={selectedAccountIds.length === 1 ? selectedAccountIds[0].toString() : "all"}
+            className="w-full"
+          />
+        </div>
+        
+        {/* ROW 2: PRIMARY FINANCIAL METRICS */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 mb-3">
           {/* Net Balance */}
           <div className="widget-container">
