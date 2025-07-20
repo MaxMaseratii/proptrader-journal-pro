@@ -19,6 +19,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { insertAccountSchema, type InsertAccount } from "@shared/schema";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
+import { CheckCircle } from "lucide-react";
 import { formatCurrency, formatDate } from "@/lib/utils";
 import type { Account, Trade } from "@shared/schema";
 import { calculateRiskSuggestions, type AssetSymbol } from "@/lib/risk-calculator";
@@ -95,14 +96,22 @@ export default function Projections() {
 
   const createAccountMutation = useMutation({
     mutationFn: async (data: InsertAccount) => {
-      return apiRequest("POST", "/api/accounts", data);
+      return apiRequest("/api/accounts", "POST", data);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/accounts'] });
       setIsAccountDialogOpen(false);
       accountForm.reset();
+      toast({
+        title: "Account Created",
+        description: "Your trading account has been created successfully.",
+      });
     },
   });
+
+  const onAccountSubmit = (data: InsertAccount) => {
+    createAccountMutation.mutate(data);
+  };
 
   const accountForm = useForm<InsertAccount>({
     resolver: zodResolver(insertAccountSchema),
@@ -448,15 +457,246 @@ export default function Projections() {
                   New Account
                 </Button>
               </DialogTrigger>
-              {/* Account creation dialog remains unchanged */}
+              {/* Complete Account Creation Form */}
               <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto bg-gray-900 border-gray-700">
                 <DialogHeader>
                   <DialogTitle className="text-white">Create Trading Account</DialogTitle>
                 </DialogHeader>
-                {/* Full account creation form preserved - keeping existing form */}
-                <div className="p-4">
-                  <p className="text-gray-400">Account creation form goes here...</p>
-                </div>
+                <Form {...accountForm}>
+                  <form onSubmit={accountForm.handleSubmit(onAccountSubmit)} className="space-y-6 p-4">
+                    <Tabs defaultValue="account-info" className="w-full">
+                      <TabsList className="grid w-full grid-cols-4">
+                        <TabsTrigger value="account-info">Account Info & Rules</TabsTrigger>
+                        <TabsTrigger value="financial">Financial Tracking</TabsTrigger>
+                        <TabsTrigger value="payout">Payout Rules</TabsTrigger>
+                        <TabsTrigger value="risk">Risk Settings</TabsTrigger>
+                      </TabsList>
+                      
+                      <TabsContent value="account-info" className="space-y-4">
+                        <div className="grid grid-cols-2 gap-4">
+                          <FormField
+                            control={accountForm.control}
+                            name="name"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel className="text-white">Account Name</FormLabel>
+                                <FormControl>
+                                  <Input {...field} placeholder="My Trading Account" className="bg-gray-700 border-gray-600 text-white" />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                          <FormField
+                            control={accountForm.control}
+                            name="propFirm"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel className="text-white">Prop Firm</FormLabel>
+                                <FormControl>
+                                  <Input {...field} placeholder="FTMO" className="bg-gray-700 border-gray-600 text-white" />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                        </div>
+                        
+                        <div className="grid grid-cols-3 gap-4">
+                          <FormField
+                            control={accountForm.control}
+                            name="type"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel className="text-white">Account Type</FormLabel>
+                                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                  <FormControl>
+                                    <SelectTrigger className="bg-gray-700 border-gray-600 text-white">
+                                      <SelectValue placeholder="Select type" />
+                                    </SelectTrigger>
+                                  </FormControl>
+                                  <SelectContent>
+                                    <SelectItem value="challenge">Challenge</SelectItem>
+                                    <SelectItem value="funded">Funded</SelectItem>
+                                    <SelectItem value="live">Live</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                          <FormField
+                            control={accountForm.control}
+                            name="status"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel className="text-white">Status</FormLabel>
+                                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                  <FormControl>
+                                    <SelectTrigger className="bg-gray-700 border-gray-600 text-white">
+                                      <SelectValue placeholder="Select status" />
+                                    </SelectTrigger>
+                                  </FormControl>
+                                  <SelectContent>
+                                    <SelectItem value="active">Active</SelectItem>
+                                    <SelectItem value="passed">Passed</SelectItem>
+                                    <SelectItem value="failed">Failed</SelectItem>
+                                    <SelectItem value="withdrawn">Withdrawn</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                          <FormField
+                            control={accountForm.control}
+                            name="startingBalance"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel className="text-white">Account Size</FormLabel>
+                                <FormControl>
+                                  <Input {...field} type="number" placeholder="100000" className="bg-gray-700 border-gray-600 text-white" />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                        </div>
+                        
+                        <div className="grid grid-cols-2 gap-4">
+                          <FormField
+                            control={accountForm.control}
+                            name="profitTarget"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel className="text-white">Profit Target</FormLabel>
+                                <FormControl>
+                                  <Input {...field} type="number" placeholder="10000" className="bg-gray-700 border-gray-600 text-white" />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                          <FormField
+                            control={accountForm.control}
+                            name="maxDrawdown"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel className="text-white">Max Drawdown</FormLabel>
+                                <FormControl>
+                                  <Input {...field} type="number" placeholder="10000" className="bg-gray-700 border-gray-600 text-white" />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                        </div>
+                      </TabsContent>
+                      
+                      <TabsContent value="financial" className="space-y-4">
+                        <div className="grid grid-cols-2 gap-4">
+                          <FormField
+                            control={accountForm.control}
+                            name="accountCost"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel className="text-white">Account Cost</FormLabel>
+                                <FormControl>
+                                  <Input {...field} type="number" placeholder="500" className="bg-gray-700 border-gray-600 text-white" />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                          <FormField
+                            control={accountForm.control}
+                            name="activationCost"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel className="text-white">Activation Cost</FormLabel>
+                                <FormControl>
+                                  <Input {...field} type="number" placeholder="0" className="bg-gray-700 border-gray-600 text-white" />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                        </div>
+                      </TabsContent>
+                      
+                      <TabsContent value="payout" className="space-y-4">
+                        <div className="grid grid-cols-2 gap-4">
+                          <FormField
+                            control={accountForm.control}
+                            name="profitSplit"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel className="text-white">Profit Split (%)</FormLabel>
+                                <FormControl>
+                                  <Input {...field} type="number" placeholder="80" className="bg-gray-700 border-gray-600 text-white" />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                          <FormField
+                            control={accountForm.control}
+                            name="minimumPayoutAmount"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel className="text-white">Minimum Payout Amount</FormLabel>
+                                <FormControl>
+                                  <Input {...field} type="number" placeholder="1000" className="bg-gray-700 border-gray-600 text-white" />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                        </div>
+                      </TabsContent>
+                      
+                      <TabsContent value="risk" className="space-y-4">
+                        <div className="grid grid-cols-2 gap-4">
+                          <FormField
+                            control={accountForm.control}
+                            name="dailyLossLimit"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel className="text-white">Daily Loss Limit</FormLabel>
+                                <FormControl>
+                                  <Input {...field} type="number" placeholder="5000" className="bg-gray-700 border-gray-600 text-white" />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                          <FormField
+                            control={accountForm.control}
+                            name="riskPerTrade"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel className="text-white">Risk Per Trade</FormLabel>
+                                <FormControl>
+                                  <Input {...field} type="number" placeholder="1000" className="bg-gray-700 border-gray-600 text-white" />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                        </div>
+                      </TabsContent>
+                    </Tabs>
+                    
+                    <div className="flex justify-end gap-2 pt-4">
+                      <Button type="button" variant="outline" onClick={() => setIsAccountDialogOpen(false)}>
+                        Cancel
+                      </Button>
+                      <Button type="submit" className="bg-yellow-400 text-black hover:bg-yellow-500">
+                        Create Account
+                      </Button>
+                    </div>
+                  </form>
+                </Form>
               </DialogContent>
             </Dialog>
           </div>
@@ -534,11 +774,124 @@ export default function Projections() {
         </div>
         
         {!isAccountsMinimized && (
-          <Card className="bg-gradient-to-br from-gray-900 via-gray-800 to-black border border-yellow-400/20">
-            <CardContent className="p-6">
-              <AccountManagement accounts={accounts} />
-            </CardContent>
-          </Card>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {accounts.map((account) => {
+              const accountTrades = trades.filter(trade => trade.accountId === account.id);
+              const totalPnl = accountTrades.reduce((sum, trade) => sum + trade.pnl, 0);
+              const netBalance = account.startingBalance + totalPnl;
+              const riskLevel = totalPnl < -account.maxDrawdown * 0.8 ? 'high risk' : 
+                               totalPnl < -account.maxDrawdown * 0.5 ? 'moderate risk' : 'low risk';
+              
+              return (
+                <Card key={account.id} className="bg-gradient-to-br from-gray-900 via-gray-800 to-black border border-gray-600 hover:border-yellow-400/50 transition-all duration-300">
+                  <CardContent className="p-6 space-y-4">
+                    {/* Header with firm name and badges */}
+                    <div className="flex items-start justify-between">
+                      <div>
+                        <h3 className="text-white font-semibold text-lg">{account.name}</h3>
+                        <p className="text-gray-400 text-sm">{account.propFirm}</p>
+                      </div>
+                      <div className="flex gap-2">
+                        <Badge className={`${getAccountStatusColor(account.status)} text-xs`}>
+                          {account.status}
+                        </Badge>
+                        <Badge className={`${account.type === 'challenge' ? 'bg-orange-500/20 text-orange-400' : 
+                                          account.type === 'funded' ? 'bg-green-500/20 text-green-400' : 
+                                          'bg-purple-500/20 text-purple-400'} text-xs`}>
+                          {account.type}
+                        </Badge>
+                        <Badge className={`${getRiskLevelColor(riskLevel as any)} text-xs`}>
+                          {riskLevel}
+                        </Badge>
+                      </div>
+                    </div>
+                    
+                    {/* Account metrics */}
+                    <div className="grid grid-cols-2 gap-4 text-sm">
+                      <div>
+                        <p className="text-gray-400">Size:</p>
+                        <p className="text-white font-medium">{formatCurrency(account.startingBalance)}</p>
+                      </div>
+                      <div>
+                        <p className="text-gray-400">Target:</p>
+                        <p className="text-white font-medium">{formatCurrency(account.profitTarget)}</p>
+                      </div>
+                      <div>
+                        <p className="text-gray-400">Risk/Trade:</p>
+                        <p className="text-white font-medium">{formatCurrency(account.riskPerTrade || 1000)}</p>
+                      </div>
+                      <div>
+                        <p className="text-gray-400">RR Ratio:</p>
+                        <p className="text-white font-medium">{account.riskRewardRatio || 2}:1</p>
+                      </div>
+                      <div>
+                        <p className="text-gray-400">Daily Limit:</p>
+                        <p className="text-white font-medium">{formatCurrency(account.dailyLossLimit)}</p>
+                      </div>
+                      <div>
+                        <p className="text-gray-400">Asset:</p>
+                        <p className="text-white font-medium capitalize">{account.primaryAsset || 'Forex'}</p>
+                      </div>
+                    </div>
+                    
+                    {/* Payout eligibility or daily target */}
+                    {account.type === 'funded' || account.type === 'live' ? (
+                      <div className="bg-green-500/10 border border-green-500/20 rounded-lg p-3">
+                        <div className="flex items-center gap-2">
+                          <CheckCircle className="h-4 w-4 text-green-400" />
+                          <span className="text-green-400 text-sm font-medium">Payout Eligible</span>
+                        </div>
+                        <p className="text-gray-400 text-xs mt-1">
+                          Next: {new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toLocaleDateString()}
+                        </p>
+                      </div>
+                    ) : (
+                      <div className="bg-gray-800/50 rounded-lg p-3">
+                        <div className="flex justify-between items-center">
+                          <span className="text-gray-400 text-sm">Daily Target</span>
+                          <span className="text-yellow-400 font-medium">
+                            {formatCurrency((account.riskPerTrade || 1000) * (account.riskRewardRatio || 2))}
+                          </span>
+                        </div>
+                        <div className="w-full bg-gray-700 rounded-full h-2 mt-2">
+                          <div 
+                            className="bg-yellow-400 h-2 rounded-full transition-all duration-300" 
+                            style={{ width: `${Math.min((totalPnl / account.profitTarget) * 100, 100)}%` }}
+                          ></div>
+                        </div>
+                      </div>
+                    )}
+                    
+                    {/* Action buttons */}
+                    <div className="flex gap-2">
+                      <Button 
+                        size="sm" 
+                        className="flex-1 bg-yellow-400/20 border border-yellow-400/30 text-yellow-400 hover:bg-yellow-400/30"
+                      >
+                        <Calendar className="h-4 w-4 mr-1" />
+                        Trading Plan
+                      </Button>
+                      <Button 
+                        size="sm" 
+                        variant="outline" 
+                        className="border-gray-600 text-gray-400 hover:bg-gray-700"
+                      >
+                        <Settings className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              );
+            })}
+            
+            {accounts.length === 0 && (
+              <div className="col-span-full text-center py-12">
+                <Shield className="mx-auto h-12 w-12 text-gray-600 mb-4" />
+                <h3 className="text-gray-400 text-lg font-medium">No Trading Accounts</h3>
+                <p className="text-gray-500 mt-2">Create your first trading account to get started</p>
+              </div>
+            )}
+          </div>
         )}
       </div>
 
