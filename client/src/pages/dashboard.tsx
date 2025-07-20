@@ -17,7 +17,7 @@ import { formatCurrency, formatPercentage, formatDate } from "@/lib/utils";
 import { calculateDisciplinedScore, getScoreColor, getGradeColor } from "@/lib/disciplined-score";
 import { calculateComprehensiveDisciplineMetrics } from "@/lib/discipline-calculator";
 import DailyPlanningWidget from "@/components/daily-planning-widget";
-import WeeklyPerformanceOverview from "@/components/weekly-performance-overview";
+
 
 // Color coding utility function
 const getValueColor = (value: number, type: 'currency' | 'percentage' | 'neutral' = 'currency') => {
@@ -661,145 +661,80 @@ export default function Dashboard() {
               </button>
             </div>
           </div>
-          <div className="widget-container w-full">
-            <div className="widget-content flex-col w-full">
-              <div className="grid grid-cols-7 gap-1 h-full w-full">
-                {(() => {
-                  const getCurrentWeekDays = () => {
-                    const weekDays = [];
-                    for (let i = 0; i < 7; i++) {
-                      const day = new Date(currentWeekStart);
-                      day.setDate(currentWeekStart.getDate() + i);
-                      weekDays.push(day);
-                    }
-                    return weekDays;
-                  };
+          
+          {/* Compact Weekly Calendar - Horizontal Layout */}
+          <div className="bg-gradient-to-br from-gray-900/60 to-black/80 rounded-xl p-4 border border-gray-700/50">
+            <div className="grid grid-cols-7 gap-1">
+              {(() => {
+                const getCurrentWeekDays = () => {
+                  const weekDays = [];
+                  for (let i = 0; i < 7; i++) {
+                    const day = new Date(currentWeekStart);
+                    day.setDate(currentWeekStart.getDate() + i);
+                    weekDays.push(day);
+                  }
+                  return weekDays;
+                };
 
-                  const weekDays = getCurrentWeekDays();
-                  const dayLabels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+                const weekDays = getCurrentWeekDays();
+                const dayLabels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+                
+                return weekDays.map((day, index) => {
+                  const dayStr = day.toISOString().split('T')[0];
                   
-                  return weekDays.map((day, index) => {
-                    const dayStr = day.toISOString().split('T')[0];
-                    
-                    // Filter trades based on account selection
-                    const filteredTrades = selectedAccountIds.length > 0
-                      ? trades?.filter(t => selectedAccountIds.includes(t.accountId)) || []
-                      : trades || [];
-                    
-                    const dayTrades = filteredTrades.filter(trade => trade.date === dayStr) || [];
-                    const dayPnL = dayTrades.reduce((sum, trade) => sum + (trade.pnl || 0), 0);
-                    const isToday = day.toDateString() === new Date().toDateString();
-                    
-                    // Get account-specific data for selected accounts
-                    const selectedAccounts = selectedAccountIds.length > 0
-                      ? accounts?.filter(acc => selectedAccountIds.includes(acc.id)) || []
-                      : accounts || [];
-                    
-                    // Calculate risk metrics from trades
-                    const totalRisk = dayTrades.reduce((sum, trade) => sum + Math.abs(trade.riskAmount || 0), 0);
-                    const avgRiskPerTrade = dayTrades.length > 0 ? totalRisk / dayTrades.length : 
-                      selectedAccounts.length > 0 ? selectedAccounts.reduce((sum, acc) => sum + (acc.riskPerTrade || 0), 0) / selectedAccounts.length : 0;
-                    const maxDailyRisk = dayTrades.length > 0 
-                      ? dayTrades.reduce((max, trade) => Math.max(max, Math.abs(trade.riskAmount || 0)), 0)
-                      : selectedAccounts.length > 0 ? selectedAccounts.reduce((sum, acc) => sum + (acc.dailyLossLimit || 0), 0) / selectedAccounts.length : 0;
-                    
-                    // Calculate reward ratio (average)
-                    const rewardRatios = dayTrades.map(trade => {
-                      const risk = Math.abs(trade.riskAmount || 0);
-                      const reward = Math.abs(trade.pnl || 0);
-                      return risk > 0 ? reward / risk : 0;
-                    }).filter(rr => rr > 0);
-                    const avgRewardRatio = rewardRatios.length > 0 ? rewardRatios.reduce((sum, rr) => sum + rr, 0) / rewardRatios.length : 0;
-                    
-                    const maxDailyTrades = selectedAccounts.reduce((max, acc) => Math.max(max, acc.maxDailyTrades || 0), 0);
-                    
-                    // Calculate daily target based on saved projections or account risk settings
-                    // Daily target = risk per trade × risk reward ratio (single trade target)
-                    const dailyTarget = (() => {
-                      if (projections && projections.length > 0) {
-                        // Use projection data for accounts with saved projections
-                        const accountProjections = projections.filter(p => 
-                          selectedAccountIds.length > 0 
-                            ? selectedAccountIds.includes(p.accountId)
-                            : true
-                        );
-                        
-                        if (accountProjections.length > 0) {
-                          return accountProjections.reduce((sum, proj) => {
-                            const riskPerTrade = proj.riskPerTrade || 0;
-                            const riskRewardRatio = proj.riskRewardRatio || 2.0;
-                            return sum + (riskPerTrade * riskRewardRatio); // Single trade target
-                          }, 0) / accountProjections.length;
+                  // Filter trades based on account selection
+                  const filteredTrades = selectedAccountIds.length > 0
+                    ? trades?.filter(t => selectedAccountIds.includes(t.accountId)) || []
+                    : trades || [];
+                  
+                  const dayTrades = filteredTrades.filter(trade => trade.date === dayStr) || [];
+                  const dayPnL = dayTrades.reduce((sum, trade) => sum + (trade.pnl || 0), 0);
+                  const isToday = day.toDateString() === new Date().toDateString();
+                  
+                  // Calculate risk metrics from trades
+                  const totalRisk = dayTrades.reduce((sum, trade) => sum + Math.abs(trade.riskAmount || 0), 0);
+                  const winRate = dayTrades.length > 0 ? 
+                    Math.round((dayTrades.filter(t => (t.pnl || 0) > 0).length / dayTrades.length) * 100) : 0;
+                  
+                  return (
+                    <div 
+                      key={index} 
+                      className={`
+                        relative p-2 rounded-md border transition-all duration-200 cursor-pointer h-16 min-w-0
+                        ${isToday 
+                          ? 'border-teal-400/60 bg-gradient-to-br from-teal-900/30 via-gray-800/40 to-teal-900/30'
+                          : 'border-gray-600/40 bg-gradient-to-br from-gray-800/40 via-gray-700/40 to-gray-800/40 hover:border-gray-500 hover:bg-gray-700/50'
                         }
-                      }
+                      `}
+                    >
+                      {/* Today indicator */}
+                      {isToday && (
+                        <div className="absolute top-1 right-1 w-1.5 h-1.5 rounded-full bg-teal-400 animate-pulse" />
+                      )}
                       
-                      // Fallback to account settings if no projections
-                      return selectedAccounts.length > 0 
-                        ? selectedAccounts.reduce((sum, acc) => {
-                            const riskPerTrade = acc.riskPerTrade || 0;
-                            const riskRewardRatio = acc.riskRewardRatio || 2.0;
-                            return sum + (riskPerTrade * riskRewardRatio); // Single trade target
-                          }, 0) / selectedAccounts.length
-                        : 0;
-                    })();
-                    
-                    return (
-                      <div 
-                        key={index} 
-                        className={`
-                          relative p-3 rounded-lg border transition-all duration-300 h-32 overflow-hidden w-full
-                          ${isToday 
-                            ? 'border-yellow-400 bg-gradient-to-br from-gray-900/80 to-gray-800/80 shadow-lg shadow-yellow-400/20' 
-                            : 'border-gray-600 bg-gradient-to-br from-gray-900/60 to-gray-800/60'
-                          }
-                          hover:border-yellow-400 hover:shadow-lg hover:shadow-yellow-400/30 cursor-pointer
-                        `}
-                      >
-                        <div className="text-left h-full flex flex-col justify-between">
-                          {/* Day Header */}
-                          <div className="text-center mb-2">
-                            <div className="text-sm font-bold text-yellow-400 drop-shadow-lg">
-                              {dayLabels[index]} {day.getDate()}
-                            </div>
-                          </div>
-                          
-                          {/* Simplified Metrics */}
-                          <div className="space-y-1.5 text-xs flex-1">
-                            {/* Daily P&L - Most Important */}
-                            <div className="flex justify-between items-center">
-                              <span className="text-gray-300 text-xs">P&L:</span>
-                              <span className={`font-bold text-sm ${dayPnL >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-                                {dayPnL >= 0 ? '+' : ''}${dayPnL.toFixed(0)}
-                              </span>
-                            </div>
-                            
-                            {/* Trades Count */}
-                            <div className="flex justify-between items-center">
-                              <span className="text-gray-300 text-xs">Trades:</span>
-                              <span className="text-blue-400 font-medium text-xs">{dayTrades.length}</span>
-                            </div>
-                            
-                            {/* Risk Used */}
-                            <div className="flex justify-between items-center">
-                              <span className="text-gray-300 text-xs">Risk:</span>
-                              <span className="text-orange-400 font-medium text-xs">${totalRisk.toFixed(0)}</span>
-                            </div>
-                            
-                            {/* Win Rate for the day */}
-                            <div className="flex justify-between items-center">
-                              <span className="text-gray-300 text-xs">Win%:</span>
-                              <span className="text-purple-400 font-medium text-xs">
-                                {dayTrades.length > 0 ? 
-                                  Math.round((dayTrades.filter(t => (t.pnl || 0) > 0).length / dayTrades.length) * 100) : 0}%
-                              </span>
-                            </div>
-                          </div>
+                      <div className="flex flex-col h-full justify-between">
+                        {/* Date */}
+                        <div className={`text-sm font-semibold ${
+                          isToday ? 'text-teal-400' : 'text-gray-200'
+                        }`}>
+                          {dayLabels[index]} {day.getDate()}
+                        </div>
+                        
+                        {/* P&L */}
+                        <div className={`text-xs font-bold ${dayPnL >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                          {dayPnL >= 0 ? '+' : ''}${Math.abs(dayPnL).toFixed(0)}
+                        </div>
+                        
+                        {/* Bottom metrics */}
+                        <div className="flex justify-between items-center text-xs">
+                          <span className="text-gray-400">{dayTrades.length}T</span>
+                          <span className="text-gray-400">{winRate}%</span>
                         </div>
                       </div>
-                    );
-                  });
-                })()}
-              </div>
+                    </div>
+                  );
+                });
+              })()}
             </div>
           </div>
         </div>
@@ -2105,26 +2040,45 @@ export default function Dashboard() {
                 return accounts?.[0]; // Default to first account
               })()}
             />
-            <WeeklyPerformanceOverview 
-              trades={(() => {
-                if (!trades) return [];
-                
-                if (accountSelectionMode === 'all') {
-                  return trades;
-                } else if (accountSelectionMode === 'single' && selectedAccountIds.length > 0) {
-                  return trades.filter(trade => trade.accountId === selectedAccountIds[0]);
-                } else if (selectedAccountIds.length > 0) {
-                  return trades.filter(trade => selectedAccountIds.includes(trade.accountId));
-                }
-                return trades;
-              })()} 
-              selectedAccount={(() => {
-                if (accountSelectionMode === 'single' && selectedAccountIds.length > 0) {
-                  return accounts?.find(acc => acc.id === selectedAccountIds[0]);
-                }
-                return accounts?.[0]; // Default to first account
-              })()}
-            />
+            {/* Quick Performance Summary */}
+            <div className="widget-container">
+              <div className="widget-content flex-col">
+                <div className="widget-left mb-4">
+                  <p className="widget-label">Weekly Performance Summary</p>
+                  <p className="widget-description">Current week trading overview</p>
+                </div>
+                <div className="space-y-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="text-center">
+                      <div className={`text-2xl font-bold ${getValueColor(combinedAnalytics?.totalPnl || 0)}`}>
+                        {formatCurrency(combinedAnalytics?.totalPnl || 0)}
+                      </div>
+                      <div className="text-sm text-gray-400">Week P&L</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-2xl font-bold text-purple-400">
+                        {combinedAnalytics?.totalTrades || 0}
+                      </div>
+                      <div className="text-sm text-gray-400">Total Trades</div>
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="text-center">
+                      <div className="text-xl font-bold text-blue-400">
+                        {formatPercentage(combinedAnalytics?.winRate || 0)}
+                      </div>
+                      <div className="text-sm text-gray-400">Win Rate</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-xl font-bold text-green-400">
+                        {combinedAnalytics?.rFactor?.toFixed(2) || '0.00'}
+                      </div>
+                      <div className="text-sm text-gray-400">R Factor</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
