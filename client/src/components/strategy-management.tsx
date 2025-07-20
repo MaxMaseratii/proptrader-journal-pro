@@ -48,8 +48,13 @@ const StrategyManagement: React.FC<StrategyManagementProps> = ({ editStrategyId,
       console.log('Strategy deleted successfully');
       queryClient.invalidateQueries({ queryKey: ['/api/strategies'] });
     },
-    onError: (error) => {
+    onError: (error: any) => {
       console.error('Failed to delete strategy:', error);
+      if (error?.response?.data?.message?.includes("being used in daily plans")) {
+        alert("Cannot delete strategy: It is being used in daily plans. Please delete the associated daily plans first.");
+      } else {
+        alert("Failed to delete strategy. Please try again.");
+      }
     },
   });
 

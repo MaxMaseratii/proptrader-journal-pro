@@ -629,6 +629,16 @@ export class DatabaseStorage implements IStorage {
   }
 
   async deleteTradingStrategy(id: number): Promise<boolean> {
+    // Check if strategy is used in any daily plans
+    const referencedPlans = await db.select({ id: dailyPlans.id })
+      .from(dailyPlans)
+      .where(eq(dailyPlans.strategyId, id))
+      .limit(1);
+    
+    if (referencedPlans.length > 0) {
+      throw new Error("Cannot delete strategy: it is being used in daily plans. Please delete the associated daily plans first.");
+    }
+    
     const result = await db.delete(tradingStrategies).where(eq(tradingStrategies.id, id));
     return (result.rowCount ?? 0) > 0;
   }

@@ -1565,6 +1565,12 @@ Provide helpful, personalized advice based on this data. Keep responses concise 
       res.json({ success: true });
     } catch (error) {
       console.error("Error deleting strategy:", error);
+      if (error instanceof Error && error.message.includes("being used in daily plans")) {
+        return res.status(400).json({ 
+          message: error.message,
+          canDelete: false 
+        });
+      }
       res.status(500).json({ message: "Failed to delete strategy" });
     }
   });
