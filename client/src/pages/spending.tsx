@@ -41,7 +41,7 @@ import {
 const Spending = () => {
   const [selectedAccountId, setSelectedAccountId] = useState<string>("all");
   const [selectedPeriod, setSelectedPeriod] = useState<string>("monthly");
-  const [activeTab, setActiveTab] = useState<string>("overview");
+
   const [editingCategory, setEditingCategory] = useState<BudgetCategory | null>(null);
   const [newCategoryName, setNewCategoryName] = useState("");
   const queryClient = useQueryClient();
@@ -257,7 +257,7 @@ const Spending = () => {
 
   return (
     <div className="container mx-auto p-6 space-y-6">
-      {/* Header with Navigation Tabs */}
+      {/* Header */}
       <div className="flex flex-col space-y-4">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
@@ -294,39 +294,10 @@ const Spending = () => {
             </Select>
           </div>
         </div>
-
-        {/* Tab Navigation */}
-        <div className="flex space-x-1 bg-gray-800/50 p-1 rounded-lg">
-          {[
-            { id: 'overview', label: 'Budget Overview', icon: PieChart },
-            { id: 'categories', label: 'Category Management', icon: Settings },
-            { id: 'expenses', label: 'Add Expenses', icon: Plus },
-            { id: 'history', label: 'Expense History', icon: Calendar }
-          ].map((tab) => {
-            const IconComponent = tab.icon;
-            return (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center space-x-2 px-4 py-2 rounded-md transition-all ${
-                  activeTab === tab.id
-                    ? 'bg-gradient-to-r from-yellow-400 to-yellow-600 text-black font-medium'
-                    : 'text-gray-300 hover:bg-gray-700/50 hover:text-yellow-400'
-                }`}
-              >
-                <IconComponent className="h-4 w-4" />
-                <span>{tab.label}</span>
-              </button>
-            );
-          })}
-        </div>
       </div>
 
-      {/* Budget Overview Tab */}
-      {activeTab === 'overview' && (
-        <div className="space-y-6">
-          {/* Budget Setup Section */}
-          {!activeBudgetPlan && (
+      {/* Budget Setup Section */}
+      {!activeBudgetPlan && (
             <Card className="bg-gradient-to-br from-gray-900 via-gray-800 to-black border border-yellow-400/20">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-white">
@@ -477,12 +448,9 @@ const Spending = () => {
               </Card>
             </>
           )}
-        </div>
-      )}
 
-      {/* Category Management Tab */}
-      {activeTab === 'categories' && (
-        <div className="space-y-6">
+      {/* Category Management Section */}
+      <div className="space-y-6">
           {/* Trading Categories */}
           <Card className="bg-gradient-to-br from-gray-900 via-gray-800 to-black border border-yellow-400/20">
             <CardHeader>
@@ -652,12 +620,10 @@ const Spending = () => {
               </div>
             </CardContent>
           </Card>
-        </div>
-      )}
+      </div>
 
-      {/* Add Expenses Tab */}
-      {activeTab === 'expenses' && (
-        <Card className="bg-gradient-to-br from-gray-900 via-gray-800 to-black border border-yellow-400/20">
+      {/* Add New Expense Section */}
+      <Card className="bg-gradient-to-br from-gray-900 via-gray-800 to-black border border-yellow-400/20">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-white">
               <Plus className="h-5 w-5 text-yellow-400" />
@@ -734,12 +700,10 @@ const Spending = () => {
               {addExpenseMutation.isPending ? "Adding..." : "Add Expense"}
             </Button>
           </CardContent>
-        </Card>
-      )}
+      </Card>
 
-      {/* Expense History Tab */}
-      {activeTab === 'history' && (
-        <Card className="bg-gradient-to-br from-gray-900 via-gray-800 to-black border border-yellow-400/20">
+      {/* Expense History Section */}
+      <Card className="bg-gradient-to-br from-gray-900 via-gray-800 to-black border border-yellow-400/20">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-white">
               <Calendar className="h-5 w-5 text-yellow-400" />
@@ -775,10 +739,7 @@ const Spending = () => {
               )}
             </div>
           </CardContent>
-        </Card>
-      )}
-
-
+      </Card>
 
       {/* Legacy Spending Entry Component */}
       <SpendingEntry accounts={accounts} />
