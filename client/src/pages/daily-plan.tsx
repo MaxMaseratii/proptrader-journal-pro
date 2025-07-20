@@ -404,8 +404,14 @@ const DailyPlanPage = () => {
                       <Button 
                         variant="ghost" 
                         size="sm" 
-                        onClick={() => setIsStrategyDialogOpen(true)}
+                        onClick={() => {
+                          if (selectedStrategy) {
+                            setEditingStrategyId(selectedStrategy);
+                          }
+                          setIsStrategyDialogOpen(true);
+                        }}
                         className="text-yellow-400 hover:text-yellow-300"
+                        title={selectedStrategy ? "Edit selected strategy" : "Manage strategies"}
                       >
                         <Settings className="w-4 h-4" />
                       </Button>
@@ -1217,7 +1223,7 @@ const DailyPlanPage = () => {
           </DialogHeader>
           <div className="overflow-y-auto h-full">
             <StrategyManagement 
-              editStrategyId={editingStrategyId}
+              editStrategyId={editingStrategyId} 
               onStrategyUpdated={() => {
                 setIsStrategyDialogOpen(false);
                 setEditingStrategyId(null);
