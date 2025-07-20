@@ -658,6 +658,56 @@ export default function Dashboard() {
             </div>
           </div>
 
+          {/* Discipline Score - MOVED FROM ROW 3 */}
+          <div className="widget-container">
+            <div className="widget-content">
+              <div className="widget-left">
+                <p className="widget-label">Discipline Score</p>
+                {(() => {
+                  const filteredTrades = selectedAccountIds.length > 0
+                    ? trades?.filter(t => selectedAccountIds.includes(t.accountId)) || []
+                    : trades || [];
+                  
+                  if (filteredTrades.length === 0) {
+                    return (
+                      <div>
+                        <p className="widget-value text-gray-400">No Score</p>
+                        <p className="widget-description text-xs">No trades to analyze</p>
+                      </div>
+                    );
+                  }
+                  
+                  const disciplineMetrics = calculateComprehensiveDisciplineMetrics(
+                    filteredTrades,
+                    accounts || [],
+                    selectedAccountIds.length === 1 ? selectedAccountIds[0].toString() : "all"
+                  );
+                  
+                  let grade = 'F';
+                  if (disciplineMetrics.disciplineScore >= 90) grade = 'A+';
+                  else if (disciplineMetrics.disciplineScore >= 80) grade = 'A';
+                  else if (disciplineMetrics.disciplineScore >= 70) grade = 'B';
+                  else if (disciplineMetrics.disciplineScore >= 60) grade = 'C';
+                  else if (disciplineMetrics.disciplineScore >= 50) grade = 'D';
+                  
+                  return (
+                    <div>
+                      <p className={`widget-value ${disciplineMetrics.disciplineScore >= 80 ? 'text-green-400' : disciplineMetrics.disciplineScore >= 60 ? 'text-yellow-400' : 'text-red-400'}`}>
+                        {Math.round(disciplineMetrics.disciplineScore)}% {grade}
+                      </p>
+                      <p className="widget-description text-xs">
+                        {Math.round(disciplineMetrics.riskManagementScore)}% risk • {Math.round(disciplineMetrics.consistencyScore)}% consistency
+                      </p>
+                    </div>
+                  );
+                })()}
+              </div>
+              <div className="widget-icon-square">
+                <Brain className="widget-icon" />
+              </div>
+            </div>
+          </div>
+
 
         </div>
 
@@ -730,60 +780,17 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* ROW 3: RISK & PLANNING */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 mb-3">
-
-
-
-
-
-
-          {/* Discipline Score */}
+        {/* ROW 3: ACCOUNT EQUITY CURVE - MOVED FROM CHARTS SECTION */}
+        <div className="grid grid-cols-1 gap-3 mb-3">
+          {/* Account Equity Curve */}
           <div className="widget-container">
-            <div className="widget-content">
-              <div className="widget-left">
-                <p className="widget-label">Discipline Score</p>
-                {(() => {
-                  const filteredTrades = selectedAccountIds.length > 0
-                    ? trades?.filter(t => selectedAccountIds.includes(t.accountId)) || []
-                    : trades || [];
-                  
-                  if (filteredTrades.length === 0) {
-                    return (
-                      <div>
-                        <p className="widget-value text-gray-400">No Score</p>
-                        <p className="widget-description text-xs">No trades to analyze</p>
-                      </div>
-                    );
-                  }
-                  
-                  const disciplineMetrics = calculateComprehensiveDisciplineMetrics(
-                    filteredTrades,
-                    accounts || [],
-                    selectedAccountIds.length === 1 ? selectedAccountIds[0].toString() : "all"
-                  );
-                  
-                  let grade = 'F';
-                  if (disciplineMetrics.disciplineScore >= 90) grade = 'A+';
-                  else if (disciplineMetrics.disciplineScore >= 80) grade = 'A';
-                  else if (disciplineMetrics.disciplineScore >= 70) grade = 'B';
-                  else if (disciplineMetrics.disciplineScore >= 60) grade = 'C';
-                  else if (disciplineMetrics.disciplineScore >= 50) grade = 'D';
-                  
-                  return (
-                    <div>
-                      <p className={`widget-value ${disciplineMetrics.disciplineScore >= 80 ? 'text-green-400' : disciplineMetrics.disciplineScore >= 60 ? 'text-yellow-400' : 'text-red-400'}`}>
-                        {Math.round(disciplineMetrics.disciplineScore)}% {grade}
-                      </p>
-                      <p className="widget-description text-xs">
-                        {Math.round(disciplineMetrics.riskManagementScore)}% risk • {Math.round(disciplineMetrics.consistencyScore)}% consistency
-                      </p>
-                    </div>
-                  );
-                })()}
+            <div className="widget-content flex-col">
+              <div className="widget-left mb-4">
+                <p className="widget-label">Account Equity Curve</p>
+                <p className="widget-description">Portfolio growth over time</p>
               </div>
-              <div className="widget-icon-square">
-                <Brain className="widget-icon" />
+              <div className="h-64 w-full">
+                <EquityChart data={getEquityData()} />
               </div>
             </div>
           </div>
@@ -791,43 +798,6 @@ export default function Dashboard() {
 
         {/* ROW 4: INVESTMENT & FINANCIAL TRACKING */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 mb-3">
-          {/* Investment ROI Summary */}
-          <div className="widget-container">
-            <div className="widget-content">
-              <div className="widget-left">
-                <p className="widget-label">Investment ROI Summary</p>
-                <div className="investment-summary space-y-1">
-                  <div className="total-invested flex justify-between">
-                    <span className="text-sm">Total Invested:</span>
-                    <span className="text-sm font-semibold">{formatCurrency(totalInvestment)}</span>
-                  </div>
-                  <div className="total-returns flex justify-between">
-                    <span className="text-sm">Total Returns:</span>
-                    <span className={`text-sm font-semibold ${getValueColor(combinedAnalytics?.totalPnl || 0)}`}>
-                      {formatCurrency(combinedAnalytics?.totalPnl || 0)}
-                    </span>
-                  </div>
-                  <div className="roi-percentage flex justify-between">
-                    <span className="text-sm">ROI:</span>
-                    <span className={`text-sm font-semibold ${getValueColor(roiPercentage)}`}>
-                      {roiPercentage.toFixed(1)}%
-                    </span>
-                  </div>
-                </div>
-                <p className="widget-description text-xs">
-                  {roiPercentage > 0 ? 'PROFITABLE TRADER' : 'BUILDING CAPITAL'}
-                </p>
-              </div>
-              <div className="widget-icon-square">
-                <DollarSign className="widget-icon" />
-              </div>
-            </div>
-          </div>
-
-
-
-
-
           {/* Account Status Summary */}
           <div className="widget-container">
             <div className="widget-content">
@@ -1017,8 +987,22 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* Total Portfolio Value Row */}
-        <div className="widget-grid mb-6">
+
+
+
+
+        {/* Investment Tracking */}
+        <div className="mb-6">
+          <h2 className="text-xl font-bold text-gradient-rainbow mb-6 flex items-center border-b border-gray-700 pb-3">
+            <Shield className="mr-3 h-5 w-5 text-green-400" />
+            Investment Tracking
+          </h2>
+        </div>
+
+
+
+        {/* ROW 8: TOTAL PORTFOLIO VALUE - MOVED FROM PREVIOUS LOCATION */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 mb-3">
           {/* Total Portfolio Value */}
           <div className="widget-container">
             <div className="widget-content">
@@ -1034,37 +1018,7 @@ export default function Dashboard() {
               </div>
             </div>
           </div>
-
-
-
-          {/* Total Return */}
-          <div className="widget-container">
-            <div className="widget-content">
-              <div className="widget-left">
-                <p className="widget-label">Total Return</p>
-                <p className="widget-value">
-                  {formatCurrency(combinedAnalytics?.totalPnl || 0)}
-                </p>
-                <p className="widget-description">Profit/Loss from trading</p>
-              </div>
-              <div className="widget-icon-square">
-                <TrendingUp className="widget-icon" />
-              </div>
-            </div>
-          </div>
         </div>
-
-
-
-        {/* Investment Tracking */}
-        <div className="mb-6">
-          <h2 className="text-xl font-bold text-gradient-rainbow mb-6 flex items-center border-b border-gray-700 pb-3">
-            <Shield className="mr-3 h-5 w-5 text-green-400" />
-            Investment Tracking
-          </h2>
-        </div>
-
-
 
         {/* Investment Tracking & Working Hours Summary */}
         <div className="widget-grid mb-6">
@@ -1503,17 +1457,40 @@ export default function Dashboard() {
 
 
 
-        {/* Charts Section */}
-        <div className="grid grid-cols-1 gap-6 mb-8">
-          {/* Account Equity Curve */}
+
+
+        {/* ROW 9: TOTAL PAYOUT WIDGET - NEW ADDITION */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 mb-8">
+          <div></div> {/* Column 1 */}
+          <div></div> {/* Column 2 */}
+          <div></div> {/* Column 3 */}
+          {/* Total Payout - Column 4 */}
           <div className="widget-container">
-            <div className="widget-content flex-col">
-              <div className="widget-left mb-4">
-                <p className="widget-label">Account Equity Curve</p>
-                <p className="widget-description">Portfolio growth over time</p>
+            <div className="widget-content">
+              <div className="widget-left">
+                <p className="widget-label">Total Payout</p>
+                <p className="widget-value text-green-400">
+                  {(() => {
+                    const selectedAccounts = selectedAccountIds.length > 0 && accountSelectionMode !== 'all'
+                      ? accounts?.filter(acc => selectedAccountIds.includes(acc.id)) || []
+                      : accounts || [];
+                    
+                    // Calculate total potential payout from funded/live accounts
+                    const totalPayout = selectedAccounts
+                      .filter(acc => acc.type === 'funded' || acc.type === 'live')
+                      .reduce((sum, acc) => {
+                        const accountTrades = trades?.filter(t => t.accountId === acc.id) || [];
+                        const totalPnl = accountTrades.reduce((total, trade) => total + (trade.pnl || 0), 0);
+                        return sum + Math.max(0, totalPnl); // Only positive P&L counts towards payout
+                      }, 0);
+                    
+                    return formatCurrency(totalPayout);
+                  })()}
+                </p>
+                <p className="widget-description">Available for withdrawal</p>
               </div>
-              <div className="h-64 w-full">
-                <EquityChart data={getEquityData()} />
+              <div className="widget-icon-square">
+                <DollarSign className="widget-icon" />
               </div>
             </div>
           </div>
