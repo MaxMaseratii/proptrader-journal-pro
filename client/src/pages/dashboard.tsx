@@ -704,251 +704,145 @@ export default function Dashboard() {
         </div>
 
 
-        {/* Complete Trading Dashboard Component */}
-        <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900 p-4">
-          <div className="max-w-7xl mx-auto space-y-6">
+        {/* Trading Metrics Dashboard - Simplified Implementation */}
+        <div className="mb-8">
+          <div className="bg-gradient-to-br from-gray-900/40 via-gray-800/60 to-black/80 border border-gray-600/30 rounded-lg p-4">
             
-            {(() => {
-              const [selectedDate, setSelectedDate] = useState(new Date());
-              const [currentPeriod, setCurrentPeriod] = useState(new Date());
-              const [viewMode, setViewMode] = useState('weekly'); // weekly, monthly, yearly
-              const [hoveredMetric, setHoveredMetric] = useState(null);
-              const [showPeriodPicker, setShowPeriodPicker] = useState(false);
+            {/* Header + PNL Combined */}
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center space-x-2">
+                <Calendar className="w-4 h-4 text-amber-400" />
+                <span className="text-lg font-bold text-amber-400">Mon 20</span>
+                <div className="w-2 h-2 rounded-full bg-teal-400" />
+              </div>
+              <div className="text-right">
+                <div className="text-2xl font-bold text-green-400">
+                  +$85.50
+                </div>
+                <div className="text-sm text-gray-400">
+                  142% of $60
+                </div>
+              </div>
+            </div>
 
-              // Generate sample trading data for different dates
-              const generateTradingData = (date) => {
-                const seed = date.getDate() + date.getMonth() * 31 + date.getFullYear() * 365;
-                const random = (min, max) => min + (seed * 9301 + 49297) % 233280 / 233280 * (max - min);
+            {/* Compact Progress Bar */}
+            <div className="w-full bg-gray-700/50 rounded-full h-2 mb-4">
+              <div 
+                className="h-2 rounded-full transition-all duration-500 bg-green-400"
+                style={{ width: '100%' }}
+              />
+            </div>
+
+            {/* 2 Rows x 4 Columns Grid */}
+            <div className="space-y-3">
+              
+              {/* Row 1: Risk+Max Daily Loss, R:R, Trades, Hours Worked */}
+              <div className="grid grid-cols-4 gap-4">
                 
-                // User's actual trading setup
-                const avgRiskPerTrade = 20; // $20 risk per trade
-                const avgRewardRatio = random(2.5, 3.5); // Around 3:1 RR
-                const maxDailyTrades = Math.round(random(2, 5)); // 2-5 trades max per day
-                const totalDayTrades = Math.round(random(0, maxDailyTrades));
-                const dailyTarget = 60; // $60 daily target
-                
-                // Calculate win rate based on trades
-                const winsNeeded = Math.max(0, Math.round(random(0, totalDayTrades)));
-                const winRate = totalDayTrades > 0 ? (winsNeeded / totalDayTrades) * 100 : 0;
-                
-                // Calculate realistic PnL around the $60 target
-                // With $20 risk and 3:1 RR, one win = $60 (target achieved)
-                const possibleOutcomes = [
-                  // Different trading day scenarios
-                  -20 * totalDayTrades, // All losses
-                  -20 * Math.max(0, totalDayTrades - 1) + 60, // 1 win, rest losses
-                  -20 * Math.max(0, totalDayTrades - 2) + 120, // 2 wins, rest losses
-                  60 * random(0.5, 1.5) // Around target with some variation
-                ];
-                
-                const dayPnL = possibleOutcomes[Math.floor(random(0, possibleOutcomes.length))];
-                
-                return {
-                  date,
-                  avgRiskPerTrade,
-                  maxDailyRisk: avgRiskPerTrade * maxDailyTrades, // Max loss if all trades lose
-                  avgRewardRatio,
-                  targetRewardRatio: 3.0,
-                  dailyTarget,
-                  dayPnL,
-                  maxDailyTrades,
-                  totalDayTrades,
-                  disciplineScore: Math.round(random(60, 95)),
-                  winRate: Math.round(winRate)
-                };
-              };
+                {/* Risk + Max Daily Loss Combined */}
+                <div className="bg-black/30 rounded-lg p-4 border border-gray-700/50 relative">
+                  <div className="absolute top-3 right-3 text-xs text-red-400">
+                    Max: $80
+                  </div>
+                  <div className="text-3xl font-bold text-red-400 mb-1">
+                    $20
+                  </div>
+                  <div className="text-sm text-gray-400">Risk Per Trade</div>
+                </div>
 
-              // Helper function to convert discipline score to letter grade
-              const getDisciplineGrade = (score) => {
-                if (score >= 90) return { grade: 'A', color: 'text-green-400' };
-                if (score >= 80) return { grade: 'B', color: 'text-green-400' };
-                if (score >= 70) return { grade: 'C', color: 'text-yellow-400' };
-                if (score >= 60) return { grade: 'D', color: 'text-orange-400' };
-                return { grade: 'F', color: 'text-red-400' };
-              };
+                {/* R:R */}
+                <div className="bg-black/30 rounded-lg p-4 border border-gray-700/50 relative">
+                  <div className="absolute top-3 right-3 text-xs text-blue-300">
+                    Target: 3.0
+                  </div>
+                  <div className="text-3xl font-bold text-blue-400 mb-1">
+                    3.2
+                  </div>
+                  <div className="text-sm text-gray-400">Risk:Reward</div>
+                </div>
 
-              const selectedDayData = generateTradingData(selectedDate);
+                {/* Trades */}
+                <div className="bg-black/30 rounded-lg p-4 border border-gray-700/50 relative">
+                  <div className="absolute top-3 right-3 text-xs text-purple-300">
+                    3/5
+                  </div>
+                  <div className="text-3xl font-bold text-purple-400 mb-1">
+                    3
+                  </div>
+                  <div className="text-sm text-gray-400">Trades Executed</div>
+                  <div className="w-full bg-gray-700/50 rounded-full h-1 mt-2">
+                    <div 
+                      className="h-1 rounded-full bg-purple-400 transition-all duration-500"
+                      style={{ width: '60%' }}
+                    />
+                  </div>
+                </div>
 
-              const CompactDetailView = ({ dayData }) => {
-                const [hoveredMetric, setHoveredMetric] = useState(null);
-                
-                // Simple data structure
-                const displayData = {
-                  dayLabel: selectedDate.toLocaleDateString('en-US', { weekday: 'short' }),
-                  day: selectedDate.getDate(),
-                  isToday: selectedDate.toDateString() === new Date().toDateString(),
-                  avgRiskPerTrade: dayData.avgRiskPerTrade,
-                  maxDailyRisk: dayData.maxDailyRisk || 80,
-                  avgRewardRatio: dayData.avgRewardRatio,
-                  targetRewardRatio: dayData.targetRewardRatio || 3.0,
-                  dailyTarget: dayData.dailyTarget || 60,
-                  dayPnL: dayData.dayPnL,
-                  maxDailyTrades: dayData.maxDailyTrades || 5,
-                  totalDayTrades: dayData.totalDayTrades,
-                  disciplineScore: dayData.disciplineScore,
-                  winRate: dayData.winRate || 0
-                };
-
-                const pnlPositive = displayData.dayPnL >= 0;
-                const targetProgress = Math.min((Math.abs(displayData.dayPnL) / displayData.dailyTarget) * 100, 100);
-                const riskUtilization = (displayData.totalDayTrades / displayData.maxDailyTrades) * 100;
-                const disciplineGrade = getDisciplineGrade(displayData.disciplineScore);
-
-                return (
-                  <div className={`
-                    relative transition-all duration-200 rounded-lg overflow-hidden w-full
-                    ${displayData.isToday 
-                      ? 'bg-gradient-to-br from-teal-950/40 via-gray-900/60 to-black/80 border border-teal-400/50' 
-                      : 'bg-gradient-to-br from-gray-900/40 via-gray-800/60 to-black/80 border border-gray-600/30'
-                    }
-                    hover:border-amber-400/60
-                  `}>
-                    
-                    {/* Ultra Compact Layout - Full Width */}
-                    <div className="p-4">
-                      
-                      {/* Header + PNL Combined */}
-                      <div className="flex items-center justify-between mb-3">
-                        <div className="flex items-center space-x-2">
-                          <Calendar className="w-4 h-4 text-amber-400" />
-                          <span className="text-lg font-bold text-amber-400">{displayData.dayLabel} {displayData.day}</span>
-                          {displayData.isToday && <div className="w-2 h-2 rounded-full bg-teal-400" />}
-                        </div>
-                        <div className="text-right">
-                          <div className={`text-2xl font-bold ${pnlPositive ? 'text-green-400' : 'text-red-400'}`}>
-                            {pnlPositive ? '+' : ''}${displayData.dayPnL.toFixed(2)}
-                          </div>
-                          <div className="text-sm text-gray-400">
-                            {targetProgress.toFixed(0)}% of ${displayData.dailyTarget.toFixed(0)}
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Compact Progress Bar */}
-                      <div className="w-full bg-gray-700/50 rounded-full h-2 mb-4">
-                        <div 
-                          className={`h-2 rounded-full transition-all duration-500 ${pnlPositive ? 'bg-green-400' : 'bg-red-400'}`}
-                          style={{ width: `${targetProgress}%` }}
-                        />
-                      </div>
-
-                      {/* NEW: 2 Rows x 4 Columns Grid - Full Width */}
-                      <div className="space-y-3">
-                        
-                        {/* Row 1: Risk+Max Daily Loss, R:R, Trades, Hours Worked */}
-                        <div className="grid grid-cols-4 gap-4">
-                          
-                          {/* Risk + Max Daily Loss Combined */}
-                          <div className="bg-black/30 rounded-lg p-4 border border-gray-700/50 relative">
-                            <div className="absolute top-3 right-3 text-xs text-red-400">
-                              Max: ${displayData.maxDailyRisk}
-                            </div>
-                            <div className="text-3xl font-bold text-red-400 mb-1">
-                              ${displayData.avgRiskPerTrade}
-                            </div>
-                            <div className="text-sm text-gray-400">Risk Per Trade</div>
-                          </div>
-
-                          {/* R:R */}
-                          <div className="bg-black/30 rounded-lg p-4 border border-gray-700/50 relative">
-                            <div className="absolute top-3 right-3 text-xs text-blue-300">
-                              Target: {displayData.targetRewardRatio.toFixed(1)}
-                            </div>
-                            <div className="text-3xl font-bold text-blue-400 mb-1">
-                              {displayData.avgRewardRatio.toFixed(1)}
-                            </div>
-                            <div className="text-sm text-gray-400">Risk:Reward</div>
-                          </div>
-
-                          {/* Trades */}
-                          <div className="bg-black/30 rounded-lg p-4 border border-gray-700/50 relative">
-                            <div className="absolute top-3 right-3 text-xs text-purple-300">
-                              {displayData.totalDayTrades}/{displayData.maxDailyTrades}
-                            </div>
-                            <div className="text-3xl font-bold text-purple-400 mb-1">
-                              {displayData.totalDayTrades}
-                            </div>
-                            <div className="text-sm text-gray-400">Trades Executed</div>
-                            <div className="w-full bg-gray-700/50 rounded-full h-1 mt-2">
-                              <div 
-                                className="h-1 rounded-full bg-purple-400 transition-all duration-500"
-                                style={{ width: `${riskUtilization}%` }}
-                              />
-                            </div>
-                          </div>
-
-                          {/* Hours Worked */}
-                          <div className="bg-black/30 rounded-lg p-4 border border-gray-700/50 relative">
-                            <div className="absolute top-3 right-3 text-xs text-indigo-300">
-                              <div className="flex items-center space-x-1">
-                                <div className="w-2 h-2 rounded-full bg-indigo-400"></div>
-                                <span>Plan: 6h</span>
-                              </div>
-                            </div>
-                            <div className="text-3xl font-bold text-indigo-400 mb-1">
-                              4.5h
-                            </div>
-                            <div className="text-sm text-gray-400">Hours Worked</div>
-                          </div>
-                        </div>
-
-                        {/* Row 2: Discipline, Risk Utilization, Avg R/R, Win Rate */}
-                        <div className="grid grid-cols-4 gap-4">
-                          
-                          {/* Discipline */}
-                          <div className="bg-black/30 rounded-lg p-4 border border-gray-700/50 relative">
-                            <div className="absolute top-3 right-3">
-                              <div className={`px-2 py-1 rounded text-xs font-bold ${disciplineGrade.grade === 'A' ? 'bg-green-500 text-black' : disciplineGrade.grade === 'B' ? 'bg-blue-500 text-white' : disciplineGrade.grade === 'C' ? 'bg-yellow-500 text-black' : 'bg-red-500 text-white'}`}>
-                                {disciplineGrade.grade === 'A' ? 'ELITE' : disciplineGrade.grade === 'B' ? 'GOOD' : disciplineGrade.grade === 'C' ? 'AVG' : 'POOR'}
-                              </div>
-                            </div>
-                            <div className={`text-3xl font-bold ${disciplineGrade.color} mb-1`}>
-                              {displayData.disciplineScore}
-                            </div>
-                            <div className="text-sm text-gray-400">Discipline Score</div>
-                          </div>
-
-                          {/* Risk Utilization */}
-                          <div className="bg-black/30 rounded-lg p-4 border border-gray-700/50 relative">
-                            <div className="absolute top-3 right-3 text-xs text-orange-300">
-                              Used
-                            </div>
-                            <div className="text-3xl font-bold text-orange-400 mb-1">
-                              {riskUtilization.toFixed(0)}%
-                            </div>
-                            <div className="text-sm text-gray-400">Risk Utilization</div>
-                          </div>
-
-                          {/* Avg Risk/Reward */}
-                          <div className="bg-black/30 rounded-lg p-4 border border-gray-700/50 relative">
-                            <div className="absolute top-3 right-3 text-xs text-cyan-300">
-                              Ratio
-                            </div>
-                            <div className="text-3xl font-bold text-cyan-400 mb-1">
-                              1:{displayData.avgRewardRatio.toFixed(1)}
-                            </div>
-                            <div className="text-sm text-gray-400">Avg Risk/Reward</div>
-                          </div>
-
-                          {/* Win Rate */}
-                          <div className="bg-black/30 rounded-lg p-4 border border-gray-700/50 relative">
-                            <div className="absolute top-3 right-3 text-xs text-emerald-300">
-                              WR
-                            </div>
-                            <div className="text-3xl font-bold text-emerald-400 mb-1">
-                              {displayData.totalDayTrades > 0 ? `${displayData.winRate}%` : '0%'}
-                            </div>
-                            <div className="text-sm text-gray-400">Win Rate</div>
-                          </div>
-                        </div>
-                      </div>
+                {/* Hours Worked */}
+                <div className="bg-black/30 rounded-lg p-4 border border-gray-700/50 relative">
+                  <div className="absolute top-3 right-3 text-xs text-indigo-300">
+                    <div className="flex items-center space-x-1">
+                      <div className="w-2 h-2 rounded-full bg-indigo-400"></div>
+                      <span>Plan: 6h</span>
                     </div>
                   </div>
-                );
-              };
+                  <div className="text-3xl font-bold text-indigo-400 mb-1">
+                    4.5h
+                  </div>
+                  <div className="text-sm text-gray-400">Hours Worked</div>
+                </div>
+              </div>
 
-              return <CompactDetailView dayData={selectedDayData} />;
-            })()}
+              {/* Row 2: Discipline, Risk Utilization, Avg R/R, Win Rate */}
+              <div className="grid grid-cols-4 gap-4">
+                
+                {/* Discipline */}
+                <div className="bg-black/30 rounded-lg p-4 border border-gray-700/50 relative">
+                  <div className="absolute top-3 right-3">
+                    <div className="px-2 py-1 rounded text-xs font-bold bg-green-500 text-black">
+                      ELITE
+                    </div>
+                  </div>
+                  <div className="text-3xl font-bold text-green-400 mb-1">
+                    92
+                  </div>
+                  <div className="text-sm text-gray-400">Discipline Score</div>
+                </div>
+
+                {/* Risk Utilization */}
+                <div className="bg-black/30 rounded-lg p-4 border border-gray-700/50 relative">
+                  <div className="absolute top-3 right-3 text-xs text-orange-300">
+                    Used
+                  </div>
+                  <div className="text-3xl font-bold text-orange-400 mb-1">
+                    60%
+                  </div>
+                  <div className="text-sm text-gray-400">Risk Utilization</div>
+                </div>
+
+                {/* Avg Risk/Reward */}
+                <div className="bg-black/30 rounded-lg p-4 border border-gray-700/50 relative">
+                  <div className="absolute top-3 right-3 text-xs text-cyan-300">
+                    Ratio
+                  </div>
+                  <div className="text-3xl font-bold text-cyan-400 mb-1">
+                    1:3.2
+                  </div>
+                  <div className="text-sm text-gray-400">Avg Risk/Reward</div>
+                </div>
+
+                {/* Win Rate */}
+                <div className="bg-black/30 rounded-lg p-4 border border-gray-700/50 relative">
+                  <div className="absolute top-3 right-3 text-xs text-emerald-300">
+                    WR
+                  </div>
+                  <div className="text-3xl font-bold text-emerald-400 mb-1">
+                    67%
+                  </div>
+                  <div className="text-sm text-gray-400">Win Rate</div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
