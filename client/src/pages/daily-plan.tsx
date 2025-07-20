@@ -137,6 +137,25 @@ const DailyPlanPage = () => {
     },
   });
 
+  // Journal Entry Mutation - seamlessly connected to main journal system
+  const createJournalEntry = useMutation({
+    mutationFn: (data: any) => apiRequest('/api/journal', 'POST', data),
+    onSuccess: () => {
+      console.log('Journal entry saved successfully');
+      queryClient.invalidateQueries({ queryKey: ['/api/journal'] });
+      // Clear journal form after successful save
+      setJournalEntry({
+        whatWentWrong: '',
+        whatWentRight: '',
+        lessonsLearned: '',
+        improvementPlan: ''
+      });
+    },
+    onError: (error) => {
+      console.error('Failed to save journal entry:', error);
+    },
+  });
+
   // Calculate actual results from trades
   const actualResults = useMemo(() => {
     if (!trades || !selectedAccount || !selectedDate) return {
@@ -214,6 +233,33 @@ const DailyPlanPage = () => {
 
   const removeTradeSetupLink = (index: number) => {
     setTradeSetupLinks(tradeSetupLinks.filter((_, i) => i !== index));
+  };
+
+  // Save journal entry function - seamlessly connects to main journal system
+  const saveJournalEntry = () => {
+    if (!selectedAccount) {
+      console.error('No account selected for journal entry');
+      return;
+    }
+
+    if (!journalEntry.whatWentRight.trim() && !journalEntry.whatWentWrong.trim() && !journalEntry.lessonsLearned.trim()) {
+      console.error('Journal entry is empty');
+      return;
+    }
+
+    const journalData = {
+      accountId: selectedAccount,
+      date: selectedDate,
+      whatWentRight: journalEntry.whatWentRight.trim(),
+      whatWentWrong: journalEntry.whatWentWrong.trim(),
+      lessonsLearned: journalEntry.lessonsLearned.trim(),
+      improvementPlan: journalEntry.improvementPlan?.trim() || '',
+      emotionalState: 'neutral',
+      marketConditions: ''
+    };
+
+    console.log('Saving journal entry:', journalData);
+    createJournalEntry.mutate(journalData);
   };
 
   const createNewPlan = () => {
@@ -954,9 +1000,13 @@ const DailyPlanPage = () => {
                   </div>
                 </div>
                 
-                <Button className="w-full bg-gradient-to-r from-yellow-400 to-yellow-600 text-black hover:from-yellow-500 hover:to-yellow-700">
+                <Button 
+                  onClick={() => saveJournalEntry()}
+                  disabled={createJournalEntry.isPending}
+                  className="w-full bg-gradient-to-r from-yellow-400 to-yellow-600 text-black hover:from-yellow-500 hover:to-yellow-700"
+                >
                   <Save className="w-4 h-4 mr-2" />
-                  Save Journal Entry
+                  {createJournalEntry.isPending ? 'Saving...' : 'Save Journal Entry'}
                 </Button>
               </div>
               
