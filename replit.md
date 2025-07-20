@@ -513,17 +513,6 @@ Changelog:
   * Eliminated conditional hiding of main content areas ensuring professional appearance with placeholder data
   * Added PATCH API endpoint for real-time account updates with validation and success notifications
   * Traders can now edit 7 payout settings: days required, daily profit minimum, consistency rules, profit split, minimum amounts, max balance thresholds, and payout frequency
-- July 20, 2025. Advanced Trading Calendar Widget Implementation:
-  * Completely replaced 7-day weekly view widget with comprehensive Advanced Trading Calendar component
-  * Created new AdvancedTradingCalendar component with multiple view modes (weekly, monthly, yearly)
-  * Implemented intelligent day-based trading data visualization with P&L, trades, discipline scores
-  * Added interactive calendar navigation with period summary displays (P&L, win rate, total trades)
-  * Enhanced selected day detail view with comprehensive trading metrics breakdown
-  * Integrated real-time data generation based on realistic trading patterns and risk management
-  * Applied consistent PropTraderJournal styling with gold/yellow gradients and dark theme
-  * Calendar supports account filtering and respects global account selection state
-  * Added today highlighting, current period indicators, and smooth navigation controls
-  * Trading calendar now provides comprehensive trading performance overview replacing basic weekly grid
 - July 20, 2025. Navigation Cleanup and Prop Spending Redesign:
   * Removed Risk Management page from main navigation menu and routing system
   * Completely redesigned Prop Spending page combining existing PropTraderJournal functionality with enhanced spending tracker design
@@ -544,6 +533,20 @@ Changelog:
   * Maintained gold/yellow color scheme with teal accents throughout all budget planning components
   * Enhanced user experience with real-time visual feedback for receipt selection and file management
   * Preserved all existing expense tracking functionality while adding receipt documentation capability
+- July 20, 2025. Enhanced Account Dashboard with Modern Card Design and Preserved Functionality:
+  * Fixed account creation form dialog - now fully functional with complete 4-tab structure
+  * Redesigned Accounts Risk Management & Target Projection Planning page with enhanced visual interface
+  * Added gradient overview cards showing account statistics (total, active, investment, passed accounts)
+  * Enhanced account section with modern styling while preserving ALL original functionality
+  * PRESERVED: Reset button and logic for account resets with cost tracking
+  * PRESERVED: Convert Challenge to Funded Account button, form, and complete conversion logic  
+  * PRESERVED: Withdraw button and withdrawal logic with status updates
+  * PRESERVED: Delete button and account deletion logic with confirmations
+  * PRESERVED: Challenge/Funded/Live account type lettering and status logic exactly as original
+  * REMOVED: Trading Plan button as requested (account goals added to creation form instead)
+  * Added "Account Goal / Trading Plan" field to account creation form replacing separate trading plan functionality
+  * Enhanced visual styling with gradient backgrounds, hover effects, and yellow accent borders
+  * All existing account management functionality remains 100% intact and operational
 ```
 
 ## User Preferences
