@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Link } from "wouter";
 import { apiRequest } from "@/lib/queryClient";
@@ -64,7 +64,23 @@ import type { Account, Trade } from "@shared/schema";
 
 // TradingDashboard component - your custom calendar component
 const TradingDashboard = ({ trades: filteredTrades }: { trades?: Trade[] }) => {
-  const [selectedDate, setSelectedDate] = useState(new Date());
+  // Set initial date to the most recent trade date if available, otherwise today
+  const [selectedDate, setSelectedDate] = useState(() => {
+    if (!filteredTrades || filteredTrades.length === 0) return new Date();
+    const tradeDates = filteredTrades.map(t => new Date(t.date)).sort((a, b) => b.getTime() - a.getTime());
+    return tradeDates[0] || new Date();
+  });
+
+  // Update selected date when filtered trades change
+  useEffect(() => {
+    if (filteredTrades && filteredTrades.length > 0) {
+      const tradeDates = filteredTrades.map(t => new Date(t.date)).sort((a, b) => b.getTime() - a.getTime());
+      const mostRecentDate = tradeDates[0];
+      if (mostRecentDate && mostRecentDate.toDateString() !== selectedDate.toDateString()) {
+        setSelectedDate(mostRecentDate);
+      }
+    }
+  }, [filteredTrades]);
   const [currentPeriod, setCurrentPeriod] = useState(new Date());
   const [viewMode, setViewMode] = useState('weekly'); // weekly, monthly, yearly
   const [hoveredMetric, setHoveredMetric] = useState(null);
@@ -82,11 +98,11 @@ const TradingDashboard = ({ trades: filteredTrades }: { trades?: Trade[] }) => {
     const winRate = dayTrades.length > 0 ? (winningTrades.length / dayTrades.length) * 100 : 0;
     
     const avgRisk = dayTrades.length > 0 
-      ? dayTrades.reduce((sum, trade) => sum + Math.abs(trade.entryPrice - (trade.stopLoss || trade.entryPrice)), 0) / dayTrades.length 
+      ? dayTrades.reduce((sum, trade) => sum + Math.abs(trade.entryPrice - (trade.initialStopLoss || trade.entryPrice)), 0) / dayTrades.length 
       : 0;
     
     const avgReward = dayTrades.length > 0 
-      ? dayTrades.reduce((sum, trade) => sum + Math.abs((trade.takeProfit || trade.exitPrice || trade.entryPrice) - trade.entryPrice), 0) / dayTrades.length 
+      ? dayTrades.reduce((sum, trade) => sum + Math.abs((trade.initialTakeProfit || trade.exitPrice || trade.entryPrice) - trade.entryPrice), 0) / dayTrades.length 
       : 0;
     
     const avgRewardRatio = avgRisk > 0 ? avgReward / avgRisk : 0;
