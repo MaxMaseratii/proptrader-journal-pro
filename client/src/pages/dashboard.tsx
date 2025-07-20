@@ -158,11 +158,11 @@ const TradingDashboard = () => {
           <h1 className="text-2xl font-bold text-amber-400">Daily Risk Management & Performance Overview</h1>
         </div>
 
-        {/* Main Dashboard Layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
+        {/* Main Dashboard Layout - ONLY 2x4 GRID */}
+        <div className="w-full max-w-2xl mx-auto">
           
-          {/* Selected Day Detail - NOW WITH 2x3 GRID - EXPANDED */}
-          <div className="lg:col-span-2">
+          {/* Selected Day Detail - NOW WITH 2x4 GRID - FULL WIDTH */}
+          <div className="w-full">
             <div className={`
               relative transition-all duration-200 rounded-lg overflow-hidden w-full
               ${isToday 
@@ -295,161 +295,6 @@ const TradingDashboard = () => {
                   </div>
                 </div>
               </div>
-            </div>
-          </div>
-          
-          {/* Calendar View - Simplified for now */}
-          <div className="lg:col-span-3">
-            <div className="bg-gradient-to-br from-gray-800/30 via-gray-900/30 to-black/30 rounded-xl p-5 border border-gray-700/50 space-y-4">
-              
-              {/* Top Row: View Tabs + Date Range + Go to Today */}
-              <div className="flex items-center justify-between w-full">
-                <div className="flex bg-gray-800/40 rounded-lg p-1 border border-gray-600/30 shadow-md">
-                  {['weekly', 'monthly', 'yearly'].map((mode) => (
-                    <button
-                      key={mode}
-                      onClick={() => setViewMode(mode)}
-                      className={`px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 capitalize ${
-                        viewMode === mode
-                          ? 'bg-amber-500 text-black shadow-md'
-                          : 'text-gray-300 hover:text-amber-400 hover:bg-gray-700/30'
-                      }`}
-                    >
-                      {mode}
-                    </button>
-                  ))}
-                </div>
-
-                <div className="flex items-center bg-gray-800/40 rounded-lg border border-gray-600/30 shadow-md overflow-hidden">
-                  <button
-                    onClick={() => navigatePeriod(-1)}
-                    className="p-2 hover:bg-gray-700/40 text-gray-400 hover:text-amber-400 transition-all duration-200"
-                  >
-                    <ChevronLeft className="w-4 h-4" />
-                  </button>
-                  
-                  <div className="px-6 py-2 border-x border-gray-600/20">
-                    <span className="text-lg font-semibold text-amber-400 min-w-48 text-center block">
-                      {formatPeriod(currentPeriod, viewMode)}
-                    </span>
-                  </div>
-                  
-                  <button
-                    onClick={() => navigatePeriod(1)}
-                    className="p-2 hover:bg-gray-700/40 text-gray-400 hover:text-amber-400 transition-all duration-200"
-                  >
-                    <ChevronRight className="w-4 h-4" />
-                  </button>
-                </div>
-                
-                <button
-                  onClick={() => {
-                    setCurrentPeriod(new Date());
-                    setSelectedDate(new Date());
-                  }}
-                  className="px-4 py-2 rounded-lg text-sm font-medium bg-teal-600/80 hover:bg-teal-600 text-white transition-all duration-200 border border-teal-500/40 shadow-md"
-                >
-                  Go to Today
-                </button>
-              </div>
-
-              {/* Weekly Calendar Table */}
-              {viewMode === 'weekly' && (
-                <div className="space-y-4">
-                  {/* Days Header */}
-                  <div className="grid grid-cols-7 gap-1 text-center text-sm font-medium text-gray-400 mb-2">
-                    {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
-                      <div key={day} className="py-2">{day}</div>
-                    ))}
-                  </div>
-                  
-                  {/* Calendar Days */}
-                  <div className="grid grid-cols-7 gap-1">
-                    {getWeekDays(currentPeriod).map((date, index) => {
-                      const dayData = generateTradingData(date);
-                      const isToday = date.toDateString() === new Date().toDateString();
-                      const isSelected = date.toDateString() === selectedDate.toDateString();
-                      
-                      // Sample data matching your screenshot - Jul 20-26, 2025
-                      const sampleWeekData = [
-                        { day: 20, pnl: '+$100', trades: '3T', winRate: '86%' },
-                        { day: 21, pnl: '+$77', trades: '3T', winRate: '87%' },
-                        { day: 22, pnl: '+$79', trades: '3T', winRate: '89%' },
-                        { day: 23, pnl: '+$82', trades: '4T', winRate: '90%' },
-                        { day: 24, pnl: '+$84', trades: '4T', winRate: '91%' },
-                        { day: 25, pnl: '+$86', trades: '5T', winRate: '93%' },
-                        { day: 26, pnl: '+$89', trades: '5T', winRate: '94%' }
-                      ];
-                      
-                      const dayInfo = sampleWeekData[index] || { day: date.getDate(), pnl: '+$0', trades: '0T', winRate: '0%' };
-                      
-                      return (
-                        <div
-                          key={index}
-                          onClick={() => setSelectedDate(date)}
-                          className={`
-                            relative bg-gray-800/50 rounded-lg p-3 cursor-pointer transition-all duration-200 min-h-[100px]
-                            ${isToday ? 'ring-2 ring-teal-400 bg-teal-950/30' : ''}
-                            ${isSelected ? 'ring-2 ring-amber-400 bg-amber-950/30' : ''}
-                            hover:bg-gray-700/50 border border-gray-700/30
-                          `}
-                        >
-                          {/* Day Number */}
-                          <div className="flex items-center justify-between mb-2">
-                            <span className={`text-lg font-bold ${isToday ? 'text-teal-400' : 'text-white'}`}>
-                              {dayInfo.day}
-                            </span>
-                            {isToday && <div className="w-2 h-2 rounded-full bg-teal-400" />}
-                          </div>
-                          
-                          {/* P&L */}
-                          <div className="text-sm font-medium text-green-400 mb-1">
-                            {dayInfo.pnl}
-                          </div>
-                          
-                          {/* Stats */}
-                          <div className="text-xs text-gray-400 space-y-1">
-                            <div>{dayInfo.trades}</div>
-                            <div className="text-emerald-400">{dayInfo.winRate}</div>
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                  
-                  {/* Weekly Summary */}
-                  <div className="grid grid-cols-5 gap-4 mt-6 pt-4 border-t border-gray-700/50">
-                    <div className="text-center">
-                      <div className="text-2xl font-bold text-green-400">+$0</div>
-                      <div className="text-sm text-gray-400">Weekly P&L</div>
-                    </div>
-                    <div className="text-center">
-                      <div className="text-2xl font-bold text-blue-400">W:0 L:0 T:0</div>
-                      <div className="text-sm text-gray-400">Wins & Loss • Total Trades</div>
-                    </div>
-                    <div className="text-center">
-                      <div className="text-2xl font-bold text-amber-400">0%</div>
-                      <div className="text-sm text-gray-400">Win Rate</div>
-                    </div>
-                    <div className="text-center">
-                      <div className="text-2xl font-bold text-emerald-400">W: $0 L: $0</div>
-                      <div className="text-sm text-gray-400">Total Wins and Losses</div>
-                    </div>
-                    <div className="text-center">
-                      <div className="text-2xl font-bold text-purple-400">$0/$0</div>
-                      <div className="text-sm text-gray-400">Avg Win/Loss</div>
-                    </div>
-                  </div>
-                </div>
-              )}
-              
-              {/* Monthly and Yearly views - simplified for now */}
-              {viewMode !== 'weekly' && (
-                <div className="text-center text-gray-400 py-8">
-                  {viewMode.charAt(0).toUpperCase() + viewMode.slice(1)} calendar view coming soon
-                </div>
-              )}
-
             </div>
           </div>
         </div>
