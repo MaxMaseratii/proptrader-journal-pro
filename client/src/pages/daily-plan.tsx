@@ -439,7 +439,10 @@ const DailyPlanPage = () => {
                       <Button
                         type="button"
                         onClick={(e) => {
+                          console.log('Add Trade Setup Link button clicked!');
+                          alert('Add button clicked!');
                           e.preventDefault();
+                          e.stopPropagation();
                           addTradeSetupLink();
                         }}
                         disabled={!newLinkData.title.trim() || !newLinkData.url.trim()}
@@ -498,7 +501,10 @@ const DailyPlanPage = () => {
                 <Button
                   type="button"
                   onClick={(e) => {
+                    console.log('Create Plan button clicked!');
+                    alert('Create Plan button clicked!');
                     e.preventDefault();
+                    e.stopPropagation();
                     createNewPlan();
                   }}
                   disabled={!selectedAccount || !selectedStrategy || createDailyPlan.isPending}

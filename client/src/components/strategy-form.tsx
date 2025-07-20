@@ -406,7 +406,10 @@ const StrategyForm: React.FC<StrategyFormProps> = ({ onClose, editStrategy }) =>
         <Button
           type="button"
           onClick={(e) => {
+            console.log('Strategy Form button clicked!');
+            alert('Strategy Form button clicked!');
             e.preventDefault();
+            e.stopPropagation();
             handleSubmit();
           }}
           disabled={!name.trim() || createMutation.isPending || updateMutation.isPending}
