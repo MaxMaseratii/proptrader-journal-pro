@@ -991,11 +991,11 @@ export default function Dashboard() {
 
         {/* COMPACT DASHBOARD: NO EMPTY SPACES */}
         
-        {/* NEW: TRADING CALENDAR COMPONENT - ROW 0 */}
+        {/* ROW 0: TRADING CALENDAR COMPONENT - FULL WIDTH */}
         <TradingDashboard />
         
         {/* ROW 1: ADVANCED TRADING CALENDAR - FULL WIDTH */}
-        <div className="w-full">
+        <div className="w-full mb-6">
           <AdvancedTradingCalendar 
             trades={selectedAccountIds.length > 0
               ? trades?.filter(t => selectedAccountIds.includes(t.accountId)) || []
