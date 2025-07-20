@@ -55,10 +55,7 @@ import {
   Trophy,
   Star,
   ChevronLeft,
-  ChevronRight,
-  Eye,
-  EyeOff,
-  ChevronDown
+  ChevronRight
 } from "lucide-react";
 import type { Account, Trade } from "@shared/schema";
 
@@ -136,40 +133,6 @@ export default function Dashboard() {
     return saved ? saved as 'all' | 'single' | 'multiple' : 'all';
   });
   
-  // Trading Navigation State
-  const [selectedDate, setSelectedDate] = useState(new Date());
-  const [currentPeriod, setCurrentPeriod] = useState(new Date());
-  const [tradingViewMode, setTradingViewMode] = useState('weekly'); // weekly, monthly, yearly
-  
-  // Trading Navigation Helper Functions
-  const formatPeriod = (date: Date, mode: string) => {
-    switch (mode) {
-      case 'weekly':
-        return date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
-      case 'monthly':
-        return date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
-      case 'yearly':
-        return date.getFullYear().toString();
-      default:
-        return date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
-    }
-  };
-
-  const navigatePeriod = (direction: number) => {
-    const newPeriod = new Date(currentPeriod);
-    switch (tradingViewMode) {
-      case 'weekly':
-        newPeriod.setDate(newPeriod.getDate() + (direction * 7));
-        break;
-      case 'monthly':
-        newPeriod.setMonth(newPeriod.getMonth() + direction);
-        break;
-      case 'yearly':
-        newPeriod.setFullYear(newPeriod.getFullYear() + direction);
-        break;
-    }
-    setCurrentPeriod(newPeriod);
-  };
 
 
   const { data: accounts, isLoading: accountsLoading } = useQuery<Account[]>({
@@ -217,6 +180,8 @@ export default function Dashboard() {
       }
     }
   }, [accounts, selectedAccountIds, accountSelectionMode]);
+
+
 
   // Persist account selection changes
   React.useEffect(() => {
@@ -641,112 +606,109 @@ export default function Dashboard() {
 
         {/* COMPACT DASHBOARD: NO EMPTY SPACES */}
         
-        {/* ROW 1: TRADING NAVIGATION DASHBOARD - EXACT IMPLEMENTATION */}
-        <div className="bg-gradient-to-br from-gray-800/30 via-gray-900/30 to-black/30 rounded-xl p-5 border border-gray-700/50 space-y-4 mb-6">
-          {/* Top Navigation */}
-          <div className="flex items-center justify-between space-x-4">
-            
-            {/* LEFT SECTION - View Mode Tabs */}
-            <div className="flex items-center bg-gray-800/40 border border-gray-600/30 rounded-lg p-1">
-              {['weekly', 'monthly', 'yearly'].map((mode) => (
-                <button
-                  key={mode}
-                  onClick={() => setTradingViewMode(mode)}
-                  className={`
-                    px-4 py-2 rounded-md text-sm font-medium transition-all duration-200
-                    ${tradingViewMode === mode 
-                      ? 'bg-amber-500 text-black' 
-                      : 'text-gray-300 hover:text-amber-400'
-                    }
-                  `}
-                >
-                  {mode.charAt(0).toUpperCase() + mode.slice(1)}
-                </button>
-              ))}
-            </div>
-
-            {/* CENTER SECTION - Date Navigation */}
-            <div className="flex items-center bg-gray-800/40 border border-gray-600/30 rounded-lg">
-              <button
-                onClick={() => navigatePeriod(-1)}
-                className="p-2 hover:bg-gray-700/40 hover:text-amber-400 transition-all duration-200 rounded-l-lg"
-              >
-                <ChevronLeft className="w-4 h-4 text-gray-400" />
-              </button>
-              <div className="px-4 py-2 text-lg font-semibold text-amber-400">
-                {formatPeriod(currentPeriod, tradingViewMode)}
+        {/* ROW 1: PRIMARY FINANCIAL METRICS */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 mb-3">
+          {/* Net Balance */}
+          <div className="widget-container">
+            <div className="widget-content">
+              <div className="widget-left">
+                <p className="widget-label">Net Balance</p>
+                <p className={`widget-value ${getValueColor(calculateNetBalance())}`}>
+                  {formatCurrency(calculateNetBalance())}
+                </p>
+                <p className="widget-description">Starting balance + Total P&L</p>
               </div>
-              <button
-                onClick={() => navigatePeriod(1)}
-                className="p-2 hover:bg-gray-700/40 hover:text-amber-400 transition-all duration-200 rounded-r-lg"
-              >
-                <ChevronRight className="w-4 h-4 text-gray-400" />
-              </button>
-            </div>
-
-            {/* RIGHT SECTION - Today Button */}
-            <button
-              onClick={() => {
-                setCurrentPeriod(new Date());
-                setSelectedDate(new Date());
-              }}
-              className="px-4 py-2 bg-teal-600/80 hover:bg-teal-600 text-white border border-teal-500/40 shadow-md rounded-lg transition-all duration-200 text-sm font-medium"
-            >
-              Go to Today
-            </button>
-          </div>
-
-          {/* Calendar Content Placeholder */}
-          <div className="h-32 bg-gradient-to-br from-gray-900/30 via-gray-800/30 to-black/30 rounded-lg border border-gray-700/30 flex items-center justify-center">
-            <p className="text-gray-400 text-sm">Trading Calendar View - Will be populated with CSV data</p>
-          </div>
-
-          {/* Bottom Summary Row - 5 widgets */}
-          <div className="flex items-center justify-between">
-            {/* Widget 1: P&L */}
-            <div className="flex flex-col items-center px-4">
-              <div className="text-base font-bold text-green-400">+$0</div>
-              <div className="text-xs text-gray-400">
-                {tradingViewMode.charAt(0).toUpperCase() + tradingViewMode.slice(1)} P&L
+              <div className="widget-icon-square">
+                <DollarSign className="widget-icon" />
               </div>
             </div>
+          </div>
 
-            {/* Separator */}
-            <div className="w-px h-8 bg-gray-600"></div>
 
-            {/* Widget 2: Wins & Losses */}
-            <div className="flex flex-col items-center px-4">
-              <div className="text-base font-bold text-purple-400">W:0 L:0 T:0</div>
-              <div className="text-xs text-gray-400">Wins & Loss • Total Trades</div>
-            </div>
 
-            {/* Separator */}
-            <div className="w-px h-8 bg-gray-600"></div>
-
-            {/* Widget 3: Win Rate */}
-            <div className="flex flex-col items-center px-4">
-              <div className="text-base font-bold text-emerald-400">0%</div>
-              <div className="text-xs text-gray-400">Win Rate</div>
-            </div>
-
-            {/* Separator */}
-            <div className="w-px h-8 bg-gray-600"></div>
-
-            {/* Widget 4: Total Wins and Losses */}
-            <div className="flex flex-col items-center px-4">
-              <div className="text-base font-bold text-green-400">W: $0 L: $0</div>
-              <div className="text-xs text-gray-400">Total Wins and Losses</div>
-            </div>
-
-            {/* Separator */}
-            <div className="w-px h-8 bg-gray-600"></div>
-
-            {/* Widget 5: Avg Win/Loss */}
-            <div className="flex flex-col items-center px-4">
-              <div className="text-base font-bold text-blue-400">$0/$0</div>
-              <div className="text-xs text-gray-400">Avg Win/Loss</div>
+          {/* Total P&L */}
+          <div className="widget-container">
+            <div className="widget-content">
+              <div className="widget-left">
+                <p className="widget-label">Total P&L</p>
+                <p className={`widget-value ${getValueColor(combinedAnalytics?.totalPnl || 0)}`}>
+                  {formatCurrency(combinedAnalytics?.totalPnl || 0)}
+                </p>
+                <p className="widget-description">Net profit/loss</p>
+              </div>
+              <div className="widget-icon-square">
+                <DollarSign className="widget-icon" />
+              </div>
             </div>
           </div>
+
+          {/* Win Rate */}
+          <div className="widget-container">
+            <div className="widget-content">
+              <div className="widget-left">
+                <p className="widget-label">Win Rate</p>
+                <p className={`widget-value ${(combinedAnalytics?.winRate || 0) > 50 ? 'text-green-400' : (combinedAnalytics?.winRate || 0) < 50 ? 'text-red-400' : 'text-white'}`}>
+                  {formatPercentage(combinedAnalytics?.winRate || 0)}
+                </p>
+                <p className="widget-description">Winning trades percentage</p>
+              </div>
+              <div className="widget-icon-square">
+                <Target className="widget-icon" />
+              </div>
+            </div>
+          </div>
+
+          {/* Discipline Score - MOVED FROM ROW 3 */}
+          <div className="widget-container">
+            <div className="widget-content">
+              <div className="widget-left">
+                <p className="widget-label">Discipline Score</p>
+                {(() => {
+                  const filteredTrades = selectedAccountIds.length > 0
+                    ? trades?.filter(t => selectedAccountIds.includes(t.accountId)) || []
+                    : trades || [];
+                  
+                  if (filteredTrades.length === 0) {
+                    return (
+                      <div>
+                        <p className="widget-value text-gray-400">No Score</p>
+                        <p className="widget-description text-xs">No trades to analyze</p>
+                      </div>
+                    );
+                  }
+                  
+                  const disciplineMetrics = calculateComprehensiveDisciplineMetrics(
+                    filteredTrades,
+                    accounts || [],
+                    selectedAccountIds.length === 1 ? selectedAccountIds[0].toString() : "all"
+                  );
+                  
+                  let grade = 'F';
+                  if (disciplineMetrics.disciplineScore >= 90) grade = 'A+';
+                  else if (disciplineMetrics.disciplineScore >= 80) grade = 'A';
+                  else if (disciplineMetrics.disciplineScore >= 70) grade = 'B';
+                  else if (disciplineMetrics.disciplineScore >= 60) grade = 'C';
+                  else if (disciplineMetrics.disciplineScore >= 50) grade = 'D';
+                  
+                  return (
+                    <div>
+                      <p className={`widget-value ${disciplineMetrics.disciplineScore >= 80 ? 'text-green-400' : disciplineMetrics.disciplineScore >= 60 ? 'text-yellow-400' : 'text-red-400'}`}>
+                        {Math.round(disciplineMetrics.disciplineScore)}% {grade}
+                      </p>
+                      <p className="widget-description text-xs">
+                        {Math.round(disciplineMetrics.riskManagementScore)}% risk • {Math.round(disciplineMetrics.consistencyScore)}% consistency
+                      </p>
+                    </div>
+                  );
+                })()}
+              </div>
+              <div className="widget-icon-square">
+                <Brain className="widget-icon" />
+              </div>
+            </div>
+          </div>
+
+
         </div>
 
         {/* ROW 2: PERFORMANCE ANALYTICS */}
@@ -834,9 +796,40 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* ROW 4: INVESTMENT & FINANCIAL TRACKING */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 mb-3">
-          {/* Account Status Summary */}
+        {/* Investment Tracking Row 2: Total Payout (Col 1) + Account Status (Col 2) */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
+          {/* Column 1: Total Payout (Moved from Row 9 Column 4) */}
+          <div className="widget-container">
+            <div className="widget-content">
+              <div className="widget-left">
+                <p className="widget-label">Total Payout</p>
+                <p className="widget-value text-green-400">
+                  {(() => {
+                    const selectedAccounts = selectedAccountIds.length > 0 && accountSelectionMode !== 'all'
+                      ? accounts?.filter(acc => selectedAccountIds.includes(acc.id)) || []
+                      : accounts || [];
+                    
+                    // Calculate total potential payout from funded/live accounts
+                    const totalPayout = selectedAccounts
+                      .filter(acc => acc.type === 'funded' || acc.type === 'live')
+                      .reduce((sum, acc) => {
+                        const accountTrades = trades?.filter(t => t.accountId === acc.id) || [];
+                        const totalPnl = accountTrades.reduce((total, trade) => total + (trade.pnl || 0), 0);
+                        return sum + Math.max(0, totalPnl); // Only positive P&L counts towards payout
+                      }, 0);
+                    
+                    return formatCurrency(totalPayout);
+                  })()}
+                </p>
+                <p className="widget-description">Available for withdrawal</p>
+              </div>
+              <div className="widget-icon-square">
+                <DollarSign className="widget-icon" />
+              </div>
+            </div>
+          </div>
+
+          {/* Column 2: Account Status (Moved from Row 4 Column 1) */}
           <div className="widget-container">
             <div className="widget-content">
               <div className="widget-left">
@@ -870,8 +863,6 @@ export default function Dashboard() {
               </div>
             </div>
           </div>
-
-
         </div>
 
         {/* ROW 5: ACTIVE ACCOUNTS & ANALYSIS */}
@@ -1058,8 +1049,9 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* Investment Tracking & Working Hours Summary */}
-        <div className="widget-grid mb-6">
+        {/* Investment Tracking Row 1: Total Spent + Second Row Moved Here (Columns 2,3,4) */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 mb-3">
+          {/* Column 1: Total Spent on Accounts */}
           <div className="widget-container">
             <div className="widget-content">
               <div className="widget-left">
@@ -1088,84 +1080,7 @@ export default function Dashboard() {
             </div>
           </div>
 
-          <div className="widget-container">
-            <div className="widget-content">
-              <div className="widget-left">
-                <p className="widget-label">Activation Costs</p>
-                {(() => {
-                  const selectedAccounts = selectedAccountIds.length > 0 && accountSelectionMode !== 'all'
-                    ? accounts?.filter(acc => selectedAccountIds.includes(acc.id)) || []
-                    : accounts || [];
-                  
-                  const totalActivationCost = selectedAccounts.reduce((sum, acc) => sum + (acc.activationCost || 0), 0);
-                  const accountText = accountSelectionMode === 'all' ? 'all accounts' : `${selectedAccounts.length} selected account(s)`;
-                  
-                  return (
-                    <div>
-                      <p className="widget-value">
-                        {formatCurrency(totalActivationCost)}
-                      </p>
-                      <p className="widget-description">Activation fees for {accountText}</p>
-                    </div>
-                  );
-                })()}
-              </div>
-              <div className="widget-icon-square">
-                <Shield className="widget-icon" />
-              </div>
-            </div>
-          </div>
-
-
-
-          <div className="widget-container">
-            <div className="widget-content">
-              <div className="widget-left">
-                <p className="widget-label">Total Combined</p>
-                {(() => {
-                  const selectedAccounts = selectedAccountIds.length > 0 && accountSelectionMode !== 'all'
-                    ? accounts?.filter(acc => selectedAccountIds.includes(acc.id)) || []
-                    : accounts || [];
-                  
-                  const accountCosts = selectedAccounts.reduce((sum, acc) => sum + (acc.accountCost || 0), 0);
-                  const activationCosts = selectedAccounts.reduce((sum, acc) => sum + (acc.activationCost || 0), 0);
-                  const manualSpending = (() => {
-                    if (!spending || !accounts) return 0;
-                    let spendings: any[] = [];
-                    
-                    if (accountSelectionMode === 'all') {
-                      spendings = spending;
-                    } else if (accountSelectionMode === 'single' && selectedAccountIds.length > 0) {
-                      spendings = spending.filter(s => s.accountId === selectedAccountIds[0]);
-                    } else {
-                      const accountIdsToUse = selectedAccountIds.length > 0 ? selectedAccountIds : (accounts.length > 0 ? [accounts[0].id] : []);
-                      spendings = spending.filter(s => accountIdsToUse.includes(s.accountId));
-                    }
-                    
-                    return spendings.reduce((sum, spending) => sum + spending.amount, 0);
-                  })();
-                  const total = accountCosts + activationCosts + manualSpending;
-                  const accountText = accountSelectionMode === 'all' ? 'all accounts' : `${selectedAccounts.length} selected account(s)`;
-                  
-                  return (
-                    <div>
-                      <p className={`widget-value ${total > 0 ? 'text-red-400' : 'text-white'}`}>
-                        {formatCurrency(total)}
-                      </p>
-                      <p className="widget-description">Total investment for {accountText}</p>
-                    </div>
-                  );
-                })()}
-              </div>
-              <div className="widget-icon-square">
-                <TrendingUp className="widget-icon" />
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Working Hours & Profitability Summary - Under Investment Tracking */}
-        <div className="widget-grid mb-8">
+          {/* Column 2: Total Working Hours (Moved from Row 2) */}
           <div className="widget-container">
             <div className="widget-content">
               <div className="widget-left">
@@ -1196,6 +1111,7 @@ export default function Dashboard() {
             </div>
           </div>
 
+          {/* Column 3: Average Hours Per Day (Moved from Row 2) */}
           <div className="widget-container">
             <div className="widget-content">
               <div className="widget-left">
@@ -1242,6 +1158,7 @@ export default function Dashboard() {
             </div>
           </div>
 
+          {/* Column 4: Profitability (Moved from Row 2) */}
           <div className="widget-container">
             <div className="widget-content">
               <div className="widget-left">
@@ -1271,6 +1188,8 @@ export default function Dashboard() {
             </div>
           </div>
         </div>
+
+
 
         {/* Add Investment Tracking Controls */}
         <div className="flex justify-end mb-8">
@@ -1497,42 +1416,7 @@ export default function Dashboard() {
 
 
 
-        {/* ROW 9: TOTAL PAYOUT WIDGET - NEW ADDITION */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 mb-8">
-          <div></div> {/* Column 1 */}
-          <div></div> {/* Column 2 */}
-          <div></div> {/* Column 3 */}
-          {/* Total Payout - Column 4 */}
-          <div className="widget-container">
-            <div className="widget-content">
-              <div className="widget-left">
-                <p className="widget-label">Total Payout</p>
-                <p className="widget-value text-green-400">
-                  {(() => {
-                    const selectedAccounts = selectedAccountIds.length > 0 && accountSelectionMode !== 'all'
-                      ? accounts?.filter(acc => selectedAccountIds.includes(acc.id)) || []
-                      : accounts || [];
-                    
-                    // Calculate total potential payout from funded/live accounts
-                    const totalPayout = selectedAccounts
-                      .filter(acc => acc.type === 'funded' || acc.type === 'live')
-                      .reduce((sum, acc) => {
-                        const accountTrades = trades?.filter(t => t.accountId === acc.id) || [];
-                        const totalPnl = accountTrades.reduce((total, trade) => total + (trade.pnl || 0), 0);
-                        return sum + Math.max(0, totalPnl); // Only positive P&L counts towards payout
-                      }, 0);
-                    
-                    return formatCurrency(totalPayout);
-                  })()}
-                </p>
-                <p className="widget-description">Available for withdrawal</p>
-              </div>
-              <div className="widget-icon-square">
-                <DollarSign className="widget-icon" />
-              </div>
-            </div>
-          </div>
-        </div>
+
 
         {/* Daily Planning Section */}
         <div className="mb-8">
