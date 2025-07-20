@@ -290,21 +290,7 @@ export default function EnhancedPayouts() {
         </div>
       </div>
 
-      {!selectedAccountId && (
-        <Card className="bg-gradient-to-br from-gray-900 via-gray-800 to-black border border-yellow-400/20">
-          <CardContent className="flex flex-col items-center justify-center py-12">
-            <Wallet className="w-16 h-16 text-gray-500 mb-4" />
-            <h3 className="text-xl font-semibold text-white mb-2">Select an Account</h3>
-            <p className="text-gray-400 text-center">
-              Choose a funded or live account to view payout information and manage withdrawals.
-            </p>
-          </CardContent>
-        </Card>
-      )}
-
-      {selectedAccountId && payoutMetrics && (
-        <>
-          {/* Payout Overview */}
+      {/* Payout Overview - Always show regardless of data */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <Card className="bg-gradient-to-br from-gray-900 via-gray-800 to-black border border-yellow-400/20">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -313,7 +299,7 @@ export default function EnhancedPayouts() {
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold text-yellow-400">
-                  {formatCurrency(selectedAccount?.balance || 0)}
+                  {selectedAccount ? formatCurrency(selectedAccount.balance || 0) : formatCurrency(0)}
                 </div>
                 <p className="text-xs text-gray-400">Current account balance</p>
               </CardContent>
@@ -326,7 +312,7 @@ export default function EnhancedPayouts() {
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold text-green-400">
-                  {formatCurrency(payoutMetrics.availablePayout)}
+                  {formatCurrency(payoutMetrics?.availablePayout || 0)}
                 </div>
                 <p className="text-xs text-gray-400">{selectedAccount?.profitSplit || 80}% profit split</p>
               </CardContent>
@@ -371,14 +357,18 @@ export default function EnhancedPayouts() {
               <div className="space-y-6">
                 <div className="text-center">
                   <div className="text-4xl font-bold text-green-400 mb-2">{eligibilityScore.toFixed(0)}%</div>
-                  <Badge className={`${eligibilityScore === 100 ? 'bg-green-400/20 text-green-400 border-green-400' : 'bg-yellow-400/20 text-yellow-400 border-yellow-400'}`}>
-                    {eligibilityScore === 100 ? 'Fully Eligible' : 'Partially Eligible'}
+                  <Badge className={`${eligibilityScore === 100 ? 'bg-green-400/20 text-green-400 border-green-400' : selectedAccountId ? 'bg-yellow-400/20 text-yellow-400 border-yellow-400' : 'bg-gray-400/20 text-gray-400 border-gray-400'}`}>
+                    {eligibilityScore === 100 ? 'Fully Eligible' : selectedAccountId ? 'Partially Eligible' : 'Select Account'}
                   </Badge>
                   <Progress value={eligibilityScore} className="mt-4 h-3" />
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {requirements.map((req, index) => (
+                  {(requirements.length > 0 ? requirements : [
+                    { name: 'Minimum Trading Days', current: 0, required: 5, completed: false, description: 'Must trade at least 5 days' },
+                    { name: 'Winning Days Rule', current: 0, required: 5, completed: false, description: 'Need 5 days with $200+ profit' },
+                    { name: 'Available Balance', current: 0, required: 500, completed: false, description: 'Minimum payout amount: $500' }
+                  ]).map((req, index) => (
                     <div key={index} className="flex items-center justify-between p-3 rounded-lg bg-gray-800/30 border border-gray-700">
                       <div className="flex items-center gap-3">
                         {req.completed ? (
@@ -457,8 +447,6 @@ export default function EnhancedPayouts() {
               </div>
             </CardContent>
           </Card>
-        </>
-      )}
     </div>
   );
 }
