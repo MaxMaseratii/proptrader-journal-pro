@@ -345,6 +345,9 @@ const DailyPlanPage = () => {
       <div className="space-y-4">
         <div>
           <h1 className="text-3xl font-bold text-yellow-400">Daily Trading Command Center</h1>
+          <div className="text-lg font-semibold text-transparent bg-clip-text bg-gradient-to-r from-green-400 via-green-500 to-emerald-400 italic tracking-wide drop-shadow-sm mb-2">
+            "PLAN YOUR TRADE, TRADE YOUR PLAN"
+          </div>
           <p className="text-gray-300">{new Date(selectedDate).toLocaleDateString('en-US', { 
             weekday: 'long', 
             year: 'numeric', 
