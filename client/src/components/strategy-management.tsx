@@ -50,10 +50,12 @@ const StrategyManagement: React.FC<StrategyManagementProps> = ({ editStrategyId,
     },
     onError: (error: any) => {
       console.error('Failed to delete strategy:', error);
-      if (error?.response?.data?.message?.includes("being used in daily plans")) {
-        alert("Cannot delete strategy: It is being used in daily plans. Please delete the associated daily plans first.");
+      // Check for our custom error message from the backend
+      const errorMessage = error?.message || error?.response?.data?.message || '';
+      if (errorMessage.includes("being used in daily plans")) {
+        alert("⚠️ Cannot Delete Strategy\n\nThis strategy is currently being used in daily plans. Please delete the associated daily plans first, then try again.");
       } else {
-        alert("Failed to delete strategy. Please try again.");
+        alert("❌ Failed to Delete Strategy\n\nSomething went wrong while deleting the strategy. Please try again or contact support if the issue persists.");
       }
     },
   });
@@ -72,7 +74,17 @@ const StrategyManagement: React.FC<StrategyManagementProps> = ({ editStrategyId,
 
   const confirmDelete = (strategy: TradingStrategy) => {
     console.log('Delete button clicked for strategy:', strategy.name, 'ID:', strategy.id);
-    if (window.confirm(`Are you sure you want to delete "${strategy.name}"? This action cannot be undone.`)) {
+    const confirmMessage = `🗑️ Delete Strategy Confirmation
+
+Strategy: "${strategy.name}"
+
+⚠️ WARNING: This action cannot be undone!
+
+Are you sure you want to permanently delete this strategy?
+
+Note: If this strategy is being used in daily plans, you'll need to delete those plans first.`;
+    
+    if (window.confirm(confirmMessage)) {
       console.log('User confirmed deletion, calling mutation');
       deleteStrategyMutation.mutate(strategy.id);
     } else {
