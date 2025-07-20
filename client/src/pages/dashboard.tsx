@@ -63,27 +63,46 @@ import {
 import type { Account, Trade } from "@shared/schema";
 
 // TradingDashboard component - your custom calendar component
-const TradingDashboard = () => {
+const TradingDashboard = ({ trades: filteredTrades }: { trades?: Trade[] }) => {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [currentPeriod, setCurrentPeriod] = useState(new Date());
   const [viewMode, setViewMode] = useState('weekly'); // weekly, monthly, yearly
   const [hoveredMetric, setHoveredMetric] = useState(null);
   const [showPeriodPicker, setShowPeriodPicker] = useState(false);
 
-  // Generate empty trading data structure for CSV population
-  const generateTradingData = (date: Date) => {
+  // Calculate trading metrics from filtered trades data
+  const calculateTradingData = (date: Date, trades: Trade[] = []) => {
+    const dayTrades = trades.filter(trade => {
+      const tradeDate = new Date(trade.date);
+      return tradeDate.toDateString() === date.toDateString();
+    });
+
+    const totalPnl = dayTrades.reduce((sum, trade) => sum + (trade.pnl || 0), 0);
+    const winningTrades = dayTrades.filter(trade => (trade.pnl || 0) > 0);
+    const winRate = dayTrades.length > 0 ? (winningTrades.length / dayTrades.length) * 100 : 0;
+    
+    const avgRisk = dayTrades.length > 0 
+      ? dayTrades.reduce((sum, trade) => sum + Math.abs(trade.entryPrice - (trade.stopLoss || trade.entryPrice)), 0) / dayTrades.length 
+      : 0;
+    
+    const avgReward = dayTrades.length > 0 
+      ? dayTrades.reduce((sum, trade) => sum + Math.abs((trade.takeProfit || trade.exitPrice || trade.entryPrice) - trade.entryPrice), 0) / dayTrades.length 
+      : 0;
+    
+    const avgRewardRatio = avgRisk > 0 ? avgReward / avgRisk : 0;
+
     return {
       date,
-      avgRiskPerTrade: 0,
-      maxDailyRisk: 0,
-      avgRewardRatio: 0,
-      targetRewardRatio: 0,
-      dailyTarget: 0,
-      dayPnL: 0,
-      maxDailyTrades: 0,
-      totalDayTrades: 0,
-      disciplineScore: 0,
-      winRate: 0
+      avgRiskPerTrade: avgRisk,
+      maxDailyRisk: avgRisk * dayTrades.length,
+      avgRewardRatio,
+      targetRewardRatio: 2.0, // Default target
+      dailyTarget: 500, // Default daily target
+      dayPnL: totalPnl,
+      maxDailyTrades: 10, // Default max
+      totalDayTrades: dayTrades.length,
+      disciplineScore: winRate,
+      winRate
     };
   };
 
@@ -146,7 +165,7 @@ const TradingDashboard = () => {
     setCurrentPeriod(newPeriod);
   };
 
-  const selectedDayData = generateTradingData(selectedDate);
+  const selectedDayData = calculateTradingData(selectedDate, filteredTrades || []);
   const isToday = selectedDate.toDateString() === new Date().toDateString();
 
   return (
@@ -182,7 +201,9 @@ const TradingDashboard = () => {
                   <div className="bg-gray-900/80 rounded-lg px-4 py-3 border border-gray-700/50">
                     <div className="flex items-center space-x-2">
                       <span className="text-sm text-gray-400">Daily P&L:</span>
-                      <span className="text-lg font-bold text-green-400">+$0.00</span>
+                      <span className={`text-lg font-bold ${selectedDayData.dayPnL >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                        {selectedDayData.dayPnL >= 0 ? '+' : ''}${selectedDayData.dayPnL.toFixed(2)}
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -195,7 +216,7 @@ const TradingDashboard = () => {
                       style={{ width: '0%', minWidth: '120px' }}
                     >
                       <span className="text-xs font-medium text-black">
-                        0% of $0 target
+                        {selectedDayData.dailyTarget > 0 ? Math.round((selectedDayData.dayPnL / selectedDayData.dailyTarget) * 100) : 0}% of ${selectedDayData.dailyTarget} target
                       </span>
                     </div>
                   </div>
@@ -209,28 +230,24 @@ const TradingDashboard = () => {
                     
                     {/* Risk + Max Daily Loss Combined */}
                     <div className="bg-black/30 rounded-lg p-4 border border-gray-700/50 relative">
-                      <div className="absolute top-3 right-3 text-xs text-red-400">Max: $0</div>
-                      <div className="text-3xl font-bold text-red-400 mb-1">$0</div>
+                      <div className="absolute top-3 right-3 text-xs text-red-400">Max: ${selectedDayData.maxDailyRisk.toFixed(0)}</div>
+                      <div className="text-3xl font-bold text-red-400 mb-1">${selectedDayData.avgRiskPerTrade.toFixed(0)}</div>
                       <div className="text-sm text-gray-400">Risk Per Trade</div>
                     </div>
 
                     {/* R:R */}
                     <div className="bg-black/30 rounded-lg p-4 border border-gray-700/50 relative">
-                      <div className="absolute top-3 right-3 text-xs text-blue-300">Target: 0 RR</div>
-                      <div className="text-3xl font-bold text-blue-400 mb-1">0.0</div>
+                      <div className="absolute top-3 right-3 text-xs text-blue-300">Target: {selectedDayData.targetRewardRatio.toFixed(1)} RR</div>
+                      <div className="text-3xl font-bold text-blue-400 mb-1">{selectedDayData.avgRewardRatio.toFixed(1)}</div>
                       <div className="text-sm text-gray-400">Risk:Reward</div>
-                      <div className="text-xs text-blue-300 mt-1">AVG. Ratio 1:0.0</div>
+                      <div className="text-xs text-blue-300 mt-1">AVG. Ratio 1:{selectedDayData.avgRewardRatio.toFixed(1)}</div>
                     </div>
 
                     {/* Trades */}
                     <div className="bg-black/30 rounded-lg p-4 border border-gray-700/50 relative">
-                      <div className="absolute top-3 right-3 text-xs text-purple-300">0/0</div>
-                      <div className="text-3xl font-bold text-purple-400 mb-1">0</div>
-                      <div className="w-full bg-gray-700/50 rounded-full h-1 mb-2">
-                        <div className="h-1 rounded-full bg-purple-400 transition-all duration-500" style={{ width: '0%' }} />
-                      </div>
-                      <div className="text-sm text-gray-400 mb-1">Trades Executed</div>
-                      <div className="text-xs text-gray-300">W:0 L:0</div>
+                      <div className="absolute top-3 right-3 text-xs text-purple-300">Max: {selectedDayData.maxDailyTrades}</div>
+                      <div className="text-3xl font-bold text-purple-400 mb-1">{selectedDayData.totalDayTrades}</div>
+                      <div className="text-sm text-gray-400">Trades Today</div>
                     </div>
 
                     {/* Hours Worked */}
@@ -253,12 +270,11 @@ const TradingDashboard = () => {
                     
                     {/* Discipline */}
                     <div className="bg-black/30 rounded-lg p-4 border border-gray-700/50 relative">
-                      <div className="absolute top-3 right-3">
-                        <div className="px-2 py-1 rounded text-xs font-bold bg-red-500 text-white">POOR</div>
+                      <div className="absolute top-3 right-3 text-xs text-emerald-300">Win: {selectedDayData.winRate.toFixed(0)}%</div>
+                      <div className={`text-3xl font-bold mb-1 ${getDisciplineGrade(selectedDayData.disciplineScore).color}`}>
+                        {getDisciplineGrade(selectedDayData.disciplineScore).grade}
                       </div>
-                      <div className="text-3xl font-bold text-red-400 mb-1">0% F</div>
-                      <div className="text-sm text-gray-400 mb-1">Discipline Score</div>
-                      <div className="text-xs text-gray-300">45% risk • 85% consistency</div>
+                      <div className="text-sm text-gray-400">Discipline</div>
                     </div>
 
                     {/* Risk Utilization */}
@@ -283,9 +299,10 @@ const TradingDashboard = () => {
                     {/* Win Rate */}
                     <div className="bg-black/30 rounded-lg p-4 border border-gray-700/50 relative">
                       <div className="absolute top-3 right-3 text-xs text-emerald-300">WR</div>
-                      <div className="text-3xl font-bold text-emerald-400 mb-1">0%</div>
-                      <div className="text-sm text-gray-400 mb-1">Win Rate</div>
-                      <div className="text-xs text-emerald-300">Profit Factor 0</div>
+                      <div className={`text-3xl font-bold mb-1 ${selectedDayData.winRate >= 50 ? 'text-emerald-400' : 'text-red-400'}`}>
+                        {selectedDayData.winRate.toFixed(0)}%
+                      </div>
+                      <div className="text-sm text-gray-400">Win Rate</div>
                     </div>
                   </div>
                 </div>
@@ -840,7 +857,12 @@ export default function Dashboard() {
         </div>
 
         {/* ROW 0: TRADING CALENDAR COMPONENT - FULL WIDTH */}
-        <TradingDashboard />
+        <TradingDashboard 
+          trades={selectedAccountIds.length > 0
+            ? trades?.filter(t => selectedAccountIds.includes(t.accountId)) || []
+            : trades || []
+          }
+        />
         
         {/* ROW 1: ADVANCED TRADING CALENDAR - FULL WIDTH */}
         <div className="w-full mb-6">

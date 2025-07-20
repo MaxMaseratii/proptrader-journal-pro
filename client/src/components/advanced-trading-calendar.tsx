@@ -459,41 +459,16 @@ export function AdvancedTradingCalendar({ trades = [], selectedAccount, classNam
           </button>
         </div>
         
-        {/* Period Summary & Today Button */}
-        <div className="flex items-center space-x-4">
-          <div className="flex items-center space-x-3 bg-gray-800/50 rounded-lg px-4 py-2 border border-gray-700/50">
-            <div className="text-center">
-              <div className={`text-sm font-bold ${periodSummary.totalPnL >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-                {periodSummary.totalPnL >= 0 ? '+' : ''}${periodSummary.totalPnL.toFixed(0)}
-              </div>
-              <div className="text-xs text-gray-400">P&L</div>
-            </div>
-            <div className="w-px h-6 bg-gray-600"></div>
-            <div className="text-center">
-              <div className="text-sm font-bold text-emerald-400">
-                {periodSummary.winRate.toFixed(0)}%
-              </div>
-              <div className="text-xs text-gray-400">Win Rate</div>
-            </div>
-            <div className="w-px h-6 bg-gray-600"></div>
-            <div className="text-center">
-              <div className="text-sm font-bold text-purple-400">
-                {periodSummary.totalTrades}
-              </div>
-              <div className="text-xs text-gray-400">Trades</div>
-            </div>
-          </div>
-          
-          <button
-            onClick={() => {
-              setCurrentPeriod(new Date());
-              setSelectedDate(new Date());
-            }}
-            className="px-4 py-2 rounded-lg bg-teal-600/50 hover:bg-teal-600/70 text-teal-400 hover:text-teal-300 transition-all text-sm font-medium"
-          >
-            Go to Today
-          </button>
-        </div>
+        {/* Today Button */}
+        <button
+          onClick={() => {
+            setCurrentPeriod(new Date());
+            setSelectedDate(new Date());
+          }}
+          className="px-4 py-2 rounded-lg bg-teal-600/50 hover:bg-teal-600/70 text-teal-400 hover:text-teal-300 transition-all text-sm font-medium"
+        >
+          Go to Today
+        </button>
       </div>
       
       {/* Calendar Component */}
