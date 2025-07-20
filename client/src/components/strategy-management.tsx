@@ -45,7 +45,11 @@ const StrategyManagement: React.FC<StrategyManagementProps> = ({ editStrategyId,
   const deleteStrategyMutation = useMutation({
     mutationFn: (id: number) => apiRequest(`/api/strategies/${id}`, 'DELETE'),
     onSuccess: () => {
+      console.log('Strategy deleted successfully');
       queryClient.invalidateQueries({ queryKey: ['/api/strategies'] });
+    },
+    onError: (error) => {
+      console.error('Failed to delete strategy:', error);
     },
   });
 
@@ -62,8 +66,12 @@ const StrategyManagement: React.FC<StrategyManagementProps> = ({ editStrategyId,
   };
 
   const confirmDelete = (strategy: TradingStrategy) => {
+    console.log('Delete button clicked for strategy:', strategy.name, 'ID:', strategy.id);
     if (window.confirm(`Are you sure you want to delete "${strategy.name}"? This action cannot be undone.`)) {
+      console.log('User confirmed deletion, calling mutation');
       deleteStrategyMutation.mutate(strategy.id);
+    } else {
+      console.log('User cancelled deletion');
     }
   };
 

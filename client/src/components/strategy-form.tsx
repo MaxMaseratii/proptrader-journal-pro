@@ -117,6 +117,15 @@ const StrategyForm: React.FC<StrategyFormProps> = ({ onClose, editStrategy }) =>
   };
 
   const handleSubmit = () => {
+    console.log('handleSubmit called in StrategyForm');
+    console.log('Strategy name:', name);
+    console.log('Edit mode:', !!editStrategy);
+    
+    if (!name.trim()) {
+      console.error('Strategy name is required');
+      return;
+    }
+    
     const expectedValue = calculateExpectedValue();
     const sessionTimesJson = JSON.stringify({
       start: startTime,
@@ -138,9 +147,13 @@ const StrategyForm: React.FC<StrategyFormProps> = ({ onClose, editStrategy }) =>
       isActive: true,
     };
 
+    console.log('Strategy payload:', strategyData);
+
     if (editStrategy) {
+      console.log('Updating strategy with ID:', editStrategy.id);
       updateMutation.mutate({ id: editStrategy.id, data: strategyData });
     } else {
+      console.log('Creating new strategy');
       createMutation.mutate(strategyData);
     }
   };
