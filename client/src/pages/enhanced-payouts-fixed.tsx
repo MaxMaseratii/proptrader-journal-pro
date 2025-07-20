@@ -459,8 +459,6 @@ export default function EnhancedPayouts() {
           </Card>
         </>
       )}
-
-
     </div>
   );
 }

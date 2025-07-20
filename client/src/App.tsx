@@ -10,7 +10,7 @@ import Projections from "@/pages/projections";
 import Journal from "@/pages/journal";
 import RiskManagement from "@/pages/risk-management";
 import Performance from "@/pages/performance";
-import EnhancedPayouts from "@/pages/enhanced-payouts";
+import EnhancedPayouts from "@/pages/enhanced-payouts-fixed";
 import Reports from "@/pages/reports";
 import Analytics from "@/pages/analytics";
 import Trades from "@/pages/trades";
