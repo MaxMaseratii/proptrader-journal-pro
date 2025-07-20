@@ -26,7 +26,7 @@ export function AdvancedTradingCalendar({ trades = [], selectedAccount, classNam
   const [hoveredMetric, setHoveredMetric] = useState(null);
   const [showPeriodPicker, setShowPeriodPicker] = useState(false);
 
-  // Generate trading data from actual trades or fallback sample data
+  // Generate trading data from actual trades only - no fallback data
   const generateTradingData = (date: Date) => {
     const dateStr = date.toISOString().split('T')[0];
     
@@ -36,8 +36,8 @@ export function AdvancedTradingCalendar({ trades = [], selectedAccount, classNam
       return tradeDate === dateStr;
     });
     
+    // Only use actual trade data - no fallback
     if (dayTrades.length > 0) {
-      // Use actual trade data
       const dayPnL = dayTrades.reduce((sum, trade) => sum + (trade.pnl || 0), 0);
       const totalDayTrades = dayTrades.length;
       const winningTrades = dayTrades.filter(trade => (trade.pnl || 0) > 0).length;
@@ -48,49 +48,18 @@ export function AdvancedTradingCalendar({ trades = [], selectedAccount, classNam
         dayPnL,
         totalDayTrades,
         winRate: Math.round(winRate),
-        disciplineScore: 75, // Default discipline score, could be calculated
-        avgRiskPerTrade: 20,
-        maxDailyRisk: 100,
-        avgRewardRatio: 3.0,
-        targetRewardRatio: 3.0,
-        dailyTarget: 60,
-        maxDailyTrades: 5
+        disciplineScore: winRate >= 60 ? 85 : winRate >= 40 ? 70 : 55, // Basic discipline calculation
+        hasData: true
       };
     } else {
-      // Fallback sample data for dates without trades
-      const seed = date.getDate() + date.getMonth() * 31 + date.getFullYear() * 365;
-      const random = (min: number, max: number) => min + (seed * 9301 + 49297) % 233280 / 233280 * (max - min);
-      
-      const avgRiskPerTrade = 20;
-      const avgRewardRatio = random(2.5, 3.5);
-      const maxDailyTrades = Math.round(random(2, 5));
-      const totalDayTrades = Math.round(random(0, maxDailyTrades));
-      const dailyTarget = 60;
-      
-      const winsNeeded = Math.max(0, Math.round(random(0, totalDayTrades)));
-      const winRate = totalDayTrades > 0 ? (winsNeeded / totalDayTrades) * 100 : 0;
-      
-      const possibleOutcomes = [
-        -20 * totalDayTrades,
-        -20 * Math.max(0, totalDayTrades - 1) + 60,
-        -20 * Math.max(0, totalDayTrades - 2) + 120,
-        60 * random(0.5, 1.5)
-      ];
-      
-      const dayPnL = possibleOutcomes[Math.floor(random(0, possibleOutcomes.length))];
-      
+      // Return empty data for dates without trades
       return {
         date,
-        avgRiskPerTrade,
-        maxDailyRisk: avgRiskPerTrade * maxDailyTrades,
-        avgRewardRatio,
-        targetRewardRatio: 3.0,
-        dailyTarget,
-        dayPnL,
-        maxDailyTrades,
-        totalDayTrades,
-        disciplineScore: Math.round(random(60, 95)),
-        winRate: Math.round(winRate)
+        dayPnL: 0,
+        totalDayTrades: 0,
+        winRate: 0,
+        disciplineScore: 0,
+        hasData: false
       };
     }
   };
@@ -173,16 +142,20 @@ export function AdvancedTradingCalendar({ trades = [], selectedAccount, classNam
     let totalWins = 0;
     let avgDiscipline = 0;
 
+    let daysWithData = 0;
     days.forEach(day => {
       const dayData = generateTradingData(day);
-      totalPnL += dayData.dayPnL;
-      totalTrades += dayData.totalDayTrades;
-      totalWins += (dayData.winRate / 100) * dayData.totalDayTrades;
-      avgDiscipline += dayData.disciplineScore;
+      if (dayData.hasData) {
+        totalPnL += dayData.dayPnL;
+        totalTrades += dayData.totalDayTrades;
+        totalWins += (dayData.winRate / 100) * dayData.totalDayTrades;
+        avgDiscipline += dayData.disciplineScore;
+        daysWithData++;
+      }
     });
 
     const winRate = totalTrades > 0 ? (totalWins / totalTrades) * 100 : 0;
-    avgDiscipline = days.length > 0 ? avgDiscipline / days.length : 0;
+    avgDiscipline = daysWithData > 0 ? avgDiscipline / daysWithData : 0;
 
     return {
       totalPnL,
@@ -247,7 +220,7 @@ export function AdvancedTradingCalendar({ trades = [], selectedAccount, classNam
   }
 
   const DayCard = ({ dayData, isSelected, isCurrentPeriod, onClick, size = 'normal' }: DayCardProps) => {
-    const { date, dayPnL, totalDayTrades, maxDailyTrades, disciplineScore } = dayData;
+    const { date, dayPnL, totalDayTrades, disciplineScore, hasData } = dayData;
     const pnlPositive = dayPnL >= 0;
     const isToday = date.toDateString() === new Date().toDateString();
     const disciplineGrade = getDisciplineGrade(disciplineScore);
@@ -283,17 +256,31 @@ export function AdvancedTradingCalendar({ trades = [], selectedAccount, classNam
           </div>
           
           {/* P&L */}
-          <div className={`text-xs font-bold ${pnlPositive ? 'text-green-400' : 'text-red-400'}`}>
-            {pnlPositive ? '+' : ''}${Math.abs(dayPnL).toFixed(0)}
-          </div>
-          
-          {/* Bottom metrics */}
-          <div className="flex justify-between items-center text-xs">
-            <span className="text-gray-400">{totalDayTrades}T</span>
-            <span className={`text-xs font-medium ${disciplineGrade.color}`}>
-              {disciplineScore}%
-            </span>
-          </div>
+          {hasData ? (
+            <>
+              <div className={`text-xs font-bold ${pnlPositive ? 'text-green-400' : 'text-red-400'}`}>
+                {pnlPositive ? '+' : ''}${Math.abs(dayPnL).toFixed(0)}
+              </div>
+              
+              {/* Bottom metrics */}
+              <div className="flex justify-between items-center text-xs">
+                <span className="text-gray-400">{totalDayTrades}T</span>
+                <span className={`text-xs font-medium ${disciplineGrade.color}`}>
+                  {disciplineScore}%
+                </span>
+              </div>
+            </>
+          ) : (
+            <>
+              <div className="text-xs text-gray-600">
+                No trades
+              </div>
+              <div className="flex justify-between items-center text-xs">
+                <span className="text-gray-600">-</span>
+                <span className="text-gray-600">-</span>
+              </div>
+            </>
+          )}
         </div>
       </div>
     );
