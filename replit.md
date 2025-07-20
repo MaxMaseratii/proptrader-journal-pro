@@ -492,6 +492,18 @@ Changelog:
   * Enhanced debugging and logging for all API requests to track successful operations
   * All journal functionality now works cohesively - daily plan journal, main journal page, and historical entries are seamlessly integrated
   * Maintained unified gold/yellow color scheme and consistent user experience across all journal interfaces
+- July 20, 2025. Comprehensive Journal-to-Daily-Plan Connection and Immutable Plans System:
+  * Added dailyPlanId field to journal entries schema for direct linking to specific daily plans
+  * Implemented immutable daily plans - once saved, only additionalNotes field can be edited
+  * Enhanced journal entry validation to require connection to daily plans (users must create daily plan first)
+  * Added "Planned Trade Link" column to trades table for TradingView links after Price Chart column
+  * Updated daily plan history to show connected journal entries under each specific DAY plan
+  * Added additionalNotes field to daily plans as the only editable field after plan is saved
+  * Implemented server-side validation to prevent editing locked daily plans except for additional notes
+  * Enhanced Daily Plan History section to show complete trading day data: Plan → Strategy → Trades → Journal → Notes
+  * Journal entries now appear under their specific trading day instead of random recent entries
+  * Users can add journal entries anytime but they must be connected to an existing daily plan
+  * Complete day-based organization: everything for each trading day is now organized together in one place
 ```
 
 ## User Preferences

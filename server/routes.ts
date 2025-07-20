@@ -1615,10 +1615,26 @@ Provide helpful, personalized advice based on this data. Keep responses concise 
   app.put("/api/daily-plans/:id", isAuthenticated, async (req, res) => {
     try {
       const planId = parseInt(req.params.id);
-      const plan = await storage.updateDailyPlan(planId, req.body);
-      if (!plan) {
+      const existingPlan = await storage.getDailyPlan(planId);
+      
+      if (!existingPlan) {
         return res.status(404).json({ message: "Daily plan not found" });
       }
+      
+      // If plan is saved (isPlanSaved = true), only allow additionalNotes to be updated
+      if (existingPlan.isPlanSaved) {
+        const { additionalNotes } = req.body;
+        if (Object.keys(req.body).length > 1 || !req.body.hasOwnProperty('additionalNotes')) {
+          return res.status(400).json({ 
+            message: "Plan is locked. Only additional notes can be edited after the plan is saved." 
+          });
+        }
+        const plan = await storage.updateDailyPlan(planId, { additionalNotes });
+        return res.json(plan);
+      }
+      
+      // Plan is not saved yet, allow all updates
+      const plan = await storage.updateDailyPlan(planId, req.body);
       res.json(plan);
     } catch (error) {
       console.error("Error updating daily plan:", error);

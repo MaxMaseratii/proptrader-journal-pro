@@ -350,6 +350,7 @@ export default function Trades() {
                   <th className="text-right py-3 px-4 text-gray-400 font-medium">Final SL Price</th>
                   <th className="text-right py-3 px-4 text-gray-400 font-medium">Final TP Price</th>
                   <th className="text-center py-3 px-4 text-gray-400 font-medium">Price Chart</th>
+                  <th className="text-center py-3 px-4 text-gray-400 font-medium">Planned Trade Link</th>
                 </tr>
               </thead>
               <tbody>
@@ -433,6 +434,20 @@ export default function Trades() {
                           </Button>
                         )}
                       </div>
+                    </td>
+                    <td className="py-3 px-4 text-center">
+                      {trade.tradingViewLink ? (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => window.open(trade.tradingViewLink, '_blank')}
+                          className="text-blue-400 border-blue-400 hover:bg-blue-400/20"
+                        >
+                          📈 View Plan
+                        </Button>
+                      ) : (
+                        <span className="text-gray-500 text-xs">No link</span>
+                      )}
                     </td>
                   </tr>
                 ))}

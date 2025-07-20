@@ -253,9 +253,15 @@ const DailyPlanPage = () => {
       plan.accountId === selectedAccount && plan.date === selectedDate
     );
 
+    if (!todayPlan) {
+      console.error('No daily plan found for this date and account. Please create a daily plan first.');
+      alert('Please create a daily plan first before adding journal entries. Journal entries must be connected to a daily plan.');
+      return;
+    }
+
     const journalData = {
       accountId: selectedAccount,
-      dailyPlanId: todayPlan?.id || null, // Link to specific daily plan
+      dailyPlanId: todayPlan.id, // Link to specific daily plan (required)
       date: selectedDate,
       whatWentRight: journalEntry.whatWentRight.trim(),
       whatWentWrong: journalEntry.whatWentWrong.trim(),
@@ -296,6 +302,8 @@ const DailyPlanPage = () => {
       riskUsed: 0,
       biggestWin: 0,
       biggestLoss: 0,
+      isPlanSaved: true, // Mark plan as saved making it immutable except for additionalNotes
+      additionalNotes: '', // Initialize empty additional notes
     };
 
     console.log('Plan payload:', planPayload);
@@ -836,7 +844,7 @@ const DailyPlanPage = () => {
 
                       {/* Journal Entries for this specific day */}
                       {plan.journalEntries && plan.journalEntries.length > 0 ? (
-                        <div className="bg-gray-900/50 rounded-lg p-3">
+                        <div className="bg-gray-900/50 rounded-lg p-3 mb-3">
                           <div className="text-xs font-medium text-yellow-400 mb-2">Day's Journal Reflections</div>
                           <div className="space-y-2">
                             {plan.journalEntries.map((entry) => (
@@ -870,10 +878,20 @@ const DailyPlanPage = () => {
                           </div>
                         </div>
                       ) : (
-                        <div className="bg-gray-900/50 rounded-lg p-3 text-center">
+                        <div className="bg-gray-900/50 rounded-lg p-3 mb-3 text-center">
                           <div className="text-xs text-gray-400">No journal entries for this day</div>
                         </div>
                       )}
+
+                      {/* Additional Notes Section - Only editable field after plan is saved */}
+                      <div className="bg-blue-900/30 rounded-lg p-3 border border-blue-400/20">
+                        <div className="text-xs font-medium text-blue-400 mb-2">Additional Notes (Editable)</div>
+                        {plan.additionalNotes ? (
+                          <div className="text-xs text-gray-300">{plan.additionalNotes}</div>
+                        ) : (
+                          <div className="text-xs text-gray-500 italic">No additional notes added</div>
+                        )}
+                      </div>
                     </div>
                   ))}
                 </div>

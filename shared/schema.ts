@@ -264,6 +264,9 @@ export const insertTradeSchema = createInsertSchema(trades).omit({
 
 export const insertJournalEntrySchema = createInsertSchema(journalEntries).omit({
   id: true,
+}).refine(data => data.dailyPlanId !== null, {
+  message: "Journal entries must be connected to a daily plan. Please create a daily plan first.",
+  path: ["dailyPlanId"]
 });
 
 export const insertDailyStatsSchema = createInsertSchema(dailyStats).omit({
@@ -452,6 +455,7 @@ export const dailyPlans = pgTable("daily_plans", {
   // Plan Status
   isPlanSaved: boolean("is_plan_saved").default(false),
   isCompleted: boolean("is_completed").default(false),
+  additionalNotes: text("additional_notes"), // Only field that can be edited after plan is saved
   
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
