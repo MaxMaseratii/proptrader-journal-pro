@@ -226,6 +226,34 @@ export const spending = pgTable("spending", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+export const budgetCategories = pgTable("budget_categories", {
+  id: serial("id").primaryKey(),
+  userId: varchar("user_id").notNull(),
+  name: text("name").notNull(),
+  type: text("type").notNull(), // 'trading' or 'personal'
+  icon: text("icon").default('DollarSign'), // Lucide icon name
+  color: text("color").default('text-gray-500'),
+  budgetAmount: real("budget_amount").notNull().default(0),
+  isActive: boolean("is_active").default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const budgetPlans = pgTable("budget_plans", {
+  id: serial("id").primaryKey(),
+  userId: varchar("user_id").notNull(),
+  name: text("name").notNull(),
+  budgetPeriod: text("budget_period").notNull(), // 'weekly', 'monthly', 'yearly'
+  totalBudget: real("total_budget").notNull(),
+  tradingBudget: real("trading_budget").notNull(),
+  personalBudget: real("personal_budget").notNull(),
+  startDate: date("start_date").notNull(),
+  endDate: date("end_date").notNull(),
+  isActive: boolean("is_active").default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
 export const achievements = pgTable("achievements", {
   id: serial("id").primaryKey(),
   userId: varchar("user_id").notNull(),
@@ -272,6 +300,24 @@ export const insertJournalEntrySchema = createInsertSchema(journalEntries).omit(
 export const insertDailyStatsSchema = createInsertSchema(dailyStats).omit({
   id: true,
 });
+
+export const insertBudgetCategorySchema = createInsertSchema(budgetCategories).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertBudgetPlanSchema = createInsertSchema(budgetPlans).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+// Type exports
+export type BudgetCategory = typeof budgetCategories.$inferSelect;
+export type BudgetPlan = typeof budgetPlans.$inferSelect;
+export type InsertBudgetCategory = z.infer<typeof insertBudgetCategorySchema>;
+export type InsertBudgetPlan = z.infer<typeof insertBudgetPlanSchema>;
 
 export const insertCsvImportSchema = createInsertSchema(csvImports).omit({
   id: true,

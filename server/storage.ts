@@ -12,6 +12,8 @@ import {
   tradingStrategies,
   dailyPlans,
   strategyRuleTracking,
+  budgetCategories,
+  budgetPlans,
   type Account,
   type Trade,
   type JournalEntry,
@@ -25,6 +27,8 @@ import {
   type TradingStrategy,
   type DailyPlan,
   type StrategyRuleTracking,
+  type BudgetCategory,
+  type BudgetPlan,
   type InsertAccount,
   type InsertTrade,
   type InsertJournalEntry,
@@ -38,6 +42,8 @@ import {
   type InsertTradingStrategy,
   type InsertDailyPlan,
   type InsertStrategyRuleTracking,
+  type InsertBudgetCategory,
+  type InsertBudgetPlan,
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, and, desc, asc, gte, lte, sum, sql } from "drizzle-orm";
@@ -125,6 +131,17 @@ export interface IStorage {
   getStrategyRuleTracking(dailyPlanId: number): Promise<StrategyRuleTracking[]>;
   createStrategyRuleTracking(tracking: InsertStrategyRuleTracking): Promise<StrategyRuleTracking>;
   updateStrategyRuleTracking(id: number, tracking: Partial<InsertStrategyRuleTracking>): Promise<StrategyRuleTracking | undefined>;
+  
+  // Budget Category operations
+  getBudgetCategories(userId: string): Promise<BudgetCategory[]>;
+  createBudgetCategory(category: InsertBudgetCategory): Promise<BudgetCategory>;
+  updateBudgetCategory(id: number, category: Partial<InsertBudgetCategory>): Promise<BudgetCategory | undefined>;
+  deleteBudgetCategory(id: number): Promise<boolean>;
+  
+  // Budget Plan operations
+  getActiveBudgetPlan(userId: string): Promise<BudgetPlan | undefined>;
+  createBudgetPlan(plan: InsertBudgetPlan): Promise<BudgetPlan>;
+  updateBudgetPlan(id: number, plan: Partial<InsertBudgetPlan>): Promise<BudgetPlan | undefined>;
 }
 
 // Production-ready DatabaseStorage implementation
@@ -711,6 +728,65 @@ export class DatabaseStorage implements IStorage {
       .where(eq(strategyRuleTracking.id, id))
       .returning();
     return updatedTracking || undefined;
+  }
+
+  // Budget Category operations
+  async getBudgetCategories(userId: string): Promise<BudgetCategory[]> {
+    return await db.select().from(budgetCategories)
+      .where(eq(budgetCategories.userId, userId))
+      .orderBy(asc(budgetCategories.name));
+  }
+
+  async createBudgetCategory(category: InsertBudgetCategory): Promise<BudgetCategory> {
+    const [newCategory] = await db
+      .insert(budgetCategories)
+      .values(category)
+      .returning();
+    return newCategory;
+  }
+
+  async updateBudgetCategory(id: number, category: Partial<InsertBudgetCategory>): Promise<BudgetCategory | undefined> {
+    const [updatedCategory] = await db
+      .update(budgetCategories)
+      .set({ ...category, updatedAt: new Date() })
+      .where(eq(budgetCategories.id, id))
+      .returning();
+    return updatedCategory || undefined;
+  }
+
+  async deleteBudgetCategory(id: number): Promise<boolean> {
+    const result = await db.delete(budgetCategories).where(eq(budgetCategories.id, id));
+    return (result.rowCount ?? 0) > 0;
+  }
+
+  // Budget Plan operations
+  async getActiveBudgetPlan(userId: string): Promise<BudgetPlan | undefined> {
+    const [plan] = await db.select().from(budgetPlans)
+      .where(and(eq(budgetPlans.userId, userId), eq(budgetPlans.isActive, true)))
+      .orderBy(desc(budgetPlans.createdAt));
+    return plan || undefined;
+  }
+
+  async createBudgetPlan(plan: InsertBudgetPlan): Promise<BudgetPlan> {
+    // Deactivate existing plans first
+    await db.update(budgetPlans)
+      .set({ isActive: false })
+      .where(eq(budgetPlans.userId, plan.userId));
+    
+    const [newPlan] = await db
+      .insert(budgetPlans)
+      .values({ ...plan, isActive: true })
+      .returning();
+    return newPlan;
+  }
+
+  async updateBudgetPlan(id: number, plan: Partial<InsertBudgetPlan>): Promise<BudgetPlan | undefined> {
+    const [updatedPlan] = await db
+      .update(budgetPlans)
+      .set({ ...plan, updatedAt: new Date() })
+      .where(eq(budgetPlans.id, id))
+      .returning();
+    return updatedPlan || undefined;
   }
 }
 

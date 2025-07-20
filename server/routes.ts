@@ -9,6 +9,8 @@ import {
   insertTradingStrategySchema, 
   insertDailyPlanSchema, 
   insertStrategyRuleTrackingSchema,
+  insertBudgetCategorySchema,
+  insertBudgetPlanSchema,
   type InsertTrade 
 } from "@shared/schema";
 import { z } from "zod";
@@ -1717,6 +1719,102 @@ Provide helpful, personalized advice based on this data. Keep responses concise 
     } catch (error) {
       console.error("Error updating rule tracking:", error);
       res.status(500).json({ message: "Failed to update rule tracking" });
+    }
+  });
+
+  // Budget Categories routes
+  app.get("/api/budget-categories", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const categories = await storage.getBudgetCategories(userId);
+      res.json(categories);
+    } catch (error) {
+      console.error("Error fetching budget categories:", error);
+      res.status(500).json({ message: "Failed to fetch budget categories" });
+    }
+  });
+
+  app.post("/api/budget-categories", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const validatedData = insertBudgetCategorySchema.parse({ ...req.body, userId });
+      const category = await storage.createBudgetCategory(validatedData);
+      res.status(201).json(category);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Invalid category data", errors: error.errors });
+      }
+      console.error("Error creating budget category:", error);
+      res.status(500).json({ message: "Failed to create budget category" });
+    }
+  });
+
+  app.patch("/api/budget-categories/:id", isAuthenticated, async (req: any, res) => {
+    try {
+      const categoryId = parseInt(req.params.id);
+      const category = await storage.updateBudgetCategory(categoryId, req.body);
+      if (!category) {
+        return res.status(404).json({ message: "Budget category not found" });
+      }
+      res.json(category);
+    } catch (error) {
+      console.error("Error updating budget category:", error);
+      res.status(500).json({ message: "Failed to update budget category" });
+    }
+  });
+
+  app.delete("/api/budget-categories/:id", isAuthenticated, async (req: any, res) => {
+    try {
+      const categoryId = parseInt(req.params.id);
+      const success = await storage.deleteBudgetCategory(categoryId);
+      if (!success) {
+        return res.status(404).json({ message: "Budget category not found" });
+      }
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error deleting budget category:", error);
+      res.status(500).json({ message: "Failed to delete budget category" });
+    }
+  });
+
+  // Budget Plans routes
+  app.get("/api/budget-plan", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const activePlan = await storage.getActiveBudgetPlan(userId);
+      res.json(activePlan);
+    } catch (error) {
+      console.error("Error fetching active budget plan:", error);
+      res.status(500).json({ message: "Failed to fetch active budget plan" });
+    }
+  });
+
+  app.post("/api/budget-plan", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const validatedData = insertBudgetPlanSchema.parse({ ...req.body, userId });
+      const plan = await storage.createBudgetPlan(validatedData);
+      res.status(201).json(plan);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Invalid budget plan data", errors: error.errors });
+      }
+      console.error("Error creating budget plan:", error);
+      res.status(500).json({ message: "Failed to create budget plan" });
+    }
+  });
+
+  app.patch("/api/budget-plan/:id", isAuthenticated, async (req: any, res) => {
+    try {
+      const planId = parseInt(req.params.id);
+      const plan = await storage.updateBudgetPlan(planId, req.body);
+      if (!plan) {
+        return res.status(404).json({ message: "Budget plan not found" });
+      }
+      res.json(plan);
+    } catch (error) {
+      console.error("Error updating budget plan:", error);
+      res.status(500).json({ message: "Failed to update budget plan" });
     }
   });
 
