@@ -796,9 +796,40 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* ROW 4: INVESTMENT & FINANCIAL TRACKING */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 mb-3">
-          {/* Account Status Summary */}
+        {/* Investment Tracking Row 2: Total Payout (Col 1) + Account Status (Col 2) */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
+          {/* Column 1: Total Payout (Moved from Row 9 Column 4) */}
+          <div className="widget-container">
+            <div className="widget-content">
+              <div className="widget-left">
+                <p className="widget-label">Total Payout</p>
+                <p className="widget-value text-green-400">
+                  {(() => {
+                    const selectedAccounts = selectedAccountIds.length > 0 && accountSelectionMode !== 'all'
+                      ? accounts?.filter(acc => selectedAccountIds.includes(acc.id)) || []
+                      : accounts || [];
+                    
+                    // Calculate total potential payout from funded/live accounts
+                    const totalPayout = selectedAccounts
+                      .filter(acc => acc.type === 'funded' || acc.type === 'live')
+                      .reduce((sum, acc) => {
+                        const accountTrades = trades?.filter(t => t.accountId === acc.id) || [];
+                        const totalPnl = accountTrades.reduce((total, trade) => total + (trade.pnl || 0), 0);
+                        return sum + Math.max(0, totalPnl); // Only positive P&L counts towards payout
+                      }, 0);
+                    
+                    return formatCurrency(totalPayout);
+                  })()}
+                </p>
+                <p className="widget-description">Available for withdrawal</p>
+              </div>
+              <div className="widget-icon-square">
+                <DollarSign className="widget-icon" />
+              </div>
+            </div>
+          </div>
+
+          {/* Column 2: Account Status (Moved from Row 4 Column 1) */}
           <div className="widget-container">
             <div className="widget-content">
               <div className="widget-left">
@@ -832,8 +863,6 @@ export default function Dashboard() {
               </div>
             </div>
           </div>
-
-
         </div>
 
         {/* ROW 5: ACTIVE ACCOUNTS & ANALYSIS */}
@@ -1020,8 +1049,9 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* Investment Tracking & Working Hours Summary */}
-        <div className="widget-grid mb-6">
+        {/* Investment Tracking Row 1: Total Spent + Second Row Moved Here (Columns 2,3,4) */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 mb-3">
+          {/* Column 1: Total Spent on Accounts */}
           <div className="widget-container">
             <div className="widget-content">
               <div className="widget-left">
@@ -1050,84 +1080,7 @@ export default function Dashboard() {
             </div>
           </div>
 
-          <div className="widget-container">
-            <div className="widget-content">
-              <div className="widget-left">
-                <p className="widget-label">Activation Costs</p>
-                {(() => {
-                  const selectedAccounts = selectedAccountIds.length > 0 && accountSelectionMode !== 'all'
-                    ? accounts?.filter(acc => selectedAccountIds.includes(acc.id)) || []
-                    : accounts || [];
-                  
-                  const totalActivationCost = selectedAccounts.reduce((sum, acc) => sum + (acc.activationCost || 0), 0);
-                  const accountText = accountSelectionMode === 'all' ? 'all accounts' : `${selectedAccounts.length} selected account(s)`;
-                  
-                  return (
-                    <div>
-                      <p className="widget-value">
-                        {formatCurrency(totalActivationCost)}
-                      </p>
-                      <p className="widget-description">Activation fees for {accountText}</p>
-                    </div>
-                  );
-                })()}
-              </div>
-              <div className="widget-icon-square">
-                <Shield className="widget-icon" />
-              </div>
-            </div>
-          </div>
-
-
-
-          <div className="widget-container">
-            <div className="widget-content">
-              <div className="widget-left">
-                <p className="widget-label">Total Combined</p>
-                {(() => {
-                  const selectedAccounts = selectedAccountIds.length > 0 && accountSelectionMode !== 'all'
-                    ? accounts?.filter(acc => selectedAccountIds.includes(acc.id)) || []
-                    : accounts || [];
-                  
-                  const accountCosts = selectedAccounts.reduce((sum, acc) => sum + (acc.accountCost || 0), 0);
-                  const activationCosts = selectedAccounts.reduce((sum, acc) => sum + (acc.activationCost || 0), 0);
-                  const manualSpending = (() => {
-                    if (!spending || !accounts) return 0;
-                    let spendings: any[] = [];
-                    
-                    if (accountSelectionMode === 'all') {
-                      spendings = spending;
-                    } else if (accountSelectionMode === 'single' && selectedAccountIds.length > 0) {
-                      spendings = spending.filter(s => s.accountId === selectedAccountIds[0]);
-                    } else {
-                      const accountIdsToUse = selectedAccountIds.length > 0 ? selectedAccountIds : (accounts.length > 0 ? [accounts[0].id] : []);
-                      spendings = spending.filter(s => accountIdsToUse.includes(s.accountId));
-                    }
-                    
-                    return spendings.reduce((sum, spending) => sum + spending.amount, 0);
-                  })();
-                  const total = accountCosts + activationCosts + manualSpending;
-                  const accountText = accountSelectionMode === 'all' ? 'all accounts' : `${selectedAccounts.length} selected account(s)`;
-                  
-                  return (
-                    <div>
-                      <p className={`widget-value ${total > 0 ? 'text-red-400' : 'text-white'}`}>
-                        {formatCurrency(total)}
-                      </p>
-                      <p className="widget-description">Total investment for {accountText}</p>
-                    </div>
-                  );
-                })()}
-              </div>
-              <div className="widget-icon-square">
-                <TrendingUp className="widget-icon" />
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Working Hours & Profitability Summary - Under Investment Tracking */}
-        <div className="widget-grid mb-8">
+          {/* Column 2: Total Working Hours (Moved from Row 2) */}
           <div className="widget-container">
             <div className="widget-content">
               <div className="widget-left">
@@ -1158,6 +1111,7 @@ export default function Dashboard() {
             </div>
           </div>
 
+          {/* Column 3: Average Hours Per Day (Moved from Row 2) */}
           <div className="widget-container">
             <div className="widget-content">
               <div className="widget-left">
@@ -1204,6 +1158,7 @@ export default function Dashboard() {
             </div>
           </div>
 
+          {/* Column 4: Profitability (Moved from Row 2) */}
           <div className="widget-container">
             <div className="widget-content">
               <div className="widget-left">
@@ -1233,6 +1188,8 @@ export default function Dashboard() {
             </div>
           </div>
         </div>
+
+
 
         {/* Add Investment Tracking Controls */}
         <div className="flex justify-end mb-8">
@@ -1459,42 +1416,7 @@ export default function Dashboard() {
 
 
 
-        {/* ROW 9: TOTAL PAYOUT WIDGET - NEW ADDITION */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 mb-8">
-          <div></div> {/* Column 1 */}
-          <div></div> {/* Column 2 */}
-          <div></div> {/* Column 3 */}
-          {/* Total Payout - Column 4 */}
-          <div className="widget-container">
-            <div className="widget-content">
-              <div className="widget-left">
-                <p className="widget-label">Total Payout</p>
-                <p className="widget-value text-green-400">
-                  {(() => {
-                    const selectedAccounts = selectedAccountIds.length > 0 && accountSelectionMode !== 'all'
-                      ? accounts?.filter(acc => selectedAccountIds.includes(acc.id)) || []
-                      : accounts || [];
-                    
-                    // Calculate total potential payout from funded/live accounts
-                    const totalPayout = selectedAccounts
-                      .filter(acc => acc.type === 'funded' || acc.type === 'live')
-                      .reduce((sum, acc) => {
-                        const accountTrades = trades?.filter(t => t.accountId === acc.id) || [];
-                        const totalPnl = accountTrades.reduce((total, trade) => total + (trade.pnl || 0), 0);
-                        return sum + Math.max(0, totalPnl); // Only positive P&L counts towards payout
-                      }, 0);
-                    
-                    return formatCurrency(totalPayout);
-                  })()}
-                </p>
-                <p className="widget-description">Available for withdrawal</p>
-              </div>
-              <div className="widget-icon-square">
-                <DollarSign className="widget-icon" />
-              </div>
-            </div>
-          </div>
-        </div>
+
 
         {/* Daily Planning Section */}
         <div className="mb-8">
