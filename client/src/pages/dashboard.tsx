@@ -829,9 +829,14 @@ export default function Dashboard() {
 
 
 
-        {/* UNIFIED HEADER WITH NAVIGATION */}
-        <div className="flex items-center justify-between bg-gradient-to-r from-gray-800/50 to-gray-900/50 rounded-xl p-4 border border-gray-700/50 mb-6">
-          <h1 className="text-2xl font-bold text-amber-400">Daily Risk Management & Advanced Trading Calendar</h1>
+        {/* UNIFIED HEADER WITH MATCHING DASHBOARD STYLE */}
+        <div className="mb-6">
+          <div className="flex items-center justify-between mb-6 border-b border-gray-700 pb-3">
+            <h2 className="text-xl font-bold text-gradient-rainbow flex items-center">
+              <Calendar className="mr-3 h-5 w-5 text-prop-gold" />
+              Daily Risk Management & Advanced Trading Calendar
+            </h2>
+          </div>
         </div>
 
         {/* ROW 0: TRADING CALENDAR COMPONENT - FULL WIDTH */}
