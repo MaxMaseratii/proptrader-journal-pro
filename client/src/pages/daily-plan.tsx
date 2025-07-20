@@ -98,12 +98,34 @@ const DailyPlanPage = () => {
   });
 
   // Mutations
+  const resetPlanForm = () => {
+    setNewPlanData({
+      riskAmount: 100,
+      targetProfit: 200,
+      maxTrades: 3,
+      plannedTrades: 2,
+      riskRewardRatio: 2,
+      maxRiskPercentage: 2,
+      plannedHours: 6,
+      hourlyWage: 50,
+      startTime: '09:30',
+      endTime: '16:00',
+      notes: '',
+      tradeSetupLinks: []
+    });
+    setTradeSetupLinks([]);
+    setNewLinkData({ title: '', url: '' });
+  };
+
   const createDailyPlan = useMutation({
     mutationFn: (data: any) => apiRequest('/api/daily-plans', 'POST', data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/daily-plans'] });
       setIsCreatePlanDialogOpen(false);
       resetPlanForm();
+    },
+    onError: (error) => {
+      console.error('Failed to create daily plan:', error);
     },
   });
 
@@ -194,6 +216,16 @@ const DailyPlanPage = () => {
   };
 
   const createNewPlan = () => {
+    console.log('Creating new plan...');
+    console.log('Selected Account:', selectedAccount);
+    console.log('Selected Strategy:', selectedStrategy);
+    console.log('Trade Setup Links:', tradeSetupLinks);
+    
+    if (!selectedAccount || !selectedStrategy) {
+      console.error('Missing required fields: account or strategy');
+      return;
+    }
+    
     const planPayload = {
       ...newPlanData,
       date: selectedDate,
@@ -212,6 +244,7 @@ const DailyPlanPage = () => {
       biggestLoss: 0,
     };
 
+    console.log('Plan payload:', planPayload);
     createDailyPlan.mutate(planPayload);
   };
 
@@ -404,7 +437,11 @@ const DailyPlanPage = () => {
                         className="bg-white border-gray-300 text-black placeholder:text-gray-500 focus:border-yellow-400 focus:ring-yellow-400"
                       />
                       <Button
-                        onClick={addTradeSetupLink}
+                        type="button"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          addTradeSetupLink();
+                        }}
                         disabled={!newLinkData.title.trim() || !newLinkData.url.trim()}
                         className="bg-yellow-500 hover:bg-yellow-600 text-black"
                       >
@@ -459,7 +496,11 @@ const DailyPlanPage = () => {
                   Cancel
                 </Button>
                 <Button
-                  onClick={createNewPlan}
+                  type="button"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    createNewPlan();
+                  }}
                   disabled={!selectedAccount || !selectedStrategy || createDailyPlan.isPending}
                   className="bg-gradient-to-r from-yellow-400 to-yellow-600 text-black hover:from-yellow-500 hover:to-yellow-700"
                 >

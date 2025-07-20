@@ -61,6 +61,9 @@ const StrategyForm: React.FC<StrategyFormProps> = ({ onClose, editStrategy }) =>
       onClose?.();
       resetForm();
     },
+    onError: (error) => {
+      console.error('Failed to create strategy:', error);
+    },
   });
 
   const updateMutation = useMutation({
@@ -69,6 +72,9 @@ const StrategyForm: React.FC<StrategyFormProps> = ({ onClose, editStrategy }) =>
       queryClient.invalidateQueries({ queryKey: ['/api/strategies'] });
       onClose?.();
       resetForm();
+    },
+    onError: (error) => {
+      console.error('Failed to update strategy:', error);
     },
   });
 
@@ -198,7 +204,11 @@ const StrategyForm: React.FC<StrategyFormProps> = ({ onClose, editStrategy }) =>
               </div>
             ))}
             <Button 
-              onClick={addRule} 
+              type="button"
+              onClick={(e) => {
+                e.preventDefault();
+                addRule();
+              }} 
               className="bg-yellow-500 hover:bg-yellow-600 text-black w-full"
             >
               <Plus className="w-4 h-4 mr-2" />
@@ -381,11 +391,15 @@ const StrategyForm: React.FC<StrategyFormProps> = ({ onClose, editStrategy }) =>
           Cancel
         </Button>
         <Button
-          onClick={handleSubmit}
+          type="button"
+          onClick={(e) => {
+            e.preventDefault();
+            handleSubmit();
+          }}
           disabled={!name.trim() || createMutation.isPending || updateMutation.isPending}
           className="bg-yellow-500 hover:bg-yellow-600 text-black"
         >
-          {editStrategy ? 'Update Strategy' : 'Create Strategy'}
+          {(createMutation.isPending || updateMutation.isPending) ? 'Saving...' : (editStrategy ? 'Update Strategy' : 'Create Strategy')}
         </Button>
       </div>
     </div>
