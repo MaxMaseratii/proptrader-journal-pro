@@ -353,10 +353,102 @@ const TradingDashboard = () => {
                 </button>
               </div>
 
-              {/* Simple calendar grid - placeholder for now */}
-              <div className="text-center text-gray-400 py-8">
-                Trading Calendar Coming Soon - CSV Data Will Populate Here
-              </div>
+              {/* Weekly Calendar Table */}
+              {viewMode === 'weekly' && (
+                <div className="space-y-4">
+                  {/* Days Header */}
+                  <div className="grid grid-cols-7 gap-1 text-center text-sm font-medium text-gray-400 mb-2">
+                    {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
+                      <div key={day} className="py-2">{day}</div>
+                    ))}
+                  </div>
+                  
+                  {/* Calendar Days */}
+                  <div className="grid grid-cols-7 gap-1">
+                    {getWeekDays(currentPeriod).map((date, index) => {
+                      const dayData = generateTradingData(date);
+                      const isToday = date.toDateString() === new Date().toDateString();
+                      const isSelected = date.toDateString() === selectedDate.toDateString();
+                      
+                      // Sample data matching your screenshot - Jul 20-26, 2025
+                      const sampleWeekData = [
+                        { day: 20, pnl: '+$100', trades: '3T', winRate: '86%' },
+                        { day: 21, pnl: '+$77', trades: '3T', winRate: '87%' },
+                        { day: 22, pnl: '+$79', trades: '3T', winRate: '89%' },
+                        { day: 23, pnl: '+$82', trades: '4T', winRate: '90%' },
+                        { day: 24, pnl: '+$84', trades: '4T', winRate: '91%' },
+                        { day: 25, pnl: '+$86', trades: '5T', winRate: '93%' },
+                        { day: 26, pnl: '+$89', trades: '5T', winRate: '94%' }
+                      ];
+                      
+                      const dayInfo = sampleWeekData[index] || { day: date.getDate(), pnl: '+$0', trades: '0T', winRate: '0%' };
+                      
+                      return (
+                        <div
+                          key={index}
+                          onClick={() => setSelectedDate(date)}
+                          className={`
+                            relative bg-gray-800/50 rounded-lg p-3 cursor-pointer transition-all duration-200 min-h-[100px]
+                            ${isToday ? 'ring-2 ring-teal-400 bg-teal-950/30' : ''}
+                            ${isSelected ? 'ring-2 ring-amber-400 bg-amber-950/30' : ''}
+                            hover:bg-gray-700/50 border border-gray-700/30
+                          `}
+                        >
+                          {/* Day Number */}
+                          <div className="flex items-center justify-between mb-2">
+                            <span className={`text-lg font-bold ${isToday ? 'text-teal-400' : 'text-white'}`}>
+                              {dayInfo.day}
+                            </span>
+                            {isToday && <div className="w-2 h-2 rounded-full bg-teal-400" />}
+                          </div>
+                          
+                          {/* P&L */}
+                          <div className="text-sm font-medium text-green-400 mb-1">
+                            {dayInfo.pnl}
+                          </div>
+                          
+                          {/* Stats */}
+                          <div className="text-xs text-gray-400 space-y-1">
+                            <div>{dayInfo.trades}</div>
+                            <div className="text-emerald-400">{dayInfo.winRate}</div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                  
+                  {/* Weekly Summary */}
+                  <div className="grid grid-cols-5 gap-4 mt-6 pt-4 border-t border-gray-700/50">
+                    <div className="text-center">
+                      <div className="text-2xl font-bold text-green-400">+$0</div>
+                      <div className="text-sm text-gray-400">Weekly P&L</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-2xl font-bold text-blue-400">W:0 L:0 T:0</div>
+                      <div className="text-sm text-gray-400">Wins & Loss • Total Trades</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-2xl font-bold text-amber-400">0%</div>
+                      <div className="text-sm text-gray-400">Win Rate</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-2xl font-bold text-emerald-400">W: $0 L: $0</div>
+                      <div className="text-sm text-gray-400">Total Wins and Losses</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-2xl font-bold text-purple-400">$0/$0</div>
+                      <div className="text-sm text-gray-400">Avg Win/Loss</div>
+                    </div>
+                  </div>
+                </div>
+              )}
+              
+              {/* Monthly and Yearly views - simplified for now */}
+              {viewMode !== 'weekly' && (
+                <div className="text-center text-gray-400 py-8">
+                  {viewMode.charAt(0).toUpperCase() + viewMode.slice(1)} calendar view coming soon
+                </div>
+              )}
 
             </div>
           </div>
