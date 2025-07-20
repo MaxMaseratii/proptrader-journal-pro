@@ -1,0 +1,70 @@
+Create a React component for a trading dashboard navigation bar using Tailwind CSS. This should be the top navigation section of a main trading dashboard.
+
+REQUIREMENTS:
+- Use React with hooks (useState)
+- Style with Tailwind CSS only
+- Dark theme with subtle colors (avoid bright/high opacity)
+- Responsive design
+- All data values set to 0 (will be populated by CSV upload)
+
+LAYOUT (3 sections in a flex container):
+
+LEFT SECTION - View Mode Tabs:
+- 3 buttons: "Weekly", "Monthly", "Yearly" 
+- Dark gray background (bg-gray-800/40)
+- Active tab: bg-amber-500 with text-black
+- Inactive tabs: text-gray-300 with hover:text-amber-400
+- Border: border-gray-600/30, rounded-lg
+
+CENTER SECTION - Date Navigation:
+- Left arrow button with ChevronLeft icon (from lucide-react)
+- Date display showing "July 2025" (dynamic based on selected period)
+- Right arrow button with ChevronRight icon
+- Dark gray background (bg-gray-800/40)
+- text-amber-400 for date
+- Hover effects: hover:bg-gray-700/40 hover:text-amber-400
+
+RIGHT SECTION - Today Button:
+- "Go to Today" text
+- bg-teal-600/80 hover:bg-teal-600
+- text-white
+- border-teal-500/40 with shadow-md
+- rounded-lg
+
+BOTTOM SUMMARY ROW (5 widgets separated by vertical lines):
+1. "+$0" with subtitle "Weekly P&L" (changes to Monthly/Yearly based on active tab) - text-green-400
+2. "W:0 L:0 T:0" with subtitle "Wins & Loss • Total Trades" - text-purple-400
+3. "0%" with subtitle "Win Rate" - text-emerald-400
+4. "W: $0 L: $0" with subtitle "Total Wins and Losses" - text-green-400
+5. "$0/$0" with subtitle "Avg Win/Loss" - text-blue-400
+
+FUNCTIONALITY:
+- State: const [viewMode, setViewMode] = useState('weekly')
+- Period formatting function that returns "July 2025", "July 2025", "2025" based on viewMode
+- Click handlers for period navigation arrows
+- Click handler for Today button
+- Dynamic P&L label that shows "Weekly P&L", "Monthly P&L", or "Yearly P&L"
+
+STYLING DETAILS:
+- Container: space-y-4 for vertical spacing
+- Vertical separators: w-px h-8 bg-gray-600
+- Transitions: transition-all duration-200
+- Padding: p-2 for arrows, px-4 py-2 for buttons
+- Font weights: font-medium for buttons, font-semibold for date, font-bold for summary numbers
+- Text sizes: text-sm for buttons, text-lg for date, text-base for summary numbers, text-xs for labels
+
+STRUCTURE:
+```jsx
+const TradingNavigation = () => {
+  const [viewMode, setViewMode] = useState('weekly');
+  
+  // Component logic here
+  
+  return (
+    <div className="bg-gradient-to-br from-gray-800/30 via-gray-900/30 to-black/30 rounded-xl p-5 border border-gray-700/50 space-y-4">
+      {/* Top navigation */}
+      {/* Calendar content placeholder */}
+      {/* Bottom summary */}
+    </div>
+  );
+};
