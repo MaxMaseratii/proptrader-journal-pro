@@ -159,7 +159,7 @@ const TradingDashboard = () => {
         </div>
 
         {/* Main Dashboard Layout - ONLY 2x4 GRID */}
-        <div className="w-full max-w-2xl mx-auto">
+        <div className="w-full">
           
           {/* Selected Day Detail - NOW WITH 2x4 GRID - FULL WIDTH */}
           <div className="w-full">

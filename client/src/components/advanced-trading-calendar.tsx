@@ -26,46 +26,73 @@ export function AdvancedTradingCalendar({ trades = [], selectedAccount, classNam
   const [hoveredMetric, setHoveredMetric] = useState(null);
   const [showPeriodPicker, setShowPeriodPicker] = useState(false);
 
-  // Generate sample trading data for different dates
+  // Generate trading data from actual trades or fallback sample data
   const generateTradingData = (date: Date) => {
-    const seed = date.getDate() + date.getMonth() * 31 + date.getFullYear() * 365;
-    const random = (min: number, max: number) => min + (seed * 9301 + 49297) % 233280 / 233280 * (max - min);
+    const dateStr = date.toISOString().split('T')[0];
     
-    // User's actual trading setup
-    const avgRiskPerTrade = 20; // $20 risk per trade
-    const avgRewardRatio = random(2.5, 3.5); // Around 3:1 RR
-    const maxDailyTrades = Math.round(random(2, 5)); // 2-5 trades max per day
-    const totalDayTrades = Math.round(random(0, maxDailyTrades));
-    const dailyTarget = 60; // $60 daily target
+    // Filter trades for this specific date
+    const dayTrades = trades.filter(trade => {
+      const tradeDate = new Date(trade.date).toISOString().split('T')[0];
+      return tradeDate === dateStr;
+    });
     
-    // Calculate win rate based on trades
-    const winsNeeded = Math.max(0, Math.round(random(0, totalDayTrades)));
-    const winRate = totalDayTrades > 0 ? (winsNeeded / totalDayTrades) * 100 : 0;
-    
-    // Calculate realistic PnL around the $60 target
-    // With $20 risk and 3:1 RR, one win = $60 (target achieved)
-    const possibleOutcomes = [
-      -20 * totalDayTrades, // All losses
-      -20 * Math.max(0, totalDayTrades - 1) + 60, // 1 win, rest losses
-      -20 * Math.max(0, totalDayTrades - 2) + 120, // 2 wins, rest losses
-      60 * random(0.5, 1.5) // Around target with some variation
-    ];
-    
-    const dayPnL = possibleOutcomes[Math.floor(random(0, possibleOutcomes.length))];
-    
-    return {
-      date,
-      avgRiskPerTrade,
-      maxDailyRisk: avgRiskPerTrade * maxDailyTrades, // Max loss if all trades lose
-      avgRewardRatio,
-      targetRewardRatio: 3.0,
-      dailyTarget,
-      dayPnL,
-      maxDailyTrades,
-      totalDayTrades,
-      disciplineScore: Math.round(random(60, 95)),
-      winRate: Math.round(winRate)
-    };
+    if (dayTrades.length > 0) {
+      // Use actual trade data
+      const dayPnL = dayTrades.reduce((sum, trade) => sum + (trade.pnl || 0), 0);
+      const totalDayTrades = dayTrades.length;
+      const winningTrades = dayTrades.filter(trade => (trade.pnl || 0) > 0).length;
+      const winRate = totalDayTrades > 0 ? (winningTrades / totalDayTrades) * 100 : 0;
+      
+      return {
+        date,
+        dayPnL,
+        totalDayTrades,
+        winRate: Math.round(winRate),
+        disciplineScore: 75, // Default discipline score, could be calculated
+        avgRiskPerTrade: 20,
+        maxDailyRisk: 100,
+        avgRewardRatio: 3.0,
+        targetRewardRatio: 3.0,
+        dailyTarget: 60,
+        maxDailyTrades: 5
+      };
+    } else {
+      // Fallback sample data for dates without trades
+      const seed = date.getDate() + date.getMonth() * 31 + date.getFullYear() * 365;
+      const random = (min: number, max: number) => min + (seed * 9301 + 49297) % 233280 / 233280 * (max - min);
+      
+      const avgRiskPerTrade = 20;
+      const avgRewardRatio = random(2.5, 3.5);
+      const maxDailyTrades = Math.round(random(2, 5));
+      const totalDayTrades = Math.round(random(0, maxDailyTrades));
+      const dailyTarget = 60;
+      
+      const winsNeeded = Math.max(0, Math.round(random(0, totalDayTrades)));
+      const winRate = totalDayTrades > 0 ? (winsNeeded / totalDayTrades) * 100 : 0;
+      
+      const possibleOutcomes = [
+        -20 * totalDayTrades,
+        -20 * Math.max(0, totalDayTrades - 1) + 60,
+        -20 * Math.max(0, totalDayTrades - 2) + 120,
+        60 * random(0.5, 1.5)
+      ];
+      
+      const dayPnL = possibleOutcomes[Math.floor(random(0, possibleOutcomes.length))];
+      
+      return {
+        date,
+        avgRiskPerTrade,
+        maxDailyRisk: avgRiskPerTrade * maxDailyTrades,
+        avgRewardRatio,
+        targetRewardRatio: 3.0,
+        dailyTarget,
+        dayPnL,
+        maxDailyTrades,
+        totalDayTrades,
+        disciplineScore: Math.round(random(60, 95)),
+        winRate: Math.round(winRate)
+      };
+    }
   };
 
   // Helper function to convert discipline score to letter grade
