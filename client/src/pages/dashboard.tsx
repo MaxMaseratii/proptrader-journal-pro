@@ -17,7 +17,7 @@ import { formatCurrency, formatPercentage, formatDate } from "@/lib/utils";
 import { calculateDisciplinedScore, getScoreColor, getGradeColor } from "@/lib/disciplined-score";
 import { calculateComprehensiveDisciplineMetrics } from "@/lib/discipline-calculator";
 import DailyPlanningWidget from "@/components/daily-planning-widget";
-
+import { AdvancedTradingCalendar } from "@/components/advanced-trading-calendar";
 
 // Color coding utility function
 const getValueColor = (value: number, type: 'currency' | 'percentage' | 'neutral' = 'currency') => {
@@ -610,7 +610,7 @@ export default function Dashboard() {
 
       <div className="p-6 space-y-6">
         
-        {/* Weekly Risk Management & Performance Calendar - Complete Trading Dashboard */}
+        {/* Weekly Risk Management & Performance Calendar - Top of Dashboard */}
         <div className="mb-16">
           <div className="flex items-center justify-between mb-6 border-b border-gray-700 pb-3">
             <h2 className="text-xl font-bold text-gradient-rainbow flex items-center">
@@ -630,7 +630,23 @@ export default function Dashboard() {
                 <ChevronLeft className="h-4 w-4 text-gray-400" />
               </button>
               <div className="text-sm text-gray-300 font-medium min-w-[200px] text-center">
-                Week 28 July 14th 2025 (Week #28/52)
+                {(() => {
+                  const weekStart = currentWeekStart || (() => {
+                    const today = new Date();
+                    const dayOfWeek = today.getDay();
+                    const daysToSubtract = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
+                    const start = new Date(today);
+                    start.setDate(today.getDate() - daysToSubtract);
+                    return start;
+                  })();
+                  
+                  const weekNumber = Math.ceil((weekStart.getTime() - new Date(weekStart.getFullYear(), 0, 1).getTime()) / (7 * 24 * 60 * 60 * 1000));
+                  const monthName = weekStart.toLocaleDateString('en-US', { month: 'long' });
+                  const day = weekStart.getDate();
+                  const year = weekStart.getFullYear();
+                  
+                  return `Week ${weekNumber} ${monthName} ${day}th ${year} (Week #${weekNumber}/52)`;
+                })()}
               </div>
               <button 
                 className="p-2 rounded-lg bg-gray-800 hover:bg-gray-700 border border-gray-600 transition-colors"
@@ -645,202 +661,144 @@ export default function Dashboard() {
               </button>
             </div>
           </div>
-          
-          {/* Horizontal Trading Calendar */}
-          <div className="bg-gradient-to-br from-gray-900 via-black to-gray-900 rounded-xl p-4 border border-gray-700/50">
-            <div className="grid grid-cols-7 gap-1">
-              {['Mon 14', 'Tue 15', 'Wed 16', 'Thu 17', 'Fri 18', 'Sat 19', 'Sun 20'].map((day, index) => {
-                const dayNumber = day.split(' ')[1];
-                const isToday = dayNumber === '14'; // Make Monday today for demo
-                
-                // Sample data for each day
-                const dayData = {
-                  pnl: index === 0 ? 500 : index === 1 ? -150 : index === 2 ? 300 : index === 3 ? 150 : index === 4 ? 0 : index === 5 ? 250 : 75,
-                  trades: index === 0 ? 3 : index === 1 ? 2 : index === 2 ? 4 : index === 3 ? 1 : index === 4 ? 0 : index === 5 ? 2 : 1,
-                  risk: index === 0 ? 60 : index === 1 ? 40 : index === 2 ? 80 : index === 3 ? 20 : index === 4 ? 0 : index === 5 ? 40 : 20,
-                  winRate: index === 0 ? 100 : index === 1 ? 0 : index === 2 ? 75 : index === 3 ? 100 : index === 4 ? 0 : index === 5 ? 50 : 100
-                };
-                
-                return (
-                  <div 
-                    key={index} 
-                    className={`
-                      relative p-2 rounded-md border transition-all duration-200 cursor-pointer h-16 min-w-0
-                      ${isToday 
-                        ? 'border-teal-400/60 bg-gradient-to-br from-teal-900/30 via-gray-800/40 to-teal-900/30'
-                        : 'border-gray-600/40 bg-gradient-to-br from-gray-800/40 via-gray-700/40 to-gray-800/40 hover:border-gray-500 hover:bg-gray-700/50'
-                      }
-                    `}
-                  >
-                    {/* Today indicator */}
-                    {isToday && (
-                      <div className="absolute top-1 right-1 w-1.5 h-1.5 rounded-full bg-teal-400 animate-pulse" />
-                    )}
+          <div className="widget-container w-full">
+            <div className="widget-content flex-col w-full">
+              <div className="grid grid-cols-7 gap-1 h-full w-full">
+                {(() => {
+                  const getCurrentWeekDays = () => {
+                    const weekDays = [];
+                    for (let i = 0; i < 7; i++) {
+                      const day = new Date(currentWeekStart);
+                      day.setDate(currentWeekStart.getDate() + i);
+                      weekDays.push(day);
+                    }
+                    return weekDays;
+                  };
+
+                  const weekDays = getCurrentWeekDays();
+                  const dayLabels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+                  
+                  return weekDays.map((day, index) => {
+                    const dayStr = day.toISOString().split('T')[0];
                     
-                    <div className="flex flex-col h-full justify-between">
-                      {/* Date */}
-                      <div className={`text-sm font-semibold ${
-                        isToday ? 'text-teal-400' : 'text-gray-200'
-                      }`}>
-                        {day}
-                      </div>
+                    // Filter trades based on account selection
+                    const filteredTrades = selectedAccountIds.length > 0
+                      ? trades?.filter(t => selectedAccountIds.includes(t.accountId)) || []
+                      : trades || [];
+                    
+                    const dayTrades = filteredTrades.filter(trade => trade.date === dayStr) || [];
+                    const dayPnL = dayTrades.reduce((sum, trade) => sum + (trade.pnl || 0), 0);
+                    const isToday = day.toDateString() === new Date().toDateString();
+                    
+                    // Get account-specific data for selected accounts
+                    const selectedAccounts = selectedAccountIds.length > 0
+                      ? accounts?.filter(acc => selectedAccountIds.includes(acc.id)) || []
+                      : accounts || [];
+                    
+                    // Calculate risk metrics from trades
+                    const totalRisk = dayTrades.reduce((sum, trade) => sum + Math.abs(trade.riskAmount || 0), 0);
+                    const avgRiskPerTrade = dayTrades.length > 0 ? totalRisk / dayTrades.length : 
+                      selectedAccounts.length > 0 ? selectedAccounts.reduce((sum, acc) => sum + (acc.riskPerTrade || 0), 0) / selectedAccounts.length : 0;
+                    const maxDailyRisk = dayTrades.length > 0 
+                      ? dayTrades.reduce((max, trade) => Math.max(max, Math.abs(trade.riskAmount || 0)), 0)
+                      : selectedAccounts.length > 0 ? selectedAccounts.reduce((sum, acc) => sum + (acc.dailyLossLimit || 0), 0) / selectedAccounts.length : 0;
+                    
+                    // Calculate reward ratio (average)
+                    const rewardRatios = dayTrades.map(trade => {
+                      const risk = Math.abs(trade.riskAmount || 0);
+                      const reward = Math.abs(trade.pnl || 0);
+                      return risk > 0 ? reward / risk : 0;
+                    }).filter(rr => rr > 0);
+                    const avgRewardRatio = rewardRatios.length > 0 ? rewardRatios.reduce((sum, rr) => sum + rr, 0) / rewardRatios.length : 0;
+                    
+                    const maxDailyTrades = selectedAccounts.reduce((max, acc) => Math.max(max, acc.maxDailyTrades || 0), 0);
+                    
+                    // Calculate daily target based on saved projections or account risk settings
+                    // Daily target = risk per trade × risk reward ratio (single trade target)
+                    const dailyTarget = (() => {
+                      if (projections && projections.length > 0) {
+                        // Use projection data for accounts with saved projections
+                        const accountProjections = projections.filter(p => 
+                          selectedAccountIds.length > 0 
+                            ? selectedAccountIds.includes(p.accountId)
+                            : true
+                        );
+                        
+                        if (accountProjections.length > 0) {
+                          return accountProjections.reduce((sum, proj) => {
+                            const riskPerTrade = proj.riskPerTrade || 0;
+                            const riskRewardRatio = proj.riskRewardRatio || 2.0;
+                            return sum + (riskPerTrade * riskRewardRatio); // Single trade target
+                          }, 0) / accountProjections.length;
+                        }
+                      }
                       
-                      {/* P&L */}
-                      <div className={`text-xs font-bold ${dayData.pnl >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-                        {dayData.pnl >= 0 ? '+' : ''}${Math.abs(dayData.pnl)}
+                      // Fallback to account settings if no projections
+                      return selectedAccounts.length > 0 
+                        ? selectedAccounts.reduce((sum, acc) => {
+                            const riskPerTrade = acc.riskPerTrade || 0;
+                            const riskRewardRatio = acc.riskRewardRatio || 2.0;
+                            return sum + (riskPerTrade * riskRewardRatio); // Single trade target
+                          }, 0) / selectedAccounts.length
+                        : 0;
+                    })();
+                    
+                    return (
+                      <div 
+                        key={index} 
+                        className={`
+                          relative p-3 rounded-lg border transition-all duration-300 h-32 overflow-hidden w-full
+                          ${isToday 
+                            ? 'border-yellow-400 bg-gradient-to-br from-gray-900/80 to-gray-800/80 shadow-lg shadow-yellow-400/20' 
+                            : 'border-gray-600 bg-gradient-to-br from-gray-900/60 to-gray-800/60'
+                          }
+                          hover:border-yellow-400 hover:shadow-lg hover:shadow-yellow-400/30 cursor-pointer
+                        `}
+                      >
+                        <div className="text-left h-full flex flex-col justify-between">
+                          {/* Day Header */}
+                          <div className="text-center mb-2">
+                            <div className="text-sm font-bold text-yellow-400 drop-shadow-lg">
+                              {dayLabels[index]} {day.getDate()}
+                            </div>
+                          </div>
+                          
+                          {/* Simplified Metrics */}
+                          <div className="space-y-1.5 text-xs flex-1">
+                            {/* Daily P&L - Most Important */}
+                            <div className="flex justify-between items-center">
+                              <span className="text-gray-300 text-xs">P&L:</span>
+                              <span className={`font-bold text-sm ${dayPnL >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                                {dayPnL >= 0 ? '+' : ''}${dayPnL.toFixed(0)}
+                              </span>
+                            </div>
+                            
+                            {/* Trades Count */}
+                            <div className="flex justify-between items-center">
+                              <span className="text-gray-300 text-xs">Trades:</span>
+                              <span className="text-blue-400 font-medium text-xs">{dayTrades.length}</span>
+                            </div>
+                            
+                            {/* Risk Used */}
+                            <div className="flex justify-between items-center">
+                              <span className="text-gray-300 text-xs">Risk:</span>
+                              <span className="text-orange-400 font-medium text-xs">${totalRisk.toFixed(0)}</span>
+                            </div>
+                            
+                            {/* Win Rate for the day */}
+                            <div className="flex justify-between items-center">
+                              <span className="text-gray-300 text-xs">Win%:</span>
+                              <span className="text-purple-400 font-medium text-xs">
+                                {dayTrades.length > 0 ? 
+                                  Math.round((dayTrades.filter(t => (t.pnl || 0) > 0).length / dayTrades.length) * 100) : 0}%
+                              </span>
+                            </div>
+                          </div>
+                        </div>
                       </div>
-                      
-                      {/* Bottom metrics */}
-                      <div className="flex justify-between items-center text-xs">
-                        <span className="text-gray-400">{dayData.trades}T</span>
-                        <span className="text-gray-400">{dayData.winRate}%</span>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        </div>
-
-
-        {/* Trading Metrics Dashboard - Simplified Implementation */}
-        <div className="mb-8">
-          <div className="bg-gradient-to-br from-gray-900/40 via-gray-800/60 to-black/80 border border-gray-600/30 rounded-lg p-4">
-            
-            {/* Header + PNL Combined */}
-            <div className="flex items-center justify-between mb-3">
-              <div className="flex items-center space-x-2">
-                <Calendar className="w-4 h-4 text-amber-400" />
-                <span className="text-lg font-bold text-amber-400">Mon 20</span>
-                <div className="w-2 h-2 rounded-full bg-teal-400" />
-              </div>
-              <div className="text-right">
-                <div className="text-2xl font-bold text-green-400">
-                  +$85.50
-                </div>
-                <div className="text-sm text-gray-400">
-                  142% of $60
-                </div>
-              </div>
-            </div>
-
-            {/* Compact Progress Bar */}
-            <div className="w-full bg-gray-700/50 rounded-full h-2 mb-4">
-              <div 
-                className="h-2 rounded-full transition-all duration-500 bg-green-400"
-                style={{ width: '100%' }}
-              />
-            </div>
-
-            {/* 2 Rows x 4 Columns Grid */}
-            <div className="space-y-3">
-              
-              {/* Row 1: Risk+Max Daily Loss, R:R, Trades, Hours Worked */}
-              <div className="grid grid-cols-4 gap-4">
-                
-                {/* Risk + Max Daily Loss Combined */}
-                <div className="bg-black/30 rounded-lg p-4 border border-gray-700/50 relative">
-                  <div className="absolute top-3 right-3 text-xs text-red-400">
-                    Max: $80
-                  </div>
-                  <div className="text-3xl font-bold text-red-400 mb-1">
-                    $20
-                  </div>
-                  <div className="text-sm text-gray-400">Risk Per Trade</div>
-                </div>
-
-                {/* R:R */}
-                <div className="bg-black/30 rounded-lg p-4 border border-gray-700/50 relative">
-                  <div className="absolute top-3 right-3 text-xs text-blue-300">
-                    Target: 3.0
-                  </div>
-                  <div className="text-3xl font-bold text-blue-400 mb-1">
-                    3.2
-                  </div>
-                  <div className="text-sm text-gray-400">Risk:Reward</div>
-                </div>
-
-                {/* Trades */}
-                <div className="bg-black/30 rounded-lg p-4 border border-gray-700/50 relative">
-                  <div className="absolute top-3 right-3 text-xs text-purple-300">
-                    3/5
-                  </div>
-                  <div className="text-3xl font-bold text-purple-400 mb-1">
-                    3
-                  </div>
-                  <div className="text-sm text-gray-400">Trades Executed</div>
-                  <div className="w-full bg-gray-700/50 rounded-full h-1 mt-2">
-                    <div 
-                      className="h-1 rounded-full bg-purple-400 transition-all duration-500"
-                      style={{ width: '60%' }}
-                    />
-                  </div>
-                </div>
-
-                {/* Hours Worked */}
-                <div className="bg-black/30 rounded-lg p-4 border border-gray-700/50 relative">
-                  <div className="absolute top-3 right-3 text-xs text-indigo-300">
-                    <div className="flex items-center space-x-1">
-                      <div className="w-2 h-2 rounded-full bg-indigo-400"></div>
-                      <span>Plan: 6h</span>
-                    </div>
-                  </div>
-                  <div className="text-3xl font-bold text-indigo-400 mb-1">
-                    4.5h
-                  </div>
-                  <div className="text-sm text-gray-400">Hours Worked</div>
-                </div>
-              </div>
-
-              {/* Row 2: Discipline, Risk Utilization, Avg R/R, Win Rate */}
-              <div className="grid grid-cols-4 gap-4">
-                
-                {/* Discipline */}
-                <div className="bg-black/30 rounded-lg p-4 border border-gray-700/50 relative">
-                  <div className="absolute top-3 right-3">
-                    <div className="px-2 py-1 rounded text-xs font-bold bg-green-500 text-black">
-                      ELITE
-                    </div>
-                  </div>
-                  <div className="text-3xl font-bold text-green-400 mb-1">
-                    92
-                  </div>
-                  <div className="text-sm text-gray-400">Discipline Score</div>
-                </div>
-
-                {/* Risk Utilization */}
-                <div className="bg-black/30 rounded-lg p-4 border border-gray-700/50 relative">
-                  <div className="absolute top-3 right-3 text-xs text-orange-300">
-                    Used
-                  </div>
-                  <div className="text-3xl font-bold text-orange-400 mb-1">
-                    60%
-                  </div>
-                  <div className="text-sm text-gray-400">Risk Utilization</div>
-                </div>
-
-                {/* Avg Risk/Reward */}
-                <div className="bg-black/30 rounded-lg p-4 border border-gray-700/50 relative">
-                  <div className="absolute top-3 right-3 text-xs text-cyan-300">
-                    Ratio
-                  </div>
-                  <div className="text-3xl font-bold text-cyan-400 mb-1">
-                    1:3.2
-                  </div>
-                  <div className="text-sm text-gray-400">Avg Risk/Reward</div>
-                </div>
-
-                {/* Win Rate */}
-                <div className="bg-black/30 rounded-lg p-4 border border-gray-700/50 relative">
-                  <div className="absolute top-3 right-3 text-xs text-emerald-300">
-                    WR
-                  </div>
-                  <div className="text-3xl font-bold text-emerald-400 mb-1">
-                    67%
-                  </div>
-                  <div className="text-sm text-gray-400">Win Rate</div>
-                </div>
+                    );
+                  });
+                })()}
               </div>
             </div>
           </div>
@@ -2147,45 +2105,26 @@ export default function Dashboard() {
                 return accounts?.[0]; // Default to first account
               })()}
             />
-            {/* Quick Performance Summary */}
-            <div className="widget-container">
-              <div className="widget-content flex-col">
-                <div className="widget-left mb-4">
-                  <p className="widget-label">Weekly Performance Summary</p>
-                  <p className="widget-description">Current week trading overview</p>
-                </div>
-                <div className="space-y-4">
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="text-center">
-                      <div className={`text-2xl font-bold ${getValueColor(combinedAnalytics?.totalPnl || 0)}`}>
-                        {formatCurrency(combinedAnalytics?.totalPnl || 0)}
-                      </div>
-                      <div className="text-sm text-gray-400">Week P&L</div>
-                    </div>
-                    <div className="text-center">
-                      <div className="text-2xl font-bold text-purple-400">
-                        {combinedAnalytics?.totalTrades || 0}
-                      </div>
-                      <div className="text-sm text-gray-400">Total Trades</div>
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="text-center">
-                      <div className="text-xl font-bold text-blue-400">
-                        {formatPercentage(combinedAnalytics?.winRate || 0)}
-                      </div>
-                      <div className="text-sm text-gray-400">Win Rate</div>
-                    </div>
-                    <div className="text-center">
-                      <div className="text-xl font-bold text-green-400">
-                        {combinedAnalytics?.rFactor?.toFixed(2) || '0.00'}
-                      </div>
-                      <div className="text-sm text-gray-400">R Factor</div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+            <AdvancedTradingCalendar 
+              trades={(() => {
+                if (!trades) return [];
+                
+                if (accountSelectionMode === 'all') {
+                  return trades;
+                } else if (accountSelectionMode === 'single' && selectedAccountIds.length > 0) {
+                  return trades.filter(trade => trade.accountId === selectedAccountIds[0]);
+                } else if (selectedAccountIds.length > 0) {
+                  return trades.filter(trade => selectedAccountIds.includes(trade.accountId));
+                }
+                return trades;
+              })()} 
+              selectedAccount={(() => {
+                if (accountSelectionMode === 'single' && selectedAccountIds.length > 0) {
+                  return accounts?.find(acc => acc.id === selectedAccountIds[0]);
+                }
+                return accounts?.[0]; // Default to first account
+              })()}
+            />
           </div>
         </div>
 
