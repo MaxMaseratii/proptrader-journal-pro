@@ -9,6 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
+import { Progress } from "@/components/ui/progress";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -428,32 +429,90 @@ export default function Projections() {
 
   return (
     <div className="p-6 space-y-8">
-      {/* Enhanced Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div>
-          <h1 className="text-3xl font-bold text-white">Account Management & Projections</h1>
-          <p className="text-gray-400">Manage your trading accounts and project future performance</p>
+      {/* Enhanced Header with Performance Metrics */}
+      <div className="space-y-6">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <div>
+            <h1 className="text-3xl font-bold text-white flex items-center gap-3">
+              <Target className="w-8 h-8 text-yellow-400" />
+              Account Management & Projections
+            </h1>
+            <p className="text-gray-400 mt-2">Manage your trading accounts and project future performance with advanced analytics</p>
+          </div>
+          
+          <div className="flex gap-2">
+            <Dialog open={isAccountDialogOpen} onOpenChange={setIsAccountDialogOpen}>
+              <DialogTrigger asChild>
+                <Button className="bg-gradient-to-r from-yellow-400 to-yellow-600 text-black font-semibold hover:from-yellow-500 hover:to-yellow-700 shadow-lg">
+                  <Plus className="w-4 h-4 mr-2" />
+                  New Account
+                </Button>
+              </DialogTrigger>
+              {/* Account creation dialog remains unchanged */}
+              <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto bg-gray-900 border-gray-700">
+                <DialogHeader>
+                  <DialogTitle className="text-white">Create Trading Account</DialogTitle>
+                </DialogHeader>
+                {/* Full account creation form preserved - keeping existing form */}
+                <div className="p-4">
+                  <p className="text-gray-400">Account creation form goes here...</p>
+                </div>
+              </DialogContent>
+            </Dialog>
+          </div>
         </div>
-        
-        <div className="flex gap-2">
-          <Dialog open={isAccountDialogOpen} onOpenChange={setIsAccountDialogOpen}>
-            <DialogTrigger asChild>
-              <Button className="bg-gradient-to-r from-yellow-400 to-yellow-600 text-black font-semibold hover:from-yellow-500 hover:to-yellow-700">
-                <Plus className="w-4 h-4 mr-2" />
-                New Account
-              </Button>
-            </DialogTrigger>
-            {/* Account creation dialog remains unchanged */}
-            <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto bg-gray-900 border-gray-700">
-              <DialogHeader>
-                <DialogTitle className="text-white">Create Trading Account</DialogTitle>
-              </DialogHeader>
-              {/* Full account creation form preserved - keeping existing form */}
-              <div className="p-4">
-                <p className="text-gray-400">Account creation form goes here...</p>
+
+        {/* Enhanced Account Overview Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          <Card className="bg-gradient-to-br from-blue-900/40 via-blue-800/30 to-black border border-blue-400/20">
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-blue-200 text-sm">Total Accounts</p>
+                  <p className="text-2xl font-bold text-white">{accounts.length}</p>
+                </div>
+                <Shield className="h-8 w-8 text-blue-400" />
               </div>
-            </DialogContent>
-          </Dialog>
+            </CardContent>
+          </Card>
+          
+          <Card className="bg-gradient-to-br from-green-900/40 via-green-800/30 to-black border border-green-400/20">
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-green-200 text-sm">Active Accounts</p>
+                  <p className="text-2xl font-bold text-white">{accounts.filter(a => a.status === 'active').length}</p>
+                </div>
+                <CheckCircle2 className="h-8 w-8 text-green-400" />
+              </div>
+            </CardContent>
+          </Card>
+          
+          <Card className="bg-gradient-to-br from-yellow-900/40 via-yellow-800/30 to-black border border-yellow-400/20">
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-yellow-200 text-sm">Total Investment</p>
+                  <p className="text-2xl font-bold text-white">
+                    {formatCurrency(accounts.reduce((sum, acc) => sum + (acc.accountCost || 0) + (acc.activationCost || 0), 0))}
+                  </p>
+                </div>
+                <DollarSign className="h-8 w-8 text-yellow-400" />
+              </div>
+            </CardContent>
+          </Card>
+          
+          <Card className="bg-gradient-to-br from-purple-900/40 via-purple-800/30 to-black border border-purple-400/20">
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-purple-200 text-sm">Passed Accounts</p>
+                  <p className="text-2xl font-bold text-white">{accounts.filter(a => a.status === 'passed').length}</p>
+                </div>
+                <TrendingUp className="h-8 w-8 text-purple-400" />
+              </div>
+            </CardContent>
+          </Card>
         </div>
       </div>
 
@@ -521,7 +580,7 @@ export default function Projections() {
                           value={settings.selectedAccountId?.toString() || ""} 
                           onValueChange={(value) => updateSetting('selectedAccountId', value ? parseInt(value) : null)}
                         >
-                          <SelectTrigger className="bg-gray-700 border-gray-600 text-white">
+                          <SelectTrigger className="bg-gray-700 border-yellow-400/20 text-white">
                             <SelectValue placeholder="Choose an account..." />
                           </SelectTrigger>
                           <SelectContent>
@@ -624,49 +683,59 @@ export default function Projections() {
                   {/* Financial Settings */}
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label className="text-white">
+                      <Label className="text-white flex items-center gap-2">
+                        <DollarSign className="h-4 w-4 text-yellow-400" />
                         Starting Capital (Display Only)
                       </Label>
                       <Input
                         type="number"
                         value={settings.startingCapital || ""}
                         onChange={(e) => updateSetting('startingCapital', e.target.value === "" ? null : Number(e.target.value))}
-                        className="bg-gray-700 border-gray-600 text-white"
-                        placeholder="0"
+                        className="bg-gray-700 border-yellow-400/20 text-white placeholder-gray-400"
+                        placeholder="100000"
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label className="text-white">Risk Per Trade</Label>
+                      <Label className="text-white flex items-center gap-2">
+                        <Shield className="h-4 w-4 text-red-400" />
+                        Risk Per Trade
+                      </Label>
                       <Input
                         type="number"
                         value={settings.riskPerTrade || ""}
                         onChange={(e) => updateSetting('riskPerTrade', e.target.value === "" ? null : Number(e.target.value))}
-                        className="bg-gray-700 border-gray-600 text-white"
-                        placeholder="0"
+                        className="bg-gray-700 border-yellow-400/20 text-white placeholder-gray-400"
+                        placeholder="1000"
                       />
                     </div>
                   </div>
 
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label className="text-white">Risk:Reward Ratio</Label>
+                      <Label className="text-white flex items-center gap-2">
+                        <BarChart3 className="h-4 w-4 text-blue-400" />
+                        Risk:Reward Ratio
+                      </Label>
                       <Input
                         type="number"
                         step="0.1"
                         value={settings.riskRewardRatio || ""}
                         onChange={(e) => updateSetting('riskRewardRatio', e.target.value === "" ? null : Number(e.target.value))}
-                        className="bg-gray-700 border-gray-600 text-white"
-                        placeholder="0"
+                        className="bg-gray-700 border-yellow-400/20 text-white placeholder-gray-400"
+                        placeholder="2.0"
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label className="text-white">Profit Target</Label>
+                      <Label className="text-white flex items-center gap-2">
+                        <Target className="h-4 w-4 text-green-400" />
+                        Profit Target
+                      </Label>
                       <Input
                         type="number"
                         value={settings.profitTarget || ""}
                         onChange={(e) => updateSetting('profitTarget', e.target.value === "" ? null : Number(e.target.value))}
-                        className="bg-gray-700 border-gray-600 text-white"
-                        placeholder="0"
+                        className="bg-gray-700 border-yellow-400/20 text-white placeholder-gray-400"
+                        placeholder="10000"
                       />
                     </div>
                   </div>
@@ -805,11 +874,12 @@ export default function Projections() {
 
             {/* Analysis Cards */}
             <div className="lg:col-span-2 space-y-6">
-              {/* Overview Cards */}
+              {/* Enhanced Overview Cards */}
               <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                <Card className="bg-blue-600 border-blue-500/20">
+                <Card className="bg-gradient-to-br from-blue-600 via-blue-500 to-blue-700 border border-blue-400/30 shadow-lg">
                   <CardContent className="p-4">
                     <div className="text-center">
+                      <Calendar className="mx-auto h-6 w-6 text-blue-100 mb-2" />
                       <div className="text-2xl font-bold text-white">
                         {daysToTarget}
                       </div>
@@ -817,19 +887,21 @@ export default function Projections() {
                     </div>
                   </CardContent>
                 </Card>
-                <Card className="bg-prop-gold border-prop-gold/20">
+                <Card className="bg-gradient-to-br from-yellow-500 via-yellow-400 to-yellow-600 border border-yellow-300/30 shadow-lg">
                   <CardContent className="p-4">
                     <div className="text-center">
-                      <div className="text-2xl font-bold text-black">
+                      <DollarSign className="mx-auto h-6 w-6 text-yellow-900 mb-2" />
+                      <div className="text-2xl font-bold text-yellow-900">
                         {formatCurrency(totalDailyReward)}
                       </div>
                       <div className="text-sm text-yellow-800">Daily Reward</div>
                     </div>
                   </CardContent>
                 </Card>
-                <Card className="bg-green-600 border-green-500/20">
+                <Card className="bg-gradient-to-br from-green-600 via-green-500 to-green-700 border border-green-400/30 shadow-lg">
                   <CardContent className="p-4">
                     <div className="text-center">
+                      <TrendingUp className="mx-auto h-6 w-6 text-green-100 mb-2" />
                       <div className="text-2xl font-bold text-white">
                         {progressPercentage.toFixed(1)}%
                       </div>
@@ -837,50 +909,67 @@ export default function Projections() {
                     </div>
                   </CardContent>
                 </Card>
-                <Card className="bg-lime-600 border-lime-500/20">
+                <Card className="bg-gradient-to-br from-purple-600 via-purple-500 to-purple-700 border border-purple-400/30 shadow-lg">
                   <CardContent className="p-4">
                     <div className="text-center">
+                      <BarChart3 className="mx-auto h-6 w-6 text-purple-100 mb-2" />
                       <div className="text-2xl font-bold text-white">
-                        {Math.floor(Math.random() * 30) + 1}
+                        {settings.copiedAccounts || 1}
                       </div>
-                      <div className="text-sm text-lime-100">Active Trading Days</div>
+                      <div className="text-sm text-purple-100">Copied Accounts</div>
                     </div>
                   </CardContent>
                 </Card>
               </div>
 
-              {/* Account Summary (if account mode) */}
+              {/* Enhanced Account Summary (if account mode) */}
               {settings.mode === 'account' && selectedAccountData && (
-                <Card className="bg-dark-card border-dark-border">
+                <Card className="bg-gradient-to-br from-gray-900 via-gray-800 to-black border border-yellow-400/20 shadow-xl">
                   <CardHeader>
-                    <CardTitle className="text-white">Selected Account Summary</CardTitle>
+                    <CardTitle className="text-white flex items-center gap-2">
+                      <Wallet className="h-5 w-5 text-yellow-400" />
+                      Selected Account Summary
+                    </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                      <div className="text-center">
+                    <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                      <div className="text-center p-4 bg-green-500/10 rounded-lg border border-green-500/20">
+                        <DollarSign className="mx-auto h-6 w-6 text-green-400 mb-2" />
                         <div className="text-lg font-bold text-green-400">
                           {formatCurrency(selectedAccountData.account.startingBalance + selectedAccountData.totalPnl)}
                         </div>
                         <div className="text-sm text-gray-400">Current Balance</div>
                       </div>
-                      <div className="text-center">
+                      <div className="text-center p-4 bg-blue-500/10 rounded-lg border border-blue-500/20">
+                        <TrendingUp className="mx-auto h-6 w-6 text-blue-400 mb-2" />
                         <div className="text-lg font-bold text-blue-400">
                           {formatCurrency(selectedAccountData.totalPnl)}
                         </div>
                         <div className="text-sm text-gray-400">Total P&L</div>
                       </div>
-                      <div className="text-center">
-                        <div className="text-lg font-bold text-prop-gold">
+                      <div className="text-center p-4 bg-yellow-500/10 rounded-lg border border-yellow-500/20">
+                        <Target className="mx-auto h-6 w-6 text-yellow-400 mb-2" />
+                        <div className="text-lg font-bold text-yellow-400">
                           {settings.copiedAccounts}
                         </div>
                         <div className="text-sm text-gray-400">Copied Accounts</div>
                       </div>
-                      <div className="text-center">
+                      <div className="text-center p-4 bg-purple-500/10 rounded-lg border border-purple-500/20">
+                        <BarChart3 className="mx-auto h-6 w-6 text-purple-400 mb-2" />
                         <div className="text-lg font-bold text-purple-400">
                           {selectedAccountData.trades.length}
                         </div>
                         <div className="text-sm text-gray-400">Total Trades</div>
                       </div>
+                    </div>
+                    
+                    {/* Progress Bar */}
+                    <div className="mt-6 space-y-2">
+                      <div className="flex justify-between text-sm">
+                        <span className="text-gray-400">Progress to Target</span>
+                        <span className="text-white font-medium">{progressPercentage.toFixed(1)}%</span>
+                      </div>
+                      <Progress value={Math.min(progressPercentage, 100)} className="h-3" />
                     </div>
                   </CardContent>
                 </Card>
