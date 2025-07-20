@@ -509,10 +509,21 @@ Changelog:
   * Added "Edit Payout Rules" button with full form for trading requirements and payout configuration
   * Enhanced all navigation pages to always show main widgets regardless of data availability
   * Updated Payouts page to display overview metrics, eligibility status, and history sections with fallback values
-  * Applied consistent widget display pattern across: Dashboard, Daily Trading Plan, Trades, Analytics, Journal, Spending, Risk Management, Achievements, and all other navigation pages
+  * Applied consistent widget display pattern across: Dashboard, Daily Trading Plan, Trades, Analytics, Journal, Spending, Achievements, and all other navigation pages
   * Eliminated conditional hiding of main content areas ensuring professional appearance with placeholder data
   * Added PATCH API endpoint for real-time account updates with validation and success notifications
   * Traders can now edit 7 payout settings: days required, daily profit minimum, consistency rules, profit split, minimum amounts, max balance thresholds, and payout frequency
+- July 20, 2025. Navigation Cleanup and Prop Spending Redesign:
+  * Removed Risk Management page from main navigation menu and routing system
+  * Completely redesigned Prop Spending page combining existing PropTraderJournal functionality with enhanced spending tracker design
+  * Integrated real account data and spending records with new category-based budget tracking system
+  * Added comprehensive expense categorization: Trading Tools, Education, Food & Entertainment, Transportation, Housing, Account Costs
+  * Implemented monthly budget tracking with progress bars and usage percentages for each category
+  * Enhanced expense entry form with proper account association and real-time data updates
+  * Combined investment tracking (account costs, activation costs, reset costs) with manual expense entries
+  * Maintained PropTraderJournal's signature dark theme with gold/yellow gradients throughout redesigned interface
+  * Added fallback displays for empty data states while maintaining professional appearance
+  * Legacy SpendingEntry component preserved at bottom for backward compatibility
 ```
 
 ## User Preferences

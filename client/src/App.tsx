@@ -8,7 +8,7 @@ import DashboardShowcase from "@/pages/dashboard-showcase";
 import Projections from "@/pages/projections";
 
 import Journal from "@/pages/journal";
-import RiskManagement from "@/pages/risk-management";
+
 import Performance from "@/pages/performance";
 import EnhancedPayouts from "@/pages/enhanced-payouts";
 import Reports from "@/pages/reports";
@@ -59,7 +59,7 @@ function Router() {
           <Route path="/csv-import" component={CsvImport} />
           <Route path="/spending" component={Spending} />
           <Route path="/journal" component={Journal} />
-          <Route path="/risk-management" component={RiskManagement} />
+
           <Route path="/performance" component={Performance} />
           <Route path="/payouts" component={EnhancedPayouts} />
           <Route path="/reports" component={Reports} />

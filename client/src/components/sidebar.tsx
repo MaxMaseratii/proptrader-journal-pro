@@ -49,7 +49,7 @@ const navItems = [
   { href: "/journal", label: "Trading Journal", icon: Book, section: "main" },
   { href: "/spending", label: "Prop Spending", icon: CreditCard, section: "main" },
   { href: "/payouts", label: "Payouts", icon: DollarSign, section: "main" },
-  { href: "/risk-management", label: "Risk Management", icon: Shield, section: "main" },
+
   { href: "/achievements", label: "Achievement", icon: Trophy, section: "main" },
   { href: "/analytics", label: "Advanced Analytics", icon: Brain, section: "main" },
   { href: "/reports", label: "Reports", icon: Calendar, section: "profile" },
