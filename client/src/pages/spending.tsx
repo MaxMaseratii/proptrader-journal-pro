@@ -212,7 +212,7 @@ const Spending = () => {
     if (!budgetSetup.totalBudget || !budgetSetup.tradingBudget || !budgetSetup.personalBudget) return;
     
     const planData = {
-      userId: user?.id,
+      userId: user?.id || "",
       name: `${budgetSetup.period.charAt(0).toUpperCase() + budgetSetup.period.slice(1)} Budget Plan`,
       budgetPeriod: budgetSetup.period,
       totalBudget: parseFloat(budgetSetup.totalBudget),
@@ -230,7 +230,7 @@ const Spending = () => {
     if (!newCategoryName) return;
     
     const categoryData = {
-      userId: user?.id,
+      userId: user?.id || "",
       name: newCategoryName,
       type,
       budgetAmount: 0,
@@ -300,74 +300,189 @@ const Spending = () => {
         </div>
       </div>
 
-      {/* Budget Setup Section */}
-      {!activeBudgetPlan && (
-            <Card className="bg-gradient-to-br from-gray-900 via-gray-800 to-black border border-yellow-400/20">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-white">
-                  <Target className="h-5 w-5 text-yellow-400" />
-                  Set Up Your Budget Plan
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                  <div className="space-y-2">
-                    <Label className="text-white">Budget Period</Label>
-                    <Select value={budgetSetup.period} onValueChange={(value) => setBudgetSetup({...budgetSetup, period: value})}>
-                      <SelectTrigger className="bg-gray-800 border-yellow-400/20 text-white">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent className="bg-gray-800 border-yellow-400/20">
-                        <SelectItem value="weekly" className="text-white hover:bg-gray-700">Weekly</SelectItem>
-                        <SelectItem value="monthly" className="text-white hover:bg-gray-700">Monthly</SelectItem>
-                        <SelectItem value="yearly" className="text-white hover:bg-gray-700">Yearly</SelectItem>
-                      </SelectContent>
-                    </Select>
+      {/* Budget Management Section - Always Visible */}
+      <Card className="bg-gradient-to-br from-gray-900 via-gray-800 to-black border border-yellow-400/20">
+        <CardHeader>
+          <CardTitle className="flex items-center justify-between text-white">
+            <div className="flex items-center gap-2">
+              <Settings className="h-5 w-5 text-yellow-400" />
+              Budget Management
+            </div>
+            {activeBudgetPlan && (
+              <Badge className="bg-green-600 text-white">
+                Active Budget Plan
+              </Badge>
+            )}
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="flex flex-wrap gap-4">
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button className="bg-gradient-to-r from-yellow-400 to-yellow-600 text-black hover:from-yellow-500 hover:to-yellow-700">
+                  <Plus className="h-4 w-4 mr-2" />
+                  {!activeBudgetPlan ? "Create Budget Plan" : "Update Budget Plan"}
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="max-w-2xl bg-gray-900 border-gray-700">
+                <DialogHeader>
+                  <DialogTitle className="text-white">
+                    {!activeBudgetPlan ? "Create New Budget Plan" : "Update Budget Plan"}
+                  </DialogTitle>
+                </DialogHeader>
+                <div className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div className="space-y-2">
+                      <Label className="text-white">Budget Period</Label>
+                      <Select value={budgetSetup.period} onValueChange={(value) => setBudgetSetup({...budgetSetup, period: value})}>
+                        <SelectTrigger className="bg-gray-800 border-yellow-400/20 text-white">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent className="bg-gray-800 border-yellow-400/20">
+                          <SelectItem value="weekly" className="text-white hover:bg-gray-700">Weekly</SelectItem>
+                          <SelectItem value="monthly" className="text-white hover:bg-gray-700">Monthly</SelectItem>
+                          <SelectItem value="yearly" className="text-white hover:bg-gray-700">Yearly</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="text-white">Total Budget</Label>
+                      <Input
+                        type="number"
+                        placeholder="5000"
+                        value={budgetSetup.totalBudget}
+                        onChange={(e) => setBudgetSetup({...budgetSetup, totalBudget: e.target.value})}
+                        className="bg-gray-800 border-yellow-400/20 text-white"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="text-white">Trading Budget</Label>
+                      <Input
+                        type="number"
+                        placeholder="3000"
+                        value={budgetSetup.tradingBudget}
+                        onChange={(e) => setBudgetSetup({...budgetSetup, tradingBudget: e.target.value})}
+                        className="bg-gray-800 border-yellow-400/20 text-white"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="text-white">Personal Budget</Label>
+                      <Input
+                        type="number"
+                        placeholder="2000"
+                        value={budgetSetup.personalBudget}
+                        onChange={(e) => setBudgetSetup({...budgetSetup, personalBudget: e.target.value})}
+                        className="bg-gray-800 border-yellow-400/20 text-white"
+                      />
+                    </div>
                   </div>
-                  <div className="space-y-2">
-                    <Label className="text-white">Total Budget</Label>
-                    <Input
-                      type="number"
-                      placeholder="5000"
-                      value={budgetSetup.totalBudget}
-                      onChange={(e) => setBudgetSetup({...budgetSetup, totalBudget: e.target.value})}
-                      className="bg-gray-800 border-yellow-400/20 text-white"
-                    />
+                  <Button 
+                    onClick={handleCreateBudgetPlan}
+                    className="w-full bg-gradient-to-r from-yellow-400 to-yellow-600 text-black hover:from-yellow-500 hover:to-yellow-700"
+                    disabled={!budgetSetup.totalBudget || !budgetSetup.tradingBudget || !budgetSetup.personalBudget || createBudgetPlanMutation.isPending}
+                  >
+                    {createBudgetPlanMutation.isPending ? "Creating..." : (!activeBudgetPlan ? "Create Budget Plan" : "Update Budget Plan")}
+                  </Button>
+                </div>
+              </DialogContent>
+            </Dialog>
+            
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button variant="outline" className="border-yellow-400/20 text-white hover:bg-gray-800">
+                  <Settings className="h-4 w-4 mr-2" />
+                  Manage Categories
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="max-w-4xl bg-gray-900 border-gray-700">
+                <DialogHeader>
+                  <DialogTitle className="text-white">Manage Budget Categories</DialogTitle>
+                </DialogHeader>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+                  {/* Trading Categories in Dialog */}
+                  <div className="space-y-4">
+                    <h3 className="text-white font-semibold flex items-center gap-2">
+                      <TrendingUp className="h-5 w-5 text-blue-500" />
+                      Trading Categories
+                    </h3>
+                    <div className="flex gap-2">
+                      <Input
+                        placeholder="Add trading category..."
+                        value={newCategoryName}
+                        onChange={(e) => setNewCategoryName(e.target.value)}
+                        className="bg-gray-800 border-yellow-400/20 text-white"
+                      />
+                      <Button 
+                        onClick={() => handleCreateCategory('trading')}
+                        className="bg-gradient-to-r from-blue-400 to-blue-600 text-white hover:from-blue-500 hover:to-blue-700"
+                        disabled={!newCategoryName || createCategoryMutation.isPending}
+                      >
+                        <Plus className="h-4 w-4" />
+                      </Button>
+                    </div>
+                    <div className="space-y-2 max-h-48 overflow-y-auto">
+                      {tradingCategories.map((category) => (
+                        <div key={category.id} className="flex items-center justify-between p-2 rounded bg-gray-800/30">
+                          <span className="text-white text-sm">{category.name}</span>
+                          <div className="flex gap-1">
+                            <Button size="sm" variant="outline" onClick={() => setEditingCategory(category)}>
+                              <Edit3 className="h-3 w-3" />
+                            </Button>
+                            <Button size="sm" variant="destructive" onClick={() => deleteCategoryMutation.mutate(category.id)}>
+                              <Trash2 className="h-3 w-3" />
+                            </Button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
                   </div>
-                  <div className="space-y-2">
-                    <Label className="text-white">Trading Budget</Label>
-                    <Input
-                      type="number"
-                      placeholder="3000"
-                      value={budgetSetup.tradingBudget}
-                      onChange={(e) => setBudgetSetup({...budgetSetup, tradingBudget: e.target.value})}
-                      className="bg-gray-800 border-yellow-400/20 text-white"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label className="text-white">Personal Budget</Label>
-                    <Input
-                      type="number"
-                      placeholder="2000"
-                      value={budgetSetup.personalBudget}
-                      onChange={(e) => setBudgetSetup({...budgetSetup, personalBudget: e.target.value})}
-                      className="bg-gray-800 border-yellow-400/20 text-white"
-                    />
+                  
+                  {/* Personal Categories in Dialog */}
+                  <div className="space-y-4">
+                    <h3 className="text-white font-semibold flex items-center gap-2">
+                      <TrendingDown className="h-5 w-5 text-orange-500" />
+                      Personal Categories
+                    </h3>
+                    <div className="flex gap-2">
+                      <Input
+                        placeholder="Add personal category..."
+                        value={newCategoryName}
+                        onChange={(e) => setNewCategoryName(e.target.value)}
+                        className="bg-gray-800 border-yellow-400/20 text-white"
+                      />
+                      <Button 
+                        onClick={() => handleCreateCategory('personal')}
+                        className="bg-gradient-to-r from-orange-400 to-orange-600 text-white hover:from-orange-500 hover:to-orange-700"
+                        disabled={!newCategoryName || createCategoryMutation.isPending}
+                      >
+                        <Plus className="h-4 w-4" />
+                      </Button>
+                    </div>
+                    <div className="space-y-2 max-h-48 overflow-y-auto">
+                      {personalCategories.map((category) => (
+                        <div key={category.id} className="flex items-center justify-between p-2 rounded bg-gray-800/30">
+                          <span className="text-white text-sm">{category.name}</span>
+                          <div className="flex gap-1">
+                            <Button size="sm" variant="outline" onClick={() => setEditingCategory(category)}>
+                              <Edit3 className="h-3 w-3" />
+                            </Button>
+                            <Button size="sm" variant="destructive" onClick={() => deleteCategoryMutation.mutate(category.id)}>
+                              <Trash2 className="h-3 w-3" />
+                            </Button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 </div>
-                <Button 
-                  onClick={handleCreateBudgetPlan}
-                  className="w-full bg-gradient-to-r from-yellow-400 to-yellow-600 text-black hover:from-yellow-500 hover:to-yellow-700"
-                  disabled={!budgetSetup.totalBudget || !budgetSetup.tradingBudget || !budgetSetup.personalBudget || createBudgetPlanMutation.isPending}
-                >
-                  {createBudgetPlanMutation.isPending ? "Creating..." : "Create Budget Plan"}
-                </Button>
-              </CardContent>
-            </Card>
-          )}
+              </DialogContent>
+            </Dialog>
+          </div>
+        </CardContent>
+      </Card>
 
-          {/* Budget Overview Cards */}
-          {activeBudgetPlan && (
+      {/* Budget Overview Cards */}
+      {activeBudgetPlan && (
             <>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 <Card className="bg-gradient-to-br from-gray-900 via-gray-800 to-black border border-yellow-400/20">
