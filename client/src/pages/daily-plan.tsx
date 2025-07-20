@@ -41,7 +41,7 @@ import {
   Link,
   Trash2
 } from 'lucide-react';
-import type { Account, TradingStrategy, DailyPlan, Trade } from '@shared/schema';
+import type { Account, TradingStrategy, DailyPlan, Trade, JournalEntry } from '@shared/schema';
 
 const DailyPlanPage = () => {
   const queryClient = useQueryClient();
@@ -92,6 +92,7 @@ const DailyPlanPage = () => {
   const { data: strategies } = useQuery<TradingStrategy[]>({ queryKey: ['/api/strategies'] });
   const { data: trades } = useQuery<Trade[]>({ queryKey: ['/api/trades'] });
   const { data: dailyPlans } = useQuery<DailyPlan[]>({ queryKey: ['/api/daily-plans'] });
+  const { data: journalEntries } = useQuery<JournalEntry[]>({ queryKey: ['/api/journal'] });
   const { data: currentPlan } = useQuery<DailyPlan | null>({
     queryKey: ['/api/daily-plans/by-date'],
     enabled: !!selectedDate && !!selectedAccount,
@@ -295,14 +296,44 @@ const DailyPlanPage = () => {
     createDailyPlan.mutate(planPayload);
   };
 
-  // Get historical plans for the history section
+  // Get historical plans with comprehensive data for the history section
   const historicalPlans = useMemo(() => {
     if (!dailyPlans || !selectedAccount) return [];
-    return dailyPlans
+    
+    const accountPlans = dailyPlans
       .filter(plan => plan.accountId === selectedAccount)
-      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
-      .slice(0, 5);
-  }, [dailyPlans, selectedAccount]);
+      .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()); // Oldest first for proper day numbering
+    
+    return accountPlans.map((plan, index) => {
+      // Get strategy for this plan
+      const strategy = strategies?.find(s => s.id === plan.strategyId);
+      
+      // Get trades for this specific day
+      const dayTrades = trades?.filter(trade => 
+        trade.accountId === selectedAccount && 
+        trade.date === plan.date
+      ) || [];
+      
+      // Calculate performance metrics
+      const totalPnL = dayTrades.reduce((sum, trade) => sum + (trade.pnl || 0), 0);
+      const winningTrades = dayTrades.filter(t => (t.pnl || 0) > 0);
+      const winRate = dayTrades.length > 0 ? (winningTrades.length / dayTrades.length * 100) : 0;
+      
+      return {
+        ...plan,
+        dayNumber: index + 1,
+        strategy,
+        trades: dayTrades,
+        performance: {
+          totalPnL,
+          tradeCount: dayTrades.length,
+          winRate,
+          wins: winningTrades.length,
+          losses: dayTrades.length - winningTrades.length
+        }
+      };
+    }).reverse(); // Show most recent first in display
+  }, [dailyPlans, selectedAccount, strategies, trades]);
 
   return (
     <div className="p-6 space-y-6 bg-black min-h-screen">
@@ -694,38 +725,108 @@ const DailyPlanPage = () => {
             </CardContent>
           </Card>
 
-          {/* Saved/Historical Trading Plans Widget */}
+          {/* Comprehensive Trading Plan History */}
           <Card className="bg-gradient-to-br from-gray-900 via-gray-800 to-black border border-yellow-400/20 shadow-xl">
             <CardHeader>
               <CardTitle className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-yellow-600 flex items-center gap-2">
                 <History className="w-5 h-5 text-yellow-400" />
-                Saved/Historical Trading Plans
+                Trading Plan History
               </CardTitle>
+              <p className="text-xs text-gray-400 mt-1">Complete trading history with strategy rules and performance</p>
             </CardHeader>
             <CardContent>
               {historicalPlans.length > 0 ? (
-                <div className="space-y-3">
+                <div className="space-y-4 max-h-96 overflow-y-auto">
                   {historicalPlans.map((plan) => (
-                    <div key={plan.id} className="flex items-center justify-between p-3 bg-gradient-to-r from-gray-800 to-gray-700 rounded-lg border border-yellow-400/10">
-                      <div>
-                        <div className="text-sm font-medium text-white">{new Date(plan.date).toLocaleDateString()}</div>
-                        <div className="text-xs text-gray-400">
-                          {plan.tradesExecuted || 0} trades • {((plan.wins || 0) / Math.max(1, (plan.wins || 0) + (plan.losses || 0)) * 100).toFixed(0)}% WR
+                    <div key={plan.id} className="bg-gradient-to-r from-gray-800 to-gray-700 rounded-lg border border-yellow-400/10 p-4">
+                      {/* Day Header */}
+                      <div className="flex justify-between items-center mb-3">
+                        <div>
+                          <div className="text-sm font-bold text-yellow-400">
+                            DAY {plan.dayNumber} PLAN
+                          </div>
+                          <div className="text-xs text-white font-medium">
+                            {new Date(plan.date).toLocaleDateString()}
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <div className={`text-sm font-bold ${plan.performance.totalPnL >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                            ${plan.performance.totalPnL.toFixed(2)}
+                          </div>
+                          <div className="text-xs text-gray-400">
+                            {plan.performance.tradeCount} trades • {plan.performance.winRate.toFixed(1)}% WR
+                          </div>
                         </div>
                       </div>
-                      <div className={`text-right ${
-                        (plan.actualPnL || 0) >= 0 ? 'text-green-400' : 'text-red-400'
-                      }`}>
-                        <div className="font-bold">${(plan.actualPnL || 0).toFixed(2)}</div>
-                        <div className="text-xs">P&L</div>
-                      </div>
+
+                      {/* Strategy Rules & Performance */}
+                      {plan.strategy && (
+                        <div className="bg-gray-900/50 rounded-lg p-3 mb-3">
+                          <div className="text-xs font-medium text-yellow-400 mb-2">Strategy Rules & Performance</div>
+                          <div className="grid grid-cols-2 gap-2 text-xs">
+                            <div className="text-gray-300">
+                              <span className="text-gray-400">Strategy:</span> {plan.strategy.name}
+                            </div>
+                            <div className="text-gray-300">
+                              <span className="text-gray-400">Risk/Reward:</span> 1:{plan.strategy.riskRewardRatio}
+                            </div>
+                            <div className="text-gray-300">
+                              <span className="text-gray-400">Max Trades:</span> {plan.strategy.maxTradesPerDay}
+                            </div>
+                            <div className="text-gray-300">
+                              <span className="text-gray-400">Expected WR:</span> {plan.strategy.expectedWinRate}%
+                            </div>
+                          </div>
+                          <div className="text-xs text-gray-400 mt-2">
+                            <span className="font-medium">Rules:</span> {plan.strategy.rules?.join(', ') || 'No rules defined'}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Trades for this day */}
+                      {plan.trades.length > 0 ? (
+                        <div className="bg-gray-900/50 rounded-lg p-3">
+                          <div className="text-xs font-medium text-yellow-400 mb-2">Day's Trades</div>
+                          <div className="space-y-2">
+                            {plan.trades.map((trade) => (
+                              <div key={trade.id} className="flex justify-between items-center text-xs bg-gray-800/50 rounded p-2">
+                                <div className="flex gap-4">
+                                  <span className="text-gray-300">{trade.symbol}</span>
+                                  <span className="text-gray-400">{trade.side}</span>
+                                  <span className="text-gray-400">Qty: {trade.quantity}</span>
+                                  <span className="text-gray-400">{trade.entryPrice} → {trade.exitPrice}</span>
+                                </div>
+                                <div className="flex gap-2 items-center">
+                                  <span className={`font-medium ${(trade.pnl || 0) >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                                    ${(trade.pnl || 0).toFixed(2)}
+                                  </span>
+                                  <span className={`text-xs px-1.5 py-0.5 rounded ${(trade.pnl || 0) >= 0 ? 'bg-green-400/20 text-green-400' : 'bg-red-400/20 text-red-400'}`}>
+                                    {(trade.pnl || 0) >= 0 ? 'WIN' : 'LOSS'}
+                                  </span>
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    className="h-6 w-6 p-0 text-blue-400 hover:text-blue-300"
+                                  >
+                                    📈
+                                  </Button>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="bg-gray-900/50 rounded-lg p-3 text-center">
+                          <div className="text-xs text-gray-400">No trades executed this day</div>
+                        </div>
+                      )}
                     </div>
                   ))}
                 </div>
               ) : (
-                <div className="text-center py-4">
+                <div className="text-center py-6">
                   <Calendar className="w-8 h-8 text-gray-500 mx-auto mb-2" />
-                  <p className="text-gray-400 text-sm">No historical plans found</p>
+                  <p className="text-gray-400 text-sm">No trading plans yet. Create your first plan above to start tracking your trading journey.</p>
                 </div>
               )}
             </CardContent>
@@ -1010,29 +1111,40 @@ const DailyPlanPage = () => {
                 </Button>
               </div>
               
-              {/* Historical Entries */}
+              {/* Recent Journal Entries - Real Data */}
               <div className="mt-6">
                 <div className="text-sm font-medium text-gray-300 mb-3">Recent Entries</div>
                 <div className="space-y-3">
-                  <div className="p-3 bg-gradient-to-r from-gray-800 to-gray-700 rounded-lg border border-yellow-400/10">
-                    <div className="text-sm font-medium text-white mb-1">July 18, 2025</div>
-                    <div className="text-xs text-gray-400 mb-2">Last Entry • 2 days ago</div>
-                    <div className="text-xs text-gray-300">
-                      "Followed strategy rules perfectly. Excellent risk management on ES futures..."
+                  {journalEntries && journalEntries.length > 0 ? (
+                    journalEntries
+                      .filter(entry => !selectedAccount || entry.accountId === selectedAccount)
+                      .slice(0, 3)
+                      .map((entry, index) => (
+                        <div key={entry.id} className="p-3 bg-gradient-to-r from-gray-800 to-gray-700 rounded-lg border border-yellow-400/10">
+                          <div className="text-sm font-medium text-white mb-1">
+                            {new Date(entry.date).toLocaleDateString()}
+                          </div>
+                          <div className="text-xs text-gray-400 mb-2">
+                            {index === 0 ? 'Latest Entry' : `${index + 1} days ago`}
+                          </div>
+                          <div className="text-xs text-gray-300">
+                            {entry.whatWentRight && `"${entry.whatWentRight.substring(0, 60)}..."`}
+                            {entry.whatWentWrong && `"${entry.whatWentWrong.substring(0, 60)}..."`}
+                            {entry.lessonsLearned && `"${entry.lessonsLearned.substring(0, 60)}..."`}
+                          </div>
+                        </div>
+                      ))
+                  ) : (
+                    <div className="text-center text-gray-400 text-sm py-4">
+                      No journal entries yet. Start by writing your first entry above.
                     </div>
-                  </div>
-                  <div className="p-3 bg-gradient-to-r from-gray-800 to-gray-700 rounded-lg border border-yellow-400/10">
-                    <div className="text-sm font-medium text-white mb-1">July 17, 2025</div>
-                    <div className="text-xs text-gray-400 mb-2">Good Day • 3 days ago</div>
-                    <div className="text-xs text-gray-300">
-                      "Struggled with emotional control after first loss. Need to work on patience..."
-                    </div>
-                  </div>
+                  )}
                   <div className="text-center">
                     <Button 
                       variant="outline" 
                       size="sm"
                       className="border-yellow-400/20 text-yellow-400 hover:bg-yellow-400/10"
+                      onClick={() => window.location.href = '/journal'}
                     >
                       View All Entries
                     </Button>
