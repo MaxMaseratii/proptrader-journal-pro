@@ -56,7 +56,8 @@ const StrategyForm: React.FC<StrategyFormProps> = ({ onClose, editStrategy }) =>
 
   const createMutation = useMutation({
     mutationFn: (data: any) => apiRequest('/api/strategies', 'POST', data),
-    onSuccess: () => {
+    onSuccess: (response) => {
+      console.log('Strategy created successfully:', response);
       queryClient.invalidateQueries({ queryKey: ['/api/strategies'] });
       onClose?.();
       resetForm();
@@ -405,13 +406,7 @@ const StrategyForm: React.FC<StrategyFormProps> = ({ onClose, editStrategy }) =>
         </Button>
         <Button
           type="button"
-          onClick={(e) => {
-            console.log('Strategy Form button clicked!');
-            alert('Strategy Form button clicked!');
-            e.preventDefault();
-            e.stopPropagation();
-            handleSubmit();
-          }}
+          onClick={() => handleSubmit()}
           disabled={!name.trim() || createMutation.isPending || updateMutation.isPending}
           className="bg-yellow-500 hover:bg-yellow-600 text-black"
         >

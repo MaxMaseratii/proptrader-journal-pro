@@ -119,7 +119,8 @@ const DailyPlanPage = () => {
 
   const createDailyPlan = useMutation({
     mutationFn: (data: any) => apiRequest('/api/daily-plans', 'POST', data),
-    onSuccess: () => {
+    onSuccess: (response) => {
+      console.log('Daily plan created successfully:', response);
       queryClient.invalidateQueries({ queryKey: ['/api/daily-plans'] });
       setIsCreatePlanDialogOpen(false);
       resetPlanForm();
@@ -438,13 +439,7 @@ const DailyPlanPage = () => {
                       />
                       <Button
                         type="button"
-                        onClick={(e) => {
-                          console.log('Add Trade Setup Link button clicked!');
-                          alert('Add button clicked!');
-                          e.preventDefault();
-                          e.stopPropagation();
-                          addTradeSetupLink();
-                        }}
+                        onClick={() => addTradeSetupLink()}
                         disabled={!newLinkData.title.trim() || !newLinkData.url.trim()}
                         className="bg-yellow-500 hover:bg-yellow-600 text-black"
                       >
@@ -500,13 +495,7 @@ const DailyPlanPage = () => {
                 </Button>
                 <Button
                   type="button"
-                  onClick={(e) => {
-                    console.log('Create Plan button clicked!');
-                    alert('Create Plan button clicked!');
-                    e.preventDefault();
-                    e.stopPropagation();
-                    createNewPlan();
-                  }}
+                  onClick={() => createNewPlan()}
                   disabled={!selectedAccount || !selectedStrategy || createDailyPlan.isPending}
                   className="bg-gradient-to-r from-yellow-400 to-yellow-600 text-black hover:from-yellow-500 hover:to-yellow-700"
                 >
