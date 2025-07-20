@@ -991,6 +991,9 @@ export default function Dashboard() {
 
         {/* COMPACT DASHBOARD: NO EMPTY SPACES */}
         
+        {/* NEW: TRADING CALENDAR COMPONENT - ROW 0 */}
+        <TradingDashboard />
+        
         {/* ROW 1: ADVANCED TRADING CALENDAR - FULL WIDTH */}
         <div className="w-full">
           <AdvancedTradingCalendar 
