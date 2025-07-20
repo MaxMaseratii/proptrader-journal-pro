@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
-import AchievementSystem from "@/components/achievement-system";
+import EnhancedAchievementSystem from "@/components/enhanced-achievement-system";
 import { isUnauthorizedError } from "@/lib/authUtils";
 
 export default function AchievementsPage() {
@@ -25,8 +25,8 @@ export default function AchievementsPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-dark-background flex items-center justify-center">
-        <div className="animate-spin w-8 h-8 border-4 border-prop-gold border-t-transparent rounded-full" />
+      <div className="min-h-screen bg-black flex items-center justify-center">
+        <div className="animate-spin w-8 h-8 border-4 border-yellow-400 border-t-transparent rounded-full" />
       </div>
     );
   }
@@ -36,10 +36,8 @@ export default function AchievementsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-dark-background">
-      <div className="container mx-auto px-6 py-8">
-        <AchievementSystem />
-      </div>
+    <div className="min-h-screen bg-black">
+      <EnhancedAchievementSystem />
     </div>
   );
 }
