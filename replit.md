@@ -551,6 +551,14 @@ Changelog:
   * Ensured page titles match navigation menu names for consistent user experience
   * Rainbow gradient uses custom CSS variables for gold, tiffany, green, blue, and pink colors with proper text clipping
   * All pages now maintain unified visual branding with professional rainbow gradient headers
+- July 21, 2025. Navigation Menu Reorganization and Charts Consolidation:
+  * Reordered navigation menu with Dashboard first and Challenge Target Planner second as requested
+  * Consolidated all chart pages into comprehensive "Charts & Analytics" page with 4 tabs: Overview, Performance, Symbol Analysis, Trading Charts
+  * Enhanced Prop Budgeting page with correct financial metrics: Total Accounts Bought, Activation Cost, Reset Cost, Payout Total, and Profitability
+  * Fixed critical ChartGrid runtime error with proper null checking for symbols array using optional chaining
+  * Updated Prop Budgeting investment summary from 3 widgets to 5 financial metrics widgets with accurate account data calculations
+  * Redesigned Daily Trading Plan header with improved layout, session tracking, and professional card styling
+  * All components now use proper dark theme with golden accents and rainbow gradient headers for unified branding
 ```
 
 ## User Preferences

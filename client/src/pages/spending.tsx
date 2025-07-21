@@ -38,7 +38,8 @@ import {
   X,
   Upload,
   Camera,
-  FileImage
+  FileImage,
+  RotateCcw
 } from 'lucide-react';
 
 const Spending = () => {
@@ -304,46 +305,71 @@ const Spending = () => {
       </div>
 
       {/* Investment Summary Section */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
         <Card className="bg-gradient-to-br from-gray-900 via-gray-800 to-black border border-yellow-400/20">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-white">Total Investment</CardTitle>
-            <TrendingUp className="h-4 w-4 text-yellow-400" />
+            <CardTitle className="text-sm font-medium text-white">Total Accounts Bought</CardTitle>
+            <Target className="h-4 w-4 text-yellow-400" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-yellow-400">
-              {formatCurrency(totalPropTradingCosts)}
-            </div>
-            <p className="text-xs text-gray-400">Account costs + activations</p>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-gradient-to-br from-gray-900 via-gray-800 to-black border border-yellow-400/20">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-white">Active Accounts</CardTitle>
-            <Target className="h-4 w-4 text-blue-500" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-blue-500">
-              {accounts.filter(a => a.status === 'active' || a.status === 'funded').length}
+              {accounts.length}
             </div>
             <p className="text-xs text-gray-400">
-              {accounts.filter(a => a.status === 'failed').length} failed accounts
+              {accounts.filter(a => a.status === 'failed').length} failed, {accounts.filter(a => a.status === 'active' || a.status === 'funded').length} active
             </p>
           </CardContent>
         </Card>
 
         <Card className="bg-gradient-to-br from-gray-900 via-gray-800 to-black border border-yellow-400/20">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-white">ROI Status</CardTitle>
+            <CardTitle className="text-sm font-medium text-white">Activation Cost</CardTitle>
+            <TrendingUp className="h-4 w-4 text-orange-400" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-orange-400">
+              {formatCurrency(accounts.reduce((sum, acc) => sum + (acc.activationCost || 0), 0))}
+            </div>
+            <p className="text-xs text-gray-400">Total activation fees</p>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-gradient-to-br from-gray-900 via-gray-800 to-black border border-yellow-400/20">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium text-white">Reset Cost</CardTitle>
+            <RotateCcw className="h-4 w-4 text-red-400" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-red-400">
+              {formatCurrency(accounts.reduce((sum, acc) => sum + (acc.totalResetsCost || 0), 0))}
+            </div>
+            <p className="text-xs text-gray-400">Total reset costs</p>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-gradient-to-br from-gray-900 via-gray-800 to-black border border-yellow-400/20">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium text-white">Payout Total</CardTitle>
             <DollarSign className="h-4 w-4 text-green-400" />
           </CardHeader>
           <CardContent>
-            <div className={`text-2xl font-bold ${totalPropTradingCosts > 0 ? 'text-green-400' : 'text-gray-400'}`}>
-              {totalPropTradingCosts > 0 ? '+' : ''}
-              {formatCurrency(Math.max(0, totalPropTradingCosts * 0.15))}
+            <div className="text-2xl font-bold text-green-400">
+              {formatCurrency(0)}
             </div>
-            <p className="text-xs text-gray-400">Estimated returns</p>
+            <p className="text-xs text-gray-400">Total payouts received</p>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-gradient-to-br from-gray-900 via-gray-800 to-black border border-yellow-400/20">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium text-white">Profitability</CardTitle>
+            <TrendingUp className="h-4 w-4 text-blue-400" />
+          </CardHeader>
+          <CardContent>
+            <div className={`text-2xl font-bold ${(0 - totalPropTradingCosts) >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+              {formatCurrency(0 - totalPropTradingCosts)}
+            </div>
+            <p className="text-xs text-gray-400">Net profit/loss</p>
           </CardContent>
         </Card>
       </div>

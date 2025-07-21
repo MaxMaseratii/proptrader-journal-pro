@@ -257,7 +257,7 @@ export default function Charts() {
           </TabsContent>
 
           <TabsContent value="trading" className="space-y-6">
-            <ChartGrid gridSize={2} />
+            <ChartGrid trades={trades} accounts={accounts} symbols={uniqueSymbols} gridSize={2} />
           </TabsContent>
         </Tabs>
       </div>

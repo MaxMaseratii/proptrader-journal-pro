@@ -17,7 +17,7 @@ export const ChartGrid: React.FC<ChartGridProps> = ({
   symbols,
   gridSize: initialGridSize = 2
 }) => {
-  const [selectedSymbol, setSelectedSymbol] = useState<string>(symbols[0] || '');
+  const [selectedSymbol, setSelectedSymbol] = useState<string>(symbols?.[0] || '');
   const [gridSize, setGridSize] = useState<1 | 2 | 4>(initialGridSize);
 
   const getTradesForSymbol = (symbol: string) => {

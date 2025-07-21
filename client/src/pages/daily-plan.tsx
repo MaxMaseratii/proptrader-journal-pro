@@ -356,23 +356,96 @@ const DailyPlanPage = () => {
 
   return (
     <div className="p-6 space-y-6 bg-black min-h-screen">
-      {/* Header */}
-      <div className="space-y-4">
-        <div>
-          <h1 className="text-3xl font-bold text-gradient-rainbow">Daily Trading Plan</h1>
-          <div className="text-sm font-medium text-cyan-400 italic tracking-wide drop-shadow-sm mb-2">
-            "Plan your trade, trade your plan"
+      {/* Redesigned Header */}
+      <div className="bg-gradient-to-br from-gray-900 via-gray-800 to-black border border-yellow-400/20 rounded-xl p-6">
+        <div className="flex flex-col xl:flex-row justify-between items-start xl:items-center gap-6">
+          <div className="flex-1">
+            <h1 className="text-3xl font-bold text-gradient-rainbow mb-2">
+              Daily Trading Plan
+            </h1>
+            <div className="text-sm font-medium text-cyan-400 italic tracking-wide drop-shadow-sm mb-3">
+              "Plan your trade, trade your plan"
+            </div>
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-2 text-sm bg-gray-800/50 px-3 py-1.5 rounded-lg border border-yellow-400/20">
+                <Calendar className="h-4 w-4 text-yellow-400" />
+                {new Date(selectedDate).toLocaleDateString('en-US', { 
+                  weekday: 'long', 
+                  year: 'numeric', 
+                  month: 'long', 
+                  day: 'numeric' 
+                })}
+              </div>
+              {isTrading && sessionStartTime && (
+                <div className="flex items-center gap-2 text-sm bg-green-900/20 px-3 py-1.5 rounded-lg border border-green-400/20">
+                  <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                  Live Session: {formatTime(Date.now() - sessionStartTime)}
+                </div>
+              )}
+            </div>
           </div>
-          <p className="text-gray-300">{new Date(selectedDate).toLocaleDateString('en-US', { 
-            weekday: 'long', 
-            year: 'numeric', 
-            month: 'long', 
-            day: 'numeric' 
-          })}</p>
+          
+          <div className="flex flex-wrap gap-3">
+            <Dialog open={isCreateStrategyDialogOpen} onOpenChange={setIsCreateStrategyDialogOpen}>
+              <DialogTrigger asChild>
+                <Button className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white">
+                  <Plus className="h-4 w-4 mr-2" />
+                  Create Strategy
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="max-w-4xl bg-gray-900 border-gray-700">
+                <DialogHeader>
+                  <DialogTitle className="text-white">Create New Trading Strategy</DialogTitle>
+                </DialogHeader>
+                <StrategyManagement 
+                  onClose={() => setIsCreateStrategyDialogOpen(false)}
+                  editingStrategyId={editingStrategyId}
+                  onEdit={setEditingStrategyId}
+                />
+              </DialogContent>
+            </Dialog>
+
+            <Dialog open={isCreatePlanDialogOpen} onOpenChange={setIsCreatePlanDialogOpen}>
+              <DialogTrigger asChild>
+                <Button className="bg-gradient-to-r from-yellow-400 to-yellow-600 text-black hover:from-yellow-500 hover:to-yellow-700">
+                  <Target className="h-4 w-4 mr-2" />
+                  Create Daily Plan
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="max-w-2xl bg-gray-900 border-gray-700">
+                <DialogHeader>
+                  <DialogTitle className="text-white">Create Daily Trading Plan</DialogTitle>
+                </DialogHeader>
+                <DailyPlanForm />
+              </DialogContent>
+            </Dialog>
+
+            {!isTrading ? (
+              <Button
+                onClick={startTradingSession}
+                className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white"
+              >
+                <Play className="h-4 w-4 mr-2" />
+                Start Session
+              </Button>
+            ) : (
+              <Button
+                onClick={stopTradingSession}
+                variant="outline"
+                size="sm"
+                className="border-red-400 text-red-400 hover:bg-red-400 hover:text-white"
+              >
+                <Square className="h-3 w-3 mr-1" />
+                Stop Session
+              </Button>
+            )}
+          </div>
         </div>
+      </div>
         
+      <div className="space-y-4">
         <div className="flex items-center justify-between">
-          {/* Left side - Create buttons and date */}
+          {/* Left side - Account and strategy selection */}
           <div className="flex items-center gap-4">
             <Button 
               onClick={() => setIsCreateStrategyDialogOpen(true)}
