@@ -1096,70 +1096,46 @@ const DailyPlanPage = () => {
       <div className="mt-6">
         <Card className="bg-gradient-to-br from-gray-900 via-gray-800 to-black border border-yellow-400/20 shadow-xl">
           <CardHeader>
-            <CardTitle className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-yellow-600 flex items-center gap-2">
-              <BookOpen className="w-5 h-5 text-yellow-400" />
-              Trading Journal
-            </CardTitle>
+            <div className="flex justify-between items-center">
+              <CardTitle className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-yellow-600 flex items-center gap-2">
+                <BookOpen className="w-4 h-4 text-yellow-400" />
+                Daily Trading Journal Entry
+              </CardTitle>
+              <div className="flex items-center gap-2">
+                <Button
+                  onClick={handleSaveJournal}
+                  disabled={journalMutation.isPending}
+                  className="bg-yellow-600 hover:bg-yellow-700 text-black px-3 py-1 text-xs"
+                >
+                  <Save className="h-3 w-3 mr-1" />
+                  {journalMutation.isPending ? "Saving..." : "Save"}
+                </Button>
+                <div className="text-xs text-gray-400">
+                  {todaysJournal ? 'Entry exists' : 'No entry'}
+                </div>
+                <Button
+                  variant="outline"
+                  onClick={() => window.location.href = '/journal'}
+                  className="border-yellow-400/20 text-white hover:bg-gray-800 px-3 py-1 text-xs"
+                >
+                  View All
+                </Button>
+              </div>
+            </div>
           </CardHeader>
           <CardContent className="space-y-4">
-              {/* Comprehensive Journal Entry - Full Replica */}
-              <div className="space-y-4">
-                <h3 className="text-lg font-semibold text-yellow-400 mb-4">Daily Trading Journal Entry</h3>
-                
-                {/* Compact Journal Layout */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div className="space-y-3">
+                {/* Row 1: Market Conditions, Emotional State, Lessons */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                   <div>
                     <Label className="text-white text-xs flex items-center gap-1">
-                      <TrendingUp className="h-3 w-3 text-green-400" />
-                      What went right?
-                    </Label>
-                    <Textarea
-                      value={journalEntry.whatWentRight}
-                      onChange={(e) => setJournalEntry(prev => ({ ...prev, whatWentRight: e.target.value }))}
-                      placeholder="Record wins..."
-                      className="bg-white border-gray-300 text-black text-sm"
-                      rows={2}
-                    />
-                  </div>
-                  
-                  <div>
-                    <Label className="text-white text-xs flex items-center gap-1">
-                      <TrendingDown className="h-3 w-3 text-red-400" />
-                      What went wrong?
-                    </Label>
-                    <Textarea
-                      value={journalEntry.whatWentWrong}
-                      onChange={(e) => setJournalEntry(prev => ({ ...prev, whatWentWrong: e.target.value }))}
-                      placeholder="Analyze mistakes..."
-                      className="bg-white border-gray-300 text-black text-sm"
-                      rows={2}
-                    />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
-                  <div>
-                    <Label className="text-white text-xs flex items-center gap-1">
-                      <Brain className="h-3 w-3 text-yellow-400" />
-                      Lessons
+                      <BarChart3 className="h-3 w-3 text-cyan-400" />
+                      Market conditions
                     </Label>
                     <Input
-                      value={journalEntry.lessonsLearned}
-                      onChange={(e) => setJournalEntry(prev => ({ ...prev, lessonsLearned: e.target.value }))}
-                      placeholder="Key insights..."
-                      className="bg-white border-gray-300 text-black text-sm"
-                    />
-                  </div>
-                  
-                  <div>
-                    <Label className="text-white text-xs flex items-center gap-1">
-                      <Target className="h-3 w-3 text-blue-400" />
-                      Tomorrow's plan
-                    </Label>
-                    <Input
-                      value={journalEntry.improvementPlan || ''}
-                      onChange={(e) => setJournalEntry(prev => ({ ...prev, improvementPlan: e.target.value }))}
-                      placeholder="Improvements..."
+                      value={journalEntry.marketConditions || ''}
+                      onChange={(e) => setJournalEntry(prev => ({ ...prev, marketConditions: e.target.value }))}
+                      placeholder="Trending/ranging..."
                       className="bg-white border-gray-300 text-black text-sm"
                     />
                   </div>
@@ -1184,80 +1160,60 @@ const DailyPlanPage = () => {
                   
                   <div>
                     <Label className="text-white text-xs flex items-center gap-1">
-                      <BarChart3 className="h-3 w-3 text-cyan-400" />
-                      Market conditions
+                      <Brain className="h-3 w-3 text-yellow-400" />
+                      Lessons
                     </Label>
                     <Input
-                      value={journalEntry.marketConditions || ''}
-                      onChange={(e) => setJournalEntry(prev => ({ ...prev, marketConditions: e.target.value }))}
-                      placeholder="Trending/ranging..."
+                      value={journalEntry.lessonsLearned}
+                      onChange={(e) => setJournalEntry(prev => ({ ...prev, lessonsLearned: e.target.value }))}
+                      placeholder="Key insights..."
                       className="bg-white border-gray-300 text-black text-sm"
                     />
                   </div>
                 </div>
-              </div>
-                
-                <Button 
-                  onClick={() => saveJournalEntry()}
-                  disabled={createJournalEntry.isPending}
-                  className="w-full bg-gradient-to-r from-yellow-400 to-yellow-600 text-black hover:from-yellow-500 hover:to-yellow-700"
-                >
-                  <Save className="w-4 h-4 mr-2" />
-                  {createJournalEntry.isPending ? 'Saving...' : 'Save Journal Entry'}
-                </Button>
-              
-              {/* Today's Journal Entry Status */}
-              <div className="mt-6">
-                <div className="text-sm font-medium text-gray-300 mb-3">Today's Journal Status</div>
-                <div className="space-y-3">
-                  {(() => {
-                    // Check if there's already a journal entry for today's plan
-                    const todayPlan = dailyPlans?.find(plan => 
-                      plan.accountId === selectedAccount && plan.date === selectedDate
-                    );
-                    const todayJournalEntry = journalEntries?.find(entry => 
-                      entry.dailyPlanId === todayPlan?.id || 
-                      (entry.accountId === selectedAccount && entry.date === selectedDate)
-                    );
 
-                    if (todayJournalEntry) {
-                      return (
-                        <div className="p-3 bg-gradient-to-r from-green-900 to-green-800 rounded-lg border border-green-400/20">
-                          <div className="text-sm font-medium text-green-400 mb-1">✓ Journal Entry Completed</div>
-                          <div className="text-xs text-gray-300 mb-2">
-                            Connected to {todayPlan ? `DAY ${historicalPlans.findIndex(p => p.id === todayPlan.id) + 1} PLAN` : 'today\'s trading'}
-                          </div>
-                          <div className="text-xs text-gray-400">
-                            {todayJournalEntry.whatWentRight && `"${todayJournalEntry.whatWentRight.substring(0, 60)}..."`}
-                            {todayJournalEntry.whatWentWrong && `"${todayJournalEntry.whatWentWrong.substring(0, 60)}..."`}
-                            {todayJournalEntry.lessonsLearned && `"${todayJournalEntry.lessonsLearned.substring(0, 60)}..."`}
-                          </div>
-                        </div>
-                      );
-                    } else {
-                      return (
-                        <div className="p-3 bg-gradient-to-r from-yellow-900 to-yellow-800 rounded-lg border border-yellow-400/20">
-                          <div className="text-sm font-medium text-yellow-400 mb-1">⏳ Journal Entry Pending</div>
-                          <div className="text-xs text-gray-300 mb-2">
-                            {todayPlan ? `Will be linked to DAY ${historicalPlans.findIndex(p => p.id === todayPlan.id) + 1} PLAN` : 'Create a daily plan first'}
-                          </div>
-                          <div className="text-xs text-gray-400">
-                            Complete the journal entry above to connect it to today's trading plan.
-                          </div>
-                        </div>
-                      );
-                    }
-                  })()}
+                {/* Row 2: What Went Wrong, What Went Right, Tomorrow's Plan */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                  <div>
+                    <Label className="text-white text-xs flex items-center gap-1">
+                      <TrendingDown className="h-3 w-3 text-red-400" />
+                      What went wrong?
+                    </Label>
+                    <Textarea
+                      value={journalEntry.whatWentWrong}
+                      onChange={(e) => setJournalEntry(prev => ({ ...prev, whatWentWrong: e.target.value }))}
+                      placeholder="Analyze mistakes..."
+                      className="bg-white border-gray-300 text-black text-sm"
+                      rows={2}
+                    />
+                  </div>
                   
-                  <div className="text-center">
-                    <Button 
-                      variant="outline" 
-                      size="sm"
-                      className="border-yellow-400/20 text-yellow-400 hover:bg-yellow-400/10"
-                      onClick={() => window.location.href = '/journal'}
-                    >
-                      View All Entries
-                    </Button>
+                  <div>
+                    <Label className="text-white text-xs flex items-center gap-1">
+                      <TrendingUp className="h-3 w-3 text-green-400" />
+                      What went right?
+                    </Label>
+                    <Textarea
+                      value={journalEntry.whatWentRight}
+                      onChange={(e) => setJournalEntry(prev => ({ ...prev, whatWentRight: e.target.value }))}
+                      placeholder="Record wins..."
+                      className="bg-white border-gray-300 text-black text-sm"
+                      rows={2}
+                    />
+                  </div>
+                  
+                  <div>
+                    <Label className="text-white text-xs flex items-center gap-1">
+                      <Target className="h-3 w-3 text-blue-400" />
+                      Tomorrow's plan
+                    </Label>
+                    <Textarea
+                      value={journalEntry.improvementPlan || ''}
+                      onChange={(e) => setJournalEntry(prev => ({ ...prev, improvementPlan: e.target.value }))}
+                      placeholder="Improvements..."
+                      className="bg-white border-gray-300 text-black text-sm"
+                      rows={2}
+                    />
                   </div>
                 </div>
               </div>
