@@ -39,20 +39,20 @@ import {
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
 const navItems = [
-  { href: "/projections", label: "Accounts  Risk Management & Target Projection Planning", icon: TrendingUp, section: "main" },
+  { href: "/projections", label: "Challenge Target Planner", icon: TrendingUp, section: "main" },
   { href: "/", label: "Dashboard", icon: ChartLine, section: "main" },
   { href: "/daily-plan", label: "Daily Trading Plan", icon: Target, section: "main" },
   { href: "/trading-companion", label: "Trading Companion", icon: Bot, section: "main" },
-  { href: "/trades", label: "Trades", icon: BarChart3, section: "main" },
-  { href: "/charts", label: "Trading Charts", icon: TrendingUp, section: "main" },
-  { href: "/disciplinary-assistant", label: "MMM Disciplinary Coach", icon: Settings, section: "main" },
+  { href: "/trades", label: "Trades Log", icon: BarChart3, section: "main" },
+  { href: "/charts", label: "Prop Budgeting", icon: Wallet, section: "main" },
+  { href: "/disciplinary-assistant", label: "Discipline & Psychology Tracker", icon: Settings, section: "main" },
   { href: "/journal", label: "Trading Journal", icon: Book, section: "main" },
   { href: "/spending", label: "Prop Spending", icon: CreditCard, section: "main" },
-  { href: "/payouts", label: "Payouts", icon: DollarSign, section: "main" },
+  { href: "/payouts", label: "Payout Records", icon: DollarSign, section: "main" },
+  { href: "/reports", label: "Reports", icon: Calendar, section: "main" },
 
   { href: "/achievements", label: "Achievement", icon: Trophy, section: "main" },
   { href: "/analytics", label: "Advanced Analytics", icon: Brain, section: "main" },
-  { href: "/reports", label: "Reports", icon: Calendar, section: "profile" },
 ];
 
 export default function Sidebar() {

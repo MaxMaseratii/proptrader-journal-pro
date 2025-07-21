@@ -22,6 +22,7 @@ import Achievements from "@/pages/achievements";
 import AdvancedDashboard from "@/pages/advanced-dashboard";
 import TradingCompanion from "@/pages/trading-companion";
 import DailyPlan from "@/pages/daily-plan";
+import Signup from "@/pages/signup";
 
 import DisciplineAnalysis from "@/pages/discipline-analysis";
 import DisciplinaryAssistant from "@/pages/disciplinary-assistant";
@@ -42,7 +43,12 @@ function Router() {
   }
 
   if (!isAuthenticated) {
-    return <Welcome />;
+    return (
+      <Switch>
+        <Route path="/signup" component={Signup} />
+        <Route component={Welcome} />
+      </Switch>
+    );
   }
 
   return (
@@ -71,6 +77,7 @@ function Router() {
           <Route path="/discipline-analysis" component={DisciplineAnalysis} />
           <Route path="/disciplinary-assistant" component={DisciplinaryAssistant} />
           <Route path="/profile" component={Profile} />
+          <Route path="/signup" component={Signup} />
           <Route component={NotFound} />
         </Switch>
       </main>

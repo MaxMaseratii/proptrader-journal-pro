@@ -734,6 +734,16 @@ export default function Dashboard() {
     queryKey: ["/api/spending"],
   });
 
+  // Query daily trading plans
+  const { data: dailyPlans = [] } = useQuery({
+    queryKey: ["/api/daily-plans"],
+  });
+
+  // Query trading strategies
+  const { data: strategies = [] } = useQuery({
+    queryKey: ["/api/trading-strategies"],
+  });
+
   // Query for saved projections
   const { data: projections } = useQuery({
     queryKey: ["/api/projections/account"],
@@ -1214,7 +1224,7 @@ export default function Dashboard() {
             {/* Ultra Compact Layout - Full Width */}
             <div className="p-4">
               
-              {/* Header + PNL Combined */}
+              {/* Header + Daily Plan Status */}
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center space-x-2">
                   <Calendar className="w-4 h-4 text-amber-400" />
@@ -1222,6 +1232,26 @@ export default function Dashboard() {
                     {selectedDate.toLocaleDateString('en-US', { weekday: 'short' })} {selectedDate.getDate()}
                   </span>
                   <div className="w-2 h-2 rounded-full bg-teal-400" />
+                  {(() => {
+                    const todayPlan = dailyPlans?.find(plan => 
+                      new Date(plan.date).toDateString() === selectedDate.toDateString()
+                    );
+                    const strategy = strategies?.find(s => s.id === todayPlan?.strategyId);
+                    
+                    if (todayPlan) {
+                      return (
+                        <div className="flex items-center space-x-2 bg-gradient-to-r from-amber-900/30 to-amber-800/30 px-3 py-1 rounded-lg border border-amber-500/30">
+                          <Target className="w-3 h-3 text-amber-400" />
+                          <span className="text-xs text-amber-300">{strategy?.name || 'Plan Active'}</span>
+                        </div>
+                      );
+                    }
+                    return (
+                      <div className="text-xs text-gray-400 bg-gray-800/30 px-2 py-1 rounded">
+                        No Plan
+                      </div>
+                    );
+                  })()}
                 </div>
                 <div className="bg-gray-900/80 rounded-lg px-4 py-3 border border-gray-700/50">
                   <div className="flex items-center space-x-2">
@@ -1229,6 +1259,25 @@ export default function Dashboard() {
                     <span className={`text-lg font-bold ${selectedDayData?.dayPnL >= 0 ? 'text-green-400' : 'text-red-400'}`}>
                       {selectedDayData?.dayPnL >= 0 ? '+' : ''}${Math.abs(selectedDayData?.dayPnL || 0).toFixed(2)}
                     </span>
+                    {(() => {
+                      const todayPlan = dailyPlans?.find(plan => 
+                        new Date(plan.date).toDateString() === selectedDate.toDateString()
+                      );
+                      const plannedPnL = todayPlan?.expectedPnl || 0;
+                      const actualPnL = selectedDayData?.dayPnL || 0;
+                      
+                      if (todayPlan && plannedPnL > 0) {
+                        const vs = actualPnL >= 0 ? '+' : '';
+                        const planDiff = actualPnL - plannedPnL;
+                        const diffColor = planDiff >= 0 ? 'text-green-400' : 'text-red-400';
+                        return (
+                          <span className="text-xs text-gray-400">
+                            vs ${plannedPnL} planned ({vs}${planDiff.toFixed(0)})
+                          </span>
+                        );
+                      }
+                      return null;
+                    })()}
                   </div>
                 </div>
               </div>
@@ -1761,11 +1810,19 @@ export default function Dashboard() {
         {/* SECTION 4: ACCOUNT MANAGEMENT */}
         <section className="mb-8">
           <div className="flex items-center justify-between mb-6 border-b border-gray-700 pb-3">
-            <h2 className="text-xl font-bold text-gradient-rainbow flex items-center">
-              <Users className="mr-3 h-5 w-5 text-prop-gold" />
-              Account Management
-            </h2>
-            <p className="text-sm text-gray-400">Account status, discipline scores, and portfolio overview</p>
+            <div>
+              <h2 className="text-xl font-bold text-gradient-rainbow flex items-center">
+                <Users className="mr-3 h-5 w-5 text-prop-gold" />
+                Account Management
+              </h2>
+              <p className="text-sm text-gray-400">Account status, discipline scores, and portfolio overview</p>
+            </div>
+            <Link href="/projections">
+              <Button className="bg-gradient-to-r from-amber-500 to-amber-600 text-black font-semibold hover:from-amber-400 hover:to-amber-500 flex items-center gap-2">
+                <Plus className="w-4 h-4" />
+                Add Account
+              </Button>
+            </Link>
           </div>
           
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
