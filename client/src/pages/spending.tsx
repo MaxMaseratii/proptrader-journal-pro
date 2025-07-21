@@ -265,7 +265,7 @@ const Spending = () => {
       <div className="flex flex-col space-y-4">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
-            <h1 className="text-3xl font-bold text-transparent bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-600 bg-clip-text">
+            <h1 className="text-3xl font-bold text-gradient-rainbow">
               Prop Budgeting
             </h1>
             <p className="text-gray-400 mt-2">Comprehensive prop trading and personal expense management</p>

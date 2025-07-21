@@ -359,7 +359,7 @@ const DailyPlanPage = () => {
       {/* Header */}
       <div className="space-y-4">
         <div>
-          <h1 className="text-3xl font-bold text-transparent bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-600 bg-clip-text">Daily Trading Plan</h1>
+          <h1 className="text-3xl font-bold text-gradient-rainbow">Daily Trading Plan</h1>
           <div className="text-sm font-medium text-cyan-400 italic tracking-wide drop-shadow-sm mb-2">
             "Plan your trade, trade your plan"
           </div>

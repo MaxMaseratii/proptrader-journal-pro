@@ -333,7 +333,7 @@ export default function Analytics() {
         {/* Header */}
         <div className="flex justify-between items-center">
           <div>
-            <h1 className="text-3xl font-bold text-transparent bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-600 bg-clip-text">
+            <h1 className="text-3xl font-bold text-gradient-rainbow">
               Advanced Analytics
             </h1>
             <p className="text-gray-400 mt-2">Comprehensive performance analysis and insights</p>

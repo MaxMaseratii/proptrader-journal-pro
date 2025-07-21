@@ -130,7 +130,7 @@ const Journal = () => {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-transparent bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-600 bg-clip-text">
+          <h1 className="text-3xl font-bold text-gradient-rainbow">
             Trading Journal
           </h1>
           <p className="text-gray-400 mt-2">Reflect on your trading performance and emotions</p>
