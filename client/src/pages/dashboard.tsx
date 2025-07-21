@@ -117,6 +117,7 @@ export default function Dashboard() {
     localStorage.setItem('congratulations-banner', JSON.stringify(banner));
   };
   const [viewMode, setViewMode] = useState<'single' | 'multiple' | 'all'>('all');
+  const [calendarViewMode, setCalendarViewMode] = useState<'weekly' | 'monthly' | 'yearly'>('weekly');
   const [showSpendingModal, setShowSpendingModal] = useState(false);
   const [showWageModal, setShowWageModal] = useState(false);
   const [newWage, setNewWage] = useState('');
@@ -621,6 +622,406 @@ export default function Dashboard() {
 
         </div>
 
+        {/* ENHANCED TRADING PERFORMANCE SECTION */}
+        <div className="mb-8">
+          <div className="flex items-center justify-between mb-6 border-b border-gray-700 pb-3">
+            <h2 className="text-xl font-bold text-gradient-rainbow flex items-center">
+              <BarChart3 className="mr-3 h-5 w-5 text-prop-gold" />
+              Daily Trading Performance Analysis
+            </h2>
+          </div>
+          
+          {/* CompactDetailView - Today's Trading Metrics */}
+          <div className={`
+            relative transition-all duration-200 rounded-lg overflow-hidden w-full mb-6
+            ${new Date().toDateString() === new Date().toDateString() 
+              ? 'bg-gradient-to-br from-teal-950/40 via-gray-900/60 to-black/80 border border-teal-400/50' 
+              : 'bg-gradient-to-br from-gray-900/40 via-gray-800/60 to-black/80 border border-gray-600/30'
+            }
+            hover:border-amber-400/60
+          `}>
+            
+            {/* Ultra Compact Layout - Full Width */}
+            <div className="p-4">
+              
+              {/* Header + PNL Combined */}
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center space-x-2">
+                  <Calendar className="w-4 h-4 text-amber-400" />
+                  <span className="text-lg font-bold text-amber-400">
+                    {new Date().toLocaleDateString('en-US', { weekday: 'short' })} {new Date().getDate()}
+                  </span>
+                  <div className="w-2 h-2 rounded-full bg-teal-400" />
+                </div>
+                <div className="bg-gray-900/80 rounded-lg px-4 py-3 border border-gray-700/50">
+                  <div className="flex items-center space-x-2">
+                    <span className="text-sm text-gray-400">Daily P&L:</span>
+                    <span className={`text-lg font-bold ${combinedAnalytics?.totalPnl >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                      {combinedAnalytics?.totalPnl >= 0 ? '+' : ''}${Math.abs(combinedAnalytics?.totalPnl || 0).toFixed(2)}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Compact Progress Bar with Text Inside */}
+              <div className="mb-4">
+                <div className="relative w-3/4 bg-gray-700/50 rounded-full h-6 mx-auto">
+                  <div 
+                    className={`h-6 rounded-full transition-all duration-500 flex items-center justify-center ${combinedAnalytics?.totalPnl >= 0 ? 'bg-green-400' : 'bg-red-400'}`}
+                    style={{ 
+                      width: `${Math.min(Math.abs(combinedAnalytics?.totalPnl || 0) / 100 * 100, 100)}%`, 
+                      minWidth: '120px' 
+                    }}
+                  >
+                    <span className="text-xs font-medium text-black">
+                      {Math.min(Math.abs(combinedAnalytics?.totalPnl || 0) / 100 * 100, 100).toFixed(0)}% of $100 target
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* NEW: 2 Rows x 4 Columns Grid - Full Width */}
+              <div className="space-y-3">
+                
+                {/* Row 1: Risk+Max Daily Loss, R:R, Trades, Hours Worked */}
+                <div className="grid grid-cols-4 gap-4">
+                  
+                  {/* Risk + Max Daily Loss Combined */}
+                  <div className="bg-black/30 rounded-lg p-4 border border-gray-700/50 relative">
+                    <div className="absolute top-3 right-3 text-xs text-red-400">
+                      Max: ${accounts?.[0]?.dailyLossLimit || 1000}
+                    </div>
+                    <div className="text-3xl font-bold text-red-400 mb-1">
+                      ${accounts?.[0]?.riskPerTrade || 20}
+                    </div>
+                    <div className="text-sm text-gray-400">Risk Per Trade</div>
+                  </div>
+
+                  {/* R:R */}
+                  <div className="bg-black/30 rounded-lg p-4 border border-gray-700/50 relative">
+                    <div className="absolute top-3 right-3 text-xs text-blue-300">
+                      Target: {accounts?.[0]?.riskRewardRatio || 3.0} RR
+                    </div>
+                    <div className="text-3xl font-bold text-blue-400 mb-1">
+                      {combinedAnalytics?.avgRiskRewardRatio?.toFixed(1) || '0.0'}
+                    </div>
+                    <div className="text-sm text-gray-400">Risk:Reward</div>
+                    <div className="text-xs text-blue-300 mt-1">
+                      AVG. Ratio 1:{combinedAnalytics?.avgRiskRewardRatio?.toFixed(1) || '0.0'}
+                    </div>
+                  </div>
+
+                  {/* Trades */}
+                  <div className="bg-black/30 rounded-lg p-4 border border-gray-700/50 relative">
+                    <div className="absolute top-3 right-3 text-xs text-purple-300">
+                      {combinedAnalytics?.totalTrades || 0}/{accounts?.[0]?.maxDailyTrades || 5}
+                    </div>
+                    <div className="text-3xl font-bold text-purple-400 mb-1">
+                      {combinedAnalytics?.totalTrades || 0}
+                    </div>
+                    <div className="w-full bg-gray-700/50 rounded-full h-1 mb-2">
+                      <div 
+                        className="h-1 rounded-full bg-purple-400 transition-all duration-500"
+                        style={{ 
+                          width: `${Math.min((combinedAnalytics?.totalTrades || 0) / (accounts?.[0]?.maxDailyTrades || 5) * 100, 100)}%` 
+                        }}
+                      />
+                    </div>
+                    <div className="text-sm text-gray-400 mb-1">Trades Executed</div>
+                    <div className="text-xs text-gray-300">
+                      W:{combinedAnalytics?.winningTrades || 0} L:{combinedAnalytics?.losingTrades || 0}
+                    </div>
+                  </div>
+
+                  {/* Hours Worked */}
+                  <div className="bg-black/30 rounded-lg p-4 border border-gray-700/50 relative">
+                    <div className="absolute top-3 right-3 text-xs text-indigo-300">
+                      <div className="flex items-center space-x-1">
+                        <div className="w-2 h-2 rounded-full bg-indigo-400"></div>
+                        <span>Plan: 6h</span>
+                      </div>
+                    </div>
+                    <div className="text-3xl font-bold text-indigo-400 mb-1">
+                      {(() => {
+                        const today = new Date().toISOString().split('T')[0];
+                        const todayTrades = trades?.filter(t => t.date === today) || [];
+                        return todayTrades.length > 0 ? (todayTrades.length * 0.5).toFixed(1) : '0.0';
+                      })()}h
+                    </div>
+                    <div className="text-sm text-gray-400 mb-1">Hours Worked</div>
+                    <div className="text-xs text-indigo-300 mb-1">
+                      Hourly wage: ${(() => {
+                        const today = new Date().toISOString().split('T')[0];
+                        const todayTrades = trades?.filter(t => t.date === today) || [];
+                        const hoursWorked = todayTrades.length * 0.5;
+                        const todayPnL = todayTrades.reduce((sum, t) => sum + (t.pnl || 0), 0);
+                        return hoursWorked > 0 ? (todayPnL / hoursWorked).toFixed(2) : '0.00';
+                      })()}
+                    </div>
+                    <div className="text-xs text-gray-300">
+                      Total: ${(() => {
+                        const today = new Date().toISOString().split('T')[0];
+                        const todayTrades = trades?.filter(t => t.date === today) || [];
+                        return todayTrades.reduce((sum, t) => sum + (t.pnl || 0), 0).toFixed(2);
+                      })()} (H. Worked x H. Wage)
+                    </div>
+                  </div>
+                </div>
+
+                {/* Row 2: Discipline, Risk Utilization, Wins/Losses, Win Rate */}
+                <div className="grid grid-cols-4 gap-4">
+                  
+                  {/* Discipline */}
+                  <div className="bg-black/30 rounded-lg p-4 border border-gray-700/50 relative">
+                    <div className="absolute top-3 right-3">
+                      <div className={`px-2 py-1 rounded text-xs font-bold ${
+                        (combinedAnalytics?.disciplineScore || 0) >= 90 ? 'bg-green-500 text-black' : 
+                        (combinedAnalytics?.disciplineScore || 0) >= 80 ? 'bg-blue-500 text-white' : 
+                        (combinedAnalytics?.disciplineScore || 0) >= 70 ? 'bg-yellow-500 text-black' : 
+                        'bg-red-500 text-white'
+                      }`}>
+                        {(combinedAnalytics?.disciplineScore || 0) >= 90 ? 'ELITE' : 
+                         (combinedAnalytics?.disciplineScore || 0) >= 80 ? 'GOOD' : 
+                         (combinedAnalytics?.disciplineScore || 0) >= 70 ? 'AVG' : 'POOR'}
+                      </div>
+                    </div>
+                    <div className={`text-3xl font-bold mb-1 ${
+                      (combinedAnalytics?.disciplineScore || 0) >= 90 ? 'text-green-400' : 
+                      (combinedAnalytics?.disciplineScore || 0) >= 80 ? 'text-green-400' : 
+                      (combinedAnalytics?.disciplineScore || 0) >= 70 ? 'text-yellow-400' : 
+                      (combinedAnalytics?.disciplineScore || 0) >= 60 ? 'text-orange-400' : 'text-red-400'
+                    }`}>
+                      {Math.round(combinedAnalytics?.disciplineScore || 0)}% {
+                        (combinedAnalytics?.disciplineScore || 0) >= 90 ? 'A' : 
+                        (combinedAnalytics?.disciplineScore || 0) >= 80 ? 'B' : 
+                        (combinedAnalytics?.disciplineScore || 0) >= 70 ? 'C' : 
+                        (combinedAnalytics?.disciplineScore || 0) >= 60 ? 'D' : 'F'
+                      }
+                    </div>
+                    <div className="text-sm text-gray-400 mb-1">Discipline Score</div>
+                    <div className="text-xs text-gray-300">
+                      Risk: 85% • Consistency: 90%
+                    </div>
+                  </div>
+
+                  {/* Risk Utilization */}
+                  <div className="bg-black/30 rounded-lg p-4 border border-gray-700/50 relative">
+                    <div className="absolute top-3 right-3 text-xs text-orange-300">
+                      Used
+                    </div>
+                    <div className="text-3xl font-bold text-orange-400 mb-1">
+                      {Math.min((combinedAnalytics?.totalTrades || 0) / (accounts?.[0]?.maxDailyTrades || 5) * 100, 100).toFixed(0)}%
+                    </div>
+                    <div className="text-sm text-gray-400 mb-1">Risk Utilization</div>
+                    <div className="text-xs text-orange-300">
+                      Total: ${((combinedAnalytics?.totalTrades || 0) * (accounts?.[0]?.riskPerTrade || 20)).toFixed(0)}
+                    </div>
+                  </div>
+
+                  {/* Win Rate */}
+                  <div className="bg-black/30 rounded-lg p-4 border border-gray-700/50 relative">
+                    <div className="absolute top-3 right-3 text-xs text-green-300">
+                      WR
+                    </div>
+                    <div className={`text-3xl font-bold mb-1 ${(combinedAnalytics?.winRate || 0) >= 50 ? 'text-green-400' : 'text-red-400'}`}>
+                      {Math.round(combinedAnalytics?.winRate || 0)}%
+                    </div>
+                    <div className="text-sm text-gray-400 mb-1">Win Rate</div>
+                    <div className="text-xs text-green-300">
+                      {combinedAnalytics?.totalTrades > 0 ? `${Math.round(combinedAnalytics?.winRate || 0)}% success` : 'No trades'}
+                    </div>
+                  </div>
+
+                  {/* Profit Factor */}
+                  <div className="bg-black/30 rounded-lg p-4 border border-gray-700/50 relative">
+                    <div className="absolute top-3 right-3 text-xs text-cyan-300">
+                      PF
+                    </div>
+                    <div className={`text-3xl font-bold mb-1 ${(combinedAnalytics?.profitFactor || 0) >= 1 ? 'text-green-400' : 'text-red-400'}`}>
+                      {(combinedAnalytics?.profitFactor || 0).toFixed(2)}
+                    </div>
+                    <div className="text-sm text-gray-400 mb-1">Profit Factor</div>
+                    <div className="text-xs text-cyan-300">
+                      Gross Win / Gross Loss
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* ENHANCED CALENDAR NAVIGATION SECTION */}
+        <div className="mb-8">
+          <div className="flex items-center justify-between mb-6 border-b border-gray-700 pb-3">
+            <h2 className="text-xl font-bold text-gradient-rainbow flex items-center">
+              <Calendar className="mr-3 h-5 w-5 text-prop-gold" />
+              Trading Calendar & Performance Overview
+            </h2>
+          </div>
+          
+          <div className="bg-gradient-to-br from-gray-900/40 via-gray-800/60 to-black/80 border border-gray-600/30 rounded-lg p-6">
+            
+            {/* Enhanced Navigation Header */}
+            <div className="flex items-center justify-between mb-6">
+              
+              {/* View Mode Selector - LEFT */}
+              <div className="flex bg-gray-800/40 rounded-lg border border-gray-600/30 overflow-hidden">
+                {['weekly', 'monthly', 'yearly'].map(mode => (
+                  <button
+                    key={mode}
+                    onClick={() => setCalendarViewMode(mode as 'weekly' | 'monthly' | 'yearly')}
+                    className={`px-4 py-2 text-sm font-medium transition-all duration-200 ${
+                      calendarViewMode === mode
+                        ? 'bg-amber-600/80 text-amber-100 border-amber-500/40'
+                        : 'text-gray-300 hover:text-amber-400 hover:bg-gray-700/30'
+                    }`}
+                  >
+                    {mode.charAt(0).toUpperCase() + mode.slice(1)}
+                  </button>
+                ))}
+              </div>
+
+              {/* Enhanced Date Range Navigation - CENTER */}
+              <div className="flex items-center bg-gray-800/40 rounded-lg border border-gray-600/30 shadow-md overflow-hidden">
+                <button
+                  onClick={() => {
+                    const newDate = new Date(currentWeekStart);
+                    if (calendarViewMode === 'weekly') newDate.setDate(newDate.getDate() - 7);
+                    else if (calendarViewMode === 'monthly') newDate.setMonth(newDate.getMonth() - 1);
+                    else if (calendarViewMode === 'yearly') newDate.setFullYear(newDate.getFullYear() - 1);
+                    setCurrentWeekStart(newDate);
+                  }}
+                  className="p-2 hover:bg-gray-700/40 text-gray-400 hover:text-amber-400 transition-all duration-200"
+                >
+                  <ChevronLeft className="w-4 h-4" />
+                </button>
+                
+                <div className="px-6 py-2 border-x border-gray-600/20">
+                  <span className="text-lg font-semibold text-amber-400 min-w-48 text-center block">
+                    {(() => {
+                      const date = currentWeekStart || new Date();
+                      switch (calendarViewMode) {
+                        case 'weekly':
+                          const weekStart = new Date(date);
+                          const weekEnd = new Date(date);
+                          weekEnd.setDate(weekEnd.getDate() + 6);
+                          return `${weekStart.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - ${weekEnd.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}, ${weekStart.getFullYear()}`;
+                        case 'monthly':
+                          return date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+                        case 'yearly':
+                          return date.getFullYear().toString();
+                        default:
+                          return '';
+                      }
+                    })()}
+                  </span>
+                </div>
+                
+                <button
+                  onClick={() => {
+                    const newDate = new Date(currentWeekStart);
+                    if (calendarViewMode === 'weekly') newDate.setDate(newDate.getDate() + 7);
+                    else if (calendarViewMode === 'monthly') newDate.setMonth(newDate.getMonth() + 1);
+                    else if (calendarViewMode === 'yearly') newDate.setFullYear(newDate.getFullYear() + 1);
+                    setCurrentWeekStart(newDate);
+                  }}
+                  className="p-2 hover:bg-gray-700/40 text-gray-400 hover:text-amber-400 transition-all duration-200"
+                >
+                  <ChevronRight className="w-4 h-4" />
+                </button>
+              </div>
+              
+              {/* Enhanced Go to Today Button */}
+              <button
+                onClick={() => {
+                  setCurrentWeekStart(new Date());
+                }}
+                className="px-4 py-2 rounded-lg text-sm font-medium bg-teal-600/80 hover:bg-teal-600 text-white transition-all duration-200 border border-teal-500/40 shadow-md"
+              >
+                Go to Today
+              </button>
+            </div>
+
+            {/* Bottom Summary Stats - Full Width Widget Section */}
+            <div className="pt-4 border-t border-gray-700/50">
+              <h4 className="text-sm font-semibold text-amber-400 mb-3 text-center">
+                {calendarViewMode.charAt(0).toUpperCase() + calendarViewMode.slice(1)} Summary
+              </h4>
+              
+              <div className="grid grid-cols-5 gap-3">
+                
+                {/* Period P&L */}
+                <div className="bg-black/30 rounded-lg p-3 border border-gray-700/50 relative">
+                  <div className="absolute top-2 right-2 text-xs text-gray-400">
+                    P&L
+                  </div>
+                  <div className={`text-xl font-bold ${combinedAnalytics?.totalPnl >= 0 ? 'text-green-400' : 'text-red-400'} mb-1`}>
+                    {combinedAnalytics?.totalPnl >= 0 ? '+' : ''}${(combinedAnalytics?.totalPnl || 0).toFixed(0)}
+                  </div>
+                  <div className="text-xs text-gray-400">{calendarViewMode.charAt(0).toUpperCase() + calendarViewMode.slice(1)} P&L</div>
+                </div>
+
+                {/* Total Trades */}
+                <div className="bg-black/30 rounded-lg p-3 border border-gray-700/50 relative">
+                  <div className="absolute top-2 right-2 text-xs text-purple-300">
+                    T
+                  </div>
+                  <div className="text-xl font-bold text-purple-400 mb-1">
+                    {combinedAnalytics?.totalTrades || 0}
+                  </div>
+                  <div className="text-xs text-gray-400">Total Trades</div>
+                  <div className="text-xs text-purple-300 mt-1">
+                    W:{combinedAnalytics?.winningTrades || 0} L:{combinedAnalytics?.losingTrades || 0}
+                  </div>
+                </div>
+
+                {/* Win Rate */}
+                <div className="bg-black/30 rounded-lg p-3 border border-gray-700/50 relative">
+                  <div className="absolute top-2 right-2 text-xs text-emerald-300">
+                    WR
+                  </div>
+                  <div className="text-xl font-bold text-emerald-400 mb-1">
+                    {Math.round(combinedAnalytics?.winRate || 0)}%
+                  </div>
+                  <div className="text-xs text-gray-400">Win Rate</div>
+                  <div className="text-xs text-emerald-300 mt-1">
+                    {combinedAnalytics?.totalTrades > 0 ? `${Math.round(combinedAnalytics?.winRate || 0)}% success` : 'No trades'}
+                  </div>
+                </div>
+
+                {/* Total Wins and Losses */}
+                <div className="bg-black/30 rounded-lg p-3 border border-gray-700/50 relative">
+                  <div className="absolute top-2 right-2 text-xs text-green-300">
+                    W/L
+                  </div>
+                  <div className="flex items-center space-x-1 mb-1">
+                    <span className="text-sm font-bold text-green-400">W: ${((combinedAnalytics?.winningTrades || 0) * 60).toFixed(0)}</span>
+                    <span className="text-sm font-bold text-red-400">L: ${((combinedAnalytics?.losingTrades || 0) * 20).toFixed(0)}</span>
+                  </div>
+                  <div className="text-xs text-gray-400">Total Wins and Losses</div>
+                  <div className="text-xs text-gray-300 mt-1">
+                    Net: ${(((combinedAnalytics?.winningTrades || 0) * 60) - ((combinedAnalytics?.losingTrades || 0) * 20)).toFixed(0)}
+                  </div>
+                </div>
+
+                {/* Average Win/Loss */}
+                <div className="bg-black/30 rounded-lg p-3 border border-gray-700/50 relative">
+                  <div className="absolute top-2 right-2 text-xs text-blue-300">
+                    AVG
+                  </div>
+                  <div className="text-xl font-bold text-blue-400 mb-1">
+                    ${combinedAnalytics?.avgWin?.toFixed(0) || '0'}/${Math.abs(combinedAnalytics?.avgLoss || 0).toFixed(0)}
+                  </div>
+                  <div className="text-xs text-gray-400">Avg Win/Loss</div>
+                  <div className="text-xs text-blue-300 mt-1">
+                    Ratio: {(combinedAnalytics?.avgLoss || 0) !== 0 ? Math.abs((combinedAnalytics?.avgWin || 0) / (combinedAnalytics?.avgLoss || 1)).toFixed(1) : '∞'}:1
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
 
         {/* COMPACT DASHBOARD: NO EMPTY SPACES */}
         
