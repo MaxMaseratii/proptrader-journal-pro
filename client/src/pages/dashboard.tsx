@@ -68,16 +68,19 @@ interface CalendarViewProps {
 
 interface WeeklyCalendarViewProps extends CalendarViewProps {
   currentWeekStart: Date;
+  selectedDate?: Date;
   onDayClick?: (date: Date) => void;
 }
 
 interface MonthlyCalendarViewProps extends CalendarViewProps {
   currentMonth: Date;
+  selectedDate?: Date;
   onDayClick?: (date: Date) => void;
 }
 
 interface YearlyCalendarViewProps extends CalendarViewProps {
   currentYear: Date;
+  selectedDate?: Date;
   onDayClick?: (date: Date) => void;
 }
 
@@ -156,7 +159,7 @@ export default function Dashboard() {
 
   
   // Calendar View Components (defined within Dashboard scope)
-  const WeeklyCalendarView: React.FC<WeeklyCalendarViewProps> = ({ currentWeekStart, trades, accounts, selectedAccountIds, onDayClick }) => {
+  const WeeklyCalendarView: React.FC<WeeklyCalendarViewProps> = ({ currentWeekStart, trades, accounts, selectedAccountIds, selectedDate, onDayClick }) => {
     const weekDays = [];
     const today = new Date();
     
@@ -205,31 +208,11 @@ export default function Dashboard() {
                 onClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
-                  console.log('=== CALENDAR DAY CLICKED ===');
+                  console.log('=== WEEKLY CALENDAR DAY CLICKED ===');
                   console.log('Clicked date:', date.toDateString());
                   console.log('Clicked date ISO:', date.toISOString().split('T')[0]);
-                  console.log('Current trades length:', trades?.length || 0);
-                  console.log('Selected account IDs:', selectedAccountIds);
                   
-                  // Check what trades exist for this specific date
-                  if (trades && trades.length > 0) {
-                    const dayTrades = getTradesForDate(date, trades, selectedAccountIds);
-                    console.log('Trades found for clicked date:', dayTrades.length);
-                    if (dayTrades.length > 0) {
-                      const totalPnL = dayTrades.reduce((sum, t) => sum + (t.pnl || 0), 0);
-                      console.log('Total PnL for clicked date:', totalPnL);
-                    }
-                    
-                    // Update selected date and day data
-                    setSelectedDate(date);
-                    const dayData = getDayData(date, trades);
-                    console.log('Setting selectedDayData to:', dayData);
-                    setSelectedDayData(dayData);
-                  } else {
-                    console.warn('No trades data available');
-                    setSelectedDayData(null);
-                  }
-                  
+                  // Use the parent component's onDayClick handler
                   onDayClick && onDayClick(date);
                 }}
               >
@@ -273,7 +256,7 @@ export default function Dashboard() {
     );
   };
 
-  const MonthlyCalendarView: React.FC<MonthlyCalendarViewProps> = ({ currentMonth, trades, accounts, selectedAccountIds, onDayClick }) => {
+  const MonthlyCalendarView: React.FC<MonthlyCalendarViewProps> = ({ currentMonth, trades, accounts, selectedAccountIds, selectedDate, onDayClick }) => {
     const today = new Date();
     const firstDay = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 1);
     const lastDay = new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 0);
@@ -324,8 +307,8 @@ export default function Dashboard() {
                   key={date.toISOString()}
                   className={`
                     relative p-2 rounded-lg border transition-all duration-200 h-20 cursor-pointer
-                    ${selectedDate.toDateString() === date.toDateString()
-                      ? 'border-amber-400 bg-amber-900/20 shadow-lg'
+                    ${selectedDate?.toDateString() === date.toDateString()
+                      ? 'border-amber-400 bg-amber-900/20 shadow-lg ring-2 ring-amber-400/50'
                       : isToday 
                       ? 'border-teal-400/60 bg-gradient-to-br from-teal-900/30 via-gray-800/40 to-teal-900/30' 
                       : isCurrentMonth
@@ -337,24 +320,11 @@ export default function Dashboard() {
                   onClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
-                    console.log('=== DAY CLICK HANDLER ===');
+                    console.log('=== MONTHLY CALENDAR DAY CLICKED ===');
                     console.log('Clicked date:', date.toDateString());
-                    console.log('Current trades length:', trades?.length || 0);
-                    console.log('Selected account IDs:', selectedAccountIds);
+                    console.log('Clicked date ISO:', date.toISOString().split('T')[0]);
                     
-                    // Update selected date immediately
-                    setSelectedDate(date);
-                    
-                    // Calculate and set day data
-                    if (trades && trades.length > 0) {
-                      const dayData = getDayData(date, trades);
-                      console.log('Setting selectedDayData to:', dayData);
-                      setSelectedDayData(dayData);
-                    } else {
-                      console.warn('No trades data available');
-                      setSelectedDayData(null);
-                    }
-                    
+                    // Use the parent component's onDayClick handler
                     onDayClick && onDayClick(date);
                   }}
                 >
@@ -1456,11 +1426,14 @@ export default function Dashboard() {
                   trades={trades}
                   accounts={accounts}
                   selectedAccountIds={selectedAccountIds}
+                  selectedDate={selectedDate}
                   onDayClick={(date) => {
-                    console.log('Day clicked in weekly view:', date.toDateString());
+                    console.log('=== WEEKLY VIEW DAY CLICKED ===');
+                    console.log('Clicked date:', date.toDateString());
+                    console.log('Clicked date ISO:', date.toISOString().split('T')[0]);
                     setSelectedDate(date);
                     const dayData = getDayData(date, trades || []);
-                    console.log('Setting day data:', dayData);
+                    console.log('Weekly view setting day data:', dayData);
                     setSelectedDayData(dayData);
                   }}
                 />
@@ -1471,11 +1444,14 @@ export default function Dashboard() {
                   trades={trades}
                   accounts={accounts}
                   selectedAccountIds={selectedAccountIds}
+                  selectedDate={selectedDate}
                   onDayClick={(date) => {
-                    console.log('Day clicked in monthly view:', date.toDateString());
+                    console.log('=== MONTHLY VIEW DAY CLICKED ===');
+                    console.log('Clicked date:', date.toDateString());
+                    console.log('Clicked date ISO:', date.toISOString().split('T')[0]);
                     setSelectedDate(date);
                     const dayData = getDayData(date, trades || []);
-                    console.log('Setting day data:', dayData);
+                    console.log('Monthly view setting day data:', dayData);
                     setSelectedDayData(dayData);
                   }}
                 />
@@ -1486,11 +1462,14 @@ export default function Dashboard() {
                   trades={trades}
                   accounts={accounts}
                   selectedAccountIds={selectedAccountIds}
+                  selectedDate={selectedDate}
                   onDayClick={(date) => {
-                    console.log('Day clicked in yearly view:', date.toDateString());
+                    console.log('=== YEARLY VIEW DAY CLICKED ===');
+                    console.log('Clicked date:', date.toDateString());
+                    console.log('Clicked date ISO:', date.toISOString().split('T')[0]);
                     setSelectedDate(date);
                     const dayData = getDayData(date, trades || []);
-                    console.log('Setting day data:', dayData);
+                    console.log('Yearly view setting day data:', dayData);
                     setSelectedDayData(dayData);
                   }}
                 />
