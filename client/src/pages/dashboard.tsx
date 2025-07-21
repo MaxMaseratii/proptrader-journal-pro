@@ -610,7 +610,199 @@ export default function Dashboard() {
 
       <div className="p-6 space-y-6">
         
+        {/* Weekly Risk Management & Performance Calendar - Top of Dashboard */}
+        <div className="mb-16">
+          <div className="flex items-center justify-between mb-6 border-b border-gray-700 pb-3">
+            <h2 className="text-xl font-bold text-gradient-rainbow flex items-center">
+              <Calendar className="mr-3 h-5 w-5 text-prop-gold" />
+              Weekly Risk Management & Performance Calendar
+            </h2>
+            <div className="flex items-center space-x-4">
+              <button 
+                className="p-2 rounded-lg bg-gray-800 hover:bg-gray-700 border border-gray-600 transition-colors"
+                onClick={() => {
+                  // Navigate to previous week
+                  const newDate = new Date(currentWeekStart);
+                  newDate.setDate(newDate.getDate() - 7);
+                  setCurrentWeekStart(newDate);
+                }}
+              >
+                <ChevronLeft className="h-4 w-4 text-gray-400" />
+              </button>
+              <div className="text-sm text-gray-300 font-medium min-w-[200px] text-center">
+                {(() => {
+                  const weekStart = currentWeekStart || (() => {
+                    const today = new Date();
+                    const dayOfWeek = today.getDay();
+                    const daysToSubtract = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
+                    const start = new Date(today);
+                    start.setDate(today.getDate() - daysToSubtract);
+                    return start;
+                  })();
+                  
+                  const weekNumber = Math.ceil((weekStart.getTime() - new Date(weekStart.getFullYear(), 0, 1).getTime()) / (7 * 24 * 60 * 60 * 1000));
+                  const monthName = weekStart.toLocaleDateString('en-US', { month: 'long' });
+                  const day = weekStart.getDate();
+                  const year = weekStart.getFullYear();
+                  
+                  return `Week ${weekNumber} ${monthName} ${day}th ${year} (Week #${weekNumber}/52)`;
+                })()}
+              </div>
+              <button 
+                className="p-2 rounded-lg bg-gray-800 hover:bg-gray-700 border border-gray-600 transition-colors"
+                onClick={() => {
+                  // Navigate to next week
+                  const newDate = new Date(currentWeekStart);
+                  newDate.setDate(newDate.getDate() + 7);
+                  setCurrentWeekStart(newDate);
+                }}
+              >
+                <ChevronRight className="h-4 w-4 text-gray-400" />
+              </button>
+            </div>
+          </div>
+          <div className="widget-container w-full">
+            <div className="widget-content flex-col w-full">
+              <div className="grid grid-cols-7 gap-1 h-full w-full">
+                {(() => {
+                  const getCurrentWeekDays = () => {
+                    const weekDays = [];
+                    for (let i = 0; i < 7; i++) {
+                      const day = new Date(currentWeekStart);
+                      day.setDate(currentWeekStart.getDate() + i);
+                      weekDays.push(day);
+                    }
+                    return weekDays;
+                  };
 
+                  const weekDays = getCurrentWeekDays();
+                  const dayLabels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+                  
+                  return weekDays.map((day, index) => {
+                    const dayStr = day.toISOString().split('T')[0];
+                    
+                    // Filter trades based on account selection
+                    const filteredTrades = selectedAccountIds.length > 0
+                      ? trades?.filter(t => selectedAccountIds.includes(t.accountId)) || []
+                      : trades || [];
+                    
+                    const dayTrades = filteredTrades.filter(trade => trade.date === dayStr) || [];
+                    const dayPnL = dayTrades.reduce((sum, trade) => sum + (trade.pnl || 0), 0);
+                    const isToday = day.toDateString() === new Date().toDateString();
+                    
+                    // Get account-specific data for selected accounts
+                    const selectedAccounts = selectedAccountIds.length > 0
+                      ? accounts?.filter(acc => selectedAccountIds.includes(acc.id)) || []
+                      : accounts || [];
+                    
+                    // Calculate risk metrics from trades
+                    const totalRisk = dayTrades.reduce((sum, trade) => sum + Math.abs(trade.riskAmount || 0), 0);
+                    const avgRiskPerTrade = dayTrades.length > 0 ? totalRisk / dayTrades.length : 
+                      selectedAccounts.length > 0 ? selectedAccounts.reduce((sum, acc) => sum + (acc.riskPerTrade || 0), 0) / selectedAccounts.length : 0;
+                    const maxDailyRisk = dayTrades.length > 0 
+                      ? dayTrades.reduce((max, trade) => Math.max(max, Math.abs(trade.riskAmount || 0)), 0)
+                      : selectedAccounts.length > 0 ? selectedAccounts.reduce((sum, acc) => sum + (acc.dailyLossLimit || 0), 0) / selectedAccounts.length : 0;
+                    
+                    // Calculate reward ratio (average)
+                    const rewardRatios = dayTrades.map(trade => {
+                      const risk = Math.abs(trade.riskAmount || 0);
+                      const reward = Math.abs(trade.pnl || 0);
+                      return risk > 0 ? reward / risk : 0;
+                    }).filter(rr => rr > 0);
+                    const avgRewardRatio = rewardRatios.length > 0 ? rewardRatios.reduce((sum, rr) => sum + rr, 0) / rewardRatios.length : 0;
+                    
+                    const maxDailyTrades = selectedAccounts.reduce((max, acc) => Math.max(max, acc.maxDailyTrades || 0), 0);
+                    
+                    // Calculate daily target based on saved projections or account risk settings
+                    // Daily target = risk per trade × risk reward ratio (single trade target)
+                    const dailyTarget = (() => {
+                      if (projections && projections.length > 0) {
+                        // Use projection data for accounts with saved projections
+                        const accountProjections = projections.filter(p => 
+                          selectedAccountIds.length > 0 
+                            ? selectedAccountIds.includes(p.accountId)
+                            : true
+                        );
+                        
+                        if (accountProjections.length > 0) {
+                          return accountProjections.reduce((sum, proj) => {
+                            const riskPerTrade = proj.riskPerTrade || 0;
+                            const riskRewardRatio = proj.riskRewardRatio || 2.0;
+                            return sum + (riskPerTrade * riskRewardRatio); // Single trade target
+                          }, 0) / accountProjections.length;
+                        }
+                      }
+                      
+                      // Fallback to account settings if no projections
+                      return selectedAccounts.length > 0 
+                        ? selectedAccounts.reduce((sum, acc) => {
+                            const riskPerTrade = acc.riskPerTrade || 0;
+                            const riskRewardRatio = acc.riskRewardRatio || 2.0;
+                            return sum + (riskPerTrade * riskRewardRatio); // Single trade target
+                          }, 0) / selectedAccounts.length
+                        : 0;
+                    })();
+                    
+                    return (
+                      <div 
+                        key={index} 
+                        className={`
+                          relative p-3 rounded-lg border transition-all duration-300 h-32 overflow-hidden w-full
+                          ${isToday 
+                            ? 'border-yellow-400 bg-gradient-to-br from-gray-900/80 to-gray-800/80 shadow-lg shadow-yellow-400/20' 
+                            : 'border-gray-600 bg-gradient-to-br from-gray-900/60 to-gray-800/60'
+                          }
+                          hover:border-yellow-400 hover:shadow-lg hover:shadow-yellow-400/30 cursor-pointer
+                        `}
+                      >
+                        <div className="text-left h-full flex flex-col justify-between">
+                          {/* Day Header */}
+                          <div className="text-center mb-2">
+                            <div className="text-sm font-bold text-yellow-400 drop-shadow-lg">
+                              {dayLabels[index]} {day.getDate()}
+                            </div>
+                          </div>
+                          
+                          {/* Simplified Metrics */}
+                          <div className="space-y-1.5 text-xs flex-1">
+                            {/* Daily P&L - Most Important */}
+                            <div className="flex justify-between items-center">
+                              <span className="text-gray-300 text-xs">P&L:</span>
+                              <span className={`font-bold text-sm ${dayPnL >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                                {dayPnL >= 0 ? '+' : ''}${dayPnL.toFixed(0)}
+                              </span>
+                            </div>
+                            
+                            {/* Trades Count */}
+                            <div className="flex justify-between items-center">
+                              <span className="text-gray-300 text-xs">Trades:</span>
+                              <span className="text-blue-400 font-medium text-xs">{dayTrades.length}</span>
+                            </div>
+                            
+                            {/* Risk Used */}
+                            <div className="flex justify-between items-center">
+                              <span className="text-gray-300 text-xs">Risk:</span>
+                              <span className="text-orange-400 font-medium text-xs">${totalRisk.toFixed(0)}</span>
+                            </div>
+                            
+                            {/* Win Rate for the day */}
+                            <div className="flex justify-between items-center">
+                              <span className="text-gray-300 text-xs">Win%:</span>
+                              <span className="text-purple-400 font-medium text-xs">
+                                {dayTrades.length > 0 ? 
+                                  Math.round((dayTrades.filter(t => (t.pnl || 0) > 0).length / dayTrades.length) * 100) : 0}%
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  });
+                })()}
+              </div>
+            </div>
+          </div>
+        </div>
 
 
         {/* COMPACT DASHBOARD: NO EMPTY SPACES */}
