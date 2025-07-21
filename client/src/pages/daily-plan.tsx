@@ -228,8 +228,6 @@ const DailyPlanPage = () => {
     setSessionStartTime(null);
   };
 
-
-
   // Save journal entry function - connects to specific daily plan
   const saveJournalEntry = () => {
     if (!selectedAccount) {
@@ -1103,15 +1101,15 @@ const DailyPlanPage = () => {
               </CardTitle>
               <div className="flex items-center gap-2">
                 <Button
-                  onClick={handleSaveJournal}
-                  disabled={journalMutation.isPending}
+                  onClick={() => saveJournalEntry()}
+                  disabled={createJournalEntry.isPending}
                   className="bg-yellow-600 hover:bg-yellow-700 text-black px-3 py-1 text-xs"
                 >
                   <Save className="h-3 w-3 mr-1" />
-                  {journalMutation.isPending ? "Saving..." : "Save"}
+                  {createJournalEntry.isPending ? "Saving..." : "Save"}
                 </Button>
                 <div className="text-xs text-gray-400">
-                  {todaysJournal ? 'Entry exists' : 'No entry'}
+                  {journalEntries?.find(entry => entry.date === selectedDate) ? 'Entry exists' : 'No entry'}
                 </div>
                 <Button
                   variant="outline"
