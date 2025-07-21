@@ -57,7 +57,8 @@ import {
   Star,
   ChevronLeft,
   ChevronRight,
-  RotateCcw
+  RotateCcw,
+  BookOpen
 } from "lucide-react";
 import type { Account, Trade } from "@shared/schema";
 
