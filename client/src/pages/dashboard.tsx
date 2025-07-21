@@ -84,11 +84,28 @@ interface YearlyCalendarViewProps extends CalendarViewProps {
 // Helper function to get trades for a specific date
 const getTradesForDate = (date: Date, trades: Trade[] = [], selectedAccountIds: number[]) => {
   const dateStr = date.toISOString().split('T')[0];
-  return trades.filter(trade => {
+  console.log('getTradesForDate DEBUG:');
+  console.log('- Target date:', date.toDateString());
+  console.log('- Target dateStr:', dateStr);
+  console.log('- Total trades:', trades.length);
+  console.log('- Selected accounts:', selectedAccountIds);
+  
+  // Show sample trade dates for debugging
+  const sampleTradeDates = trades.slice(0, 5).map(t => t.date);
+  console.log('- Sample trade dates in database:', sampleTradeDates);
+  
+  const filteredTrades = trades.filter(trade => {
     const matchesDate = trade.date === dateStr;
     const matchesAccount = selectedAccountIds.length === 0 || selectedAccountIds.includes(trade.accountId);
+    if (matchesDate) {
+      console.log('- Found matching date trade:', trade.id, 'date:', trade.date, 'pnl:', trade.pnl);
+    }
     return matchesDate && matchesAccount;
   });
+  
+  console.log('- Filtered trades count:', filteredTrades.length);
+  console.log('- Filtered trades total PnL:', filteredTrades.reduce((sum, t) => sum + (t.pnl || 0), 0));
+  return filteredTrades;
 };
 
 // Helper function to calculate daily P&L and metrics
@@ -544,6 +561,9 @@ export default function Dashboard() {
   // Initialize with today's data when trades load
   useEffect(() => {
     if (trades && trades.length > 0) {
+      console.log('=== TRADES LOADED ===');
+      console.log('First 5 trade dates:', trades.slice(0, 5).map(t => ({ date: t.date, pnl: t.pnl })));
+      
       const today = new Date();
       setSelectedDate(today);
       const todayData = getDayData(today, trades);
@@ -1558,23 +1578,30 @@ export default function Dashboard() {
           <div className="widget-container">
             <div className="widget-content">
               <div className="widget-left">
-                {selectedDayData ? (
-                  <>
-                    <p className="widget-label">Day P&L ({selectedDayData.date.toLocaleDateString()})</p>
-                    <p className={`widget-value ${getValueColor(selectedDayData.dayPnL)}`}>
-                      {formatCurrency(selectedDayData.dayPnL)}
-                    </p>
-                    <p className="widget-description">Selected day profit/loss</p>
-                  </>
-                ) : (
-                  <>
-                    <p className="widget-label">Net Balance</p>
-                    <p className={`widget-value ${getValueColor(calculateNetBalance())}`}>
-                      {formatCurrency(calculateNetBalance())}
-                    </p>
-                    <p className="widget-description">Starting balance + Total P&L</p>
-                  </>
-                )}
+                {(() => {
+                  console.log('WIDGET RENDER DEBUG - Day P&L:');
+                  console.log('- selectedDayData exists:', !!selectedDayData);
+                  if (selectedDayData) {
+                    console.log('- selectedDayData:', selectedDayData);
+                  }
+                  return selectedDayData ? (
+                    <>
+                      <p className="widget-label">Day P&L ({selectedDayData.date.toLocaleDateString()})</p>
+                      <p className={`widget-value ${getValueColor(selectedDayData.dayPnL)}`}>
+                        {formatCurrency(selectedDayData.dayPnL)}
+                      </p>
+                      <p className="widget-description">Selected day profit/loss</p>
+                    </>
+                  ) : (
+                    <>
+                      <p className="widget-label">Net Balance</p>
+                      <p className={`widget-value ${getValueColor(calculateNetBalance())}`}>
+                        {formatCurrency(calculateNetBalance())}
+                      </p>
+                      <p className="widget-description">Starting balance + Total P&L</p>
+                    </>
+                  );
+                })()}
               </div>
               <div className="widget-icon-square">
                 <DollarSign className="widget-icon" />
