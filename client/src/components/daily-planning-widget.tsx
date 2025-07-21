@@ -42,9 +42,9 @@ export function DailyPlanningWidget({ trades = [], selectedAccount, className }:
   const todayWinRate = todayTradesCount > 0 ? (todayWins / todayTradesCount * 100) : 0;
 
   // Daily targets from account or defaults
-  const dailyTarget = selectedAccount ? (selectedAccount.riskPerTrade * selectedAccount.riskRewardRatio) : 0;
-  const maxDailyTrades = selectedAccount?.maxDailyTrades || 0;
-  const dailyRiskLimit = selectedAccount?.dailyLossLimit || 0;
+  const dailyTarget = selectedAccount ? (selectedAccount.riskPerTrade * selectedAccount.riskRewardRatio) : 450;
+  const maxDailyTrades = selectedAccount?.maxDailyTrades || 5;
+  const dailyRiskLimit = selectedAccount?.dailyLossLimit || 1000;
 
   // Calculate progress
   const targetProgress = Math.min(Math.max((todayPnL / dailyTarget) * 100, 0), 100);

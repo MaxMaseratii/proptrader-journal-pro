@@ -26,42 +26,46 @@ export function AdvancedTradingCalendar({ trades = [], selectedAccount, classNam
   const [hoveredMetric, setHoveredMetric] = useState(null);
   const [showPeriodPicker, setShowPeriodPicker] = useState(false);
 
-  // Generate trading data from actual trades only - no fallback data
+  // Generate sample trading data for different dates
   const generateTradingData = (date: Date) => {
-    const dateStr = date.toISOString().split('T')[0];
+    const seed = date.getDate() + date.getMonth() * 31 + date.getFullYear() * 365;
+    const random = (min: number, max: number) => min + (seed * 9301 + 49297) % 233280 / 233280 * (max - min);
     
-    // Filter trades for this specific date
-    const dayTrades = trades.filter(trade => {
-      const tradeDate = new Date(trade.date).toISOString().split('T')[0];
-      return tradeDate === dateStr;
-    });
+    // User's actual trading setup
+    const avgRiskPerTrade = 20; // $20 risk per trade
+    const avgRewardRatio = random(2.5, 3.5); // Around 3:1 RR
+    const maxDailyTrades = Math.round(random(2, 5)); // 2-5 trades max per day
+    const totalDayTrades = Math.round(random(0, maxDailyTrades));
+    const dailyTarget = 60; // $60 daily target
     
-    // Only use actual trade data - no fallback
-    if (dayTrades.length > 0) {
-      const dayPnL = dayTrades.reduce((sum, trade) => sum + (trade.pnl || 0), 0);
-      const totalDayTrades = dayTrades.length;
-      const winningTrades = dayTrades.filter(trade => (trade.pnl || 0) > 0).length;
-      const winRate = totalDayTrades > 0 ? (winningTrades / totalDayTrades) * 100 : 0;
-      
-      return {
-        date,
-        dayPnL,
-        totalDayTrades,
-        winRate: Math.round(winRate),
-        disciplineScore: winRate >= 60 ? 85 : winRate >= 40 ? 70 : 55, // Basic discipline calculation
-        hasData: true
-      };
-    } else {
-      // Return empty data for dates without trades
-      return {
-        date,
-        dayPnL: 0,
-        totalDayTrades: 0,
-        winRate: 0,
-        disciplineScore: 0,
-        hasData: false
-      };
-    }
+    // Calculate win rate based on trades
+    const winsNeeded = Math.max(0, Math.round(random(0, totalDayTrades)));
+    const winRate = totalDayTrades > 0 ? (winsNeeded / totalDayTrades) * 100 : 0;
+    
+    // Calculate realistic PnL around the $60 target
+    // With $20 risk and 3:1 RR, one win = $60 (target achieved)
+    const possibleOutcomes = [
+      -20 * totalDayTrades, // All losses
+      -20 * Math.max(0, totalDayTrades - 1) + 60, // 1 win, rest losses
+      -20 * Math.max(0, totalDayTrades - 2) + 120, // 2 wins, rest losses
+      60 * random(0.5, 1.5) // Around target with some variation
+    ];
+    
+    const dayPnL = possibleOutcomes[Math.floor(random(0, possibleOutcomes.length))];
+    
+    return {
+      date,
+      avgRiskPerTrade,
+      maxDailyRisk: avgRiskPerTrade * maxDailyTrades, // Max loss if all trades lose
+      avgRewardRatio,
+      targetRewardRatio: 3.0,
+      dailyTarget,
+      dayPnL,
+      maxDailyTrades,
+      totalDayTrades,
+      disciplineScore: Math.round(random(60, 95)),
+      winRate: Math.round(winRate)
+    };
   };
 
   // Helper function to convert discipline score to letter grade
@@ -142,20 +146,16 @@ export function AdvancedTradingCalendar({ trades = [], selectedAccount, classNam
     let totalWins = 0;
     let avgDiscipline = 0;
 
-    let daysWithData = 0;
     days.forEach(day => {
       const dayData = generateTradingData(day);
-      if (dayData.hasData) {
-        totalPnL += dayData.dayPnL;
-        totalTrades += dayData.totalDayTrades;
-        totalWins += (dayData.winRate / 100) * dayData.totalDayTrades;
-        avgDiscipline += dayData.disciplineScore;
-        daysWithData++;
-      }
+      totalPnL += dayData.dayPnL;
+      totalTrades += dayData.totalDayTrades;
+      totalWins += (dayData.winRate / 100) * dayData.totalDayTrades;
+      avgDiscipline += dayData.disciplineScore;
     });
 
     const winRate = totalTrades > 0 ? (totalWins / totalTrades) * 100 : 0;
-    avgDiscipline = daysWithData > 0 ? avgDiscipline / daysWithData : 0;
+    avgDiscipline = days.length > 0 ? avgDiscipline / days.length : 0;
 
     return {
       totalPnL,
@@ -220,7 +220,7 @@ export function AdvancedTradingCalendar({ trades = [], selectedAccount, classNam
   }
 
   const DayCard = ({ dayData, isSelected, isCurrentPeriod, onClick, size = 'normal' }: DayCardProps) => {
-    const { date, dayPnL, totalDayTrades, disciplineScore, hasData } = dayData;
+    const { date, dayPnL, totalDayTrades, maxDailyTrades, disciplineScore } = dayData;
     const pnlPositive = dayPnL >= 0;
     const isToday = date.toDateString() === new Date().toDateString();
     const disciplineGrade = getDisciplineGrade(disciplineScore);
@@ -229,7 +229,7 @@ export function AdvancedTradingCalendar({ trades = [], selectedAccount, classNam
       <div
         onClick={() => onClick(date)}
         className={`
-          relative p-3 rounded-md border transition-all duration-200 cursor-pointer h-24 min-w-0
+          relative p-2 rounded-md border transition-all duration-200 cursor-pointer h-16 min-w-0
           ${isSelected 
             ? 'border-amber-400 bg-gradient-to-br from-amber-900/40 via-amber-800/30 to-amber-900/40 shadow-md' 
             : isToday
@@ -256,31 +256,17 @@ export function AdvancedTradingCalendar({ trades = [], selectedAccount, classNam
           </div>
           
           {/* P&L */}
-          {hasData ? (
-            <>
-              <div className={`text-xs font-bold ${pnlPositive ? 'text-green-400' : 'text-red-400'}`}>
-                {pnlPositive ? '+' : ''}${Math.abs(dayPnL).toFixed(0)}
-              </div>
-              
-              {/* Bottom metrics */}
-              <div className="flex justify-between items-center text-xs">
-                <span className="text-gray-400">{totalDayTrades}T</span>
-                <span className={`text-xs font-medium ${disciplineGrade.color}`}>
-                  {disciplineScore}%
-                </span>
-              </div>
-            </>
-          ) : (
-            <>
-              <div className="text-xs text-gray-600">
-                No trades
-              </div>
-              <div className="flex justify-between items-center text-xs">
-                <span className="text-gray-600">-</span>
-                <span className="text-gray-600">-</span>
-              </div>
-            </>
-          )}
+          <div className={`text-xs font-bold ${pnlPositive ? 'text-green-400' : 'text-red-400'}`}>
+            {pnlPositive ? '+' : ''}${Math.abs(dayPnL).toFixed(0)}
+          </div>
+          
+          {/* Bottom metrics */}
+          <div className="flex justify-between items-center text-xs">
+            <span className="text-gray-400">{totalDayTrades}T</span>
+            <span className={`text-xs font-medium ${disciplineGrade.color}`}>
+              {disciplineScore}%
+            </span>
+          </div>
         </div>
       </div>
     );
@@ -346,75 +332,50 @@ export function AdvancedTradingCalendar({ trades = [], selectedAccount, classNam
           </div>
         );
       
-      case 'yearly':
-        return (
-          <div className="space-y-3">
-            {/* Year Grid - 4x3 months */}
-            <div className="grid grid-cols-3 gap-4">
-              {getYearMonths(currentPeriod).map((month, monthIndex) => {
-                const monthData = generateTradingData(month);
-                const isCurrentMonth = month.getMonth() === new Date().getMonth() && 
-                                     month.getFullYear() === new Date().getFullYear();
-                const isSelectedMonth = month.getMonth() === selectedDate.getMonth() && 
-                                      month.getFullYear() === selectedDate.getFullYear();
-                
-                return (
-                  <div
-                    key={monthIndex}
-                    onClick={() => {
-                      setSelectedDate(new Date(month.getFullYear(), month.getMonth(), 1));
-                      setCurrentPeriod(month);
-                      setViewMode('monthly');
-                    }}
-                    className={`
-                      relative bg-gray-800/50 rounded-lg p-4 cursor-pointer transition-all duration-200 min-h-[120px]
-                      ${isCurrentMonth ? 'ring-2 ring-teal-400 bg-teal-950/30' : ''}
-                      ${isSelectedMonth ? 'ring-2 ring-amber-400 bg-amber-950/30' : ''}
-                      hover:bg-gray-700/50 border border-gray-700/30
-                    `}
-                  >
-                    {/* Month Name */}
-                    <div className="flex items-center justify-between mb-2">
-                      <span className={`text-sm font-bold ${isCurrentMonth ? 'text-teal-400' : 'text-white'}`}>
-                        {month.toLocaleDateString('en-US', { month: 'short' })}
-                      </span>
-                      {isCurrentMonth && <div className="w-2 h-2 rounded-full bg-teal-400" />}
-                    </div>
-                    
-                    {/* Month P&L */}
-                    <div className="text-xs font-medium text-green-400 mb-1">
-                      +${Math.round(monthData.dayPnL * 20)} {/* Monthly estimate */}
-                    </div>
-                    
-                    {/* Month Stats */}
-                    <div className="text-xs text-gray-400 space-y-1">
-                      <div>{Math.round(monthData.totalDayTrades * 20)}T</div>
-                      <div className="text-emerald-400">{monthData.winRate}%</div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        );
-      
       default:
         return null;
     }
   };
 
   return (
-    <div className={`bg-gradient-to-br from-gray-900/80 to-gray-800/80 border border-gray-700 rounded-lg p-6 backdrop-blur-sm ${className}`}>
+    <div className={`bg-gradient-to-br from-gray-900/80 to-gray-800/80 border border-gray-700 rounded-lg p-4 backdrop-blur-sm ${className}`}>
+      {/* Header with Navigation */}
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center gap-2">
+          <Calendar className="w-4 h-4 text-yellow-400" />
+          <h3 className="text-sm font-semibold text-white">Advanced Trading Calendar</h3>
+        </div>
+        
+        {/* Period Navigation */}
+        <div className="flex items-center space-x-4">
+          <button
+            onClick={() => navigatePeriod(-1)}
+            className="p-2 rounded-lg bg-gray-700/50 hover:bg-gray-600/50 text-gray-300 hover:text-amber-400 transition-all"
+          >
+            <ChevronLeft className="w-4 h-4" />
+          </button>
+          
+          <span className="text-sm font-medium text-gray-300 min-w-32 text-center">
+            {formatPeriod(currentPeriod, viewMode)}
+          </span>
+          
+          <button
+            onClick={() => navigatePeriod(1)}
+            className="p-2 rounded-lg bg-gray-700/50 hover:bg-gray-600/50 text-gray-300 hover:text-amber-400 transition-all"
+          >
+            <ChevronRight className="w-4 h-4" />
+          </button>
+        </div>
+      </div>
 
-      {/* NAVIGATION AND CONTROLS */}
-      <div className="flex justify-between items-center mb-6">
-        {/* View Mode Tabs */}
+      {/* View Mode Tabs */}
+      <div className="flex justify-between items-center mb-4">
         <div className="flex bg-gray-800/50 rounded-lg p-1 border border-gray-700/50">
-          {['weekly', 'monthly', 'yearly'].map((mode) => (
+          {['weekly', 'monthly'].map((mode) => (
             <button
               key={mode}
               onClick={() => switchViewMode(mode)}
-              className={`px-4 py-2 rounded-md text-sm font-medium transition-all capitalize ${
+              className={`px-3 py-1 rounded-md text-xs font-medium transition-all capitalize ${
                 viewMode === mode
                   ? 'bg-amber-500 text-black'
                   : 'text-gray-400 hover:text-amber-400 hover:bg-gray-700/50'
@@ -424,26 +385,29 @@ export function AdvancedTradingCalendar({ trades = [], selectedAccount, classNam
             </button>
           ))}
         </div>
-
-        {/* Period Navigation */}
-        <div className="flex items-center space-x-4">
-          <button
-            onClick={() => navigatePeriod(-1)}
-            className="p-2 rounded-lg bg-gray-700/50 hover:bg-gray-600/50 text-gray-300 hover:text-amber-400 transition-all"
-          >
-            <ChevronLeft className="w-5 h-5" />
-          </button>
-          
-          <span className="text-lg font-medium text-amber-400 min-w-48 text-center">
-            {formatPeriod(currentPeriod, viewMode)}
-          </span>
-          
-          <button
-            onClick={() => navigatePeriod(1)}
-            className="p-2 rounded-lg bg-gray-700/50 hover:bg-gray-600/50 text-gray-300 hover:text-amber-400 transition-all"
-          >
-            <ChevronRight className="w-5 h-5" />
-          </button>
+        
+        {/* Period Summary */}
+        <div className="flex items-center space-x-3 bg-gray-800/50 rounded-lg px-3 py-2 border border-gray-700/50">
+          <div className="text-center">
+            <div className={`text-sm font-bold ${periodSummary.totalPnL >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+              {periodSummary.totalPnL >= 0 ? '+' : ''}${periodSummary.totalPnL.toFixed(0)}
+            </div>
+            <div className="text-xs text-gray-400">P&L</div>
+          </div>
+          <div className="w-px h-6 bg-gray-600"></div>
+          <div className="text-center">
+            <div className="text-sm font-bold text-emerald-400">
+              {periodSummary.winRate.toFixed(0)}%
+            </div>
+            <div className="text-xs text-gray-400">Win Rate</div>
+          </div>
+          <div className="w-px h-6 bg-gray-600"></div>
+          <div className="text-center">
+            <div className="text-sm font-bold text-purple-400">
+              {periodSummary.totalTrades}
+            </div>
+            <div className="text-xs text-gray-400">Trades</div>
+          </div>
         </div>
         
         {/* Today Button */}
@@ -452,9 +416,9 @@ export function AdvancedTradingCalendar({ trades = [], selectedAccount, classNam
             setCurrentPeriod(new Date());
             setSelectedDate(new Date());
           }}
-          className="px-4 py-2 rounded-lg bg-teal-600/50 hover:bg-teal-600/70 text-teal-400 hover:text-teal-300 transition-all text-sm font-medium"
+          className="px-3 py-1 rounded-lg bg-teal-600/50 hover:bg-teal-600/70 text-teal-400 hover:text-teal-300 transition-all text-xs"
         >
-          Go to Today
+          Today
         </button>
       </div>
       

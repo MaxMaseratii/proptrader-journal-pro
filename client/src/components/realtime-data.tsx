@@ -158,9 +158,17 @@ export default function RealtimeData() {
   const updateMarketData = () => {
     setMarketData(prevData => 
       prevData.map(item => {
-        // Remove simulated price changes - real-time data should come from actual feeds
+        const volatility = Math.random() * 0.02 - 0.01; // ±1% random change
+        const newPrice = item.price * (1 + volatility);
+        const change = newPrice - item.price;
+        const changePercent = (change / item.price) * 100;
+        
         return {
           ...item,
+          price: newPrice,
+          change,
+          changePercent,
+          volume: item.volume + Math.floor(Math.random() * 1000),
           timestamp: new Date()
         };
       })

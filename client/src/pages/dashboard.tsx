@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from "react";
+import React, { useState, useMemo } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Link } from "wouter";
 import { apiRequest } from "@/lib/queryClient";
@@ -55,283 +55,25 @@ import {
   Trophy,
   Star,
   ChevronLeft,
-  ChevronRight,
-  Eye,
-  EyeOff,
-  ChevronDown
+  ChevronRight
 } from "lucide-react";
 import type { Account, Trade } from "@shared/schema";
 
-// TradingDashboard component - your custom calendar component
-const TradingDashboard = ({ trades: filteredTrades }: { trades?: Trade[] }) => {
-  // Set initial date to the most recent trade date if available, otherwise today
-  const [selectedDate, setSelectedDate] = useState(() => {
-    if (!filteredTrades || filteredTrades.length === 0) return new Date();
-    const tradeDates = filteredTrades.map(t => new Date(t.date)).sort((a, b) => b.getTime() - a.getTime());
-    return tradeDates[0] || new Date();
-  });
-
-  // Update selected date when filtered trades change
-  useEffect(() => {
-    if (filteredTrades && filteredTrades.length > 0) {
-      const tradeDates = filteredTrades.map(t => new Date(t.date)).sort((a, b) => b.getTime() - a.getTime());
-      const mostRecentDate = tradeDates[0];
-      if (mostRecentDate && mostRecentDate.toDateString() !== selectedDate.toDateString()) {
-        setSelectedDate(mostRecentDate);
-      }
-    }
-  }, [filteredTrades]);
-  const [currentPeriod, setCurrentPeriod] = useState(new Date());
-  const [viewMode, setViewMode] = useState('weekly'); // weekly, monthly, yearly
-  const [hoveredMetric, setHoveredMetric] = useState(null);
-  const [showPeriodPicker, setShowPeriodPicker] = useState(false);
-
-  // Calculate trading metrics from filtered trades data
-  const calculateTradingData = (date: Date, trades: Trade[] = []) => {
-    const dayTrades = trades.filter(trade => {
-      const tradeDate = new Date(trade.date);
-      return tradeDate.toDateString() === date.toDateString();
-    });
-
-    const totalPnl = dayTrades.reduce((sum, trade) => sum + (trade.pnl || 0), 0);
-    const winningTrades = dayTrades.filter(trade => (trade.pnl || 0) > 0);
-    const winRate = dayTrades.length > 0 ? (winningTrades.length / dayTrades.length) * 100 : 0;
-    
-    const avgRisk = dayTrades.length > 0 
-      ? dayTrades.reduce((sum, trade) => sum + Math.abs(trade.entryPrice - (trade.initialStopLoss || trade.entryPrice)), 0) / dayTrades.length 
-      : 0;
-    
-    const avgReward = dayTrades.length > 0 
-      ? dayTrades.reduce((sum, trade) => sum + Math.abs((trade.initialTakeProfit || trade.exitPrice || trade.entryPrice) - trade.entryPrice), 0) / dayTrades.length 
-      : 0;
-    
-    const avgRewardRatio = avgRisk > 0 ? avgReward / avgRisk : 0;
-
-    return {
-      date,
-      avgRiskPerTrade: avgRisk,
-      maxDailyRisk: avgRisk * dayTrades.length,
-      avgRewardRatio,
-      targetRewardRatio: 0, // No default - must come from account data
-      dailyTarget: 0, // No default - must come from account data  
-      dayPnL: totalPnl,
-      maxDailyTrades: 0, // No default - must come from account data
-      totalDayTrades: dayTrades.length,
-      disciplineScore: winRate,
-      winRate
-    };
-  };
-
-  // Helper function to convert discipline score to letter grade
-  const getDisciplineGrade = (score: number) => {
-    if (score >= 90) return { grade: 'A', color: 'text-green-400' };
-    if (score >= 80) return { grade: 'B', color: 'text-green-400' };
-    if (score >= 70) return { grade: 'C', color: 'text-yellow-400' };
-    if (score >= 60) return { grade: 'D', color: 'text-orange-400' };
-    return { grade: 'F', color: 'text-red-400' };
-  };
-
-  // Calendar helper functions
-  const getWeekDays = (date: Date) => {
-    const week = [];
-    const startOfWeek = new Date(date);
-    const day = startOfWeek.getDay();
-    const diff = startOfWeek.getDate() - day;
-    startOfWeek.setDate(diff);
-
-    for (let i = 0; i < 7; i++) {
-      const weekDay = new Date(startOfWeek);
-      weekDay.setDate(startOfWeek.getDate() + i);
-      week.push(weekDay);
-    }
-    return week;
-  };
-
-  const formatPeriod = (date: Date, mode: string) => {
-    switch (mode) {
-      case 'weekly':
-        const weekStart = getWeekDays(date)[0];
-        const weekEnd = getWeekDays(date)[6];
-        if (weekStart.getMonth() === weekEnd.getMonth()) {
-          return `${weekStart.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - ${weekEnd.getDate()}, ${weekStart.getFullYear()}`;
-        }
-        return `${weekStart.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - ${weekEnd.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}, ${weekStart.getFullYear()}`;
-      case 'monthly':
-        return date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
-      case 'yearly':
-        return date.getFullYear().toString();
-      default:
-        return '';
-    }
-  };
-
-  const navigatePeriod = (direction: number) => {
-    const newPeriod = new Date(currentPeriod);
-    switch (viewMode) {
-      case 'weekly':
-        newPeriod.setDate(newPeriod.getDate() + (direction * 7));
-        break;
-      case 'monthly':
-        newPeriod.setMonth(newPeriod.getMonth() + direction);
-        break;
-      case 'yearly':
-        newPeriod.setFullYear(newPeriod.getFullYear() + direction);
-        break;
-    }
-    setCurrentPeriod(newPeriod);
-  };
-
-  // ALWAYS show today's data in the first row metrics, regardless of calendar selection
-  const todayData = calculateTradingData(new Date(), filteredTrades || []);
-  const selectedDayData = calculateTradingData(selectedDate, filteredTrades || []);
-  const isToday = selectedDate.toDateString() === new Date().toDateString();
-
-  return (
-    <div className="w-full mb-6">
-      <div className="w-full">
-        
-        {/* Main Dashboard Layout - ONLY 2x4 GRID - FULL WIDTH */}
-        <div className="w-full">
-          
-          {/* Selected Day Detail - NOW WITH 2x4 GRID - FULL WIDTH */}
-          <div className="w-full">
-            <div className={`
-              relative transition-all duration-200 rounded-lg overflow-hidden w-full
-              ${isToday 
-                ? 'bg-gradient-to-br from-teal-950/40 via-gray-900/60 to-black/80 border border-teal-400/50' 
-                : 'bg-gradient-to-br from-gray-900/40 via-gray-800/60 to-black/80 border border-gray-600/30'
-              }
-              hover:border-amber-400/60
-            `}>
-              
-              {/* Ultra Compact Layout - Full Width */}
-              <div className="p-4">
-                
-                {/* Header + PNL Combined - ALWAYS TODAY */}
-                <div className="flex items-center justify-between mb-3">
-                  <div className="flex items-center space-x-2">
-                    <Calendar className="w-4 h-4 text-amber-400" />
-                    <span className="text-lg font-bold text-amber-400">
-                      Today {new Date().toLocaleDateString('en-US', { weekday: 'short' })} {new Date().getDate()}
-                    </span>
-                    <div className="w-2 h-2 rounded-full bg-teal-400" />
-                  </div>
-                  <div className="bg-gray-900/80 rounded-lg px-4 py-3 border border-gray-700/50">
-                    <div className="flex items-center space-x-2">
-                      <span className="text-sm text-gray-400">Daily P&L:</span>
-                      <span className={`text-lg font-bold ${todayData.dayPnL >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-                        {todayData.dayPnL >= 0 ? '+' : ''}${todayData.dayPnL.toFixed(2)}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Compact Progress Bar with Text Inside */}
-                <div className="mb-4">
-                  <div className="relative w-3/4 bg-gray-700/50 rounded-full h-6 mx-auto">
-                    <div 
-                      className="h-6 rounded-full transition-all duration-500 flex items-center justify-center bg-green-400"
-                      style={{ width: '0%', minWidth: '120px' }}
-                    >
-                      <span className="text-xs font-medium text-black">
-                        {selectedDayData.dailyTarget > 0 ? Math.round((selectedDayData.dayPnL / selectedDayData.dailyTarget) * 100) : 0}% of ${selectedDayData.dailyTarget} target
-                      </span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* 2 Rows x 4 Columns Grid - Full Width Dashboard */}
-                <div className="space-y-4">
-                  
-                  {/* Row 1 */}
-                  <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-4 gap-6">
-                    
-                    {/* Risk + Max Daily Loss Combined - ALWAYS TODAY'S DATA */}
-                    <div className="bg-black/30 rounded-lg p-4 border border-gray-700/50 relative">
-                      <div className="absolute top-3 right-3 text-xs text-red-400">Max: ${todayData.maxDailyRisk.toFixed(0)}</div>
-                      <div className="text-3xl font-bold text-red-400 mb-1">${todayData.avgRiskPerTrade.toFixed(0)}</div>
-                      <div className="text-sm text-gray-400">Risk Per Trade</div>
-                    </div>
-
-                    {/* R:R - ALWAYS TODAY'S DATA */}
-                    <div className="bg-black/30 rounded-lg p-4 border border-gray-700/50 relative">
-                      <div className="absolute top-3 right-3 text-xs text-blue-300">Target: {todayData.targetRewardRatio.toFixed(1)} RR</div>
-                      <div className="text-3xl font-bold text-blue-400 mb-1">{todayData.avgRewardRatio.toFixed(1)}</div>
-                      <div className="text-sm text-gray-400">Risk:Reward</div>
-                      <div className="text-xs text-blue-300 mt-1">AVG. Ratio 1:{todayData.avgRewardRatio.toFixed(1)}</div>
-                    </div>
-
-                    {/* Trades - ALWAYS TODAY'S DATA */}
-                    <div className="bg-black/30 rounded-lg p-4 border border-gray-700/50 relative">
-                      <div className="absolute top-3 right-3 text-xs text-purple-300">Max: {todayData.maxDailyTrades}</div>
-                      <div className="text-3xl font-bold text-purple-400 mb-1">{todayData.totalDayTrades}</div>
-                      <div className="text-sm text-gray-400">Trades Today</div>
-                    </div>
-
-                    {/* Hours Worked */}
-                    <div className="bg-black/30 rounded-lg p-4 border border-gray-700/50 relative">
-                      <div className="absolute top-3 right-3 text-xs text-indigo-300">
-                        <div className="flex items-center space-x-1">
-                          <div className="w-2 h-2 rounded-full bg-indigo-400"></div>
-                          <span>Plan: 0h</span>
-                        </div>
-                      </div>
-                      <div className="text-3xl font-bold text-indigo-400 mb-1">0h</div>
-                      <div className="text-sm text-gray-400 mb-1">Hours Worked</div>
-                      <div className="text-xs text-indigo-300 mb-1">Hourly wage: $0</div>
-                      <div className="text-xs text-gray-300">Total: $0 (H. Worked x H. Wage)</div>
-                    </div>
-                  </div>
-
-                  {/* Row 2 */}
-                  <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-4 gap-6">
-                    
-                    {/* Discipline */}
-                    <div className="bg-black/30 rounded-lg p-4 border border-gray-700/50 relative">
-                      <div className="absolute top-3 right-3 text-xs text-emerald-300">Win: {selectedDayData.winRate.toFixed(0)}%</div>
-                      <div className={`text-3xl font-bold mb-1 ${getDisciplineGrade(selectedDayData.disciplineScore).color}`}>
-                        {getDisciplineGrade(selectedDayData.disciplineScore).grade}
-                      </div>
-                      <div className="text-sm text-gray-400">Discipline</div>
-                    </div>
-
-                    {/* Risk Utilization */}
-                    <div className="bg-black/30 rounded-lg p-4 border border-gray-700/50 relative">
-                      <div className="absolute top-3 right-3 text-xs text-orange-300">Used</div>
-                      <div className="text-3xl font-bold text-orange-400 mb-1">0%</div>
-                      <div className="text-sm text-gray-400 mb-1">Risk Utilization</div>
-                      <div className="text-xs text-orange-300">Total: $0</div>
-                    </div>
-
-                    {/* Wins and Losses */}
-                    <div className="bg-black/30 rounded-lg p-4 border border-gray-700/50 relative">
-                      <div className="absolute top-3 right-3 text-xs text-green-300">W/L</div>
-                      <div className="flex items-center space-x-2 mb-1">
-                        <span className="text-lg font-bold text-green-400">W: $0</span>
-                        <span className="text-lg font-bold text-red-400">L: $0</span>
-                      </div>
-                      <div className="text-sm text-gray-400 mb-1">Total Wins and Losses</div>
-                      <div className="text-xs text-gray-300">Avg W/L $0 / $0</div>
-                    </div>
-
-                    {/* Win Rate */}
-                    <div className="bg-black/30 rounded-lg p-4 border border-gray-700/50 relative">
-                      <div className="absolute top-3 right-3 text-xs text-emerald-300">WR</div>
-                      <div className={`text-3xl font-bold mb-1 ${selectedDayData.winRate >= 50 ? 'text-emerald-400' : 'text-red-400'}`}>
-                        {selectedDayData.winRate.toFixed(0)}%
-                      </div>
-                      <div className="text-sm text-gray-400">Win Rate</div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-};
+interface DashboardAnalytics {
+  account: Account;
+  totalPnl: number;
+  winRate: number;
+  totalTrades: number;
+  winningTrades: number;
+  losingTrades: number;
+  bestTrade: number;
+  worstTrade: number;
+  currentBalance: number;
+  drawdown: number;
+  profitTarget: number;
+  dailyLossLimit: number;
+  riskLimitUsed: number;
+}
 
 export default function Dashboard() {
   const queryClient = useQueryClient();
@@ -391,7 +133,8 @@ export default function Dashboard() {
     return saved ? saved as 'all' | 'single' | 'multiple' : 'all';
   });
   
-
+  // Separate state for Payout Status widget (independent from global selection)
+  const [payoutStatusAccountId, setPayoutStatusAccountId] = useState<number | null>(null);
 
   const { data: accounts, isLoading: accountsLoading } = useQuery<Account[]>({
     queryKey: ["/api/accounts"],
@@ -439,7 +182,15 @@ export default function Dashboard() {
     }
   }, [accounts, selectedAccountIds, accountSelectionMode]);
 
-
+  // Initialize payout status account
+  React.useEffect(() => {
+    if (accounts && !payoutStatusAccountId) {
+      const firstAccount = accounts[0];
+      if (firstAccount) {
+        setPayoutStatusAccountId(firstAccount.id);
+      }
+    }
+  }, [accounts, payoutStatusAccountId]);
 
   // Persist account selection changes
   React.useEffect(() => {
@@ -548,19 +299,18 @@ export default function Dashboard() {
   const totalInvestment = useMemo(() => {
     if (!spending || !accounts) return 0;
     
-    const spendingArray = Array.isArray(spending) ? spending : [];
     let spendings: any[] = [];
     
     if (accountSelectionMode === 'all') {
-      spendings = spendingArray;
+      spendings = spending;
     } else if (accountSelectionMode === 'single' && selectedAccountIds.length > 0) {
-      spendings = spendingArray.filter((s: any) => s.accountId === selectedAccountIds[0]);
+      spendings = spending.filter(s => s.accountId === selectedAccountIds[0]);
     } else {
       const accountIdsToUse = selectedAccountIds.length > 0 ? selectedAccountIds : (accounts.length > 0 ? [accounts[0].id] : []);
-      spendings = spendingArray.filter((s: any) => accountIdsToUse.includes(s.accountId));
+      spendings = spending.filter(s => accountIdsToUse.includes(s.accountId));
     }
     
-    return spendings.reduce((sum, spendingItem) => sum + spendingItem.amount, 0);
+    return spendings.reduce((sum, spending) => sum + spending.amount, 0);
   }, [spending, accounts, selectedAccountIds, accountSelectionMode]);
 
   // Calculate ROI percentage
@@ -596,14 +346,13 @@ export default function Dashboard() {
       if (account.type !== 'funded') return; // Only funded accounts have payouts
       
       const accountTrades = trades.filter(t => t.accountId === account.id);
-      const accountPnL = accountTrades.reduce((sum, trade) => sum + (trade.pnl || 0), 0);
-      const currentProfit = accountPnL;
+      const currentProfit = account.currentBalance - account.startingBalance;
       
       // Check payout requirements - use actual user-entered values
       const daysRequired = account.daysRequiredForPayout || 0;
       const winningDayMinimum = account.winningDayMinimum || 0;
       const minimumPayoutAmount = account.minimumPayoutAmount || 0;
-      const maxPayoutPercentage = account.maximumPayoutPerAccount ? (account.maximumPayoutPerAccount / 100) : 1;
+      const maxPayoutPercentage = account.maximumPayoutPercentage ? (account.maximumPayoutPercentage / 100) : 1;
       const profitSplit = account.profitSplit ? (account.profitSplit / 100) : 1;
       const bufferPercentage = account.bufferPercentage ? (account.bufferPercentage / 100) : 0;
       
@@ -806,7 +555,9 @@ export default function Dashboard() {
             </Link>
             <div className="relative">
               <Bell className="h-5 w-5 text-gray-400" />
-              {/* Remove hardcoded notification count - notifications should come from actual data */}
+              <span className="absolute -top-1 -right-1 bg-error-red text-xs rounded-full w-4 h-4 flex items-center justify-center text-white">
+                3
+              </span>
             </div>
           </div>
         </div>
@@ -862,37 +613,9 @@ export default function Dashboard() {
 
 
 
-        {/* UNIFIED HEADER WITH MATCHING DASHBOARD STYLE */}
-        <div className="mb-6">
-          <div className="flex items-center justify-between mb-6 border-b border-gray-700 pb-3">
-            <h2 className="text-xl font-bold text-gradient-rainbow flex items-center">
-              <Calendar className="mr-3 h-5 w-5 text-prop-gold" />
-              Daily Risk Management & Advanced Trading Calendar
-            </h2>
-          </div>
-        </div>
-
-        {/* ROW 0: TRADING CALENDAR COMPONENT - FULL WIDTH */}
-        <TradingDashboard 
-          trades={selectedAccountIds.length > 0
-            ? trades?.filter(t => selectedAccountIds.includes(t.accountId)) || []
-            : trades || []
-          }
-        />
+        {/* COMPACT DASHBOARD: NO EMPTY SPACES */}
         
-        {/* ROW 1: ADVANCED TRADING CALENDAR - FULL WIDTH */}
-        <div className="w-full mb-6">
-          <AdvancedTradingCalendar 
-            trades={selectedAccountIds.length > 0
-              ? trades?.filter(t => selectedAccountIds.includes(t.accountId)) || []
-              : trades || []
-            }
-            selectedAccount={selectedAccountIds.length === 1 ? selectedAccountIds[0].toString() : "all"}
-            className="w-full"
-          />
-        </div>
-        
-        {/* ROW 2: PRIMARY FINANCIAL METRICS */}
+        {/* ROW 1: PRIMARY FINANCIAL METRICS */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 mb-3">
           {/* Net Balance */}
           <div className="widget-container">
@@ -940,56 +663,6 @@ export default function Dashboard() {
               </div>
               <div className="widget-icon-square">
                 <Target className="widget-icon" />
-              </div>
-            </div>
-          </div>
-
-          {/* Discipline Score - MOVED FROM ROW 3 */}
-          <div className="widget-container">
-            <div className="widget-content">
-              <div className="widget-left">
-                <p className="widget-label">Discipline Score</p>
-                {(() => {
-                  const filteredTrades = selectedAccountIds.length > 0
-                    ? trades?.filter(t => selectedAccountIds.includes(t.accountId)) || []
-                    : trades || [];
-                  
-                  if (filteredTrades.length === 0) {
-                    return (
-                      <div>
-                        <p className="widget-value text-gray-400">No Score</p>
-                        <p className="widget-description text-xs">No trades to analyze</p>
-                      </div>
-                    );
-                  }
-                  
-                  const disciplineMetrics = calculateComprehensiveDisciplineMetrics(
-                    filteredTrades,
-                    accounts || [],
-                    selectedAccountIds.length === 1 ? selectedAccountIds[0].toString() : "all"
-                  );
-                  
-                  let grade = 'F';
-                  if (disciplineMetrics.disciplineScore >= 90) grade = 'A+';
-                  else if (disciplineMetrics.disciplineScore >= 80) grade = 'A';
-                  else if (disciplineMetrics.disciplineScore >= 70) grade = 'B';
-                  else if (disciplineMetrics.disciplineScore >= 60) grade = 'C';
-                  else if (disciplineMetrics.disciplineScore >= 50) grade = 'D';
-                  
-                  return (
-                    <div>
-                      <p className={`widget-value ${disciplineMetrics.disciplineScore >= 80 ? 'text-green-400' : disciplineMetrics.disciplineScore >= 60 ? 'text-yellow-400' : 'text-red-400'}`}>
-                        {Math.round(disciplineMetrics.disciplineScore)}% {grade}
-                      </p>
-                      <p className="widget-description text-xs">
-                        {Math.round(disciplineMetrics.riskManagementScore)}% risk • {Math.round(disciplineMetrics.consistencyScore)}% consistency
-                      </p>
-                    </div>
-                  );
-                })()}
-              </div>
-              <div className="widget-icon-square">
-                <Brain className="widget-icon" />
               </div>
             </div>
           </div>
@@ -1066,48 +739,93 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* ROW 3: ACCOUNT EQUITY CURVE - MOVED FROM CHARTS SECTION */}
-        <div className="grid grid-cols-1 gap-3 mb-3">
-          {/* Account Equity Curve */}
+        {/* ROW 3: RISK & PLANNING */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 mb-3">
+
+
+
+
+
+
+          {/* Discipline Score */}
           <div className="widget-container">
-            <div className="widget-content flex-col">
-              <div className="widget-left mb-4">
-                <p className="widget-label">Account Equity Curve</p>
-                <p className="widget-description">Portfolio growth over time</p>
+            <div className="widget-content">
+              <div className="widget-left">
+                <p className="widget-label">Discipline Score</p>
+                {(() => {
+                  const filteredTrades = selectedAccountIds.length > 0
+                    ? trades?.filter(t => selectedAccountIds.includes(t.accountId)) || []
+                    : trades || [];
+                  
+                  if (filteredTrades.length === 0) {
+                    return (
+                      <div>
+                        <p className="widget-value text-gray-400">No Score</p>
+                        <p className="widget-description text-xs">No trades to analyze</p>
+                      </div>
+                    );
+                  }
+                  
+                  const disciplineMetrics = calculateComprehensiveDisciplineMetrics(
+                    filteredTrades,
+                    accounts || [],
+                    selectedAccountIds.length === 1 ? selectedAccountIds[0].toString() : "all"
+                  );
+                  
+                  let grade = 'F';
+                  if (disciplineMetrics.disciplineScore >= 90) grade = 'A+';
+                  else if (disciplineMetrics.disciplineScore >= 80) grade = 'A';
+                  else if (disciplineMetrics.disciplineScore >= 70) grade = 'B';
+                  else if (disciplineMetrics.disciplineScore >= 60) grade = 'C';
+                  else if (disciplineMetrics.disciplineScore >= 50) grade = 'D';
+                  
+                  return (
+                    <div>
+                      <p className={`widget-value ${disciplineMetrics.disciplineScore >= 80 ? 'text-green-400' : disciplineMetrics.disciplineScore >= 60 ? 'text-yellow-400' : 'text-red-400'}`}>
+                        {Math.round(disciplineMetrics.disciplineScore)}% {grade}
+                      </p>
+                      <p className="widget-description text-xs">
+                        {Math.round(disciplineMetrics.riskManagementScore)}% risk • {Math.round(disciplineMetrics.consistencyScore)}% consistency
+                      </p>
+                    </div>
+                  );
+                })()}
               </div>
-              <div className="h-64 w-full">
-                <EquityChart data={getEquityData()} />
+              <div className="widget-icon-square">
+                <Brain className="widget-icon" />
               </div>
             </div>
           </div>
         </div>
 
-        {/* Investment Tracking Row 2: Total Payout (Col 1) + Account Status (Col 2) */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
-          {/* Column 1: Total Payout (Moved from Row 9 Column 4) */}
+        {/* ROW 4: INVESTMENT & FINANCIAL TRACKING */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 mb-3">
+          {/* Investment ROI Summary */}
           <div className="widget-container">
             <div className="widget-content">
               <div className="widget-left">
-                <p className="widget-label">Total Payout</p>
-                <p className="widget-value text-green-400">
-                  {(() => {
-                    const selectedAccounts = selectedAccountIds.length > 0 && accountSelectionMode !== 'all'
-                      ? accounts?.filter(acc => selectedAccountIds.includes(acc.id)) || []
-                      : accounts || [];
-                    
-                    // Calculate total potential payout from funded/live accounts
-                    const totalPayout = selectedAccounts
-                      .filter(acc => acc.type === 'funded' || acc.type === 'live')
-                      .reduce((sum, acc) => {
-                        const accountTrades = trades?.filter(t => t.accountId === acc.id) || [];
-                        const totalPnl = accountTrades.reduce((total, trade) => total + (trade.pnl || 0), 0);
-                        return sum + Math.max(0, totalPnl); // Only positive P&L counts towards payout
-                      }, 0);
-                    
-                    return formatCurrency(totalPayout);
-                  })()}
+                <p className="widget-label">Investment ROI Summary</p>
+                <div className="investment-summary space-y-1">
+                  <div className="total-invested flex justify-between">
+                    <span className="text-sm">Total Invested:</span>
+                    <span className="text-sm font-semibold">{formatCurrency(totalInvestment)}</span>
+                  </div>
+                  <div className="total-returns flex justify-between">
+                    <span className="text-sm">Total Returns:</span>
+                    <span className={`text-sm font-semibold ${getValueColor(combinedAnalytics?.totalPnl || 0)}`}>
+                      {formatCurrency(combinedAnalytics?.totalPnl || 0)}
+                    </span>
+                  </div>
+                  <div className="roi-percentage flex justify-between">
+                    <span className="text-sm">ROI:</span>
+                    <span className={`text-sm font-semibold ${getValueColor(roiPercentage)}`}>
+                      {roiPercentage.toFixed(1)}%
+                    </span>
+                  </div>
+                </div>
+                <p className="widget-description text-xs">
+                  {roiPercentage > 0 ? 'PROFITABLE TRADER' : 'BUILDING CAPITAL'}
                 </p>
-                <p className="widget-description">Available for withdrawal</p>
               </div>
               <div className="widget-icon-square">
                 <DollarSign className="widget-icon" />
@@ -1115,7 +833,64 @@ export default function Dashboard() {
             </div>
           </div>
 
-          {/* Column 2: Account Status (Moved from Row 4 Column 1) */}
+          {/* Personal Hourly Wages */}
+          <div className="widget-container">
+            <div className="widget-content">
+              <div className="widget-left">
+                <p className="widget-label">Personal Hourly Wages</p>
+                {(() => {
+                  const filteredTrades = selectedAccountIds.length > 0
+                    ? trades?.filter(t => selectedAccountIds.includes(t.accountId)) || []
+                    : trades || [];
+                  
+                  if (filteredTrades.length === 0) {
+                    return (
+                      <div>
+                        <p className="widget-value text-gray-400">$0.00</p>
+                        <p className="widget-description text-xs">No trading hours logged</p>
+                      </div>
+                    );
+                  }
+                  
+                  const hourlyWage = user?.personalHourlyWage || 25;
+                  const uniqueDays = new Set(filteredTrades.map(t => t.date.split('T')[0])).size || 0;
+                  const totalTradingHours = uniqueDays * 8; // 8 hours per trading day
+                  const totalPnl = filteredTrades.reduce((sum, trade) => sum + (trade.pnl || 0), 0);
+                  const expectedEarnings = hourlyWage * totalTradingHours;
+                  const actualPerformance = totalPnl - expectedEarnings; // Actual PnL vs expected wages
+                  
+                  return (
+                    <div>
+                      <p className={`widget-value ${actualPerformance >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                        {formatCurrency(actualPerformance)}
+                      </p>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          setNewWage((user?.personalHourlyWage || 25).toString());
+                          setShowWageModal(true);
+                        }}
+                        className="mb-2 text-xs bg-blue-600 hover:bg-blue-700 text-white border-blue-600"
+                      >
+                        Set Hourly Wage
+                      </Button>
+                      <p className="widget-description text-xs">
+                        Target: {formatCurrency(expectedEarnings)} ({formatCurrency(hourlyWage)}/hr × {totalTradingHours.toFixed(1)} hours)
+                      </p>
+                    </div>
+                  );
+                })()}
+              </div>
+              <div className="widget-icon-square">
+                <Clock className="widget-icon" />
+              </div>
+            </div>
+          </div>
+
+
+
+          {/* Account Status Summary */}
           <div className="widget-container">
             <div className="widget-content">
               <div className="widget-left">
@@ -1149,6 +924,8 @@ export default function Dashboard() {
               </div>
             </div>
           </div>
+
+
         </div>
 
         {/* ROW 5: ACTIVE ACCOUNTS & ANALYSIS */}
@@ -1228,7 +1005,56 @@ export default function Dashboard() {
             </div>
           </div>
 
-
+          {/* Payout Status */}
+          <div className="widget-container">
+            <div className="widget-content">
+              <div className="widget-left">
+                <p className="widget-label">Payout Status</p>
+                {(() => {
+                  const payoutAccount = accounts?.find(a => a.id === payoutStatusAccountId);
+                  if (!payoutAccount) return <p className="text-gray-400 text-sm">No account selected</p>;
+                  
+                  if (payoutAccount.type === 'challenge') {
+                    return (
+                      <div className="payout-info">
+                        <p className="text-sm text-yellow-400">Focus on passing challenge</p>
+                        <p className="text-xs text-gray-400">Complete challenge requirements first</p>
+                      </div>
+                    );
+                  }
+                  
+                  const accountTrades = trades?.filter(t => t.accountId === payoutAccount.id) || [];
+                  const currentProfit = accountTrades.reduce((sum, trade) => sum + (trade.pnl || 0), 0);
+                  const minimumPayout = payoutAccount.minimumPayoutAmount || 0;
+                  const maxNetBalance = payoutAccount.maxNetBalanceForPayout || 0;
+                  const requiredTotal = maxNetBalance + minimumPayout;
+                  
+                  return (
+                    <div className="payout-progress">
+                      <div className="progress-bar-container">
+                        <div className="progress-info flex justify-between text-xs">
+                          <span>Progress:</span>
+                          <span>{formatCurrency(currentProfit)} / {formatCurrency(requiredTotal)}</span>
+                        </div>
+                        <div className="progress-bar bg-gray-700 rounded-full h-2 mt-1">
+                          <div 
+                            className="progress-fill bg-green-500 h-2 rounded-full transition-all duration-300"
+                            style={{ width: `${Math.min(100, (currentProfit / requiredTotal) * 100)}%` }}
+                          />
+                        </div>
+                      </div>
+                      <p className="text-xs text-gray-400 mt-1">
+                        {currentProfit >= requiredTotal ? '✅ Eligible for payout' : '⏳ Building towards payout'}
+                      </p>
+                    </div>
+                  );
+                })()}
+              </div>
+              <div className="widget-icon-square">
+                <DollarSign className="widget-icon" />
+              </div>
+            </div>
+          </div>
 
 
         </div>
@@ -1302,22 +1128,8 @@ export default function Dashboard() {
           </div>
         </div>
 
-
-
-
-
-        {/* Investment Tracking */}
-        <div className="mb-6">
-          <h2 className="text-xl font-bold text-gradient-rainbow mb-6 flex items-center border-b border-gray-700 pb-3">
-            <Shield className="mr-3 h-5 w-5 text-green-400" />
-            Investment Tracking
-          </h2>
-        </div>
-
-
-
-        {/* ROW 8: TOTAL PORTFOLIO VALUE - MOVED FROM PREVIOUS LOCATION */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 mb-3">
+        {/* Total Portfolio Value Row */}
+        <div className="widget-grid mb-6">
           {/* Total Portfolio Value */}
           <div className="widget-container">
             <div className="widget-content">
@@ -1333,11 +1145,54 @@ export default function Dashboard() {
               </div>
             </div>
           </div>
+
+          {/* Total Investment */}
+          <div className="widget-container">
+            <div className="widget-content">
+              <div className="widget-left">
+                <p className="widget-label">Total Investment</p>
+                <p className="widget-value">
+                  {formatCurrency(totalInvestment)}
+                </p>
+                <p className="widget-description">Selected accounts investment</p>
+              </div>
+              <div className="widget-icon-square">
+                <TrendingUp className="widget-icon" />
+              </div>
+            </div>
+          </div>
+
+          {/* Total Return */}
+          <div className="widget-container">
+            <div className="widget-content">
+              <div className="widget-left">
+                <p className="widget-label">Total Return</p>
+                <p className="widget-value">
+                  {formatCurrency(combinedAnalytics?.totalPnl || 0)}
+                </p>
+                <p className="widget-description">Profit/Loss from trading</p>
+              </div>
+              <div className="widget-icon-square">
+                <TrendingUp className="widget-icon" />
+              </div>
+            </div>
+          </div>
         </div>
 
-        {/* Investment Tracking Row 1: Total Spent + Second Row Moved Here (Columns 2,3,4) */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 mb-3">
-          {/* Column 1: Total Spent on Accounts */}
+
+
+        {/* Investment Tracking */}
+        <div className="mb-6">
+          <h2 className="text-xl font-bold text-gradient-rainbow mb-6 flex items-center border-b border-gray-700 pb-3">
+            <Shield className="mr-3 h-5 w-5 text-green-400" />
+            Investment Tracking
+          </h2>
+        </div>
+
+
+
+        {/* Investment Tracking & Working Hours Summary */}
+        <div className="widget-grid mb-6">
           <div className="widget-container">
             <div className="widget-content">
               <div className="widget-left">
@@ -1366,7 +1221,84 @@ export default function Dashboard() {
             </div>
           </div>
 
-          {/* Column 2: Total Working Hours (Moved from Row 2) */}
+          <div className="widget-container">
+            <div className="widget-content">
+              <div className="widget-left">
+                <p className="widget-label">Activation Costs</p>
+                {(() => {
+                  const selectedAccounts = selectedAccountIds.length > 0 && accountSelectionMode !== 'all'
+                    ? accounts?.filter(acc => selectedAccountIds.includes(acc.id)) || []
+                    : accounts || [];
+                  
+                  const totalActivationCost = selectedAccounts.reduce((sum, acc) => sum + (acc.activationCost || 0), 0);
+                  const accountText = accountSelectionMode === 'all' ? 'all accounts' : `${selectedAccounts.length} selected account(s)`;
+                  
+                  return (
+                    <div>
+                      <p className="widget-value">
+                        {formatCurrency(totalActivationCost)}
+                      </p>
+                      <p className="widget-description">Activation fees for {accountText}</p>
+                    </div>
+                  );
+                })()}
+              </div>
+              <div className="widget-icon-square">
+                <Shield className="widget-icon" />
+              </div>
+            </div>
+          </div>
+
+
+
+          <div className="widget-container">
+            <div className="widget-content">
+              <div className="widget-left">
+                <p className="widget-label">Total Combined</p>
+                {(() => {
+                  const selectedAccounts = selectedAccountIds.length > 0 && accountSelectionMode !== 'all'
+                    ? accounts?.filter(acc => selectedAccountIds.includes(acc.id)) || []
+                    : accounts || [];
+                  
+                  const accountCosts = selectedAccounts.reduce((sum, acc) => sum + (acc.accountCost || 0), 0);
+                  const activationCosts = selectedAccounts.reduce((sum, acc) => sum + (acc.activationCost || 0), 0);
+                  const manualSpending = (() => {
+                    if (!spending || !accounts) return 0;
+                    let spendings: any[] = [];
+                    
+                    if (accountSelectionMode === 'all') {
+                      spendings = spending;
+                    } else if (accountSelectionMode === 'single' && selectedAccountIds.length > 0) {
+                      spendings = spending.filter(s => s.accountId === selectedAccountIds[0]);
+                    } else {
+                      const accountIdsToUse = selectedAccountIds.length > 0 ? selectedAccountIds : (accounts.length > 0 ? [accounts[0].id] : []);
+                      spendings = spending.filter(s => accountIdsToUse.includes(s.accountId));
+                    }
+                    
+                    return spendings.reduce((sum, spending) => sum + spending.amount, 0);
+                  })();
+                  const total = accountCosts + activationCosts + manualSpending;
+                  const accountText = accountSelectionMode === 'all' ? 'all accounts' : `${selectedAccounts.length} selected account(s)`;
+                  
+                  return (
+                    <div>
+                      <p className={`widget-value ${total > 0 ? 'text-red-400' : 'text-white'}`}>
+                        {formatCurrency(total)}
+                      </p>
+                      <p className="widget-description">Total investment for {accountText}</p>
+                    </div>
+                  );
+                })()}
+              </div>
+              <div className="widget-icon-square">
+                <TrendingUp className="widget-icon" />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Working Hours & Profitability Summary - Under Investment Tracking */}
+        <div className="widget-grid mb-8">
           <div className="widget-container">
             <div className="widget-content">
               <div className="widget-left">
@@ -1397,7 +1329,6 @@ export default function Dashboard() {
             </div>
           </div>
 
-          {/* Column 3: Average Hours Per Day (Moved from Row 2) */}
           <div className="widget-container">
             <div className="widget-content">
               <div className="widget-left">
@@ -1444,7 +1375,6 @@ export default function Dashboard() {
             </div>
           </div>
 
-          {/* Column 4: Profitability (Moved from Row 2) */}
           <div className="widget-container">
             <div className="widget-content">
               <div className="widget-left">
@@ -1474,8 +1404,6 @@ export default function Dashboard() {
             </div>
           </div>
         </div>
-
-
 
         {/* Add Investment Tracking Controls */}
         <div className="flex justify-end mb-8">
@@ -1634,9 +1562,45 @@ export default function Dashboard() {
         <div className="widget-grid mb-6">
 
 
+          {/* Daily Trade Limit */}
+          <div className="widget-container">
+            <div className="widget-content">
+              <div className="widget-left">
+                <p className="widget-label">Daily Trade Limit</p>
+                <p className="widget-value">
+                  {trades?.filter(t => t.date === new Date().toISOString().split('T')[0]).length || 0} / 5
+                </p>
+                <p className="widget-description">
+                  Current trades today / Maximum allowed
+                </p>
+              </div>
+              <div className="widget-icon-square">
+                <BarChart3 className="widget-icon" />
+              </div>
+            </div>
+          </div>
 
-
-
+          {/* Personal Hourly Wage */}
+          <div className="widget-container">
+            <div className="widget-content">
+              <div className="widget-left">
+                <p className="widget-label">Personal Hourly Wage</p>
+                <p className={`widget-value ${
+                  user?.personalHourlyWage && ((combinedAnalytics?.totalPnl || 0) / 35.0) >= user.personalHourlyWage 
+                    ? 'text-green-400' 
+                    : 'text-red-400'
+                }`}>
+                  {formatCurrency((combinedAnalytics?.totalPnl || 0) / 35.0)}
+                </p>
+                <p className="widget-description">
+                  Target: {formatCurrency(user?.personalHourlyWage || 25)} / 35.0 hours
+                </p>
+              </div>
+              <div className="widget-icon-square">
+                <DollarSign className="widget-icon" />
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* Risk Alert and Disciplined Trading Analysis */}
@@ -1695,14 +1659,232 @@ export default function Dashboard() {
             </div>
           </div>
 
+          {/* Payout Status */}
+          <div className="widget-container">
+            <div className="widget-content flex-col">
+              <div className="flex items-center justify-between mb-4">
+                <div className="widget-left">
+                  <p className="widget-label">Payout Status</p>
+                  <p className="widget-description">Track payout eligibility</p>
+                </div>
+                <Select value={payoutStatusAccountId?.toString() || ''} onValueChange={(value) => setPayoutStatusAccountId(Number(value))}>
+                  <SelectTrigger className="w-48 bg-gray-800 border-gray-600 text-white text-sm">
+                    <SelectValue placeholder="Select account" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-gray-800 border-gray-600">
+                    {accounts?.map(account => (
+                      <SelectItem key={account.id} value={account.id.toString()} className="text-white">
+                        {account.name} {account.status === 'active' ? '(Active)' : ''}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              {(() => {
+                const selectedAccount = accounts?.find(acc => acc.id === payoutStatusAccountId);
+                if (!selectedAccount) return null;
+                
+                // Check if account type is eligible for payout
+                const isEligibleAccountType = selectedAccount.type === 'funded' || selectedAccount.type === 'live';
+                
+                if (!isEligibleAccountType) {
+                  return (
+                    <div className="space-y-4">
+                      <div className="text-center p-4 rounded-lg bg-gray-800">
+                        <p className="text-xl font-bold text-gray-400">
+                          {selectedAccount.type === 'challenge' ? 'CHALLENGE ACCOUNT' : 'NOT ELIGIBLE'}
+                        </p>
+                        <p className="text-sm text-gray-400 mt-2">
+                          {selectedAccount.type === 'challenge' 
+                            ? 'Focus on passing the challenge. Payouts available after funded.'
+                            : 'Account type not eligible for payouts'}
+                        </p>
+                      </div>
+                    </div>
+                  );
+                }
+                
+                const accountTrades = trades?.filter(t => t.accountId === selectedAccount.id) || [];
+                // Use actual account-specific payout rules from database
+                const requiredDays = selectedAccount.daysRequiredForPayout || 0;
+                const winningDayMinimum = selectedAccount.winningDayMinimum || 0;
+                const minimumPayoutAmount = selectedAccount.minimumPayoutAmount || 0;
+                const maxNetBalanceForPayout = selectedAccount.maxNetBalanceForPayout;
+                
+                const winningTrades = accountTrades.filter(t => (t.pnl || 0) >= winningDayMinimum);
+                const totalProfit = (trades?.filter(t => t.accountId === selectedAccount.id).reduce((sum, trade) => sum + (trade.pnl || 0), 0) || 0);
+                const currentDrawdown = selectedAccount.maxDrawdown - (selectedAccount.startingBalance - (selectedAccount.startingBalance + totalProfit));
+                const isInDrawdown = currentDrawdown < (selectedAccount.maxDrawdown * 0.5);
+                
+                const daysTraded = new Set(accountTrades.map(t => t.date)).size;
+                const winningDays = winningTrades.length;
+                const profitTargetMet = totalProfit >= (selectedAccount.profitTarget || 0);
+                const daysRequirementMet = daysTraded >= requiredDays;
+                const drawdownSafe = !isInDrawdown;
+                // Check if profit exceeds max net balance + minimum payout amount
+                const totalRequiredProfit = (maxNetBalanceForPayout || 0) + minimumPayoutAmount;
+                const minimumPayoutMet = totalProfit >= totalRequiredProfit;
+                const maxNetBalanceMet = !maxNetBalanceForPayout || totalProfit > maxNetBalanceForPayout;
+                
+                const isReady = profitTargetMet && daysRequirementMet && drawdownSafe && winningDays >= requiredDays && minimumPayoutMet && maxNetBalanceMet;
+                
+                return (
+                  <div className="space-y-4">
+                    {/* Status Indicator */}
+                    <div className="text-center p-4 rounded-lg bg-gray-800">
+                      <p className={`text-2xl font-bold ${isReady ? 'text-green-400' : 'text-yellow-400'}`}>
+                        {isReady ? '✓ READY FOR PAYOUT' : 'IN PROGRESS'}
+                      </p>
+                      <p className="text-sm text-gray-400 mt-2">
+                        Estimated Payout: {formatCurrency((() => {
+                          if (selectedAccount.type !== 'funded') return 0;
+                          const currentProfit = totalProfit;
+                          const profitSplit = (selectedAccount.profitSplit || 0) / 100;
+                          const maxPayoutPercentage = (selectedAccount.maximumPayoutPercentage || 0) / 100;
+                          const bufferPercentage = (selectedAccount.bufferPercentage || 0) / 100;
+                          const profitTarget = selectedAccount.profitTarget || 0;
+                          const bufferAmount = profitTarget * bufferPercentage;
+                          const profitAboveBuffer = Math.max(0, currentProfit - bufferAmount);
+                          return Math.max(0, profitAboveBuffer * profitSplit * maxPayoutPercentage);
+                        })())}
+                      </p>
+                    </div>
+                    
+                    {/* Progress Tracking */}
+                    <div className="space-y-4">
+                      {/* Profit Target Progress */}
+                      <div>
+                        <div className="flex justify-between text-sm mb-2">
+                          <span className="text-gray-300">Profit Target</span>
+                          <span className={profitTargetMet ? 'text-green-400' : 'text-yellow-400'}>
+                            {formatCurrency(totalProfit)} / {formatCurrency(selectedAccount.profitTarget || 0)}
+                          </span>
+                        </div>
+                        <div className="w-full bg-gray-700 rounded-full h-3">
+                          <div 
+                            className={`h-3 rounded-full transition-all duration-300 ${
+                              profitTargetMet ? 'bg-green-400' : 'bg-yellow-400'
+                            }`}
+                            style={{ width: `${Math.min((totalProfit / (selectedAccount.profitTarget || 1)) * 100, 100)}%` }}
+                          ></div>
+                        </div>
+                      </div>
+                      
+                      {/* Trading Days Progress */}
+                      <div>
+                        <div className="flex justify-between text-sm mb-2">
+                          <span className="text-gray-300">Trading Days</span>
+                          <span className={daysRequirementMet ? 'text-green-400' : 'text-blue-400'}>
+                            {daysTraded} / {requiredDays} days
+                          </span>
+                        </div>
+                        <div className="w-full bg-gray-700 rounded-full h-3">
+                          <div 
+                            className={`h-3 rounded-full transition-all duration-300 ${
+                              daysRequirementMet ? 'bg-green-400' : 'bg-blue-400'
+                            }`}
+                            style={{ width: `${Math.min((daysTraded / (requiredDays || 1)) * 100, 100)}%` }}
+                          ></div>
+                        </div>
+                      </div>
+                      
+                      {/* Winning Days Progress */}
+                      <div>
+                        <div className="flex justify-between text-sm mb-2">
+                          <span className="text-gray-300">
+                            Winning Days (${winningDayMinimum}+)
+                          </span>
+                          <span className={winningDays >= requiredDays ? 'text-green-400' : 'text-purple-400'}>
+                            {winningDays} / {requiredDays} days
+                          </span>
+                        </div>
+                        <div className="w-full bg-gray-700 rounded-full h-3">
+                          <div 
+                            className={`h-3 rounded-full transition-all duration-300 ${
+                              winningDays >= requiredDays ? 'bg-green-400' : 'bg-purple-400'
+                            }`}
+                            style={{ width: `${Math.min((winningDays / (requiredDays || 1)) * 100, 100)}%` }}
+                          ></div>
+                        </div>
+                      </div>
+                      
+                      {/* Minimum Payout Amount */}
+                      <div>
+                        <div className="flex justify-between text-sm mb-2">
+                          <span className="text-gray-300">Total Required for Payout</span>
+                          <span className={minimumPayoutMet ? 'text-green-400' : 'text-orange-400'}>
+                            {formatCurrency(totalProfit)} / {formatCurrency(totalRequiredProfit)}
+                          </span>
+                        </div>
+                        <div className="w-full bg-gray-700 rounded-full h-3">
+                          <div 
+                            className={`h-3 rounded-full transition-all duration-300 ${
+                              minimumPayoutMet ? 'bg-green-400' : 'bg-orange-400'
+                            }`}
+                            style={{ width: `${Math.min((totalProfit / (totalRequiredProfit || 1)) * 100, 100)}%` }}
+                          ></div>
+                        </div>
+                        <p className="text-xs text-gray-400 mt-1">
+                          {maxNetBalanceForPayout ? `${formatCurrency(maxNetBalanceForPayout)} (max balance) + ${formatCurrency(minimumPayoutAmount)} (minimum)` : `${formatCurrency(minimumPayoutAmount)} minimum`}
+                        </p>
+                      </div>
 
+                      {/* Max Net Balance for Payout */}
+                      {maxNetBalanceForPayout && (
+                        <div>
+                          <div className="flex justify-between text-sm mb-2">
+                            <span className="text-gray-300">Max Net Balance Exceeded</span>
+                            <span className={maxNetBalanceMet ? 'text-green-400' : 'text-red-400'}>
+                              {totalProfit > maxNetBalanceForPayout ? 'Exceeded' : 'Not Exceeded'}
+                            </span>
+                          </div>
+                          <div className="w-full bg-gray-700 rounded-full h-3">
+                            <div 
+                              className={`h-3 rounded-full transition-all duration-300 ${
+                                maxNetBalanceMet ? 'bg-green-400' : 'bg-red-400'
+                              }`}
+                              style={{ width: `${Math.min((totalProfit / (maxNetBalanceForPayout || 1)) * 100, 100)}%` }}
+                            ></div>
+                          </div>
+                          <p className="text-xs text-gray-400 mt-1">
+                            Must exceed ${formatCurrency(maxNetBalanceForPayout)} to be eligible for payout
+                          </p>
+                        </div>
+                      )}
+
+                      {/* Drawdown Status */}
+                      <div className="flex justify-between items-center">
+                        <span className="text-gray-300">Drawdown Status</span>
+                        <span className={drawdownSafe ? 'text-green-400' : 'text-red-400'}>
+                          {drawdownSafe ? 'Safe' : 'In Violation'}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })()}
+            </div>
+          </div>
         </div>
 
 
 
-
-
-
+        {/* Charts Section */}
+        <div className="grid grid-cols-1 gap-6 mb-8">
+          {/* Account Equity Curve */}
+          <div className="widget-container">
+            <div className="widget-content flex-col">
+              <div className="widget-left mb-4">
+                <p className="widget-label">Account Equity Curve</p>
+                <p className="widget-description">Portfolio growth over time</p>
+              </div>
+              <div className="h-64 w-full">
+                <EquityChart data={getEquityData()} />
+              </div>
+            </div>
+          </div>
+        </div>
 
         {/* Daily Planning Section */}
         <div className="mb-8">
@@ -1802,7 +1984,50 @@ export default function Dashboard() {
           </div>
         </div>
 
-
+        {/* Trade Analysis Calendar */}
+        <div className="mb-8">
+          <h2 className="text-xl font-bold text-gradient-rainbow mb-6 flex items-center border-b border-gray-700 pb-3">
+            <Calendar className="mr-3 h-5 w-5 text-prop-gold" />
+            Trade Analysis Calendar
+          </h2>
+          <div className="widget-container">
+            <div className="widget-content flex-col">
+              <div className="widget-left mb-4">
+                <p className="widget-label">Calendar View</p>
+                <p className="widget-description">Track trades across time periods</p>
+              </div>
+              <div className="w-full">
+                <TradeAnalysisCalendar 
+                  trades={(() => {
+                    if (!trades) return [];
+                    
+                    if (accountSelectionMode === 'all') {
+                      return trades;
+                    } else if (accountSelectionMode === 'single' && selectedAccountIds.length > 0) {
+                      return trades.filter(trade => trade.accountId === selectedAccountIds[0]);
+                    } else if (selectedAccountIds.length > 0) {
+                      return trades.filter(trade => selectedAccountIds.includes(trade.accountId));
+                    }
+                    return trades;
+                  })()} 
+                  accounts={(() => {
+                    if (!accounts) return [];
+                    
+                    if (accountSelectionMode === 'all') {
+                      return accounts;
+                    } else if (accountSelectionMode === 'single' && selectedAccountIds.length > 0) {
+                      return accounts.filter(acc => acc.id === selectedAccountIds[0]);
+                    } else if (selectedAccountIds.length > 0) {
+                      return accounts.filter(acc => selectedAccountIds.includes(acc.id));
+                    }
+                    return accounts;
+                  })()}
+                  viewMode={timePeriod}
+                />
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* Set Hourly Wage Modal */}
