@@ -412,11 +412,125 @@ const DailyPlanPage = () => {
                   Create Daily Plan
                 </Button>
               </DialogTrigger>
-              <DialogContent className="max-w-2xl bg-gray-900 border-gray-700">
+              <DialogContent className="max-w-2xl bg-gradient-to-br from-gray-900 via-gray-800 to-black border border-yellow-400/20">
                 <DialogHeader>
-                  <DialogTitle className="text-white">Create Daily Trading Plan</DialogTitle>
+                  <DialogTitle className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-yellow-600">Create Daily Trading Plan</DialogTitle>
+                  <DialogDescription className="text-gray-400">
+                    Set up your trading plan for {new Date(selectedDate).toLocaleDateString()}
+                  </DialogDescription>
                 </DialogHeader>
-                <DailyPlanForm />
+                
+                <div className="space-y-4 max-h-[70vh] overflow-y-auto">
+                  {/* Account and Strategy Selection */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <Label className="text-white">Trading Account</Label>
+                      <Select value={selectedAccount?.toString() || ""} onValueChange={(value) => setSelectedAccount(parseInt(value))}>
+                        <SelectTrigger className="bg-gray-800 border-yellow-400/20 text-white hover:border-yellow-400/40">
+                          <SelectValue placeholder="Select account" />
+                        </SelectTrigger>
+                        <SelectContent className="bg-gray-800 border-yellow-400/20">
+                          {accounts?.map((account) => (
+                            <SelectItem key={account.id} value={account.id.toString()}>
+                              {account.name} - {account.type}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    
+                    <div>
+                      <Label className="text-white">Trading Strategy</Label>
+                      <Select value={selectedStrategy?.toString() || ""} onValueChange={(value) => setSelectedStrategy(parseInt(value))}>
+                        <SelectTrigger className="bg-gray-800 border-yellow-400/20 text-white hover:border-yellow-400/40">
+                          <SelectValue placeholder="Select strategy" />
+                        </SelectTrigger>
+                        <SelectContent className="bg-gray-800 border-yellow-400/20">
+                          {strategies?.map((strategy) => (
+                            <SelectItem key={strategy.id} value={strategy.id.toString()}>
+                              {strategy.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+
+                  {/* Risk and Targets */}
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div>
+                      <Label className="text-white">Risk Amount ($)</Label>
+                      <Input
+                        type="number"
+                        value={newPlanData.riskAmount}
+                        onChange={(e) => {
+                          const value = parseFloat(e.target.value) || 0;
+                          setNewPlanData(prev => ({ ...prev, riskAmount: value }));
+                        }}
+                        className="bg-white border-gray-300 text-black"
+                      />
+                    </div>
+                    <div>
+                      <Label className="text-white">Target Profit ($)</Label>
+                      <Input
+                        type="number"
+                        value={newPlanData.targetProfit}
+                        onChange={(e) => {
+                          const value = parseFloat(e.target.value) || 0;
+                          setNewPlanData(prev => ({ ...prev, targetProfit: value }));
+                        }}
+                        className="bg-white border-gray-300 text-black"
+                      />
+                    </div>
+                    <div>
+                      <Label className="text-white">Max Trades</Label>
+                      <Input
+                        type="number"
+                        value={newPlanData.maxTrades}
+                        onChange={(e) => {
+                          const value = parseInt(e.target.value) || 0;
+                          setNewPlanData(prev => ({ ...prev, maxTrades: value }));
+                        }}
+                        className="bg-white border-gray-300 text-black"
+                      />
+                    </div>
+                    <div>
+                      <Label className="text-white">R:R Ratio</Label>
+                      <Input
+                        type="number"
+                        step="0.1"
+                        value={newPlanData.riskRewardRatio}
+                        onChange={(e) => {
+                          const value = parseFloat(e.target.value) || 0;
+                          setNewPlanData(prev => ({ ...prev, riskRewardRatio: value }));
+                        }}
+                        className="bg-white border-gray-300 text-black"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Notes */}
+                  <div>
+                    <Label className="text-white">Trading Notes</Label>
+                    <Textarea
+                      value={newPlanData.notes}
+                      onChange={(e) => setNewPlanData(prev => ({ ...prev, notes: e.target.value }))}
+                      placeholder="Add any additional notes for your trading plan..."
+                      className="bg-white border-gray-300 text-black min-h-[80px]"
+                    />
+                  </div>
+
+                  {/* Create Plan Button */}
+                  <div className="flex justify-end pt-4">
+                    <Button
+                      onClick={createNewPlan}
+                      disabled={!selectedAccount || !selectedStrategy || createDailyPlan.isPending}
+                      className="bg-gradient-to-r from-yellow-400 to-yellow-600 text-black hover:from-yellow-500 hover:to-yellow-700"
+                    >
+                      {createDailyPlan.isPending ? 'Creating...' : 'Create Plan'}
+                    </Button>
+                  </div>
+                </div>
               </DialogContent>
             </Dialog>
 
@@ -455,183 +569,14 @@ const DailyPlanPage = () => {
               Create Strategy
             </Button>
             
-            <Dialog open={isCreatePlanDialogOpen} onOpenChange={setIsCreatePlanDialogOpen}>
-              <DialogTrigger asChild>
-                <Button className="bg-gradient-to-r from-yellow-400 to-yellow-600 text-black hover:from-yellow-500 hover:to-yellow-700">
-                  <Plus className="w-4 h-4 mr-2" />
-                  Create Daily Plan
-                </Button>
-              </DialogTrigger>
-            <DialogContent className="max-w-2xl bg-gradient-to-br from-gray-900 via-gray-800 to-black border border-yellow-400/20">
-              <DialogHeader>
-                <DialogTitle className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-yellow-600">Create Daily Trading Plan</DialogTitle>
-                <DialogDescription className="text-gray-400">
-                  Set up your trading plan for {new Date(selectedDate).toLocaleDateString()}
-                </DialogDescription>
-              </DialogHeader>
-              
-              <div className="space-y-4 max-h-[70vh] overflow-y-auto">
-                {/* Account and Strategy Selection */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <Label className="text-white">Trading Account</Label>
-                    <Select value={selectedAccount?.toString() || ""} onValueChange={(value) => setSelectedAccount(parseInt(value))}>
-                      <SelectTrigger className="bg-gray-800 border-yellow-400/20 text-white hover:border-yellow-400/40">
-                        <SelectValue placeholder="Select account" />
-                      </SelectTrigger>
-                      <SelectContent className="bg-gray-800 border-yellow-400/20">
-                        {accounts?.map((account) => (
-                          <SelectItem key={account.id} value={account.id.toString()}>
-                            {account.name} - {account.type}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <Label className="text-white">Trading Strategy</Label>
-                      <Button 
-                        variant="ghost" 
-                        size="sm" 
-                        onClick={() => {
-                          if (selectedStrategy) {
-                            setEditingStrategyId(selectedStrategy);
-                          }
-                          setIsStrategyDialogOpen(true);
-                        }}
-                        className="text-yellow-400 hover:text-yellow-300"
-                        title={selectedStrategy ? "Edit selected strategy" : "Manage strategies"}
-                      >
-                        <Settings className="w-4 h-4" />
-                      </Button>
-                    </div>
-                    <Select value={selectedStrategy?.toString() || ""} onValueChange={(value) => setSelectedStrategy(parseInt(value))}>
-                      <SelectTrigger className="bg-gray-800 border-yellow-400/20 text-white hover:border-yellow-400/40">
-                        <SelectValue placeholder="Select strategy" />
-                      </SelectTrigger>
-                      <SelectContent className="bg-gray-800 border-yellow-400/20">
-                        {strategies?.map((strategy) => (
-                          <SelectItem key={strategy.id} value={strategy.id.toString()}>
-                            {strategy.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
+            <Button 
+              onClick={() => setIsCreatePlanDialogOpen(true)}
+              className="bg-gradient-to-r from-yellow-400 to-yellow-600 text-black hover:from-yellow-500 hover:to-yellow-700"
+            >
+              <Plus className="w-4 h-4 mr-2" />
+              Create Daily Plan
+            </Button>
 
-                {/* Trading Time */}
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <Label className="text-white">Start Time</Label>
-                    <Input
-                      type="time"
-                      value={newPlanData.startTime}
-                      onChange={(e) => setNewPlanData(prev => ({ ...prev, startTime: e.target.value }))}
-                      className="bg-white border-gray-300 text-black placeholder:text-gray-500 focus:border-yellow-400 focus:ring-yellow-400"
-                    />
-                  </div>
-                  <div>
-                    <Label className="text-white">End Time</Label>
-                    <Input
-                      type="time"
-                      value={newPlanData.endTime}
-                      onChange={(e) => setNewPlanData(prev => ({ ...prev, endTime: e.target.value }))}
-                      className="bg-white border-gray-300 text-black placeholder:text-gray-500 focus:border-yellow-400 focus:ring-yellow-400"
-                    />
-                  </div>
-                </div>
-
-                {/* Risk and Targets */}
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  <div>
-                    <Label className="text-white">Risk Amount ($)</Label>
-                    <Input
-                      type="number"
-                      value={newPlanData.riskAmount}
-                      onChange={(e) => {
-                        const value = parseFloat(e.target.value) || 0;
-                        setNewPlanData(prev => ({ ...prev, riskAmount: value }));
-                      }}
-                      className="bg-white border-gray-300 text-black placeholder:text-gray-500 focus:border-yellow-400 focus:ring-yellow-400"
-                    />
-                  </div>
-                  <div>
-                    <Label className="text-white">Target Profit ($)</Label>
-                    <Input
-                      type="number"
-                      value={newPlanData.targetProfit}
-                      onChange={(e) => {
-                        const value = parseFloat(e.target.value) || 0;
-                        setNewPlanData(prev => ({ ...prev, targetProfit: value }));
-                      }}
-                      className="bg-white border-gray-300 text-black placeholder:text-gray-500 focus:border-yellow-400 focus:ring-yellow-400"
-                    />
-                  </div>
-                  <div>
-                    <Label className="text-white">Max Trades</Label>
-                    <Input
-                      type="number"
-                      value={newPlanData.maxTrades}
-                      onChange={(e) => {
-                        const value = parseInt(e.target.value) || 0;
-                        setNewPlanData(prev => ({ ...prev, maxTrades: value }));
-                      }}
-                      className="bg-white border-gray-300 text-black placeholder:text-gray-500 focus:border-yellow-400 focus:ring-yellow-400"
-                    />
-                  </div>
-                  <div>
-                    <Label className="text-white">RR Ratio</Label>
-                    <Input
-                      type="number"
-                      step="0.1"
-                      value={newPlanData.riskRewardRatio}
-                      onChange={(e) => {
-                        const value = parseFloat(e.target.value) || 0;
-                        setNewPlanData(prev => ({ ...prev, riskRewardRatio: value }));
-                      }}
-                      className="bg-white border-gray-300 text-black placeholder:text-gray-500 focus:border-yellow-400 focus:ring-yellow-400"
-                    />
-                  </div>
-                </div>
-
-                {/* Trade Setup Links */}
-
-
-                {/* Notes */}
-                <div>
-                  <Label className="text-white">Trading Notes</Label>
-                  <Textarea
-                    value={newPlanData.notes}
-                    onChange={(e) => setNewPlanData(prev => ({ ...prev, notes: e.target.value }))}
-                    placeholder="Enter your trading plan notes..."
-                    className="bg-white border-gray-300 text-black placeholder:text-gray-500 focus:border-yellow-400 focus:ring-yellow-400"
-                  />
-                </div>
-              </div>
-
-              <div className="flex justify-end gap-3 pt-4 border-t border-gray-600">
-                <Button
-                  variant="outline"
-                  onClick={() => setIsCreatePlanDialogOpen(false)}
-                  className="border-gray-600 text-gray-300"
-                >
-                  Cancel
-                </Button>
-                <Button
-                  type="button"
-                  onClick={() => createNewPlan()}
-                  disabled={!selectedAccount || !selectedStrategy || createDailyPlan.isPending}
-                  className="bg-gradient-to-r from-yellow-400 to-yellow-600 text-black hover:from-yellow-500 hover:to-yellow-700"
-                >
-                  {createDailyPlan.isPending ? 'Creating...' : 'Create Plan'}
-                </Button>
-              </div>
-            </DialogContent>
-            </Dialog>
-            
             <Input
               type="date"
               value={selectedDate}

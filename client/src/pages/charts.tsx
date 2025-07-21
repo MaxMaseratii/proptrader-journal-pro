@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { SimpleChart } from "@/components/tradingview/SimpleChart";
 import { ChartGrid } from "@/components/tradingview/ChartGrid";
@@ -7,16 +8,34 @@ import { BarChart3, TrendingUp, Grid3X3, Activity, PieChart, LineChart, Calendar
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Label } from '@/components/ui/label';
 import { format } from "date-fns";
 
 export default function Charts() {
+  const [selectedAccountIds, setSelectedAccountIds] = useState<number[]>([]);
+
   const { data: accounts = [] } = useQuery<Account[]>({
     queryKey: ["/api/accounts"],
   });
 
-  const { data: trades = [] } = useQuery<Trade[]>({
+  const { data: allTrades = [] } = useQuery<Trade[]>({
     queryKey: ["/api/trades"],
   });
+
+  // Handle account selection
+  const handleAccountSelection = (value: string) => {
+    if (value === "all") {
+      setSelectedAccountIds([]);
+    } else {
+      setSelectedAccountIds([parseInt(value)]);
+    }
+  };
+
+  // Filter trades based on selected account
+  const trades = selectedAccountIds.length > 0 
+    ? allTrades.filter(trade => selectedAccountIds.includes(trade.accountId))
+    : allTrades;
 
   // Get unique symbols from trades
   const uniqueSymbols = Array.from(new Set(trades.map(trade => trade.symbol).filter(Boolean)));
@@ -102,15 +121,23 @@ export default function Charts() {
             </h1>
             <p className="text-gray-400 mt-2">Comprehensive visual analysis of your {trades.length} trades across {uniqueSymbols.length} symbols</p>
           </div>
-          <div className="flex items-center space-x-4">
-            <Badge variant="secondary" className="flex items-center">
-              <Activity className="h-3 w-3 mr-1" />
-              {uniqueSymbols.length} Symbols
-            </Badge>
-            <Badge variant="secondary" className="flex items-center">
-              <TrendingUp className="h-3 w-3 mr-1" />
-              {trades.length} Trades
-            </Badge>
+          <div className="flex items-center gap-4">
+            <div>
+              <Label className="text-white text-sm">Filter by Account</Label>
+              <Select value={selectedAccountIds.length === 1 ? selectedAccountIds[0].toString() : "all"} onValueChange={handleAccountSelection}>
+                <SelectTrigger className="bg-gray-800 border-yellow-400/20 text-white hover:border-yellow-400/40 min-w-[200px]">
+                  <SelectValue placeholder="Select account" />
+                </SelectTrigger>
+                <SelectContent className="bg-gray-800 border-yellow-400/20">
+                  <SelectItem value="all">All Accounts</SelectItem>
+                  {accounts?.map((account) => (
+                    <SelectItem key={account.id} value={account.id.toString()}>
+                      {account.name} - {account.type}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
           </div>
         </div>
 
