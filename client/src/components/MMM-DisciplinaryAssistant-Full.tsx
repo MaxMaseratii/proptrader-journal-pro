@@ -1855,13 +1855,13 @@ export default function MMMDisciplinaryAssistant({ trades, accounts, selectedAcc
                   <div className="flex items-center justify-between">
                     <span className="text-sm text-gray-400">Weekly Journal Completion</span>
                     <span className="font-bold text-prop-gold">
-                      {Math.floor(Math.random() * 7)}/7 days
+                      0/7 days
                     </span>
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-sm text-gray-400">Monthly Journal Target</span>
                     <span className="font-bold text-prop-gold">
-                      {Math.floor(Math.random() * 30)}/30 days
+                      0/30 days
                     </span>
                   </div>
                   <Alert className="bg-yellow-500/10 border-yellow-500/30">

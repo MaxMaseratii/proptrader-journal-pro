@@ -112,10 +112,10 @@ const TradingDashboard = ({ trades: filteredTrades }: { trades?: Trade[] }) => {
       avgRiskPerTrade: avgRisk,
       maxDailyRisk: avgRisk * dayTrades.length,
       avgRewardRatio,
-      targetRewardRatio: 2.0, // Default target
-      dailyTarget: 500, // Default daily target
+      targetRewardRatio: 0, // No default - must come from account data
+      dailyTarget: 0, // No default - must come from account data  
       dayPnL: totalPnl,
-      maxDailyTrades: 10, // Default max
+      maxDailyTrades: 0, // No default - must come from account data
       totalDayTrades: dayTrades.length,
       disciplineScore: winRate,
       winRate
@@ -804,9 +804,7 @@ export default function Dashboard() {
             </Link>
             <div className="relative">
               <Bell className="h-5 w-5 text-gray-400" />
-              <span className="absolute -top-1 -right-1 bg-error-red text-xs rounded-full w-4 h-4 flex items-center justify-center text-white">
-                3
-              </span>
+              {/* Remove hardcoded notification count - notifications should come from actual data */}
             </div>
           </div>
         </div>

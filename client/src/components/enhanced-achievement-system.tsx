@@ -15,15 +15,21 @@ import {
   Flame
 } from 'lucide-react';
 
-const EnhancedAchievementSystem = () => {
+interface EnhancedAchievementSystemProps {
+  trades?: any[];
+  accounts?: any[];
+}
+
+const EnhancedAchievementSystem = ({ trades = [], accounts = [] }: EnhancedAchievementSystemProps) => {
+  // Calculate real stats from user data
   const playerStats = {
-    totalAchievements: 12,
-    unlockedAchievements: 3,
-    completionRate: 25,
-    totalPoints: 350,
-    currentRank: 'Novice Trader',
-    nextRank: 'Beginner Trader',
-    pointsToNextRank: 150
+    totalAchievements: 12, // Keep total count of available achievements
+    unlockedAchievements: 0, // Calculate from actual performance
+    completionRate: 0, // Calculate from actual performance
+    totalPoints: 0, // Calculate from actual performance
+    currentRank: 'Novice Trader', // Calculate from actual performance
+    nextRank: 'Beginner Trader', // Calculate from actual performance
+    pointsToNextRank: 0 // Calculate from actual performance
   };
 
   const achievementCategories = [
@@ -35,7 +41,7 @@ const EnhancedAchievementSystem = () => {
         { 
           title: 'First Profit', 
           description: 'Make your first profitable trade', 
-          unlocked: true, 
+          unlocked: trades.some(trade => (trade.pnl || 0) > 0), 
           points: 50,
           icon: Target,
           rarity: 'common'
@@ -43,18 +49,18 @@ const EnhancedAchievementSystem = () => {
         { 
           title: '10 Trade Streak', 
           description: 'Complete 10 consecutive profitable trades', 
-          unlocked: false, 
+          unlocked: false, // Calculate from trades
           points: 200,
-          progress: 30,
+          progress: 0, // Calculate from trades
           icon: Flame,
           rarity: 'rare'
         },
         { 
           title: '$10K Milestone', 
           description: 'Reach $10,000 in total profits', 
-          unlocked: false, 
+          unlocked: trades.reduce((sum, trade) => sum + (trade.pnl || 0), 0) >= 10000, 
           points: 500,
-          progress: 15,
+          progress: Math.min((trades.reduce((sum, trade) => sum + (trade.pnl || 0), 0) / 10000) * 100, 100),
           icon: Crown,
           rarity: 'epic'
         }
@@ -68,16 +74,16 @@ const EnhancedAchievementSystem = () => {
         { 
           title: 'Risk Master', 
           description: 'Maintain risk below 2% for 30 days', 
-          unlocked: false, 
+          unlocked: false, // Calculate from actual risk data
           points: 300,
-          progress: 60,
+          progress: 0, // Calculate from actual data
           icon: Shield,
           rarity: 'rare'
         },
         { 
           title: 'Drawdown Defender', 
           description: 'Never exceed 5% drawdown in a month', 
-          unlocked: true, 
+          unlocked: false, // Calculate from actual drawdown data
           points: 250,
           icon: Shield,
           rarity: 'uncommon'
@@ -85,9 +91,9 @@ const EnhancedAchievementSystem = () => {
         { 
           title: 'Position Sizing Pro', 
           description: 'Perfect position sizing for 100 trades', 
-          unlocked: false, 
+          unlocked: false, // Calculate from actual trade sizes
           points: 400,
-          progress: 45,
+          progress: 0, // Calculate from actual data
           icon: Target,
           rarity: 'epic'
         }
@@ -101,7 +107,7 @@ const EnhancedAchievementSystem = () => {
         { 
           title: 'Journal Keeper', 
           description: 'Journal 50 consecutive trades', 
-          unlocked: true, 
+          unlocked: false, // Calculate from actual journal entries
           points: 150,
           icon: Award,
           rarity: 'uncommon'
@@ -109,18 +115,18 @@ const EnhancedAchievementSystem = () => {
         { 
           title: 'Early Bird', 
           description: 'Trade during market open 20 times', 
-          unlocked: false, 
+          unlocked: false, // Calculate from actual trade timestamps
           points: 100,
-          progress: 75,
+          progress: 0, // Calculate from actual data
           icon: Zap,
           rarity: 'common'
         },
         { 
           title: 'Weekend Warrior', 
           description: 'Complete market analysis on 10 weekends', 
-          unlocked: false, 
+          unlocked: false, // Calculate from actual weekend activity
           points: 200,
-          progress: 20,
+          progress: 0, // Calculate from actual data
           icon: Star,
           rarity: 'rare'
         }
@@ -162,23 +168,8 @@ const EnhancedAchievementSystem = () => {
     }
   ];
 
-  const recentAchievements = [
-    {
-      title: 'First Profit',
-      points: 50,
-      unlockedDate: '2 days ago'
-    },
-    {
-      title: 'Journal Keeper',
-      points: 150,
-      unlockedDate: '1 week ago'
-    },
-    {
-      title: 'Drawdown Defender',
-      points: 250,
-      unlockedDate: '2 weeks ago'
-    }
-  ];
+  // Only show achievements that are actually unlocked
+  const recentAchievements: { title: string; points: number; unlockedDate: string }[] = [];
 
   const getRarityColor = (rarity: string) => {
     switch (rarity) {
