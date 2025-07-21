@@ -59,6 +59,55 @@ import {
 } from "lucide-react";
 import type { Account, Trade } from "@shared/schema";
 
+// Calendar View Components
+interface CalendarViewProps {
+  trades?: Trade[];
+  accounts?: Account[];
+  selectedAccountIds: number[];
+}
+
+interface WeeklyCalendarViewProps extends CalendarViewProps {
+  currentWeekStart: Date;
+}
+
+interface MonthlyCalendarViewProps extends CalendarViewProps {
+  currentMonth: Date;
+}
+
+interface YearlyCalendarViewProps extends CalendarViewProps {
+  currentYear: Date;
+}
+
+// Helper function to get trades for a specific date
+const getTradesForDate = (date: Date, trades: Trade[] = [], selectedAccountIds: number[]) => {
+  const dateStr = date.toISOString().split('T')[0];
+  return trades.filter(trade => {
+    const matchesDate = trade.date === dateStr;
+    const matchesAccount = selectedAccountIds.length === 0 || selectedAccountIds.includes(trade.accountId);
+    return matchesDate && matchesAccount;
+  });
+};
+
+// Helper function to calculate daily P&L and metrics
+const getDayMetrics = (date: Date, trades: Trade[] = [], selectedAccountIds: number[]) => {
+  const dayTrades = getTradesForDate(date, trades, selectedAccountIds);
+  const totalPnL = dayTrades.reduce((sum, trade) => sum + (trade.pnl || 0), 0);
+  const totalTrades = dayTrades.length;
+  const winningTrades = dayTrades.filter(trade => (trade.pnl || 0) > 0).length;
+  const winRate = totalTrades > 0 ? (winningTrades / totalTrades) * 100 : 0;
+  
+  return {
+    totalPnL,
+    totalTrades,
+    winningTrades,
+    losingTrades: totalTrades - winningTrades,
+    winRate,
+    trades: dayTrades
+  };
+};
+
+
+
 interface DashboardAnalytics {
   account: Account;
   totalPnl: number;
@@ -77,6 +126,286 @@ interface DashboardAnalytics {
 
 export default function Dashboard() {
   const queryClient = useQueryClient();
+  
+  // Calendar View Components (defined within Dashboard scope)
+  const WeeklyCalendarView: React.FC<WeeklyCalendarViewProps> = ({ currentWeekStart, trades, accounts, selectedAccountIds }) => {
+    const weekDays = [];
+    const today = new Date();
+    
+    // Generate 7 days starting from currentWeekStart
+    for (let i = 0; i < 7; i++) {
+      const date = new Date(currentWeekStart);
+      date.setDate(date.getDate() + i);
+      weekDays.push(date);
+    }
+
+    const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
+    return (
+      <div className="bg-gray-800/40 rounded-lg border border-gray-600/30 p-4">
+        {/* Week Header */}
+        <div className="grid grid-cols-7 gap-2 mb-4">
+          {dayNames.map(dayName => (
+            <div key={dayName} className="text-center text-sm font-semibold text-gray-300 py-2">
+              {dayName}
+            </div>
+          ))}
+        </div>
+        
+        {/* Week Days */}
+        <div className="grid grid-cols-7 gap-2">
+          {weekDays.map(date => {
+            const metrics = getDayMetrics(date, trades, selectedAccountIds);
+            const isToday = date.toDateString() === today.toDateString();
+            const isCurrentMonth = date.getMonth() === currentWeekStart.getMonth();
+            
+            return (
+              <div
+                key={date.toISOString()}
+                className={`
+                  relative p-3 rounded-lg border transition-all duration-200 h-24
+                  ${isToday 
+                    ? 'border-teal-400/60 bg-gradient-to-br from-teal-900/30 via-gray-800/40 to-teal-900/30' 
+                    : isCurrentMonth
+                    ? 'border-gray-600/40 bg-gradient-to-br from-gray-800/40 via-gray-700/40 to-gray-800/40'
+                    : 'border-gray-700/30 bg-gradient-to-br from-gray-900/30 via-gray-800/30 to-gray-900/30 opacity-60'
+                  }
+                  hover:border-amber-400/60
+                `}
+              >
+                {/* Today indicator */}
+                {isToday && (
+                  <div className="absolute top-1 right-1 w-2 h-2 rounded-full bg-teal-400 animate-pulse" />
+                )}
+                
+                {/* Date */}
+                <div className={`text-sm font-semibold mb-1 ${
+                  isToday ? 'text-teal-400' : 
+                  isCurrentMonth ? 'text-gray-200' : 'text-gray-500'
+                }`}>
+                  {date.getDate()}
+                </div>
+                
+                {/* P&L */}
+                <div className={`text-xs font-bold mb-1 ${
+                  metrics.totalPnL > 0 ? 'text-green-400' : 
+                  metrics.totalPnL < 0 ? 'text-red-400' : 'text-gray-400'
+                }`}>
+                  {metrics.totalPnL > 0 ? '+' : ''}${Math.abs(metrics.totalPnL).toFixed(0)}
+                </div>
+                
+                {/* Bottom metrics */}
+                <div className="flex justify-between items-center text-xs">
+                  <span className="text-gray-400">{metrics.totalTrades}T</span>
+                  <span className={`font-medium ${
+                    metrics.winRate >= 80 ? 'text-green-400' :
+                    metrics.winRate >= 60 ? 'text-yellow-400' :
+                    metrics.winRate >= 40 ? 'text-orange-400' : 'text-red-400'
+                  }`}>
+                    {metrics.totalTrades > 0 ? Math.round(metrics.winRate) : 0}%
+                  </span>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    );
+  };
+
+  const MonthlyCalendarView: React.FC<MonthlyCalendarViewProps> = ({ currentMonth, trades, accounts, selectedAccountIds }) => {
+    const today = new Date();
+    const firstDay = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 1);
+    const lastDay = new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 0);
+    
+    // Get first day of the week for the month (Sunday = 0)
+    const startDate = new Date(firstDay);
+    startDate.setDate(startDate.getDate() - firstDay.getDay());
+    
+    const weeks = [];
+    let currentDate = new Date(startDate);
+    
+    // Generate weeks until we cover the entire month
+    while (currentDate <= lastDay || weeks.length < 6) {
+      const week = [];
+      for (let i = 0; i < 7; i++) {
+        week.push(new Date(currentDate));
+        currentDate.setDate(currentDate.getDate() + 1);
+      }
+      weeks.push(week);
+      
+      // Break if we've covered the month and have at least 4 weeks
+      if (currentDate > lastDay && weeks.length >= 4) break;
+    }
+
+    const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
+    return (
+      <div className="bg-gray-800/40 rounded-lg border border-gray-600/30 p-4">
+        {/* Month Header */}
+        <div className="grid grid-cols-7 gap-2 mb-4">
+          {dayNames.map(dayName => (
+            <div key={dayName} className="text-center text-sm font-semibold text-gray-300 py-2">
+              {dayName}
+            </div>
+          ))}
+        </div>
+        
+        {/* Month Weeks */}
+        {weeks.map((week, weekIndex) => (
+          <div key={weekIndex} className="grid grid-cols-7 gap-2 mb-2 last:mb-0">
+            {week.map(date => {
+              const metrics = getDayMetrics(date, trades, selectedAccountIds);
+              const isToday = date.toDateString() === today.toDateString();
+              const isCurrentMonth = date.getMonth() === currentMonth.getMonth();
+              
+              return (
+                <div
+                  key={date.toISOString()}
+                  className={`
+                    relative p-2 rounded-lg border transition-all duration-200 h-16
+                    ${isToday 
+                      ? 'border-teal-400/60 bg-gradient-to-br from-teal-900/30 via-gray-800/40 to-teal-900/30' 
+                      : isCurrentMonth
+                      ? 'border-gray-600/40 bg-gradient-to-br from-gray-800/40 via-gray-700/40 to-gray-800/40'
+                      : 'border-gray-700/30 bg-gradient-to-br from-gray-900/30 via-gray-800/30 to-gray-900/30 opacity-60'
+                    }
+                    hover:border-amber-400/60
+                  `}
+                >
+                  {/* Today indicator */}
+                  {isToday && (
+                    <div className="absolute top-1 right-1 w-1.5 h-1.5 rounded-full bg-teal-400 animate-pulse" />
+                  )}
+                  
+                  {/* Date */}
+                  <div className={`text-xs font-semibold mb-1 ${
+                    isToday ? 'text-teal-400' : 
+                    isCurrentMonth ? 'text-gray-200' : 'text-gray-500'
+                  }`}>
+                    {date.getDate()}
+                  </div>
+                  
+                  {/* P&L */}
+                  <div className={`text-xs font-bold mb-1 ${
+                    metrics.totalPnL > 0 ? 'text-green-400' : 
+                    metrics.totalPnL < 0 ? 'text-red-400' : 'text-gray-400'
+                  }`}>
+                    {metrics.totalTrades > 0 ? (
+                      <>
+                        {metrics.totalPnL > 0 ? '+' : ''}${Math.abs(metrics.totalPnL).toFixed(0)}
+                      </>
+                    ) : (
+                      '$0'
+                    )}
+                  </div>
+                  
+                  {/* Bottom metrics */}
+                  <div className="flex justify-between items-center text-xs">
+                    <span className="text-gray-400">{metrics.totalTrades}T</span>
+                    <span className={`font-medium ${
+                      metrics.totalTrades === 0 ? 'text-gray-500' :
+                      metrics.winRate >= 80 ? 'text-green-400' :
+                      metrics.winRate >= 60 ? 'text-yellow-400' :
+                      metrics.winRate >= 40 ? 'text-orange-400' : 'text-red-400'
+                    }`}>
+                      {metrics.totalTrades > 0 ? Math.round(metrics.winRate) : 0}%
+                    </span>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        ))}
+      </div>
+    );
+  };
+
+  const YearlyCalendarView: React.FC<YearlyCalendarViewProps> = ({ currentYear, trades, accounts, selectedAccountIds }) => {
+    const months = [];
+    
+    for (let i = 0; i < 12; i++) {
+      const month = new Date(currentYear.getFullYear(), i, 1);
+      months.push(month);
+    }
+
+    const monthNames = [
+      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+    ];
+
+    return (
+      <div className="bg-gray-800/40 rounded-lg border border-gray-600/30 p-4">
+        <div className="grid grid-cols-6 gap-4">
+          {months.map((month, index) => {
+            // Calculate month metrics by getting all days in the month
+            const lastDayOfMonth = new Date(month.getFullYear(), month.getMonth() + 1, 0).getDate();
+            let monthPnL = 0;
+            let monthTrades = 0;
+            let monthWinningTrades = 0;
+            
+            for (let day = 1; day <= lastDayOfMonth; day++) {
+              const date = new Date(month.getFullYear(), month.getMonth(), day);
+              const metrics = getDayMetrics(date, trades, selectedAccountIds);
+              monthPnL += metrics.totalPnL;
+              monthTrades += metrics.totalTrades;
+              monthWinningTrades += metrics.winningTrades;
+            }
+            
+            const monthWinRate = monthTrades > 0 ? (monthWinningTrades / monthTrades) * 100 : 0;
+            const isCurrentMonth = month.getMonth() === new Date().getMonth() && month.getFullYear() === new Date().getFullYear();
+
+            return (
+              <div
+                key={index}
+                className={`
+                  relative p-4 rounded-lg border transition-all duration-200 h-20
+                  ${isCurrentMonth
+                    ? 'border-teal-400/60 bg-gradient-to-br from-teal-900/30 via-gray-800/40 to-teal-900/30'
+                    : 'border-gray-600/40 bg-gradient-to-br from-gray-800/40 via-gray-700/40 to-gray-800/40'
+                  }
+                  hover:border-amber-400/60
+                `}
+              >
+                {/* Current month indicator */}
+                {isCurrentMonth && (
+                  <div className="absolute top-2 right-2 w-2 h-2 rounded-full bg-teal-400 animate-pulse" />
+                )}
+                
+                {/* Month name */}
+                <div className={`text-sm font-semibold mb-1 ${
+                  isCurrentMonth ? 'text-teal-400' : 'text-gray-200'
+                }`}>
+                  {monthNames[index]}
+                </div>
+                
+                {/* P&L */}
+                <div className={`text-sm font-bold mb-1 ${
+                  monthPnL > 0 ? 'text-green-400' : 
+                  monthPnL < 0 ? 'text-red-400' : 'text-gray-400'
+                }`}>
+                  {monthPnL > 0 ? '+' : ''}${Math.abs(monthPnL).toFixed(0)}
+                </div>
+                
+                {/* Bottom metrics */}
+                <div className="flex justify-between items-center text-xs">
+                  <span className="text-gray-400">{monthTrades}T</span>
+                  <span className={`font-medium ${
+                    monthTrades === 0 ? 'text-gray-500' :
+                    monthWinRate >= 80 ? 'text-green-400' :
+                    monthWinRate >= 60 ? 'text-yellow-400' :
+                    monthWinRate >= 40 ? 'text-orange-400' : 'text-red-400'
+                  }`}>
+                    {monthTrades > 0 ? Math.round(monthWinRate) : 0}%
+                  </span>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    );
+  };
   const [selectedAccountIds, setSelectedAccountIds] = useState<number[]>(() => {
     const saved = localStorage.getItem('dashboard-selected-accounts');
     return saved ? JSON.parse(saved) : [];
@@ -941,6 +1270,34 @@ export default function Dashboard() {
               >
                 Go to Today
               </button>
+            </div>
+
+            {/* Calendar Display */}
+            <div className="mb-6">
+              {calendarViewMode === 'weekly' && (
+                <WeeklyCalendarView 
+                  currentWeekStart={currentWeekStart}
+                  trades={trades}
+                  accounts={accounts}
+                  selectedAccountIds={selectedAccountIds}
+                />
+              )}
+              {calendarViewMode === 'monthly' && (
+                <MonthlyCalendarView 
+                  currentMonth={currentWeekStart}
+                  trades={trades}
+                  accounts={accounts}
+                  selectedAccountIds={selectedAccountIds}
+                />
+              )}
+              {calendarViewMode === 'yearly' && (
+                <YearlyCalendarView 
+                  currentYear={currentWeekStart}
+                  trades={trades}
+                  accounts={accounts}
+                  selectedAccountIds={selectedAccountIds}
+                />
+              )}
             </div>
 
             {/* Bottom Summary Stats - Full Width Widget Section */}
