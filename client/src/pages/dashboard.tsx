@@ -127,9 +127,9 @@ interface DashboardAnalytics {
 export default function Dashboard() {
   const queryClient = useQueryClient();
   
-  // Critical calendar day selection state
+  // Calendar day selection state for Section 1 widgets
   const [selectedDate, setSelectedDate] = useState(new Date());
-  const [selectedDayData, setSelectedDayData] = useState(null);
+  const [selectedDayData, setSelectedDayData] = useState<any>(null);
   
 
   
@@ -1440,17 +1440,29 @@ export default function Dashboard() {
 
         {/* COMPACT DASHBOARD: NO EMPTY SPACES */}
         
-        {/* ROW 1: PRIMARY FINANCIAL METRICS */}
+        {/* ROW 1: PRIMARY FINANCIAL METRICS - CALENDAR DAY RESPONSIVE */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 mb-3">
-          {/* Net Balance */}
+          {/* Net Balance or Day P&L */}
           <div className="widget-container">
             <div className="widget-content">
               <div className="widget-left">
-                <p className="widget-label">Net Balance</p>
-                <p className={`widget-value ${getValueColor(calculateNetBalance())}`}>
-                  {formatCurrency(calculateNetBalance())}
-                </p>
-                <p className="widget-description">Starting balance + Total P&L</p>
+                {selectedDayData ? (
+                  <>
+                    <p className="widget-label">Day P&L ({selectedDayData.date.toLocaleDateString()})</p>
+                    <p className={`widget-value ${getValueColor(selectedDayData.dayPnL)}`}>
+                      {formatCurrency(selectedDayData.dayPnL)}
+                    </p>
+                    <p className="widget-description">Selected day profit/loss</p>
+                  </>
+                ) : (
+                  <>
+                    <p className="widget-label">Net Balance</p>
+                    <p className={`widget-value ${getValueColor(calculateNetBalance())}`}>
+                      {formatCurrency(calculateNetBalance())}
+                    </p>
+                    <p className="widget-description">Starting balance + Total P&L</p>
+                  </>
+                )}
               </div>
               <div className="widget-icon-square">
                 <DollarSign className="widget-icon" />
@@ -1460,18 +1472,30 @@ export default function Dashboard() {
 
 
 
-          {/* Total P&L */}
+          {/* Total P&L or Day Trades */}
           <div className="widget-container">
             <div className="widget-content">
               <div className="widget-left">
-                <p className="widget-label">Total P&L</p>
-                <p className={`widget-value ${getValueColor(combinedAnalytics?.totalPnl || 0)}`}>
-                  {formatCurrency(combinedAnalytics?.totalPnl || 0)}
-                </p>
-                <p className="widget-description">Net profit/loss</p>
+                {selectedDayData ? (
+                  <>
+                    <p className="widget-label">Day Trades</p>
+                    <p className="widget-value text-white">
+                      {selectedDayData.totalDayTrades}
+                    </p>
+                    <p className="widget-description">W: {selectedDayData.wins} | L: {selectedDayData.losses}</p>
+                  </>
+                ) : (
+                  <>
+                    <p className="widget-label">Total P&L</p>
+                    <p className={`widget-value ${getValueColor(combinedAnalytics?.totalPnl || 0)}`}>
+                      {formatCurrency(combinedAnalytics?.totalPnl || 0)}
+                    </p>
+                    <p className="widget-description">Net profit/loss</p>
+                  </>
+                )}
               </div>
               <div className="widget-icon-square">
-                <DollarSign className="widget-icon" />
+                <Activity className="widget-icon" />
               </div>
             </div>
           </div>
@@ -1480,11 +1504,23 @@ export default function Dashboard() {
           <div className="widget-container">
             <div className="widget-content">
               <div className="widget-left">
-                <p className="widget-label">Win Rate</p>
-                <p className={`widget-value ${(combinedAnalytics?.winRate || 0) > 50 ? 'text-green-400' : (combinedAnalytics?.winRate || 0) < 50 ? 'text-red-400' : 'text-white'}`}>
-                  {formatPercentage(combinedAnalytics?.winRate || 0)}
-                </p>
-                <p className="widget-description">Winning trades percentage</p>
+                {selectedDayData ? (
+                  <>
+                    <p className="widget-label">Day Win Rate</p>
+                    <p className={`widget-value ${selectedDayData.winRate > 50 ? 'text-green-400' : selectedDayData.winRate < 50 ? 'text-red-400' : 'text-white'}`}>
+                      {Math.round(selectedDayData.winRate)}%
+                    </p>
+                    <p className="widget-description">Day performance rate</p>
+                  </>
+                ) : (
+                  <>
+                    <p className="widget-label">Win Rate</p>
+                    <p className={`widget-value ${(combinedAnalytics?.winRate || 0) > 50 ? 'text-green-400' : (combinedAnalytics?.winRate || 0) < 50 ? 'text-red-400' : 'text-white'}`}>
+                      {formatPercentage(combinedAnalytics?.winRate || 0)}
+                    </p>
+                    <p className="widget-description">Winning trades percentage</p>
+                  </>
+                )}
               </div>
               <div className="widget-icon-square">
                 <Target className="widget-icon" />
@@ -1492,8 +1528,62 @@ export default function Dashboard() {
             </div>
           </div>
 
-
+          {/* Fourth Widget - Day Risk or Total Trades */}
+          <div className="widget-container">
+            <div className="widget-content">
+              <div className="widget-left">
+                {selectedDayData ? (
+                  <>
+                    <p className="widget-label">Day Risk</p>
+                    <p className="widget-value text-orange-400">
+                      {formatCurrency(selectedDayData.avgRiskPerTrade * selectedDayData.totalDayTrades)}
+                    </p>
+                    <p className="widget-description">Total risk taken</p>
+                  </>
+                ) : (
+                  <>
+                    <p className="widget-label">Total Trades</p>
+                    <p className="widget-value text-white">
+                      {combinedAnalytics?.totalTrades || 0}
+                    </p>
+                    <p className="widget-description">All executed trades</p>
+                  </>
+                )}
+              </div>
+              <div className="widget-icon-square">
+                <Activity className="widget-icon" />
+              </div>
+            </div>
+          </div>
         </div>
+
+        {/* Day Selection Indicator */}
+        {selectedDayData && (
+          <div className="mb-6 bg-amber-900/20 border border-amber-400/30 rounded-lg p-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center">
+                <div className="w-2 h-2 bg-amber-400 rounded-full animate-pulse mr-3"></div>
+                <span className="text-amber-400 font-semibold">
+                  Viewing data for {selectedDayData.date.toLocaleDateString('en-US', { 
+                    weekday: 'long',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                  })}
+                </span>
+              </div>
+              <button
+                onClick={() => {
+                  setSelectedDate(new Date());
+                  setSelectedDayData(null);
+                }}
+                className="px-3 py-1 bg-amber-600/80 hover:bg-amber-600 text-white text-sm rounded-md transition-colors"
+              >
+                Clear Selection
+              </button>
+            </div>
+          </div>
+        )}
 
         {/* ROW 2: PERFORMANCE ANALYTICS */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 mb-3">
