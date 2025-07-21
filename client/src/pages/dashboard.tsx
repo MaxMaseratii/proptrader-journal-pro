@@ -68,14 +68,17 @@ interface CalendarViewProps {
 
 interface WeeklyCalendarViewProps extends CalendarViewProps {
   currentWeekStart: Date;
+  onDayClick?: (date: Date) => void;
 }
 
 interface MonthlyCalendarViewProps extends CalendarViewProps {
   currentMonth: Date;
+  onDayClick?: (date: Date) => void;
 }
 
 interface YearlyCalendarViewProps extends CalendarViewProps {
   currentYear: Date;
+  onDayClick?: (date: Date) => void;
 }
 
 // Helper function to get trades for a specific date
@@ -134,7 +137,7 @@ export default function Dashboard() {
 
   
   // Calendar View Components (defined within Dashboard scope)
-  const WeeklyCalendarView: React.FC<WeeklyCalendarViewProps> = ({ currentWeekStart, trades, accounts, selectedAccountIds }) => {
+  const WeeklyCalendarView: React.FC<WeeklyCalendarViewProps> = ({ currentWeekStart, trades, accounts, selectedAccountIds, onDayClick }) => {
     const weekDays = [];
     const today = new Date();
     
@@ -180,13 +183,7 @@ export default function Dashboard() {
                   }
                   hover:border-amber-400/60
                 `}
-                onClick={() => {
-                  console.log('Calendar day clicked:', date.toDateString());
-                  setSelectedDate(date);
-                  const dayData = getDayData(date, trades || []);
-                  console.log('Setting day data:', dayData);
-                  setSelectedDayData(dayData);
-                }}
+                onClick={() => onDayClick && onDayClick(date)}
               >
                 {/* Today indicator */}
                 {isToday && (
@@ -228,7 +225,7 @@ export default function Dashboard() {
     );
   };
 
-  const MonthlyCalendarView: React.FC<MonthlyCalendarViewProps> = ({ currentMonth, trades, accounts, selectedAccountIds }) => {
+  const MonthlyCalendarView: React.FC<MonthlyCalendarViewProps> = ({ currentMonth, trades, accounts, selectedAccountIds, onDayClick }) => {
     const today = new Date();
     const firstDay = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 1);
     const lastDay = new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 0);
@@ -289,13 +286,7 @@ export default function Dashboard() {
                     }
                     hover:border-amber-400/60
                   `}
-                  onClick={() => {
-                    console.log('Monthly calendar day clicked:', date.toDateString());
-                    setSelectedDate(date);
-                    const dayData = getDayData(date, trades || []);
-                    console.log('Setting monthly day data:', dayData);
-                    setSelectedDayData(dayData);
-                  }}
+                  onClick={() => onDayClick && onDayClick(date)}
                 >
                   {/* Today indicator */}
                   {isToday && (
@@ -345,7 +336,7 @@ export default function Dashboard() {
     );
   };
 
-  const YearlyCalendarView: React.FC<YearlyCalendarViewProps> = ({ currentYear, trades, accounts, selectedAccountIds }) => {
+  const YearlyCalendarView: React.FC<YearlyCalendarViewProps> = ({ currentYear, trades, accounts, selectedAccountIds, onDayClick }) => {
     const months = [];
     
     for (let i = 0; i < 12; i++) {
@@ -394,8 +385,7 @@ export default function Dashboard() {
                 `}
                 onClick={() => {
                   const firstDayOfMonth = new Date(month.getFullYear(), month.getMonth(), 1);
-                  setSelectedDate(firstDayOfMonth);
-                  setSelectedDayData(getDayData(firstDayOfMonth, trades || []));
+                  onDayClick && onDayClick(firstDayOfMonth);
                 }}
               >
                 {/* Current month indicator */}
@@ -1350,6 +1340,13 @@ export default function Dashboard() {
                   trades={trades}
                   accounts={accounts}
                   selectedAccountIds={selectedAccountIds}
+                  onDayClick={(date) => {
+                    console.log('Day clicked in weekly view:', date.toDateString());
+                    setSelectedDate(date);
+                    const dayData = getDayData(date, trades || []);
+                    console.log('Setting day data:', dayData);
+                    setSelectedDayData(dayData);
+                  }}
                 />
               )}
               {calendarViewMode === 'monthly' && (
@@ -1358,6 +1355,13 @@ export default function Dashboard() {
                   trades={trades}
                   accounts={accounts}
                   selectedAccountIds={selectedAccountIds}
+                  onDayClick={(date) => {
+                    console.log('Day clicked in monthly view:', date.toDateString());
+                    setSelectedDate(date);
+                    const dayData = getDayData(date, trades || []);
+                    console.log('Setting day data:', dayData);
+                    setSelectedDayData(dayData);
+                  }}
                 />
               )}
               {calendarViewMode === 'yearly' && (
@@ -1366,6 +1370,13 @@ export default function Dashboard() {
                   trades={trades}
                   accounts={accounts}
                   selectedAccountIds={selectedAccountIds}
+                  onDayClick={(date) => {
+                    console.log('Day clicked in yearly view:', date.toDateString());
+                    setSelectedDate(date);
+                    const dayData = getDayData(date, trades || []);
+                    console.log('Setting day data:', dayData);
+                    setSelectedDayData(dayData);
+                  }}
                 />
               )}
             </div>
