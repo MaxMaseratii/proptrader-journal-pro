@@ -206,6 +206,9 @@ export default function Dashboard() {
                   hover:border-amber-400/60 hover:scale-105
                 `}
                 onClick={(e) => {
+                  console.log('=== RAW WEEKLY CALENDAR CLICK ===');
+                  console.log('Event target:', e.target);
+                  console.log('Current target:', e.currentTarget);
                   e.preventDefault();
                   e.stopPropagation();
                   console.log('=== WEEKLY CALENDAR DAY CLICKED ===');
@@ -213,7 +216,12 @@ export default function Dashboard() {
                   console.log('Clicked date ISO:', date.toISOString().split('T')[0]);
                   
                   // Use the parent component's onDayClick handler
-                  onDayClick && onDayClick(date);
+                  if (onDayClick) {
+                    console.log('Calling WEEKLY onDayClick with date:', date);
+                    onDayClick(date);
+                  } else {
+                    console.log('ERROR: WEEKLY onDayClick is not defined!');
+                  }
                 }}
               >
                 {/* Today indicator */}
@@ -318,6 +326,9 @@ export default function Dashboard() {
                     hover:border-amber-400/60
                   `}
                   onClick={(e) => {
+                    console.log('=== RAW MONTHLY CALENDAR CLICK ===');
+                    console.log('Event target:', e.target);
+                    console.log('Current target:', e.currentTarget);
                     e.preventDefault();
                     e.stopPropagation();
                     console.log('=== MONTHLY CALENDAR DAY CLICKED ===');
@@ -325,7 +336,12 @@ export default function Dashboard() {
                     console.log('Clicked date ISO:', date.toISOString().split('T')[0]);
                     
                     // Use the parent component's onDayClick handler
-                    onDayClick && onDayClick(date);
+                    if (onDayClick) {
+                      console.log('Calling MONTHLY onDayClick with date:', date);
+                      onDayClick(date);
+                    } else {
+                      console.log('ERROR: MONTHLY onDayClick is not defined!');
+                    }
                   }}
                 >
                   {/* Today indicator */}
