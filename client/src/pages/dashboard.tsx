@@ -58,7 +58,8 @@ import {
   ChevronLeft,
   ChevronRight,
   RotateCcw,
-  BookOpen
+  BookOpen,
+  FileText
 } from "lucide-react";
 import type { Account, Trade } from "@shared/schema";
 
@@ -157,6 +158,24 @@ export default function Dashboard() {
     return (totalPnl / totalCapital) * 100;
   };
 
+  // Check if a date has journal entries
+  const hasJournalEntry = (date: Date) => {
+    if (!journalEntries) return false;
+    const dateStr = date.toISOString().split('T')[0];
+    return journalEntries.some((entry: any) => 
+      entry.date?.split('T')[0] === dateStr
+    );
+  };
+
+  // Get journal entry for a specific date
+  const getJournalEntry = (date: Date) => {
+    if (!journalEntries) return null;
+    const dateStr = date.toISOString().split('T')[0];
+    return journalEntries.find((entry: any) => 
+      entry.date?.split('T')[0] === dateStr
+    );
+  };
+
   // FIXED: Enhanced handleDayClick with better debugging
   const handleDayClick = useCallback((clickedDate: Date) => {
     console.log('🖱️ Day clicked:', clickedDate.toDateString());
@@ -208,6 +227,8 @@ export default function Dashboard() {
             const isSelected = selectedDate?.toDateString() === date.toDateString();
             const isCurrentMonth = date.getMonth() === currentWeekStart.getMonth();
             
+            const hasJournal = hasJournalEntry(date);
+            
             return (
               <div
                 key={date.toISOString()}
@@ -231,8 +252,25 @@ export default function Dashboard() {
                 }}
                 style={{ zIndex: 10 }}
               >
+                {/* Journal Icon */}
+                {hasJournal && (
+                  <div className="absolute top-1 right-1">
+                    <FileText 
+                      className="w-3 h-3 text-amber-400 cursor-pointer hover:text-amber-300" 
+                      title="Journal entry available - click to view"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        const entry = getJournalEntry(date);
+                        if (entry) {
+                          alert(`Journal Entry for ${date.toDateString()}:\n\nWhat went wrong: ${entry.whatWentWrong || 'Not specified'}\n\nWhat went right: ${entry.whatWentRight || 'Not specified'}\n\nTomorrow's plan: ${entry.tomorrowsPlan || 'Not specified'}`);
+                        }
+                      }}
+                    />
+                  </div>
+                )}
+                
                 {/* Today indicator */}
-                {isToday && (
+                {isToday && !hasJournal && (
                   <div className="absolute top-1 right-1 w-2 h-2 rounded-full bg-teal-400 animate-pulse" />
                 )}
                 
@@ -324,6 +362,7 @@ export default function Dashboard() {
               const metrics = getDayMetrics(date, trades, selectedAccountIds);
               const isToday = date.toDateString() === today.toDateString();
               const isCurrentMonth = date.getMonth() === currentMonth.getMonth();
+              const hasJournal = hasJournalEntry(date);
               
               return (
                 <div
@@ -348,8 +387,25 @@ export default function Dashboard() {
                   }}
                   style={{ zIndex: 10 }}
                 >
+                  {/* Journal Icon */}
+                  {hasJournal && (
+                    <div className="absolute top-0.5 right-0.5">
+                      <FileText 
+                        className="w-2.5 h-2.5 text-amber-400 cursor-pointer hover:text-amber-300" 
+                        title="Journal entry available - click to view"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          const entry = getJournalEntry(date);
+                          if (entry) {
+                            alert(`Journal Entry for ${date.toDateString()}:\n\nWhat went wrong: ${entry.whatWentWrong || 'Not specified'}\n\nWhat went right: ${entry.whatWentRight || 'Not specified'}\n\nTomorrow's plan: ${entry.tomorrowsPlan || 'Not specified'}`);
+                          }
+                        }}
+                      />
+                    </div>
+                  )}
+                  
                   {/* Today indicator */}
-                  {isToday && (
+                  {isToday && !hasJournal && (
                     <div className="absolute top-1 right-1 w-1.5 h-1.5 rounded-full bg-teal-400 animate-pulse" />
                   )}
                   
@@ -550,6 +606,10 @@ export default function Dashboard() {
 
   const { data: trades, isLoading: tradesLoading } = useQuery<Trade[]>({
     queryKey: ["/api/trades"],
+  });
+
+  const { data: journalEntries } = useQuery({
+    queryKey: ["/api/journal"],
   });
 
   // ===== FIXED: SINGLE SOURCE OF TRUTH FOR DAY DATA =====
