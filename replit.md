@@ -533,6 +533,14 @@ Changelog:
   * Maintained gold/yellow color scheme with teal accents throughout all budget planning components
   * Enhanced user experience with real-time visual feedback for receipt selection and file management
   * Preserved all existing expense tracking functionality while adding receipt documentation capability
+- July 21, 2025. Dashboard Widget Cleanup and Streamlining:
+  * Removed Investment ROI Summary, Personal Hourly Wages, Payout Status, Total Investment widgets from dashboard
+  * Removed Working Hours & Profitability Summary, Daily Trade Limit widgets
+  * Eliminated Daily Planning section and Trade Analysis Calendar section
+  * Removed Weekly Risk Management & Performance Calendar from top of dashboard
+  * Streamlined dashboard layout to focus on core trading metrics and performance data
+  * Maintained budget management functionality on spending page with "Create Budget Plan" and "Manage Categories" buttons
+  * Enhanced dashboard performance by reducing widget complexity and improving load times
 ```
 
 ## User Preferences
