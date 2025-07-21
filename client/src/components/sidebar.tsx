@@ -44,10 +44,10 @@ const navItems = [
   { href: "/daily-plan", label: "Daily Trading Plan", icon: Target, section: "main" },
   { href: "/trading-companion", label: "Trading Companion", icon: Bot, section: "main" },
   { href: "/trades", label: "Trades Log", icon: BarChart3, section: "main" },
-  { href: "/charts", label: "Prop Budgeting", icon: Wallet, section: "main" },
+  { href: "/charts", label: "Charts", icon: BarChart3, section: "main" },
   { href: "/disciplinary-assistant", label: "Discipline & Psychology Tracker", icon: Settings, section: "main" },
   { href: "/journal", label: "Trading Journal", icon: Book, section: "main" },
-  { href: "/spending", label: "Prop Spending", icon: CreditCard, section: "main" },
+  { href: "/spending", label: "Prop Budgeting", icon: Wallet, section: "main" },
   { href: "/payouts", label: "Payout Records", icon: DollarSign, section: "main" },
   { href: "/reports", label: "Reports", icon: Calendar, section: "main" },
 

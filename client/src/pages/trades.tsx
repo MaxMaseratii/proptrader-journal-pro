@@ -181,8 +181,10 @@ export default function Trades() {
       <header className="border-b border-gray-800 bg-dark-bg pb-6">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-white">Trading Management</h1>
-            <p className="text-gray-400">Add new trades manually or view existing trading activity</p>
+            <h1 className="text-3xl font-bold text-transparent bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-600 bg-clip-text">
+              Trades Log
+            </h1>
+            <p className="text-gray-400 mt-2">Add new trades manually or view existing trading activity</p>
           </div>
         </div>
       </header>

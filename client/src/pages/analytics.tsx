@@ -333,8 +333,10 @@ export default function Analytics() {
         {/* Header */}
         <div className="flex justify-between items-center">
           <div>
-            <h1 className="text-3xl font-bold">Advanced Analytics</h1>
-            <p className="text-gray-400 mt-1">Comprehensive performance analysis and insights</p>
+            <h1 className="text-3xl font-bold text-transparent bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-600 bg-clip-text">
+              Advanced Analytics
+            </h1>
+            <p className="text-gray-400 mt-2">Comprehensive performance analysis and insights</p>
           </div>
           <div className="flex gap-3">
             <Button onClick={exportData} className="bg-blue-600 hover:bg-blue-700">

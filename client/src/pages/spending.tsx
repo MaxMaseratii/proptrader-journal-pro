@@ -265,8 +265,10 @@ const Spending = () => {
       <div className="flex flex-col space-y-4">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
-            <h1 className="text-3xl font-bold text-white">Budget Planner & Spending Tracker</h1>
-            <p className="text-gray-400">Comprehensive prop trading and personal expense management</p>
+            <h1 className="text-3xl font-bold text-transparent bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-600 bg-clip-text">
+              Prop Budgeting
+            </h1>
+            <p className="text-gray-400 mt-2">Comprehensive prop trading and personal expense management</p>
           </div>
           <div className="flex items-center space-x-4">
             <Select value={selectedPeriod} onValueChange={setSelectedPeriod}>
