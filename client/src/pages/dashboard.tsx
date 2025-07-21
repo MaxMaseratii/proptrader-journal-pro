@@ -992,93 +992,9 @@ export default function Dashboard() {
 
         {/* ROW 4: INVESTMENT & FINANCIAL TRACKING */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 mb-3">
-          {/* Investment ROI Summary */}
-          <div className="widget-container">
-            <div className="widget-content">
-              <div className="widget-left">
-                <p className="widget-label">Investment ROI Summary</p>
-                <div className="investment-summary space-y-1">
-                  <div className="total-invested flex justify-between">
-                    <span className="text-sm">Total Invested:</span>
-                    <span className="text-sm font-semibold">{formatCurrency(totalInvestment)}</span>
-                  </div>
-                  <div className="total-returns flex justify-between">
-                    <span className="text-sm">Total Returns:</span>
-                    <span className={`text-sm font-semibold ${getValueColor(combinedAnalytics?.totalPnl || 0)}`}>
-                      {formatCurrency(combinedAnalytics?.totalPnl || 0)}
-                    </span>
-                  </div>
-                  <div className="roi-percentage flex justify-between">
-                    <span className="text-sm">ROI:</span>
-                    <span className={`text-sm font-semibold ${getValueColor(roiPercentage)}`}>
-                      {roiPercentage.toFixed(1)}%
-                    </span>
-                  </div>
-                </div>
-                <p className="widget-description text-xs">
-                  {roiPercentage > 0 ? 'PROFITABLE TRADER' : 'BUILDING CAPITAL'}
-                </p>
-              </div>
-              <div className="widget-icon-square">
-                <DollarSign className="widget-icon" />
-              </div>
-            </div>
-          </div>
 
-          {/* Personal Hourly Wages */}
-          <div className="widget-container">
-            <div className="widget-content">
-              <div className="widget-left">
-                <p className="widget-label">Personal Hourly Wages</p>
-                {(() => {
-                  const filteredTrades = selectedAccountIds.length > 0
-                    ? trades?.filter(t => selectedAccountIds.includes(t.accountId)) || []
-                    : trades || [];
-                  
-                  if (filteredTrades.length === 0) {
-                    return (
-                      <div>
-                        <p className="widget-value text-gray-400">$0.00</p>
-                        <p className="widget-description text-xs">No trading hours logged</p>
-                      </div>
-                    );
-                  }
-                  
-                  const hourlyWage = user?.personalHourlyWage || 25;
-                  const uniqueDays = new Set(filteredTrades.map(t => t.date.split('T')[0])).size || 0;
-                  const totalTradingHours = uniqueDays * 8; // 8 hours per trading day
-                  const totalPnl = filteredTrades.reduce((sum, trade) => sum + (trade.pnl || 0), 0);
-                  const expectedEarnings = hourlyWage * totalTradingHours;
-                  const actualPerformance = totalPnl - expectedEarnings; // Actual PnL vs expected wages
-                  
-                  return (
-                    <div>
-                      <p className={`widget-value ${actualPerformance >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-                        {formatCurrency(actualPerformance)}
-                      </p>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => {
-                          setNewWage((user?.personalHourlyWage || 25).toString());
-                          setShowWageModal(true);
-                        }}
-                        className="mb-2 text-xs bg-blue-600 hover:bg-blue-700 text-white border-blue-600"
-                      >
-                        Set Hourly Wage
-                      </Button>
-                      <p className="widget-description text-xs">
-                        Target: {formatCurrency(expectedEarnings)} ({formatCurrency(hourlyWage)}/hr × {totalTradingHours.toFixed(1)} hours)
-                      </p>
-                    </div>
-                  );
-                })()}
-              </div>
-              <div className="widget-icon-square">
-                <Clock className="widget-icon" />
-              </div>
-            </div>
-          </div>
+
+
 
 
 
@@ -1197,56 +1113,7 @@ export default function Dashboard() {
             </div>
           </div>
 
-          {/* Payout Status */}
-          <div className="widget-container">
-            <div className="widget-content">
-              <div className="widget-left">
-                <p className="widget-label">Payout Status</p>
-                {(() => {
-                  const payoutAccount = accounts?.find(a => a.id === payoutStatusAccountId);
-                  if (!payoutAccount) return <p className="text-gray-400 text-sm">No account selected</p>;
-                  
-                  if (payoutAccount.type === 'challenge') {
-                    return (
-                      <div className="payout-info">
-                        <p className="text-sm text-yellow-400">Focus on passing challenge</p>
-                        <p className="text-xs text-gray-400">Complete challenge requirements first</p>
-                      </div>
-                    );
-                  }
-                  
-                  const accountTrades = trades?.filter(t => t.accountId === payoutAccount.id) || [];
-                  const currentProfit = accountTrades.reduce((sum, trade) => sum + (trade.pnl || 0), 0);
-                  const minimumPayout = payoutAccount.minimumPayoutAmount || 0;
-                  const maxNetBalance = payoutAccount.maxNetBalanceForPayout || 0;
-                  const requiredTotal = maxNetBalance + minimumPayout;
-                  
-                  return (
-                    <div className="payout-progress">
-                      <div className="progress-bar-container">
-                        <div className="progress-info flex justify-between text-xs">
-                          <span>Progress:</span>
-                          <span>{formatCurrency(currentProfit)} / {formatCurrency(requiredTotal)}</span>
-                        </div>
-                        <div className="progress-bar bg-gray-700 rounded-full h-2 mt-1">
-                          <div 
-                            className="progress-fill bg-green-500 h-2 rounded-full transition-all duration-300"
-                            style={{ width: `${Math.min(100, (currentProfit / requiredTotal) * 100)}%` }}
-                          />
-                        </div>
-                      </div>
-                      <p className="text-xs text-gray-400 mt-1">
-                        {currentProfit >= requiredTotal ? '✅ Eligible for payout' : '⏳ Building towards payout'}
-                      </p>
-                    </div>
-                  );
-                })()}
-              </div>
-              <div className="widget-icon-square">
-                <DollarSign className="widget-icon" />
-              </div>
-            </div>
-          </div>
+
 
 
         </div>
@@ -1338,21 +1205,7 @@ export default function Dashboard() {
             </div>
           </div>
 
-          {/* Total Investment */}
-          <div className="widget-container">
-            <div className="widget-content">
-              <div className="widget-left">
-                <p className="widget-label">Total Investment</p>
-                <p className="widget-value">
-                  {formatCurrency(totalInvestment)}
-                </p>
-                <p className="widget-description">Selected accounts investment</p>
-              </div>
-              <div className="widget-icon-square">
-                <TrendingUp className="widget-icon" />
-              </div>
-            </div>
-          </div>
+
 
           {/* Total Return */}
           <div className="widget-container">
@@ -1489,113 +1342,7 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* Working Hours & Profitability Summary - Under Investment Tracking */}
-        <div className="widget-grid mb-8">
-          <div className="widget-container">
-            <div className="widget-content">
-              <div className="widget-left">
-                <p className="widget-label">Total Working Hours</p>
-                <p className="widget-value text-white">
-                  {(() => {
-                    const filteredTrades = selectedAccountIds.length > 0
-                      ? trades?.filter(t => selectedAccountIds.includes(t.accountId)) || []
-                      : trades || [];
-                    const uniqueDays = new Set(filteredTrades.map(t => t.date.split('T')[0])).size || 0;
-                    const totalHours = uniqueDays * 8; // 8 hours per trading day
-                    return totalHours.toFixed(1);
-                  })()} Hrs
-                </p>
-                <p className="widget-description">
-                  {(() => {
-                    const filteredTrades = selectedAccountIds.length > 0
-                      ? trades?.filter(t => selectedAccountIds.includes(t.accountId)) || []
-                      : trades || [];
-                    const uniqueDays = new Set(filteredTrades.map(t => t.date.split('T')[0])).size || 0;
-                    return `Based on ${uniqueDays} trading days × 8 hours per day`;
-                  })()}
-                </p>
-              </div>
-              <div className="widget-icon-square">
-                <Calendar className="widget-icon" />
-              </div>
-            </div>
-          </div>
 
-          <div className="widget-container">
-            <div className="widget-content">
-              <div className="widget-left">
-                <p className="widget-label">Average Hours Per Day</p>
-                <p className="widget-value">
-                  {(() => {
-                    // Calculate based on actual trading duration from selected accounts trades
-                    const filteredTrades = (() => {
-                      if (!trades) return [];
-                      
-                      if (accountSelectionMode === 'all') {
-                        return trades;
-                      } else if (accountSelectionMode === 'single' && selectedAccountIds.length > 0) {
-                        return trades.filter(t => t.accountId === selectedAccountIds[0]);
-                      } else {
-                        const accountIdsToUse = selectedAccountIds.length > 0 ? selectedAccountIds : (accounts && accounts.length > 0 ? [accounts[0].id] : []);
-                        return trades.filter(t => accountIdsToUse.includes(t.accountId));
-                      }
-                    })();
-                    
-                    const totalTradingMinutes = filteredTrades.reduce((sum, trade) => {
-                      // Assume average trade duration of 15 minutes if not specified
-                      return sum + 15;
-                    }, 0) || 0;
-                    
-                    const avgDailyMinutes = totalTradingMinutes / 30; // Over 30 days
-                    
-                    if (avgDailyMinutes < 60) {
-                      return `${Math.round(avgDailyMinutes)} Min`;
-                    } else {
-                      const avgDailyHours = avgDailyMinutes / 60;
-                      // Cap at 24 hours since a day can't have more than 24 hours
-                      return `${Math.min(avgDailyHours, 24).toFixed(1)} Hrs`;
-                    }
-                  })()}
-                </p>
-                <p className="widget-description">
-                  Based on 30-day trading period
-                </p>
-              </div>
-              <div className="widget-icon-square">
-                <Calendar className="widget-icon" />
-              </div>
-            </div>
-          </div>
-
-          <div className="widget-container">
-            <div className="widget-content">
-              <div className="widget-left">
-                <p className="widget-label">Profitability</p>
-                {(() => {
-                  const totalSpent = (combinedAnalytics?.accounts?.reduce((sum, acc) => sum + (acc.accountCost || 0), 0) || 0) +
-                                    (combinedAnalytics?.accounts?.reduce((sum, acc) => sum + (acc.activationCost || 0), 0) || 0);
-                  const totalPayout = 0; // This would come from actual payout data
-                  const difference = totalPayout - totalSpent;
-                  const isProfit = difference >= 0;
-                  
-                  return (
-                    <>
-                      <p className={`widget-value ${isProfit ? 'text-green-400' : 'text-red-400'}`}>
-                        {isProfit ? '+' : ''}{formatCurrency(difference)}
-                      </p>
-                      <p className="widget-description">
-                        {isProfit ? 'Profitable' : 'Loss'} • {formatCurrency(totalPayout)} vs {formatCurrency(totalSpent)}
-                      </p>
-                    </>
-                  );
-                })()}
-              </div>
-              <div className="widget-icon-square">
-                <TrendingUp className="widget-icon" />
-              </div>
-            </div>
-          </div>
-        </div>
 
         {/* Add Investment Tracking Controls */}
         <div className="flex justify-end mb-8">
@@ -1754,45 +1501,7 @@ export default function Dashboard() {
         <div className="widget-grid mb-6">
 
 
-          {/* Daily Trade Limit */}
-          <div className="widget-container">
-            <div className="widget-content">
-              <div className="widget-left">
-                <p className="widget-label">Daily Trade Limit</p>
-                <p className="widget-value">
-                  {trades?.filter(t => t.date === new Date().toISOString().split('T')[0]).length || 0} / 5
-                </p>
-                <p className="widget-description">
-                  Current trades today / Maximum allowed
-                </p>
-              </div>
-              <div className="widget-icon-square">
-                <BarChart3 className="widget-icon" />
-              </div>
-            </div>
-          </div>
 
-          {/* Personal Hourly Wage */}
-          <div className="widget-container">
-            <div className="widget-content">
-              <div className="widget-left">
-                <p className="widget-label">Personal Hourly Wage</p>
-                <p className={`widget-value ${
-                  user?.personalHourlyWage && ((combinedAnalytics?.totalPnl || 0) / 35.0) >= user.personalHourlyWage 
-                    ? 'text-green-400' 
-                    : 'text-red-400'
-                }`}>
-                  {formatCurrency((combinedAnalytics?.totalPnl || 0) / 35.0)}
-                </p>
-                <p className="widget-description">
-                  Target: {formatCurrency(user?.personalHourlyWage || 25)} / 35.0 hours
-                </p>
-              </div>
-              <div className="widget-icon-square">
-                <DollarSign className="widget-icon" />
-              </div>
-            </div>
-          </div>
         </div>
 
         {/* Risk Alert and Disciplined Trading Analysis */}
@@ -1851,213 +1560,7 @@ export default function Dashboard() {
             </div>
           </div>
 
-          {/* Payout Status */}
-          <div className="widget-container">
-            <div className="widget-content flex-col">
-              <div className="flex items-center justify-between mb-4">
-                <div className="widget-left">
-                  <p className="widget-label">Payout Status</p>
-                  <p className="widget-description">Track payout eligibility</p>
-                </div>
-                <Select value={payoutStatusAccountId?.toString() || ''} onValueChange={(value) => setPayoutStatusAccountId(Number(value))}>
-                  <SelectTrigger className="w-48 bg-gray-800 border-gray-600 text-white text-sm">
-                    <SelectValue placeholder="Select account" />
-                  </SelectTrigger>
-                  <SelectContent className="bg-gray-800 border-gray-600">
-                    {accounts?.map(account => (
-                      <SelectItem key={account.id} value={account.id.toString()} className="text-white">
-                        {account.name} {account.status === 'active' ? '(Active)' : ''}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              
-              {(() => {
-                const selectedAccount = accounts?.find(acc => acc.id === payoutStatusAccountId);
-                if (!selectedAccount) return null;
-                
-                // Check if account type is eligible for payout
-                const isEligibleAccountType = selectedAccount.type === 'funded' || selectedAccount.type === 'live';
-                
-                if (!isEligibleAccountType) {
-                  return (
-                    <div className="space-y-4">
-                      <div className="text-center p-4 rounded-lg bg-gray-800">
-                        <p className="text-xl font-bold text-gray-400">
-                          {selectedAccount.type === 'challenge' ? 'CHALLENGE ACCOUNT' : 'NOT ELIGIBLE'}
-                        </p>
-                        <p className="text-sm text-gray-400 mt-2">
-                          {selectedAccount.type === 'challenge' 
-                            ? 'Focus on passing the challenge. Payouts available after funded.'
-                            : 'Account type not eligible for payouts'}
-                        </p>
-                      </div>
-                    </div>
-                  );
-                }
-                
-                const accountTrades = trades?.filter(t => t.accountId === selectedAccount.id) || [];
-                // Use actual account-specific payout rules from database
-                const requiredDays = selectedAccount.daysRequiredForPayout || 0;
-                const winningDayMinimum = selectedAccount.winningDayMinimum || 0;
-                const minimumPayoutAmount = selectedAccount.minimumPayoutAmount || 0;
-                const maxNetBalanceForPayout = selectedAccount.maxNetBalanceForPayout;
-                
-                const winningTrades = accountTrades.filter(t => (t.pnl || 0) >= winningDayMinimum);
-                const totalProfit = (trades?.filter(t => t.accountId === selectedAccount.id).reduce((sum, trade) => sum + (trade.pnl || 0), 0) || 0);
-                const currentDrawdown = selectedAccount.maxDrawdown - (selectedAccount.startingBalance - (selectedAccount.startingBalance + totalProfit));
-                const isInDrawdown = currentDrawdown < (selectedAccount.maxDrawdown * 0.5);
-                
-                const daysTraded = new Set(accountTrades.map(t => t.date)).size;
-                const winningDays = winningTrades.length;
-                const profitTargetMet = totalProfit >= (selectedAccount.profitTarget || 0);
-                const daysRequirementMet = daysTraded >= requiredDays;
-                const drawdownSafe = !isInDrawdown;
-                // Check if profit exceeds max net balance + minimum payout amount
-                const totalRequiredProfit = (maxNetBalanceForPayout || 0) + minimumPayoutAmount;
-                const minimumPayoutMet = totalProfit >= totalRequiredProfit;
-                const maxNetBalanceMet = !maxNetBalanceForPayout || totalProfit > maxNetBalanceForPayout;
-                
-                const isReady = profitTargetMet && daysRequirementMet && drawdownSafe && winningDays >= requiredDays && minimumPayoutMet && maxNetBalanceMet;
-                
-                return (
-                  <div className="space-y-4">
-                    {/* Status Indicator */}
-                    <div className="text-center p-4 rounded-lg bg-gray-800">
-                      <p className={`text-2xl font-bold ${isReady ? 'text-green-400' : 'text-yellow-400'}`}>
-                        {isReady ? '✓ READY FOR PAYOUT' : 'IN PROGRESS'}
-                      </p>
-                      <p className="text-sm text-gray-400 mt-2">
-                        Estimated Payout: {formatCurrency((() => {
-                          if (selectedAccount.type !== 'funded') return 0;
-                          const currentProfit = totalProfit;
-                          const profitSplit = (selectedAccount.profitSplit || 0) / 100;
-                          const maxPayoutPercentage = (selectedAccount.maximumPayoutPercentage || 0) / 100;
-                          const bufferPercentage = (selectedAccount.bufferPercentage || 0) / 100;
-                          const profitTarget = selectedAccount.profitTarget || 0;
-                          const bufferAmount = profitTarget * bufferPercentage;
-                          const profitAboveBuffer = Math.max(0, currentProfit - bufferAmount);
-                          return Math.max(0, profitAboveBuffer * profitSplit * maxPayoutPercentage);
-                        })())}
-                      </p>
-                    </div>
-                    
-                    {/* Progress Tracking */}
-                    <div className="space-y-4">
-                      {/* Profit Target Progress */}
-                      <div>
-                        <div className="flex justify-between text-sm mb-2">
-                          <span className="text-gray-300">Profit Target</span>
-                          <span className={profitTargetMet ? 'text-green-400' : 'text-yellow-400'}>
-                            {formatCurrency(totalProfit)} / {formatCurrency(selectedAccount.profitTarget || 0)}
-                          </span>
-                        </div>
-                        <div className="w-full bg-gray-700 rounded-full h-3">
-                          <div 
-                            className={`h-3 rounded-full transition-all duration-300 ${
-                              profitTargetMet ? 'bg-green-400' : 'bg-yellow-400'
-                            }`}
-                            style={{ width: `${Math.min((totalProfit / (selectedAccount.profitTarget || 1)) * 100, 100)}%` }}
-                          ></div>
-                        </div>
-                      </div>
-                      
-                      {/* Trading Days Progress */}
-                      <div>
-                        <div className="flex justify-between text-sm mb-2">
-                          <span className="text-gray-300">Trading Days</span>
-                          <span className={daysRequirementMet ? 'text-green-400' : 'text-blue-400'}>
-                            {daysTraded} / {requiredDays} days
-                          </span>
-                        </div>
-                        <div className="w-full bg-gray-700 rounded-full h-3">
-                          <div 
-                            className={`h-3 rounded-full transition-all duration-300 ${
-                              daysRequirementMet ? 'bg-green-400' : 'bg-blue-400'
-                            }`}
-                            style={{ width: `${Math.min((daysTraded / (requiredDays || 1)) * 100, 100)}%` }}
-                          ></div>
-                        </div>
-                      </div>
-                      
-                      {/* Winning Days Progress */}
-                      <div>
-                        <div className="flex justify-between text-sm mb-2">
-                          <span className="text-gray-300">
-                            Winning Days (${winningDayMinimum}+)
-                          </span>
-                          <span className={winningDays >= requiredDays ? 'text-green-400' : 'text-purple-400'}>
-                            {winningDays} / {requiredDays} days
-                          </span>
-                        </div>
-                        <div className="w-full bg-gray-700 rounded-full h-3">
-                          <div 
-                            className={`h-3 rounded-full transition-all duration-300 ${
-                              winningDays >= requiredDays ? 'bg-green-400' : 'bg-purple-400'
-                            }`}
-                            style={{ width: `${Math.min((winningDays / (requiredDays || 1)) * 100, 100)}%` }}
-                          ></div>
-                        </div>
-                      </div>
-                      
-                      {/* Minimum Payout Amount */}
-                      <div>
-                        <div className="flex justify-between text-sm mb-2">
-                          <span className="text-gray-300">Total Required for Payout</span>
-                          <span className={minimumPayoutMet ? 'text-green-400' : 'text-orange-400'}>
-                            {formatCurrency(totalProfit)} / {formatCurrency(totalRequiredProfit)}
-                          </span>
-                        </div>
-                        <div className="w-full bg-gray-700 rounded-full h-3">
-                          <div 
-                            className={`h-3 rounded-full transition-all duration-300 ${
-                              minimumPayoutMet ? 'bg-green-400' : 'bg-orange-400'
-                            }`}
-                            style={{ width: `${Math.min((totalProfit / (totalRequiredProfit || 1)) * 100, 100)}%` }}
-                          ></div>
-                        </div>
-                        <p className="text-xs text-gray-400 mt-1">
-                          {maxNetBalanceForPayout ? `${formatCurrency(maxNetBalanceForPayout)} (max balance) + ${formatCurrency(minimumPayoutAmount)} (minimum)` : `${formatCurrency(minimumPayoutAmount)} minimum`}
-                        </p>
-                      </div>
 
-                      {/* Max Net Balance for Payout */}
-                      {maxNetBalanceForPayout && (
-                        <div>
-                          <div className="flex justify-between text-sm mb-2">
-                            <span className="text-gray-300">Max Net Balance Exceeded</span>
-                            <span className={maxNetBalanceMet ? 'text-green-400' : 'text-red-400'}>
-                              {totalProfit > maxNetBalanceForPayout ? 'Exceeded' : 'Not Exceeded'}
-                            </span>
-                          </div>
-                          <div className="w-full bg-gray-700 rounded-full h-3">
-                            <div 
-                              className={`h-3 rounded-full transition-all duration-300 ${
-                                maxNetBalanceMet ? 'bg-green-400' : 'bg-red-400'
-                              }`}
-                              style={{ width: `${Math.min((totalProfit / (maxNetBalanceForPayout || 1)) * 100, 100)}%` }}
-                            ></div>
-                          </div>
-                          <p className="text-xs text-gray-400 mt-1">
-                            Must exceed ${formatCurrency(maxNetBalanceForPayout)} to be eligible for payout
-                          </p>
-                        </div>
-                      )}
-
-                      {/* Drawdown Status */}
-                      <div className="flex justify-between items-center">
-                        <span className="text-gray-300">Drawdown Status</span>
-                        <span className={drawdownSafe ? 'text-green-400' : 'text-red-400'}>
-                          {drawdownSafe ? 'Safe' : 'In Violation'}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })()}
-            </div>
-          </div>
         </div>
 
 
@@ -2078,55 +1581,7 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* Daily Planning Section */}
-        <div className="mb-8">
-          <h2 className="text-xl font-bold text-gradient-rainbow mb-6 flex items-center border-b border-gray-700 pb-3">
-            <Target className="mr-3 h-5 w-5 text-prop-gold" />
-            Daily Planning
-          </h2>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <DailyPlanningWidget 
-              trades={(() => {
-                if (!trades) return [];
-                
-                if (accountSelectionMode === 'all') {
-                  return trades;
-                } else if (accountSelectionMode === 'single' && selectedAccountIds.length > 0) {
-                  return trades.filter(trade => trade.accountId === selectedAccountIds[0]);
-                } else if (selectedAccountIds.length > 0) {
-                  return trades.filter(trade => selectedAccountIds.includes(trade.accountId));
-                }
-                return trades;
-              })()} 
-              selectedAccount={(() => {
-                if (accountSelectionMode === 'single' && selectedAccountIds.length > 0) {
-                  return accounts?.find(acc => acc.id === selectedAccountIds[0]);
-                }
-                return accounts?.[0]; // Default to first account
-              })()}
-            />
-            <WeeklyPerformanceOverview 
-              trades={(() => {
-                if (!trades) return [];
-                
-                if (accountSelectionMode === 'all') {
-                  return trades;
-                } else if (accountSelectionMode === 'single' && selectedAccountIds.length > 0) {
-                  return trades.filter(trade => trade.accountId === selectedAccountIds[0]);
-                } else if (selectedAccountIds.length > 0) {
-                  return trades.filter(trade => selectedAccountIds.includes(trade.accountId));
-                }
-                return trades;
-              })()} 
-              selectedAccount={(() => {
-                if (accountSelectionMode === 'single' && selectedAccountIds.length > 0) {
-                  return accounts?.find(acc => acc.id === selectedAccountIds[0]);
-                }
-                return accounts?.[0]; // Default to first account
-              })()}
-            />
-          </div>
-        </div>
+
 
         {/* Daily Trading Journal */}
         <div className="mb-8">
@@ -2176,50 +1631,7 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* Trade Analysis Calendar */}
-        <div className="mb-8">
-          <h2 className="text-xl font-bold text-gradient-rainbow mb-6 flex items-center border-b border-gray-700 pb-3">
-            <Calendar className="mr-3 h-5 w-5 text-prop-gold" />
-            Trade Analysis Calendar
-          </h2>
-          <div className="widget-container">
-            <div className="widget-content flex-col">
-              <div className="widget-left mb-4">
-                <p className="widget-label">Calendar View</p>
-                <p className="widget-description">Track trades across time periods</p>
-              </div>
-              <div className="w-full">
-                <TradeAnalysisCalendar 
-                  trades={(() => {
-                    if (!trades) return [];
-                    
-                    if (accountSelectionMode === 'all') {
-                      return trades;
-                    } else if (accountSelectionMode === 'single' && selectedAccountIds.length > 0) {
-                      return trades.filter(trade => trade.accountId === selectedAccountIds[0]);
-                    } else if (selectedAccountIds.length > 0) {
-                      return trades.filter(trade => selectedAccountIds.includes(trade.accountId));
-                    }
-                    return trades;
-                  })()} 
-                  accounts={(() => {
-                    if (!accounts) return [];
-                    
-                    if (accountSelectionMode === 'all') {
-                      return accounts;
-                    } else if (accountSelectionMode === 'single' && selectedAccountIds.length > 0) {
-                      return accounts.filter(acc => acc.id === selectedAccountIds[0]);
-                    } else if (selectedAccountIds.length > 0) {
-                      return accounts.filter(acc => selectedAccountIds.includes(acc.id));
-                    }
-                    return accounts;
-                  })()}
-                  viewMode={timePeriod}
-                />
-              </div>
-            </div>
-          </div>
-        </div>
+
       </div>
 
       {/* Set Hourly Wage Modal */}
