@@ -55,7 +55,9 @@ import {
   Trophy,
   Star,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  BookOpen,
+  LineChart
 } from "lucide-react";
 import type { Account, Trade } from "@shared/schema";
 
