@@ -56,7 +56,8 @@ import {
   Trophy,
   Star,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  RotateCcw
 } from "lucide-react";
 import type { Account, Trade } from "@shared/schema";
 
