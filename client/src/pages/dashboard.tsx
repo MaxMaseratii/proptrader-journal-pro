@@ -1869,14 +1869,14 @@ export default function Dashboard() {
               </div>
             </div>
 
-            {/* Account Equity Curve - Full Widget */}
-            <div className="bg-gray-900/50 border border-gray-700 rounded-lg p-6 col-span-2">
-              <div className="flex items-center justify-between mb-6">
-                <h3 className="text-xl font-semibold text-white">Account Equity Curve</h3>
-                <TrendingUp className="w-6 h-6 text-amber-400" />
+            {/* Account Equity Curve */}
+            <div className="bg-gray-900/50 border border-gray-700 rounded-lg p-6">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold text-white">Account Equity Curve</h3>
+                <TrendingUp className="w-5 h-5 text-amber-400" />
               </div>
               
-              <div className="h-80 w-full relative" id="equity-chart-container">
+              <div className="h-64 w-full relative" id="equity-chart-container">
                 {(() => {
                   const filteredTrades = trades?.filter(trade => 
                     selectedAccountIds.length === 0 || selectedAccountIds.includes(trade.accountId)
@@ -1934,7 +1934,7 @@ export default function Dashboard() {
                   const chartRange = chartMax - chartMin;
 
                   // Calculate breakeven line position
-                  const breakevenY = 270 - ((accountCost - chartMin) / chartRange) * 240;
+                  const breakevenY = 226 - ((accountCost - chartMin) / chartRange) * 196;
 
                   return (
                     <div className="h-full relative">
@@ -1947,11 +1947,11 @@ export default function Dashboard() {
                         <div className="text-xs text-gray-400 mt-1" id="tooltip-performance"></div>
                       </div>
 
-                      <svg className="w-full h-full" viewBox="0 0 600 300">
+                      <svg className="w-full h-full" viewBox="0 0 500 256">
                         <defs>
                           {/* Grid pattern */}
-                          <pattern id="grid" width="60" height="30" patternUnits="userSpaceOnUse">
-                            <path d="M 60 0 L 0 0 0 30" fill="none" stroke="#374151" strokeWidth="0.5" opacity="0.3"/>
+                          <pattern id="grid" width="50" height="25.6" patternUnits="userSpaceOnUse">
+                            <path d="M 50 0 L 0 0 0 25.6" fill="none" stroke="#374151" strokeWidth="0.5" opacity="0.3"/>
                           </pattern>
                           
                           {/* Profit/Loss gradients */}
@@ -1971,29 +1971,29 @@ export default function Dashboard() {
                         
                         {/* Profit/Loss areas */}
                         <rect
-                          x="50"
+                          x="40"
                           y="30"
-                          width="520"
+                          width="430"
                           height={Math.max(0, breakevenY - 30)}
                           fill="url(#profitArea)"
                         />
                         <rect
-                          x="50"
+                          x="40"
                           y={breakevenY}
-                          width="520"
-                          height={Math.max(0, 270 - breakevenY)}
+                          width="430"
+                          height={Math.max(0, 226 - breakevenY)}
                           fill="url(#lossArea)"
                         />
                         
                         {/* Breakeven line */}
                         <line
-                          x1="50"
+                          x1="40"
                           y1={breakevenY}
-                          x2="570"
+                          x2="470"
                           y2={breakevenY}
                           stroke="#f59e0b"
                           strokeWidth="2"
-                          strokeDasharray="8,4"
+                          strokeDasharray="6,3"
                           opacity="0.9"
                         />
                         
@@ -2003,16 +2003,16 @@ export default function Dashboard() {
                           stroke="#3b82f6"
                           strokeWidth="3"
                           points={equityPoints.map((point, index) => {
-                            const x = 50 + (index / (equityPoints.length - 1)) * 520;
-                            const y = 270 - ((point.y - chartMin) / chartRange) * 240;
+                            const x = 40 + (index / (equityPoints.length - 1)) * 430;
+                            const y = 226 - ((point.y - chartMin) / chartRange) * 196;
                             return `${x},${y}`;
                           }).join(' ')}
                         />
                         
                         {/* Data points with hover */}
                         {equityPoints.map((point, index) => {
-                          const x = 50 + (index / (equityPoints.length - 1)) * 520;
-                          const y = 270 - ((point.y - chartMin) / chartRange) * 240;
+                          const x = 40 + (index / (equityPoints.length - 1)) * 430;
+                          const y = 226 - ((point.y - chartMin) / chartRange) * 196;
                           const isProfit = point.y >= accountCost;
                           
                           return (
@@ -2020,11 +2020,11 @@ export default function Dashboard() {
                               key={index}
                               cx={x}
                               cy={y}
-                              r="6"
+                              r="5"
                               fill={isProfit ? "#10b981" : "#ef4444"}
                               stroke="white"
                               strokeWidth="2"
-                              className="cursor-pointer hover:r-8 transition-all duration-200"
+                              className="cursor-pointer hover:r-7 transition-all duration-200"
                               onMouseEnter={(e) => {
                                 const tooltip = document.getElementById('chart-tooltip');
                                 if (tooltip) {
@@ -2070,18 +2070,18 @@ export default function Dashboard() {
                         })}
                         
                         {/* Y-axis labels */}
-                        <text x="45" y="40" textAnchor="end" className="fill-gray-400 text-sm" fontSize="12">
+                        <text x="35" y="35" textAnchor="end" className="fill-gray-400 text-xs" fontSize="11">
                           {formatCurrency(chartMax)}
                         </text>
-                        <text x="45" y="155" textAnchor="end" className="fill-gray-400 text-sm" fontSize="12">
+                        <text x="35" y="130" textAnchor="end" className="fill-gray-400 text-xs" fontSize="11">
                           {formatCurrency((chartMax + chartMin) / 2)}
                         </text>
-                        <text x="45" y="275" textAnchor="end" className="fill-gray-400 text-sm" fontSize="12">
+                        <text x="35" y="230" textAnchor="end" className="fill-gray-400 text-xs" fontSize="11">
                           {formatCurrency(chartMin)}
                         </text>
                         
                         {/* Breakeven label */}
-                        <text x="55" y={breakevenY - 8} className="fill-amber-400 text-sm font-medium" fontSize="13">
+                        <text x="45" y={breakevenY - 6} className="fill-amber-400 text-xs font-medium" fontSize="11">
                           Breakeven: {formatCurrency(accountCost)}
                         </text>
                       </svg>
