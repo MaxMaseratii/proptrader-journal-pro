@@ -57,6 +57,8 @@ const DailyPlanPage = () => {
   const [isCreatePlanDialogOpen, setIsCreatePlanDialogOpen] = useState(false);
   const [editingStrategyId, setEditingStrategyId] = useState<number | null>(null);
   const [isCreateStrategyDialogOpen, setIsCreateStrategyDialogOpen] = useState(false);
+  const [isJournalDialogOpen, setIsJournalDialogOpen] = useState(false);
+  const [selectedPlanForStats, setSelectedPlanForStats] = useState<any>(null);
   
   // Form data for new plan
   const [newPlanData, setNewPlanData] = useState({
@@ -451,47 +453,66 @@ const DailyPlanPage = () => {
       </div>
 
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto p-6 space-y-8 text-white">
+      <div className="max-w-7xl mx-auto p-6 space-y-8">
         
         {/* Today's Plan vs Actual Performance */}
         <Card className="bg-gradient-to-br from-gray-900 via-gray-800 to-black border border-yellow-400/20">
           <CardHeader>
-            <CardTitle className="text-yellow-400 flex items-center gap-2">
-              <Target className="h-5 w-5" />
-              Today's Plan vs Actual Performance
+            <CardTitle className="text-yellow-400 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Target className="h-5 w-5" />
+                Today's Plan vs Actual Performance
+              </div>
+              <Button 
+                onClick={() => setIsJournalDialogOpen(true)}
+                className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white"
+              >
+                <BookOpen className="h-4 w-4 mr-2" />
+                Journal Entry
+              </Button>
             </CardTitle>
           </CardHeader>
           <CardContent>
             {currentPlan ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                <div className="space-y-2">
-                  <div className="text-sm text-gray-400">Target Profit</div>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                <div className="text-center p-4 bg-gradient-to-r from-gray-800 to-gray-700 rounded-lg border border-yellow-400/10">
+                  <div className="text-sm text-gray-400 mb-2">Target Profit</div>
                   <div className="text-2xl font-bold text-yellow-400">${currentPlan.targetProfit}</div>
-                  <div className="text-xs text-gray-500">Planned: ${currentPlan.targetProfit}</div>
+                  <div className="text-xs text-gray-500">Actual: ${actualResults.actualPnL.toFixed(2)}</div>
+                  <Progress 
+                    value={currentPlan.targetProfit ? (actualResults.actualPnL / currentPlan.targetProfit) * 100 : 0} 
+                    className="mt-2 h-2" 
+                  />
                 </div>
-                <div className="space-y-2">
-                  <div className="text-sm text-gray-400">Risk Amount</div>
-                  <div className="text-2xl font-bold text-red-400">${currentPlan.riskAmount}</div>
-                  <div className="text-xs text-gray-500">Max Risk: ${currentPlan.riskAmount}</div>
-                </div>
-                <div className="space-y-2">
-                  <div className="text-sm text-gray-400">Max Trades</div>
+                <div className="text-center p-4 bg-gradient-to-r from-gray-800 to-gray-700 rounded-lg border border-yellow-400/10">
+                  <div className="text-sm text-gray-400 mb-2">Max Trades</div>
                   <div className="text-2xl font-bold text-blue-400">{currentPlan.maxTrades}</div>
-                  <div className="text-xs text-gray-500">Planned: {currentPlan.maxTrades}</div>
+                  <div className="text-xs text-gray-500">Executed: {actualResults.tradesExecuted}</div>
+                  <Progress 
+                    value={currentPlan.maxTrades ? (actualResults.tradesExecuted / currentPlan.maxTrades) * 100 : 0} 
+                    className="mt-2 h-2" 
+                  />
                 </div>
-                <div className="space-y-2">
-                  <div className="text-sm text-gray-400">RR Ratio</div>
-                  <div className="text-2xl font-bold text-green-400">1:{currentPlan.riskRewardRatio}</div>
-                  <div className="text-xs text-gray-500">Target: 1:{currentPlan.riskRewardRatio}</div>
+                <div className="text-center p-4 bg-gradient-to-r from-gray-800 to-gray-700 rounded-lg border border-yellow-400/10">
+                  <div className="text-sm text-gray-400 mb-2">Risk Amount</div>
+                  <div className="text-2xl font-bold text-red-400">${currentPlan.riskAmount}</div>
+                  <div className="text-xs text-gray-500">Used: ${actualResults.riskUsed.toFixed(2)}</div>
+                </div>
+                <div className="text-center p-4 bg-gradient-to-r from-gray-800 to-gray-700 rounded-lg border border-yellow-400/10">
+                  <div className="text-sm text-gray-400 mb-2">Win Rate</div>
+                  <div className="text-2xl font-bold text-green-400">{calculateWinRate()}%</div>
+                  <div className="text-xs text-gray-500">{actualResults.wins}W / {actualResults.losses}L</div>
                 </div>
               </div>
             ) : (
               <div className="text-center py-8">
+                <Target className="w-16 h-16 text-gray-500 mx-auto mb-4" />
                 <div className="text-gray-400 mb-4">No trading plan for today</div>
                 <Button 
                   onClick={() => setIsCreatePlanDialogOpen(true)}
                   className="bg-gradient-to-r from-yellow-400 to-yellow-600 text-black hover:from-yellow-500 hover:to-yellow-700"
                 >
+                  <Plus className="h-4 w-4 mr-2" />
                   Create Today's Plan
                 </Button>
               </div>
@@ -499,88 +520,136 @@ const DailyPlanPage = () => {
           </CardContent>
         </Card>
 
-        {/* Trading Journal Section */}
-        <Card className="bg-gradient-to-br from-gray-900 via-gray-800 to-black border border-yellow-400/20">
-          <CardHeader>
-            <CardTitle className="text-yellow-400 flex items-center gap-2">
-              <BookOpen className="h-5 w-5" />
-              Daily Trading Journal
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="space-y-4">
-                <div>
-                  <Label className="text-white text-sm flex items-center gap-2">
-                    <TrendingDown className="h-4 w-4 text-red-400" />
-                    What went wrong today?
-                  </Label>
-                  <Textarea
-                    value={journalEntry.whatWentWrong || ''}
-                    onChange={(e) => setJournalEntry(prev => ({ ...prev, whatWentWrong: e.target.value }))}
-                    placeholder="Mistakes, missed opportunities..."
-                    className="bg-white border-gray-300 text-black text-sm"
-                    rows={3}
-                  />
+        {/* Historical Plans and Plan Stats */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          
+          {/* Historical Trading Plans */}
+          <Card className="bg-gradient-to-br from-gray-900 via-gray-800 to-black border border-yellow-400/20">
+            <CardHeader>
+              <CardTitle className="text-yellow-400 flex items-center gap-2">
+                <History className="h-5 w-5" />
+                Historical Trading Plans
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="max-h-96 overflow-y-auto">
+              {historicalPlans.length > 0 ? (
+                <div className="space-y-3">
+                  {historicalPlans.map((plan) => (
+                    <div 
+                      key={plan.id} 
+                      className="bg-gray-800/50 rounded-lg p-4 border border-gray-700 hover:border-yellow-400/30 cursor-pointer transition-all"
+                      onClick={() => setSelectedPlanForStats(plan)}
+                    >
+                      <div className="flex justify-between items-start mb-2">
+                        <div>
+                          <div className="text-sm font-medium text-white">
+                            Day #{plan.dayNumber} • {plan.strategy?.name}
+                          </div>
+                          <div className="text-xs text-gray-400">
+                            {new Date(plan.date).toLocaleDateString()}
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <div className={`text-sm font-bold ${plan.performance.totalPnL >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                            ${plan.performance.totalPnL.toFixed(2)}
+                          </div>
+                          <div className="text-xs text-gray-400">
+                            {plan.performance.tradeCount} trades • {plan.performance.winRate.toFixed(1)}% WR
+                          </div>
+                        </div>
+                      </div>
+                      <div className="text-xs text-blue-400 hover:text-blue-300">
+                        Click to view detailed stats →
+                      </div>
+                    </div>
+                  ))}
                 </div>
-                
-                <div>
-                  <Label className="text-white text-sm flex items-center gap-2">
-                    <TrendingUp className="h-4 w-4 text-green-400" />
-                    What went right today?
-                  </Label>
-                  <Textarea
-                    value={journalEntry.whatWentRight || ''}
-                    onChange={(e) => setJournalEntry(prev => ({ ...prev, whatWentRight: e.target.value }))}
-                    placeholder="Good decisions, wins..."
-                    className="bg-white border-gray-300 text-black text-sm"
-                    rows={3}
-                  />
+              ) : (
+                <div className="text-center py-8 text-gray-400">
+                  No historical plans found
                 </div>
-              </div>
-              
-              <div className="space-y-4">
-                <div>
-                  <Label className="text-white text-sm flex items-center gap-2">
-                    <Brain className="h-4 w-4 text-blue-400" />
-                    Lessons learned
-                  </Label>
-                  <Textarea
-                    value={journalEntry.lessonsLearned || ''}
-                    onChange={(e) => setJournalEntry(prev => ({ ...prev, lessonsLearned: e.target.value }))}
-                    placeholder="Key takeaways..."
-                    className="bg-white border-gray-300 text-black text-sm"
-                    rows={3}
-                  />
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Plan Statistics */}
+          <Card className="bg-gradient-to-br from-gray-900 via-gray-800 to-black border border-yellow-400/20">
+            <CardHeader>
+              <CardTitle className="text-yellow-400 flex items-center gap-2">
+                <BarChart3 className="h-5 w-5" />
+                {selectedPlanForStats ? `Plan Statistics - Day #${selectedPlanForStats.dayNumber}` : 'Plan Statistics'}
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              {selectedPlanForStats ? (
+                <div className="space-y-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="text-center p-3 bg-gray-800/50 rounded-lg">
+                      <div className="text-lg font-bold text-yellow-400">
+                        ${selectedPlanForStats.targetProfit}
+                      </div>
+                      <div className="text-xs text-gray-400">Target Profit</div>
+                    </div>
+                    <div className="text-center p-3 bg-gray-800/50 rounded-lg">
+                      <div className={`text-lg font-bold ${selectedPlanForStats.performance.totalPnL >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                        ${selectedPlanForStats.performance.totalPnL.toFixed(2)}
+                      </div>
+                      <div className="text-xs text-gray-400">Actual P&L</div>
+                    </div>
+                    <div className="text-center p-3 bg-gray-800/50 rounded-lg">
+                      <div className="text-lg font-bold text-blue-400">
+                        {selectedPlanForStats.maxTrades}
+                      </div>
+                      <div className="text-xs text-gray-400">Max Trades</div>
+                    </div>
+                    <div className="text-center p-3 bg-gray-800/50 rounded-lg">
+                      <div className="text-lg font-bold text-white">
+                        {selectedPlanForStats.performance.tradeCount}
+                      </div>
+                      <div className="text-xs text-gray-400">Executed</div>
+                    </div>
+                  </div>
+                  
+                  <div className="pt-4 border-t border-gray-700">
+                    <div className="text-sm text-white mb-2">Performance Breakdown</div>
+                    <div className="grid grid-cols-3 gap-2 text-xs">
+                      <div className="text-center p-2 bg-green-900/20 rounded">
+                        <div className="text-green-400 font-bold">{selectedPlanForStats.performance.wins}</div>
+                        <div className="text-gray-400">Wins</div>
+                      </div>
+                      <div className="text-center p-2 bg-red-900/20 rounded">
+                        <div className="text-red-400 font-bold">{selectedPlanForStats.performance.losses}</div>
+                        <div className="text-gray-400">Losses</div>
+                      </div>
+                      <div className="text-center p-2 bg-blue-900/20 rounded">
+                        <div className="text-blue-400 font-bold">{selectedPlanForStats.performance.winRate.toFixed(1)}%</div>
+                        <div className="text-gray-400">Win Rate</div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {selectedPlanForStats.strategy && (
+                    <div className="pt-4 border-t border-gray-700">
+                      <div className="text-sm text-white mb-2">Strategy Used</div>
+                      <div className="bg-gray-800/50 rounded-lg p-3">
+                        <div className="text-yellow-400 font-medium">{selectedPlanForStats.strategy.name}</div>
+                        <div className="text-xs text-gray-400 mt-1">{selectedPlanForStats.strategy.description}</div>
+                        <div className="text-xs text-green-400 mt-2">
+                          Expected WR: {selectedPlanForStats.strategy.expectedWinRate}% • RR: 1:{selectedPlanForStats.strategy.riskRewardRatio}
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
-                
-                <div>
-                  <Label className="text-white text-sm flex items-center gap-2">
-                    <Target className="h-4 w-4 text-yellow-400" />
-                    Tomorrow's plan
-                  </Label>
-                  <Textarea
-                    value={journalEntry.improvementPlan || ''}
-                    onChange={(e) => setJournalEntry(prev => ({ ...prev, improvementPlan: e.target.value }))}
-                    placeholder="Improvements for tomorrow..."
-                    className="bg-white border-gray-300 text-black text-sm"
-                    rows={3}
-                  />
+              ) : (
+                <div className="text-center py-8 text-gray-400">
+                  <BarChart3 className="w-16 h-16 mx-auto mb-4 text-gray-500" />
+                  Click on a historical plan to view detailed statistics
                 </div>
-              </div>
-            </div>
-            
-            <div className="flex justify-end pt-4 border-t border-gray-700 mt-6">
-              <Button 
-                onClick={() => saveJournalEntry.mutate()}
-                disabled={saveJournalEntry.isPending}
-                className="bg-gradient-to-r from-yellow-400 to-yellow-600 text-black hover:from-yellow-500 hover:to-yellow-700"
-              >
-                {saveJournalEntry.isPending ? 'Saving...' : 'Save Journal Entry'}
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
+              )}
+            </CardContent>
+          </Card>
+        </div>
       </div>
 
       {/* Historical Plans and Strategies */}
@@ -806,6 +875,107 @@ const DailyPlanPage = () => {
                 queryClient.invalidateQueries({ queryKey: ['/api/strategies'] });
               }}
             />
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Journal Entry Dialog */}
+      <Dialog open={isJournalDialogOpen} onOpenChange={setIsJournalDialogOpen}>
+        <DialogContent className="max-w-4xl bg-gradient-to-br from-gray-900 via-gray-800 to-black border border-yellow-400/20">
+          <DialogHeader>
+            <DialogTitle className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-yellow-600">
+              Daily Trading Journal Entry
+            </DialogTitle>
+            <DialogDescription className="text-gray-400">
+              Reflect on your trading day for {new Date(selectedDate).toLocaleDateString()}
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-4">
+              <div>
+                <Label className="text-white text-sm flex items-center gap-2">
+                  <TrendingDown className="h-4 w-4 text-red-400" />
+                  What went wrong today?
+                </Label>
+                <Textarea
+                  value={journalEntry.whatWentWrong || ''}
+                  onChange={(e) => setJournalEntry(prev => ({ ...prev, whatWentWrong: e.target.value }))}
+                  placeholder="Mistakes, missed opportunities, emotional trading..."
+                  className="bg-gray-800 border-yellow-400/20 text-white placeholder-gray-400"
+                  rows={4}
+                />
+              </div>
+              
+              <div>
+                <Label className="text-white text-sm flex items-center gap-2">
+                  <TrendingUp className="h-4 w-4 text-green-400" />
+                  What went right today?
+                </Label>
+                <Textarea
+                  value={journalEntry.whatWentRight || ''}
+                  onChange={(e) => setJournalEntry(prev => ({ ...prev, whatWentRight: e.target.value }))}
+                  placeholder="Good decisions, successful trades, discipline..."
+                  className="bg-gray-800 border-yellow-400/20 text-white placeholder-gray-400"
+                  rows={4}
+                />
+              </div>
+            </div>
+            
+            <div className="space-y-4">
+              <div>
+                <Label className="text-white text-sm flex items-center gap-2">
+                  <Brain className="h-4 w-4 text-blue-400" />
+                  Lessons learned
+                </Label>
+                <Textarea
+                  value={journalEntry.lessonsLearned || ''}
+                  onChange={(e) => setJournalEntry(prev => ({ ...prev, lessonsLearned: e.target.value }))}
+                  placeholder="Key takeaways from today's trading..."
+                  className="bg-gray-800 border-yellow-400/20 text-white placeholder-gray-400"
+                  rows={4}
+                />
+              </div>
+              
+              <div>
+                <Label className="text-white text-sm flex items-center gap-2">
+                  <Target className="h-4 w-4 text-yellow-400" />
+                  Tomorrow's plan
+                </Label>
+                <Textarea
+                  value={journalEntry.improvementPlan || ''}
+                  onChange={(e) => setJournalEntry(prev => ({ ...prev, improvementPlan: e.target.value }))}
+                  placeholder="Improvements and focus areas for tomorrow..."
+                  className="bg-gray-800 border-yellow-400/20 text-white placeholder-gray-400"
+                  rows={4}
+                />
+              </div>
+            </div>
+          </div>
+          
+          <div className="flex justify-end gap-3 pt-6 border-t border-gray-600">
+            <Button
+              variant="outline"
+              onClick={() => setIsJournalDialogOpen(false)}
+              className="border-gray-600 text-gray-300"
+            >
+              Cancel
+            </Button>
+            <Button 
+              onClick={() => {
+                createJournalEntry.mutate({
+                  accountId: selectedAccount,
+                  date: selectedDate,
+                  dailyPlanId: currentPlan?.id || null,
+                  ...journalEntry
+                });
+                setIsJournalDialogOpen(false);
+              }}
+              disabled={createJournalEntry.isPending}
+              className="bg-gradient-to-r from-yellow-400 to-yellow-600 text-black hover:from-yellow-500 hover:to-yellow-700"
+            >
+              {createJournalEntry.isPending ? 'Saving...' : 'Save Journal Entry'}
+            </Button>
           </div>
         </DialogContent>
       </Dialog>
