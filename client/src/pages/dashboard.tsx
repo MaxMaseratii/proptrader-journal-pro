@@ -1870,24 +1870,13 @@ export default function Dashboard() {
             </div>
 
             {/* Account Equity Curve */}
-            <div className="bg-gradient-to-br from-gray-900/40 via-gray-800/60 to-black/80 border border-gray-600/30 rounded-xl p-6 hover:border-amber-400/60 transition-all duration-300 hover:shadow-lg hover:shadow-amber-400/20">
-              <div className="flex items-center justify-between mb-6">
-                <div className="flex items-center space-x-3">
-                  <div className="w-10 h-10 bg-gradient-to-br from-amber-400 to-amber-600 rounded-lg flex items-center justify-center">
-                    <TrendingUp className="w-5 h-5 text-black" />
-                  </div>
-                  <div>
-                    <h3 className="text-lg font-bold text-white">Portfolio Growth</h3>
-                    <p className="text-xs text-gray-400">Account equity progression</p>
-                  </div>
-                </div>
-                <div className="text-right">
-                  <div className="text-xs text-gray-400">Performance</div>
-                  <div className="text-sm font-semibold text-amber-400">Live Chart</div>
-                </div>
+            <div className="bg-gray-900/50 border border-gray-700 rounded-lg p-6">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold text-white">Account Equity Curve</h3>
+                <TrendingUp className="w-5 h-5 text-amber-400" />
               </div>
               
-              <div className="h-64 w-full bg-gradient-to-br from-black/20 to-gray-900/20 rounded-lg border border-gray-700/30 p-4">
+              <div className="h-48 w-full relative" id="equity-chart-container">
                 {(() => {
                   const filteredTrades = trades?.filter(trade => 
                     selectedAccountIds.length === 0 || selectedAccountIds.includes(trade.accountId)
@@ -1897,11 +1886,9 @@ export default function Dashboard() {
                     return (
                       <div className="h-full flex items-center justify-center text-gray-400">
                         <div className="text-center">
-                          <div className="w-16 h-16 bg-gradient-to-br from-gray-700 to-gray-800 rounded-full flex items-center justify-center mb-4">
-                            <BarChart3 className="w-8 h-8 text-gray-500" />
-                          </div>
-                          <p className="text-lg font-medium text-gray-300 mb-1">No Trading Data</p>
-                          <p className="text-sm text-gray-500">Complete trades to visualize your equity curve</p>
+                          <BarChart3 className="w-12 h-12 mx-auto mb-2 text-gray-600" />
+                          <p className="text-sm">No trades to display</p>
+                          <p className="text-xs mt-1">Complete trades to see equity curve</p>
                         </div>
                       </div>
                     );
@@ -1923,8 +1910,7 @@ export default function Dashboard() {
                     y: accountCost, 
                     trade: null, 
                     tradesCount: 0, 
-                    date: 'Start',
-                    timestamp: new Date().getTime() - (sortedTrades.length * 24 * 60 * 60 * 1000)
+                    date: 'Start'
                   }];
                   
                   sortedTrades.forEach((trade, index) => {
@@ -1934,254 +1920,169 @@ export default function Dashboard() {
                       y: runningBalance, 
                       trade: trade,
                       tradesCount: index + 1,
-                      date: trade.date || '',
-                      timestamp: new Date(trade.date || '').getTime()
+                      date: trade.date || ''
                     });
                   });
 
-                  const maxBalance = Math.max(...equityPoints.map(p => p.y), accountCost);
-                  const minBalance = Math.min(...equityPoints.map(p => p.y), accountCost);
-                  const range = Math.max(maxBalance - minBalance, accountCost * 0.15);
+                  const maxBalance = Math.max(...equityPoints.map(p => p.y));
+                  const minBalance = Math.min(...equityPoints.map(p => p.y));
+                  const range = Math.max(maxBalance - minBalance, accountCost * 0.1);
                   const padding = range * 0.1;
 
                   const chartMin = minBalance - padding;
                   const chartMax = maxBalance + padding;
                   const chartRange = chartMax - chartMin;
-                  const breakevenY = 232 - ((accountCost - chartMin) / chartRange) * 212;
 
-                  const currentPnL = runningBalance - accountCost;
-                  const pnlPercentage = ((currentPnL / accountCost) * 100);
+                  // Calculate breakeven line position
+                  const breakevenY = 172 - ((accountCost - chartMin) / chartRange) * 152;
 
                   return (
                     <div className="h-full relative">
-                      <svg className="w-full h-full" viewBox="0 0 480 240">
-                        {/* Enhanced gradients and patterns */}
+                      {/* Floating tooltip */}
+                      <div id="chart-tooltip" className="absolute z-50 bg-gray-800 border border-gray-600 rounded-lg p-3 pointer-events-none opacity-0 transition-opacity duration-200 shadow-lg min-w-[200px]">
+                        <div className="text-xs text-gray-300 mb-1" id="tooltip-date"></div>
+                        <div className="text-sm font-medium text-white mb-1" id="tooltip-balance"></div>
+                        <div className="text-xs text-gray-400" id="tooltip-trades"></div>
+                        <div className="text-xs font-medium" id="tooltip-pnl"></div>
+                        <div className="text-xs text-gray-400 mt-1" id="tooltip-performance"></div>
+                      </div>
+
+                      <svg className="w-full h-full" viewBox="0 0 400 192">
                         <defs>
-                          <linearGradient id="chartBackground" x1="0%" y1="0%" x2="0%" y2="100%">
-                            <stop offset="0%" stopColor="#1f2937" stopOpacity="0.1"/>
-                            <stop offset="100%" stopColor="#111827" stopOpacity="0.3"/>
-                          </linearGradient>
+                          {/* Grid pattern */}
+                          <pattern id="grid" width="40" height="19.2" patternUnits="userSpaceOnUse">
+                            <path d="M 40 0 L 0 0 0 19.2" fill="none" stroke="#374151" strokeWidth="0.5" opacity="0.3"/>
+                          </pattern>
                           
-                          <linearGradient id="profitGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                            <stop offset="0%" stopColor="#10b981" stopOpacity="0.2"/>
+                          {/* Profit/Loss gradients */}
+                          <linearGradient id="profitArea" x1="0%" y1="0%" x2="0%" y2="100%">
+                            <stop offset="0%" stopColor="#10b981" stopOpacity="0.1"/>
                             <stop offset="100%" stopColor="#10b981" stopOpacity="0.05"/>
                           </linearGradient>
                           
-                          <linearGradient id="lossGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                          <linearGradient id="lossArea" x1="0%" y1="0%" x2="0%" y2="100%">
                             <stop offset="0%" stopColor="#ef4444" stopOpacity="0.05"/>
-                            <stop offset="100%" stopColor="#ef4444" stopOpacity="0.2"/>
+                            <stop offset="100%" stopColor="#ef4444" stopOpacity="0.1"/>
                           </linearGradient>
-                          
-                          <linearGradient id="equityLineGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                            <stop offset="0%" stopColor="#f59e0b" stopOpacity="0.8"/>
-                            <stop offset="50%" stopColor="#10b981" stopOpacity="1"/>
-                            <stop offset="100%" stopColor="#3b82f6" stopOpacity="0.9"/>
-                          </linearGradient>
-
-                          <filter id="glow">
-                            <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
-                            <feMerge> 
-                              <feMergeNode in="coloredBlur"/>
-                              <feMergeNode in="SourceGraphic"/>
-                            </feMerge>
-                          </filter>
-
-                          <pattern id="gridPattern" width="48" height="19.2" patternUnits="userSpaceOnUse">
-                            <path d="M 48 0 L 0 0 0 19.2" fill="none" stroke="#374151" strokeWidth="0.3" opacity="0.4"/>
-                          </pattern>
                         </defs>
 
-                        {/* Background */}
-                        <rect width="100%" height="100%" fill="url(#chartBackground)" rx="8"/>
-                        <rect x="40" y="10" width="420" height="172" fill="url(#gridPattern)" opacity="0.6"/>
+                        {/* Grid background */}
+                        <rect width="100%" height="100%" fill="url(#grid)" />
                         
-                        {/* Profit/Loss regions */}
+                        {/* Profit/Loss areas */}
                         <rect
-                          x="40"
-                          y="10"
-                          width="420"
-                          height={Math.max(0, breakevenY - 10)}
-                          fill="url(#profitGradient)"
+                          x="30"
+                          y="20"
+                          width="350"
+                          height={Math.max(0, breakevenY - 20)}
+                          fill="url(#profitArea)"
                         />
                         <rect
-                          x="40"
+                          x="30"
                           y={breakevenY}
-                          width="420"
-                          height={Math.max(0, 182 - breakevenY)}
-                          fill="url(#lossGradient)"
+                          width="350"
+                          height={Math.max(0, 172 - breakevenY)}
+                          fill="url(#lossArea)"
                         />
                         
                         {/* Breakeven line */}
                         <line
-                          x1="40"
+                          x1="30"
                           y1={breakevenY}
-                          x2="460"
+                          x2="380"
                           y2={breakevenY}
                           stroke="#f59e0b"
-                          strokeWidth="2"
-                          strokeDasharray="8,4"
-                          opacity="0.9"
-                          filter="url(#glow)"
-                        />
-                        <text x="45" y={breakevenY - 8} className="fill-amber-400 text-xs font-medium" fontSize="11">
-                          ◆ Breakeven: {formatCurrency(accountCost)}
-                        </text>
-                        
-                        {/* Area under curve */}
-                        <path
-                          d={`M 40 ${breakevenY} ${equityPoints.map((point, index) => {
-                            const x = 40 + (index / (equityPoints.length - 1)) * 420;
-                            const y = 182 - ((point.y - chartMin) / chartRange) * 172;
-                            return `L ${x} ${y}`;
-                          }).join(' ')} L 460 ${breakevenY} Z`}
-                          fill={currentPnL >= 0 ? "url(#profitGradient)" : "url(#lossGradient)"}
-                          opacity="0.3"
+                          strokeWidth="1"
+                          strokeDasharray="5,5"
+                          opacity="0.8"
                         />
                         
-                        {/* Main equity curve line */}
-                        <path
-                          d={`M ${equityPoints.map((point, index) => {
-                            const x = 40 + (index / (equityPoints.length - 1)) * 420;
-                            const y = 182 - ((point.y - chartMin) / chartRange) * 172;
-                            return `${index === 0 ? 'M' : 'L'} ${x} ${y}`;
-                          }).join(' ')}`}
+                        {/* Equity curve line */}
+                        <polyline
                           fill="none"
-                          stroke="url(#equityLineGradient)"
-                          strokeWidth="3"
-                          filter="url(#glow)"
-                          className="drop-shadow-lg"
+                          stroke="#3b82f6"
+                          strokeWidth="2"
+                          points={equityPoints.map((point, index) => {
+                            const x = 30 + (index / (equityPoints.length - 1)) * 350;
+                            const y = 172 - ((point.y - chartMin) / chartRange) * 152;
+                            return `${x},${y}`;
+                          }).join(' ')}
                         />
                         
-                        {/* Enhanced data points with detailed hover */}
+                        {/* Data points with hover */}
                         {equityPoints.map((point, index) => {
-                          const x = 40 + (index / (equityPoints.length - 1)) * 420;
-                          const y = 230 - ((point.y - chartMin) / chartRange) * 200;
+                          const x = 30 + (index / (equityPoints.length - 1)) * 350;
+                          const y = 172 - ((point.y - chartMin) / chartRange) * 152;
                           const isProfit = point.y >= accountCost;
-                          const netPnL = point.y - accountCost;
-                          const netPnLPercent = ((netPnL / accountCost) * 100);
-                          const tradeTime = point.trade ? new Date(point.date).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : 'N/A';
                           
                           return (
-                            <g key={index} className="cursor-pointer">
-                              {/* Outer glow ring */}
-                              <circle
-                                cx={x}
-                                cy={y}
-                                r="12"
-                                fill={isProfit ? "#10b981" : "#ef4444"}
-                                opacity="0.1"
-                                className="hover:opacity-30 transition-all duration-300"
-                              />
-                              {/* Middle ring */}
-                              <circle
-                                cx={x}
-                                cy={y}
-                                r="8"
-                                fill={isProfit ? "#10b981" : "#ef4444"}
-                                opacity="0.3"
-                                className="hover:opacity-50 transition-all duration-300"
-                              />
-                              {/* Main point */}
-                              <circle
-                                cx={x}
-                                cy={y}
-                                r="5"
-                                fill={isProfit ? "#10b981" : "#ef4444"}
-                                stroke="white"
-                                strokeWidth="2"
-                                className="hover:r-7 transition-all duration-300"
-                                filter="url(#glow)"
-                              />
-                              {/* Center highlight */}
-                              <circle
-                                cx={x}
-                                cy={y}
-                                r="2"
-                                fill="white"
-                                opacity="0.9"
-                                className="hover:opacity-100"
-                              />
-                              
-                              {/* Comprehensive tooltip */}
-                              <g className="opacity-0 hover:opacity-100 transition-opacity duration-300 pointer-events-none">
-                                {/* Tooltip background with gradient */}
-                                <rect
-                                  x={x - 110}
-                                  y={y - 85}
-                                  width="220"
-                                  height="70"
-                                  fill="rgba(17, 24, 39, 0.98)"
-                                  rx="12"
-                                  stroke={isProfit ? "#10b981" : "#ef4444"}
-                                  strokeWidth="2"
-                                  filter="url(#glow)"
-                                />
-                                <rect
-                                  x={x - 108}
-                                  y={y - 83}
-                                  width="216"
-                                  height="8"
-                                  fill={isProfit ? "url(#profitGradient)" : "url(#lossGradient)"}
-                                  rx="6"
-                                  opacity="0.8"
-                                />
-                                
-                                {/* Trade Date & Time */}
-                                <text x={x} y={y - 65} textAnchor="middle" className="fill-white text-sm font-bold" fontSize="12">
-                                  {point.date === 'Start' ? '🏁 Account Started' : `📅 ${new Date(point.date).toLocaleDateString()}`}
-                                </text>
-                                <text x={x} y={y - 50} textAnchor="middle" className="fill-gray-300 text-xs" fontSize="11">
-                                  {point.date === 'Start' ? 'Initial Capital Deployment' : `⏰ Time: ${tradeTime}`}
-                                </text>
-                                
-                                {/* Trade Details */}
-                                <text x={x - 100} y={y - 35} className="fill-gray-400 text-xs" fontSize="10">
-                                  Trade Count:
-                                </text>
-                                <text x={x + 100} y={y - 35} textAnchor="end" className="fill-amber-400 text-xs font-semibold" fontSize="10">
-                                  #{point.tradesCount}
-                                </text>
-                                
-                                <text x={x - 100} y={y - 23} className="fill-gray-400 text-xs" fontSize="10">
-                                  Account Balance:
-                                </text>
-                                <text x={x + 100} y={y - 23} textAnchor="end" className={`text-xs font-bold ${isProfit ? 'fill-green-400' : 'fill-red-400'}`} fontSize="10">
-                                  {formatCurrency(point.y)}
-                                </text>
-                                
-                                {/* Trade P&L */}
-                                {point.trade && (
-                                  <>
-                                    <text x={x - 100} y={y - 11} className="fill-gray-400 text-xs" fontSize="10">
-                                      Trade P&L:
-                                    </text>
-                                    <text x={x + 100} y={y - 11} textAnchor="end" className={`text-xs font-bold ${point.trade.pnl >= 0 ? 'fill-green-400' : 'fill-red-400'}`} fontSize="10">
-                                      {point.trade.pnl >= 0 ? '+' : ''}{formatCurrency(point.trade.pnl || 0)}
-                                    </text>
-                                  </>
-                                )}
-                                
-                                {/* Net Performance */}
-                                <text x={x - 100} y={y + 1} className="fill-gray-400 text-xs" fontSize="10">
-                                  Net Performance:
-                                </text>
-                                <text x={x + 100} y={y + 1} textAnchor="end" className={`text-xs font-bold ${netPnL >= 0 ? 'fill-green-400' : 'fill-red-400'}`} fontSize="10">
-                                  {netPnL >= 0 ? '+' : ''}{formatCurrency(netPnL)} ({netPnLPercent >= 0 ? '+' : ''}{netPnLPercent.toFixed(1)}%)
-                                </text>
-                              </g>
-                            </g>
+                            <circle
+                              key={index}
+                              cx={x}
+                              cy={y}
+                              r="4"
+                              fill={isProfit ? "#10b981" : "#ef4444"}
+                              stroke="white"
+                              strokeWidth="2"
+                              className="cursor-pointer hover:r-6 transition-all duration-200"
+                              onMouseEnter={(e) => {
+                                const tooltip = document.getElementById('chart-tooltip');
+                                if (tooltip) {
+                                  const rect = e.currentTarget.getBoundingClientRect();
+                                  const container = document.getElementById('equity-chart-container');
+                                  if (container) {
+                                    const containerRect = container.getBoundingClientRect();
+                                    tooltip.style.left = (rect.left - containerRect.left + 10) + 'px';
+                                    tooltip.style.top = (rect.top - containerRect.top - 100) + 'px';
+                                  }
+                                  
+                                  const dateEl = document.getElementById('tooltip-date');
+                                  const balanceEl = document.getElementById('tooltip-balance');
+                                  const tradesEl = document.getElementById('tooltip-trades');
+                                  const pnlEl = document.getElementById('tooltip-pnl');
+                                  const performanceEl = document.getElementById('tooltip-performance');
+                                  
+                                  if (dateEl && balanceEl && tradesEl && pnlEl && performanceEl) {
+                                    const tradeTime = point.trade ? new Date(point.date).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : '';
+                                    const netPnL = point.y - accountCost;
+                                    const netPercent = ((netPnL / accountCost) * 100).toFixed(1);
+                                    
+                                    dateEl.textContent = point.date === 'Start' ? 'Account Start' : `${new Date(point.date).toLocaleDateString()} ${tradeTime}`;
+                                    balanceEl.textContent = `Balance: ${formatCurrency(point.y)}`;
+                                    tradesEl.textContent = `Trade #${point.tradesCount}`;
+                                    pnlEl.textContent = point.trade ? `Trade P&L: ${formatCurrency(point.trade.pnl || 0)}` : 'Initial Capital';
+                                    pnlEl.className = `text-xs font-medium ${point.trade ? (point.trade.pnl >= 0 ? 'text-green-400' : 'text-red-400') : 'text-gray-400'}`;
+                                    performanceEl.textContent = `Net: ${netPnL >= 0 ? '+' : ''}${formatCurrency(netPnL)} (${netPercent}%)`;
+                                    performanceEl.className = `text-xs text-gray-400 mt-1 ${netPnL >= 0 ? 'text-green-400' : 'text-red-400'}`;
+                                  }
+                                  
+                                  tooltip.style.opacity = '1';
+                                }
+                              }}
+                              onMouseLeave={() => {
+                                const tooltip = document.getElementById('chart-tooltip');
+                                if (tooltip) {
+                                  tooltip.style.opacity = '0';
+                                }
+                              }}
+                            />
                           );
                         })}
                         
-                        {/* Enhanced Y-axis labels */}
-                        <text x="35" y="35" textAnchor="end" className="fill-gray-400 text-xs font-medium" fontSize="10">
+                        {/* Y-axis labels */}
+                        <text x="25" y="25" textAnchor="end" className="fill-gray-400 text-xs" fontSize="10">
                           {formatCurrency(chartMax)}
                         </text>
-                        <text x="35" y="135" textAnchor="end" className="fill-gray-400 text-xs font-medium" fontSize="10">
+                        <text x="25" y="100" textAnchor="end" className="fill-gray-400 text-xs" fontSize="10">
                           {formatCurrency((chartMax + chartMin) / 2)}
                         </text>
-                        <text x="35" y="225" textAnchor="end" className="fill-gray-400 text-xs font-medium" fontSize="10">
+                        <text x="25" y="175" textAnchor="end" className="fill-gray-400 text-xs" fontSize="10">
                           {formatCurrency(chartMin)}
+                        </text>
+                        
+                        {/* Breakeven label */}
+                        <text x="35" y={breakevenY - 5} className="fill-amber-400 text-xs" fontSize="9">
+                          Breakeven: {formatCurrency(accountCost)}
                         </text>
                       </svg>
                     </div>
