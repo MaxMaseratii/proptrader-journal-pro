@@ -1111,7 +1111,7 @@ export default function Dashboard() {
 
       <div className="p-6 space-y-6">
         
-        {/* Daily Trading Plan & Performance - Single Header */}
+        {/* ORIGINAL SECTION 1: Daily Planning & Overview */}
         <div className="mb-8">
           <div className="flex items-center justify-between mb-6 border-b border-gray-700 pb-3">
             <h2 className="text-xl font-bold text-gradient-rainbow flex items-center">
@@ -1119,9 +1119,121 @@ export default function Dashboard() {
               Daily Trading Plan & Performance
             </h2>
           </div>
+          
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* Left Column: Today's Plan */}
+            <div className="lg:col-span-1">
+              <DailyPlanningWidget 
+                accounts={accounts || []} 
+                selectedAccountIds={selectedAccountIds}
+                selectedDate={selectedDate}
+                setSelectedDate={setSelectedDate}
+              />
+            </div>
+            
+            {/* Middle Column: Weekly Performance */}
+            <div className="lg:col-span-1">
+              <WeeklyPerformanceOverview 
+                trades={trades || []} 
+                selectedAccountIds={selectedAccountIds}
+                currentWeekStart={currentWeekStart}
+                setCurrentWeekStart={setCurrentWeekStart}
+              />
+            </div>
+            
+            {/* Right Column: Trading Calendar Preview */}
+            <div className="lg:col-span-1">
+              <TradeAnalysisCalendar
+                trades={trades || []}
+                accounts={accounts || []}
+                selectedAccountIds={selectedAccountIds}
+                selectedDate={selectedDate}
+                setSelectedDate={setSelectedDate}
+                compact={true}
+              />
+            </div>
+          </div>
+        </div>
 
-        {/* ===== SECTION 1: PERFORMANCE OVERVIEW ===== */}
+        {/* ORIGINAL SECTION 2: Account Status & Activity */}
         <div className="mb-8">
+          <div className="flex items-center justify-between mb-6 border-b border-gray-700 pb-3">
+            <h2 className="text-xl font-bold text-gradient-rainbow flex items-center">
+              <Users className="mr-3 h-5 w-5 text-prop-gold" />
+              Account Status & Recent Activity
+            </h2>
+          </div>
+          
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Left: Active Accounts Overview */}
+            <div className="bg-gray-900/60 border border-gray-700/50 rounded-lg p-6">
+              <h3 className="text-lg font-bold text-gradient-rainbow flex items-center mb-4">
+                <Users className="mr-2 h-5 w-5 text-prop-gold" />
+                Active Accounts Overview
+              </h3>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-yellow-400">
+                    {accounts?.filter(acc => acc.type === 'challenge').length || 0}
+                  </div>
+                  <div className="text-sm text-gray-400">Challenge</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-green-400">
+                    {accounts?.filter(acc => acc.type === 'funded').length || 0}
+                  </div>
+                  <div className="text-sm text-gray-400">Funded</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-blue-400">
+                    {accounts?.filter(acc => acc.type === 'live').length || 0}
+                  </div>
+                  <div className="text-sm text-gray-400">Live</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-red-400">
+                    {accounts?.filter(acc => acc.status === 'failed').length || 0}
+                  </div>
+                  <div className="text-sm text-gray-400">Failed</div>
+                </div>
+              </div>
+            </div>
+            
+            {/* Right: Recent Trading Activity */}
+            <div className="bg-gray-900/60 border border-gray-700/50 rounded-lg p-6">
+              <h3 className="text-lg font-bold text-gradient-rainbow flex items-center mb-4">
+                <Activity className="mr-2 h-5 w-5 text-prop-gold" />
+                Recent Trading Activity
+              </h3>
+              <div className="space-y-3">
+                {trades?.slice(0, 3).map((trade) => (
+                  <div key={trade.id} className="flex justify-between items-center py-2 border-b border-gray-700/30">
+                    <div>
+                      <div className="font-medium text-white">{trade.symbol}</div>
+                      <div className="text-xs text-gray-400">{formatDate(trade.date)}</div>
+                    </div>
+                    <div className={`font-bold ${trade.pnl >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                      {trade.pnl >= 0 ? '+' : ''}{formatCurrency(trade.pnl)}
+                    </div>
+                  </div>
+                )) || (
+                  <div className="text-center text-gray-400 py-4">
+                    No recent trades found
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* ===== REORGANIZED SECTIONS START FROM NET BALANCE ===== */}
+        <div className="mb-8">
+          <div className="flex items-center justify-between mb-6 border-b border-gray-700 pb-3">
+            <h2 className="text-xl font-bold text-gradient-rainbow flex items-center">
+              <BarChart3 className="mr-3 h-5 w-5 text-prop-gold" />
+              Performance Overview
+            </h2>
+          </div>
           {/* Row 1: 4 widgets → grid-cols-4 */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
             
@@ -1898,7 +2010,6 @@ export default function Dashboard() {
           </div>
         </div>
 
-      </div>
       </div>
 
       {/* Set Hourly Wage Modal */}
