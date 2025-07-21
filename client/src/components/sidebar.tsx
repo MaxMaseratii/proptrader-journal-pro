@@ -24,7 +24,9 @@ import {
   ChevronLeft,
   PanelLeftClose,
   PanelLeftOpen,
-  Target
+  Target,
+  Activity,
+  FileText
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
@@ -39,12 +41,12 @@ import {
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
 const navItems = [
-  { href: "/", label: "Dashboard", icon: ChartLine, section: "main" },
+  { href: "/", label: "Dashboard", icon: BarChart3, section: "main" },
   { href: "/projections", label: "Challenge Target Planner", icon: TrendingUp, section: "main" },
   { href: "/daily-plan", label: "Daily Trading Plan", icon: Target, section: "main" },
   { href: "/trading-companion", label: "Trading Companion", icon: Bot, section: "main" },
-  { href: "/trades", label: "Trades Log", icon: BarChart3, section: "main" },
-  { href: "/charts", label: "Charts & Analytics", icon: BarChart3, section: "main" },
+  { href: "/trades", label: "Trades Log", icon: FileText, section: "main" },
+  { href: "/charts", label: "Charts & Analytics", icon: ChartLine, section: "main" },
   { href: "/disciplinary-assistant", label: "Discipline & Psychology Tracker", icon: Settings, section: "main" },
   { href: "/journal", label: "Trading Journal", icon: Book, section: "main" },
   { href: "/spending", label: "Prop Budgeting", icon: Wallet, section: "main" },

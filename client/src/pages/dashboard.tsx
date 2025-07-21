@@ -1826,7 +1826,67 @@ export default function Dashboard() {
           </div>
         </section>
 
-        {/* SECTION 4: ACCOUNT MANAGEMENT */}
+        {/* SECTION 4: TRADING ACTIVITY */}
+        <section className="mb-8">
+          <div className="flex items-center justify-between mb-6 border-b border-gray-700 pb-3">
+            <h2 className="text-xl font-bold text-gradient-rainbow flex items-center">
+              <Activity className="mr-3 h-5 w-5 text-prop-gold" />
+              Trading Activity
+            </h2>
+            <p className="text-sm text-gray-400">Recent trades and performance analytics</p>
+          </div>
+          
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Latest Trades */}
+            <div className="bg-gradient-to-br from-gray-900/40 via-gray-800/60 to-black/80 border border-gray-600/30 rounded-lg p-6 hover:border-amber-400/60 transition-all duration-200">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold text-white">Latest Trades</h3>
+                <Activity className="w-5 h-5 text-amber-400" />
+              </div>
+              <div className="space-y-3 max-h-64 overflow-y-auto">
+                {trades && trades.length > 0 ? (
+                  trades
+                    .filter(trade => selectedAccountIds.length === 0 || selectedAccountIds.includes(trade.accountId))
+                    .slice(-5)
+                    .reverse()
+                    .map((trade, index) => (
+                      <div key={trade.id || index} className="bg-black/30 rounded-lg p-3">
+                        <div className="flex justify-between items-start mb-1">
+                          <span className="text-white font-medium">{trade.symbol}</span>
+                          <span className={`font-bold ${(trade.pnl || 0) >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                            {(trade.pnl || 0) >= 0 ? '+' : ''}{formatCurrency(trade.pnl || 0)}
+                          </span>
+                        </div>
+                        <div className="flex justify-between text-xs text-gray-400">
+                          <span>{new Date(trade.date || '').toLocaleDateString()}</span>
+                          <span>{trade.side || 'Unknown'}</span>
+                        </div>
+                      </div>
+                    ))
+                ) : (
+                  <p className="text-gray-400 text-center py-8">No trades yet</p>
+                )}
+              </div>
+            </div>
+
+            {/* Account Equity Curve */}
+            <div className="bg-gradient-to-br from-gray-900/40 via-gray-800/60 to-black/80 border border-gray-600/30 rounded-lg p-6 hover:border-amber-400/60 transition-all duration-200">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold text-white">Account Equity Curve</h3>
+                <TrendingUp className="w-5 h-5 text-amber-400" />
+              </div>
+              <div className="h-48 w-full flex items-center justify-center text-gray-400">
+                <div className="text-center">
+                  <BarChart3 className="w-12 h-12 mx-auto mb-2 text-gray-600" />
+                  <p className="text-sm">Portfolio growth over time</p>
+                  <p className="text-xs mt-1">Complete trades to see equity curve</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* SECTION 5: ACCOUNT MANAGEMENT */}
         <section className="mb-8">
           <div className="flex items-center justify-between mb-6 border-b border-gray-700 pb-3">
             <div>
@@ -2043,67 +2103,7 @@ export default function Dashboard() {
           </div>
         </section>
 
-        {/* SECTION 6: TRADING ACTIVITY */}
-        <section className="mb-8">
-          <div className="flex items-center justify-between mb-6 border-b border-gray-700 pb-3">
-            <h2 className="text-xl font-bold text-gradient-rainbow flex items-center">
-              <Activity className="mr-3 h-5 w-5 text-prop-gold" />
-              Trading Activity
-            </h2>
-            <p className="text-sm text-gray-400">Recent trades and performance analytics</p>
-          </div>
-          
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Latest Trades */}
-            <div className="bg-gradient-to-br from-gray-900/40 via-gray-800/60 to-black/80 border border-gray-600/30 rounded-lg p-6 hover:border-amber-400/60 transition-all duration-200">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-semibold text-white">Latest Trades</h3>
-                <Activity className="w-5 h-5 text-amber-400" />
-              </div>
-              <div className="space-y-3 max-h-64 overflow-y-auto">
-                {trades && trades.length > 0 ? (
-                  trades
-                    .filter(trade => selectedAccountIds.length === 0 || selectedAccountIds.includes(trade.accountId))
-                    .slice(-5)
-                    .reverse()
-                    .map((trade, index) => (
-                      <div key={trade.id || index} className="bg-black/30 rounded-lg p-3">
-                        <div className="flex justify-between items-start mb-1">
-                          <span className="text-white font-medium">{trade.symbol}</span>
-                          <span className={`font-bold ${(trade.pnl || 0) >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-                            {(trade.pnl || 0) >= 0 ? '+' : ''}{formatCurrency(trade.pnl || 0)}
-                          </span>
-                        </div>
-                        <div className="flex justify-between text-xs text-gray-400">
-                          <span>{new Date(trade.date || '').toLocaleDateString()}</span>
-                          <span>{trade.side || 'Unknown'}</span>
-                        </div>
-                      </div>
-                    ))
-                ) : (
-                  <p className="text-gray-400 text-center py-8">No trades yet</p>
-                )}
-              </div>
-            </div>
-
-            {/* Account Equity Curve */}
-            <div className="bg-gradient-to-br from-gray-900/40 via-gray-800/60 to-black/80 border border-gray-600/30 rounded-lg p-6 hover:border-amber-400/60 transition-all duration-200">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-semibold text-white">Account Equity Curve</h3>
-                <TrendingUp className="w-5 h-5 text-amber-400" />
-              </div>
-              <div className="h-48 w-full flex items-center justify-center text-gray-400">
-                <div className="text-center">
-                  <BarChart3 className="w-12 h-12 mx-auto mb-2 text-gray-600" />
-                  <p className="text-sm">Portfolio growth over time</p>
-                  <p className="text-xs text-gray-500 mt-1">Chart visualization</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* SECTION 7: INVESTMENT TRACKING */}
+        {/* SECTION 6: INVESTMENT TRACKING */}
         <section className="mb-8">
           <div className="flex items-center justify-between mb-6 border-b border-gray-700 pb-3">
             <h2 className="text-xl font-bold text-gradient-rainbow flex items-center">
