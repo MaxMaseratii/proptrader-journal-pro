@@ -387,7 +387,66 @@ const Spending = () => {
               </DialogContent>
             </Dialog>
             
-            {/* Add Expense Button now positioned above form fields */}
+            {/* Add Spending Entry Form - In Same Row */}
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button className="bg-gradient-to-r from-teal-400 to-teal-600 text-black hover:from-teal-500 hover:to-teal-700">
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add Spending Entry
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="max-w-md bg-gray-900 border-gray-700">
+                <DialogHeader>
+                  <DialogTitle className="text-white">Add New Expense</DialogTitle>
+                </DialogHeader>
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="amount" className="text-white">Amount</Label>
+                    <Input
+                      id="amount"
+                      type="number"
+                      placeholder="0.00"
+                      value={newExpense.amount}
+                      onChange={(e) => setNewExpense({...newExpense, amount: e.target.value})}
+                      className="bg-gray-800 border-yellow-400/20 text-white"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="category" className="text-white">Category</Label>
+                    <Select value={newExpense.category} onValueChange={(value) => setNewExpense({...newExpense, category: value})}>
+                      <SelectTrigger className="bg-gray-800 border-yellow-400/20 text-white">
+                        <SelectValue placeholder="Select category" />
+                      </SelectTrigger>
+                      <SelectContent className="bg-gray-800 border-yellow-400/20">
+                        {[...tradingCategories, ...personalCategories].map((category) => (
+                          <SelectItem key={category.id} value={category.name} className="text-white hover:bg-gray-700">
+                            {category.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="description" className="text-white">Description</Label>
+                    <Textarea
+                      id="description"
+                      placeholder="What did you spend money on?"
+                      value={newExpense.description}
+                      onChange={(e) => setNewExpense({...newExpense, description: e.target.value})}
+                      className="bg-gray-800 border-yellow-400/20 text-white"
+                    />
+                  </div>
+                  <Button 
+                    onClick={handleAddExpense}
+                    className="w-full bg-gradient-to-r from-teal-400 to-teal-600 text-black hover:from-teal-500 hover:to-teal-700"
+                    disabled={!newExpense.amount || !newExpense.category || !newExpense.description || addExpenseMutation.isPending}
+                  >
+                    <Plus className="h-4 w-4 mr-2" />
+                    {addExpenseMutation.isPending ? "Adding..." : "Add Expense"}
+                  </Button>
+                </div>
+              </DialogContent>
+            </Dialog>
             
             <Dialog>
               <DialogTrigger asChild>
@@ -752,16 +811,7 @@ const Spending = () => {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="flex justify-end mb-4">
-              <Button 
-                onClick={handleAddExpense}
-                className="bg-gradient-to-r from-teal-400 to-teal-600 text-black hover:from-teal-500 hover:to-teal-700"
-                disabled={!newExpense.amount || !newExpense.category || !newExpense.description || addExpenseMutation.isPending}
-              >
-                <Plus className="h-4 w-4 mr-2" />
-                {addExpenseMutation.isPending ? "Adding..." : "Add Expense"}
-              </Button>
-            </div>
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="amount" className="text-white">Amount</Label>

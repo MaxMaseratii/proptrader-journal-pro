@@ -1098,7 +1098,7 @@ const DailyPlanPage = () => {
           <CardHeader>
             <CardTitle className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-yellow-600 flex items-center gap-2">
               <BookOpen className="w-5 h-5 text-yellow-400" />
-              Trading Journal & Historical Entries
+              Trading Journal
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -1106,101 +1106,92 @@ const DailyPlanPage = () => {
               <div className="space-y-4">
                 <h3 className="text-lg font-semibold text-yellow-400 mb-4">Daily Trading Journal Entry</h3>
                 
-                {/* First Row - What Went Right/Wrong */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* Compact Journal Layout */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   <div>
-                    <Label className="text-white text-sm flex items-center gap-2">
-                      <TrendingUp className="h-4 w-4 text-green-400" />
+                    <Label className="text-white text-xs flex items-center gap-1">
+                      <TrendingUp className="h-3 w-3 text-green-400" />
                       What went right?
                     </Label>
                     <Textarea
                       value={journalEntry.whatWentRight}
                       onChange={(e) => setJournalEntry(prev => ({ ...prev, whatWentRight: e.target.value }))}
-                      placeholder="Record your wins and good decisions..."
-                      className="bg-white border-gray-300 text-black placeholder:text-gray-500 focus:border-yellow-400 focus:ring-yellow-400 text-sm"
-                      rows={3}
+                      placeholder="Record wins..."
+                      className="bg-white border-gray-300 text-black text-sm"
+                      rows={2}
                     />
                   </div>
                   
                   <div>
-                    <Label className="text-white text-sm flex items-center gap-2">
-                      <TrendingDown className="h-4 w-4 text-red-400" />
+                    <Label className="text-white text-xs flex items-center gap-1">
+                      <TrendingDown className="h-3 w-3 text-red-400" />
                       What went wrong?
                     </Label>
                     <Textarea
                       value={journalEntry.whatWentWrong}
                       onChange={(e) => setJournalEntry(prev => ({ ...prev, whatWentWrong: e.target.value }))}
-                      placeholder="Analyze mistakes and missed opportunities..."
-                      className="bg-white border-gray-300 text-black placeholder:text-gray-500 focus:border-yellow-400 focus:ring-yellow-400 text-sm"
-                      rows={3}
+                      placeholder="Analyze mistakes..."
+                      className="bg-white border-gray-300 text-black text-sm"
+                      rows={2}
                     />
                   </div>
                 </div>
 
-                {/* Second Row - Lessons and Improvement Plan */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
                   <div>
-                    <Label className="text-white text-sm flex items-center gap-2">
-                      <Brain className="h-4 w-4 text-yellow-400" />
-                      Key lessons learned
+                    <Label className="text-white text-xs flex items-center gap-1">
+                      <Brain className="h-3 w-3 text-yellow-400" />
+                      Lessons
                     </Label>
-                    <Textarea
+                    <Input
                       value={journalEntry.lessonsLearned}
                       onChange={(e) => setJournalEntry(prev => ({ ...prev, lessonsLearned: e.target.value }))}
-                      placeholder="What did you learn today?"
-                      className="bg-white border-gray-300 text-black placeholder:text-gray-500 focus:border-yellow-400 focus:ring-yellow-400 text-sm"
-                      rows={3}
+                      placeholder="Key insights..."
+                      className="bg-white border-gray-300 text-black text-sm"
                     />
                   </div>
                   
                   <div>
-                    <Label className="text-white text-sm flex items-center gap-2">
-                      <Target className="h-4 w-4 text-blue-400" />
-                      Improvement plan
+                    <Label className="text-white text-xs flex items-center gap-1">
+                      <Target className="h-3 w-3 text-blue-400" />
+                      Tomorrow's plan
                     </Label>
-                    <Textarea
+                    <Input
                       value={journalEntry.improvementPlan || ''}
                       onChange={(e) => setJournalEntry(prev => ({ ...prev, improvementPlan: e.target.value }))}
-                      placeholder="Specific actions to take tomorrow..."
-                      className="bg-white border-gray-300 text-black placeholder:text-gray-500 focus:border-yellow-400 focus:ring-yellow-400 text-sm"
-                      rows={3}
+                      placeholder="Improvements..."
+                      className="bg-white border-gray-300 text-black text-sm"
                     />
                   </div>
-                </div>
-
-                {/* Third Row - Emotional State and Market Conditions */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  
                   <div>
-                    <Label className="text-white text-sm flex items-center gap-2">
-                      <Activity className="h-4 w-4 text-purple-400" />
-                      Emotional state during trading
+                    <Label className="text-white text-xs flex items-center gap-1">
+                      <Activity className="h-3 w-3 text-purple-400" />
+                      Emotional state
                     </Label>
                     <select
                       value={journalEntry.emotionalState || 'neutral'}
                       onChange={(e) => setJournalEntry(prev => ({ ...prev, emotionalState: e.target.value }))}
-                      className="w-full bg-white border border-gray-300 text-black rounded-md px-3 py-2 text-sm focus:border-yellow-400 focus:ring-yellow-400"
+                      className="w-full bg-white border border-gray-300 text-black rounded-md px-2 py-1 text-sm"
                     >
                       <option value="confident">Confident</option>
                       <option value="calm">Calm</option>
                       <option value="neutral">Neutral</option>
                       <option value="anxious">Anxious</option>
                       <option value="frustrated">Frustrated</option>
-                      <option value="excited">Excited</option>
-                      <option value="fearful">Fearful</option>
-                      <option value="greedy">Greedy</option>
                     </select>
                   </div>
                   
                   <div>
-                    <Label className="text-white text-sm flex items-center gap-2">
-                      <BarChart3 className="h-4 w-4 text-cyan-400" />
+                    <Label className="text-white text-xs flex items-center gap-1">
+                      <BarChart3 className="h-3 w-3 text-cyan-400" />
                       Market conditions
                     </Label>
                     <Input
                       value={journalEntry.marketConditions || ''}
                       onChange={(e) => setJournalEntry(prev => ({ ...prev, marketConditions: e.target.value }))}
-                      placeholder="Trending, ranging, volatile, slow..."
-                      className="bg-white border-gray-300 text-black placeholder:text-gray-500 focus:border-yellow-400 focus:ring-yellow-400 text-sm"
+                      placeholder="Trending/ranging..."
+                      className="bg-white border-gray-300 text-black text-sm"
                     />
                   </div>
                 </div>

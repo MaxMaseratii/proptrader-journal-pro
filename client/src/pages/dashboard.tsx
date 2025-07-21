@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Link } from "wouter";
 import { apiRequest } from "@/lib/queryClient";
@@ -127,6 +127,12 @@ interface DashboardAnalytics {
 export default function Dashboard() {
   const queryClient = useQueryClient();
   
+  // Critical calendar day selection state
+  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [selectedDayData, setSelectedDayData] = useState(null);
+  
+
+  
   // Calendar View Components (defined within Dashboard scope)
   const WeeklyCalendarView: React.FC<WeeklyCalendarViewProps> = ({ currentWeekStart, trades, accounts, selectedAccountIds }) => {
     const weekDays = [];
@@ -163,8 +169,10 @@ export default function Dashboard() {
               <div
                 key={date.toISOString()}
                 className={`
-                  relative p-3 rounded-lg border transition-all duration-200 h-32
-                  ${isToday 
+                  relative p-3 rounded-lg border transition-all duration-200 h-24 cursor-pointer
+                  ${selectedDate.toDateString() === date.toDateString()
+                    ? 'border-amber-400 bg-amber-900/20 shadow-lg'
+                    : isToday 
                     ? 'border-teal-400/60 bg-gradient-to-br from-teal-900/30 via-gray-800/40 to-teal-900/30' 
                     : isCurrentMonth
                     ? 'border-gray-600/40 bg-gradient-to-br from-gray-800/40 via-gray-700/40 to-gray-800/40'
@@ -172,6 +180,10 @@ export default function Dashboard() {
                   }
                   hover:border-amber-400/60
                 `}
+                onClick={() => {
+                  setSelectedDate(date);
+                  setSelectedDayData(getDayData(date, trades || []));
+                }}
               >
                 {/* Today indicator */}
                 {isToday && (
@@ -359,13 +371,20 @@ export default function Dashboard() {
               <div
                 key={index}
                 className={`
-                  relative p-4 rounded-lg border transition-all duration-200 h-24
-                  ${isCurrentMonth
+                  relative p-3 rounded-lg border transition-all duration-200 h-20 cursor-pointer
+                  ${selectedDate.getMonth() === month.getMonth() && selectedDate.getFullYear() === month.getFullYear()
+                    ? 'border-amber-400 bg-amber-900/20 shadow-lg'
+                    : isCurrentMonth
                     ? 'border-teal-400/60 bg-gradient-to-br from-teal-900/30 via-gray-800/40 to-teal-900/30'
                     : 'border-gray-600/40 bg-gradient-to-br from-gray-800/40 via-gray-700/40 to-gray-800/40'
                   }
                   hover:border-amber-400/60
                 `}
+                onClick={() => {
+                  const firstDayOfMonth = new Date(month.getFullYear(), month.getMonth(), 1);
+                  setSelectedDate(firstDayOfMonth);
+                  setSelectedDayData(getDayData(firstDayOfMonth, trades || []));
+                }}
               >
                 {/* Current month indicator */}
                 {isCurrentMonth && (
@@ -473,6 +492,45 @@ export default function Dashboard() {
   const { data: trades, isLoading: tradesLoading } = useQuery<Trade[]>({
     queryKey: ["/api/trades"],
   });
+
+  // Function to get day-specific data for widgets
+  const getDayData = (clickedDate: Date, tradesData: Trade[] = []) => {
+    const dayTrades = getTradesForDate(clickedDate, tradesData, selectedAccountIds);
+    
+    const totalDayTrades = dayTrades.length;
+    const wins = dayTrades.filter(t => (t.pnl || 0) > 0).length;
+    const losses = dayTrades.filter(t => (t.pnl || 0) <= 0).length;
+    const dayPnL = dayTrades.reduce((sum, t) => sum + (t.pnl || 0), 0);
+    const avgRiskPerTrade = dayTrades.length > 0 ? 
+      dayTrades.reduce((sum, t) => sum + Math.abs(t.pnl || 0), 0) / dayTrades.length : 0;
+    const avgRewardRatio = wins > 0 ? 
+      dayTrades.filter(t => (t.pnl || 0) > 0).reduce((sum, t) => sum + (t.pnl || 0), 0) / wins : 0;
+    
+    return {
+      date: clickedDate,
+      totalDayTrades,
+      wins,
+      losses,
+      dayPnL,
+      avgRiskPerTrade: Math.round(avgRiskPerTrade),
+      avgRewardRatio: Math.round(avgRewardRatio),
+      maxDailyRisk: avgRiskPerTrade * 5,
+      disciplineScore: 85,
+      winRate: totalDayTrades > 0 ? (wins / totalDayTrades) * 100 : 0,
+      hoursWorked: 6.5,
+      hoursPlanned: 8,
+      trades: dayTrades
+    };
+  };
+  
+  // Initialize with today's data
+  useEffect(() => {
+    if (trades && trades.length > 0) {
+      const today = new Date();
+      setSelectedDate(today);
+      setSelectedDayData(getDayData(today, trades));
+    }
+  }, [trades, selectedAccountIds]);
 
   const { data: user } = useQuery({
     queryKey: ["/api/auth/user"],
