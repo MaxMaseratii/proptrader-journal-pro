@@ -1051,12 +1051,7 @@ export default function Dashboard() {
             <h2 className="text-3xl font-bold text-gradient-rainbow">
               Trading Dashboard
             </h2>
-            <p className="text-gray-400 text-base mt-2 flex items-center">
-              <Target className="h-4 w-4 mr-2 text-orange-400" />
-              {accountSelectionMode === 'all' 
-                ? `Monitoring all ${accounts?.length ?? 0} trading accounts` 
-                : `Analyzing ${selectedAccountIds.length || (accounts && accounts.length > 0 ? 1 : 0)} selected account(s)`}
-            </p>
+
           </div>
           <div className="flex items-center space-x-4">
             {/* Account Selection */}
