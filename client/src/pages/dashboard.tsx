@@ -132,8 +132,9 @@ export default function Dashboard() {
   const [calendarViewMode, setCalendarViewMode] = useState('weekly');
   const [currentWeekStart, setCurrentWeekStart] = useState(() => {
     const today = new Date();
-    const dayOfWeek = today.getDay();
-    const daysToSubtract = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
+    const dayOfWeek = today.getDay(); // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
+    // Start week on Sunday (traditional calendar format)
+    const daysToSubtract = dayOfWeek;
     const start = new Date(today);
     start.setDate(today.getDate() - daysToSubtract);
     return start;
