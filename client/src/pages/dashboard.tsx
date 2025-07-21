@@ -176,6 +176,18 @@ export default function Dashboard() {
     );
   };
 
+  // Open journal dialog
+  const openJournalDialog = (date: Date) => {
+    const entry = getJournalEntry(date);
+    if (entry) {
+      setJournalDialog({
+        isOpen: true,
+        entry: entry,
+        date: date.toDateString()
+      });
+    }
+  };
+
   // FIXED: Enhanced handleDayClick with better debugging
   const handleDayClick = useCallback((clickedDate: Date) => {
     console.log('🖱️ Day clicked:', clickedDate.toDateString());
@@ -260,10 +272,7 @@ export default function Dashboard() {
                       title="Journal entry available - click to view"
                       onClick={(e) => {
                         e.stopPropagation();
-                        const entry = getJournalEntry(date);
-                        if (entry) {
-                          alert(`Journal Entry for ${date.toDateString()}:\n\nWhat went wrong: ${entry.whatWentWrong || 'Not specified'}\n\nWhat went right: ${entry.whatWentRight || 'Not specified'}\n\nTomorrow's plan: ${entry.tomorrowsPlan || 'Not specified'}`);
-                        }
+                        openJournalDialog(date);
                       }}
                     />
                   </div>
@@ -395,10 +404,7 @@ export default function Dashboard() {
                         title="Journal entry available - click to view"
                         onClick={(e) => {
                           e.stopPropagation();
-                          const entry = getJournalEntry(date);
-                          if (entry) {
-                            alert(`Journal Entry for ${date.toDateString()}:\n\nWhat went wrong: ${entry.whatWentWrong || 'Not specified'}\n\nWhat went right: ${entry.whatWentRight || 'Not specified'}\n\nTomorrow's plan: ${entry.tomorrowsPlan || 'Not specified'}`);
-                          }
+                          openJournalDialog(date);
                         }}
                       />
                     </div>
@@ -589,6 +595,12 @@ export default function Dashboard() {
     amount: '',
     description: '',
     date: new Date().toISOString().split('T')[0]
+  });
+  
+  const [journalDialog, setJournalDialog] = useState({
+    isOpen: false,
+    entry: null as any,
+    date: ''
   });
   const [calendarDate, setCalendarDate] = useState(new Date());
   const [timePeriod, setTimePeriod] = useState<'daily' | 'weekly' | 'monthly' | 'yearly'>('monthly');
@@ -2149,6 +2161,113 @@ export default function Dashboard() {
         </section>
 
       </div>
+
+      {/* Journal Entry Dialog */}
+      <Dialog open={journalDialog.isOpen} onOpenChange={(open) => setJournalDialog(prev => ({ ...prev, isOpen: open }))}>
+        <DialogContent className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 border border-amber-500/30 text-white max-w-2xl">
+          <DialogHeader>
+            <DialogTitle className="text-xl font-bold text-amber-400 flex items-center gap-2">
+              <BookOpen className="w-5 h-5" />
+              Trading Journal Entry - {journalDialog.date}
+            </DialogTitle>
+          </DialogHeader>
+          
+          {journalDialog.entry && (
+            <div className="space-y-6 py-4">
+              {/* Market Conditions & Emotional State */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-3">
+                  <h3 className="text-amber-300 font-semibold flex items-center gap-2">
+                    <TrendingUp className="w-4 h-4" />
+                    Market Conditions
+                  </h3>
+                  <div className="bg-gray-800/50 rounded-lg p-4 border border-gray-600/30">
+                    <p className="text-gray-300 text-sm leading-relaxed">
+                      {journalDialog.entry.marketConditions || 'Not specified'}
+                    </p>
+                  </div>
+                </div>
+                
+                <div className="space-y-3">
+                  <h3 className="text-amber-300 font-semibold flex items-center gap-2">
+                    <Activity className="w-4 h-4" />
+                    Emotional State
+                  </h3>
+                  <div className="bg-gray-800/50 rounded-lg p-4 border border-gray-600/30">
+                    <p className="text-gray-300 text-sm leading-relaxed">
+                      {journalDialog.entry.emotionalState || 'Not specified'}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* What Went Wrong & What Went Right */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-3">
+                  <h3 className="text-red-400 font-semibold flex items-center gap-2">
+                    <AlertTriangle className="w-4 h-4" />
+                    What Went Wrong
+                  </h3>
+                  <div className="bg-red-900/20 rounded-lg p-4 border border-red-500/30">
+                    <p className="text-gray-300 text-sm leading-relaxed">
+                      {journalDialog.entry.whatWentWrong || 'Not specified'}
+                    </p>
+                  </div>
+                </div>
+                
+                <div className="space-y-3">
+                  <h3 className="text-green-400 font-semibold flex items-center gap-2">
+                    <CheckCircle className="w-4 h-4" />
+                    What Went Right
+                  </h3>
+                  <div className="bg-green-900/20 rounded-lg p-4 border border-green-500/30">
+                    <p className="text-gray-300 text-sm leading-relaxed">
+                      {journalDialog.entry.whatWentRight || 'Not specified'}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Lessons & Tomorrow's Plan */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-3">
+                  <h3 className="text-blue-400 font-semibold flex items-center gap-2">
+                    <BookOpen className="w-4 h-4" />
+                    Key Lessons
+                  </h3>
+                  <div className="bg-blue-900/20 rounded-lg p-4 border border-blue-500/30">
+                    <p className="text-gray-300 text-sm leading-relaxed">
+                      {journalDialog.entry.keyLessonsLearned || 'Not specified'}
+                    </p>
+                  </div>
+                </div>
+                
+                <div className="space-y-3">
+                  <h3 className="text-purple-400 font-semibold flex items-center gap-2">
+                    <Target className="w-4 h-4" />
+                    Tomorrow's Plan
+                  </h3>
+                  <div className="bg-purple-900/20 rounded-lg p-4 border border-purple-500/30">
+                    <p className="text-gray-300 text-sm leading-relaxed">
+                      {journalDialog.entry.tomorrowsPlan || 'Not specified'}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Close Button */}
+              <div className="flex justify-end pt-4 border-t border-gray-600/30">
+                <Button 
+                  onClick={() => setJournalDialog(prev => ({ ...prev, isOpen: false }))}
+                  className="bg-amber-600 hover:bg-amber-500 text-black font-semibold px-8"
+                >
+                  Close
+                </Button>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
 
       {/* Set Hourly Wage Modal */}
       <Dialog open={showWageModal} onOpenChange={setShowWageModal}>
