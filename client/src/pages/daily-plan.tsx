@@ -797,9 +797,9 @@ const DailyPlanPage = () => {
 
       {/* Journal Entry Dialog */}
       <Dialog open={isJournalDialogOpen} onOpenChange={setIsJournalDialogOpen}>
-        <DialogContent className="max-w-4xl bg-gradient-to-br from-gray-900 via-gray-800 to-black border border-yellow-400/20">
-          <DialogHeader>
-            <DialogTitle className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-yellow-600">
+        <DialogContent className="max-w-6xl bg-gradient-to-br from-gray-900 via-gray-800 to-black border border-yellow-400/20">
+          <DialogHeader className="mb-6">
+            <DialogTitle className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-yellow-600 text-2xl">
               Daily Trading Journal Entry
             </DialogTitle>
             <DialogDescription className="text-gray-400">
@@ -807,10 +807,65 @@ const DailyPlanPage = () => {
             </DialogDescription>
           </DialogHeader>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-4">
+          {/* Replica of main journal entry layout */}
+          <div className="space-y-6">
+            {/* Top Row: Account Selection, Emotional State, Market Conditions */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
-                <Label className="text-white text-sm flex items-center gap-2">
+                <Label className="text-white text-sm mb-2 block">Account</Label>
+                <Select 
+                  value={selectedAccount?.toString() || ''} 
+                  onValueChange={(value) => setSelectedAccount(Number(value))}
+                >
+                  <SelectTrigger className="bg-gray-800 border-yellow-400/20 text-white">
+                    <SelectValue placeholder="Select account" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-gray-800 border-yellow-400/20">
+                    {accounts?.map((account) => (
+                      <SelectItem key={account.id} value={account.id.toString()}>
+                        {account.name} ({account.type})
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div>
+                <Label className="text-white text-sm mb-2 block">Emotional State</Label>
+                <Select 
+                  value={journalEntry.emotionalState || 'neutral'} 
+                  onValueChange={(value) => setJournalEntry(prev => ({ ...prev, emotionalState: value }))}
+                >
+                  <SelectTrigger className="bg-gray-800 border-yellow-400/20 text-white">
+                    <SelectValue placeholder="Select emotional state" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-gray-800 border-yellow-400/20">
+                    <SelectItem value="confident">😤 Confident</SelectItem>
+                    <SelectItem value="calm">😌 Calm</SelectItem>
+                    <SelectItem value="neutral">😐 Neutral</SelectItem>
+                    <SelectItem value="anxious">😰 Anxious</SelectItem>
+                    <SelectItem value="frustrated">😤 Frustrated</SelectItem>
+                    <SelectItem value="excited">🤩 Excited</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div>
+                <Label className="text-white text-sm mb-2 block">Market Conditions</Label>
+                <Input
+                  value={journalEntry.marketConditions || ''}
+                  onChange={(e) => setJournalEntry(prev => ({ ...prev, marketConditions: e.target.value }))}
+                  placeholder="Trending, choppy, volatile..."
+                  className="bg-gray-800 border-yellow-400/20 text-white placeholder-gray-400"
+                />
+              </div>
+            </div>
+
+            {/* Main Content Grid - Two Rows */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Row 1 */}
+              <div>
+                <Label className="text-white text-sm flex items-center gap-2 mb-2">
                   <TrendingDown className="h-4 w-4 text-red-400" />
                   What went wrong today?
                 </Label>
@@ -824,7 +879,7 @@ const DailyPlanPage = () => {
               </div>
               
               <div>
-                <Label className="text-white text-sm flex items-center gap-2">
+                <Label className="text-white text-sm flex items-center gap-2 mb-2">
                   <TrendingUp className="h-4 w-4 text-green-400" />
                   What went right today?
                 </Label>
@@ -836,11 +891,10 @@ const DailyPlanPage = () => {
                   rows={4}
                 />
               </div>
-            </div>
-            
-            <div className="space-y-4">
+
+              {/* Row 2 */}
               <div>
-                <Label className="text-white text-sm flex items-center gap-2">
+                <Label className="text-white text-sm flex items-center gap-2 mb-2">
                   <Brain className="h-4 w-4 text-blue-400" />
                   Lessons learned
                 </Label>
@@ -854,7 +908,7 @@ const DailyPlanPage = () => {
               </div>
               
               <div>
-                <Label className="text-white text-sm flex items-center gap-2">
+                <Label className="text-white text-sm flex items-center gap-2 mb-2">
                   <Target className="h-4 w-4 text-yellow-400" />
                   Tomorrow's plan
                 </Label>

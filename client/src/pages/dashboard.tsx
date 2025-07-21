@@ -1145,6 +1145,12 @@ export default function Dashboard() {
                 Add Trade
               </Button>
             </Link>
+            <Link href="/accounts">
+              <Button className="bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105">
+                <Plus className="mr-2 h-4 w-4" />
+                Add Account
+              </Button>
+            </Link>
             <div className="relative">
               <Bell className="h-5 w-5 text-gray-400" />
               <span className="absolute -top-1 -right-1 bg-error-red text-xs rounded-full w-4 h-4 flex items-center justify-center text-white">
