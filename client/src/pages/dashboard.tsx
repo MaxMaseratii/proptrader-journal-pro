@@ -1139,18 +1139,36 @@ export default function Dashboard() {
 
 
             
-            <Link href="/trades?tab=add">
-              <Button className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105">
-                <Plus className="mr-2 h-4 w-4" />
-                Add Trade
-              </Button>
-            </Link>
-            <Link href="/accounts">
-              <Button className="bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105">
-                <Plus className="mr-2 h-4 w-4" />
-                Add Account
-              </Button>
-            </Link>
+            {/* Professional Action Buttons Group */}
+            <div className="flex items-center gap-3">
+              <Link href="/trades?tab=add">
+                <Button 
+                  size="sm" 
+                  className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white shadow-md hover:shadow-lg transition-all duration-200"
+                >
+                  <Plus className="mr-1 h-3 w-3" />
+                  Trade
+                </Button>
+              </Link>
+              <Link href="/accounts">
+                <Button 
+                  size="sm" 
+                  className="bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white shadow-md hover:shadow-lg transition-all duration-200"
+                >
+                  <Plus className="mr-1 h-3 w-3" />
+                  Account
+                </Button>
+              </Link>
+              <Link href="/journal">
+                <Button 
+                  size="sm" 
+                  className="bg-gradient-to-r from-yellow-600 to-orange-600 hover:from-yellow-700 hover:to-orange-700 text-white shadow-md hover:shadow-lg transition-all duration-200"
+                >
+                  <BookOpen className="mr-1 h-3 w-3" />
+                  Journal
+                </Button>
+              </Link>
+            </div>
             <div className="relative">
               <Bell className="h-5 w-5 text-gray-400" />
               <span className="absolute -top-1 -right-1 bg-error-red text-xs rounded-full w-4 h-4 flex items-center justify-center text-white">
@@ -2173,55 +2191,7 @@ export default function Dashboard() {
           </div>
         </section>
 
-        {/* SECTION 8: DAILY TRADING JOURNAL */}
-        <section className="mb-8">
-          <div className="flex items-center justify-between mb-6 border-b border-gray-700 pb-3">
-            <h2 className="text-xl font-bold text-gradient-rainbow flex items-center">
-              <BookOpen className="mr-3 h-5 w-5 text-prop-gold" />
-              Daily Trading Journal
-            </h2>
-            <p className="text-sm text-gray-400">Reflection and improvement planning</p>
-          </div>
-          
-          <div className="bg-gradient-to-br from-gray-900/40 via-gray-800/60 to-black/80 border border-gray-600/30 rounded-lg p-6 hover:border-amber-400/60 transition-all duration-200">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-              <div>
-                <label className="block text-sm font-medium text-gray-400 mb-2">What went wrong today?</label>
-                <Textarea 
-                  className="bg-black/30 border-gray-600/50 text-white resize-none min-h-[80px]" 
-                  rows={3} 
-                  placeholder="Reflect on mistakes and lessons learned..."
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-400 mb-2">What went right today?</label>
-                <Textarea 
-                  className="bg-black/30 border-gray-600/50 text-white resize-none min-h-[80px]" 
-                  rows={3} 
-                  placeholder="Note successful strategies and decisions..."
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-400 mb-2">Tomorrow's improvement plan</label>
-                <Textarea 
-                  className="bg-black/30 border-gray-600/50 text-white resize-none min-h-[80px]" 
-                  rows={3} 
-                  placeholder="Set goals for tomorrow's session..."
-                />
-              </div>
-            </div>
-            <div className="flex justify-between items-center">
-              <Link href="/journal">
-                <Button variant="ghost" className="text-amber-400 hover:text-amber-300">
-                  View Full Journal
-                </Button>
-              </Link>
-              <Button className="bg-amber-600 hover:bg-amber-500 text-black font-semibold">
-                Save Journal Entry
-              </Button>
-            </div>
-          </div>
-        </section>
+
 
       </div>
 
