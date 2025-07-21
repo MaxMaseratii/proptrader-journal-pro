@@ -181,6 +181,8 @@ const TradingDashboard = ({ trades: filteredTrades }: { trades?: Trade[] }) => {
     setCurrentPeriod(newPeriod);
   };
 
+  // ALWAYS show today's data in the first row metrics, regardless of calendar selection
+  const todayData = calculateTradingData(new Date(), filteredTrades || []);
   const selectedDayData = calculateTradingData(selectedDate, filteredTrades || []);
   const isToday = selectedDate.toDateString() === new Date().toDateString();
 
@@ -205,20 +207,20 @@ const TradingDashboard = ({ trades: filteredTrades }: { trades?: Trade[] }) => {
               {/* Ultra Compact Layout - Full Width */}
               <div className="p-4">
                 
-                {/* Header + PNL Combined */}
+                {/* Header + PNL Combined - ALWAYS TODAY */}
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center space-x-2">
                     <Calendar className="w-4 h-4 text-amber-400" />
                     <span className="text-lg font-bold text-amber-400">
-                      {selectedDate.toLocaleDateString('en-US', { weekday: 'short' })} {selectedDate.getDate()}
+                      Today {new Date().toLocaleDateString('en-US', { weekday: 'short' })} {new Date().getDate()}
                     </span>
-                    {isToday && <div className="w-2 h-2 rounded-full bg-teal-400" />}
+                    <div className="w-2 h-2 rounded-full bg-teal-400" />
                   </div>
                   <div className="bg-gray-900/80 rounded-lg px-4 py-3 border border-gray-700/50">
                     <div className="flex items-center space-x-2">
                       <span className="text-sm text-gray-400">Daily P&L:</span>
-                      <span className={`text-lg font-bold ${selectedDayData.dayPnL >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-                        {selectedDayData.dayPnL >= 0 ? '+' : ''}${selectedDayData.dayPnL.toFixed(2)}
+                      <span className={`text-lg font-bold ${todayData.dayPnL >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                        {todayData.dayPnL >= 0 ? '+' : ''}${todayData.dayPnL.toFixed(2)}
                       </span>
                     </div>
                   </div>
@@ -244,25 +246,25 @@ const TradingDashboard = ({ trades: filteredTrades }: { trades?: Trade[] }) => {
                   {/* Row 1 */}
                   <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-4 gap-6">
                     
-                    {/* Risk + Max Daily Loss Combined */}
+                    {/* Risk + Max Daily Loss Combined - ALWAYS TODAY'S DATA */}
                     <div className="bg-black/30 rounded-lg p-4 border border-gray-700/50 relative">
-                      <div className="absolute top-3 right-3 text-xs text-red-400">Max: ${selectedDayData.maxDailyRisk.toFixed(0)}</div>
-                      <div className="text-3xl font-bold text-red-400 mb-1">${selectedDayData.avgRiskPerTrade.toFixed(0)}</div>
+                      <div className="absolute top-3 right-3 text-xs text-red-400">Max: ${todayData.maxDailyRisk.toFixed(0)}</div>
+                      <div className="text-3xl font-bold text-red-400 mb-1">${todayData.avgRiskPerTrade.toFixed(0)}</div>
                       <div className="text-sm text-gray-400">Risk Per Trade</div>
                     </div>
 
-                    {/* R:R */}
+                    {/* R:R - ALWAYS TODAY'S DATA */}
                     <div className="bg-black/30 rounded-lg p-4 border border-gray-700/50 relative">
-                      <div className="absolute top-3 right-3 text-xs text-blue-300">Target: {selectedDayData.targetRewardRatio.toFixed(1)} RR</div>
-                      <div className="text-3xl font-bold text-blue-400 mb-1">{selectedDayData.avgRewardRatio.toFixed(1)}</div>
+                      <div className="absolute top-3 right-3 text-xs text-blue-300">Target: {todayData.targetRewardRatio.toFixed(1)} RR</div>
+                      <div className="text-3xl font-bold text-blue-400 mb-1">{todayData.avgRewardRatio.toFixed(1)}</div>
                       <div className="text-sm text-gray-400">Risk:Reward</div>
-                      <div className="text-xs text-blue-300 mt-1">AVG. Ratio 1:{selectedDayData.avgRewardRatio.toFixed(1)}</div>
+                      <div className="text-xs text-blue-300 mt-1">AVG. Ratio 1:{todayData.avgRewardRatio.toFixed(1)}</div>
                     </div>
 
-                    {/* Trades */}
+                    {/* Trades - ALWAYS TODAY'S DATA */}
                     <div className="bg-black/30 rounded-lg p-4 border border-gray-700/50 relative">
-                      <div className="absolute top-3 right-3 text-xs text-purple-300">Max: {selectedDayData.maxDailyTrades}</div>
-                      <div className="text-3xl font-bold text-purple-400 mb-1">{selectedDayData.totalDayTrades}</div>
+                      <div className="absolute top-3 right-3 text-xs text-purple-300">Max: {todayData.maxDailyTrades}</div>
+                      <div className="text-3xl font-bold text-purple-400 mb-1">{todayData.totalDayTrades}</div>
                       <div className="text-sm text-gray-400">Trades Today</div>
                     </div>
 
