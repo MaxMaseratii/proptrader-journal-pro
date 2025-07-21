@@ -1569,652 +1569,227 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* COMPACT DASHBOARD: NO EMPTY SPACES */}
+        {/* ===== ✅ SAFE TO IMPLEMENT - NEW REORGANIZED SECTIONS ===== */}
         
-        {/* ROW 1: PRIMARY FINANCIAL METRICS */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 mb-3">
-          {/* Net Balance */}
-          <div className="widget-container">
-            <div className="widget-content">
-              <div className="widget-left">
-                <p className="widget-label">Net Balance</p>
-                <p className={`widget-value ${getValueColor(calculateNetBalance())}`}>
-                  {formatCurrency(calculateNetBalance())}
-                </p>
-                <p className="widget-description">Starting balance + Total P&L</p>
+        {/* SECTION 3: PERFORMANCE OVERVIEW */}
+        <section className="mb-8">
+          <div className="flex items-center justify-between mb-6 border-b border-gray-700 pb-3">
+            <h2 className="text-xl font-bold text-gradient-rainbow flex items-center">
+              <TrendingUp className="mr-3 h-5 w-5 text-prop-gold" />
+              Performance Overview
+            </h2>
+            <p className="text-sm text-gray-400">Key trading metrics and portfolio performance</p>
+          </div>
+          
+          {/* ROW 1: Main Performance Metrics (4 widgets) */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+            {/* Net Balance */}
+            <div className="bg-gradient-to-br from-gray-900/40 via-gray-800/60 to-black/80 border border-gray-600/30 rounded-lg p-4 hover:border-amber-400/60 transition-all duration-200">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-sm font-medium text-gray-300">Net Balance</span>
+                <DollarSign className="w-4 h-4 text-amber-400" />
               </div>
-              <div className="widget-icon-square">
-                <DollarSign className="widget-icon" />
+              <div className={`text-2xl font-bold mb-1 ${getValueColor(calculateNetBalance())}`}>
+                {formatCurrency(calculateNetBalance())}
               </div>
+              <div className="text-xs text-gray-400">Starting balance + Total P&L</div>
+            </div>
+
+            {/* Total P&L */}
+            <div className="bg-gradient-to-br from-gray-900/40 via-gray-800/60 to-black/80 border border-gray-600/30 rounded-lg p-4 hover:border-amber-400/60 transition-all duration-200">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-sm font-medium text-gray-300">Total P&L</span>
+                <TrendingUp className="w-4 h-4 text-green-400" />
+              </div>
+              <div className={`text-2xl font-bold mb-1 ${getValueColor(combinedAnalytics?.totalPnl || 0)}`}>
+                {formatCurrency(combinedAnalytics?.totalPnl || 0)}
+              </div>
+              <div className="text-xs text-gray-400">Net profit/loss</div>
+            </div>
+
+            {/* Win Rate */}
+            <div className="bg-gradient-to-br from-gray-900/40 via-gray-800/60 to-black/80 border border-gray-600/30 rounded-lg p-4 hover:border-amber-400/60 transition-all duration-200">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-sm font-medium text-gray-300">Win Rate</span>
+                <Target className="w-4 h-4 text-green-400" />
+              </div>
+              <div className={`text-2xl font-bold mb-1 ${(combinedAnalytics?.winRate || 0) > 50 ? 'text-green-400' : 'text-red-400'}`}>
+                {formatPercentage(combinedAnalytics?.winRate || 0)}
+              </div>
+              <div className="text-xs text-gray-400">Winning trades percentage</div>
+            </div>
+
+            {/* Total Trades */}
+            <div className="bg-gradient-to-br from-gray-900/40 via-gray-800/60 to-black/80 border border-gray-600/30 rounded-lg p-4 hover:border-amber-400/60 transition-all duration-200">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-sm font-medium text-gray-300">Total Trades</span>
+                <Activity className="w-4 h-4 text-purple-400" />
+              </div>
+              <div className="text-2xl font-bold mb-1 text-white">
+                {combinedAnalytics?.totalTrades || 0}
+              </div>
+              <div className="text-xs text-gray-400">All executed trades</div>
             </div>
           </div>
 
-
-
-          {/* Total P&L */}
-          <div className="widget-container">
-            <div className="widget-content">
-              <div className="widget-left">
-                <p className="widget-label">Total P&L</p>
-                <p className={`widget-value ${getValueColor(combinedAnalytics?.totalPnl || 0)}`}>
-                  {formatCurrency(combinedAnalytics?.totalPnl || 0)}
-                </p>
-                <p className="widget-description">Net profit/loss</p>
+          {/* ROW 2: Performance Analysis (4 widgets) */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            {/* Discipline Score */}
+            <div className="bg-gradient-to-br from-gray-900/40 via-gray-800/60 to-black/80 border border-gray-600/30 rounded-lg p-4 hover:border-amber-400/60 transition-all duration-200">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-sm font-medium text-gray-300">Discipline Score</span>
+                <Shield className="w-4 h-4 text-blue-400" />
               </div>
-              <div className="widget-icon-square">
-                <DollarSign className="widget-icon" />
+              <div className="text-2xl font-bold mb-1 text-blue-400">
+                {Math.round(combinedAnalytics?.disciplinedScore || 0)}% A
               </div>
+              <div className="text-xs text-gray-400">Trading discipline rating</div>
+            </div>
+
+            {/* R Factor */}
+            <div className="bg-gradient-to-br from-gray-900/40 via-gray-800/60 to-black/80 border border-gray-600/30 rounded-lg p-4 hover:border-amber-400/60 transition-all duration-200">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-sm font-medium text-gray-300">R Factor</span>
+                <BarChart3 className="w-4 h-4 text-cyan-400" />
+              </div>
+              <div className="text-2xl font-bold mb-1 text-cyan-400">
+                {combinedAnalytics?.rFactor?.toFixed(2) || '0.00'}
+              </div>
+              <div className="text-xs text-gray-400">Risk/Reward ratio</div>
+            </div>
+
+            {/* Profit Factor */}
+            <div className="bg-gradient-to-br from-gray-900/40 via-gray-800/60 to-black/80 border border-gray-600/30 rounded-lg p-4 hover:border-amber-400/60 transition-all duration-200">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-sm font-medium text-gray-300">Profit Factor</span>
+                <TrendingUp className="w-4 h-4 text-green-400" />
+              </div>
+              <div className="text-2xl font-bold mb-1 text-green-400">
+                {combinedAnalytics?.profitFactor?.toFixed(2) || '0.00'}
+              </div>
+              <div className="text-xs text-gray-400">Gross Win / Gross Loss</div>
+            </div>
+
+            {/* Avg Win/Loss */}
+            <div className="bg-gradient-to-br from-gray-900/40 via-gray-800/60 to-black/80 border border-gray-600/30 rounded-lg p-4 hover:border-amber-400/60 transition-all duration-200">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-sm font-medium text-gray-300">Avg Win/Loss</span>
+                <BarChart3 className="w-4 h-4 text-orange-400" />
+              </div>
+              <div className="flex items-center space-x-2 text-lg font-bold mb-1">
+                <span className="text-green-400">{formatCurrency(combinedAnalytics?.averageWin || 0)}</span>
+                <span className="text-gray-400">/</span>
+                <span className="text-red-400">{formatCurrency(Math.abs(combinedAnalytics?.averageLoss || 0))}</span>
+              </div>
+              <div className="text-xs text-gray-400">Win vs Loss ratio</div>
             </div>
           </div>
+        </section>
 
-          {/* Win Rate */}
-          <div className="widget-container">
-            <div className="widget-content">
-              <div className="widget-left">
-                <p className="widget-label">Win Rate</p>
-                <p className={`widget-value ${(combinedAnalytics?.winRate || 0) > 50 ? 'text-green-400' : (combinedAnalytics?.winRate || 0) < 50 ? 'text-red-400' : 'text-white'}`}>
-                  {formatPercentage(combinedAnalytics?.winRate || 0)}
-                </p>
-                <p className="widget-description">Winning trades percentage</p>
-              </div>
-              <div className="widget-icon-square">
-                <Target className="widget-icon" />
-              </div>
-            </div>
+        {/* SECTION 4: ACCOUNT MANAGEMENT */}
+        <section className="mb-8">
+          <div className="flex items-center justify-between mb-6 border-b border-gray-700 pb-3">
+            <h2 className="text-xl font-bold text-gradient-rainbow flex items-center">
+              <Users className="mr-3 h-5 w-5 text-prop-gold" />
+              Account Management
+            </h2>
+            <p className="text-sm text-gray-400">Account status, discipline scores, and portfolio overview</p>
           </div>
-
-
-        </div>
-
-        {/* ROW 2: PERFORMANCE ANALYTICS */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 mb-3">
-          {/* R Factor */}
-          <div className="widget-container">
-            <div className="widget-content">
-              <div className="widget-left">
-                <p className="widget-label">R Factor</p>
-                <p className={`widget-value ${(combinedAnalytics?.rFactor || 0) > 1 ? 'text-green-400' : (combinedAnalytics?.rFactor || 0) < 1 ? 'text-red-400' : 'text-white'}`}>
-                  {combinedAnalytics?.rFactor?.toFixed(2) || '0.00'}
-                </p>
-                <p className="widget-description">Risk/Reward ratio</p>
+          
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* Account Status */}
+            <div className="bg-gradient-to-br from-gray-900/40 via-gray-800/60 to-black/80 border border-gray-600/30 rounded-lg p-6 hover:border-amber-400/60 transition-all duration-200">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold text-white">Account Status</h3>
+                <User className="w-5 h-5 text-amber-400" />
               </div>
-              <div className="widget-icon-square">
-                <Activity className="widget-icon" />
-              </div>
-            </div>
-          </div>
-
-          {/* Profit Factor */}
-          <div className="widget-container">
-            <div className="widget-content">
-              <div className="widget-left">
-                <p className="widget-label">Profit Factor</p>
-                <p className={`widget-value ${(combinedAnalytics?.profitFactor || 0) > 1 ? 'text-green-400' : (combinedAnalytics?.profitFactor || 0) < 1 ? 'text-red-400' : 'text-white'}`}>
-                  {combinedAnalytics?.profitFactor?.toFixed(2) || '0.00'}
-                </p>
-                <p className="widget-description">Gross profit / gross loss</p>
-              </div>
-              <div className="widget-icon-square">
-                <TrendingUp className="widget-icon" />
-              </div>
-            </div>
-          </div>
-
-          {/* Avg Win/Loss */}
-          <div className="widget-container">
-            <div className="widget-content">
-              <div className="widget-left">
-                <p className="widget-label">Avg Win/Loss</p>
-                <div className="flex items-center space-x-2 text-lg font-bold">
-                  <span className="text-green-400">{formatCurrency(combinedAnalytics?.averageWin || 0)}</span>
-                  <span className="text-gray-400">/</span>
-                  <span className="text-red-400">{formatCurrency(Math.abs(combinedAnalytics?.averageLoss || 0))}</span>
+              <div className="space-y-3">
+                <div className="flex justify-between">
+                  <span className="text-gray-400">Active Accounts:</span>
+                  <span className="text-green-400 font-semibold">{accounts?.filter(a => a.status === 'active').length || 0}</span>
                 </div>
-                <p className="widget-description">Win vs Loss ratio</p>
-              </div>
-              <div className="widget-icon-square">
-                <BarChart3 className="widget-icon" />
-              </div>
-            </div>
-          </div>
-
-          {/* Total Trades */}
-          <div className="widget-container">
-            <div className="widget-content">
-              <div className="widget-left">
-                <p className="widget-label">Total Trades</p>
-                <p className="widget-value text-white">
-                  {combinedAnalytics?.totalTrades || 0}
-                </p>
-                <p className="widget-description">All executed trades</p>
-              </div>
-              <div className="widget-icon-square">
-                <Activity className="widget-icon" />
+                <div className="flex justify-between">
+                  <span className="text-gray-400">Challenge Accounts:</span>
+                  <span className="text-yellow-400 font-semibold">{accounts?.filter(a => a.type === 'challenge').length || 0}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-400">Funded Accounts:</span>
+                  <span className="text-green-400 font-semibold">{accounts?.filter(a => a.type === 'funded').length || 0}</span>
+                </div>
               </div>
             </div>
-          </div>
-        </div>
 
-        {/* ROW 3: RISK & PLANNING */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 mb-3">
-
-
-
-
-
-
-          {/* Discipline Score */}
-          <div className="widget-container">
-            <div className="widget-content">
-              <div className="widget-left">
-                <p className="widget-label">Discipline Score</p>
-                {(() => {
-                  const filteredTrades = selectedAccountIds.length > 0
-                    ? trades?.filter(t => selectedAccountIds.includes(t.accountId)) || []
-                    : trades || [];
-                  
-                  if (filteredTrades.length === 0) {
-                    return (
-                      <div>
-                        <p className="widget-value text-gray-400">No Score</p>
-                        <p className="widget-description text-xs">No trades to analyze</p>
-                      </div>
-                    );
-                  }
-                  
-                  const disciplineMetrics = calculateComprehensiveDisciplineMetrics(
-                    filteredTrades,
-                    accounts || [],
-                    selectedAccountIds.length === 1 ? selectedAccountIds[0].toString() : "all"
-                  );
-                  
-                  let grade = 'F';
-                  if (disciplineMetrics.disciplineScore >= 90) grade = 'A+';
-                  else if (disciplineMetrics.disciplineScore >= 80) grade = 'A';
-                  else if (disciplineMetrics.disciplineScore >= 70) grade = 'B';
-                  else if (disciplineMetrics.disciplineScore >= 60) grade = 'C';
-                  else if (disciplineMetrics.disciplineScore >= 50) grade = 'D';
-                  
-                  return (
-                    <div>
-                      <p className={`widget-value ${disciplineMetrics.disciplineScore >= 80 ? 'text-green-400' : disciplineMetrics.disciplineScore >= 60 ? 'text-yellow-400' : 'text-red-400'}`}>
-                        {Math.round(disciplineMetrics.disciplineScore)}% {grade}
-                      </p>
-                      <p className="widget-description text-xs">
-                        {Math.round(disciplineMetrics.riskManagementScore)}% risk • {Math.round(disciplineMetrics.consistencyScore)}% consistency
-                      </p>
-                    </div>
-                  );
-                })()}
+            {/* Max Maserati Account */}
+            <div className="bg-gradient-to-br from-gray-900/40 via-gray-800/60 to-black/80 border border-gray-600/30 rounded-lg p-6 hover:border-amber-400/60 transition-all duration-200">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold text-white">Primary Account</h3>
+                <User className="w-5 h-5 text-amber-400" />
               </div>
-              <div className="widget-icon-square">
-                <Brain className="widget-icon" />
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* ROW 4: INVESTMENT & FINANCIAL TRACKING */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 mb-3">
-
-
-
-
-
-
-          {/* Account Status Summary */}
-          <div className="widget-container">
-            <div className="widget-content">
-              <div className="widget-left">
-                <p className="widget-label">Account Status</p>
-                <div className="account-status-summary space-y-1">
-                  <div className="challenge-accounts flex justify-between">
-                    <span className="text-sm">Challenge:</span>
-                    <span className="text-sm font-semibold text-yellow-400">
-                      {accounts?.filter(a => a.type === 'challenge').length || 0}
+              {accounts?.[0] && (
+                <div className="space-y-3">
+                  <div className="flex justify-between">
+                    <span className="text-gray-400">Name:</span>
+                    <span className="text-white font-semibold">{accounts[0].name}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-400">Type:</span>
+                    <span className={`font-semibold capitalize ${accounts[0].type === 'funded' ? 'text-green-400' : accounts[0].type === 'challenge' ? 'text-yellow-400' : 'text-blue-400'}`}>
+                      {accounts[0].type}
                     </span>
                   </div>
-                  <div className="funded-accounts flex justify-between">
-                    <span className="text-sm">Funded:</span>
-                    <span className="text-sm font-semibold text-green-400">
-                      {accounts?.filter(a => a.type === 'funded').length || 0}
-                    </span>
-                  </div>
-                  <div className="live-accounts flex justify-between">
-                    <span className="text-sm">Live:</span>
-                    <span className="text-sm font-semibold text-blue-400">
-                      {accounts?.filter(a => a.type === 'live').length || 0}
-                    </span>
+                  <div className="flex justify-between">
+                    <span className="text-gray-400">Balance:</span>
+                    <span className="text-white font-semibold">{formatCurrency(accounts[0].startingBalance || 0)}</span>
                   </div>
                 </div>
-                <p className="widget-description text-xs">
-                  {accounts?.filter(a => a.status === 'active').length || 0} active accounts
-                </p>
-              </div>
-              <div className="widget-icon-square">
-                <Users className="widget-icon" />
-              </div>
+              )}
             </div>
-          </div>
 
-
-        </div>
-
-        {/* ROW 5: ACTIVE ACCOUNTS & ANALYSIS */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 mb-3">
-
-
-          {/* Account Discipline Analysis */}
-          <div className="widget-container">
-            <div className="widget-content">
-              <div className="widget-left">
-                <p className="widget-label">Account Discipline Analysis</p>
-                {(() => {
-                  // Use the EXACT same discipline calculation as MMM Disciplinary Coach
-                  const filteredTrades = selectedAccountIds.length > 0
-                    ? trades?.filter(t => selectedAccountIds.includes(t.accountId)) || []
-                    : trades || [];
-                  
-                  // Early return for no trades
-                  if (filteredTrades.length === 0) {
-                    return (
-                      <div className="discipline-breakdown space-y-1">
-                        <div className="text-center py-4">
-                          <span className="text-sm text-gray-400">No trades to analyze for selected account(s)</span>
-                          <p className="text-xs text-gray-500 mt-1">Switch to an account with trading activity</p>
-                        </div>
-                      </div>
-                    );
-                  }
-                  const disciplineMetrics = calculateComprehensiveDisciplineMetrics(
-                    filteredTrades,
-                    accounts || [],
-                    selectedAccountIds.length === 1 ? selectedAccountIds[0].toString() : "all"
-                  );
-                  
-                  let grade = 'F';
-                  if (disciplineMetrics.disciplineScore >= 90) grade = 'A+';
-                  else if (disciplineMetrics.disciplineScore >= 80) grade = 'A';
-                  else if (disciplineMetrics.disciplineScore >= 70) grade = 'B';
-                  else if (disciplineMetrics.disciplineScore >= 60) grade = 'C';
-                  else if (disciplineMetrics.disciplineScore >= 50) grade = 'D';
-                  
-                  return (
-                    <div className="discipline-breakdown space-y-1">
-                      <div className="risk-management flex justify-between">
-                        <span className="text-sm">Risk Management:</span>
-                        <span className={`text-sm font-semibold ${disciplineMetrics.riskManagementScore >= 80 ? 'text-green-400' : disciplineMetrics.riskManagementScore >= 60 ? 'text-yellow-400' : 'text-red-400'}`}>
-                          {disciplineMetrics.riskManagementScore.toFixed(0)}%
-                        </span>
-                      </div>
-                      <div className="stop-loss-respect flex justify-between">
-                        <span className="text-sm">Emotional Control:</span>
-                        <span className={`text-sm font-semibold ${disciplineMetrics.emotionalControlScore >= 80 ? 'text-green-400' : disciplineMetrics.emotionalControlScore >= 60 ? 'text-yellow-400' : 'text-red-400'}`}>
-                          {disciplineMetrics.emotionalControlScore.toFixed(0)}%
-                        </span>
-                      </div>
-                      <div className="profit-target flex justify-between">
-                        <span className="text-sm">Consistency:</span>
-                        <span className={`text-sm font-semibold ${disciplineMetrics.consistencyScore >= 60 ? 'text-green-400' : disciplineMetrics.consistencyScore >= 40 ? 'text-yellow-400' : 'text-red-400'}`}>
-                          {disciplineMetrics.consistencyScore.toFixed(0)}%
-                        </span>
-                      </div>
-                      <div className="overall-score pt-2 border-t border-gray-700">
-                        <div className="flex justify-between">
-                          <span className="text-sm font-semibold">Overall Score:</span>
-                          <span className={`text-sm font-bold ${disciplineMetrics.disciplineScore >= 70 ? 'text-green-400' : disciplineMetrics.disciplineScore >= 50 ? 'text-yellow-400' : 'text-red-400'}`}>
-                            {disciplineMetrics.disciplineScore.toFixed(0)}% {grade} Grade
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })()}
+            {/* Portfolio Summary */}
+            <div className="bg-gradient-to-br from-gray-900/40 via-gray-800/60 to-black/80 border border-gray-600/30 rounded-lg p-6 hover:border-amber-400/60 transition-all duration-200">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold text-white">Portfolio Summary</h3>
+                <BarChart3 className="w-5 h-5 text-amber-400" />
               </div>
-              <div className="widget-icon-square">
-                <Brain className="widget-icon" />
-              </div>
-            </div>
-          </div>
-
-
-
-
-        </div>
-
-
-
-
-
-
-
-
-
-        {/* Active Accounts & Disciplinary Score Widget */}
-        <div className="widget-grid mb-6">
-          <div className="widget-container col-span-full">
-            <div className="widget-content flex-col">
-              <div className="widget-left mb-4">
-                <p className="widget-label">Active Accounts & Disciplinary Score</p>
-                <p className="widget-description">Prop firm challenge and funded accounts with performance analysis</p>
-              </div>
-              <div className="space-y-4 w-full">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 max-h-96 overflow-y-auto">
-                  {combinedAnalytics?.accounts?.map((account) => {
-                    const accountTrades = trades?.filter(t => t.accountId === account.id) || [];
-                    const disciplinedAnalysis = calculateDisciplinedScore(account, accountTrades);
-                    const netBalance = account.startingBalance + (accountTrades.reduce((sum, trade) => sum + (trade.pnl || 0), 0) || 0);
-                    
-                    return (
-                      <div key={account.id} className="flex flex-col p-3 bg-dark-surface rounded-lg border border-prop-gold/20 hover:border-prop-gold/40 transition-colors">
-                        <div className="flex items-center justify-between mb-2">
-                          <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
-                            account.type === 'funded' ? 'bg-success-green' : 
-                            netBalance < account.startingBalance * 0.95 ? 'bg-warning-orange' : 'bg-primary'
-                          }`}>
-                            {account.type === 'funded' ? (
-                              <Target className="text-white h-4 w-4" />
-                            ) : netBalance < account.startingBalance * 0.95 ? (
-                              <AlertTriangle className="text-white h-4 w-4" />
-                            ) : (
-                              <TrendingDown className="text-white h-4 w-4" />
-                            )}
-                          </div>
-                          <div className="text-center p-2 bg-gradient-to-b from-yellow-600 to-yellow-700 rounded min-w-[60px]">
-                            <p className="text-white font-bold text-sm">
-                              {disciplinedAnalysis.disciplinedScore.toFixed(0)}%
-                            </p>
-                            <p className="text-yellow-100 text-xs">
-                              {disciplinedAnalysis.scoreGrade}
-                            </p>
-                          </div>
-                        </div>
-                        <div className="flex-1">
-                          <p className="font-medium text-white text-sm truncate">{account.name}</p>
-                          <p className="text-xs text-gray-400 mb-1">{account.type} • {account.firm}</p>
-                        </div>
-                        <div className="mt-2 pt-2 border-t border-gray-700">
-                          <p className="font-bold text-white text-sm">{formatCurrency(netBalance)}</p>
-                          <p className={`text-xs ${getValueColor(accountTrades.reduce((sum, trade) => sum + (trade.pnl || 0), 0) || 0)}`}>
-                            {(accountTrades.reduce((sum, trade) => sum + (trade.pnl || 0), 0) || 0) >= 0 ? '+' : ''}{formatCurrency(accountTrades.reduce((sum, trade) => sum + (trade.pnl || 0), 0) || 0)}
-                          </p>
-                          <p className="text-xs text-gray-400 mt-1">
-                            {disciplinedAnalysis.totalTrades} trades • {disciplinedAnalysis.violationsCount} violations
-                          </p>
-                        </div>
-                      </div>
-                    );
-                  })}
+              <div className="space-y-3">
+                <div className="flex justify-between">
+                  <span className="text-gray-400">Total Capital:</span>
+                  <span className="text-white font-semibold">{formatCurrency(accounts?.reduce((sum, acc) => sum + (acc.startingBalance || 0), 0) || 0)}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-400">Total P&L:</span>
+                  <span className={`font-semibold ${getValueColor(combinedAnalytics?.totalPnl || 0)}`}>
+                    {formatCurrency(combinedAnalytics?.totalPnl || 0)}
+                  </span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-400">ROI:</span>
+                  <span className={`font-semibold ${getValueColor(calculateROI())}`}>
+                    {formatPercentage(calculateROI())}
+                  </span>
                 </div>
               </div>
             </div>
           </div>
-        </div>
+        </section>
 
-        {/* Total Portfolio Value Row */}
-        <div className="widget-grid mb-6">
-          {/* Total Portfolio Value */}
-          <div className="widget-container">
-            <div className="widget-content">
-              <div className="widget-left">
-                <p className="widget-label">Total Portfolio Value</p>
-                <p className="widget-value">
-                  {formatCurrency(combinedAnalytics?.currentBalance || 0)}
-                </p>
-                <p className="widget-description">Selected accounts</p>
-              </div>
-              <div className="widget-icon-square">
-                <DollarSign className="widget-icon" />
-              </div>
-            </div>
+        {/* SECTION 5: RISK MANAGEMENT */}
+        <section className="mb-8">
+          <div className="flex items-center justify-between mb-6 border-b border-gray-700 pb-3">
+            <h2 className="text-xl font-bold text-gradient-rainbow flex items-center">
+              <Shield className="mr-3 h-5 w-5 text-prop-gold" />
+              Risk Management
+            </h2>
+            <p className="text-sm text-gray-400">Discipline analysis and risk monitoring</p>
           </div>
-
-
-
-          {/* Total Return */}
-          <div className="widget-container">
-            <div className="widget-content">
-              <div className="widget-left">
-                <p className="widget-label">Total Return</p>
-                <p className="widget-value">
-                  {formatCurrency(combinedAnalytics?.totalPnl || 0)}
-                </p>
-                <p className="widget-description">Profit/Loss from trading</p>
+          
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Discipline Score Breakdown */}
+            <div className="bg-gradient-to-br from-gray-900/40 via-gray-800/60 to-black/80 border border-gray-600/30 rounded-lg p-6 hover:border-amber-400/60 transition-all duration-200">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold text-white">Discipline Score Breakdown</h3>
+                <Brain className="w-5 h-5 text-amber-400" />
               </div>
-              <div className="widget-icon-square">
-                <TrendingUp className="widget-icon" />
-              </div>
-            </div>
-          </div>
-        </div>
-
-
-
-        {/* Investment Tracking */}
-        <div className="mb-6">
-          <h2 className="text-xl font-bold text-gradient-rainbow mb-6 flex items-center border-b border-gray-700 pb-3">
-            <Shield className="mr-3 h-5 w-5 text-green-400" />
-            Investment Tracking
-          </h2>
-        </div>
-
-
-
-        {/* Investment Tracking & Working Hours Summary */}
-        <div className="widget-grid mb-6">
-          <div className="widget-container">
-            <div className="widget-content">
-              <div className="widget-left">
-                <p className="widget-label">Total Spent on Accounts</p>
-                {(() => {
-                  const selectedAccounts = selectedAccountIds.length > 0 && accountSelectionMode !== 'all'
-                    ? accounts?.filter(acc => selectedAccountIds.includes(acc.id)) || []
-                    : accounts || [];
-                  
-                  const totalCost = selectedAccounts.reduce((sum, acc) => sum + (acc.accountCost || 0), 0);
-                  const accountText = accountSelectionMode === 'all' ? 'all accounts' : `${selectedAccounts.length} selected account(s)`;
-                  
-                  return (
-                    <div>
-                      <p className="widget-value">
-                        {formatCurrency(totalCost)}
-                      </p>
-                      <p className="widget-description">Purchase costs for {accountText}</p>
-                    </div>
-                  );
-                })()}
-              </div>
-              <div className="widget-icon-square">
-                <DollarSign className="widget-icon" />
-              </div>
-            </div>
-          </div>
-
-          <div className="widget-container">
-            <div className="widget-content">
-              <div className="widget-left">
-                <p className="widget-label">Activation Costs</p>
-                {(() => {
-                  const selectedAccounts = selectedAccountIds.length > 0 && accountSelectionMode !== 'all'
-                    ? accounts?.filter(acc => selectedAccountIds.includes(acc.id)) || []
-                    : accounts || [];
-                  
-                  const totalActivationCost = selectedAccounts.reduce((sum, acc) => sum + (acc.activationCost || 0), 0);
-                  const accountText = accountSelectionMode === 'all' ? 'all accounts' : `${selectedAccounts.length} selected account(s)`;
-                  
-                  return (
-                    <div>
-                      <p className="widget-value">
-                        {formatCurrency(totalActivationCost)}
-                      </p>
-                      <p className="widget-description">Activation fees for {accountText}</p>
-                    </div>
-                  );
-                })()}
-              </div>
-              <div className="widget-icon-square">
-                <Shield className="widget-icon" />
-              </div>
-            </div>
-          </div>
-
-
-
-          <div className="widget-container">
-            <div className="widget-content">
-              <div className="widget-left">
-                <p className="widget-label">Total Combined</p>
-                {(() => {
-                  const selectedAccounts = selectedAccountIds.length > 0 && accountSelectionMode !== 'all'
-                    ? accounts?.filter(acc => selectedAccountIds.includes(acc.id)) || []
-                    : accounts || [];
-                  
-                  const accountCosts = selectedAccounts.reduce((sum, acc) => sum + (acc.accountCost || 0), 0);
-                  const activationCosts = selectedAccounts.reduce((sum, acc) => sum + (acc.activationCost || 0), 0);
-                  const manualSpending = (() => {
-                    if (!spending || !accounts) return 0;
-                    let spendings: any[] = [];
-                    
-                    if (accountSelectionMode === 'all') {
-                      spendings = spending;
-                    } else if (accountSelectionMode === 'single' && selectedAccountIds.length > 0) {
-                      spendings = spending.filter(s => s.accountId === selectedAccountIds[0]);
-                    } else {
-                      const accountIdsToUse = selectedAccountIds.length > 0 ? selectedAccountIds : (accounts.length > 0 ? [accounts[0].id] : []);
-                      spendings = spending.filter(s => accountIdsToUse.includes(s.accountId));
-                    }
-                    
-                    return spendings.reduce((sum, spending) => sum + spending.amount, 0);
-                  })();
-                  const total = accountCosts + activationCosts + manualSpending;
-                  const accountText = accountSelectionMode === 'all' ? 'all accounts' : `${selectedAccounts.length} selected account(s)`;
-                  
-                  return (
-                    <div>
-                      <p className={`widget-value ${total > 0 ? 'text-red-400' : 'text-white'}`}>
-                        {formatCurrency(total)}
-                      </p>
-                      <p className="widget-description">Total investment for {accountText}</p>
-                    </div>
-                  );
-                })()}
-              </div>
-              <div className="widget-icon-square">
-                <TrendingUp className="widget-icon" />
-              </div>
-            </div>
-          </div>
-        </div>
-
-
-
-        {/* Add Investment Tracking Controls */}
-        <div className="flex justify-end mb-8">
-          <Dialog open={showSpendingModal} onOpenChange={setShowSpendingModal}>
-            <DialogTrigger asChild>
-              <Button className="bg-blue-600 hover:bg-blue-700 text-white">
-                <Plus className="mr-2 h-4 w-4" />
-                Add Spending/Payout
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="bg-gray-800 border-gray-700 text-white">
-              <DialogHeader>
-                <DialogTitle>Add Spending/Payout Entry</DialogTitle>
-              </DialogHeader>
-              <div className="space-y-4">
-                <div>
-                  <Label htmlFor="type">Type</Label>
-                  <Select 
-                    value={spendingForm.type} 
-                    onValueChange={(value: 'spending' | 'payout') => setSpendingForm({...spendingForm, type: value})}
-                  >
-                    <SelectTrigger className="bg-gray-700 border-gray-600 text-white">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent className="bg-gray-700 border-gray-600">
-                      <SelectItem value="spending">Spending</SelectItem>
-                      <SelectItem value="payout">Payout</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div>
-                  <Label htmlFor="amount">Amount</Label>
-                  <Input
-                    id="amount"
-                    type="number"
-                    placeholder="0.00"
-                    value={spendingForm.amount}
-                    onChange={(e) => setSpendingForm({...spendingForm, amount: e.target.value})}
-                    className="bg-gray-700 border-gray-600 text-white"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="description">Description</Label>
-                  <Input
-                    id="description"
-                    placeholder="Account purchase, payout, etc."
-                    value={spendingForm.description}
-                    onChange={(e) => setSpendingForm({...spendingForm, description: e.target.value})}
-                    className="bg-gray-700 border-gray-600 text-white"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="date">Date</Label>
-                  <Input
-                    id="date"
-                    type="date"
-                    value={spendingForm.date}
-                    onChange={(e) => setSpendingForm({...spendingForm, date: e.target.value})}
-                    className="bg-gray-700 border-gray-600 text-white"
-                  />
-                </div>
-                <div className="flex gap-2 pt-4">
-                  <Button 
-                    onClick={() => {
-                      // TODO: Save spending/payout entry
-                      console.log('Saving:', spendingForm);
-                      setShowSpendingModal(false);
-                      setSpendingForm({
-                        type: 'spending',
-                        amount: '',
-                        description: '',
-                        date: new Date().toISOString().split('T')[0]
-                      });
-                    }}
-                    className="bg-blue-600 hover:bg-blue-700 flex-1"
-                  >
-                    Save Entry
-                  </Button>
-                  <Button 
-                    variant="outline" 
-                    onClick={() => setShowSpendingModal(false)}
-                    className="border-gray-600 text-white hover:bg-gray-700"
-                  >
-                    Cancel
-                  </Button>
-                </div>
-              </div>
-            </DialogContent>
-          </Dialog>
-        </div>
-
-
-
-        {/* Recent Trades Section */}
-        <div className="mb-6">
-          <h2 className="text-xl font-bold text-gradient-rainbow mb-6 flex items-center border-b border-gray-700 pb-3">
-            <Activity className="mr-3 h-5 w-5 text-green-400" />
-            Recent Trading Activity
-          </h2>
-        </div>
-
-        <div className="widget-container mb-6">
-          <div className="widget-content flex-col">
-            <div className="widget-left mb-4">
-              <p className="widget-label">Latest Trades</p>
-              <p className="widget-description">Most recent trading activity</p>
-            </div>
-            <div className="space-y-4 w-full">
               {(() => {
                 const filteredTrades = selectedAccountIds.length > 0
                   ? trades?.filter(t => selectedAccountIds.includes(t.accountId)) || []
@@ -2223,59 +1798,48 @@ export default function Dashboard() {
                 if (filteredTrades.length === 0) {
                   return (
                     <div className="text-center py-8">
-                      <p className="text-gray-400">No recent trading activity</p>
-                      <p className="text-gray-500 text-sm">Switch to an account with trades</p>
+                      <p className="text-gray-400 text-lg">No Data</p>
+                      <p className="text-gray-500 text-sm">No trades to analyze</p>
                     </div>
                   );
                 }
                 
-                return filteredTrades.slice(0, 5).map((trade) => (
-                <div key={trade.id} className="flex items-center justify-between p-4 bg-dark-surface rounded-lg border border-prop-gold/20">
-                  <div className="flex items-center">
-                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center mr-4 ${
-                      trade.pnl > 0 ? 'bg-success-green' : trade.pnl < 0 ? 'bg-error-red' : 'bg-gray-600'
-                    }`}>
-                      {trade.pnl > 0 ? (
-                        <TrendingUp className="text-white h-5 w-5" />
-                      ) : trade.pnl < 0 ? (
-                        <TrendingDown className="text-white h-5 w-5" />
-                      ) : (
-                        <Target className="text-white h-5 w-5" />
-                      )}
+                const disciplineMetrics = calculateComprehensiveDisciplineMetrics(
+                  filteredTrades,
+                  accounts || [],
+                  selectedAccountIds.length === 1 ? selectedAccountIds[0].toString() : "all"
+                );
+                
+                return (
+                  <div className="space-y-4">
+                    <div className="flex justify-between items-center">
+                      <span className="text-gray-400">Overall Score:</span>
+                      <span className={`text-xl font-bold ${disciplineMetrics.disciplineScore >= 80 ? 'text-green-400' : disciplineMetrics.disciplineScore >= 60 ? 'text-yellow-400' : 'text-red-400'}`}>
+                        {Math.round(disciplineMetrics.disciplineScore)}%
+                      </span>
                     </div>
-                    <div>
-                      <p className="font-medium text-white">{trade.symbol}</p>
-                      <p className="text-sm text-gray-400">{trade.side} • {trade.date}</p>
+                    <div className="flex justify-between items-center">
+                      <span className="text-gray-400">Risk Management:</span>
+                      <span className="text-orange-400 font-semibold">{Math.round(disciplineMetrics.riskManagementScore)}%</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-gray-400">Emotional Control:</span>
+                      <span className="text-blue-400 font-semibold">{Math.round(disciplineMetrics.emotionalControlScore)}%</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-gray-400">Consistency:</span>
+                      <span className="text-green-400 font-semibold">{Math.round(disciplineMetrics.consistencyScore)}%</span>
                     </div>
                   </div>
-                  <div className="text-right">
-                    <p className={`font-bold ${getValueColor(trade.pnl)}`}>
-                      {formatCurrency(trade.pnl)}
-                    </p>
-                    <p className="text-sm text-gray-400">{trade.quantity} shares</p>
-                  </div>
-                </div>
-              ));
+                );
               })()}
             </div>
-          </div>
-        </div>
 
-        {/* First Row: Risk Management, Daily Trade Limit, Disciplined Score */}
-        <div className="widget-grid mb-6">
-
-
-
-        </div>
-
-        {/* Risk Alert and Disciplined Trading Analysis */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-          {/* Risk Alert - Top 3 Critical Accounts */}
-          <div className="widget-container">
-            <div className="widget-content flex-col">
-              <div className="widget-left mb-4">
-                <p className="widget-label">Risk Alert</p>
-                <p className="widget-description">3 Most Critical Accounts</p>
+            {/* Risk Alert */}
+            <div className="bg-gradient-to-br from-gray-900/40 via-gray-800/60 to-black/80 border border-gray-600/30 rounded-lg p-6 hover:border-amber-400/60 transition-all duration-200">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold text-white">Risk Alert</h3>
+                <AlertTriangle className="w-5 h-5 text-amber-400" />
               </div>
               <div className="space-y-3">
                 {accounts && trades ? (
@@ -2283,7 +1847,7 @@ export default function Dashboard() {
                     .map(account => {
                       const accountTrades = trades.filter(t => t.accountId === account.id);
                       const totalPnl = accountTrades.reduce((sum, trade) => sum + (trade.pnl || 0), 0);
-                      const dailyLossLimit = account.dailyLossLimit || (account.maxDrawdown ? account.maxDrawdown * 0.05 : 1000); // Use account's daily loss limit
+                      const dailyLossLimit = account.dailyLossLimit || (account.maxDrawdown ? account.maxDrawdown * 0.05 : 1000);
                       const currentDrawdown = Math.abs(Math.min(0, totalPnl));
                       const riskPercentage = (currentDrawdown / dailyLossLimit) * 100;
                       
@@ -2297,104 +1861,232 @@ export default function Dashboard() {
                     .sort((a, b) => b.riskPercentage - a.riskPercentage)
                     .slice(0, 3)
                     .map(({ account, riskPercentage, currentDrawdown, dailyLossLimit }) => (
-                      <div key={account.id} className="bg-dark-surface rounded-lg p-3">
+                      <div key={account.id} className="bg-black/30 rounded-lg p-3">
                         <div className="flex justify-between text-sm mb-2">
                           <span className="truncate">{account.name}</span>
                           <span className={`font-medium ${
                             riskPercentage > 80 ? 'text-red-400' : 
-                            riskPercentage > 60 ? 'text-warning-orange' : 
+                            riskPercentage > 60 ? 'text-orange-400' : 
                             'text-yellow-400'
                           }`}>
                             {riskPercentage.toFixed(1)}%
                           </span>
                         </div>
-                        <Progress 
-                          value={riskPercentage} 
-                          className="w-full h-1.5 bg-dark-border"
-                        />
+                        <div className="w-full bg-gray-700 rounded-full h-2">
+                          <div 
+                            className={`h-2 rounded-full ${
+                              riskPercentage > 80 ? 'bg-red-500' : 
+                              riskPercentage > 60 ? 'bg-orange-500' : 
+                              'bg-yellow-500'
+                            }`}
+                            style={{ width: `${Math.min(100, riskPercentage)}%` }}
+                          />
+                        </div>
                         <p className="text-xs text-gray-400 mt-1">
                           {formatCurrency(currentDrawdown)} / {formatCurrency(dailyLossLimit)} risk used
                         </p>
                       </div>
                     ))
                 ) : (
-                  <p className="text-gray-400 text-sm">No accounts to monitor</p>
+                  <p className="text-gray-400 text-center py-4">No accounts to monitor</p>
                 )}
               </div>
             </div>
           </div>
+        </section>
 
-
-        </div>
-
-
-
-        {/* Charts Section */}
-        <div className="grid grid-cols-1 gap-6 mb-8">
-          {/* Account Equity Curve */}
-          <div className="widget-container">
-            <div className="widget-content flex-col">
-              <div className="widget-left mb-4">
-                <p className="widget-label">Account Equity Curve</p>
-                <p className="widget-description">Portfolio growth over time</p>
+        {/* SECTION 6: TRADING ACTIVITY */}
+        <section className="mb-8">
+          <div className="flex items-center justify-between mb-6 border-b border-gray-700 pb-3">
+            <h2 className="text-xl font-bold text-gradient-rainbow flex items-center">
+              <Activity className="mr-3 h-5 w-5 text-prop-gold" />
+              Trading Activity
+            </h2>
+            <p className="text-sm text-gray-400">Recent trades and performance analytics</p>
+          </div>
+          
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Latest Trades */}
+            <div className="bg-gradient-to-br from-gray-900/40 via-gray-800/60 to-black/80 border border-gray-600/30 rounded-lg p-6 hover:border-amber-400/60 transition-all duration-200">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold text-white">Latest Trades</h3>
+                <Activity className="w-5 h-5 text-amber-400" />
               </div>
-              <div className="h-64 w-full">
-                <EquityChart data={getEquityData()} />
+              <div className="space-y-3 max-h-64 overflow-y-auto">
+                {trades && trades.length > 0 ? (
+                  trades
+                    .filter(trade => selectedAccountIds.length === 0 || selectedAccountIds.includes(trade.accountId))
+                    .slice(-5)
+                    .reverse()
+                    .map((trade, index) => (
+                      <div key={trade.id || index} className="bg-black/30 rounded-lg p-3">
+                        <div className="flex justify-between items-start mb-1">
+                          <span className="text-white font-medium">{trade.symbol}</span>
+                          <span className={`font-bold ${(trade.pnl || 0) >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                            {(trade.pnl || 0) >= 0 ? '+' : ''}{formatCurrency(trade.pnl || 0)}
+                          </span>
+                        </div>
+                        <div className="flex justify-between text-xs text-gray-400">
+                          <span>{new Date(trade.date || '').toLocaleDateString()}</span>
+                          <span>{trade.side || 'Unknown'}</span>
+                        </div>
+                      </div>
+                    ))
+                ) : (
+                  <p className="text-gray-400 text-center py-8">No trades yet</p>
+                )}
+              </div>
+            </div>
+
+            {/* Account Equity Curve */}
+            <div className="bg-gradient-to-br from-gray-900/40 via-gray-800/60 to-black/80 border border-gray-600/30 rounded-lg p-6 hover:border-amber-400/60 transition-all duration-200">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold text-white">Account Equity Curve</h3>
+                <TrendingUp className="w-5 h-5 text-amber-400" />
+              </div>
+              <div className="h-48 w-full flex items-center justify-center text-gray-400">
+                <div className="text-center">
+                  <BarChart3 className="w-12 h-12 mx-auto mb-2 text-gray-600" />
+                  <p className="text-sm">Portfolio growth over time</p>
+                  <p className="text-xs text-gray-500 mt-1">Chart visualization</p>
+                </div>
               </div>
             </div>
           </div>
-        </div>
+        </section>
 
-
-
-        {/* Daily Trading Journal */}
-        <div className="mb-8">
-          <h2 className="text-xl font-bold text-gradient-rainbow mb-6 flex items-center border-b border-gray-700 pb-3">
-            <Target className="mr-3 h-5 w-5 text-prop-gold" />
-            Daily Trading Journal
-          </h2>
-          <div className="widget-container">
-            <div className="widget-content flex-col">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-                <div>
-                  <label className="block text-sm font-medium text-gray-400 mb-2">What went wrong today?</label>
-                  <Textarea 
-                    className="bg-dark-surface border-dark-border resize-none" 
-                    rows={3} 
-                    placeholder="Reflect on mistakes and lessons learned..."
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-400 mb-2">What went right today?</label>
-                  <Textarea 
-                    className="bg-dark-surface border-dark-border resize-none" 
-                    rows={3} 
-                    placeholder="Note successful strategies and decisions..."
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-400 mb-2">Tomorrow's improvement plan</label>
-                  <Textarea 
-                    className="bg-dark-surface border-dark-border resize-none" 
-                    rows={3} 
-                    placeholder="Set goals for tomorrow's session..."
-                  />
-                </div>
+        {/* SECTION 7: INVESTMENT TRACKING */}
+        <section className="mb-8">
+          <div className="flex items-center justify-between mb-6 border-b border-gray-700 pb-3">
+            <h2 className="text-xl font-bold text-gradient-rainbow flex items-center">
+              <CreditCard className="mr-3 h-5 w-5 text-prop-gold" />
+              Investment Tracking
+            </h2>
+            <p className="text-sm text-gray-400">Account costs, spending, payouts and ROI analysis</p>
+          </div>
+          
+          {/* ROW 1: Basic Costs (3 widgets) */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+            <div className="bg-gradient-to-br from-gray-900/40 via-gray-800/60 to-black/80 border border-gray-600/30 rounded-lg p-4 hover:border-amber-400/60 transition-all duration-200">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-sm font-medium text-gray-300">Total Spent on Accounts</span>
+                <DollarSign className="w-4 h-4 text-amber-400" />
               </div>
-              <div className="flex justify-between items-center">
-                <Link href="/journal">
-                  <Button variant="ghost" className="text-primary hover:text-blue-400">
-                    View Full Journal
-                  </Button>
-                </Link>
-                <Button className="bg-accent-orange hover:bg-orange-600">
-                  Save Journal Entry
+              <div className="text-2xl font-bold mb-1 text-red-400">
+                {formatCurrency(accounts?.reduce((sum, acc) => sum + (acc.accountCost || 0), 0) || 0)}
+              </div>
+              <div className="text-xs text-gray-400">Challenge & setup costs</div>
+            </div>
+
+            <div className="bg-gradient-to-br from-gray-900/40 via-gray-800/60 to-black/80 border border-gray-600/30 rounded-lg p-4 hover:border-amber-400/60 transition-all duration-200">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-sm font-medium text-gray-300">Reset Cost</span>
+                <RotateCcw className="w-4 h-4 text-orange-400" />
+              </div>
+              <div className="text-2xl font-bold mb-1 text-orange-400">
+                {formatCurrency(accounts?.reduce((sum, acc) => sum + (acc.totalResetsCost || 0), 0) || 0)}
+              </div>
+              <div className="text-xs text-gray-400">Failed account resets</div>
+            </div>
+
+            <div className="bg-gradient-to-br from-gray-900/40 via-gray-800/60 to-black/80 border border-gray-600/30 rounded-lg p-4 hover:border-amber-400/60 transition-all duration-200">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-sm font-medium text-gray-300">Activation Costs</span>
+                <CheckCircle className="w-4 h-4 text-blue-400" />
+              </div>
+              <div className="text-2xl font-bold mb-1 text-blue-400">
+                {formatCurrency(accounts?.reduce((sum, acc) => sum + (acc.activationCost || 0), 0) || 0)}
+              </div>
+              <div className="text-xs text-gray-400">Account activation fees</div>
+            </div>
+          </div>
+
+          {/* ROW 2: Financial Summary (3 widgets) */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="bg-gradient-to-br from-gray-900/40 via-gray-800/60 to-black/80 border border-gray-600/30 rounded-lg p-4 hover:border-amber-400/60 transition-all duration-200">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-sm font-medium text-gray-300">Total Spent</span>
+                <CreditCard className="w-4 h-4 text-red-400" />
+              </div>
+              <div className="text-2xl font-bold mb-1 text-red-400">
+                {formatCurrency((accounts?.reduce((sum, acc) => sum + (acc.accountCost || 0) + (acc.totalResetsCost || 0) + (acc.activationCost || 0), 0) || 0))}
+              </div>
+              <div className="text-xs text-gray-400">Total investment</div>
+            </div>
+
+            <div className="bg-gradient-to-br from-gray-900/40 via-gray-800/60 to-black/80 border border-gray-600/30 rounded-lg p-4 hover:border-amber-400/60 transition-all duration-200">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-sm font-medium text-gray-300">Payouts</span>
+                <TrendingUp className="w-4 h-4 text-green-400" />
+              </div>
+              <div className="text-2xl font-bold mb-1 text-green-400">
+                {formatCurrency(combinedAnalytics?.totalPnl || 0)}
+              </div>
+              <div className="text-xs text-gray-400">Total received</div>
+            </div>
+
+            <div className="bg-gradient-to-br from-gray-900/40 via-gray-800/60 to-black/80 border border-gray-600/30 rounded-lg p-4 hover:border-amber-400/60 transition-all duration-200">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-sm font-medium text-gray-300">Profitability</span>
+                <TrendingUp className="w-4 h-4 text-amber-400" />
+              </div>
+              <div className={`text-2xl font-bold mb-1 ${getValueColor((combinedAnalytics?.totalPnl || 0) - (accounts?.reduce((sum, acc) => sum + (acc.accountCost || 0) + (acc.totalResetsCost || 0) + (acc.activationCost || 0), 0) || 0))}`}>
+                {formatCurrency((combinedAnalytics?.totalPnl || 0) - (accounts?.reduce((sum, acc) => sum + (acc.accountCost || 0) + (acc.totalResetsCost || 0) + (acc.activationCost || 0), 0) || 0))}
+              </div>
+              <div className="text-xs text-gray-400">Net result</div>
+            </div>
+          </div>
+        </section>
+
+        {/* SECTION 8: DAILY TRADING JOURNAL */}
+        <section className="mb-8">
+          <div className="flex items-center justify-between mb-6 border-b border-gray-700 pb-3">
+            <h2 className="text-xl font-bold text-gradient-rainbow flex items-center">
+              <BookOpen className="mr-3 h-5 w-5 text-prop-gold" />
+              Daily Trading Journal
+            </h2>
+            <p className="text-sm text-gray-400">Reflection and improvement planning</p>
+          </div>
+          
+          <div className="bg-gradient-to-br from-gray-900/40 via-gray-800/60 to-black/80 border border-gray-600/30 rounded-lg p-6 hover:border-amber-400/60 transition-all duration-200">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+              <div>
+                <label className="block text-sm font-medium text-gray-400 mb-2">What went wrong today?</label>
+                <Textarea 
+                  className="bg-black/30 border-gray-600/50 text-white resize-none min-h-[80px]" 
+                  rows={3} 
+                  placeholder="Reflect on mistakes and lessons learned..."
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-400 mb-2">What went right today?</label>
+                <Textarea 
+                  className="bg-black/30 border-gray-600/50 text-white resize-none min-h-[80px]" 
+                  rows={3} 
+                  placeholder="Note successful strategies and decisions..."
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-400 mb-2">Tomorrow's improvement plan</label>
+                <Textarea 
+                  className="bg-black/30 border-gray-600/50 text-white resize-none min-h-[80px]" 
+                  rows={3} 
+                  placeholder="Set goals for tomorrow's session..."
+                />
+              </div>
+            </div>
+            <div className="flex justify-between items-center">
+              <Link href="/journal">
+                <Button variant="ghost" className="text-amber-400 hover:text-amber-300">
+                  View Full Journal
                 </Button>
-              </div>
+              </Link>
+              <Button className="bg-amber-600 hover:bg-amber-500 text-black font-semibold">
+                Save Journal Entry
+              </Button>
             </div>
           </div>
-        </div>
-
+        </section>
 
       </div>
 
@@ -2423,14 +2115,14 @@ export default function Dashboard() {
                   updateWageMutation.mutate(parseFloat(newWage));
                 }}
                 disabled={updateWageMutation.isPending}
-                className="bg-blue-600 hover:bg-blue-700 flex-1"
+                className="flex-1 bg-accent-orange hover:bg-orange-600"
               >
-                {updateWageMutation.isPending ? 'Saving...' : 'Save Wage'}
+                {updateWageMutation.isPending ? 'Updating...' : 'Update Wage'}
               </Button>
               <Button
                 variant="outline"
                 onClick={() => setShowWageModal(false)}
-                className="border-gray-600 text-white hover:bg-gray-700"
+                className="flex-1 border-gray-600 text-gray-300 hover:bg-gray-700"
               >
                 Cancel
               </Button>
