@@ -87,28 +87,12 @@ interface YearlyCalendarViewProps extends CalendarViewProps {
 // Helper function to get trades for a specific date
 const getTradesForDate = (date: Date, trades: Trade[] = [], selectedAccountIds: number[]) => {
   const dateStr = date.toISOString().split('T')[0];
-  console.log('getTradesForDate DEBUG:');
-  console.log('- Target date:', date.toDateString());
-  console.log('- Target dateStr:', dateStr);
-  console.log('- Total trades:', trades.length);
-  console.log('- Selected accounts:', selectedAccountIds);
   
-  // Show sample trade dates for debugging
-  const sampleTradeDates = trades.slice(0, 5).map(t => t.date);
-  console.log('- Sample trade dates in database:', sampleTradeDates);
-  
-  const filteredTrades = trades.filter(trade => {
+  return trades.filter(trade => {
     const matchesDate = trade.date === dateStr;
     const matchesAccount = selectedAccountIds.length === 0 || selectedAccountIds.includes(trade.accountId);
-    if (matchesDate) {
-      console.log('- Found matching date trade:', trade.id, 'date:', trade.date, 'pnl:', trade.pnl);
-    }
     return matchesDate && matchesAccount;
   });
-  
-  console.log('- Filtered trades count:', filteredTrades.length);
-  console.log('- Filtered trades total PnL:', filteredTrades.reduce((sum, t) => sum + (t.pnl || 0), 0));
-  return filteredTrades;
 };
 
 // Helper function to calculate daily P&L and metrics
@@ -205,24 +189,7 @@ export default function Dashboard() {
                   }
                   hover:border-amber-400/60 hover:scale-105
                 `}
-                onClick={(e) => {
-                  console.log('🔥 WEEKLY CALENDAR CLICK DETECTED 🔥');
-                  console.log('Target element:', e.target.constructor.name);
-                  console.log('Current element:', e.currentTarget.constructor.name);
-                  console.log('Date clicked:', date.toDateString());
-                  console.log('Date ISO:', date.toISOString().split('T')[0]);
-                  
-                  e.preventDefault();
-                  e.stopPropagation();
-                  
-                  try {
-                    console.log('Executing onDayClick...');
-                    onDayClick(date);
-                    console.log('✅ onDayClick executed successfully');
-                  } catch (error) {
-                    console.error('❌ Error in onDayClick:', error);
-                  }
-                }}
+                onClick={() => onDayClick(date)}
               >
                 {/* Today indicator */}
                 {isToday && (
@@ -325,24 +292,7 @@ export default function Dashboard() {
                     }
                     hover:border-amber-400/60
                   `}
-                  onClick={(e) => {
-                    console.log('🔥 MONTHLY CALENDAR CLICK DETECTED 🔥');
-                    console.log('Target element:', e.target.constructor.name);
-                    console.log('Current element:', e.currentTarget.constructor.name);
-                    console.log('Date clicked:', date.toDateString());
-                    console.log('Date ISO:', date.toISOString().split('T')[0]);
-                    
-                    e.preventDefault();
-                    e.stopPropagation();
-                    
-                    try {
-                      console.log('Executing onDayClick...');
-                      onDayClick(date);
-                      console.log('✅ onDayClick executed successfully');
-                    } catch (error) {
-                      console.error('❌ Error in onDayClick:', error);
-                    }
-                  }}
+                  onClick={() => onDayClick(date)}
                 >
                   {/* Today indicator */}
                   {isToday && (
@@ -1433,22 +1383,7 @@ export default function Dashboard() {
                 Go to Today
               </button>
               
-              {/* DIAGNOSTIC TEST BUTTON */}
-              <button
-                onClick={() => {
-                  console.log('🚨 DIAGNOSTIC TEST BUTTON CLICKED 🚨');
-                  const testDate = new Date('2025-07-10'); // July 10th has actual trade data
-                  console.log('Test date:', testDate.toDateString());
-                  setSelectedDate(testDate);
-                  const dayData = getDayData(testDate, trades || []);
-                  console.log('Test day data:', dayData);
-                  setSelectedDayData(dayData);
-                  console.log('🚨 DIAGNOSTIC TEST COMPLETE 🚨');
-                }}
-                className="px-3 py-2 rounded-lg text-xs font-medium bg-red-600/80 hover:bg-red-600 text-white transition-all duration-200 border border-red-500/40 shadow-md"
-              >
-                TEST
-              </button>
+
             </div>
 
             {/* Calendar Display */}
@@ -1461,12 +1396,8 @@ export default function Dashboard() {
                   selectedAccountIds={selectedAccountIds}
                   selectedDate={selectedDate}
                   onDayClick={(date) => {
-                    console.log('=== WEEKLY VIEW DAY CLICKED ===');
-                    console.log('Clicked date:', date.toDateString());
-                    console.log('Clicked date ISO:', date.toISOString().split('T')[0]);
                     setSelectedDate(date);
                     const dayData = getDayData(date, trades || []);
-                    console.log('Weekly view setting day data:', dayData);
                     setSelectedDayData(dayData);
                   }}
                 />
@@ -1479,12 +1410,8 @@ export default function Dashboard() {
                   selectedAccountIds={selectedAccountIds}
                   selectedDate={selectedDate}
                   onDayClick={(date) => {
-                    console.log('=== MONTHLY VIEW DAY CLICKED ===');
-                    console.log('Clicked date:', date.toDateString());
-                    console.log('Clicked date ISO:', date.toISOString().split('T')[0]);
                     setSelectedDate(date);
                     const dayData = getDayData(date, trades || []);
-                    console.log('Monthly view setting day data:', dayData);
                     setSelectedDayData(dayData);
                   }}
                 />
@@ -1497,12 +1424,8 @@ export default function Dashboard() {
                   selectedAccountIds={selectedAccountIds}
                   selectedDate={selectedDate}
                   onDayClick={(date) => {
-                    console.log('=== YEARLY VIEW DAY CLICKED ===');
-                    console.log('Clicked date:', date.toDateString());
-                    console.log('Clicked date ISO:', date.toISOString().split('T')[0]);
                     setSelectedDate(date);
                     const dayData = getDayData(date, trades || []);
-                    console.log('Yearly view setting day data:', dayData);
                     setSelectedDayData(dayData);
                   }}
                 />
