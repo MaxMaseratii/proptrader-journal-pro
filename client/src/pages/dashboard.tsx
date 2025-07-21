@@ -205,16 +205,23 @@ export default function Dashboard() {
                 onClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
-                  console.log('=== DAY CLICK HANDLER ===');
+                  console.log('=== CALENDAR DAY CLICKED ===');
                   console.log('Clicked date:', date.toDateString());
+                  console.log('Clicked date ISO:', date.toISOString().split('T')[0]);
                   console.log('Current trades length:', trades?.length || 0);
                   console.log('Selected account IDs:', selectedAccountIds);
                   
-                  // Update selected date immediately
-                  setSelectedDate(date);
-                  
-                  // Calculate and set day data
+                  // Check what trades exist for this specific date
                   if (trades && trades.length > 0) {
+                    const dayTrades = getTradesForDate(date, trades, selectedAccountIds);
+                    console.log('Trades found for clicked date:', dayTrades.length);
+                    if (dayTrades.length > 0) {
+                      const totalPnL = dayTrades.reduce((sum, t) => sum + (t.pnl || 0), 0);
+                      console.log('Total PnL for clicked date:', totalPnL);
+                    }
+                    
+                    // Update selected date and day data
+                    setSelectedDate(date);
                     const dayData = getDayData(date, trades);
                     console.log('Setting selectedDayData to:', dayData);
                     setSelectedDayData(dayData);
