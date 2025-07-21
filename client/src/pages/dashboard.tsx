@@ -133,8 +133,8 @@ export default function Dashboard() {
   const [currentWeekStart, setCurrentWeekStart] = useState(() => {
     const today = new Date();
     const dayOfWeek = today.getDay(); // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
-    // Start week on Sunday (traditional calendar format)
-    const daysToSubtract = dayOfWeek;
+    // Start week on Monday (European/business calendar format)
+    const daysToSubtract = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
     const start = new Date(today);
     start.setDate(today.getDate() - daysToSubtract);
     return start;
@@ -176,7 +176,7 @@ export default function Dashboard() {
       weekDays.push(date);
     }
 
-    const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    const dayNames = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
     return (
       <div className="bg-gray-800/40 rounded-lg border border-gray-600/30 p-4">
@@ -271,9 +271,11 @@ export default function Dashboard() {
     const firstDay = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 1);
     const lastDay = new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 0);
     
-    // Get first day of the week for the month (Sunday = 0)
+    // Get first day of the week for the month (Monday = 1, Sunday = 0)
     const startDate = new Date(firstDay);
-    startDate.setDate(startDate.getDate() - firstDay.getDay());
+    const firstDayOfWeek = firstDay.getDay();
+    const daysToSubtract = firstDayOfWeek === 0 ? 6 : firstDayOfWeek - 1;
+    startDate.setDate(startDate.getDate() - daysToSubtract);
     
     const weeks = [];
     let currentDate = new Date(startDate);
@@ -291,7 +293,7 @@ export default function Dashboard() {
       if (currentDate > lastDay && weeks.length >= 4) break;
     }
 
-    const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    const dayNames = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
     return (
       <div className="bg-gray-800/40 rounded-lg border border-gray-600/30 p-4">
@@ -1145,15 +1147,15 @@ export default function Dashboard() {
                 <div className="flex items-center space-x-2">
                   <Calendar className="w-4 h-4 text-amber-400" />
                   <span className="text-lg font-bold text-amber-400">
-                    {new Date().toLocaleDateString('en-US', { weekday: 'short' })} {new Date().getDate()}
+                    {selectedDate.toLocaleDateString('en-US', { weekday: 'short' })} {selectedDate.getDate()}
                   </span>
                   <div className="w-2 h-2 rounded-full bg-teal-400" />
                 </div>
                 <div className="bg-gray-900/80 rounded-lg px-4 py-3 border border-gray-700/50">
                   <div className="flex items-center space-x-2">
                     <span className="text-sm text-gray-400">Daily P&L:</span>
-                    <span className={`text-lg font-bold ${combinedAnalytics?.totalPnl >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-                      {combinedAnalytics?.totalPnl >= 0 ? '+' : ''}${Math.abs(combinedAnalytics?.totalPnl || 0).toFixed(2)}
+                    <span className={`text-lg font-bold ${selectedDayData?.dayPnL >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                      {selectedDayData?.dayPnL >= 0 ? '+' : ''}${Math.abs(selectedDayData?.dayPnL || 0).toFixed(2)}
                     </span>
                   </div>
                 </div>
@@ -1163,14 +1165,14 @@ export default function Dashboard() {
               <div className="mb-4">
                 <div className="relative w-3/4 bg-gray-700/50 rounded-full h-6 mx-auto">
                   <div 
-                    className={`h-6 rounded-full transition-all duration-500 flex items-center justify-center ${combinedAnalytics?.totalPnl >= 0 ? 'bg-green-400' : 'bg-red-400'}`}
+                    className={`h-6 rounded-full transition-all duration-500 flex items-center justify-center ${selectedDayData?.dayPnL >= 0 ? 'bg-green-400' : 'bg-red-400'}`}
                     style={{ 
-                      width: `${Math.min(Math.abs(combinedAnalytics?.totalPnl || 0) / 100 * 100, 100)}%`, 
+                      width: `${Math.min(Math.abs(selectedDayData?.dayPnL || 0) / 100 * 100, 100)}%`, 
                       minWidth: '120px' 
                     }}
                   >
                     <span className="text-xs font-medium text-black">
-                      {Math.min(Math.abs(combinedAnalytics?.totalPnl || 0) / 100 * 100, 100).toFixed(0)}% of $100 target
+                      {Math.min(Math.abs(selectedDayData?.dayPnL || 0) / 100 * 100, 100).toFixed(0)}% of $100 target
                     </span>
                   </div>
                 </div>
@@ -1210,16 +1212,16 @@ export default function Dashboard() {
                   {/* Trades */}
                   <div className="bg-black/30 rounded-lg p-4 border border-gray-700/50 relative">
                     <div className="absolute top-3 right-3 text-xs text-purple-300">
-                      {combinedAnalytics?.totalTrades || 0}/{accounts?.[0]?.maxDailyTrades || 5}
+                      {selectedDayData?.totalDayTrades || 0}/{accounts?.[0]?.maxDailyTrades || 5}
                     </div>
                     <div className="text-3xl font-bold text-purple-400 mb-1">
-                      {combinedAnalytics?.totalTrades || 0}
+                      {selectedDayData?.totalDayTrades || 0}
                     </div>
                     <div className="w-full bg-gray-700/50 rounded-full h-1 mb-2">
                       <div 
                         className="h-1 rounded-full bg-purple-400 transition-all duration-500"
                         style={{ 
-                          width: `${Math.min((combinedAnalytics?.totalTrades || 0) / (accounts?.[0]?.maxDailyTrades || 5) * 100, 100)}%` 
+                          width: `${Math.min((selectedDayData?.totalDayTrades || 0) / (accounts?.[0]?.maxDailyTrades || 5) * 100, 100)}%` 
                         }}
                       />
                     </div>
