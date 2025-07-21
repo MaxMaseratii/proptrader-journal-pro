@@ -1052,12 +1052,12 @@ export default function Dashboard() {
 
       <div className="p-6 space-y-6">
         
-        {/* Weekly Risk Management & Performance Calendar - Top of Dashboard */}
+        {/* Daily Trading Plan & Performance */}
         <div className="mb-16">
           <div className="flex items-center justify-between mb-6 border-b border-gray-700 pb-3">
             <h2 className="text-xl font-bold text-gradient-rainbow flex items-center">
               <Calendar className="mr-3 h-5 w-5 text-prop-gold" />
-              Weekly Risk Management & Performance Calendar
+              Daily Trading Plan & Performance
             </h2>
           </div>
 
@@ -1065,12 +1065,6 @@ export default function Dashboard() {
 
         {/* ENHANCED TRADING PERFORMANCE SECTION */}
         <div className="mb-8">
-          <div className="flex items-center justify-between mb-6 border-b border-gray-700 pb-3">
-            <h2 className="text-xl font-bold text-gradient-rainbow flex items-center">
-              <BarChart3 className="mr-3 h-5 w-5 text-prop-gold" />
-              Daily Trading Performance Analysis
-            </h2>
-          </div>
           
           {/* CompactDetailView - Today's Trading Metrics */}
           <div className={`
@@ -1520,15 +1514,9 @@ export default function Dashboard() {
           <div className="widget-container">
             <div className="widget-content">
               <div className="widget-left">
-                {(() => {
-                  console.log('WIDGET RENDER DEBUG - Day P&L:');
-                  console.log('- selectedDayData exists:', !!selectedDayData);
-                  if (selectedDayData) {
-                    console.log('- selectedDayData:', selectedDayData);
-                  }
-                  return selectedDayData ? (
+                {selectedDayData ? (
                     <>
-                      <p className="widget-label">Day P&L ({selectedDayData.date.toLocaleDateString()})</p>
+                      <p className="widget-label">Day P&L</p>
                       <p className={`widget-value ${getValueColor(selectedDayData.dayPnL)}`}>
                         {formatCurrency(selectedDayData.dayPnL)}
                       </p>
@@ -1536,14 +1524,13 @@ export default function Dashboard() {
                     </>
                   ) : (
                     <>
-                      <p className="widget-label">Net Balance</p>
+                      <p className="widget-label">Day P&L</p>
                       <p className={`widget-value ${getValueColor(calculateNetBalance())}`}>
                         {formatCurrency(calculateNetBalance())}
                       </p>
                       <p className="widget-description">Starting balance + Total P&L</p>
                     </>
-                  );
-                })()}
+                  )}
               </div>
               <div className="widget-icon-square">
                 <DollarSign className="widget-icon" />
@@ -1567,11 +1554,11 @@ export default function Dashboard() {
                   </>
                 ) : (
                   <>
-                    <p className="widget-label">Total P&L</p>
-                    <p className={`widget-value ${getValueColor(combinedAnalytics?.totalPnl || 0)}`}>
-                      {formatCurrency(combinedAnalytics?.totalPnl || 0)}
+                    <p className="widget-label">Day Trades</p>
+                    <p className="widget-value text-white">
+                      {combinedAnalytics?.totalTrades || 0}
                     </p>
-                    <p className="widget-description">Net profit/loss</p>
+                    <p className="widget-description">All executed trades</p>
                   </>
                 )}
               </div>
@@ -1595,7 +1582,7 @@ export default function Dashboard() {
                   </>
                 ) : (
                   <>
-                    <p className="widget-label">Win Rate</p>
+                    <p className="widget-label">Day Win Rate</p>
                     <p className={`widget-value ${(combinedAnalytics?.winRate || 0) > 50 ? 'text-green-400' : (combinedAnalytics?.winRate || 0) < 50 ? 'text-red-400' : 'text-white'}`}>
                       {formatPercentage(combinedAnalytics?.winRate || 0)}
                     </p>
@@ -1623,11 +1610,11 @@ export default function Dashboard() {
                   </>
                 ) : (
                   <>
-                    <p className="widget-label">Total Trades</p>
-                    <p className="widget-value text-white">
-                      {combinedAnalytics?.totalTrades || 0}
+                    <p className="widget-label">Day Risk</p>
+                    <p className="widget-value text-orange-400">
+                      $0
                     </p>
-                    <p className="widget-description">All executed trades</p>
+                    <p className="widget-description">Total risk taken</p>
                   </>
                 )}
               </div>
