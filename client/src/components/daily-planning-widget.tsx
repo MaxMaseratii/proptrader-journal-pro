@@ -22,10 +22,11 @@ import { cn } from "@/lib/utils";
 interface DailyPlanningWidgetProps {
   trades?: any[];
   selectedAccount?: any;
+  dailyPlan?: any;
   className?: string;
 }
 
-export function DailyPlanningWidget({ trades = [], selectedAccount, className }: DailyPlanningWidgetProps) {
+export function DailyPlanningWidget({ trades = [], selectedAccount, dailyPlan, className }: DailyPlanningWidgetProps) {
   const [isTrading, setIsTrading] = useState(false);
   const [tradingStartTime, setTradingStartTime] = useState<number | null>(null);
   const [currentSessionTime, setCurrentSessionTime] = useState(0);
@@ -41,10 +42,10 @@ export function DailyPlanningWidget({ trades = [], selectedAccount, className }:
   const todayLosses = todayTrades.filter(trade => (trade.pnl || 0) < 0).length;
   const todayWinRate = todayTradesCount > 0 ? (todayWins / todayTradesCount * 100) : 0;
 
-  // Daily targets from account or defaults
-  const dailyTarget = selectedAccount ? (selectedAccount.riskPerTrade * selectedAccount.riskRewardRatio) : 450;
-  const maxDailyTrades = selectedAccount?.maxDailyTrades || 5;
-  const dailyRiskLimit = selectedAccount?.dailyLossLimit || 1000;
+  // Daily targets from daily plan or account defaults
+  const dailyTarget = dailyPlan?.targetProfit || (selectedAccount ? (selectedAccount.riskPerTrade * selectedAccount.riskRewardRatio) : 450);
+  const maxDailyTrades = dailyPlan?.maxTrades || selectedAccount?.maxDailyTrades || 5;
+  const dailyRiskLimit = dailyPlan?.riskAmount || selectedAccount?.dailyLossLimit || 1000;
 
   // Calculate progress
   const targetProgress = Math.min(Math.max((todayPnL / dailyTarget) * 100, 0), 100);
