@@ -1954,33 +1954,7 @@ export default function Dashboard() {
 
                   return (
                     <div className="h-full relative">
-                      {/* Performance Stats Header */}
-                      <div className="flex justify-between items-center mb-4 px-2">
-                        <div className="flex space-x-6">
-                          <div className="text-center">
-                            <div className="text-xs text-gray-400 mb-1">Starting Capital</div>
-                            <div className="text-sm font-bold text-white">{formatCurrency(accountCost)}</div>
-                          </div>
-                          <div className="text-center">
-                            <div className="text-xs text-gray-400 mb-1">Current Value</div>
-                            <div className={`text-sm font-bold ${runningBalance >= accountCost ? 'text-green-400' : 'text-red-400'}`}>
-                              {formatCurrency(runningBalance)}
-                            </div>
-                          </div>
-                          <div className="text-center">
-                            <div className="text-xs text-gray-400 mb-1">Total Return</div>
-                            <div className={`text-sm font-bold ${currentPnL >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-                              {currentPnL >= 0 ? '+' : ''}{formatCurrency(currentPnL)} ({pnlPercentage >= 0 ? '+' : ''}{pnlPercentage.toFixed(1)}%)
-                            </div>
-                          </div>
-                        </div>
-                        <div className="text-right">
-                          <div className="text-xs text-gray-400 mb-1">Total Trades</div>
-                          <div className="text-sm font-bold text-amber-400">{sortedTrades.length}</div>
-                        </div>
-                      </div>
-
-                      <svg className="w-full h-48" viewBox="0 0 480 192">
+                      <svg className="w-full h-full" viewBox="0 0 480 240">
                         {/* Enhanced gradients and patterns */}
                         <defs>
                           <linearGradient id="chartBackground" x1="0%" y1="0%" x2="0%" y2="100%">
@@ -2078,11 +2052,14 @@ export default function Dashboard() {
                           className="drop-shadow-lg"
                         />
                         
-                        {/* Enhanced data points */}
+                        {/* Enhanced data points with detailed hover */}
                         {equityPoints.map((point, index) => {
                           const x = 40 + (index / (equityPoints.length - 1)) * 420;
-                          const y = 182 - ((point.y - chartMin) / chartRange) * 172;
+                          const y = 230 - ((point.y - chartMin) / chartRange) * 200;
                           const isProfit = point.y >= accountCost;
+                          const netPnL = point.y - accountCost;
+                          const netPnLPercent = ((netPnL / accountCost) * 100);
+                          const tradeTime = point.trade ? new Date(point.date).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : 'N/A';
                           
                           return (
                             <g key={index} className="cursor-pointer">
@@ -2090,10 +2067,19 @@ export default function Dashboard() {
                               <circle
                                 cx={x}
                                 cy={y}
+                                r="12"
+                                fill={isProfit ? "#10b981" : "#ef4444"}
+                                opacity="0.1"
+                                className="hover:opacity-30 transition-all duration-300"
+                              />
+                              {/* Middle ring */}
+                              <circle
+                                cx={x}
+                                cy={y}
                                 r="8"
                                 fill={isProfit ? "#10b981" : "#ef4444"}
-                                opacity="0.2"
-                                className="hover:opacity-40 transition-opacity"
+                                opacity="0.3"
+                                className="hover:opacity-50 transition-all duration-300"
                               />
                               {/* Main point */}
                               <circle
@@ -2103,39 +2089,84 @@ export default function Dashboard() {
                                 fill={isProfit ? "#10b981" : "#ef4444"}
                                 stroke="white"
                                 strokeWidth="2"
-                                className="hover:r-6 transition-all duration-200"
+                                className="hover:r-7 transition-all duration-300"
                                 filter="url(#glow)"
                               />
-                              {/* Center dot */}
+                              {/* Center highlight */}
                               <circle
                                 cx={x}
                                 cy={y}
                                 r="2"
                                 fill="white"
                                 opacity="0.9"
+                                className="hover:opacity-100"
                               />
                               
-                              {/* Enhanced tooltip */}
-                              <g className="opacity-0 hover:opacity-100 transition-opacity duration-200 pointer-events-none">
+                              {/* Comprehensive tooltip */}
+                              <g className="opacity-0 hover:opacity-100 transition-opacity duration-300 pointer-events-none">
+                                {/* Tooltip background with gradient */}
                                 <rect
-                                  x={x - 85}
-                                  y={y - 55}
-                                  width="170"
-                                  height="45"
-                                  fill="rgba(17, 24, 39, 0.95)"
-                                  rx="8"
+                                  x={x - 110}
+                                  y={y - 85}
+                                  width="220"
+                                  height="70"
+                                  fill="rgba(17, 24, 39, 0.98)"
+                                  rx="12"
                                   stroke={isProfit ? "#10b981" : "#ef4444"}
-                                  strokeWidth="1"
+                                  strokeWidth="2"
                                   filter="url(#glow)"
                                 />
-                                <text x={x} y={y - 38} textAnchor="middle" className="fill-white text-xs font-medium" fontSize="11">
-                                  {point.date === 'Start' ? '🎯 Starting Point' : `📅 ${new Date(point.date).toLocaleDateString()}`}
+                                <rect
+                                  x={x - 108}
+                                  y={y - 83}
+                                  width="216"
+                                  height="8"
+                                  fill={isProfit ? "url(#profitGradient)" : "url(#lossGradient)"}
+                                  rx="6"
+                                  opacity="0.8"
+                                />
+                                
+                                {/* Trade Date & Time */}
+                                <text x={x} y={y - 65} textAnchor="middle" className="fill-white text-sm font-bold" fontSize="12">
+                                  {point.date === 'Start' ? '🏁 Account Started' : `📅 ${new Date(point.date).toLocaleDateString()}`}
                                 </text>
-                                <text x={x} y={y - 26} textAnchor="middle" className="fill-gray-300 text-xs" fontSize="10">
-                                  📊 Trade #{point.tradesCount} • Balance: {formatCurrency(point.y)}
+                                <text x={x} y={y - 50} textAnchor="middle" className="fill-gray-300 text-xs" fontSize="11">
+                                  {point.date === 'Start' ? 'Initial Capital Deployment' : `⏰ Time: ${tradeTime}`}
                                 </text>
-                                <text x={x} y={y - 14} textAnchor="middle" className={`text-xs font-medium ${point.trade ? (point.trade.pnl >= 0 ? 'fill-green-400' : 'fill-red-400') : 'fill-amber-400'}`} fontSize="10">
-                                  {point.trade ? `💰 ${point.trade.pnl >= 0 ? '+' : ''}${formatCurrency(point.trade.pnl || 0)}` : '🏦 Initial Capital'}
+                                
+                                {/* Trade Details */}
+                                <text x={x - 100} y={y - 35} className="fill-gray-400 text-xs" fontSize="10">
+                                  Trade Count:
+                                </text>
+                                <text x={x + 100} y={y - 35} textAnchor="end" className="fill-amber-400 text-xs font-semibold" fontSize="10">
+                                  #{point.tradesCount}
+                                </text>
+                                
+                                <text x={x - 100} y={y - 23} className="fill-gray-400 text-xs" fontSize="10">
+                                  Account Balance:
+                                </text>
+                                <text x={x + 100} y={y - 23} textAnchor="end" className={`text-xs font-bold ${isProfit ? 'fill-green-400' : 'fill-red-400'}`} fontSize="10">
+                                  {formatCurrency(point.y)}
+                                </text>
+                                
+                                {/* Trade P&L */}
+                                {point.trade && (
+                                  <>
+                                    <text x={x - 100} y={y - 11} className="fill-gray-400 text-xs" fontSize="10">
+                                      Trade P&L:
+                                    </text>
+                                    <text x={x + 100} y={y - 11} textAnchor="end" className={`text-xs font-bold ${point.trade.pnl >= 0 ? 'fill-green-400' : 'fill-red-400'}`} fontSize="10">
+                                      {point.trade.pnl >= 0 ? '+' : ''}{formatCurrency(point.trade.pnl || 0)}
+                                    </text>
+                                  </>
+                                )}
+                                
+                                {/* Net Performance */}
+                                <text x={x - 100} y={y + 1} className="fill-gray-400 text-xs" fontSize="10">
+                                  Net Performance:
+                                </text>
+                                <text x={x + 100} y={y + 1} textAnchor="end" className={`text-xs font-bold ${netPnL >= 0 ? 'fill-green-400' : 'fill-red-400'}`} fontSize="10">
+                                  {netPnL >= 0 ? '+' : ''}{formatCurrency(netPnL)} ({netPnLPercent >= 0 ? '+' : ''}{netPnLPercent.toFixed(1)}%)
                                 </text>
                               </g>
                             </g>
@@ -2143,22 +2174,14 @@ export default function Dashboard() {
                         })}
                         
                         {/* Enhanced Y-axis labels */}
-                        <text x="35" y="15" textAnchor="end" className="fill-gray-400 text-xs font-medium" fontSize="10">
+                        <text x="35" y="35" textAnchor="end" className="fill-gray-400 text-xs font-medium" fontSize="10">
                           {formatCurrency(chartMax)}
                         </text>
-                        <text x="35" y="100" textAnchor="end" className="fill-gray-400 text-xs font-medium" fontSize="10">
+                        <text x="35" y="135" textAnchor="end" className="fill-gray-400 text-xs font-medium" fontSize="10">
                           {formatCurrency((chartMax + chartMin) / 2)}
                         </text>
-                        <text x="35" y="185" textAnchor="end" className="fill-gray-400 text-xs font-medium" fontSize="10">
+                        <text x="35" y="225" textAnchor="end" className="fill-gray-400 text-xs font-medium" fontSize="10">
                           {formatCurrency(chartMin)}
-                        </text>
-                        
-                        {/* X-axis time labels */}
-                        <text x="40" y="195" className="fill-gray-400 text-xs" fontSize="9">
-                          {equityPoints[0]?.date === 'Start' ? 'Start' : new Date(equityPoints[0]?.date || '').toLocaleDateString()}
-                        </text>
-                        <text x="460" y="195" textAnchor="end" className="fill-gray-400 text-xs" fontSize="9">
-                          {equityPoints[equityPoints.length - 1]?.date === 'Start' ? 'Today' : new Date(equityPoints[equityPoints.length - 1]?.date || '').toLocaleDateString()}
                         </text>
                       </svg>
                     </div>
