@@ -181,8 +181,11 @@ export default function Dashboard() {
                   hover:border-amber-400/60
                 `}
                 onClick={() => {
+                  console.log('Calendar day clicked:', date.toDateString());
                   setSelectedDate(date);
-                  setSelectedDayData(getDayData(date, trades || []));
+                  const dayData = getDayData(date, trades || []);
+                  console.log('Setting day data:', dayData);
+                  setSelectedDayData(dayData);
                 }}
               >
                 {/* Today indicator */}
@@ -275,8 +278,10 @@ export default function Dashboard() {
                 <div
                   key={date.toISOString()}
                   className={`
-                    relative p-2 rounded-lg border transition-all duration-200 h-20
-                    ${isToday 
+                    relative p-2 rounded-lg border transition-all duration-200 h-20 cursor-pointer
+                    ${selectedDate.toDateString() === date.toDateString()
+                      ? 'border-amber-400 bg-amber-900/20 shadow-lg'
+                      : isToday 
                       ? 'border-teal-400/60 bg-gradient-to-br from-teal-900/30 via-gray-800/40 to-teal-900/30' 
                       : isCurrentMonth
                       ? 'border-gray-600/40 bg-gradient-to-br from-gray-800/40 via-gray-700/40 to-gray-800/40'
@@ -284,6 +289,13 @@ export default function Dashboard() {
                     }
                     hover:border-amber-400/60
                   `}
+                  onClick={() => {
+                    console.log('Monthly calendar day clicked:', date.toDateString());
+                    setSelectedDate(date);
+                    const dayData = getDayData(date, trades || []);
+                    console.log('Setting monthly day data:', dayData);
+                    setSelectedDayData(dayData);
+                  }}
                 >
                   {/* Today indicator */}
                   {isToday && (
