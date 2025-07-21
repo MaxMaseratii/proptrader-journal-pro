@@ -68,26 +68,19 @@ interface CalendarViewProps {
 
 interface WeeklyCalendarViewProps extends CalendarViewProps {
   currentWeekStart: Date;
-  selectedDate?: Date;
-  onDayClick: (date: Date) => void;
 }
 
 interface MonthlyCalendarViewProps extends CalendarViewProps {
   currentMonth: Date;
-  selectedDate?: Date;
-  onDayClick: (date: Date) => void;
 }
 
 interface YearlyCalendarViewProps extends CalendarViewProps {
   currentYear: Date;
-  selectedDate?: Date;
-  onDayClick: (date: Date) => void;
 }
 
 // Helper function to get trades for a specific date
 const getTradesForDate = (date: Date, trades: Trade[] = [], selectedAccountIds: number[]) => {
   const dateStr = date.toISOString().split('T')[0];
-  
   return trades.filter(trade => {
     const matchesDate = trade.date === dateStr;
     const matchesAccount = selectedAccountIds.length === 0 || selectedAccountIds.includes(trade.accountId);
@@ -134,16 +127,14 @@ interface DashboardAnalytics {
 export default function Dashboard() {
   const queryClient = useQueryClient();
   
-  // Calendar day selection state for Section 1 widgets
+  // Critical calendar day selection state
   const [selectedDate, setSelectedDate] = useState(new Date());
-  const [selectedDayData, setSelectedDayData] = useState<any>(null);
-
-
+  const [selectedDayData, setSelectedDayData] = useState(null);
   
 
   
   // Calendar View Components (defined within Dashboard scope)
-  const WeeklyCalendarView: React.FC<WeeklyCalendarViewProps> = ({ currentWeekStart, trades, accounts, selectedAccountIds, selectedDate, onDayClick }) => {
+  const WeeklyCalendarView: React.FC<WeeklyCalendarViewProps> = ({ currentWeekStart, trades, accounts, selectedAccountIds }) => {
     const weekDays = [];
     const today = new Date();
     
@@ -179,17 +170,20 @@ export default function Dashboard() {
                 key={date.toISOString()}
                 className={`
                   relative p-3 rounded-lg border transition-all duration-200 h-24 cursor-pointer
-                  ${selectedDate?.toDateString() === date.toDateString()
-                    ? 'border-amber-400 bg-amber-900/20 shadow-lg ring-2 ring-amber-400/50'
+                  ${selectedDate.toDateString() === date.toDateString()
+                    ? 'border-amber-400 bg-amber-900/20 shadow-lg'
                     : isToday 
                     ? 'border-teal-400/60 bg-gradient-to-br from-teal-900/30 via-gray-800/40 to-teal-900/30' 
                     : isCurrentMonth
                     ? 'border-gray-600/40 bg-gradient-to-br from-gray-800/40 via-gray-700/40 to-gray-800/40'
                     : 'border-gray-700/30 bg-gradient-to-br from-gray-900/30 via-gray-800/30 to-gray-900/30 opacity-60'
                   }
-                  hover:border-amber-400/60 hover:scale-105
+                  hover:border-amber-400/60
                 `}
-                onClick={() => onDayClick(date)}
+                onClick={() => {
+                  setSelectedDate(date);
+                  setSelectedDayData(getDayData(date, trades || []));
+                }}
               >
                 {/* Today indicator */}
                 {isToday && (
@@ -231,7 +225,7 @@ export default function Dashboard() {
     );
   };
 
-  const MonthlyCalendarView: React.FC<MonthlyCalendarViewProps> = ({ currentMonth, trades, accounts, selectedAccountIds, selectedDate, onDayClick }) => {
+  const MonthlyCalendarView: React.FC<MonthlyCalendarViewProps> = ({ currentMonth, trades, accounts, selectedAccountIds }) => {
     const today = new Date();
     const firstDay = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 1);
     const lastDay = new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 0);
@@ -281,10 +275,8 @@ export default function Dashboard() {
                 <div
                   key={date.toISOString()}
                   className={`
-                    relative p-2 rounded-lg border transition-all duration-200 h-20 cursor-pointer
-                    ${selectedDate?.toDateString() === date.toDateString()
-                      ? 'border-amber-400 bg-amber-900/20 shadow-lg ring-2 ring-amber-400/50'
-                      : isToday 
+                    relative p-2 rounded-lg border transition-all duration-200 h-20
+                    ${isToday 
                       ? 'border-teal-400/60 bg-gradient-to-br from-teal-900/30 via-gray-800/40 to-teal-900/30' 
                       : isCurrentMonth
                       ? 'border-gray-600/40 bg-gradient-to-br from-gray-800/40 via-gray-700/40 to-gray-800/40'
@@ -292,7 +284,6 @@ export default function Dashboard() {
                     }
                     hover:border-amber-400/60
                   `}
-                  onClick={() => onDayClick(date)}
                 >
                   {/* Today indicator */}
                   {isToday && (
@@ -342,7 +333,7 @@ export default function Dashboard() {
     );
   };
 
-  const YearlyCalendarView: React.FC<YearlyCalendarViewProps> = ({ currentYear, trades, accounts, selectedAccountIds, onDayClick }) => {
+  const YearlyCalendarView: React.FC<YearlyCalendarViewProps> = ({ currentYear, trades, accounts, selectedAccountIds }) => {
     const months = [];
     
     for (let i = 0; i < 12; i++) {
@@ -391,7 +382,8 @@ export default function Dashboard() {
                 `}
                 onClick={() => {
                   const firstDayOfMonth = new Date(month.getFullYear(), month.getMonth(), 1);
-                  onDayClick && onDayClick(firstDayOfMonth);
+                  setSelectedDate(firstDayOfMonth);
+                  setSelectedDayData(getDayData(firstDayOfMonth, trades || []));
                 }}
               >
                 {/* Current month indicator */}
@@ -501,80 +493,34 @@ export default function Dashboard() {
     queryKey: ["/api/trades"],
   });
 
-  // Initialize with today's data when trades load
-  useEffect(() => {
-    if (trades && trades.length > 0) {
-      console.log('=== TRADES LOADED ===');
-      console.log('First 5 trade dates:', trades.slice(0, 5).map(t => ({ date: t.date, pnl: t.pnl })));
-      
-      const today = new Date();
-      setSelectedDate(today);
-      const todayData = getDayData(today, trades);
-      console.log('Initializing with today data:', todayData);
-      setSelectedDayData(todayData);
-    }
-  }, [trades, selectedAccountIds]); // Re-run when trades or account selection changes
-
   // Function to get day-specific data for widgets
   const getDayData = (clickedDate: Date, tradesData: Trade[] = []) => {
-    try {
-      console.log('getDayData called with:', {
-        date: clickedDate.toDateString(),
-        tradesDataLength: tradesData.length,
-        selectedAccountIds
-      });
-
-      const dayTrades = getTradesForDate(clickedDate, tradesData, selectedAccountIds);
-      console.log('Filtered day trades:', dayTrades);
-      
-      const totalDayTrades = dayTrades.length;
-      const wins = dayTrades.filter(t => (t.pnl || 0) > 0).length;
-      const losses = dayTrades.filter(t => (t.pnl || 0) <= 0).length;
-      const dayPnL = dayTrades.reduce((sum, t) => sum + (t.pnl || 0), 0);
-      
-      const avgRiskPerTrade = totalDayTrades > 0 ? 
-        dayTrades.reduce((sum, t) => sum + Math.abs(t.pnl || 0), 0) / totalDayTrades : 0;
-      
-      const winningTrades = dayTrades.filter(t => (t.pnl || 0) > 0);
-      const avgRewardRatio = winningTrades.length > 0 ? 
-        winningTrades.reduce((sum, t) => sum + (t.pnl || 0), 0) / winningTrades.length : 0;
-      
-      const result = {
-        date: clickedDate,
-        totalDayTrades,
-        wins,
-        losses,
-        dayPnL,
-        avgRiskPerTrade: Math.round(avgRiskPerTrade),
-        avgRewardRatio: Math.round(avgRewardRatio),
-        maxDailyRisk: avgRiskPerTrade * 5,
-        disciplineScore: 85, // Calculate from actual rules if available
-        winRate: totalDayTrades > 0 ? (wins / totalDayTrades) * 100 : 0,
-        hoursWorked: 6.5, // Get from actual data if available
-        hoursPlanned: 8,
-        trades: dayTrades
-      };
-      
-      console.log('getDayData result:', result);
-      return result;
-    } catch (error) {
-      console.error('Error in getDayData:', error);
-      return {
-        date: clickedDate,
-        totalDayTrades: 0,
-        wins: 0,
-        losses: 0,
-        dayPnL: 0,
-        avgRiskPerTrade: 0,
-        avgRewardRatio: 0,
-        maxDailyRisk: 0,
-        disciplineScore: 0,
-        winRate: 0,
-        hoursWorked: 0,
-        hoursPlanned: 8,
-        trades: []
-      };
-    }
+    const dayTrades = getTradesForDate(clickedDate, tradesData, selectedAccountIds);
+    
+    const totalDayTrades = dayTrades.length;
+    const wins = dayTrades.filter(t => (t.pnl || 0) > 0).length;
+    const losses = dayTrades.filter(t => (t.pnl || 0) <= 0).length;
+    const dayPnL = dayTrades.reduce((sum, t) => sum + (t.pnl || 0), 0);
+    const avgRiskPerTrade = dayTrades.length > 0 ? 
+      dayTrades.reduce((sum, t) => sum + Math.abs(t.pnl || 0), 0) / dayTrades.length : 0;
+    const avgRewardRatio = wins > 0 ? 
+      dayTrades.filter(t => (t.pnl || 0) > 0).reduce((sum, t) => sum + (t.pnl || 0), 0) / wins : 0;
+    
+    return {
+      date: clickedDate,
+      totalDayTrades,
+      wins,
+      losses,
+      dayPnL,
+      avgRiskPerTrade: Math.round(avgRiskPerTrade),
+      avgRewardRatio: Math.round(avgRewardRatio),
+      maxDailyRisk: avgRiskPerTrade * 5,
+      disciplineScore: 85,
+      winRate: totalDayTrades > 0 ? (wins / totalDayTrades) * 100 : 0,
+      hoursWorked: 6.5,
+      hoursPlanned: 8,
+      trades: dayTrades
+    };
   };
   
   // Initialize with today's data
@@ -1052,12 +998,12 @@ export default function Dashboard() {
 
       <div className="p-6 space-y-6">
         
-        {/* Daily Trading Plan & Performance */}
+        {/* Weekly Risk Management & Performance Calendar - Top of Dashboard */}
         <div className="mb-16">
           <div className="flex items-center justify-between mb-6 border-b border-gray-700 pb-3">
             <h2 className="text-xl font-bold text-gradient-rainbow flex items-center">
               <Calendar className="mr-3 h-5 w-5 text-prop-gold" />
-              Daily Trading Plan & Performance
+              Weekly Risk Management & Performance Calendar
             </h2>
           </div>
 
@@ -1065,6 +1011,12 @@ export default function Dashboard() {
 
         {/* ENHANCED TRADING PERFORMANCE SECTION */}
         <div className="mb-8">
+          <div className="flex items-center justify-between mb-6 border-b border-gray-700 pb-3">
+            <h2 className="text-xl font-bold text-gradient-rainbow flex items-center">
+              <BarChart3 className="mr-3 h-5 w-5 text-prop-gold" />
+              Daily Trading Performance Analysis
+            </h2>
+          </div>
           
           {/* CompactDetailView - Today's Trading Metrics */}
           <div className={`
@@ -1376,8 +1328,6 @@ export default function Dashboard() {
               >
                 Go to Today
               </button>
-              
-
             </div>
 
             {/* Calendar Display */}
@@ -1388,12 +1338,6 @@ export default function Dashboard() {
                   trades={trades}
                   accounts={accounts}
                   selectedAccountIds={selectedAccountIds}
-                  selectedDate={selectedDate}
-                  onDayClick={(date) => {
-                    setSelectedDate(date);
-                    const dayData = getDayData(date, trades || []);
-                    setSelectedDayData(dayData);
-                  }}
                 />
               )}
               {calendarViewMode === 'monthly' && (
@@ -1402,12 +1346,6 @@ export default function Dashboard() {
                   trades={trades}
                   accounts={accounts}
                   selectedAccountIds={selectedAccountIds}
-                  selectedDate={selectedDate}
-                  onDayClick={(date) => {
-                    setSelectedDate(date);
-                    const dayData = getDayData(date, trades || []);
-                    setSelectedDayData(dayData);
-                  }}
                 />
               )}
               {calendarViewMode === 'yearly' && (
@@ -1416,12 +1354,6 @@ export default function Dashboard() {
                   trades={trades}
                   accounts={accounts}
                   selectedAccountIds={selectedAccountIds}
-                  selectedDate={selectedDate}
-                  onDayClick={(date) => {
-                    setSelectedDate(date);
-                    const dayData = getDayData(date, trades || []);
-                    setSelectedDayData(dayData);
-                  }}
                 />
               )}
             </div>
@@ -1508,29 +1440,17 @@ export default function Dashboard() {
 
         {/* COMPACT DASHBOARD: NO EMPTY SPACES */}
         
-        {/* ROW 1: PRIMARY FINANCIAL METRICS - CALENDAR DAY RESPONSIVE */}
+        {/* ROW 1: PRIMARY FINANCIAL METRICS */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 mb-3">
-          {/* Net Balance or Day P&L */}
+          {/* Net Balance */}
           <div className="widget-container">
             <div className="widget-content">
               <div className="widget-left">
-                {selectedDayData ? (
-                    <>
-                      <p className="widget-label">Day P&L</p>
-                      <p className={`widget-value ${getValueColor(selectedDayData.dayPnL)}`}>
-                        {formatCurrency(selectedDayData.dayPnL)}
-                      </p>
-                      <p className="widget-description">Selected day profit/loss</p>
-                    </>
-                  ) : (
-                    <>
-                      <p className="widget-label">Day P&L</p>
-                      <p className={`widget-value ${getValueColor(calculateNetBalance())}`}>
-                        {formatCurrency(calculateNetBalance())}
-                      </p>
-                      <p className="widget-description">Starting balance + Total P&L</p>
-                    </>
-                  )}
+                <p className="widget-label">Net Balance</p>
+                <p className={`widget-value ${getValueColor(calculateNetBalance())}`}>
+                  {formatCurrency(calculateNetBalance())}
+                </p>
+                <p className="widget-description">Starting balance + Total P&L</p>
               </div>
               <div className="widget-icon-square">
                 <DollarSign className="widget-icon" />
@@ -1540,30 +1460,18 @@ export default function Dashboard() {
 
 
 
-          {/* Total P&L or Day Trades */}
+          {/* Total P&L */}
           <div className="widget-container">
             <div className="widget-content">
               <div className="widget-left">
-                {selectedDayData ? (
-                  <>
-                    <p className="widget-label">Day Trades</p>
-                    <p className="widget-value text-white">
-                      {selectedDayData.totalDayTrades}
-                    </p>
-                    <p className="widget-description">W: {selectedDayData.wins} | L: {selectedDayData.losses}</p>
-                  </>
-                ) : (
-                  <>
-                    <p className="widget-label">Day Trades</p>
-                    <p className="widget-value text-white">
-                      {combinedAnalytics?.totalTrades || 0}
-                    </p>
-                    <p className="widget-description">All executed trades</p>
-                  </>
-                )}
+                <p className="widget-label">Total P&L</p>
+                <p className={`widget-value ${getValueColor(combinedAnalytics?.totalPnl || 0)}`}>
+                  {formatCurrency(combinedAnalytics?.totalPnl || 0)}
+                </p>
+                <p className="widget-description">Net profit/loss</p>
               </div>
               <div className="widget-icon-square">
-                <Activity className="widget-icon" />
+                <DollarSign className="widget-icon" />
               </div>
             </div>
           </div>
@@ -1572,23 +1480,11 @@ export default function Dashboard() {
           <div className="widget-container">
             <div className="widget-content">
               <div className="widget-left">
-                {selectedDayData ? (
-                  <>
-                    <p className="widget-label">Day Win Rate</p>
-                    <p className={`widget-value ${selectedDayData.winRate > 50 ? 'text-green-400' : selectedDayData.winRate < 50 ? 'text-red-400' : 'text-white'}`}>
-                      {Math.round(selectedDayData.winRate)}%
-                    </p>
-                    <p className="widget-description">Day performance rate</p>
-                  </>
-                ) : (
-                  <>
-                    <p className="widget-label">Day Win Rate</p>
-                    <p className={`widget-value ${(combinedAnalytics?.winRate || 0) > 50 ? 'text-green-400' : (combinedAnalytics?.winRate || 0) < 50 ? 'text-red-400' : 'text-white'}`}>
-                      {formatPercentage(combinedAnalytics?.winRate || 0)}
-                    </p>
-                    <p className="widget-description">Winning trades percentage</p>
-                  </>
-                )}
+                <p className="widget-label">Win Rate</p>
+                <p className={`widget-value ${(combinedAnalytics?.winRate || 0) > 50 ? 'text-green-400' : (combinedAnalytics?.winRate || 0) < 50 ? 'text-red-400' : 'text-white'}`}>
+                  {formatPercentage(combinedAnalytics?.winRate || 0)}
+                </p>
+                <p className="widget-description">Winning trades percentage</p>
               </div>
               <div className="widget-icon-square">
                 <Target className="widget-icon" />
@@ -1596,62 +1492,8 @@ export default function Dashboard() {
             </div>
           </div>
 
-          {/* Fourth Widget - Day Risk or Total Trades */}
-          <div className="widget-container">
-            <div className="widget-content">
-              <div className="widget-left">
-                {selectedDayData ? (
-                  <>
-                    <p className="widget-label">Day Risk</p>
-                    <p className="widget-value text-orange-400">
-                      {formatCurrency(selectedDayData.avgRiskPerTrade * selectedDayData.totalDayTrades)}
-                    </p>
-                    <p className="widget-description">Total risk taken</p>
-                  </>
-                ) : (
-                  <>
-                    <p className="widget-label">Day Risk</p>
-                    <p className="widget-value text-orange-400">
-                      $0
-                    </p>
-                    <p className="widget-description">Total risk taken</p>
-                  </>
-                )}
-              </div>
-              <div className="widget-icon-square">
-                <Activity className="widget-icon" />
-              </div>
-            </div>
-          </div>
-        </div>
 
-        {/* Day Selection Indicator */}
-        {selectedDayData && (
-          <div className="mb-6 bg-amber-900/20 border border-amber-400/30 rounded-lg p-3">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center">
-                <div className="w-2 h-2 bg-amber-400 rounded-full animate-pulse mr-3"></div>
-                <span className="text-amber-400 font-semibold">
-                  Viewing data for {selectedDayData.date.toLocaleDateString('en-US', { 
-                    weekday: 'long',
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric'
-                  })}
-                </span>
-              </div>
-              <button
-                onClick={() => {
-                  setSelectedDate(new Date());
-                  setSelectedDayData(null);
-                }}
-                className="px-3 py-1 bg-amber-600/80 hover:bg-amber-600 text-white text-sm rounded-md transition-colors"
-              >
-                Clear Selection
-              </button>
-            </div>
-          </div>
-        )}
+        </div>
 
         {/* ROW 2: PERFORMANCE ANALYTICS */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 mb-3">
