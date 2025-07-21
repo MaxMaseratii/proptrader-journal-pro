@@ -1201,11 +1201,21 @@ export default function Dashboard() {
                       Target: {accounts?.[0]?.riskRewardRatio || 3.0} RR
                     </div>
                     <div className="text-3xl font-bold text-blue-400 mb-1">
-                      {combinedAnalytics?.rFactor?.toFixed(1) || '0.0'}
+                      {(() => {
+                        const avgReward = selectedDayData?.avgRewardRatio || 0;
+                        const avgRisk = selectedDayData?.avgRiskPerTrade || 0;
+                        const rRatio = avgRisk > 0 ? avgReward / avgRisk : 0;
+                        return rRatio.toFixed(1);
+                      })()}
                     </div>
                     <div className="text-sm text-gray-400">Risk:Reward</div>
                     <div className="text-xs text-blue-300 mt-1">
-                      AVG. Ratio 1:{combinedAnalytics?.rFactor?.toFixed(1) || '0.0'}
+                      AVG. Ratio 1:{(() => {
+                        const avgReward = selectedDayData?.avgRewardRatio || 0;
+                        const avgRisk = selectedDayData?.avgRiskPerTrade || 0;
+                        const rRatio = avgRisk > 0 ? avgReward / avgRisk : 0;
+                        return rRatio.toFixed(1);
+                      })()}
                     </div>
                   </div>
 
@@ -1227,7 +1237,7 @@ export default function Dashboard() {
                     </div>
                     <div className="text-sm text-gray-400 mb-1">Trades Executed</div>
                     <div className="text-xs text-gray-300">
-                      W:{combinedAnalytics?.winningTrades || 0} L:{combinedAnalytics?.losingTrades || 0}
+                      W:{selectedDayData?.wins || 0} L:{selectedDayData?.losses || 0}
                     </div>
                   </div>
 
@@ -1273,32 +1283,32 @@ export default function Dashboard() {
                   <div className="bg-black/30 rounded-lg p-4 border border-gray-700/50 relative">
                     <div className="absolute top-3 right-3">
                       <div className={`px-2 py-1 rounded text-xs font-bold ${
-                        (combinedAnalytics?.disciplinedScore || 0) >= 90 ? 'bg-green-500 text-black' : 
-                        (combinedAnalytics?.disciplinedScore || 0) >= 80 ? 'bg-blue-500 text-white' : 
-                        (combinedAnalytics?.disciplinedScore || 0) >= 70 ? 'bg-yellow-500 text-black' : 
+                        (selectedDayData?.disciplineScore || 0) >= 90 ? 'bg-green-500 text-black' : 
+                        (selectedDayData?.disciplineScore || 0) >= 80 ? 'bg-blue-500 text-white' : 
+                        (selectedDayData?.disciplineScore || 0) >= 70 ? 'bg-yellow-500 text-black' : 
                         'bg-red-500 text-white'
                       }`}>
-                        {(combinedAnalytics?.disciplinedScore || 0) >= 90 ? 'ELITE' : 
-                         (combinedAnalytics?.disciplinedScore || 0) >= 80 ? 'GOOD' : 
-                         (combinedAnalytics?.disciplinedScore || 0) >= 70 ? 'AVG' : 'POOR'}
+                        {(selectedDayData?.disciplineScore || 0) >= 90 ? 'ELITE' : 
+                         (selectedDayData?.disciplineScore || 0) >= 80 ? 'GOOD' : 
+                         (selectedDayData?.disciplineScore || 0) >= 70 ? 'AVG' : 'POOR'}
                       </div>
                     </div>
                     <div className={`text-3xl font-bold mb-1 ${
-                      (combinedAnalytics?.disciplinedScore || 0) >= 90 ? 'text-green-400' : 
-                      (combinedAnalytics?.disciplinedScore || 0) >= 80 ? 'text-green-400' : 
-                      (combinedAnalytics?.disciplinedScore || 0) >= 70 ? 'text-yellow-400' : 
-                      (combinedAnalytics?.disciplinedScore || 0) >= 60 ? 'text-orange-400' : 'text-red-400'
+                      (selectedDayData?.disciplineScore || 0) >= 90 ? 'text-green-400' : 
+                      (selectedDayData?.disciplineScore || 0) >= 80 ? 'text-green-400' : 
+                      (selectedDayData?.disciplineScore || 0) >= 70 ? 'text-yellow-400' : 
+                      (selectedDayData?.disciplineScore || 0) >= 60 ? 'text-orange-400' : 'text-red-400'
                     }`}>
-                      {Math.round(combinedAnalytics?.disciplinedScore || 0)}% {
-                        (combinedAnalytics?.disciplinedScore || 0) >= 90 ? 'A' : 
-                        (combinedAnalytics?.disciplinedScore || 0) >= 80 ? 'B' : 
-                        (combinedAnalytics?.disciplinedScore || 0) >= 70 ? 'C' : 
-                        (combinedAnalytics?.disciplinedScore || 0) >= 60 ? 'D' : 'F'
+                      {Math.round(selectedDayData?.disciplineScore || 0)}% {
+                        (selectedDayData?.disciplineScore || 0) >= 90 ? 'A' : 
+                        (selectedDayData?.disciplineScore || 0) >= 80 ? 'B' : 
+                        (selectedDayData?.disciplineScore || 0) >= 70 ? 'C' : 
+                        (selectedDayData?.disciplineScore || 0) >= 60 ? 'D' : 'F'
                       }
                     </div>
                     <div className="text-sm text-gray-400 mb-1">Discipline Score</div>
                     <div className="text-xs text-gray-300">
-                      Risk: 85% • Consistency: 90%
+                      Risk: {Math.round((selectedDayData?.disciplineScore || 0) * 0.85)}% • Consistency: {Math.round((selectedDayData?.disciplineScore || 0) * 0.90)}%
                     </div>
                   </div>
 
@@ -1308,11 +1318,11 @@ export default function Dashboard() {
                       Used
                     </div>
                     <div className="text-3xl font-bold text-orange-400 mb-1">
-                      {Math.min((combinedAnalytics?.totalTrades || 0) / (accounts?.[0]?.maxDailyTrades || 5) * 100, 100).toFixed(0)}%
+                      {Math.min((selectedDayData?.totalDayTrades || 0) / (accounts?.[0]?.maxDailyTrades || 5) * 100, 100).toFixed(0)}%
                     </div>
                     <div className="text-sm text-gray-400 mb-1">Risk Utilization</div>
                     <div className="text-xs text-orange-300">
-                      Total: ${((combinedAnalytics?.totalTrades || 0) * (accounts?.[0]?.riskPerTrade || 20)).toFixed(0)}
+                      Total: ${((selectedDayData?.totalDayTrades || 0) * (accounts?.[0]?.riskPerTrade || 20)).toFixed(0)}
                     </div>
                   </div>
 
@@ -1321,12 +1331,12 @@ export default function Dashboard() {
                     <div className="absolute top-3 right-3 text-xs text-green-300">
                       WR
                     </div>
-                    <div className={`text-3xl font-bold mb-1 ${(combinedAnalytics?.winRate || 0) >= 50 ? 'text-green-400' : 'text-red-400'}`}>
-                      {Math.round(combinedAnalytics?.winRate || 0)}%
+                    <div className={`text-3xl font-bold mb-1 ${(selectedDayData?.winRate || 0) >= 50 ? 'text-green-400' : 'text-red-400'}`}>
+                      {Math.round(selectedDayData?.winRate || 0)}%
                     </div>
                     <div className="text-sm text-gray-400 mb-1">Win Rate</div>
                     <div className="text-xs text-green-300">
-                      {combinedAnalytics?.totalTrades > 0 ? `${Math.round(combinedAnalytics?.winRate || 0)}% success` : 'No trades'}
+                      {selectedDayData?.totalDayTrades > 0 ? `${Math.round(selectedDayData?.winRate || 0)}% success` : 'No trades'}
                     </div>
                   </div>
 
@@ -1335,8 +1345,18 @@ export default function Dashboard() {
                     <div className="absolute top-3 right-3 text-xs text-cyan-300">
                       PF
                     </div>
-                    <div className={`text-3xl font-bold mb-1 ${(combinedAnalytics?.profitFactor || 0) >= 1 ? 'text-green-400' : 'text-red-400'}`}>
-                      {(combinedAnalytics?.profitFactor || 0).toFixed(2)}
+                    <div className={`text-3xl font-bold mb-1 ${(() => {
+                      const grossWin = selectedDayData?.trades?.filter(t => (t.pnl || 0) > 0).reduce((sum, t) => sum + (t.pnl || 0), 0) || 0;
+                      const grossLoss = Math.abs(selectedDayData?.trades?.filter(t => (t.pnl || 0) < 0).reduce((sum, t) => sum + (t.pnl || 0), 0) || 0);
+                      const profitFactor = grossLoss > 0 ? grossWin / grossLoss : grossWin > 0 ? 999 : 0;
+                      return profitFactor >= 1 ? 'text-green-400' : 'text-red-400';
+                    })()}`}>
+                      {(() => {
+                        const grossWin = selectedDayData?.trades?.filter(t => (t.pnl || 0) > 0).reduce((sum, t) => sum + (t.pnl || 0), 0) || 0;
+                        const grossLoss = Math.abs(selectedDayData?.trades?.filter(t => (t.pnl || 0) < 0).reduce((sum, t) => sum + (t.pnl || 0), 0) || 0);
+                        const profitFactor = grossLoss > 0 ? grossWin / grossLoss : grossWin > 0 ? 999 : 0;
+                        return profitFactor.toFixed(2);
+                      })()}
                     </div>
                     <div className="text-sm text-gray-400 mb-1">Profit Factor</div>
                     <div className="text-xs text-cyan-300">
