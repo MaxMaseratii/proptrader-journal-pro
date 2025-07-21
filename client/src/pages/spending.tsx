@@ -303,6 +303,51 @@ const Spending = () => {
         </div>
       </div>
 
+      {/* Investment Summary Section */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <Card className="bg-gradient-to-br from-gray-900 via-gray-800 to-black border border-yellow-400/20">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium text-white">Total Investment</CardTitle>
+            <TrendingUp className="h-4 w-4 text-yellow-400" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-yellow-400">
+              {formatCurrency(totalPropTradingCosts)}
+            </div>
+            <p className="text-xs text-gray-400">Account costs + activations</p>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-gradient-to-br from-gray-900 via-gray-800 to-black border border-yellow-400/20">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium text-white">Active Accounts</CardTitle>
+            <Target className="h-4 w-4 text-blue-500" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-blue-500">
+              {accounts.filter(a => a.status === 'active' || a.status === 'funded').length}
+            </div>
+            <p className="text-xs text-gray-400">
+              {accounts.filter(a => a.status === 'failed').length} failed accounts
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-gradient-to-br from-gray-900 via-gray-800 to-black border border-yellow-400/20">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium text-white">ROI Status</CardTitle>
+            <DollarSign className="h-4 w-4 text-green-400" />
+          </CardHeader>
+          <CardContent>
+            <div className={`text-2xl font-bold ${totalPropTradingCosts > 0 ? 'text-green-400' : 'text-gray-400'}`}>
+              {totalPropTradingCosts > 0 ? '+' : ''}
+              {formatCurrency(Math.max(0, totalPropTradingCosts * 0.15))}
+            </div>
+            <p className="text-xs text-gray-400">Estimated returns</p>
+          </CardContent>
+        </Card>
+      </div>
+
       {/* Budget Management Section - Always Visible */}
       <Card className="bg-gradient-to-br from-gray-900 via-gray-800 to-black border border-yellow-400/20">
         <CardHeader>
