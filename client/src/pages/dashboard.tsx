@@ -1875,12 +1875,108 @@ export default function Dashboard() {
                 <h3 className="text-lg font-semibold text-white">Account Equity Curve</h3>
                 <TrendingUp className="w-5 h-5 text-amber-400" />
               </div>
-              <div className="h-48 w-full flex items-center justify-center text-gray-400">
-                <div className="text-center">
-                  <BarChart3 className="w-12 h-12 mx-auto mb-2 text-gray-600" />
-                  <p className="text-sm">Portfolio growth over time</p>
-                  <p className="text-xs mt-1">Complete trades to see equity curve</p>
-                </div>
+              <div className="h-48 w-full">
+                {(() => {
+                  const filteredTrades = trades?.filter(trade => 
+                    selectedAccountIds.length === 0 || selectedAccountIds.includes(trade.accountId)
+                  ) || [];
+                  
+                  if (filteredTrades.length === 0) {
+                    return (
+                      <div className="h-full flex items-center justify-center text-gray-400">
+                        <div className="text-center">
+                          <BarChart3 className="w-12 h-12 mx-auto mb-2 text-gray-600" />
+                          <p className="text-sm">No trades to display</p>
+                          <p className="text-xs mt-1">Complete trades to see equity curve</p>
+                        </div>
+                      </div>
+                    );
+                  }
+
+                  // Calculate equity curve data
+                  const sortedTrades = [...filteredTrades].sort((a, b) => 
+                    new Date(a.date || '').getTime() - new Date(b.date || '').getTime()
+                  );
+                  
+                  const selectedAccount = accounts?.find(acc => 
+                    selectedAccountIds.length === 1 ? selectedAccountIds.includes(acc.id) : false
+                  );
+                  const startingBalance = selectedAccount?.startingBalance || 100000;
+                  
+                  let runningBalance = startingBalance;
+                  const equityPoints = [{ x: 0, y: startingBalance }];
+                  
+                  sortedTrades.forEach((trade, index) => {
+                    runningBalance += (trade.pnl || 0);
+                    equityPoints.push({ x: index + 1, y: runningBalance });
+                  });
+
+                  const maxBalance = Math.max(...equityPoints.map(p => p.y));
+                  const minBalance = Math.min(...equityPoints.map(p => p.y));
+                  const range = maxBalance - minBalance;
+                  const padding = range * 0.1;
+
+                  return (
+                    <div className="h-full relative">
+                      <svg className="w-full h-full" viewBox={`0 0 400 192`}>
+                        {/* Grid lines */}
+                        <defs>
+                          <pattern id="grid" width="40" height="19.2" patternUnits="userSpaceOnUse">
+                            <path d="M 40 0 L 0 0 0 19.2" fill="none" stroke="#374151" strokeWidth="0.5" opacity="0.3"/>
+                          </pattern>
+                        </defs>
+                        <rect width="100%" height="100%" fill="url(#grid)" />
+                        
+                        {/* Equity curve line */}
+                        <polyline
+                          fill="none"
+                          stroke="#10b981"
+                          strokeWidth="2"
+                          points={equityPoints.map((point, index) => {
+                            const x = (index / (equityPoints.length - 1)) * 380 + 10;
+                            const y = 182 - ((point.y - minBalance + padding) / (range + 2 * padding)) * 172;
+                            return `${x},${y}`;
+                          }).join(' ')}
+                        />
+                        
+                        {/* Data points */}
+                        {equityPoints.map((point, index) => {
+                          const x = (index / (equityPoints.length - 1)) * 380 + 10;
+                          const y = 182 - ((point.y - minBalance + padding) / (range + 2 * padding)) * 172;
+                          return (
+                            <circle
+                              key={index}
+                              cx={x}
+                              cy={y}
+                              r="3"
+                              fill={point.y >= startingBalance ? "#10b981" : "#ef4444"}
+                              className="opacity-80 hover:opacity-100"
+                            />
+                          );
+                        })}
+                        
+                        {/* Y-axis labels */}
+                        <text x="5" y="15" className="fill-gray-400 text-xs" fontSize="10">
+                          {formatCurrency(maxBalance + padding)}
+                        </text>
+                        <text x="5" y="100" className="fill-gray-400 text-xs" fontSize="10">
+                          {formatCurrency((maxBalance + minBalance) / 2)}
+                        </text>
+                        <text x="5" y="185" className="fill-gray-400 text-xs" fontSize="10">
+                          {formatCurrency(minBalance - padding)}
+                        </text>
+                      </svg>
+                      
+                      {/* Current balance indicator */}
+                      <div className="absolute top-2 right-2 bg-black/60 rounded px-2 py-1">
+                        <div className="text-xs text-gray-400">Current Balance</div>
+                        <div className={`text-sm font-bold ${runningBalance >= startingBalance ? 'text-green-400' : 'text-red-400'}`}>
+                          {formatCurrency(runningBalance)}
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })()}
               </div>
             </div>
           </div>
