@@ -1,0 +1,598 @@
+import React, { useState, useMemo } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Progress } from "@/components/ui/progress";
+import { Textarea } from "@/components/ui/textarea";
+import { 
+  TrendingUp, 
+  TrendingDown, 
+  DollarSign, 
+  Target, 
+  Shield, 
+  Activity,
+  BarChart3,
+  Brain,
+  Users,
+  AlertTriangle,
+  BookOpen,
+  CreditCard,
+  LineChart,
+  Plus
+} from "lucide-react";
+
+const ReorganizedDashboard = () => {
+  // Add CSS styles for gradient
+  React.useEffect(() => {
+    const style = document.createElement('style');
+    style.textContent = `
+      .text-gradient-rainbow {
+        background: linear-gradient(135deg, #ffd700, #ffb347, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4, #ffeaa7);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+      .text-prop-gold { 
+        color: #ffd700; 
+      }
+    `;
+    document.head.appendChild(style);
+    
+    return () => {
+      document.head.removeChild(style);
+    };
+  }, []);
+
+  // Mock data - replace with your actual data
+  const portfolioData = {
+    netBalance: 27700.00,
+    totalPnL: 2700.00,
+    winRate: 75.00,
+    rFactor: 1.09,
+    profitFactor: 3.27,
+    avgWin: 323.96,
+    avgLoss: 296.88,
+    totalTrades: 16,
+    disciplineScore: 84
+  };
+
+  const accountData = {
+    challenge: 1,
+    funded: 0,
+    live: 0,
+    totalSpentOnAccounts: 90.00,
+    resetCost: 0.00,
+    activationCosts: 0.00,
+    totalSpent: 90.00, // totalSpentOnAccounts + resetCost + activationCosts
+    payouts: 0.00, // received payments from funded/live accounts
+    profitability: -90.00 // payouts - totalSpent
+  };
+
+  const recentTrades = [
+    { id: 1, symbol: 'ES', side: 'long', date: '2025-07-14', pnl: 25.00, shares: 1 },
+    { id: 2, symbol: 'ES', side: 'long', date: '2025-07-14', pnl: 25.00, shares: 1 },
+    { id: 3, symbol: 'ES', side: 'long', date: '2025-07-11', pnl: -1012.50, shares: 1 },
+    { id: 4, symbol: 'ES', side: 'long', date: '2025-07-11', pnl: 650.00, shares: 1 },
+    { id: 5, symbol: 'ES', side: 'long', date: '2025-07-11', pnl: 712.50, shares: 1 }
+  ];
+
+  // Section Header Component with consistent rainbow gradient styling
+  const SectionHeader = ({ icon: Icon, title, subtitle }) => (
+    <div className="flex items-center justify-between mb-6 border-b border-gray-700 pb-3">
+      <div>
+        <h2 className="text-xl font-bold text-gradient-rainbow flex items-center">
+          <Icon className="mr-3 h-5 w-5 text-prop-gold" />
+          {title}
+        </h2>
+        {subtitle && <p className="text-gray-400 text-sm mt-1">{subtitle}</p>}
+      </div>
+    </div>
+  );
+
+  // Widget Component
+  const Widget = ({ title, value, description, icon: Icon, color = "text-white", trend = null }) => (
+    <Card className="bg-gray-900/60 border-gray-700/50 hover:border-gray-600 transition-colors">
+      <CardContent className="p-6">
+        <div className="flex items-center justify-between">
+          <div className="flex-1">
+            <p className="text-gray-400 text-sm font-medium">{title}</p>
+            <p className={`text-2xl font-bold ${color} mt-1`}>{value}</p>
+            <p className="text-xs text-gray-500 mt-1">{description}</p>
+          </div>
+          <div className="bg-gray-800/60 p-3 rounded-xl">
+            <Icon className="h-6 w-6 text-gray-400" />
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+
+  return (
+    <div className="p-6 space-y-8 bg-gradient-to-br from-gray-900 via-black to-gray-900 min-h-screen">
+      
+      {/* 1. PERFORMANCE OVERVIEW */}
+      <section>
+        <SectionHeader 
+          icon={TrendingUp} 
+          title="Performance Overview" 
+          subtitle="Key trading metrics and portfolio performance"
+        />
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+          <Widget
+            title="Net Balance"
+            value={`${portfolioData.netBalance.toLocaleString()}`}
+            description="Starting balance + Total P&L"
+            icon={DollarSign}
+            color="text-emerald-400"
+          />
+          
+          <Widget
+            title="Total P&L"
+            value={`${portfolioData.totalPnL.toLocaleString()}`}
+            description="Net profit/loss"
+            icon={TrendingUp}
+            color="text-emerald-400"
+          />
+          
+          <Widget
+            title="Win Rate"
+            value={`${portfolioData.winRate}%`}
+            description="Winning trades percentage"
+            icon={Target}
+            color="text-emerald-400"
+          />
+          
+          <Widget
+            title="Total Trades"
+            value={portfolioData.totalTrades}
+            description="All executed trades"
+            icon={Activity}
+            color="text-white"
+          />
+
+          <Card className="bg-gray-900/60 border-gray-700/50 hover:border-gray-600 transition-colors">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div className="flex-1">
+                  <p className="text-gray-400 text-sm font-medium">Discipline Score</p>
+                  <p className="text-2xl font-bold text-emerald-400 mt-1">{portfolioData.disciplineScore}% A</p>
+                  <p className="text-xs text-gray-500 mt-1">Overall performance grade</p>
+                </div>
+                <div className="bg-gray-800/60 p-3 rounded-xl">
+                  <Brain className="h-6 w-6 text-gray-400" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Performance Ratios */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+          <Widget
+            title="R Factor"
+            value={portfolioData.rFactor}
+            description="Risk/Reward ratio"
+            icon={BarChart3}
+            color="text-blue-400"
+          />
+          
+          <Widget
+            title="Profit Factor"
+            value={portfolioData.profitFactor}
+            description="Gross profit / gross loss"
+            icon={TrendingUp}
+            color="text-blue-400"
+          />
+          
+          <Card className="bg-gray-900/60 border-gray-700/50">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div className="flex-1">
+                  <p className="text-gray-400 text-sm font-medium">Avg Win/Loss</p>
+                  <div className="flex items-center space-x-2 text-lg font-bold mt-1">
+                    <span className="text-emerald-400">${portfolioData.avgWin}</span>
+                    <span className="text-gray-400">/</span>
+                    <span className="text-red-400">${portfolioData.avgLoss}</span>
+                  </div>
+                  <p className="text-xs text-gray-500 mt-1">Win vs Loss ratio</p>
+                </div>
+                <div className="bg-gray-800/60 p-3 rounded-xl">
+                  <BarChart3 className="h-6 w-6 text-gray-400" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </section>
+
+      {/* 2. ACCOUNT MANAGEMENT */}
+      <section>
+        <SectionHeader 
+          icon={Users} 
+          title="Account Management" 
+          subtitle="Account status, discipline scores, and portfolio overview"
+        />
+        
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          
+          {/* Account Status */}
+          <Card className="bg-gray-900/60 border-gray-700/50">
+            <CardHeader>
+              <CardTitle className="text-gradient-rainbow flex items-center">
+                <Users className="mr-2 h-5 w-5 text-prop-gold" />
+                Account Status
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-gray-400">Challenge:</span>
+                  <Badge className="bg-yellow-600 text-white">{accountData.challenge}</Badge>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-gray-400">Funded:</span>
+                  <Badge className="bg-green-600 text-white">{accountData.funded}</Badge>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-gray-400">Live:</span>
+                  <Badge className="bg-blue-600 text-white">{accountData.live}</Badge>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Active Account Card */}
+          <Card className="bg-gray-900/60 border-gray-700/50">
+            <CardHeader>
+              <CardTitle className="text-gradient-rainbow flex items-center">
+                <Shield className="mr-2 h-5 w-5 text-prop-gold" />
+                Max Maserati
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="flex items-center justify-between mb-4">
+                <div className="bg-yellow-600 px-3 py-1 rounded-lg">
+                  <span className="text-white font-bold text-lg">88% B</span>
+                </div>
+                <Badge variant="outline" className="text-yellow-400 border-yellow-400">
+                  Challenge • TPT
+                </Badge>
+              </div>
+              <div className="space-y-2">
+                <div className="flex justify-between">
+                  <span className="text-gray-400 text-sm">Balance:</span>
+                  <span className="text-white font-medium">$27,700.00</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-400 text-sm">P&L:</span>
+                  <span className="text-emerald-400 font-medium">+$2,700.00</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-400 text-sm">Trades:</span>
+                  <span className="text-white">16 trades • 0 violations</span>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Portfolio Summary */}
+          <Card className="bg-gray-900/60 border-gray-700/50">
+            <CardHeader>
+              <CardTitle className="text-gradient-rainbow flex items-center">
+                <DollarSign className="mr-2 h-5 w-5 text-prop-gold" />
+                Portfolio Summary
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-400 text-sm">Total Value:</span>
+                  <span className="text-white font-bold">$27,700.00</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-400 text-sm">Total Return:</span>
+                  <span className="text-emerald-400 font-bold">$2,700.00</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-400 text-sm">ROI:</span>
+                  <span className="text-emerald-400 font-bold">+10.8%</span>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </section>
+
+      {/* 3. RISK MANAGEMENT */}
+      <section>
+        <SectionHeader 
+          icon={Shield} 
+          title="Risk Management" 
+          subtitle="Discipline analysis and risk monitoring"
+        />
+        
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          
+          {/* Discipline Score */}
+          <Card className="bg-gray-900/60 border-gray-700/50">
+            <CardHeader>
+              <CardTitle className="text-gradient-rainbow flex items-center">
+                <Brain className="mr-2 h-5 w-5 text-prop-gold" />
+                Discipline Score
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-center mb-6">
+                <div className="text-4xl font-bold text-emerald-400 mb-2">84% A</div>
+                <p className="text-gray-400">Overall Grade</p>
+              </div>
+              
+              <div className="space-y-4">
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-400">Risk Management:</span>
+                  <div className="flex items-center">
+                    <Progress value={45} className="w-20 h-2 mr-2" />
+                    <span className="text-orange-400 font-medium">45%</span>
+                  </div>
+                </div>
+                
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-400">Emotional Control:</span>
+                  <div className="flex items-center">
+                    <Progress value={18} className="w-20 h-2 mr-2" />
+                    <span className="text-red-400 font-medium">18%</span>
+                  </div>
+                </div>
+                
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-400">Consistency:</span>
+                  <div className="flex items-center">
+                    <Progress value={85} className="w-20 h-2 mr-2" />
+                    <span className="text-emerald-400 font-medium">85%</span>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Risk Alert */}
+          <Card className="bg-gray-900/60 border-gray-700/50">
+            <CardHeader>
+              <CardTitle className="text-gradient-rainbow flex items-center">
+                <AlertTriangle className="mr-2 h-5 w-5 text-prop-gold" />
+                Risk Alert
+              </CardTitle>
+              <p className="text-gray-400 text-sm">3 Most Critical Accounts</p>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                <div className="bg-gray-800/40 rounded-lg p-3">
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="text-white text-sm">Soya/CLIFF</span>
+                    <span className="text-red-400 font-bold">100.0%</span>
+                  </div>
+                  <Progress value={100} className="w-full h-2 bg-red-400" />
+                  <p className="text-xs text-gray-400 mt-1">$3,650.00 / $3,250.00 risk used</p>
+                </div>
+                
+                <div className="bg-gray-800/40 rounded-lg p-3">
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="text-white text-sm">Max Maserati</span>
+                    <span className="text-emerald-400 font-bold">0.0%</span>
+                  </div>
+                  <Progress value={0} className="w-full h-2" />
+                  <p className="text-xs text-gray-400 mt-1">/ $75.00 risk used</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </section>
+
+      {/* 4. TRADING ACTIVITY */}
+      <section>
+        <SectionHeader 
+          icon={Activity} 
+          title="Trading Activity" 
+          subtitle="Recent trades and performance analytics"
+        />
+        
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          
+          {/* Recent Trades - Exact replica of dashboard trades section */}
+          <Card className="bg-gray-900/60 border-gray-700/50">
+            <CardHeader>
+              <CardTitle className="text-gradient-rainbow flex items-center">
+                <Activity className="mr-2 h-5 w-5 text-prop-gold" />
+                Latest Trades
+              </CardTitle>
+              <p className="text-gray-400 text-sm">Most recent trading activity</p>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {recentTrades.map((trade) => (
+                  <div key={trade.id} className="flex items-center justify-between p-4 bg-gray-800/40 rounded-lg border border-gray-700/30">
+                    <div className="flex items-center">
+                      <div className={`w-10 h-10 rounded-lg flex items-center justify-center mr-4 ${
+                        trade.pnl > 0 ? 'bg-emerald-600' : trade.pnl < 0 ? 'bg-red-600' : 'bg-gray-600'
+                      }`}>
+                        {trade.pnl > 0 ? (
+                          <TrendingUp className="text-white h-5 w-5" />
+                        ) : trade.pnl < 0 ? (
+                          <TrendingDown className="text-white h-5 w-5" />
+                        ) : (
+                          <Target className="text-white h-5 w-5" />
+                        )}
+                      </div>
+                      <div>
+                        <p className="font-medium text-white">{trade.symbol}</p>
+                        <p className="text-sm text-gray-400">{trade.side} • {trade.date}</p>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <p className={`font-bold ${trade.pnl >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
+                        {trade.pnl >= 0 ? '+' : ''}${trade.pnl.toFixed(2)}
+                      </p>
+                      <p className="text-sm text-gray-400">{trade.shares} shares</p>
+                    </div>
+                  </div>
+                ))}
+                
+                {recentTrades.length === 0 && (
+                  <div className="text-center py-8">
+                    <p className="text-gray-400">No recent trading activity</p>
+                    <p className="text-gray-500 text-sm">Switch to an account with trades</p>
+                  </div>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Account Equity Curve */}
+          <Card className="bg-gray-900/60 border-gray-700/50">
+            <CardHeader>
+              <CardTitle className="text-gradient-rainbow flex items-center">
+                <LineChart className="mr-2 h-5 w-5 text-prop-gold" />
+                Account Equity Curve
+              </CardTitle>
+              <p className="text-gray-400 text-sm">Portfolio growth over time</p>
+            </CardHeader>
+            <CardContent>
+              <div className="h-48 flex items-center justify-center bg-gray-800/40 rounded-lg">
+                <p className="text-gray-400">Portfolio growth chart would go here</p>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </section>
+
+      {/* 5. INVESTMENT TRACKING */}
+      <section>
+        <SectionHeader 
+          icon={CreditCard} 
+          title="Investment Tracking" 
+          subtitle="Account costs, spending, payouts and ROI analysis"
+        />
+        
+        {/* First Row */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+          <Widget
+            title="Total Spent on Accounts"
+            value={`${accountData.totalSpentOnAccounts.toFixed(2)}`}
+            description="Purchase costs for accounts"
+            icon={DollarSign}
+            color="text-indigo-400"
+          />
+          
+          <Widget
+            title="Reset Cost"
+            value={`${accountData.resetCost.toFixed(2)}`}
+            description="Account reset fees"
+            icon={Shield}
+            color="text-red-400"
+          />
+          
+          <Widget
+            title="Activation Costs"
+            value={`${accountData.activationCosts.toFixed(2)}`}
+            description="Activation fees for accounts"
+            icon={Shield}
+            color="text-orange-400"
+          />
+        </div>
+
+        {/* Second Row */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <Widget
+            title="Total Spent"
+            value={`${accountData.totalSpent.toFixed(2)}`}
+            description="Accounts + Reset + Activation costs"
+            icon={TrendingDown}
+            color="text-red-400"
+          />
+          
+          <Widget
+            title="Payouts"
+            value={`${accountData.payouts.toFixed(2)}`}
+            description="Received payments from funded/live accounts"
+            icon={DollarSign}
+            color="text-emerald-400"
+          />
+          
+          <Widget
+            title="Profitability"
+            value={`${accountData.profitability.toFixed(2)}`}
+            description="Payouts minus total spending"
+            icon={TrendingUp}
+            color={accountData.profitability >= 0 ? "text-emerald-400" : "text-red-400"}
+          />
+        </div>
+
+        <div className="flex justify-end mt-4">
+          <Button className="bg-indigo-600 hover:bg-indigo-700 text-white">
+            <Plus className="mr-2 h-4 w-4" />
+            Add Spending/Payout
+          </Button>
+        </div>
+      </section>
+
+      {/* 6. DAILY TRADING JOURNAL - Exact replica */}
+      <section>
+        <SectionHeader 
+          icon={BookOpen} 
+          title="Daily Trading Journal" 
+          subtitle="Reflection and improvement planning"
+        />
+        
+        <Card className="bg-gray-900/60 border-gray-700/50">
+          <CardHeader>
+            <CardTitle className="text-gradient-rainbow flex items-center">
+              <Target className="mr-2 h-5 w-5 text-prop-gold" />
+              Daily Trading Journal
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="p-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+              <div>
+                <label className="block text-sm font-medium text-gray-400 mb-2">What went wrong today?</label>
+                <Textarea 
+                  className="bg-gray-800/60 border-gray-600 resize-none text-white" 
+                  rows={3} 
+                  placeholder="Reflect on mistakes and lessons learned..."
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-400 mb-2">What went right today?</label>
+                <Textarea 
+                  className="bg-gray-800/60 border-gray-600 resize-none text-white" 
+                  rows={3} 
+                  placeholder="Note successful strategies and decisions..."
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-400 mb-2">Tomorrow's improvement plan</label>
+                <Textarea 
+                  className="bg-gray-800/60 border-gray-600 resize-none text-white" 
+                  rows={3} 
+                  placeholder="Set goals for tomorrow's session..."
+                />
+              </div>
+            </div>
+            
+            <div className="flex justify-between items-center">
+              <Button variant="ghost" className="text-blue-400 hover:text-blue-300">
+                View Full Journal
+              </Button>
+              <Button className="bg-orange-600 hover:bg-orange-700">
+                Save Journal Entry
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </section>
+    </div>
+  );
+};
+
+export default ReorganizedDashboard;

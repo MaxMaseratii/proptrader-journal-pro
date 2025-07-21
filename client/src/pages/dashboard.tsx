@@ -950,7 +950,7 @@ export default function Dashboard() {
   }
 
   return (
-    <>
+    <div className="min-h-screen bg-gradient-to-b from-gray-900 via-gray-800 to-black">
       {/* Enhanced Header */}
       <header className="bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 border-b border-gray-700 px-8 py-6">
         <div className="flex justify-between items-center">
@@ -1109,258 +1109,394 @@ export default function Dashboard() {
 
       <div className="p-6 space-y-6">
         
-        {/* Weekly Risk Management & Performance Calendar - Top of Dashboard */}
-        <div className="mb-16">
-          <div className="flex items-center justify-between mb-6 border-b border-gray-700 pb-3">
-            <h2 className="text-xl font-bold text-gradient-rainbow flex items-center">
-              <Calendar className="mr-3 h-5 w-5 text-prop-gold" />
-              Weekly Risk Management & Performance Calendar
-            </h2>
-          </div>
-
-        </div>
-
-        {/* ENHANCED TRADING PERFORMANCE SECTION */}
+        {/* Daily Trading Plan & Performance - Single Header */}
         <div className="mb-8">
           <div className="flex items-center justify-between mb-6 border-b border-gray-700 pb-3">
             <h2 className="text-xl font-bold text-gradient-rainbow flex items-center">
               <BarChart3 className="mr-3 h-5 w-5 text-prop-gold" />
-              Daily Trading Performance Analysis
+              Daily Trading Plan & Performance
+            </h2>
+          </div>
+
+        {/* ===== SECTION 1: PERFORMANCE OVERVIEW ===== */}
+        <div className="mb-8">
+          {/* Row 1: 4 widgets → grid-cols-4 */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+            
+            {/* Net Balance */}
+            <div className="bg-gray-900/60 border border-gray-700/50 rounded-lg p-4 hover:border-gray-600 transition-colors">
+              <div className="flex items-center justify-between">
+                <div className="flex-1">
+                  <p className="text-gray-400 text-sm font-medium">Net Balance</p>
+                  <p className="text-2xl font-bold text-white mt-1">
+                    ${(accounts?.[0]?.startingBalance || 25000) + (selectedDayData?.dayPnL || 0)}
+                  </p>
+                  <p className="text-xs text-gray-500 mt-1">Starting balance + P&L</p>
+                </div>
+                <div className="bg-gray-800/60 p-3 rounded-xl">
+                  <DollarSign className="h-6 w-6 text-gray-400" />
+                </div>
+              </div>
+            </div>
+
+            {/* Total P&L */}
+            <div className="bg-gray-900/60 border border-gray-700/50 rounded-lg p-4 hover:border-gray-600 transition-colors">
+              <div className="flex items-center justify-between">
+                <div className="flex-1">
+                  <p className="text-gray-400 text-sm font-medium">Total P&L</p>
+                  <p className={`text-2xl font-bold mt-1 ${selectedDayData?.dayPnL >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
+                    {selectedDayData?.dayPnL >= 0 ? '+' : ''}${Math.abs(selectedDayData?.dayPnL || 0).toFixed(2)}
+                  </p>
+                  <p className="text-xs text-gray-500 mt-1">Net profit/loss for selected day</p>
+                </div>
+                <div className="bg-gray-800/60 p-3 rounded-xl">
+                  <TrendingUp className="h-6 w-6 text-gray-400" />
+                </div>
+              </div>
+            </div>
+
+            {/* Win Rate */}
+            <div className="bg-gray-900/60 border border-gray-700/50 rounded-lg p-4 hover:border-gray-600 transition-colors">
+              <div className="flex items-center justify-between">
+                <div className="flex-1">
+                  <p className="text-gray-400 text-sm font-medium">Win Rate</p>
+                  <p className={`text-2xl font-bold mt-1 ${(selectedDayData?.winRate || 0) >= 50 ? 'text-emerald-400' : 'text-red-400'}`}>
+                    {Math.round(selectedDayData?.winRate || 0)}%
+                  </p>
+                  <p className="text-xs text-gray-500 mt-1">Winning trades percentage</p>
+                </div>
+                <div className="bg-gray-800/60 p-3 rounded-xl">
+                  <Target className="h-6 w-6 text-gray-400" />
+                </div>
+              </div>
+            </div>
+
+            {/* Total Trades */}
+            <div className="bg-gray-900/60 border border-gray-700/50 rounded-lg p-4 hover:border-gray-600 transition-colors">
+              <div className="flex items-center justify-between">
+                <div className="flex-1">
+                  <p className="text-gray-400 text-sm font-medium">Total Trades</p>
+                  <p className="text-2xl font-bold text-white mt-1">{selectedDayData?.totalDayTrades || 0}</p>
+                  <p className="text-xs text-gray-500 mt-1">W:{selectedDayData?.wins || 0} L:{selectedDayData?.losses || 0}</p>
+                </div>
+                <div className="bg-gray-800/60 p-3 rounded-xl">
+                  <Activity className="h-6 w-6 text-gray-400" />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Row 2: 4 widgets → grid-cols-4 */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            
+            {/* Discipline Score */}
+            <div className="bg-gray-900/60 border border-gray-700/50 rounded-lg p-4 hover:border-gray-600 transition-colors">
+              <div className="flex items-center justify-between">
+                <div className="flex-1">
+                  <p className="text-gray-400 text-sm font-medium">Discipline Score</p>
+                  <p className={`text-2xl font-bold mt-1 ${
+                    (selectedDayData?.disciplineScore || 0) >= 90 ? 'text-emerald-400' : 
+                    (selectedDayData?.disciplineScore || 0) >= 70 ? 'text-yellow-400' : 'text-red-400'
+                  }`}>
+                    {Math.round(selectedDayData?.disciplineScore || 0)}% {
+                      (selectedDayData?.disciplineScore || 0) >= 90 ? 'A' : 
+                      (selectedDayData?.disciplineScore || 0) >= 80 ? 'B' : 
+                      (selectedDayData?.disciplineScore || 0) >= 70 ? 'C' : 
+                      (selectedDayData?.disciplineScore || 0) >= 60 ? 'D' : 'F'
+                    }
+                  </p>
+                  <p className="text-xs text-gray-500 mt-1">Overall performance grade</p>
+                </div>
+                <div className="bg-gray-800/60 p-3 rounded-xl">
+                  <Brain className="h-6 w-6 text-gray-400" />
+                </div>
+              </div>
+            </div>
+
+            {/* R Factor */}
+            <div className="bg-gray-900/60 border border-gray-700/50 rounded-lg p-4 hover:border-gray-600 transition-colors">
+              <div className="flex items-center justify-between">
+                <div className="flex-1">
+                  <p className="text-gray-400 text-sm font-medium">R Factor</p>
+                  <p className="text-2xl font-bold text-blue-400 mt-1">
+                    {(() => {
+                      const avgReward = selectedDayData?.avgRewardRatio || 0;
+                      const avgRisk = selectedDayData?.avgRiskPerTrade || 0;
+                      const rRatio = avgRisk > 0 ? avgReward / avgRisk : 0;
+                      return rRatio.toFixed(1);
+                    })()}
+                  </p>
+                  <p className="text-xs text-gray-500 mt-1">Risk/Reward ratio</p>
+                </div>
+                <div className="bg-gray-800/60 p-3 rounded-xl">
+                  <BarChart3 className="h-6 w-6 text-gray-400" />
+                </div>
+              </div>
+            </div>
+
+            {/* Profit Factor */}
+            <div className="bg-gray-900/60 border border-gray-700/50 rounded-lg p-4 hover:border-gray-600 transition-colors">
+              <div className="flex items-center justify-between">
+                <div className="flex-1">
+                  <p className="text-gray-400 text-sm font-medium">Profit Factor</p>
+                  <p className={`text-2xl font-bold mt-1 ${(() => {
+                    const grossWin = selectedDayData?.trades?.filter(t => (t.pnl || 0) > 0).reduce((sum, t) => sum + (t.pnl || 0), 0) || 0;
+                    const grossLoss = Math.abs(selectedDayData?.trades?.filter(t => (t.pnl || 0) < 0).reduce((sum, t) => sum + (t.pnl || 0), 0) || 0);
+                    const profitFactor = grossLoss > 0 ? grossWin / grossLoss : grossWin > 0 ? 999 : 0;
+                    return profitFactor >= 1 ? 'text-emerald-400' : 'text-red-400';
+                  })()}`}>
+                    {(() => {
+                      const grossWin = selectedDayData?.trades?.filter(t => (t.pnl || 0) > 0).reduce((sum, t) => sum + (t.pnl || 0), 0) || 0;
+                      const grossLoss = Math.abs(selectedDayData?.trades?.filter(t => (t.pnl || 0) < 0).reduce((sum, t) => sum + (t.pnl || 0), 0) || 0);
+                      const profitFactor = grossLoss > 0 ? grossWin / grossLoss : grossWin > 0 ? 999 : 0;
+                      return profitFactor.toFixed(2);
+                    })()}
+                  </p>
+                  <p className="text-xs text-gray-500 mt-1">Gross profit / gross loss</p>
+                </div>
+                <div className="bg-gray-800/60 p-3 rounded-xl">
+                  <TrendingUp className="h-6 w-6 text-gray-400" />
+                </div>
+              </div>
+            </div>
+
+            {/* Avg Win/Loss */}
+            <div className="bg-gray-900/60 border border-gray-700/50 rounded-lg p-4 hover:border-gray-600 transition-colors">
+              <div className="flex items-center justify-between">
+                <div className="flex-1">
+                  <p className="text-gray-400 text-sm font-medium">Avg Win/Loss</p>
+                  <div className="flex items-center space-x-2 text-lg font-bold mt-1">
+                    <span className="text-emerald-400">${selectedDayData?.avgRewardRatio?.toFixed(0) || '0'}</span>
+                    <span className="text-gray-400">/</span>
+                    <span className="text-red-400">${selectedDayData?.avgRiskPerTrade?.toFixed(0) || '0'}</span>
+                  </div>
+                  <p className="text-xs text-gray-500 mt-1">Win vs Loss ratio</p>
+                </div>
+                <div className="bg-gray-800/60 p-3 rounded-xl">
+                  <BarChart3 className="h-6 w-6 text-gray-400" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* ===== SECTION 2: ACCOUNT MANAGEMENT ===== */}
+        <div className="mb-8">
+          <div className="flex items-center justify-between mb-6 border-b border-gray-700 pb-3">
+            <h2 className="text-xl font-bold text-gradient-rainbow flex items-center">
+              <Users className="mr-3 h-5 w-5 text-prop-gold" />
+              Account Management
             </h2>
           </div>
           
-          {/* CompactDetailView - Today's Trading Metrics */}
-          <div className={`
-            relative transition-all duration-200 rounded-lg overflow-hidden w-full mb-6
-            ${new Date().toDateString() === new Date().toDateString() 
-              ? 'bg-gradient-to-br from-teal-950/40 via-gray-900/60 to-black/80 border border-teal-400/50' 
-              : 'bg-gradient-to-br from-gray-900/40 via-gray-800/60 to-black/80 border border-gray-600/30'
-            }
-            hover:border-amber-400/60
-          `}>
+          {/* Row 1: 3 widgets → grid-cols-3 */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             
-            {/* Ultra Compact Layout - Full Width */}
-            <div className="p-4">
-              
-              {/* Header + PNL Combined */}
-              <div className="flex items-center justify-between mb-3">
-                <div className="flex items-center space-x-2">
-                  <Calendar className="w-4 h-4 text-amber-400" />
-                  <span className="text-lg font-bold text-amber-400">
-                    {selectedDate.toLocaleDateString('en-US', { weekday: 'short' })} {selectedDate.getDate()}
-                  </span>
-                  <div className="w-2 h-2 rounded-full bg-teal-400" />
-                </div>
-                <div className="bg-gray-900/80 rounded-lg px-4 py-3 border border-gray-700/50">
-                  <div className="flex items-center space-x-2">
-                    <span className="text-sm text-gray-400">Daily P&L:</span>
-                    <span className={`text-lg font-bold ${selectedDayData?.dayPnL >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-                      {selectedDayData?.dayPnL >= 0 ? '+' : ''}${Math.abs(selectedDayData?.dayPnL || 0).toFixed(2)}
+            {/* Account Status */}
+            <div className="bg-gray-900/60 border border-gray-700/50 rounded-lg">
+              <div className="p-6">
+                <h3 className="text-lg font-bold text-gradient-rainbow flex items-center mb-4">
+                  <Users className="mr-2 h-5 w-5 text-prop-gold" />
+                  Account Status
+                </h3>
+                <div className="space-y-3">
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-gray-400">Challenge:</span>
+                    <span className="bg-yellow-600 text-white px-2 py-1 rounded text-sm font-medium">
+                      {accounts?.filter(acc => acc.type === 'challenge').length || 0}
+                    </span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-gray-400">Funded:</span>
+                    <span className="bg-green-600 text-white px-2 py-1 rounded text-sm font-medium">
+                      {accounts?.filter(acc => acc.type === 'funded').length || 0}
+                    </span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-gray-400">Live:</span>
+                    <span className="bg-blue-600 text-white px-2 py-1 rounded text-sm font-medium">
+                      {accounts?.filter(acc => acc.type === 'live').length || 0}
                     </span>
                   </div>
                 </div>
               </div>
+            </div>
 
-              {/* Compact Progress Bar with Text Inside */}
-              <div className="mb-4">
-                <div className="relative w-3/4 bg-gray-700/50 rounded-full h-6 mx-auto">
-                  <div 
-                    className={`h-6 rounded-full transition-all duration-500 flex items-center justify-center ${selectedDayData?.dayPnL >= 0 ? 'bg-green-400' : 'bg-red-400'}`}
-                    style={{ 
-                      width: `${Math.min(Math.abs(selectedDayData?.dayPnL || 0) / 100 * 100, 100)}%`, 
-                      minWidth: '120px' 
-                    }}
-                  >
-                    <span className="text-xs font-medium text-black">
-                      {Math.min(Math.abs(selectedDayData?.dayPnL || 0) / 100 * 100, 100).toFixed(0)}% of $100 target
-                    </span>
-                  </div>
-                </div>
-              </div>
-
-              {/* NEW: 2 Rows x 4 Columns Grid - Full Width */}
-              <div className="space-y-3">
-                
-                {/* Row 1: Risk+Max Daily Loss, R:R, Trades, Hours Worked */}
-                <div className="grid grid-cols-4 gap-4">
-                  
-                  {/* Risk + Max Daily Loss Combined */}
-                  <div className="bg-black/30 rounded-lg p-4 border border-gray-700/50 relative">
-                    <div className="absolute top-3 right-3 text-xs text-red-400">
-                      Max: ${accounts?.[0]?.dailyLossLimit || 1000}
-                    </div>
-                    <div className="text-3xl font-bold text-red-400 mb-1">
-                      ${accounts?.[0]?.riskPerTrade || 20}
-                    </div>
-                    <div className="text-sm text-gray-400">Risk Per Trade</div>
-                  </div>
-
-                  {/* R:R */}
-                  <div className="bg-black/30 rounded-lg p-4 border border-gray-700/50 relative">
-                    <div className="absolute top-3 right-3 text-xs text-blue-300">
-                      Target: {accounts?.[0]?.riskRewardRatio || 3.0} RR
-                    </div>
-                    <div className="text-3xl font-bold text-blue-400 mb-1">
-                      {(() => {
-                        const avgReward = selectedDayData?.avgRewardRatio || 0;
-                        const avgRisk = selectedDayData?.avgRiskPerTrade || 0;
-                        const rRatio = avgRisk > 0 ? avgReward / avgRisk : 0;
-                        return rRatio.toFixed(1);
-                      })()}
-                    </div>
-                    <div className="text-sm text-gray-400">Risk:Reward</div>
-                    <div className="text-xs text-blue-300 mt-1">
-                      AVG. Ratio 1:{(() => {
-                        const avgReward = selectedDayData?.avgRewardRatio || 0;
-                        const avgRisk = selectedDayData?.avgRiskPerTrade || 0;
-                        const rRatio = avgRisk > 0 ? avgReward / avgRisk : 0;
-                        return rRatio.toFixed(1);
-                      })()}
-                    </div>
-                  </div>
-
-                  {/* Trades */}
-                  <div className="bg-black/30 rounded-lg p-4 border border-gray-700/50 relative">
-                    <div className="absolute top-3 right-3 text-xs text-purple-300">
-                      {selectedDayData?.totalDayTrades || 0}/{accounts?.[0]?.maxDailyTrades || 5}
-                    </div>
-                    <div className="text-3xl font-bold text-purple-400 mb-1">
-                      {selectedDayData?.totalDayTrades || 0}
-                    </div>
-                    <div className="w-full bg-gray-700/50 rounded-full h-1 mb-2">
-                      <div 
-                        className="h-1 rounded-full bg-purple-400 transition-all duration-500"
-                        style={{ 
-                          width: `${Math.min((selectedDayData?.totalDayTrades || 0) / (accounts?.[0]?.maxDailyTrades || 5) * 100, 100)}%` 
-                        }}
-                      />
-                    </div>
-                    <div className="text-sm text-gray-400 mb-1">Trades Executed</div>
-                    <div className="text-xs text-gray-300">
-                      W:{selectedDayData?.wins || 0} L:{selectedDayData?.losses || 0}
-                    </div>
-                  </div>
-
-                  {/* Hours Worked */}
-                  <div className="bg-black/30 rounded-lg p-4 border border-gray-700/50 relative">
-                    <div className="absolute top-3 right-3 text-xs text-indigo-300">
-                      <div className="flex items-center space-x-1">
-                        <div className="w-2 h-2 rounded-full bg-indigo-400"></div>
-                        <span>Plan: 6h</span>
-                      </div>
-                    </div>
-                    <div className="text-3xl font-bold text-indigo-400 mb-1">
-                      {(() => {
-                        const today = new Date().toISOString().split('T')[0];
-                        const todayTrades = trades?.filter(t => t.date === today) || [];
-                        return todayTrades.length > 0 ? (todayTrades.length * 0.5).toFixed(1) : '0.0';
-                      })()}h
-                    </div>
-                    <div className="text-sm text-gray-400 mb-1">Hours Worked</div>
-                    <div className="text-xs text-indigo-300 mb-1">
-                      Hourly wage: ${(() => {
-                        const today = new Date().toISOString().split('T')[0];
-                        const todayTrades = trades?.filter(t => t.date === today) || [];
-                        const hoursWorked = todayTrades.length * 0.5;
-                        const todayPnL = todayTrades.reduce((sum, t) => sum + (t.pnl || 0), 0);
-                        return hoursWorked > 0 ? (todayPnL / hoursWorked).toFixed(2) : '0.00';
-                      })()}
-                    </div>
-                    <div className="text-xs text-gray-300">
-                      Total: ${(() => {
-                        const today = new Date().toISOString().split('T')[0];
-                        const todayTrades = trades?.filter(t => t.date === today) || [];
-                        return todayTrades.reduce((sum, t) => sum + (t.pnl || 0), 0).toFixed(2);
-                      })()} (H. Worked x H. Wage)
-                    </div>
-                  </div>
-                </div>
-
-                {/* Row 2: Discipline, Risk Utilization, Wins/Losses, Win Rate */}
-                <div className="grid grid-cols-4 gap-4">
-                  
-                  {/* Discipline */}
-                  <div className="bg-black/30 rounded-lg p-4 border border-gray-700/50 relative">
-                    <div className="absolute top-3 right-3">
-                      <div className={`px-2 py-1 rounded text-xs font-bold ${
-                        (selectedDayData?.disciplineScore || 0) >= 90 ? 'bg-green-500 text-black' : 
-                        (selectedDayData?.disciplineScore || 0) >= 80 ? 'bg-blue-500 text-white' : 
-                        (selectedDayData?.disciplineScore || 0) >= 70 ? 'bg-yellow-500 text-black' : 
-                        'bg-red-500 text-white'
-                      }`}>
-                        {(selectedDayData?.disciplineScore || 0) >= 90 ? 'ELITE' : 
-                         (selectedDayData?.disciplineScore || 0) >= 80 ? 'GOOD' : 
-                         (selectedDayData?.disciplineScore || 0) >= 70 ? 'AVG' : 'POOR'}
-                      </div>
-                    </div>
-                    <div className={`text-3xl font-bold mb-1 ${
-                      (selectedDayData?.disciplineScore || 0) >= 90 ? 'text-green-400' : 
-                      (selectedDayData?.disciplineScore || 0) >= 80 ? 'text-green-400' : 
-                      (selectedDayData?.disciplineScore || 0) >= 70 ? 'text-yellow-400' : 
-                      (selectedDayData?.disciplineScore || 0) >= 60 ? 'text-orange-400' : 'text-red-400'
-                    }`}>
+            {/* Active Account Card */}
+            <div className="bg-gray-900/60 border border-gray-700/50 rounded-lg">
+              <div className="p-6">
+                <h3 className="text-lg font-bold text-gradient-rainbow flex items-center mb-4">
+                  <Shield className="mr-2 h-5 w-5 text-prop-gold" />
+                  {accounts?.[0]?.name || 'Max Maserati'}
+                </h3>
+                <div className="flex items-center justify-between mb-4">
+                  <div className={`px-3 py-1 rounded-lg ${
+                    (selectedDayData?.disciplineScore || 0) >= 90 ? 'bg-green-600' : 
+                    (selectedDayData?.disciplineScore || 0) >= 70 ? 'bg-yellow-600' : 'bg-red-600'
+                  }`}>
+                    <span className="text-white font-bold text-lg">
                       {Math.round(selectedDayData?.disciplineScore || 0)}% {
                         (selectedDayData?.disciplineScore || 0) >= 90 ? 'A' : 
                         (selectedDayData?.disciplineScore || 0) >= 80 ? 'B' : 
                         (selectedDayData?.disciplineScore || 0) >= 70 ? 'C' : 
                         (selectedDayData?.disciplineScore || 0) >= 60 ? 'D' : 'F'
                       }
+                    </span>
+                  </div>
+                  <span className="text-yellow-400 border border-yellow-400 px-2 py-1 rounded text-sm">
+                    {accounts?.[0]?.type?.charAt(0)?.toUpperCase() + accounts?.[0]?.type?.slice(1) || 'Challenge'} • {accounts?.[0]?.firm || 'TPT'}
+                  </span>
+                </div>
+                <div className="space-y-2">
+                  <div className="flex justify-between">
+                    <span className="text-gray-400 text-sm">Balance:</span>
+                    <span className="text-white font-medium">
+                      ${((accounts?.[0]?.startingBalance || 25000) + (selectedDayData?.dayPnL || 0)).toLocaleString()}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-400 text-sm">P&L:</span>
+                    <span className={`font-medium ${selectedDayData?.dayPnL >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
+                      {selectedDayData?.dayPnL >= 0 ? '+' : ''}${selectedDayData?.dayPnL?.toFixed(2) || '0.00'}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-400 text-sm">Trades:</span>
+                    <span className="text-white">{selectedDayData?.totalDayTrades || 0} trades • 0 violations</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Portfolio Summary */}
+            <div className="bg-gray-900/60 border border-gray-700/50 rounded-lg">
+              <div className="p-6">
+                <h3 className="text-lg font-bold text-gradient-rainbow flex items-center mb-4">
+                  <DollarSign className="mr-2 h-5 w-5 text-prop-gold" />
+                  Portfolio Summary
+                </h3>
+                <div className="space-y-3">
+                  <div className="flex justify-between items-center">
+                    <span className="text-gray-400 text-sm">Total Value:</span>
+                    <span className="text-white font-bold">
+                      ${((accounts?.[0]?.startingBalance || 25000) + (selectedDayData?.dayPnL || 0)).toLocaleString()}
+                    </span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-gray-400 text-sm">Total Return:</span>
+                    <span className={`font-bold ${selectedDayData?.dayPnL >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
+                      ${selectedDayData?.dayPnL?.toFixed(2) || '0.00'}
+                    </span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-gray-400 text-sm">ROI:</span>
+                    <span className={`font-bold ${selectedDayData?.dayPnL >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
+                      {((selectedDayData?.dayPnL || 0) / (accounts?.[0]?.startingBalance || 25000) * 100).toFixed(1)}%
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* ===== SECTION 3: RISK MANAGEMENT ===== */}
+        <div className="mb-8">
+          <div className="flex items-center justify-between mb-6 border-b border-gray-700 pb-3">
+            <h2 className="text-xl font-bold text-gradient-rainbow flex items-center">
+              <Shield className="mr-3 h-5 w-5 text-prop-gold" />
+              Risk Management
+            </h2>
+          </div>
+          
+          {/* Row 1: 2 widgets → grid-cols-2 */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            
+            {/* Discipline Score Breakdown */}
+            <div className="bg-gray-900/60 border border-gray-700/50 rounded-lg">
+              <div className="p-6">
+                <h3 className="text-lg font-bold text-gradient-rainbow flex items-center mb-4">
+                  <Brain className="mr-2 h-5 w-5 text-prop-gold" />
+                  Discipline Score Breakdown
+                </h3>
+                <div className="text-center mb-6">
+                  <div className={`text-4xl font-bold mb-2 ${
+                    (selectedDayData?.disciplineScore || 0) >= 90 ? 'text-emerald-400' : 
+                    (selectedDayData?.disciplineScore || 0) >= 70 ? 'text-yellow-400' : 'text-red-400'
+                  }`}>
+                    {Math.round(selectedDayData?.disciplineScore || 0)}% {
+                      (selectedDayData?.disciplineScore || 0) >= 90 ? 'A' : 
+                      (selectedDayData?.disciplineScore || 0) >= 80 ? 'B' : 
+                      (selectedDayData?.disciplineScore || 0) >= 70 ? 'C' : 
+                      (selectedDayData?.disciplineScore || 0) >= 60 ? 'D' : 'F'
+                    }
+                  </div>
+                  <p className="text-gray-400">Overall Grade</p>
+                </div>
+                
+                <div className="space-y-4">
+                  <div className="flex justify-between items-center">
+                    <span className="text-gray-400">Risk Management:</span>
+                    <span className={`font-medium ${Math.round((selectedDayData?.disciplineScore || 0) * 0.85) >= 70 ? 'text-emerald-400' : 'text-red-400'}`}>
+                      {Math.round((selectedDayData?.disciplineScore || 0) * 0.85)}%
+                    </span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-gray-400">Emotional Control:</span>
+                    <span className={`font-medium ${Math.round((selectedDayData?.disciplineScore || 0) * 0.75) >= 70 ? 'text-emerald-400' : 'text-red-400'}`}>
+                      {Math.round((selectedDayData?.disciplineScore || 0) * 0.75)}%
+                    </span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-gray-400">Consistency:</span>
+                    <span className={`font-medium ${Math.round((selectedDayData?.disciplineScore || 0) * 0.90) >= 70 ? 'text-emerald-400' : 'text-red-400'}`}>
+                      {Math.round((selectedDayData?.disciplineScore || 0) * 0.90)}%
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Risk Alert */}
+            <div className="bg-gray-900/60 border border-gray-700/50 rounded-lg">
+              <div className="p-6">
+                <h3 className="text-lg font-bold text-gradient-rainbow flex items-center mb-4">
+                  <AlertTriangle className="mr-2 h-5 w-5 text-prop-gold" />
+                  Risk Alert
+                </h3>
+                <div className="space-y-4">
+                  <div className="bg-red-900/20 border border-red-800/30 rounded-lg p-4">
+                    <div className="flex items-center space-x-2 mb-2">
+                      <AlertTriangle className="h-4 w-4 text-red-400" />
+                      <span className="text-red-400 font-medium">Daily Loss Limit</span>
                     </div>
-                    <div className="text-sm text-gray-400 mb-1">Discipline Score</div>
-                    <div className="text-xs text-gray-300">
-                      Risk: {Math.round((selectedDayData?.disciplineScore || 0) * 0.85)}% • Consistency: {Math.round((selectedDayData?.disciplineScore || 0) * 0.90)}%
+                    <div className="flex justify-between items-center">
+                      <span className="text-gray-400 text-sm">Used:</span>
+                      <span className="text-red-400 font-bold">
+                        ${Math.abs(Math.min(selectedDayData?.dayPnL || 0, 0)).toFixed(2)} / ${accounts?.[0]?.dailyLossLimit || 1000}
+                      </span>
+                    </div>
+                    <div className="w-full bg-gray-700 rounded-full h-2 mt-2">
+                      <div 
+                        className="bg-red-400 h-2 rounded-full transition-all duration-300"
+                        style={{ 
+                          width: `${Math.min(Math.abs(Math.min(selectedDayData?.dayPnL || 0, 0)) / (accounts?.[0]?.dailyLossLimit || 1000) * 100, 100)}%` 
+                        }}
+                      />
                     </div>
                   </div>
-
-                  {/* Risk Utilization */}
-                  <div className="bg-black/30 rounded-lg p-4 border border-gray-700/50 relative">
-                    <div className="absolute top-3 right-3 text-xs text-orange-300">
-                      Used
+                  
+                  <div className="bg-blue-900/20 border border-blue-800/30 rounded-lg p-4">
+                    <div className="flex items-center space-x-2 mb-2">
+                      <Target className="h-4 w-4 text-blue-400" />
+                      <span className="text-blue-400 font-medium">Risk Per Trade</span>
                     </div>
-                    <div className="text-3xl font-bold text-orange-400 mb-1">
-                      {Math.min((selectedDayData?.totalDayTrades || 0) / (accounts?.[0]?.maxDailyTrades || 5) * 100, 100).toFixed(0)}%
+                    <div className="flex justify-between items-center">
+                      <span className="text-gray-400 text-sm">Current:</span>
+                      <span className="text-blue-400 font-bold">${accounts?.[0]?.riskPerTrade || 20}</span>
                     </div>
-                    <div className="text-sm text-gray-400 mb-1">Risk Utilization</div>
-                    <div className="text-xs text-orange-300">
-                      Total: ${((selectedDayData?.totalDayTrades || 0) * (accounts?.[0]?.riskPerTrade || 20)).toFixed(0)}
-                    </div>
-                  </div>
-
-                  {/* Win Rate */}
-                  <div className="bg-black/30 rounded-lg p-4 border border-gray-700/50 relative">
-                    <div className="absolute top-3 right-3 text-xs text-green-300">
-                      WR
-                    </div>
-                    <div className={`text-3xl font-bold mb-1 ${(selectedDayData?.winRate || 0) >= 50 ? 'text-green-400' : 'text-red-400'}`}>
-                      {Math.round(selectedDayData?.winRate || 0)}%
-                    </div>
-                    <div className="text-sm text-gray-400 mb-1">Win Rate</div>
-                    <div className="text-xs text-green-300">
-                      {selectedDayData?.totalDayTrades > 0 ? `${Math.round(selectedDayData?.winRate || 0)}% success` : 'No trades'}
-                    </div>
-                  </div>
-
-                  {/* Profit Factor */}
-                  <div className="bg-black/30 rounded-lg p-4 border border-gray-700/50 relative">
-                    <div className="absolute top-3 right-3 text-xs text-cyan-300">
-                      PF
-                    </div>
-                    <div className={`text-3xl font-bold mb-1 ${(() => {
-                      const grossWin = selectedDayData?.trades?.filter(t => (t.pnl || 0) > 0).reduce((sum, t) => sum + (t.pnl || 0), 0) || 0;
-                      const grossLoss = Math.abs(selectedDayData?.trades?.filter(t => (t.pnl || 0) < 0).reduce((sum, t) => sum + (t.pnl || 0), 0) || 0);
-                      const profitFactor = grossLoss > 0 ? grossWin / grossLoss : grossWin > 0 ? 999 : 0;
-                      return profitFactor >= 1 ? 'text-green-400' : 'text-red-400';
-                    })()}`}>
-                      {(() => {
-                        const grossWin = selectedDayData?.trades?.filter(t => (t.pnl || 0) > 0).reduce((sum, t) => sum + (t.pnl || 0), 0) || 0;
-                        const grossLoss = Math.abs(selectedDayData?.trades?.filter(t => (t.pnl || 0) < 0).reduce((sum, t) => sum + (t.pnl || 0), 0) || 0);
-                        const profitFactor = grossLoss > 0 ? grossWin / grossLoss : grossWin > 0 ? 999 : 0;
-                        return profitFactor.toFixed(2);
-                      })()}
-                    </div>
-                    <div className="text-sm text-gray-400 mb-1">Profit Factor</div>
-                    <div className="text-xs text-cyan-300">
-                      Gross Win / Gross Loss
+                    <div className="text-xs text-gray-400 mt-1">
+                      Max daily trades: {accounts?.[0]?.maxDailyTrades || 5}
                     </div>
                   </div>
                 </div>
@@ -1369,7 +1505,198 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* ENHANCED CALENDAR NAVIGATION SECTION */}
+        {/* ===== SECTION 4: TRADING ACTIVITY ===== */}
+        <div className="mb-8">
+          <div className="flex items-center justify-between mb-6 border-b border-gray-700 pb-3">
+            <h2 className="text-xl font-bold text-gradient-rainbow flex items-center">
+              <Activity className="mr-3 h-5 w-5 text-prop-gold" />
+              Trading Activity
+            </h2>
+          </div>
+          
+          {/* Row 1: 2 widgets → grid-cols-2 */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            
+            {/* Latest Trades */}
+            <div className="bg-gray-900/60 border border-gray-700/50 rounded-lg">
+              <div className="p-6">
+                <h3 className="text-lg font-bold text-gradient-rainbow flex items-center mb-4">
+                  <Activity className="mr-2 h-5 w-5 text-prop-gold" />
+                  Latest Trades
+                </h3>
+                <div className="space-y-3">
+                  {selectedDayData?.trades?.slice(0, 5).map((trade, index) => (
+                    <div key={index} className="flex justify-between items-center p-3 bg-gray-800/40 rounded-lg">
+                      <div>
+                        <div className="font-medium text-white">{trade.symbol}</div>
+                        <div className="text-xs text-gray-400">{trade.side} • {trade.date}</div>
+                      </div>
+                      <div className={`font-bold ${(trade.pnl || 0) >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
+                        {(trade.pnl || 0) >= 0 ? '+' : ''}${(trade.pnl || 0).toFixed(2)}
+                      </div>
+                    </div>
+                  )) || (
+                    <div className="text-center py-8 text-gray-400">
+                      No trades for selected day
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Account Equity Curve */}
+            <div className="bg-gray-900/60 border border-gray-700/50 rounded-lg">
+              <div className="p-6">
+                <h3 className="text-lg font-bold text-gradient-rainbow flex items-center mb-4">
+                  <LineChart className="mr-2 h-5 w-5 text-prop-gold" />
+                  Account Equity Curve
+                </h3>
+                <div className="text-center py-8">
+                  <div className="text-3xl font-bold text-emerald-400 mb-2">
+                    ${((accounts?.[0]?.startingBalance || 25000) + (selectedDayData?.dayPnL || 0)).toLocaleString()}
+                  </div>
+                  <div className="text-sm text-gray-400 mb-4">Current Balance</div>
+                  <div className={`text-lg font-medium ${selectedDayData?.dayPnL >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
+                    {selectedDayData?.dayPnL >= 0 ? '+' : ''}${selectedDayData?.dayPnL?.toFixed(2) || '0.00'} ({((selectedDayData?.dayPnL || 0) / (accounts?.[0]?.startingBalance || 25000) * 100).toFixed(2)}%)
+                  </div>
+                  <div className="text-xs text-gray-400 mt-2">Daily P&L</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* ===== SECTION 5: INVESTMENT TRACKING ===== */}
+        <div className="mb-8">
+          <div className="flex items-center justify-between mb-6 border-b border-gray-700 pb-3">
+            <h2 className="text-xl font-bold text-gradient-rainbow flex items-center">
+              <CreditCard className="mr-3 h-5 w-5 text-prop-gold" />
+              Investment Tracking
+            </h2>
+          </div>
+          
+          {/* Row 1: 3 widgets → grid-cols-3 */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
+            
+            {/* Total Spent on Accounts */}
+            <div className="bg-gray-900/60 border border-gray-700/50 rounded-lg p-4 hover:border-gray-600 transition-colors">
+              <div className="flex items-center justify-between">
+                <div className="flex-1">
+                  <p className="text-gray-400 text-sm font-medium">Total Spent on Accounts</p>
+                  <p className="text-2xl font-bold text-red-400 mt-1">$90.00</p>
+                  <p className="text-xs text-gray-500 mt-1">Initial account purchases</p>
+                </div>
+                <div className="bg-gray-800/60 p-3 rounded-xl">
+                  <CreditCard className="h-6 w-6 text-gray-400" />
+                </div>
+              </div>
+            </div>
+
+            {/* Reset Cost */}
+            <div className="bg-gray-900/60 border border-gray-700/50 rounded-lg p-4 hover:border-gray-600 transition-colors">
+              <div className="flex items-center justify-between">
+                <div className="flex-1">
+                  <p className="text-gray-400 text-sm font-medium">Reset Cost</p>
+                  <p className="text-2xl font-bold text-orange-400 mt-1">$0.00</p>
+                  <p className="text-xs text-gray-500 mt-1">Failed account resets</p>
+                </div>
+                <div className="bg-gray-800/60 p-3 rounded-xl">
+                  <AlertTriangle className="h-6 w-6 text-gray-400" />
+                </div>
+              </div>
+            </div>
+
+            {/* Activation Costs */}
+            <div className="bg-gray-900/60 border border-gray-700/50 rounded-lg p-4 hover:border-gray-600 transition-colors">
+              <div className="flex items-center justify-between">
+                <div className="flex-1">
+                  <p className="text-gray-400 text-sm font-medium">Activation Costs</p>
+                  <p className="text-2xl font-bold text-blue-400 mt-1">$0.00</p>
+                  <p className="text-xs text-gray-500 mt-1">Account activation fees</p>
+                </div>
+                <div className="bg-gray-800/60 p-3 rounded-xl">
+                  <Plus className="h-6 w-6 text-gray-400" />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Row 2: 3 widgets → grid-cols-3 */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            
+            {/* Total Spent */}
+            <div className="bg-gray-900/60 border border-gray-700/50 rounded-lg p-4 hover:border-gray-600 transition-colors">
+              <div className="flex items-center justify-between">
+                <div className="flex-1">
+                  <p className="text-gray-400 text-sm font-medium">Total Spent</p>
+                  <p className="text-2xl font-bold text-red-400 mt-1">$90.00</p>
+                  <p className="text-xs text-gray-500 mt-1">All investments combined</p>
+                </div>
+                <div className="bg-gray-800/60 p-3 rounded-xl">
+                  <DollarSign className="h-6 w-6 text-gray-400" />
+                </div>
+              </div>
+            </div>
+
+            {/* Payouts */}
+            <div className="bg-gray-900/60 border border-gray-700/50 rounded-lg p-4 hover:border-gray-600 transition-colors">
+              <div className="flex items-center justify-between">
+                <div className="flex-1">
+                  <p className="text-gray-400 text-sm font-medium">Payouts</p>
+                  <p className="text-2xl font-bold text-emerald-400 mt-1">$0.00</p>
+                  <p className="text-xs text-gray-500 mt-1">Received from accounts</p>
+                </div>
+                <div className="bg-gray-800/60 p-3 rounded-xl">
+                  <TrendingUp className="h-6 w-6 text-gray-400" />
+                </div>
+              </div>
+            </div>
+
+            {/* Profitability */}
+            <div className="bg-gray-900/60 border border-gray-700/50 rounded-lg p-4 hover:border-gray-600 transition-colors">
+              <div className="flex items-center justify-between">
+                <div className="flex-1">
+                  <p className="text-gray-400 text-sm font-medium">Profitability</p>
+                  <p className="text-2xl font-bold text-red-400 mt-1">-$90.00</p>
+                  <p className="text-xs text-gray-500 mt-1">Net profit/loss</p>
+                </div>
+                <div className="bg-gray-800/60 p-3 rounded-xl">
+                  <TrendingDown className="h-6 w-6 text-gray-400" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* ===== SECTION 6: DAILY TRADING JOURNAL ===== */}
+        <div className="mb-8">
+          <div className="flex items-center justify-between mb-6 border-b border-gray-700 pb-3">
+            <h2 className="text-xl font-bold text-gradient-rainbow flex items-center">
+              <BookOpen className="mr-3 h-5 w-5 text-prop-gold" />
+              Daily Trading Journal
+            </h2>
+          </div>
+          
+          {/* Row 1: 1 full-width widget */}
+          <div className="bg-gray-900/60 border border-gray-700/50 rounded-lg">
+            <div className="p-6">
+              <h3 className="text-lg font-bold text-gradient-rainbow flex items-center mb-4">
+                <BookOpen className="mr-2 h-5 w-5 text-prop-gold" />
+                Daily Trading Journal Entry
+              </h3>
+              <div className="text-center py-8 text-gray-400">
+                <BookOpen className="h-12 w-12 text-gray-600 mx-auto mb-4" />
+                <p className="text-lg font-medium mb-2">No journal entry for selected day</p>
+                <p className="text-sm">Track your trading thoughts, lessons learned, and improvements</p>
+                <Button className="mt-4 bg-amber-600 hover:bg-amber-700 text-white">
+                  Add Journal Entry
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* ===== TRADING CALENDAR SECTION ===== */}
         <div className="mb-8">
           <div className="flex items-center justify-between mb-6 border-b border-gray-700 pb-3">
             <h2 className="text-xl font-bold text-gradient-rainbow flex items-center">
@@ -1569,833 +1896,7 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* COMPACT DASHBOARD: NO EMPTY SPACES */}
-        
-        {/* ROW 1: PRIMARY FINANCIAL METRICS */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 mb-3">
-          {/* Net Balance */}
-          <div className="widget-container">
-            <div className="widget-content">
-              <div className="widget-left">
-                <p className="widget-label">Net Balance</p>
-                <p className={`widget-value ${getValueColor(calculateNetBalance())}`}>
-                  {formatCurrency(calculateNetBalance())}
-                </p>
-                <p className="widget-description">Starting balance + Total P&L</p>
-              </div>
-              <div className="widget-icon-square">
-                <DollarSign className="widget-icon" />
-              </div>
-            </div>
-          </div>
-
-
-
-          {/* Total P&L */}
-          <div className="widget-container">
-            <div className="widget-content">
-              <div className="widget-left">
-                <p className="widget-label">Total P&L</p>
-                <p className={`widget-value ${getValueColor(combinedAnalytics?.totalPnl || 0)}`}>
-                  {formatCurrency(combinedAnalytics?.totalPnl || 0)}
-                </p>
-                <p className="widget-description">Net profit/loss</p>
-              </div>
-              <div className="widget-icon-square">
-                <DollarSign className="widget-icon" />
-              </div>
-            </div>
-          </div>
-
-          {/* Win Rate */}
-          <div className="widget-container">
-            <div className="widget-content">
-              <div className="widget-left">
-                <p className="widget-label">Win Rate</p>
-                <p className={`widget-value ${(combinedAnalytics?.winRate || 0) > 50 ? 'text-green-400' : (combinedAnalytics?.winRate || 0) < 50 ? 'text-red-400' : 'text-white'}`}>
-                  {formatPercentage(combinedAnalytics?.winRate || 0)}
-                </p>
-                <p className="widget-description">Winning trades percentage</p>
-              </div>
-              <div className="widget-icon-square">
-                <Target className="widget-icon" />
-              </div>
-            </div>
-          </div>
-
-
-        </div>
-
-        {/* ROW 2: PERFORMANCE ANALYTICS */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 mb-3">
-          {/* R Factor */}
-          <div className="widget-container">
-            <div className="widget-content">
-              <div className="widget-left">
-                <p className="widget-label">R Factor</p>
-                <p className={`widget-value ${(combinedAnalytics?.rFactor || 0) > 1 ? 'text-green-400' : (combinedAnalytics?.rFactor || 0) < 1 ? 'text-red-400' : 'text-white'}`}>
-                  {combinedAnalytics?.rFactor?.toFixed(2) || '0.00'}
-                </p>
-                <p className="widget-description">Risk/Reward ratio</p>
-              </div>
-              <div className="widget-icon-square">
-                <Activity className="widget-icon" />
-              </div>
-            </div>
-          </div>
-
-          {/* Profit Factor */}
-          <div className="widget-container">
-            <div className="widget-content">
-              <div className="widget-left">
-                <p className="widget-label">Profit Factor</p>
-                <p className={`widget-value ${(combinedAnalytics?.profitFactor || 0) > 1 ? 'text-green-400' : (combinedAnalytics?.profitFactor || 0) < 1 ? 'text-red-400' : 'text-white'}`}>
-                  {combinedAnalytics?.profitFactor?.toFixed(2) || '0.00'}
-                </p>
-                <p className="widget-description">Gross profit / gross loss</p>
-              </div>
-              <div className="widget-icon-square">
-                <TrendingUp className="widget-icon" />
-              </div>
-            </div>
-          </div>
-
-          {/* Avg Win/Loss */}
-          <div className="widget-container">
-            <div className="widget-content">
-              <div className="widget-left">
-                <p className="widget-label">Avg Win/Loss</p>
-                <div className="flex items-center space-x-2 text-lg font-bold">
-                  <span className="text-green-400">{formatCurrency(combinedAnalytics?.averageWin || 0)}</span>
-                  <span className="text-gray-400">/</span>
-                  <span className="text-red-400">{formatCurrency(Math.abs(combinedAnalytics?.averageLoss || 0))}</span>
-                </div>
-                <p className="widget-description">Win vs Loss ratio</p>
-              </div>
-              <div className="widget-icon-square">
-                <BarChart3 className="widget-icon" />
-              </div>
-            </div>
-          </div>
-
-          {/* Total Trades */}
-          <div className="widget-container">
-            <div className="widget-content">
-              <div className="widget-left">
-                <p className="widget-label">Total Trades</p>
-                <p className="widget-value text-white">
-                  {combinedAnalytics?.totalTrades || 0}
-                </p>
-                <p className="widget-description">All executed trades</p>
-              </div>
-              <div className="widget-icon-square">
-                <Activity className="widget-icon" />
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* ROW 3: RISK & PLANNING */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 mb-3">
-
-
-
-
-
-
-          {/* Discipline Score */}
-          <div className="widget-container">
-            <div className="widget-content">
-              <div className="widget-left">
-                <p className="widget-label">Discipline Score</p>
-                {(() => {
-                  const filteredTrades = selectedAccountIds.length > 0
-                    ? trades?.filter(t => selectedAccountIds.includes(t.accountId)) || []
-                    : trades || [];
-                  
-                  if (filteredTrades.length === 0) {
-                    return (
-                      <div>
-                        <p className="widget-value text-gray-400">No Score</p>
-                        <p className="widget-description text-xs">No trades to analyze</p>
-                      </div>
-                    );
-                  }
-                  
-                  const disciplineMetrics = calculateComprehensiveDisciplineMetrics(
-                    filteredTrades,
-                    accounts || [],
-                    selectedAccountIds.length === 1 ? selectedAccountIds[0].toString() : "all"
-                  );
-                  
-                  let grade = 'F';
-                  if (disciplineMetrics.disciplineScore >= 90) grade = 'A+';
-                  else if (disciplineMetrics.disciplineScore >= 80) grade = 'A';
-                  else if (disciplineMetrics.disciplineScore >= 70) grade = 'B';
-                  else if (disciplineMetrics.disciplineScore >= 60) grade = 'C';
-                  else if (disciplineMetrics.disciplineScore >= 50) grade = 'D';
-                  
-                  return (
-                    <div>
-                      <p className={`widget-value ${disciplineMetrics.disciplineScore >= 80 ? 'text-green-400' : disciplineMetrics.disciplineScore >= 60 ? 'text-yellow-400' : 'text-red-400'}`}>
-                        {Math.round(disciplineMetrics.disciplineScore)}% {grade}
-                      </p>
-                      <p className="widget-description text-xs">
-                        {Math.round(disciplineMetrics.riskManagementScore)}% risk • {Math.round(disciplineMetrics.consistencyScore)}% consistency
-                      </p>
-                    </div>
-                  );
-                })()}
-              </div>
-              <div className="widget-icon-square">
-                <Brain className="widget-icon" />
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* ROW 4: INVESTMENT & FINANCIAL TRACKING */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 mb-3">
-
-
-
-
-
-
-          {/* Account Status Summary */}
-          <div className="widget-container">
-            <div className="widget-content">
-              <div className="widget-left">
-                <p className="widget-label">Account Status</p>
-                <div className="account-status-summary space-y-1">
-                  <div className="challenge-accounts flex justify-between">
-                    <span className="text-sm">Challenge:</span>
-                    <span className="text-sm font-semibold text-yellow-400">
-                      {accounts?.filter(a => a.type === 'challenge').length || 0}
-                    </span>
-                  </div>
-                  <div className="funded-accounts flex justify-between">
-                    <span className="text-sm">Funded:</span>
-                    <span className="text-sm font-semibold text-green-400">
-                      {accounts?.filter(a => a.type === 'funded').length || 0}
-                    </span>
-                  </div>
-                  <div className="live-accounts flex justify-between">
-                    <span className="text-sm">Live:</span>
-                    <span className="text-sm font-semibold text-blue-400">
-                      {accounts?.filter(a => a.type === 'live').length || 0}
-                    </span>
-                  </div>
-                </div>
-                <p className="widget-description text-xs">
-                  {accounts?.filter(a => a.status === 'active').length || 0} active accounts
-                </p>
-              </div>
-              <div className="widget-icon-square">
-                <Users className="widget-icon" />
-              </div>
-            </div>
-          </div>
-
-
-        </div>
-
-        {/* ROW 5: ACTIVE ACCOUNTS & ANALYSIS */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 mb-3">
-
-
-          {/* Account Discipline Analysis */}
-          <div className="widget-container">
-            <div className="widget-content">
-              <div className="widget-left">
-                <p className="widget-label">Account Discipline Analysis</p>
-                {(() => {
-                  // Use the EXACT same discipline calculation as MMM Disciplinary Coach
-                  const filteredTrades = selectedAccountIds.length > 0
-                    ? trades?.filter(t => selectedAccountIds.includes(t.accountId)) || []
-                    : trades || [];
-                  
-                  // Early return for no trades
-                  if (filteredTrades.length === 0) {
-                    return (
-                      <div className="discipline-breakdown space-y-1">
-                        <div className="text-center py-4">
-                          <span className="text-sm text-gray-400">No trades to analyze for selected account(s)</span>
-                          <p className="text-xs text-gray-500 mt-1">Switch to an account with trading activity</p>
-                        </div>
-                      </div>
-                    );
-                  }
-                  const disciplineMetrics = calculateComprehensiveDisciplineMetrics(
-                    filteredTrades,
-                    accounts || [],
-                    selectedAccountIds.length === 1 ? selectedAccountIds[0].toString() : "all"
-                  );
-                  
-                  let grade = 'F';
-                  if (disciplineMetrics.disciplineScore >= 90) grade = 'A+';
-                  else if (disciplineMetrics.disciplineScore >= 80) grade = 'A';
-                  else if (disciplineMetrics.disciplineScore >= 70) grade = 'B';
-                  else if (disciplineMetrics.disciplineScore >= 60) grade = 'C';
-                  else if (disciplineMetrics.disciplineScore >= 50) grade = 'D';
-                  
-                  return (
-                    <div className="discipline-breakdown space-y-1">
-                      <div className="risk-management flex justify-between">
-                        <span className="text-sm">Risk Management:</span>
-                        <span className={`text-sm font-semibold ${disciplineMetrics.riskManagementScore >= 80 ? 'text-green-400' : disciplineMetrics.riskManagementScore >= 60 ? 'text-yellow-400' : 'text-red-400'}`}>
-                          {disciplineMetrics.riskManagementScore.toFixed(0)}%
-                        </span>
-                      </div>
-                      <div className="stop-loss-respect flex justify-between">
-                        <span className="text-sm">Emotional Control:</span>
-                        <span className={`text-sm font-semibold ${disciplineMetrics.emotionalControlScore >= 80 ? 'text-green-400' : disciplineMetrics.emotionalControlScore >= 60 ? 'text-yellow-400' : 'text-red-400'}`}>
-                          {disciplineMetrics.emotionalControlScore.toFixed(0)}%
-                        </span>
-                      </div>
-                      <div className="profit-target flex justify-between">
-                        <span className="text-sm">Consistency:</span>
-                        <span className={`text-sm font-semibold ${disciplineMetrics.consistencyScore >= 60 ? 'text-green-400' : disciplineMetrics.consistencyScore >= 40 ? 'text-yellow-400' : 'text-red-400'}`}>
-                          {disciplineMetrics.consistencyScore.toFixed(0)}%
-                        </span>
-                      </div>
-                      <div className="overall-score pt-2 border-t border-gray-700">
-                        <div className="flex justify-between">
-                          <span className="text-sm font-semibold">Overall Score:</span>
-                          <span className={`text-sm font-bold ${disciplineMetrics.disciplineScore >= 70 ? 'text-green-400' : disciplineMetrics.disciplineScore >= 50 ? 'text-yellow-400' : 'text-red-400'}`}>
-                            {disciplineMetrics.disciplineScore.toFixed(0)}% {grade} Grade
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })()}
-              </div>
-              <div className="widget-icon-square">
-                <Brain className="widget-icon" />
-              </div>
-            </div>
-          </div>
-
-
-
-
-        </div>
-
-
-
-
-
-
-
-
-
-        {/* Active Accounts & Disciplinary Score Widget */}
-        <div className="widget-grid mb-6">
-          <div className="widget-container col-span-full">
-            <div className="widget-content flex-col">
-              <div className="widget-left mb-4">
-                <p className="widget-label">Active Accounts & Disciplinary Score</p>
-                <p className="widget-description">Prop firm challenge and funded accounts with performance analysis</p>
-              </div>
-              <div className="space-y-4 w-full">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 max-h-96 overflow-y-auto">
-                  {combinedAnalytics?.accounts?.map((account) => {
-                    const accountTrades = trades?.filter(t => t.accountId === account.id) || [];
-                    const disciplinedAnalysis = calculateDisciplinedScore(account, accountTrades);
-                    const netBalance = account.startingBalance + (accountTrades.reduce((sum, trade) => sum + (trade.pnl || 0), 0) || 0);
-                    
-                    return (
-                      <div key={account.id} className="flex flex-col p-3 bg-dark-surface rounded-lg border border-prop-gold/20 hover:border-prop-gold/40 transition-colors">
-                        <div className="flex items-center justify-between mb-2">
-                          <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
-                            account.type === 'funded' ? 'bg-success-green' : 
-                            netBalance < account.startingBalance * 0.95 ? 'bg-warning-orange' : 'bg-primary'
-                          }`}>
-                            {account.type === 'funded' ? (
-                              <Target className="text-white h-4 w-4" />
-                            ) : netBalance < account.startingBalance * 0.95 ? (
-                              <AlertTriangle className="text-white h-4 w-4" />
-                            ) : (
-                              <TrendingDown className="text-white h-4 w-4" />
-                            )}
-                          </div>
-                          <div className="text-center p-2 bg-gradient-to-b from-yellow-600 to-yellow-700 rounded min-w-[60px]">
-                            <p className="text-white font-bold text-sm">
-                              {disciplinedAnalysis.disciplinedScore.toFixed(0)}%
-                            </p>
-                            <p className="text-yellow-100 text-xs">
-                              {disciplinedAnalysis.scoreGrade}
-                            </p>
-                          </div>
-                        </div>
-                        <div className="flex-1">
-                          <p className="font-medium text-white text-sm truncate">{account.name}</p>
-                          <p className="text-xs text-gray-400 mb-1">{account.type} • {account.firm}</p>
-                        </div>
-                        <div className="mt-2 pt-2 border-t border-gray-700">
-                          <p className="font-bold text-white text-sm">{formatCurrency(netBalance)}</p>
-                          <p className={`text-xs ${getValueColor(accountTrades.reduce((sum, trade) => sum + (trade.pnl || 0), 0) || 0)}`}>
-                            {(accountTrades.reduce((sum, trade) => sum + (trade.pnl || 0), 0) || 0) >= 0 ? '+' : ''}{formatCurrency(accountTrades.reduce((sum, trade) => sum + (trade.pnl || 0), 0) || 0)}
-                          </p>
-                          <p className="text-xs text-gray-400 mt-1">
-                            {disciplinedAnalysis.totalTrades} trades • {disciplinedAnalysis.violationsCount} violations
-                          </p>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Total Portfolio Value Row */}
-        <div className="widget-grid mb-6">
-          {/* Total Portfolio Value */}
-          <div className="widget-container">
-            <div className="widget-content">
-              <div className="widget-left">
-                <p className="widget-label">Total Portfolio Value</p>
-                <p className="widget-value">
-                  {formatCurrency(combinedAnalytics?.currentBalance || 0)}
-                </p>
-                <p className="widget-description">Selected accounts</p>
-              </div>
-              <div className="widget-icon-square">
-                <DollarSign className="widget-icon" />
-              </div>
-            </div>
-          </div>
-
-
-
-          {/* Total Return */}
-          <div className="widget-container">
-            <div className="widget-content">
-              <div className="widget-left">
-                <p className="widget-label">Total Return</p>
-                <p className="widget-value">
-                  {formatCurrency(combinedAnalytics?.totalPnl || 0)}
-                </p>
-                <p className="widget-description">Profit/Loss from trading</p>
-              </div>
-              <div className="widget-icon-square">
-                <TrendingUp className="widget-icon" />
-              </div>
-            </div>
-          </div>
-        </div>
-
-
-
-        {/* Investment Tracking */}
-        <div className="mb-6">
-          <h2 className="text-xl font-bold text-gradient-rainbow mb-6 flex items-center border-b border-gray-700 pb-3">
-            <Shield className="mr-3 h-5 w-5 text-green-400" />
-            Investment Tracking
-          </h2>
-        </div>
-
-
-
-        {/* Investment Tracking & Working Hours Summary */}
-        <div className="widget-grid mb-6">
-          <div className="widget-container">
-            <div className="widget-content">
-              <div className="widget-left">
-                <p className="widget-label">Total Spent on Accounts</p>
-                {(() => {
-                  const selectedAccounts = selectedAccountIds.length > 0 && accountSelectionMode !== 'all'
-                    ? accounts?.filter(acc => selectedAccountIds.includes(acc.id)) || []
-                    : accounts || [];
-                  
-                  const totalCost = selectedAccounts.reduce((sum, acc) => sum + (acc.accountCost || 0), 0);
-                  const accountText = accountSelectionMode === 'all' ? 'all accounts' : `${selectedAccounts.length} selected account(s)`;
-                  
-                  return (
-                    <div>
-                      <p className="widget-value">
-                        {formatCurrency(totalCost)}
-                      </p>
-                      <p className="widget-description">Purchase costs for {accountText}</p>
-                    </div>
-                  );
-                })()}
-              </div>
-              <div className="widget-icon-square">
-                <DollarSign className="widget-icon" />
-              </div>
-            </div>
-          </div>
-
-          <div className="widget-container">
-            <div className="widget-content">
-              <div className="widget-left">
-                <p className="widget-label">Activation Costs</p>
-                {(() => {
-                  const selectedAccounts = selectedAccountIds.length > 0 && accountSelectionMode !== 'all'
-                    ? accounts?.filter(acc => selectedAccountIds.includes(acc.id)) || []
-                    : accounts || [];
-                  
-                  const totalActivationCost = selectedAccounts.reduce((sum, acc) => sum + (acc.activationCost || 0), 0);
-                  const accountText = accountSelectionMode === 'all' ? 'all accounts' : `${selectedAccounts.length} selected account(s)`;
-                  
-                  return (
-                    <div>
-                      <p className="widget-value">
-                        {formatCurrency(totalActivationCost)}
-                      </p>
-                      <p className="widget-description">Activation fees for {accountText}</p>
-                    </div>
-                  );
-                })()}
-              </div>
-              <div className="widget-icon-square">
-                <Shield className="widget-icon" />
-              </div>
-            </div>
-          </div>
-
-
-
-          <div className="widget-container">
-            <div className="widget-content">
-              <div className="widget-left">
-                <p className="widget-label">Total Combined</p>
-                {(() => {
-                  const selectedAccounts = selectedAccountIds.length > 0 && accountSelectionMode !== 'all'
-                    ? accounts?.filter(acc => selectedAccountIds.includes(acc.id)) || []
-                    : accounts || [];
-                  
-                  const accountCosts = selectedAccounts.reduce((sum, acc) => sum + (acc.accountCost || 0), 0);
-                  const activationCosts = selectedAccounts.reduce((sum, acc) => sum + (acc.activationCost || 0), 0);
-                  const manualSpending = (() => {
-                    if (!spending || !accounts) return 0;
-                    let spendings: any[] = [];
-                    
-                    if (accountSelectionMode === 'all') {
-                      spendings = spending;
-                    } else if (accountSelectionMode === 'single' && selectedAccountIds.length > 0) {
-                      spendings = spending.filter(s => s.accountId === selectedAccountIds[0]);
-                    } else {
-                      const accountIdsToUse = selectedAccountIds.length > 0 ? selectedAccountIds : (accounts.length > 0 ? [accounts[0].id] : []);
-                      spendings = spending.filter(s => accountIdsToUse.includes(s.accountId));
-                    }
-                    
-                    return spendings.reduce((sum, spending) => sum + spending.amount, 0);
-                  })();
-                  const total = accountCosts + activationCosts + manualSpending;
-                  const accountText = accountSelectionMode === 'all' ? 'all accounts' : `${selectedAccounts.length} selected account(s)`;
-                  
-                  return (
-                    <div>
-                      <p className={`widget-value ${total > 0 ? 'text-red-400' : 'text-white'}`}>
-                        {formatCurrency(total)}
-                      </p>
-                      <p className="widget-description">Total investment for {accountText}</p>
-                    </div>
-                  );
-                })()}
-              </div>
-              <div className="widget-icon-square">
-                <TrendingUp className="widget-icon" />
-              </div>
-            </div>
-          </div>
-        </div>
-
-
-
-        {/* Add Investment Tracking Controls */}
-        <div className="flex justify-end mb-8">
-          <Dialog open={showSpendingModal} onOpenChange={setShowSpendingModal}>
-            <DialogTrigger asChild>
-              <Button className="bg-blue-600 hover:bg-blue-700 text-white">
-                <Plus className="mr-2 h-4 w-4" />
-                Add Spending/Payout
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="bg-gray-800 border-gray-700 text-white">
-              <DialogHeader>
-                <DialogTitle>Add Spending/Payout Entry</DialogTitle>
-              </DialogHeader>
-              <div className="space-y-4">
-                <div>
-                  <Label htmlFor="type">Type</Label>
-                  <Select 
-                    value={spendingForm.type} 
-                    onValueChange={(value: 'spending' | 'payout') => setSpendingForm({...spendingForm, type: value})}
-                  >
-                    <SelectTrigger className="bg-gray-700 border-gray-600 text-white">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent className="bg-gray-700 border-gray-600">
-                      <SelectItem value="spending">Spending</SelectItem>
-                      <SelectItem value="payout">Payout</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div>
-                  <Label htmlFor="amount">Amount</Label>
-                  <Input
-                    id="amount"
-                    type="number"
-                    placeholder="0.00"
-                    value={spendingForm.amount}
-                    onChange={(e) => setSpendingForm({...spendingForm, amount: e.target.value})}
-                    className="bg-gray-700 border-gray-600 text-white"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="description">Description</Label>
-                  <Input
-                    id="description"
-                    placeholder="Account purchase, payout, etc."
-                    value={spendingForm.description}
-                    onChange={(e) => setSpendingForm({...spendingForm, description: e.target.value})}
-                    className="bg-gray-700 border-gray-600 text-white"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="date">Date</Label>
-                  <Input
-                    id="date"
-                    type="date"
-                    value={spendingForm.date}
-                    onChange={(e) => setSpendingForm({...spendingForm, date: e.target.value})}
-                    className="bg-gray-700 border-gray-600 text-white"
-                  />
-                </div>
-                <div className="flex gap-2 pt-4">
-                  <Button 
-                    onClick={() => {
-                      // TODO: Save spending/payout entry
-                      console.log('Saving:', spendingForm);
-                      setShowSpendingModal(false);
-                      setSpendingForm({
-                        type: 'spending',
-                        amount: '',
-                        description: '',
-                        date: new Date().toISOString().split('T')[0]
-                      });
-                    }}
-                    className="bg-blue-600 hover:bg-blue-700 flex-1"
-                  >
-                    Save Entry
-                  </Button>
-                  <Button 
-                    variant="outline" 
-                    onClick={() => setShowSpendingModal(false)}
-                    className="border-gray-600 text-white hover:bg-gray-700"
-                  >
-                    Cancel
-                  </Button>
-                </div>
-              </div>
-            </DialogContent>
-          </Dialog>
-        </div>
-
-
-
-        {/* Recent Trades Section */}
-        <div className="mb-6">
-          <h2 className="text-xl font-bold text-gradient-rainbow mb-6 flex items-center border-b border-gray-700 pb-3">
-            <Activity className="mr-3 h-5 w-5 text-green-400" />
-            Recent Trading Activity
-          </h2>
-        </div>
-
-        <div className="widget-container mb-6">
-          <div className="widget-content flex-col">
-            <div className="widget-left mb-4">
-              <p className="widget-label">Latest Trades</p>
-              <p className="widget-description">Most recent trading activity</p>
-            </div>
-            <div className="space-y-4 w-full">
-              {(() => {
-                const filteredTrades = selectedAccountIds.length > 0
-                  ? trades?.filter(t => selectedAccountIds.includes(t.accountId)) || []
-                  : trades || [];
-                
-                if (filteredTrades.length === 0) {
-                  return (
-                    <div className="text-center py-8">
-                      <p className="text-gray-400">No recent trading activity</p>
-                      <p className="text-gray-500 text-sm">Switch to an account with trades</p>
-                    </div>
-                  );
-                }
-                
-                return filteredTrades.slice(0, 5).map((trade) => (
-                <div key={trade.id} className="flex items-center justify-between p-4 bg-dark-surface rounded-lg border border-prop-gold/20">
-                  <div className="flex items-center">
-                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center mr-4 ${
-                      trade.pnl > 0 ? 'bg-success-green' : trade.pnl < 0 ? 'bg-error-red' : 'bg-gray-600'
-                    }`}>
-                      {trade.pnl > 0 ? (
-                        <TrendingUp className="text-white h-5 w-5" />
-                      ) : trade.pnl < 0 ? (
-                        <TrendingDown className="text-white h-5 w-5" />
-                      ) : (
-                        <Target className="text-white h-5 w-5" />
-                      )}
-                    </div>
-                    <div>
-                      <p className="font-medium text-white">{trade.symbol}</p>
-                      <p className="text-sm text-gray-400">{trade.side} • {trade.date}</p>
-                    </div>
-                  </div>
-                  <div className="text-right">
-                    <p className={`font-bold ${getValueColor(trade.pnl)}`}>
-                      {formatCurrency(trade.pnl)}
-                    </p>
-                    <p className="text-sm text-gray-400">{trade.quantity} shares</p>
-                  </div>
-                </div>
-              ));
-              })()}
-            </div>
-          </div>
-        </div>
-
-        {/* First Row: Risk Management, Daily Trade Limit, Disciplined Score */}
-        <div className="widget-grid mb-6">
-
-
-
-        </div>
-
-        {/* Risk Alert and Disciplined Trading Analysis */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-          {/* Risk Alert - Top 3 Critical Accounts */}
-          <div className="widget-container">
-            <div className="widget-content flex-col">
-              <div className="widget-left mb-4">
-                <p className="widget-label">Risk Alert</p>
-                <p className="widget-description">3 Most Critical Accounts</p>
-              </div>
-              <div className="space-y-3">
-                {accounts && trades ? (
-                  accounts
-                    .map(account => {
-                      const accountTrades = trades.filter(t => t.accountId === account.id);
-                      const totalPnl = accountTrades.reduce((sum, trade) => sum + (trade.pnl || 0), 0);
-                      const dailyLossLimit = account.dailyLossLimit || (account.maxDrawdown ? account.maxDrawdown * 0.05 : 1000); // Use account's daily loss limit
-                      const currentDrawdown = Math.abs(Math.min(0, totalPnl));
-                      const riskPercentage = (currentDrawdown / dailyLossLimit) * 100;
-                      
-                      return {
-                        account,
-                        riskPercentage: Math.min(100, riskPercentage),
-                        currentDrawdown,
-                        dailyLossLimit
-                      };
-                    })
-                    .sort((a, b) => b.riskPercentage - a.riskPercentage)
-                    .slice(0, 3)
-                    .map(({ account, riskPercentage, currentDrawdown, dailyLossLimit }) => (
-                      <div key={account.id} className="bg-dark-surface rounded-lg p-3">
-                        <div className="flex justify-between text-sm mb-2">
-                          <span className="truncate">{account.name}</span>
-                          <span className={`font-medium ${
-                            riskPercentage > 80 ? 'text-red-400' : 
-                            riskPercentage > 60 ? 'text-warning-orange' : 
-                            'text-yellow-400'
-                          }`}>
-                            {riskPercentage.toFixed(1)}%
-                          </span>
-                        </div>
-                        <Progress 
-                          value={riskPercentage} 
-                          className="w-full h-1.5 bg-dark-border"
-                        />
-                        <p className="text-xs text-gray-400 mt-1">
-                          {formatCurrency(currentDrawdown)} / {formatCurrency(dailyLossLimit)} risk used
-                        </p>
-                      </div>
-                    ))
-                ) : (
-                  <p className="text-gray-400 text-sm">No accounts to monitor</p>
-                )}
-              </div>
-            </div>
-          </div>
-
-
-        </div>
-
-
-
-        {/* Charts Section */}
-        <div className="grid grid-cols-1 gap-6 mb-8">
-          {/* Account Equity Curve */}
-          <div className="widget-container">
-            <div className="widget-content flex-col">
-              <div className="widget-left mb-4">
-                <p className="widget-label">Account Equity Curve</p>
-                <p className="widget-description">Portfolio growth over time</p>
-              </div>
-              <div className="h-64 w-full">
-                <EquityChart data={getEquityData()} />
-              </div>
-            </div>
-          </div>
-        </div>
-
-
-
-        {/* Daily Trading Journal */}
-        <div className="mb-8">
-          <h2 className="text-xl font-bold text-gradient-rainbow mb-6 flex items-center border-b border-gray-700 pb-3">
-            <Target className="mr-3 h-5 w-5 text-prop-gold" />
-            Daily Trading Journal
-          </h2>
-          <div className="widget-container">
-            <div className="widget-content flex-col">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-                <div>
-                  <label className="block text-sm font-medium text-gray-400 mb-2">What went wrong today?</label>
-                  <Textarea 
-                    className="bg-dark-surface border-dark-border resize-none" 
-                    rows={3} 
-                    placeholder="Reflect on mistakes and lessons learned..."
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-400 mb-2">What went right today?</label>
-                  <Textarea 
-                    className="bg-dark-surface border-dark-border resize-none" 
-                    rows={3} 
-                    placeholder="Note successful strategies and decisions..."
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-400 mb-2">Tomorrow's improvement plan</label>
-                  <Textarea 
-                    className="bg-dark-surface border-dark-border resize-none" 
-                    rows={3} 
-                    placeholder="Set goals for tomorrow's session..."
-                  />
-                </div>
-              </div>
-              <div className="flex justify-between items-center">
-                <Link href="/journal">
-                  <Button variant="ghost" className="text-primary hover:text-blue-400">
-                    View Full Journal
-                  </Button>
-                </Link>
-                <Button className="bg-accent-orange hover:bg-orange-600">
-                  Save Journal Entry
-                </Button>
-              </div>
-            </div>
-          </div>
-        </div>
-
-
+      </div>
       </div>
 
       {/* Set Hourly Wage Modal */}
@@ -2438,6 +1939,6 @@ export default function Dashboard() {
           </div>
         </DialogContent>
       </Dialog>
-    </>
+    </div>
   );
 }
