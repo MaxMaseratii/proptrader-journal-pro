@@ -69,19 +69,19 @@ interface CalendarViewProps {
 interface WeeklyCalendarViewProps extends CalendarViewProps {
   currentWeekStart: Date;
   selectedDate?: Date;
-  onDayClick?: (date: Date) => void;
+  onDayClick: (date: Date) => void;
 }
 
 interface MonthlyCalendarViewProps extends CalendarViewProps {
   currentMonth: Date;
   selectedDate?: Date;
-  onDayClick?: (date: Date) => void;
+  onDayClick: (date: Date) => void;
 }
 
 interface YearlyCalendarViewProps extends CalendarViewProps {
   currentYear: Date;
   selectedDate?: Date;
-  onDayClick?: (date: Date) => void;
+  onDayClick: (date: Date) => void;
 }
 
 // Helper function to get trades for a specific date
@@ -206,21 +206,21 @@ export default function Dashboard() {
                   hover:border-amber-400/60 hover:scale-105
                 `}
                 onClick={(e) => {
-                  console.log('=== RAW WEEKLY CALENDAR CLICK ===');
-                  console.log('Event target:', e.target);
-                  console.log('Current target:', e.currentTarget);
+                  console.log('🔥 WEEKLY CALENDAR CLICK DETECTED 🔥');
+                  console.log('Target element:', e.target.constructor.name);
+                  console.log('Current element:', e.currentTarget.constructor.name);
+                  console.log('Date clicked:', date.toDateString());
+                  console.log('Date ISO:', date.toISOString().split('T')[0]);
+                  
                   e.preventDefault();
                   e.stopPropagation();
-                  console.log('=== WEEKLY CALENDAR DAY CLICKED ===');
-                  console.log('Clicked date:', date.toDateString());
-                  console.log('Clicked date ISO:', date.toISOString().split('T')[0]);
                   
-                  // Use the parent component's onDayClick handler
-                  if (onDayClick) {
-                    console.log('Calling WEEKLY onDayClick with date:', date);
+                  try {
+                    console.log('Executing onDayClick...');
                     onDayClick(date);
-                  } else {
-                    console.log('ERROR: WEEKLY onDayClick is not defined!');
+                    console.log('✅ onDayClick executed successfully');
+                  } catch (error) {
+                    console.error('❌ Error in onDayClick:', error);
                   }
                 }}
               >
@@ -326,21 +326,21 @@ export default function Dashboard() {
                     hover:border-amber-400/60
                   `}
                   onClick={(e) => {
-                    console.log('=== RAW MONTHLY CALENDAR CLICK ===');
-                    console.log('Event target:', e.target);
-                    console.log('Current target:', e.currentTarget);
+                    console.log('🔥 MONTHLY CALENDAR CLICK DETECTED 🔥');
+                    console.log('Target element:', e.target.constructor.name);
+                    console.log('Current element:', e.currentTarget.constructor.name);
+                    console.log('Date clicked:', date.toDateString());
+                    console.log('Date ISO:', date.toISOString().split('T')[0]);
+                    
                     e.preventDefault();
                     e.stopPropagation();
-                    console.log('=== MONTHLY CALENDAR DAY CLICKED ===');
-                    console.log('Clicked date:', date.toDateString());
-                    console.log('Clicked date ISO:', date.toISOString().split('T')[0]);
                     
-                    // Use the parent component's onDayClick handler
-                    if (onDayClick) {
-                      console.log('Calling MONTHLY onDayClick with date:', date);
+                    try {
+                      console.log('Executing onDayClick...');
                       onDayClick(date);
-                    } else {
-                      console.log('ERROR: MONTHLY onDayClick is not defined!');
+                      console.log('✅ onDayClick executed successfully');
+                    } catch (error) {
+                      console.error('❌ Error in onDayClick:', error);
                     }
                   }}
                 >
@@ -1431,6 +1431,23 @@ export default function Dashboard() {
                 className="px-4 py-2 rounded-lg text-sm font-medium bg-teal-600/80 hover:bg-teal-600 text-white transition-all duration-200 border border-teal-500/40 shadow-md"
               >
                 Go to Today
+              </button>
+              
+              {/* DIAGNOSTIC TEST BUTTON */}
+              <button
+                onClick={() => {
+                  console.log('🚨 DIAGNOSTIC TEST BUTTON CLICKED 🚨');
+                  const testDate = new Date('2025-07-10'); // July 10th has actual trade data
+                  console.log('Test date:', testDate.toDateString());
+                  setSelectedDate(testDate);
+                  const dayData = getDayData(testDate, trades || []);
+                  console.log('Test day data:', dayData);
+                  setSelectedDayData(dayData);
+                  console.log('🚨 DIAGNOSTIC TEST COMPLETE 🚨');
+                }}
+                className="px-3 py-2 rounded-lg text-xs font-medium bg-red-600/80 hover:bg-red-600 text-white transition-all duration-200 border border-red-500/40 shadow-md"
+              >
+                TEST
               </button>
             </div>
 
