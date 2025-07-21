@@ -111,7 +111,7 @@ const DailyPlanPage = () => {
       startTime: '09:30',
       endTime: '16:00',
       notes: '',
-
+      tradeSetupLinks: []
     });
   };
 
@@ -398,9 +398,11 @@ const DailyPlanPage = () => {
                   <DialogTitle className="text-white">Create New Trading Strategy</DialogTitle>
                 </DialogHeader>
                 <StrategyManagement 
-                  onClose={() => setIsCreateStrategyDialogOpen(false)}
-                  editingStrategyId={editingStrategyId}
-                  onEdit={setEditingStrategyId}
+                  editStrategyId={editingStrategyId}
+                  onStrategyUpdated={() => {
+                    setIsCreateStrategyDialogOpen(false);
+                    setEditingStrategyId(null);
+                  }}
                 />
               </DialogContent>
             </Dialog>
@@ -773,7 +775,7 @@ const DailyPlanPage = () => {
                             </div>
                           </div>
                           <div className="text-xs text-gray-400 mt-2">
-                            <span className="font-medium">Rules:</span> {plan.strategy.rules?.join(', ') || 'No rules defined'}
+                            <span className="font-medium">Rules:</span> {Array.isArray(plan.strategy.rules) ? plan.strategy.rules.join(', ') : 'No rules defined'}
                           </div>
                         </div>
                       )}
@@ -802,7 +804,7 @@ const DailyPlanPage = () => {
                                     <Button
                                       variant="ghost"
                                       size="sm"
-                                      onClick={() => window.open(trade.tradingViewLink, '_blank')}
+                                      onClick={() => trade.tradingViewLink && window.open(trade.tradingViewLink, '_blank')}
                                       className="h-6 w-6 p-0 text-blue-400 hover:text-blue-300"
                                       title="View TradingView Plan"
                                     >
@@ -1246,7 +1248,12 @@ const DailyPlanPage = () => {
             </DialogDescription>
           </DialogHeader>
           <div className="overflow-y-auto max-h-[70vh]">
-            <StrategyManagement />
+            <StrategyManagement 
+              onStrategyUpdated={() => {
+                setIsCreateStrategyDialogOpen(false);
+                queryClient.invalidateQueries({ queryKey: ['/api/strategies'] });
+              }}
+            />
           </div>
         </DialogContent>
       </Dialog>
