@@ -127,9 +127,17 @@ interface DashboardAnalytics {
 export default function Dashboard() {
   const queryClient = useQueryClient();
   
-  // Critical calendar day selection state
+  // ===== FIXED STATE MANAGEMENT =====
   const [selectedDate, setSelectedDate] = useState(new Date());
-  const [selectedDayData, setSelectedDayData] = useState(null);
+  const [calendarViewMode, setCalendarViewMode] = useState('weekly');
+  const [currentWeekStart, setCurrentWeekStart] = useState(() => {
+    const today = new Date();
+    const dayOfWeek = today.getDay();
+    const daysToSubtract = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
+    const start = new Date(today);
+    start.setDate(today.getDate() - daysToSubtract);
+    return start;
+  });
   
 
   
@@ -163,6 +171,7 @@ export default function Dashboard() {
           {weekDays.map(date => {
             const metrics = getDayMetrics(date, trades, selectedAccountIds);
             const isToday = date.toDateString() === today.toDateString();
+            const isSelected = selectedDate?.toDateString() === date.toDateString();
             const isCurrentMonth = date.getMonth() === currentWeekStart.getMonth();
             
             return (
@@ -170,8 +179,8 @@ export default function Dashboard() {
                 key={date.toISOString()}
                 className={`
                   relative p-3 rounded-lg border transition-all duration-200 h-24 cursor-pointer
-                  ${selectedDate.toDateString() === date.toDateString()
-                    ? 'border-amber-400 bg-amber-900/20 shadow-lg'
+                  ${isSelected
+                    ? 'border-amber-400 bg-amber-900/20 shadow-lg ring-2 ring-amber-400/50'
                     : isToday 
                     ? 'border-teal-400/60 bg-gradient-to-br from-teal-900/30 via-gray-800/40 to-teal-900/30' 
                     : isCurrentMonth
@@ -180,18 +189,21 @@ export default function Dashboard() {
                   }
                   hover:border-amber-400/60
                 `}
-                onClick={() => {
-                  setSelectedDate(date);
-                  setSelectedDayData(getDayData(date, trades || []));
-                }}
+                onClick={() => handleDayClick(date)}
               >
                 {/* Today indicator */}
                 {isToday && (
                   <div className="absolute top-1 right-1 w-2 h-2 rounded-full bg-teal-400 animate-pulse" />
                 )}
                 
+                {/* Selected indicator */}
+                {isSelected && (
+                  <div className="absolute top-1 left-1 w-2 h-2 rounded-full bg-amber-400" />
+                )}
+                
                 {/* Date */}
                 <div className={`text-sm font-semibold mb-1 ${
+                  isSelected ? 'text-amber-400' :
                   isToday ? 'text-teal-400' : 
                   isCurrentMonth ? 'text-gray-200' : 'text-gray-500'
                 }`}>
@@ -275,8 +287,10 @@ export default function Dashboard() {
                 <div
                   key={date.toISOString()}
                   className={`
-                    relative p-2 rounded-lg border transition-all duration-200 h-20
-                    ${isToday 
+                    relative p-2 rounded-lg border transition-all duration-200 h-20 cursor-pointer
+                    ${selectedDate?.toDateString() === date.toDateString()
+                      ? 'border-amber-400 bg-amber-900/20 shadow-lg ring-2 ring-amber-400/50'
+                      : isToday 
                       ? 'border-teal-400/60 bg-gradient-to-br from-teal-900/30 via-gray-800/40 to-teal-900/30' 
                       : isCurrentMonth
                       ? 'border-gray-600/40 bg-gradient-to-br from-gray-800/40 via-gray-700/40 to-gray-800/40'
@@ -284,14 +298,21 @@ export default function Dashboard() {
                     }
                     hover:border-amber-400/60
                   `}
+                  onClick={() => handleDayClick(date)}
                 >
                   {/* Today indicator */}
                   {isToday && (
                     <div className="absolute top-1 right-1 w-1.5 h-1.5 rounded-full bg-teal-400 animate-pulse" />
                   )}
                   
+                  {/* Selected indicator */}
+                  {selectedDate?.toDateString() === date.toDateString() && (
+                    <div className="absolute top-1 left-1 w-1.5 h-1.5 rounded-full bg-amber-400" />
+                  )}
+                  
                   {/* Date */}
                   <div className={`text-xs font-semibold mb-1 ${
+                    selectedDate?.toDateString() === date.toDateString() ? 'text-amber-400' :
                     isToday ? 'text-teal-400' : 
                     isCurrentMonth ? 'text-gray-200' : 'text-gray-500'
                   }`}>
@@ -382,8 +403,7 @@ export default function Dashboard() {
                 `}
                 onClick={() => {
                   const firstDayOfMonth = new Date(month.getFullYear(), month.getMonth(), 1);
-                  setSelectedDate(firstDayOfMonth);
-                  setSelectedDayData(getDayData(firstDayOfMonth, trades || []));
+                  handleDayClick(firstDayOfMonth);
                 }}
               >
                 {/* Current month indicator */}
@@ -429,14 +449,6 @@ export default function Dashboard() {
     const saved = localStorage.getItem('dashboard-selected-accounts');
     return saved ? JSON.parse(saved) : [];
   });
-  const [currentWeekStart, setCurrentWeekStart] = useState<Date>(() => {
-    const today = new Date();
-    const dayOfWeek = today.getDay();
-    const daysToSubtract = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
-    const start = new Date(today);
-    start.setDate(today.getDate() - daysToSubtract);
-    return start;
-  });
   const [congratulationsBanner, setCongratulationsBanner] = useState<{
     visible: boolean;
     message: string;
@@ -465,7 +477,6 @@ export default function Dashboard() {
     localStorage.setItem('congratulations-banner', JSON.stringify(banner));
   };
   const [viewMode, setViewMode] = useState<'single' | 'multiple' | 'all'>('all');
-  const [calendarViewMode, setCalendarViewMode] = useState<'weekly' | 'monthly' | 'yearly'>('weekly');
   const [showSpendingModal, setShowSpendingModal] = useState(false);
   const [showWageModal, setShowWageModal] = useState(false);
   const [newWage, setNewWage] = useState('');
@@ -493,7 +504,75 @@ export default function Dashboard() {
     queryKey: ["/api/trades"],
   });
 
-  // Function to get day-specific data for widgets
+  // ===== FIXED: SINGLE SOURCE OF TRUTH FOR DAY DATA =====
+  const selectedDayData = useMemo(() => {
+    if (!trades || !selectedDate) return null;
+    
+    console.log('🎯 Calculating day data for:', selectedDate.toDateString());
+    console.log('📊 Available trades:', trades.length);
+    console.log('🎛️ Selected accounts:', selectedAccountIds);
+    
+    const dayTrades = getTradesForDate(selectedDate, trades, selectedAccountIds);
+    console.log('📈 Day trades found:', dayTrades.length);
+    
+    if (dayTrades.length === 0) {
+      return {
+        date: selectedDate,
+        totalDayTrades: 0,
+        wins: 0,
+        losses: 0,
+        dayPnL: 0,
+        avgRiskPerTrade: 0,
+        avgRewardRatio: 0,
+        maxDailyRisk: 0,
+        disciplineScore: 0,
+        winRate: 0,
+        hoursWorked: 0,
+        hoursPlanned: 8,
+        trades: []
+      };
+    }
+    
+    const totalDayTrades = dayTrades.length;
+    const wins = dayTrades.filter(t => (t.pnl || 0) > 0).length;
+    const losses = dayTrades.filter(t => (t.pnl || 0) <= 0).length;
+    const dayPnL = dayTrades.reduce((sum, t) => sum + (t.pnl || 0), 0);
+    
+    const avgRiskPerTrade = totalDayTrades > 0 ? 
+      dayTrades.reduce((sum, t) => sum + Math.abs(t.pnl || 0), 0) / totalDayTrades : 0;
+    
+    const winningTrades = dayTrades.filter(t => (t.pnl || 0) > 0);
+    const avgRewardRatio = winningTrades.length > 0 ? 
+      winningTrades.reduce((sum, t) => sum + (t.pnl || 0), 0) / winningTrades.length : 0;
+    
+    const result = {
+      date: selectedDate,
+      totalDayTrades,
+      wins,
+      losses,
+      dayPnL,
+      avgRiskPerTrade: Math.round(avgRiskPerTrade),
+      avgRewardRatio: Math.round(avgRewardRatio),
+      maxDailyRisk: avgRiskPerTrade * 5,
+      disciplineScore: Math.min(95, 70 + (wins / totalDayTrades) * 25), // Realistic calculation
+      winRate: totalDayTrades > 0 ? (wins / totalDayTrades) * 100 : 0,
+      hoursWorked: totalDayTrades * 0.5, // Estimate based on trades
+      hoursPlanned: 8,
+      trades: dayTrades
+    };
+    
+    console.log('✅ Final day data:', result);
+    return result;
+  }, [selectedDate, trades, selectedAccountIds]);
+
+  // ===== FIXED: CALENDAR DAY CLICK HANDLER =====
+  const handleDayClick = (clickedDate: Date) => {
+    console.log('🖱️ Day clicked:', clickedDate.toDateString());
+    setSelectedDate(clickedDate);
+    // Note: selectedDayData will automatically update due to useMemo dependency
+  };
+
+  // Function to get day-specific data for widgets (legacy support)
   const getDayData = (clickedDate: Date, tradesData: Trade[] = []) => {
     const dayTrades = getTradesForDate(clickedDate, tradesData, selectedAccountIds);
     
@@ -523,12 +602,12 @@ export default function Dashboard() {
     };
   };
   
-  // Initialize with today's data
+  // Initialize with today's data - selectedDayData updates automatically via useMemo
   useEffect(() => {
     if (trades && trades.length > 0) {
       const today = new Date();
       setSelectedDate(today);
-      setSelectedDayData(getDayData(today, trades));
+      // selectedDayData will automatically update via useMemo dependency
     }
   }, [trades, selectedAccountIds]);
 

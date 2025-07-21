@@ -129,7 +129,6 @@ const DailyPlanPage = () => {
     },
     onError: (error) => {
       console.error('Failed to create daily plan:', error);
-      alert(`Failed to create daily plan: ${error.message}`);
     },
   });
 
@@ -247,7 +246,7 @@ const DailyPlanPage = () => {
 
     if (!todayPlan) {
       console.error('No daily plan found for this date and account. Please create a daily plan first.');
-      alert('Please create a daily plan first before adding journal entries. Journal entries must be connected to a daily plan.');
+      console.warn('Please create a daily plan first before adding journal entries. Journal entries must be connected to a daily plan.');
       return;
     }
 
