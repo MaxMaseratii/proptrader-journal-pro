@@ -198,6 +198,13 @@ const DailyPlanPage = () => {
   }, [trades, selectedAccount, selectedDate]);
 
   // Helper functions
+  const calculateExpectedValue = (winRate: number, riskRewardRatio: number, riskAmount: number) => {
+    const winRateDecimal = winRate / 100;
+    const lossRate = 1 - winRateDecimal;
+    const expectedValue = (winRateDecimal * riskAmount * riskRewardRatio) - (lossRate * riskAmount);
+    return expectedValue;
+  };
+
   const formatTime = (milliseconds: number) => {
     const hours = Math.floor(milliseconds / 3600000);
     const minutes = Math.floor((milliseconds % 3600000) / 60000);
