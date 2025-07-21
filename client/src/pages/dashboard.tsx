@@ -163,7 +163,7 @@ export default function Dashboard() {
               <div
                 key={date.toISOString()}
                 className={`
-                  relative p-3 rounded-lg border transition-all duration-200 h-24
+                  relative p-3 rounded-lg border transition-all duration-200 h-32
                   ${isToday 
                     ? 'border-teal-400/60 bg-gradient-to-br from-teal-900/30 via-gray-800/40 to-teal-900/30' 
                     : isCurrentMonth
@@ -263,7 +263,7 @@ export default function Dashboard() {
                 <div
                   key={date.toISOString()}
                   className={`
-                    relative p-2 rounded-lg border transition-all duration-200 h-16
+                    relative p-2 rounded-lg border transition-all duration-200 h-20
                     ${isToday 
                       ? 'border-teal-400/60 bg-gradient-to-br from-teal-900/30 via-gray-800/40 to-teal-900/30' 
                       : isCurrentMonth
@@ -359,7 +359,7 @@ export default function Dashboard() {
               <div
                 key={index}
                 className={`
-                  relative p-4 rounded-lg border transition-all duration-200 h-20
+                  relative p-4 rounded-lg border transition-all duration-200 h-24
                   ${isCurrentMonth
                     ? 'border-teal-400/60 bg-gradient-to-br from-teal-900/30 via-gray-800/40 to-teal-900/30'
                     : 'border-gray-600/40 bg-gradient-to-br from-gray-800/40 via-gray-700/40 to-gray-800/40'

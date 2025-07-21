@@ -76,12 +76,14 @@ const DailyPlanPage = () => {
 
 
 
-  // Journal state
+  // Journal state - comprehensive fields like main journal
   const [journalEntry, setJournalEntry] = useState({
     whatWentWrong: '',
     whatWentRight: '',
     lessonsLearned: '',
-    improvementPlan: ''
+    improvementPlan: '',
+    emotionalState: 'neutral',
+    marketConditions: ''
   });
 
   // Data queries
@@ -114,15 +116,20 @@ const DailyPlanPage = () => {
   };
 
   const createDailyPlan = useMutation({
-    mutationFn: (data: any) => apiRequest('/api/daily-plans', 'POST', data),
+    mutationFn: (data: any) => {
+      console.log('Sending daily plan data to API:', data);
+      return apiRequest('/api/daily-plans', 'POST', data);
+    },
     onSuccess: (response) => {
       console.log('Daily plan created successfully:', response);
       queryClient.invalidateQueries({ queryKey: ['/api/daily-plans'] });
       setIsCreatePlanDialogOpen(false);
       resetPlanForm();
+      alert('Daily plan created successfully!');
     },
     onError: (error) => {
       console.error('Failed to create daily plan:', error);
+      alert(`Failed to create daily plan: ${error.message}`);
     },
   });
 
@@ -144,7 +151,9 @@ const DailyPlanPage = () => {
         whatWentWrong: '',
         whatWentRight: '',
         lessonsLearned: '',
-        improvementPlan: ''
+        improvementPlan: '',
+        emotionalState: 'neutral',
+        marketConditions: ''
       });
     },
     onError: (error) => {
@@ -252,8 +261,8 @@ const DailyPlanPage = () => {
       whatWentWrong: journalEntry.whatWentWrong.trim(),
       lessonsLearned: journalEntry.lessonsLearned.trim(),
       improvementPlan: journalEntry.improvementPlan?.trim() || '',
-      emotionalState: 'neutral',
-      marketConditions: ''
+      emotionalState: journalEntry.emotionalState || 'neutral',
+      marketConditions: journalEntry.marketConditions?.trim() || ''
     };
 
     console.log('Saving journal entry linked to daily plan:', journalData);
@@ -1082,9 +1091,12 @@ const DailyPlanPage = () => {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-              {/* Quick Journal Entry - Compact Row Layout */}
+              {/* Comprehensive Journal Entry - Full Replica */}
               <div className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <h3 className="text-lg font-semibold text-yellow-400 mb-4">Daily Trading Journal Entry</h3>
+                
+                {/* First Row - What Went Right/Wrong */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <Label className="text-white text-sm flex items-center gap-2">
                       <TrendingUp className="h-4 w-4 text-green-400" />
@@ -1112,7 +1124,10 @@ const DailyPlanPage = () => {
                       rows={3}
                     />
                   </div>
-                  
+                </div>
+
+                {/* Second Row - Lessons and Improvement Plan */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <Label className="text-white text-sm flex items-center gap-2">
                       <Brain className="h-4 w-4 text-yellow-400" />
@@ -1126,7 +1141,59 @@ const DailyPlanPage = () => {
                       rows={3}
                     />
                   </div>
+                  
+                  <div>
+                    <Label className="text-white text-sm flex items-center gap-2">
+                      <Target className="h-4 w-4 text-blue-400" />
+                      Improvement plan
+                    </Label>
+                    <Textarea
+                      value={journalEntry.improvementPlan || ''}
+                      onChange={(e) => setJournalEntry(prev => ({ ...prev, improvementPlan: e.target.value }))}
+                      placeholder="Specific actions to take tomorrow..."
+                      className="bg-white border-gray-300 text-black placeholder:text-gray-500 focus:border-yellow-400 focus:ring-yellow-400 text-sm"
+                      rows={3}
+                    />
+                  </div>
                 </div>
+
+                {/* Third Row - Emotional State and Market Conditions */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <Label className="text-white text-sm flex items-center gap-2">
+                      <Activity className="h-4 w-4 text-purple-400" />
+                      Emotional state during trading
+                    </Label>
+                    <select
+                      value={journalEntry.emotionalState || 'neutral'}
+                      onChange={(e) => setJournalEntry(prev => ({ ...prev, emotionalState: e.target.value }))}
+                      className="w-full bg-white border border-gray-300 text-black rounded-md px-3 py-2 text-sm focus:border-yellow-400 focus:ring-yellow-400"
+                    >
+                      <option value="confident">Confident</option>
+                      <option value="calm">Calm</option>
+                      <option value="neutral">Neutral</option>
+                      <option value="anxious">Anxious</option>
+                      <option value="frustrated">Frustrated</option>
+                      <option value="excited">Excited</option>
+                      <option value="fearful">Fearful</option>
+                      <option value="greedy">Greedy</option>
+                    </select>
+                  </div>
+                  
+                  <div>
+                    <Label className="text-white text-sm flex items-center gap-2">
+                      <BarChart3 className="h-4 w-4 text-cyan-400" />
+                      Market conditions
+                    </Label>
+                    <Input
+                      value={journalEntry.marketConditions || ''}
+                      onChange={(e) => setJournalEntry(prev => ({ ...prev, marketConditions: e.target.value }))}
+                      placeholder="Trending, ranging, volatile, slow..."
+                      className="bg-white border-gray-300 text-black placeholder:text-gray-500 focus:border-yellow-400 focus:ring-yellow-400 text-sm"
+                    />
+                  </div>
+                </div>
+              </div>
                 
                 <Button 
                   onClick={() => saveJournalEntry()}
@@ -1136,7 +1203,6 @@ const DailyPlanPage = () => {
                   <Save className="w-4 h-4 mr-2" />
                   {createJournalEntry.isPending ? 'Saving...' : 'Save Journal Entry'}
                 </Button>
-              </div>
               
               {/* Today's Journal Entry Status */}
               <div className="mt-6">

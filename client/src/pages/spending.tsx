@@ -387,6 +387,16 @@ const Spending = () => {
               </DialogContent>
             </Dialog>
             
+            {/* Add Expense Button moved here */}
+            <Button 
+              onClick={handleAddExpense}
+              className="bg-gradient-to-r from-teal-400 to-teal-600 text-black hover:from-teal-500 hover:to-teal-700"
+              disabled={!newExpense.amount || !newExpense.category || !newExpense.description || addExpenseMutation.isPending}
+            >
+              <Plus className="h-4 w-4 mr-2" />
+              {addExpenseMutation.isPending ? "Adding..." : "Add Expense"}
+            </Button>
+            
             <Dialog>
               <DialogTrigger asChild>
                 <Button variant="outline" className="border-yellow-400/20 text-white hover:bg-gray-800">
@@ -787,7 +797,7 @@ const Spending = () => {
                 placeholder="What did you spend money on?"
                 value={newExpense.description}
                 onChange={(e) => setNewExpense({...newExpense, description: e.target.value})}
-                className="bg-gray-800 border-yellow-400/20 text-white"
+                className="bg-white border-yellow-400/20 text-black"
               />
             </div>
 
@@ -855,13 +865,7 @@ const Spending = () => {
               </div>
             </div>
 
-            <Button 
-              onClick={handleAddExpense}
-              className="w-full bg-gradient-to-r from-yellow-400 to-yellow-600 text-black hover:from-yellow-500 hover:to-yellow-700"
-              disabled={!newExpense.amount || !newExpense.category || !newExpense.description || addExpenseMutation.isPending}
-            >
-              {addExpenseMutation.isPending ? "Adding..." : "Add Expense"}
-            </Button>
+
           </CardContent>
       </Card>
 
