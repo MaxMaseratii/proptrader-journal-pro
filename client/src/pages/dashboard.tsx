@@ -50,6 +50,7 @@ import {
   Clock,
   CheckCircle,
   Users,
+  User,
   CreditCard,
   X,
   Trophy,
@@ -144,6 +145,14 @@ export default function Dashboard() {
   const clearDaySelection = () => {
     console.log('🗑️ Clearing day selection');
     setSelectedDate(new Date()); // Reset to today
+  };
+
+  // Calculate ROI function
+  const calculateROI = () => {
+    const totalCapital = accounts?.reduce((sum, acc) => sum + (acc.startingBalance || 0), 0) || 0;
+    const totalPnl = combinedAnalytics?.totalPnl || 0;
+    if (totalCapital === 0) return 0;
+    return (totalPnl / totalCapital) * 100;
   };
 
   // FIXED: Enhanced handleDayClick with better debugging
