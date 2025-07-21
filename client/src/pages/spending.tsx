@@ -260,7 +260,8 @@ const Spending = () => {
     .slice(0, 10);
 
   return (
-    <div className="container mx-auto p-6 space-y-6">
+    <div className="min-h-screen bg-dark-bg text-white">
+      <div className="container mx-auto p-6 space-y-6">
       {/* Header */}
       <div className="flex flex-col space-y-4">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
@@ -964,6 +965,7 @@ const Spending = () => {
 
       {/* Legacy Spending Entry Component - Hidden since Add Expense is in header */}
       {/* <SpendingEntry accounts={accounts} /> */}
+      </div>
     </div>
   );
 };

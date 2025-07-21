@@ -127,8 +127,9 @@ const Journal = () => {
   const todaysEntry = getTodaysEntry();
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
+    <div className="min-h-screen bg-dark-bg text-white p-6">
+      <div className="space-y-6">
+        <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold text-gradient-rainbow">
             Trading Journal
@@ -354,6 +355,7 @@ const Journal = () => {
           )}
         </div>
       </div>
+    </div>
     </div>
   );
 };

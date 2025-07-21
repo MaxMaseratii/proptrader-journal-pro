@@ -202,7 +202,7 @@ export const TradingViewChart: React.FC<TradingViewChartProps> = ({
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Accounts</SelectItem>
-                {accounts.map(account => (
+                {accounts?.map(account => (
                   <SelectItem key={account.id} value={account.id.toString()}>
                     {account.name}
                   </SelectItem>

@@ -177,7 +177,8 @@ export default function Trades() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="min-h-screen bg-dark-bg text-white p-6">
+      <div className="space-y-6">
       <header className="border-b border-gray-800 bg-dark-bg pb-6">
         <div className="flex items-center justify-between">
           <div>
@@ -545,6 +546,7 @@ export default function Trades() {
       </Card>
         </TabsContent>
       </Tabs>
+      </div>
     </div>
   );
 }
