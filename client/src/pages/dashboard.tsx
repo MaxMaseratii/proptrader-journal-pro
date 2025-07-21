@@ -1901,23 +1901,42 @@ export default function Dashboard() {
                   const selectedAccount = accounts?.find(acc => 
                     selectedAccountIds.length === 1 ? selectedAccountIds.includes(acc.id) : false
                   );
-                  const startingBalance = selectedAccount?.startingBalance || 100000;
+                  const accountCost = selectedAccount?.accountCost || 100000; // Initial account cost
                   
-                  let runningBalance = startingBalance;
-                  const equityPoints = [{ x: 0, y: startingBalance }];
+                  let runningBalance = accountCost;
+                  const equityPoints = [{ 
+                    x: 0, 
+                    y: accountCost, 
+                    trade: null, 
+                    tradesCount: 0, 
+                    date: 'Start' 
+                  }];
                   
                   sortedTrades.forEach((trade, index) => {
                     runningBalance += (trade.pnl || 0);
-                    equityPoints.push({ x: index + 1, y: runningBalance });
+                    equityPoints.push({ 
+                      x: index + 1, 
+                      y: runningBalance, 
+                      trade: trade,
+                      tradesCount: index + 1,
+                      date: trade.date || ''
+                    });
                   });
 
-                  const maxBalance = Math.max(...equityPoints.map(p => p.y));
-                  const minBalance = Math.min(...equityPoints.map(p => p.y));
-                  const range = maxBalance - minBalance;
+                  const maxBalance = Math.max(...equityPoints.map(p => p.y), accountCost);
+                  const minBalance = Math.min(...equityPoints.map(p => p.y), accountCost);
+                  const range = Math.max(maxBalance - minBalance, accountCost * 0.2); // Minimum 20% range
                   const padding = range * 0.1;
 
+                  const chartMin = minBalance - padding;
+                  const chartMax = maxBalance + padding;
+                  const chartRange = chartMax - chartMin;
+
+                  // Calculate breakeven line position
+                  const breakevenY = 182 - ((accountCost - chartMin) / chartRange) * 172;
+
                   return (
-                    <div className="h-full relative">
+                    <div className="h-full relative group">
                       <svg className="w-full h-full" viewBox={`0 0 400 192`}>
                         {/* Grid lines */}
                         <defs>
@@ -1927,6 +1946,51 @@ export default function Dashboard() {
                         </defs>
                         <rect width="100%" height="100%" fill="url(#grid)" />
                         
+                        {/* Breakeven line (account cost) */}
+                        <line
+                          x1="10"
+                          y1={breakevenY}
+                          x2="390"
+                          y2={breakevenY}
+                          stroke="#6b7280"
+                          strokeWidth="2"
+                          strokeDasharray="5,5"
+                          opacity="0.8"
+                        />
+                        <text x="15" y={breakevenY - 5} className="fill-gray-400 text-xs" fontSize="10">
+                          Breakeven: {formatCurrency(accountCost)}
+                        </text>
+                        
+                        {/* Profit/Loss regions */}
+                        <rect
+                          x="10"
+                          y="10"
+                          width="380"
+                          height={Math.max(0, breakevenY - 10)}
+                          fill="url(#profitGradient)"
+                          opacity="0.1"
+                        />
+                        <rect
+                          x="10"
+                          y={breakevenY}
+                          width="380"
+                          height={Math.max(0, 182 - breakevenY)}
+                          fill="url(#lossGradient)"
+                          opacity="0.1"
+                        />
+                        
+                        {/* Gradients */}
+                        <defs>
+                          <linearGradient id="profitGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                            <stop offset="0%" stopColor="#10b981" stopOpacity="0.3"/>
+                            <stop offset="100%" stopColor="#10b981" stopOpacity="0.1"/>
+                          </linearGradient>
+                          <linearGradient id="lossGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                            <stop offset="0%" stopColor="#ef4444" stopOpacity="0.1"/>
+                            <stop offset="100%" stopColor="#ef4444" stopOpacity="0.3"/>
+                          </linearGradient>
+                        </defs>
+                        
                         {/* Equity curve line */}
                         <polyline
                           fill="none"
@@ -1934,44 +1998,71 @@ export default function Dashboard() {
                           strokeWidth="2"
                           points={equityPoints.map((point, index) => {
                             const x = (index / (equityPoints.length - 1)) * 380 + 10;
-                            const y = 182 - ((point.y - minBalance + padding) / (range + 2 * padding)) * 172;
+                            const y = 182 - ((point.y - chartMin) / chartRange) * 172;
                             return `${x},${y}`;
                           }).join(' ')}
                         />
                         
-                        {/* Data points */}
+                        {/* Data points with hover */}
                         {equityPoints.map((point, index) => {
                           const x = (index / (equityPoints.length - 1)) * 380 + 10;
-                          const y = 182 - ((point.y - minBalance + padding) / (range + 2 * padding)) * 172;
+                          const y = 182 - ((point.y - chartMin) / chartRange) * 172;
                           return (
-                            <circle
-                              key={index}
-                              cx={x}
-                              cy={y}
-                              r="3"
-                              fill={point.y >= startingBalance ? "#10b981" : "#ef4444"}
-                              className="opacity-80 hover:opacity-100"
-                            />
+                            <g key={index}>
+                              <circle
+                                cx={x}
+                                cy={y}
+                                r="4"
+                                fill={point.y >= accountCost ? "#10b981" : "#ef4444"}
+                                className="opacity-80 hover:opacity-100 cursor-pointer transition-all"
+                                stroke="white"
+                                strokeWidth="1"
+                              />
+                              {/* Tooltip on hover */}
+                              <g className="opacity-0 hover:opacity-100 pointer-events-none">
+                                <rect
+                                  x={x - 75}
+                                  y={y - 45}
+                                  width="150"
+                                  height="35"
+                                  fill="rgba(0,0,0,0.9)"
+                                  rx="4"
+                                  stroke="#374151"
+                                />
+                                <text x={x} y={y - 28} textAnchor="middle" className="fill-white text-xs" fontSize="10">
+                                  {point.date === 'Start' ? 'Starting Point' : new Date(point.date).toLocaleDateString()}
+                                </text>
+                                <text x={x} y={y - 18} textAnchor="middle" className="fill-white text-xs" fontSize="10">
+                                  Trades: {point.tradesCount} | Balance: {formatCurrency(point.y)}
+                                </text>
+                                <text x={x} y={y - 8} textAnchor="middle" className={`text-xs ${point.trade ? (point.trade.pnl >= 0 ? 'fill-green-400' : 'fill-red-400') : 'fill-gray-400'}`} fontSize="10">
+                                  {point.trade ? `P&L: ${formatCurrency(point.trade.pnl || 0)}` : 'Initial Cost'}
+                                </text>
+                              </g>
+                            </g>
                           );
                         })}
                         
                         {/* Y-axis labels */}
                         <text x="5" y="15" className="fill-gray-400 text-xs" fontSize="10">
-                          {formatCurrency(maxBalance + padding)}
+                          {formatCurrency(chartMax)}
                         </text>
                         <text x="5" y="100" className="fill-gray-400 text-xs" fontSize="10">
-                          {formatCurrency((maxBalance + minBalance) / 2)}
+                          {formatCurrency((chartMax + chartMin) / 2)}
                         </text>
                         <text x="5" y="185" className="fill-gray-400 text-xs" fontSize="10">
-                          {formatCurrency(minBalance - padding)}
+                          {formatCurrency(chartMin)}
                         </text>
                       </svg>
                       
                       {/* Current balance indicator */}
                       <div className="absolute top-2 right-2 bg-black/60 rounded px-2 py-1">
                         <div className="text-xs text-gray-400">Current Balance</div>
-                        <div className={`text-sm font-bold ${runningBalance >= startingBalance ? 'text-green-400' : 'text-red-400'}`}>
+                        <div className={`text-sm font-bold ${runningBalance >= accountCost ? 'text-green-400' : 'text-red-400'}`}>
                           {formatCurrency(runningBalance)}
+                        </div>
+                        <div className="text-xs text-gray-400">
+                          {runningBalance >= accountCost ? '+' : ''}{formatCurrency(runningBalance - accountCost)}
                         </div>
                       </div>
                     </div>
