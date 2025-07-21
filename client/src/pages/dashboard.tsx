@@ -1120,23 +1120,12 @@ export default function Dashboard() {
 
       <div className="p-6 space-y-6">
         
-        {/* Weekly Risk Management & Performance Calendar - Top of Dashboard */}
-        <div className="mb-16">
-          <div className="flex items-center justify-between mb-6 border-b border-gray-700 pb-3">
-            <h2 className="text-xl font-bold text-gradient-rainbow flex items-center">
-              <Calendar className="mr-3 h-5 w-5 text-prop-gold" />
-              Weekly Risk Management & Performance Calendar
-            </h2>
-          </div>
-
-        </div>
-
-        {/* ENHANCED TRADING PERFORMANCE SECTION */}
+        {/* Daily Trading Plan & Performance - Consolidated Section */}
         <div className="mb-8">
           <div className="flex items-center justify-between mb-6 border-b border-gray-700 pb-3">
             <h2 className="text-xl font-bold text-gradient-rainbow flex items-center">
               <BarChart3 className="mr-3 h-5 w-5 text-prop-gold" />
-              Daily Trading Performance Analysis
+              Daily Trading Plan & Performance
             </h2>
           </div>
           
