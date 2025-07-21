@@ -113,7 +113,7 @@ export default function AchievementSystem() {
       <div className="bg-gradient-to-r from-gray-900/80 to-gray-800/80 border border-gray-700 rounded-xl p-6">
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-2xl font-bold text-white flex items-center">
+            <h2 className="text-2xl font-bold text-gradient-rainbow flex items-center">
               <Award className="h-7 w-7 text-prop-gold mr-3" />
               Achievement Center
             </h2>

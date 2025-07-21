@@ -205,7 +205,7 @@ export default function Performance() {
       <header className="bg-dark-surface border-b border-dark-border px-6 py-4">
         <div className="flex justify-between items-center">
           <div>
-            <h2 className="text-2xl font-bold">Performance Analytics</h2>
+            <h2 className="text-2xl font-bold text-gradient-rainbow">Performance Analytics</h2>
             <p className="text-gray-400 text-sm mt-1">Analyze your trading performance and statistics</p>
           </div>
           <div className="flex items-center space-x-4">

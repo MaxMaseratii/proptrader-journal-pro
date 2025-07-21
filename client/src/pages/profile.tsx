@@ -44,7 +44,7 @@ export default function Profile() {
       <div className="max-w-4xl mx-auto">
         <div className="flex justify-between items-center mb-6">
           <div>
-            <h1 className="text-3xl font-bold">Profile Settings</h1>
+            <h1 className="text-3xl font-bold text-gradient-rainbow">Profile Settings</h1>
             <p className="text-gray-400 mt-1">Manage your account settings and preferences</p>
           </div>
           <div className="flex gap-3">

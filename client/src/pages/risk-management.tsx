@@ -97,7 +97,7 @@ export default function RiskManagement() {
       <header className="bg-dark-surface border-b border-dark-border px-6 py-4">
         <div className="flex justify-between items-center">
           <div>
-            <h2 className="text-2xl font-bold">Risk Management</h2>
+            <h2 className="text-2xl font-bold text-gradient-rainbow">Risk Management</h2>
             <p className="text-gray-400 text-sm mt-1">Monitor and manage your trading risk exposure</p>
           </div>
           <Select value={selectedAccountId} onValueChange={setSelectedAccountId}>

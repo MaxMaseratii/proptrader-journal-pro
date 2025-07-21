@@ -260,7 +260,7 @@ export default function CustomizableDashboard({ accounts, trades }: Customizable
     <DndProvider backend={HTML5Backend}>
       <div className="space-y-6">
         <div className="flex justify-between items-center">
-          <h2 className="text-2xl font-bold text-prop-gold">Customizable Dashboard</h2>
+          <h2 className="text-2xl font-bold text-gradient-rainbow">Customizable Dashboard</h2>
           <div className="flex space-x-2">
             <Button
               variant="outline"

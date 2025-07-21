@@ -279,7 +279,7 @@ export default function Payouts() {
       <header className="bg-dark-surface border-b border-dark-border px-6 py-4">
         <div className="flex justify-between items-center">
           <div>
-            <h2 className="text-2xl font-bold">Payout Management</h2>
+            <h2 className="text-2xl font-bold text-gradient-rainbow">Payout Management</h2>
             <p className="text-gray-400 text-sm mt-1">Track your earnings and manage payout requests</p>
           </div>
           <div className="flex items-center space-x-4">

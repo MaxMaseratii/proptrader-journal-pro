@@ -105,7 +105,7 @@ export default function Reports() {
         {/* Header */}
         <div className="flex justify-between items-center">
           <div>
-            <h1 className="text-3xl font-bold">Reports & Analytics</h1>
+            <h1 className="text-3xl font-bold text-gradient-rainbow">Reports & Analytics</h1>
             <p className="text-gray-400 mt-1">Generate comprehensive trading reports and export data</p>
           </div>
           <div className="flex gap-3">
