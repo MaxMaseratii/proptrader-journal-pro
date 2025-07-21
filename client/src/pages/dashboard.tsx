@@ -183,7 +183,10 @@ export default function Dashboard() {
                   }
                   hover:border-amber-400/60
                 `}
-                onClick={() => onDayClick && onDayClick(date)}
+                onClick={() => {
+                  console.log('Weekly calendar clicked:', date.toDateString());
+                  onDayClick && onDayClick(date);
+                }}
               >
                 {/* Today indicator */}
                 {isToday && (
@@ -286,7 +289,10 @@ export default function Dashboard() {
                     }
                     hover:border-amber-400/60
                   `}
-                  onClick={() => onDayClick && onDayClick(date)}
+                  onClick={() => {
+                    console.log('Monthly calendar clicked:', date.toDateString());
+                    onDayClick && onDayClick(date);
+                  }}
                 >
                   {/* Today indicator */}
                   {isToday && (
