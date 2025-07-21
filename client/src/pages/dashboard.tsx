@@ -1198,11 +1198,11 @@ export default function Dashboard() {
                       Target: {accounts?.[0]?.riskRewardRatio || 3.0} RR
                     </div>
                     <div className="text-3xl font-bold text-blue-400 mb-1">
-                      {combinedAnalytics?.avgRiskRewardRatio?.toFixed(1) || '0.0'}
+                      {combinedAnalytics?.rFactor?.toFixed(1) || '0.0'}
                     </div>
                     <div className="text-sm text-gray-400">Risk:Reward</div>
                     <div className="text-xs text-blue-300 mt-1">
-                      AVG. Ratio 1:{combinedAnalytics?.avgRiskRewardRatio?.toFixed(1) || '0.0'}
+                      AVG. Ratio 1:{combinedAnalytics?.rFactor?.toFixed(1) || '0.0'}
                     </div>
                   </div>
 
@@ -1270,27 +1270,27 @@ export default function Dashboard() {
                   <div className="bg-black/30 rounded-lg p-4 border border-gray-700/50 relative">
                     <div className="absolute top-3 right-3">
                       <div className={`px-2 py-1 rounded text-xs font-bold ${
-                        (combinedAnalytics?.disciplineScore || 0) >= 90 ? 'bg-green-500 text-black' : 
-                        (combinedAnalytics?.disciplineScore || 0) >= 80 ? 'bg-blue-500 text-white' : 
-                        (combinedAnalytics?.disciplineScore || 0) >= 70 ? 'bg-yellow-500 text-black' : 
+                        (combinedAnalytics?.disciplinedScore || 0) >= 90 ? 'bg-green-500 text-black' : 
+                        (combinedAnalytics?.disciplinedScore || 0) >= 80 ? 'bg-blue-500 text-white' : 
+                        (combinedAnalytics?.disciplinedScore || 0) >= 70 ? 'bg-yellow-500 text-black' : 
                         'bg-red-500 text-white'
                       }`}>
-                        {(combinedAnalytics?.disciplineScore || 0) >= 90 ? 'ELITE' : 
-                         (combinedAnalytics?.disciplineScore || 0) >= 80 ? 'GOOD' : 
-                         (combinedAnalytics?.disciplineScore || 0) >= 70 ? 'AVG' : 'POOR'}
+                        {(combinedAnalytics?.disciplinedScore || 0) >= 90 ? 'ELITE' : 
+                         (combinedAnalytics?.disciplinedScore || 0) >= 80 ? 'GOOD' : 
+                         (combinedAnalytics?.disciplinedScore || 0) >= 70 ? 'AVG' : 'POOR'}
                       </div>
                     </div>
                     <div className={`text-3xl font-bold mb-1 ${
-                      (combinedAnalytics?.disciplineScore || 0) >= 90 ? 'text-green-400' : 
-                      (combinedAnalytics?.disciplineScore || 0) >= 80 ? 'text-green-400' : 
-                      (combinedAnalytics?.disciplineScore || 0) >= 70 ? 'text-yellow-400' : 
-                      (combinedAnalytics?.disciplineScore || 0) >= 60 ? 'text-orange-400' : 'text-red-400'
+                      (combinedAnalytics?.disciplinedScore || 0) >= 90 ? 'text-green-400' : 
+                      (combinedAnalytics?.disciplinedScore || 0) >= 80 ? 'text-green-400' : 
+                      (combinedAnalytics?.disciplinedScore || 0) >= 70 ? 'text-yellow-400' : 
+                      (combinedAnalytics?.disciplinedScore || 0) >= 60 ? 'text-orange-400' : 'text-red-400'
                     }`}>
-                      {Math.round(combinedAnalytics?.disciplineScore || 0)}% {
-                        (combinedAnalytics?.disciplineScore || 0) >= 90 ? 'A' : 
-                        (combinedAnalytics?.disciplineScore || 0) >= 80 ? 'B' : 
-                        (combinedAnalytics?.disciplineScore || 0) >= 70 ? 'C' : 
-                        (combinedAnalytics?.disciplineScore || 0) >= 60 ? 'D' : 'F'
+                      {Math.round(combinedAnalytics?.disciplinedScore || 0)}% {
+                        (combinedAnalytics?.disciplinedScore || 0) >= 90 ? 'A' : 
+                        (combinedAnalytics?.disciplinedScore || 0) >= 80 ? 'B' : 
+                        (combinedAnalytics?.disciplinedScore || 0) >= 70 ? 'C' : 
+                        (combinedAnalytics?.disciplinedScore || 0) >= 60 ? 'D' : 'F'
                       }
                     </div>
                     <div className="text-sm text-gray-400 mb-1">Discipline Score</div>
