@@ -133,6 +133,8 @@ export default function Dashboard() {
   // Calendar day selection state for Section 1 widgets
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [selectedDayData, setSelectedDayData] = useState<any>(null);
+
+
   
 
   
@@ -173,18 +175,37 @@ export default function Dashboard() {
                 key={date.toISOString()}
                 className={`
                   relative p-3 rounded-lg border transition-all duration-200 h-24 cursor-pointer
-                  ${selectedDate.toDateString() === date.toDateString()
-                    ? 'border-amber-400 bg-amber-900/20 shadow-lg'
+                  ${selectedDate?.toDateString() === date.toDateString()
+                    ? 'border-amber-400 bg-amber-900/20 shadow-lg ring-2 ring-amber-400/50'
                     : isToday 
                     ? 'border-teal-400/60 bg-gradient-to-br from-teal-900/30 via-gray-800/40 to-teal-900/30' 
                     : isCurrentMonth
                     ? 'border-gray-600/40 bg-gradient-to-br from-gray-800/40 via-gray-700/40 to-gray-800/40'
                     : 'border-gray-700/30 bg-gradient-to-br from-gray-900/30 via-gray-800/30 to-gray-900/30 opacity-60'
                   }
-                  hover:border-amber-400/60
+                  hover:border-amber-400/60 hover:scale-105
                 `}
-                onClick={() => {
-                  console.log('Weekly calendar clicked:', date.toDateString());
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  console.log('=== DAY CLICK HANDLER ===');
+                  console.log('Clicked date:', date.toDateString());
+                  console.log('Current trades length:', trades?.length || 0);
+                  console.log('Selected account IDs:', selectedAccountIds);
+                  
+                  // Update selected date immediately
+                  setSelectedDate(date);
+                  
+                  // Calculate and set day data
+                  if (trades && trades.length > 0) {
+                    const dayData = getDayData(date, trades);
+                    console.log('Setting selectedDayData to:', dayData);
+                    setSelectedDayData(dayData);
+                  } else {
+                    console.warn('No trades data available');
+                    setSelectedDayData(null);
+                  }
+                  
                   onDayClick && onDayClick(date);
                 }}
               >
@@ -289,8 +310,27 @@ export default function Dashboard() {
                     }
                     hover:border-amber-400/60
                   `}
-                  onClick={() => {
-                    console.log('Monthly calendar clicked:', date.toDateString());
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    console.log('=== DAY CLICK HANDLER ===');
+                    console.log('Clicked date:', date.toDateString());
+                    console.log('Current trades length:', trades?.length || 0);
+                    console.log('Selected account IDs:', selectedAccountIds);
+                    
+                    // Update selected date immediately
+                    setSelectedDate(date);
+                    
+                    // Calculate and set day data
+                    if (trades && trades.length > 0) {
+                      const dayData = getDayData(date, trades);
+                      console.log('Setting selectedDayData to:', dayData);
+                      setSelectedDayData(dayData);
+                    } else {
+                      console.warn('No trades data available');
+                      setSelectedDayData(null);
+                    }
+                    
                     onDayClick && onDayClick(date);
                   }}
                 >
@@ -501,34 +541,77 @@ export default function Dashboard() {
     queryKey: ["/api/trades"],
   });
 
+  // Initialize with today's data when trades load
+  useEffect(() => {
+    if (trades && trades.length > 0) {
+      const today = new Date();
+      setSelectedDate(today);
+      const todayData = getDayData(today, trades);
+      console.log('Initializing with today data:', todayData);
+      setSelectedDayData(todayData);
+    }
+  }, [trades, selectedAccountIds]); // Re-run when trades or account selection changes
+
   // Function to get day-specific data for widgets
   const getDayData = (clickedDate: Date, tradesData: Trade[] = []) => {
-    const dayTrades = getTradesForDate(clickedDate, tradesData, selectedAccountIds);
-    
-    const totalDayTrades = dayTrades.length;
-    const wins = dayTrades.filter(t => (t.pnl || 0) > 0).length;
-    const losses = dayTrades.filter(t => (t.pnl || 0) <= 0).length;
-    const dayPnL = dayTrades.reduce((sum, t) => sum + (t.pnl || 0), 0);
-    const avgRiskPerTrade = dayTrades.length > 0 ? 
-      dayTrades.reduce((sum, t) => sum + Math.abs(t.pnl || 0), 0) / dayTrades.length : 0;
-    const avgRewardRatio = wins > 0 ? 
-      dayTrades.filter(t => (t.pnl || 0) > 0).reduce((sum, t) => sum + (t.pnl || 0), 0) / wins : 0;
-    
-    return {
-      date: clickedDate,
-      totalDayTrades,
-      wins,
-      losses,
-      dayPnL,
-      avgRiskPerTrade: Math.round(avgRiskPerTrade),
-      avgRewardRatio: Math.round(avgRewardRatio),
-      maxDailyRisk: avgRiskPerTrade * 5,
-      disciplineScore: 85,
-      winRate: totalDayTrades > 0 ? (wins / totalDayTrades) * 100 : 0,
-      hoursWorked: 6.5,
-      hoursPlanned: 8,
-      trades: dayTrades
-    };
+    try {
+      console.log('getDayData called with:', {
+        date: clickedDate.toDateString(),
+        tradesDataLength: tradesData.length,
+        selectedAccountIds
+      });
+
+      const dayTrades = getTradesForDate(clickedDate, tradesData, selectedAccountIds);
+      console.log('Filtered day trades:', dayTrades);
+      
+      const totalDayTrades = dayTrades.length;
+      const wins = dayTrades.filter(t => (t.pnl || 0) > 0).length;
+      const losses = dayTrades.filter(t => (t.pnl || 0) <= 0).length;
+      const dayPnL = dayTrades.reduce((sum, t) => sum + (t.pnl || 0), 0);
+      
+      const avgRiskPerTrade = totalDayTrades > 0 ? 
+        dayTrades.reduce((sum, t) => sum + Math.abs(t.pnl || 0), 0) / totalDayTrades : 0;
+      
+      const winningTrades = dayTrades.filter(t => (t.pnl || 0) > 0);
+      const avgRewardRatio = winningTrades.length > 0 ? 
+        winningTrades.reduce((sum, t) => sum + (t.pnl || 0), 0) / winningTrades.length : 0;
+      
+      const result = {
+        date: clickedDate,
+        totalDayTrades,
+        wins,
+        losses,
+        dayPnL,
+        avgRiskPerTrade: Math.round(avgRiskPerTrade),
+        avgRewardRatio: Math.round(avgRewardRatio),
+        maxDailyRisk: avgRiskPerTrade * 5,
+        disciplineScore: 85, // Calculate from actual rules if available
+        winRate: totalDayTrades > 0 ? (wins / totalDayTrades) * 100 : 0,
+        hoursWorked: 6.5, // Get from actual data if available
+        hoursPlanned: 8,
+        trades: dayTrades
+      };
+      
+      console.log('getDayData result:', result);
+      return result;
+    } catch (error) {
+      console.error('Error in getDayData:', error);
+      return {
+        date: clickedDate,
+        totalDayTrades: 0,
+        wins: 0,
+        losses: 0,
+        dayPnL: 0,
+        avgRiskPerTrade: 0,
+        avgRewardRatio: 0,
+        maxDailyRisk: 0,
+        disciplineScore: 0,
+        winRate: 0,
+        hoursWorked: 0,
+        hoursPlanned: 8,
+        trades: []
+      };
+    }
   };
   
   // Initialize with today's data
