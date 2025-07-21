@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from "react";
+import React, { useState, useMemo, useEffect, useCallback } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Link } from "wouter";
 import { apiRequest } from "@/lib/queryClient";
@@ -138,6 +138,28 @@ export default function Dashboard() {
     start.setDate(today.getDate() - daysToSubtract);
     return start;
   });
+
+  // FIXED: Add missing clearDaySelection function
+  const clearDaySelection = () => {
+    console.log('🗑️ Clearing day selection');
+    setSelectedDate(new Date()); // Reset to today
+  };
+
+  // FIXED: Enhanced handleDayClick with better debugging
+  const handleDayClick = useCallback((clickedDate: Date) => {
+    console.log('🖱️ Day clicked:', clickedDate.toDateString());
+    console.log('🔄 Current selectedDate:', selectedDate.toDateString());
+    console.log('🔄 Setting new selectedDate...');
+    
+    // Force a new Date object to ensure React detects the change
+    const newDate = new Date(clickedDate.getTime());
+    setSelectedDate(newDate);
+    
+    // Debug: Verify state update
+    setTimeout(() => {
+      console.log('✅ State updated. New selectedDate should be:', newDate.toDateString());
+    }, 100);
+  }, [selectedDate]);
   
 
   
@@ -187,9 +209,15 @@ export default function Dashboard() {
                     ? 'border-gray-600/40 bg-gradient-to-br from-gray-800/40 via-gray-700/40 to-gray-800/40'
                     : 'border-gray-700/30 bg-gradient-to-br from-gray-900/30 via-gray-800/30 to-gray-900/30 opacity-60'
                   }
-                  hover:border-amber-400/60
+                  hover:border-amber-400/60 hover:scale-105
                 `}
-                onClick={() => handleDayClick(date)}
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  console.log('📅 Weekly calendar day clicked:', date.toDateString());
+                  handleDayClick(date);
+                }}
+                style={{ zIndex: 10 }}
               >
                 {/* Today indicator */}
                 {isToday && (
@@ -296,9 +324,15 @@ export default function Dashboard() {
                       ? 'border-gray-600/40 bg-gradient-to-br from-gray-800/40 via-gray-700/40 to-gray-800/40'
                       : 'border-gray-700/30 bg-gradient-to-br from-gray-900/30 via-gray-800/30 to-gray-900/30 opacity-60'
                     }
-                    hover:border-amber-400/60
+                    hover:border-amber-400/60 hover:scale-105
                   `}
-                  onClick={() => handleDayClick(date)}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    console.log('📅 Monthly calendar day clicked:', date.toDateString());
+                    handleDayClick(date);
+                  }}
+                  style={{ zIndex: 10 }}
                 >
                   {/* Today indicator */}
                   {isToday && (
@@ -565,12 +599,7 @@ export default function Dashboard() {
     return result;
   }, [selectedDate, trades, selectedAccountIds]);
 
-  // ===== FIXED: CALENDAR DAY CLICK HANDLER =====
-  const handleDayClick = (clickedDate: Date) => {
-    console.log('🖱️ Day clicked:', clickedDate.toDateString());
-    setSelectedDate(clickedDate);
-    // Note: selectedDayData will automatically update due to useMemo dependency
-  };
+  // ===== LEGACY HANDLER REMOVED - using enhanced version above =====
 
   // Function to get day-specific data for widgets (legacy support)
   const getDayData = (clickedDate: Date, tradesData: Trade[] = []) => {
