@@ -125,7 +125,7 @@ const DailyPlanPage = () => {
       queryClient.invalidateQueries({ queryKey: ['/api/daily-plans'] });
       setIsCreatePlanDialogOpen(false);
       resetPlanForm();
-      alert('Daily plan created successfully!');
+      // No alert - just close dialog and show plan immediately
     },
     onError: (error) => {
       console.error('Failed to create daily plan:', error);
