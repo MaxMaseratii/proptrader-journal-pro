@@ -387,15 +387,7 @@ const Spending = () => {
               </DialogContent>
             </Dialog>
             
-            {/* Add Expense Button moved here */}
-            <Button 
-              onClick={handleAddExpense}
-              className="bg-gradient-to-r from-teal-400 to-teal-600 text-black hover:from-teal-500 hover:to-teal-700"
-              disabled={!newExpense.amount || !newExpense.category || !newExpense.description || addExpenseMutation.isPending}
-            >
-              <Plus className="h-4 w-4 mr-2" />
-              {addExpenseMutation.isPending ? "Adding..." : "Add Expense"}
-            </Button>
+            {/* Add Expense Button now positioned above form fields */}
             
             <Dialog>
               <DialogTrigger asChild>
@@ -760,6 +752,16 @@ const Spending = () => {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
+            <div className="flex justify-end mb-4">
+              <Button 
+                onClick={handleAddExpense}
+                className="bg-gradient-to-r from-teal-400 to-teal-600 text-black hover:from-teal-500 hover:to-teal-700"
+                disabled={!newExpense.amount || !newExpense.category || !newExpense.description || addExpenseMutation.isPending}
+              >
+                <Plus className="h-4 w-4 mr-2" />
+                {addExpenseMutation.isPending ? "Adding..." : "Add Expense"}
+              </Button>
+            </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="amount" className="text-white">Amount</Label>
@@ -908,8 +910,8 @@ const Spending = () => {
           </CardContent>
       </Card>
 
-      {/* Legacy Spending Entry Component */}
-      <SpendingEntry accounts={accounts} />
+      {/* Legacy Spending Entry Component - Hidden since Add Expense is in header */}
+      {/* <SpendingEntry accounts={accounts} /> */}
     </div>
   );
 };

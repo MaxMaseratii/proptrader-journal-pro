@@ -93,7 +93,7 @@ const DailyPlanPage = () => {
   const { data: dailyPlans } = useQuery<DailyPlan[]>({ queryKey: ['/api/daily-plans'] });
   const { data: journalEntries } = useQuery<JournalEntry[]>({ queryKey: ['/api/journal'] });
   const { data: currentPlan } = useQuery<DailyPlan | null>({
-    queryKey: ['/api/daily-plans/by-date'],
+    queryKey: [`/api/daily-plans/by-date?date=${selectedDate}&accountId=${selectedAccount}`],
     enabled: !!selectedDate && !!selectedAccount,
   });
 
@@ -296,6 +296,15 @@ const DailyPlanPage = () => {
       biggestLoss: 0,
       isPlanSaved: true, // Mark plan as saved making it immutable except for additionalNotes
       additionalNotes: '', // Initialize empty additional notes
+      // Journal fields - initialize empty
+      whatWentWrong: '',
+      whatWentRight: '',
+      lessonsLearned: '',
+      improvementPlan: '',
+      emotionalState: 'neutral',
+      marketConditions: '',
+      tomorrowPlan: '',
+      tradeSetupLinks: JSON.stringify([]), // Empty array as JSON string
     };
 
     console.log('Plan payload:', planPayload);
@@ -868,13 +877,18 @@ const DailyPlanPage = () => {
             </CardContent>
           </Card>
 
-          {/* Strategy Rules */}
+
+        </div>
+
+        {/* Right Column - Strategy Rules First, Then Strategy Performance & Saved Strategies */}
+        <div className="space-y-6">
+          {/* Strategy Rules & Performance - Moved to Top */}
           {selectedStrategy && strategies?.find(s => s.id === selectedStrategy) && (
             <Card className="bg-gradient-to-br from-gray-900 via-gray-800 to-black border border-yellow-400/20 shadow-xl">
               <CardHeader>
                 <CardTitle className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-yellow-600 flex items-center gap-2">
                   <Shield className="w-5 h-5 text-yellow-400" />
-                  Strategy Rules & Performance
+                  Selected Strategy Rules & Performance
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -907,7 +921,7 @@ const DailyPlanPage = () => {
                       
                       {Array.isArray(strategy.rules) && strategy.rules.length > 0 && (
                         <div className="space-y-2">
-                          <div className="text-sm font-medium text-gray-300">Rules to Follow:</div>
+                          <div className="text-sm font-medium text-gray-300">Rules to Follow Today:</div>
                           {strategy.rules.map((rule, index) => (
                             <div key={index} className="flex items-center justify-between p-2 bg-gradient-to-r from-gray-800 to-gray-700 rounded-lg border border-yellow-400/10">
                               <span className="text-sm text-gray-300">{rule}</span>
@@ -922,16 +936,13 @@ const DailyPlanPage = () => {
               </CardContent>
             </Card>
           )}
-        </div>
 
-        {/* Right Column - Strategy Performance & Saved Strategies */}
-        <div className="space-y-6">
           {/* Strategy Performance Comparison Widget */}
           <Card className="bg-gradient-to-br from-gray-900 via-gray-800 to-black border border-yellow-400/20 shadow-xl">
             <CardHeader>
               <CardTitle className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-yellow-600 flex items-center gap-2">
                 <BarChart3 className="w-5 h-5 text-yellow-400" />
-                Strategy Performance Comparison
+                All Strategies Performance Comparison
               </CardTitle>
             </CardHeader>
             <CardContent>
