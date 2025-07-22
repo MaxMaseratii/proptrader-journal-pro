@@ -21,6 +21,7 @@ export const accounts = pgTable("accounts", {
   // Risk Management Settings
   riskPerTrade: real("risk_per_trade"), // Dollar amount to risk per trade
   riskPercentage: real("risk_percentage"), // Percentage of account to risk
+  riskRewardRatio: real("risk_reward_ratio").default(2.0), // Risk to reward ratio (e.g., 1:2 = 2.0)
   maxPositionSize: integer("max_position_size"), // Maximum contracts per trade
   maxTradesPerDay: integer("max_trades_per_day").default(0), // Maximum trades allowed per day (0 = unlimited)
   maxRiskPerDay: real("max_risk_per_day"), // Maximum risk per day ($)
@@ -98,7 +99,6 @@ export const accounts = pgTable("accounts", {
   riskCalculationPeriod: text("risk_calculation_period"), // 'weekly', 'bi_weekly', 'monthly', 'custom'
   customRiskAmount: real("custom_risk_amount"), // Fixed dollar amount to risk per trade
   useRiskPercentage: boolean("use_risk_percentage").default(false),
-  riskRewardRatio: real("risk_reward_ratio").default(2.0),
   primaryAsset: text("primary_asset"), // 'ES', 'MES', 'NQ', 'MNQ', etc.
   secondaryAsset: text("secondary_asset"),
   tertiaryAsset: text("tertiary_asset"),
