@@ -94,12 +94,23 @@ export default function Projections() {
 
   const createAccountMutation = useMutation({
     mutationFn: async (data: InsertAccount) => {
-      return apiRequest("POST", "/api/accounts", data);
+      return apiRequest("/api/accounts", "POST", data);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/accounts'] });
       setIsAccountDialogOpen(false);
       accountForm.reset();
+      toast({
+        title: "Account Created",
+        description: "Your account has been created successfully.",
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to create account.",
+        variant: "destructive",
+      });
     },
   });
 
@@ -110,9 +121,9 @@ export default function Projections() {
       firm: "",
       type: "challenge",
       status: "active",
-      startingBalance: null,
-      profitTarget: null,
-      maxDrawdown: null,
+      startingBalance: 0,
+      profitTarget: 0,
+      maxDrawdown: 0,
       hasDailyLossLimit: false,
       dailyLossLimit: null,
       dailyLossLimitType: "soft",
@@ -136,7 +147,7 @@ export default function Projections() {
       accountCost: null,
       purchaseMethod: null,
       resetCount: 0,
-      totalResetsCost: null,
+      totalResetsCost: 0,
       activationCost: null,
       activationPaid: false,
       includesActivationFee: false,
@@ -160,11 +171,11 @@ export default function Projections() {
       useRiskPercentage: false,
       riskPercentage: null,
       customRiskAmount: null,
-      riskRewardRatio: null,
+      riskRewardRatio: 2.0,
       primaryAsset: "ES" as AssetSymbol,
       useIntradayMargins: true,
-      marginSafetyBuffer: null,
-      stopLossPoints: null,
+      marginSafetyBuffer: 50.0,
+      stopLossPoints: 10,
       riskPerTrade: null,
       maxTradesPerDay: 0,
       maxRiskPerDay: null,
