@@ -65,9 +65,9 @@
             justify-content: center;
             font-size: 1.5rem;
         }
-        .feature-icon.yellow { background: linear-gradient(45deg, #f59e0b, #d97706); }
-        .feature-icon.green { background: linear-gradient(45deg, #10b981, #059669); }
-        .feature-icon.pink { background: linear-gradient(45deg, #ec4899, #be185d); }
+        .feature-icon.yellow { background: linear-gradient(45deg, #f59e0b, #d97706); color: #000; }
+        .feature-icon.green { background: linear-gradient(45deg, #10b981, #059669); color: #000; }
+        .feature-icon.pink { background: linear-gradient(45deg, #ec4899, #be185d); color: #000; }
         .auth-card {
             background: rgba(17, 24, 39, 0.95);
             border-radius: 1rem;
@@ -170,30 +170,46 @@
     <div class="container">
         <div class="hero">
             <h1>PropTraderJournal</h1>
-            <p>The ultimate trading journal designed for prop traders. Track your performance, analyze your discipline, and accelerate your path to funded accounts.</p>
+            <p>Professional trading journal built for serious prop traders. Advanced analytics, risk management, and performance tracking to accelerate your trading career.</p>
             
             <div class="features">
                 <div class="feature">
-                    <div class="feature-icon yellow">📊</div>
+                    <div class="feature-icon yellow">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M3 3v18h18"></path>
+                            <path d="m19 9-5 5-4-4-3 3"></path>
+                        </svg>
+                    </div>
                     <div>
-                        <h3>Professional Tracking</h3>
-                        <p style="color: #9ca3af; font-size: 0.875rem;">Track multiple prop accounts with precision</p>
+                        <h3>Professional Analytics</h3>
+                        <p style="color: #9ca3af; font-size: 0.875rem;">Advanced performance tracking and detailed trade analysis</p>
                     </div>
                 </div>
                 
                 <div class="feature">
-                    <div class="feature-icon green">🧠</div>
-                    <div>
-                        <h3>Discipline Analysis</h3>
-                        <p style="color: #9ca3af; font-size: 0.875rem;">AI-powered insights to improve your trading</p>
+                    <div class="feature-icon green">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="3"></circle>
+                            <path d="M12 1v6m0 6v6"></path>
+                            <path d="m21 12-6 0m-6 0-6 0"></path>
+                        </svg>
                     </div>
-                </div>
-                
-                <div class="feature">
-                    <div class="feature-icon pink">🛡️</div>
                     <div>
                         <h3>Risk Management</h3>
-                        <p style="color: #9ca3af; font-size: 0.875rem;">Advanced tools to protect your capital</p>
+                        <p style="color: #9ca3af; font-size: 0.875rem;">Sophisticated risk controls and drawdown monitoring</p>
+                    </div>
+                </div>
+                
+                <div class="feature">
+                    <div class="feature-icon pink">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+                            <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+                        </svg>
+                    </div>
+                    <div>
+                        <h3>Trading Journal</h3>
+                        <p style="color: #9ca3af; font-size: 0.875rem;">Comprehensive journaling and performance insights</p>
                     </div>
                 </div>
             </div>

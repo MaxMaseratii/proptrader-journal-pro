@@ -57,7 +57,7 @@ function Router() {
         </Route>
         <Route path="/auth">
           {() => {
-            window.location.href = '/standalone-auth.html';
+            window.location.href = '/auth.html';
             return null;
           }}
         </Route>
@@ -67,7 +67,7 @@ function Router() {
         <Route path="/support" component={Support} />
         <Route>
           {() => {
-            window.location.href = '/standalone-auth.html';
+            window.location.href = '/auth.html';
             return null;
           }}
         </Route>
