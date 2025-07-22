@@ -65,6 +65,8 @@ export const accounts = pgTable("accounts", {
   tradingSessionStart: text("trading_session_start"), // e.g. "09:30"
   tradingSessionEnd: text("trading_session_end"), // e.g. "16:00"
   timezone: text("timezone"), // e.g. "EST", "PST", "GMT"
+  dailyWorkingHours: real("daily_working_hours"), // Hours per day trader plans to work
+  hourlyWages: real("hourly_wages"), // Expected hourly wage in dollars
   useIntradayMargins: boolean("use_intraday_margins").default(true),
   
   // Payout Settings (flexible for all account types)

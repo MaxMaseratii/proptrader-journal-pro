@@ -179,6 +179,8 @@ export default function Projections() {
       tradingSessionStart: "",
       tradingSessionEnd: "",
       timezone: "",
+      dailyWorkingHours: null,
+      hourlyWages: null,
       copyTradingAllowed: true,
       newsTradingAllowed: true,
       useIntradayMargins: true,
@@ -1738,14 +1740,25 @@ export default function Projections() {
                           render={({ field }) => (
                             <FormItem>
                               <FormLabel className="text-white">Trading Session Start</FormLabel>
-                              <FormControl>
-                                <Input 
-                                  {...field} 
-                                  type="time"
-                                  className="bg-gray-800 border-gray-600 text-white" 
-                                  value={field.value || ""}
-                                />
-                              </FormControl>
+                              <Select onValueChange={field.onChange} value={field.value || ""}>
+                                <FormControl>
+                                  <SelectTrigger className="bg-gray-800 border-gray-600 text-white">
+                                    <SelectValue placeholder="--:-- --" />
+                                  </SelectTrigger>
+                                </FormControl>
+                                <SelectContent className="bg-gray-800 border-gray-600 max-h-60">
+                                  {Array.from({ length: 48 }, (_, i) => {
+                                    const hour = Math.floor(i / 2);
+                                    const minute = i % 2 === 0 ? "00" : "30";
+                                    const time = `${hour.toString().padStart(2, '0')}:${minute}`;
+                                    return (
+                                      <SelectItem key={time} value={time}>
+                                        {time}
+                                      </SelectItem>
+                                    );
+                                  })}
+                                </SelectContent>
+                              </Select>
                               <FormMessage />
                             </FormItem>
                           )}
@@ -1756,14 +1769,25 @@ export default function Projections() {
                           render={({ field }) => (
                             <FormItem>
                               <FormLabel className="text-white">Trading Session End</FormLabel>
-                              <FormControl>
-                                <Input 
-                                  {...field} 
-                                  type="time"
-                                  className="bg-gray-800 border-gray-600 text-white" 
-                                  value={field.value || ""}
-                                />
-                              </FormControl>
+                              <Select onValueChange={field.onChange} value={field.value || ""}>
+                                <FormControl>
+                                  <SelectTrigger className="bg-gray-800 border-gray-600 text-white">
+                                    <SelectValue placeholder="--:-- --" />
+                                  </SelectTrigger>
+                                </FormControl>
+                                <SelectContent className="bg-gray-800 border-gray-600 max-h-60">
+                                  {Array.from({ length: 48 }, (_, i) => {
+                                    const hour = Math.floor(i / 2);
+                                    const minute = i % 2 === 0 ? "00" : "30";
+                                    const time = `${hour.toString().padStart(2, '0')}:${minute}`;
+                                    return (
+                                      <SelectItem key={time} value={time}>
+                                        {time}
+                                      </SelectItem>
+                                    );
+                                  })}
+                                </SelectContent>
+                              </Select>
                               <FormMessage />
                             </FormItem>
                           )}
@@ -1774,12 +1798,66 @@ export default function Projections() {
                           render={({ field }) => (
                             <FormItem>
                               <FormLabel className="text-white">Timezone</FormLabel>
+                              <Select onValueChange={field.onChange} value={field.value || ""}>
+                                <FormControl>
+                                  <SelectTrigger className="bg-gray-800 border-gray-600 text-white">
+                                    <SelectValue placeholder="Select timezone" />
+                                  </SelectTrigger>
+                                </FormControl>
+                                <SelectContent className="bg-gray-800 border-gray-600">
+                                  <SelectItem value="EST">EST - Eastern Standard Time</SelectItem>
+                                  <SelectItem value="CST">CST - Central Standard Time</SelectItem>
+                                  <SelectItem value="MST">MST - Mountain Standard Time</SelectItem>
+                                  <SelectItem value="PST">PST - Pacific Standard Time</SelectItem>
+                                  <SelectItem value="GMT">GMT - Greenwich Mean Time</SelectItem>
+                                  <SelectItem value="CET">CET - Central European Time</SelectItem>
+                                  <SelectItem value="JST">JST - Japan Standard Time</SelectItem>
+                                  <SelectItem value="AEST">AEST - Australian Eastern Standard Time</SelectItem>
+                                </SelectContent>
+                              </Select>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-4">
+                        <FormField
+                          control={accountForm.control}
+                          name="dailyWorkingHours"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="text-white">Daily Working Hours</FormLabel>
                               <FormControl>
                                 <Input 
                                   {...field} 
+                                  type="number" 
+                                  step="0.5"
                                   className="bg-gray-800 border-gray-600 text-white" 
-                                  placeholder="e.g. EST, PST, GMT"
-                                  value={field.value || ""}
+                                  placeholder="8.0"
+                                  value={field.value === null ? "" : field.value}
+                                  onChange={(e) => field.onChange(e.target.value === "" ? null : parseFloat(e.target.value))}
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={accountForm.control}
+                          name="hourlyWages"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="text-white">Hourly Wages ($)</FormLabel>
+                              <FormControl>
+                                <Input 
+                                  {...field} 
+                                  type="number" 
+                                  step="0.01"
+                                  className="bg-gray-800 border-gray-600 text-white" 
+                                  placeholder="25.00"
+                                  value={field.value === null ? "" : field.value}
+                                  onChange={(e) => field.onChange(e.target.value === "" ? null : parseFloat(e.target.value))}
                                 />
                               </FormControl>
                               <FormMessage />
