@@ -83,7 +83,7 @@ export default function Reports() {
         name: acc.name,
         type: acc.type,
         firm: acc.firm,
-        balance: acc.currentBalance,
+        balance: acc.startingBalance,
         status: acc.status
       }))
     };

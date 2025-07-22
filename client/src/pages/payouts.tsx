@@ -81,43 +81,8 @@ export default function Payouts() {
 
   const selectedAccount = accounts?.find(acc => acc.id.toString() === selectedAccountId);
 
-  // Mock payout history for demonstration
-  const payoutHistory: PayoutHistory[] = [
-    {
-      id: 1,
-      date: "2024-10-15",
-      amount: 1200,
-      status: 'received',
-      type: 'weekly',
-      firmRating: 5,
-      firmExperience: "Excellent service! Fast payout processing, no issues whatsoever.",
-      requestedDate: "2024-10-10",
-      approvedDate: "2024-10-12",
-      receivedDate: "2024-10-15"
-    },
-    {
-      id: 2,
-      date: "2024-09-28",
-      amount: 800,
-      status: 'received',
-      type: 'weekly',
-      firmRating: 4,
-      firmExperience: "Good experience, took 3 days but everything went smoothly.",
-      requestedDate: "2024-09-25",
-      approvedDate: "2024-09-26",
-      receivedDate: "2024-09-28"
-    },
-    {
-      id: 3,
-      date: "2024-09-10", 
-      amount: 600,
-      status: 'approved',
-      type: 'weekly',
-      notes: "Waiting for bank transfer to complete",
-      requestedDate: "2024-09-05",
-      approvedDate: "2024-09-08"
-    }
-  ];
+  // Payout history - will be empty until user requests payouts
+  const payoutHistory: PayoutHistory[] = [];
 
   const calculatePayoutMetrics = (): PayoutMetrics | null => {
     if (!selectedAccount || !trades) return null;

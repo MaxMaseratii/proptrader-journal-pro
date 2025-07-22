@@ -18,12 +18,12 @@ import {
 const EnhancedAchievementSystem = () => {
   const playerStats = {
     totalAchievements: 12,
-    unlockedAchievements: 3,
-    completionRate: 25,
-    totalPoints: 350,
-    currentRank: 'Novice Trader',
-    nextRank: 'Beginner Trader',
-    pointsToNextRank: 150
+    unlockedAchievements: 0,
+    completionRate: 0,
+    totalPoints: 0,
+    currentRank: 'New Trader',
+    nextRank: 'Novice Trader',
+    pointsToNextRank: 100
   };
 
   const achievementCategories = [
@@ -35,7 +35,7 @@ const EnhancedAchievementSystem = () => {
         { 
           title: 'First Profit', 
           description: 'Make your first profitable trade', 
-          unlocked: true, 
+          unlocked: false, 
           points: 50,
           icon: Target,
           rarity: 'common'
@@ -45,7 +45,7 @@ const EnhancedAchievementSystem = () => {
           description: 'Complete 10 consecutive profitable trades', 
           unlocked: false, 
           points: 200,
-          progress: 30,
+          progress: 0,
           icon: Flame,
           rarity: 'rare'
         },
@@ -54,7 +54,7 @@ const EnhancedAchievementSystem = () => {
           description: 'Reach $10,000 in total profits', 
           unlocked: false, 
           points: 500,
-          progress: 15,
+          progress: 0,
           icon: Crown,
           rarity: 'epic'
         }
@@ -70,14 +70,14 @@ const EnhancedAchievementSystem = () => {
           description: 'Maintain risk below 2% for 30 days', 
           unlocked: false, 
           points: 300,
-          progress: 60,
+          progress: 0,
           icon: Shield,
           rarity: 'rare'
         },
         { 
           title: 'Drawdown Defender', 
           description: 'Never exceed 5% drawdown in a month', 
-          unlocked: true, 
+          unlocked: false, 
           points: 250,
           icon: Shield,
           rarity: 'uncommon'
@@ -87,7 +87,7 @@ const EnhancedAchievementSystem = () => {
           description: 'Perfect position sizing for 100 trades', 
           unlocked: false, 
           points: 400,
-          progress: 45,
+          progress: 0,
           icon: Target,
           rarity: 'epic'
         }
@@ -101,7 +101,7 @@ const EnhancedAchievementSystem = () => {
         { 
           title: 'Journal Keeper', 
           description: 'Journal 50 consecutive trades', 
-          unlocked: true, 
+          unlocked: false, 
           points: 150,
           icon: Award,
           rarity: 'uncommon'
@@ -111,7 +111,7 @@ const EnhancedAchievementSystem = () => {
           description: 'Trade during market open 20 times', 
           unlocked: false, 
           points: 100,
-          progress: 75,
+          progress: 0,
           icon: Zap,
           rarity: 'common'
         },
@@ -120,7 +120,7 @@ const EnhancedAchievementSystem = () => {
           description: 'Complete market analysis on 10 weekends', 
           unlocked: false, 
           points: 200,
-          progress: 20,
+          progress: 0,
           icon: Star,
           rarity: 'rare'
         }
@@ -136,7 +136,7 @@ const EnhancedAchievementSystem = () => {
           description: 'Achieve 80%+ win rate over 50 trades', 
           unlocked: false, 
           points: 600,
-          progress: 55,
+          progress: 0,
           icon: Crown,
           rarity: 'legendary'
         },
@@ -145,7 +145,7 @@ const EnhancedAchievementSystem = () => {
           description: 'Maintain 2.0+ profit factor for 3 months', 
           unlocked: false, 
           points: 700,
-          progress: 33,
+          progress: 0,
           icon: Trophy,
           rarity: 'legendary'
         },
@@ -154,7 +154,7 @@ const EnhancedAchievementSystem = () => {
           description: 'Profitable for 12 consecutive months', 
           unlocked: false, 
           points: 1000,
-          progress: 8,
+          progress: 0,
           icon: Medal,
           rarity: 'mythic'
         }
@@ -162,23 +162,7 @@ const EnhancedAchievementSystem = () => {
     }
   ];
 
-  const recentAchievements = [
-    {
-      title: 'First Profit',
-      points: 50,
-      unlockedDate: '2 days ago'
-    },
-    {
-      title: 'Journal Keeper',
-      points: 150,
-      unlockedDate: '1 week ago'
-    },
-    {
-      title: 'Drawdown Defender',
-      points: 250,
-      unlockedDate: '2 weeks ago'
-    }
-  ];
+  const recentAchievements: any[] = [];
 
   const getRarityColor = (rarity: string) => {
     switch (rarity) {

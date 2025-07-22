@@ -213,7 +213,7 @@ const Spending = () => {
     if (!budgetSetup.totalBudget || !budgetSetup.tradingBudget || !budgetSetup.personalBudget) return;
     
     const planData = {
-      userId: user?.id || "",
+      userId: (user as any)?.id || "",
       name: `${budgetSetup.period.charAt(0).toUpperCase() + budgetSetup.period.slice(1)} Budget Plan`,
       budgetPeriod: budgetSetup.period,
       totalBudget: parseFloat(budgetSetup.totalBudget),
@@ -231,7 +231,7 @@ const Spending = () => {
     if (!newCategoryName) return;
     
     const categoryData = {
-      userId: user?.id || "",
+      userId: (user as any)?.id || "",
       name: newCategoryName,
       type,
       budgetAmount: 0,
@@ -423,7 +423,7 @@ const Spending = () => {
                       <Label className="text-white">Total Budget</Label>
                       <Input
                         type="number"
-                        placeholder="5000"
+                        placeholder="Total monthly budget"
                         value={budgetSetup.totalBudget}
                         onChange={(e) => setBudgetSetup({...budgetSetup, totalBudget: e.target.value})}
                         className="bg-gray-800 border-yellow-400/20 text-white"
@@ -433,7 +433,7 @@ const Spending = () => {
                       <Label className="text-white">Trading Budget</Label>
                       <Input
                         type="number"
-                        placeholder="3000"
+                        placeholder="Budget for trading"
                         value={budgetSetup.tradingBudget}
                         onChange={(e) => setBudgetSetup({...budgetSetup, tradingBudget: e.target.value})}
                         className="bg-gray-800 border-yellow-400/20 text-white"
@@ -443,7 +443,7 @@ const Spending = () => {
                       <Label className="text-white">Personal Budget</Label>
                       <Input
                         type="number"
-                        placeholder="2000"
+                        placeholder="Personal expenses budget"
                         value={budgetSetup.personalBudget}
                         onChange={(e) => setBudgetSetup({...budgetSetup, personalBudget: e.target.value})}
                         className="bg-gray-800 border-yellow-400/20 text-white"

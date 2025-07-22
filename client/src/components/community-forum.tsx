@@ -154,7 +154,7 @@ const mockPosts: ForumPost[] = [
 ];
 
 export default function CommunityForum() {
-  const [posts, setPosts] = useState<ForumPost[]>(mockPosts);
+  const [posts, setPosts] = useState<ForumPost[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
   const [sortBy, setSortBy] = useState<'hot' | 'new' | 'top'>('hot');
