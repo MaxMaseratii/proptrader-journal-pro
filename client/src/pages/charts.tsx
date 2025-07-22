@@ -87,7 +87,7 @@ export default function Charts() {
   const equityData = trades
     .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
     .reduce((acc, trade, index) => {
-      const previousBalance = index === 0 ? 100000 : acc[index - 1].balance; // Starting balance
+      const previousBalance = index === 0 ? (accounts?.[0]?.startingBalance || 0) : acc[index - 1].balance;
       const newBalance = previousBalance + (trade.pnl || 0);
       acc.push({
         date: format(new Date(trade.date), 'MMM dd'),

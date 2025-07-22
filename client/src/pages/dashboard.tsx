@@ -1895,7 +1895,7 @@ export default function Dashboard() {
                     const selectedAccount = accounts?.find(acc => 
                       selectedAccountIds.length === 1 ? selectedAccountIds.includes(acc.id) : false
                     );
-                    const accountCost = selectedAccount?.accountCost || 100000;
+                    const accountCost = selectedAccount?.accountCost || selectedAccount?.startingBalance || 0;
                     
                     let runningBalance = accountCost;
                     filteredTrades.forEach(trade => {
@@ -1959,7 +1959,7 @@ export default function Dashboard() {
                     const selectedAccount = accounts?.find(acc => 
                       selectedAccountIds.length === 1 ? selectedAccountIds.includes(acc.id) : false
                     );
-                    const accountCost = selectedAccount?.accountCost || 100000;
+                    const accountCost = selectedAccount?.accountCost || selectedAccount?.startingBalance || 0;
                     
                     let runningBalance = accountCost;
                     const equityPoints = [{ 
@@ -2014,7 +2014,7 @@ export default function Dashboard() {
                         </div>
 
                         {/* Floating tooltip */}
-                        <div id="chart-tooltip" className="absolute z-50 bg-gray-800 border border-gray-600 rounded-lg p-3 pointer-events-none opacity-0 transition-opacity duration-200 shadow-lg min-w-[200px]">
+                        <div id="chart-tooltip" className="absolute z-50 bg-gray-800 border border-gray-600 rounded-lg p-2 pointer-events-none opacity-0 transition-opacity duration-200 shadow-lg min-w-[180px]">
                           <div className="text-xs text-gray-300 mb-1" id="tooltip-date"></div>
                           <div className="text-sm font-medium text-white mb-1" id="tooltip-balance"></div>
                           <div className="text-xs text-gray-400" id="tooltip-trades"></div>
@@ -2108,14 +2108,6 @@ export default function Dashboard() {
                             opacity="0.8"
                             filter="url(#glow)"
                           />
-                          <text
-                            x={padding.left + 10}
-                            y={breakevenY - 8}
-                            className="fill-yellow-400 text-xs font-semibold"
-                            fontSize="12"
-                          >
-                            Breakeven: {formatCurrency(accountCost)}
-                          </text>
 
                           {/* Area fill under curve */}
                           <path

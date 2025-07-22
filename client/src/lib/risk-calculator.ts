@@ -47,7 +47,7 @@ export interface RiskSuggestion {
 
 export function calculateRiskSuggestions(account: Partial<Account>): RiskSuggestion {
   // For prop firms, use max drawdown as the real account amount for risk calculations
-  const tradingCapital = account.maxDrawdown || account.tradingCapital || 50000;
+  const tradingCapital = account.maxDrawdown || account.tradingCapital || account.startingBalance || 0;
   const profitTarget = account.profitTarget || tradingCapital * 0.1;
   const maxDrawdown = account.maxDrawdown || tradingCapital * 0.05;
   const dailyLossLimit = account.dailyLossLimit || maxDrawdown * 0.5;

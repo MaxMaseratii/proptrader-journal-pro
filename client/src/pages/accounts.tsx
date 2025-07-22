@@ -47,15 +47,14 @@ export default function Accounts() {
       firm: "",
       type: "challenge",
       status: "active",
-      startingBalance: 50000,
-      currentBalance: 50000,
+      startingBalance: 0,
       profitTarget: 5000,
       maxDrawdown: 2000,
       hasDailyLossLimit: false,
       dailyLossLimit: 0,
       dailyLossLimitType: "soft",
       // Risk calculator fields
-      tradingCapital: 50000,
+      tradingCapital: 0,
       riskCalculationPeriod: "weekly",
       useRiskPercentage: false,
       riskPercentage: 1.0,
@@ -1015,7 +1014,7 @@ export default function Accounts() {
                                     <div className="mt-2 p-2 bg-blue-900/30 rounded border border-blue-600/30">
                                       {(() => {
                                         const asset = ASSET_CONFIG.find(a => a.symbol === form.watch("primaryTradingAsset"));
-                                        const riskSuggestion = getRiskSuggestion(form.watch("primaryTradingAsset"), form.watch("startingBalance") || 50000);
+                                        const riskSuggestion = getRiskSuggestion(form.watch("primaryTradingAsset"), form.watch("startingBalance") || 0);
                                         return asset ? (
                                           <div className="space-y-1">
                                             <p className="text-blue-300 text-xs">
@@ -2019,7 +2018,7 @@ export default function Accounts() {
                                       value={field.value || ""}
                                       onChange={(e) => field.onChange(e.target.value === "" ? null : parseFloat(e.target.value))}
                                       className="bg-gray-700 border-gray-600 text-white placeholder-gray-400"
-                                      placeholder="e.g., 50000"
+                                      placeholder="Account starting balance"
                                     />
                                   </FormControl>
                                   <p className="text-xs text-gray-400 mt-1">

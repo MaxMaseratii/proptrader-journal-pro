@@ -44,9 +44,9 @@ export default function DashboardShowcase() {
   });
 
   // Calculate portfolio metrics
-  const totalPortfolioValue = accounts.reduce((sum, acc) => sum + acc.currentBalance, 0);
+  const totalPortfolioValue = accounts.reduce((sum, acc) => sum + acc.startingBalance, 0);
   const totalInvested = accounts.reduce((sum, acc) => sum + (acc.accountCost || 0) + (acc.activationCost || 0), 0);
-  const totalPnL = accounts.reduce((sum, acc) => sum + (acc.currentBalance - acc.startingBalance), 0);
+  const totalPnL = trades.reduce((sum, trade) => sum + (trade.pnl || 0), 0);
   const totalPnLPercentage = accounts.length > 0 
     ? (totalPnL / accounts.reduce((sum, acc) => sum + acc.startingBalance, 0)) * 100 
     : 0;
@@ -65,25 +65,29 @@ export default function DashboardShowcase() {
   // Recent trades for showcase
   const recentTrades = trades.slice(0, 5);
 
-  // Mock equity curve data
-  const equityData = [
-    { date: '2024-09-15', balance: 150000 },
-    { date: '2024-09-20', balance: 151200 },
-    { date: '2024-09-25', balance: 149800 },
-    { date: '2024-09-30', balance: 152100 },
-    { date: '2024-10-05', balance: 153400 },
-    { date: '2024-10-10', balance: 152800 },
-    { date: '2024-10-15', balance: 154600 },
-    { date: '2024-10-20', balance: 156200 },
-    { date: '2024-10-25', balance: 155100 },
-    { date: '2024-10-30', balance: 157800 },
-  ];
+  // Generate equity curve data from actual trades
+  const equityData = trades.length > 0 ? trades
+    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+    .reduce((acc, trade, index) => {
+      const previousBalance = index === 0 ? (accounts?.[0]?.startingBalance || 0) : acc[index - 1].balance;
+      const newBalance = previousBalance + (trade.pnl || 0);
+      acc.push({
+        date: new Date(trade.date).toISOString().split('T')[0],
+        balance: newBalance
+      });
+      return acc;
+    }, [] as { date: string; balance: number }[]) : [];
 
-  const monthlyData = [
-    { month: 'Aug', pnl: 2400 },
-    { month: 'Sep', pnl: 3100 },
-    { month: 'Oct', pnl: 4200 },
-  ];
+  // Generate monthly data from actual trades
+  const monthlyData = trades.length > 0 ? Array.from(
+    trades.reduce((acc, trade) => {
+      const month = new Date(trade.date).toLocaleDateString('en-US', { month: 'short' });
+      const existing = acc.get(month) || 0;
+      acc.set(month, existing + (trade.pnl || 0));
+      return acc;
+    }, new Map<string, number>()),
+    ([month, pnl]) => ({ month, pnl })
+  ) : [];
 
   return (
     <div className="p-6 space-y-8 bg-prop-gradient-main min-h-screen">
@@ -302,7 +306,7 @@ export default function DashboardShowcase() {
               <div>
                 <p className="text-gray-400 text-sm font-medium">Funded Accounts</p>
                 <p className="text-2xl font-bold text-prop-blue">
-                  ${accounts.filter(acc => acc.status === 'funded').reduce((sum, acc) => sum + acc.currentBalance, 0).toLocaleString()}
+                  ${accounts.filter(acc => acc.status === 'funded').reduce((sum, acc) => sum + acc.startingBalance, 0).toLocaleString()}
                 </p>
                 <p className="text-xs text-gray-400 mt-1">
                   {fundedAccounts} accounts • Payout eligible
@@ -321,7 +325,7 @@ export default function DashboardShowcase() {
               <div>
                 <p className="text-gray-400 text-sm font-medium">Live Accounts</p>
                 <p className="text-2xl font-bold text-prop-green">
-                  ${accounts.filter(acc => acc.status === 'active').reduce((sum, acc) => sum + acc.currentBalance, 0).toLocaleString()}
+                  ${accounts.filter(acc => acc.status === 'active').reduce((sum, acc) => sum + acc.startingBalance, 0).toLocaleString()}
                 </p>
                 <p className="text-xs text-gray-400 mt-1">
                   {activeAccounts} accounts • Payout eligible
@@ -340,7 +344,7 @@ export default function DashboardShowcase() {
               <div>
                 <p className="text-gray-400 text-sm font-medium">Challenge Accounts</p>
                 <p className="text-2xl font-bold text-prop-gold">
-                  ${accounts.filter(acc => acc.type === 'challenge').reduce((sum, acc) => sum + acc.currentBalance, 0).toLocaleString()}
+                  ${accounts.filter(acc => acc.type === 'challenge').reduce((sum, acc) => sum + acc.startingBalance, 0).toLocaleString()}
                 </p>
                 <p className="text-xs text-gray-400 mt-1">
                   {challengeAccounts} accounts • In progress
@@ -384,12 +388,8 @@ export default function DashboardShowcase() {
                     <p className="text-sm text-gray-400">{account.firm}</p>
                   </div>
                   <div className="text-right">
-                    <p className="font-semibold text-white">${account.currentBalance.toLocaleString()}</p>
-                    <p className={`text-sm ${
-                      account.currentBalance >= account.startingBalance ? 'text-prop-green' : 'text-prop-pink'
-                    }`}>
-                      {account.currentBalance >= account.startingBalance ? '+' : ''}
-                      ${(account.currentBalance - account.startingBalance).toLocaleString()}
+                    <p className="font-semibold text-white">${account.startingBalance.toLocaleString()}</p>
+                    <p className="text-sm text-gray-400">Starting Balance
                     </p>
                   </div>
                 </div>
