@@ -194,7 +194,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Update account with reset data
       const updatedAccount = await storage.updateAccount(id, {
         currentBalance: account.startingBalance,
-        status: 'active',
+        status: 'active' as const,
         resetCount: (account.resetCount || 0) + 1,
         totalResetsCost: (account.totalResetsCost || 0) + (resetCost || 0)
       });
@@ -211,7 +211,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const id = parseInt(req.params.id);
       
       const updatedAccount = await storage.updateAccount(id, {
-        status: 'withdrawn'
+        status: 'withdrawn' as const
       });
 
       if (!updatedAccount) {
@@ -514,7 +514,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const errors: string[] = [];
 
       // Check if this is a completed trades CSV format (has EnteredAt, ExitedAt, etc.)
-      const isCompletedTradesFormat = headers.some(h => 
+      const isCompletedTradesFormat = headers.some((h: string) => 
         h.toLowerCase().includes('enteredat') || 
         h.toLowerCase().includes('exitedat') || 
         h.toLowerCase().includes('entryprice') ||
@@ -533,7 +533,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           
           try {
             const values = line.split(',').map((v: string) => v.trim());
-            const row: any = {};
+            const row: Record<string, string> = {};
             
             headers.forEach((header: string, index: number) => {
               row[header] = values[index] || '';
@@ -964,8 +964,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
     } catch (error) {
       console.error("Detailed CSV import error:", error);
-      console.error("Error stack:", error.stack);
-      console.error("Error name:", error.name);
+      console.error("Error stack:", (error as Error).stack);
+      console.error("Error name:", (error as Error).name);
       res.status(500).json({ message: "Failed to import CSV", error: error instanceof Error ? error.message : 'Unknown error' });
     }
   });
@@ -997,7 +997,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.put("/api/journal/:id", async (req, res) => {
     try {
       const id = parseInt(req.params.id);
-      const validatedData = insertJournalEntrySchema.partial().parse(req.body);
+      const validatedData = insertJournalEntrySchema.deepPartial().parse(req.body);
       const entry = await storage.updateJournalEntry(id, validatedData);
       if (!entry) {
         return res.status(404).json({ message: "Journal entry not found" });
@@ -1050,11 +1050,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
         losingTrades: losingTrades.length,
         bestTrade: bestTrade?.pnl || 0,
         worstTrade: worstTrade?.pnl || 0,
-        currentBalance: account.currentBalance,
-        drawdown: ((account.startingBalance - account.currentBalance) / account.startingBalance) * 100,
+        currentBalance: account.startingBalance + totalPnl,
+        drawdown: Math.max(0, ((account.startingBalance - (account.startingBalance + totalPnl)) / account.startingBalance) * 100),
         profitTarget: account.profitTarget,
         dailyLossLimit: account.dailyLossLimit,
-        riskLimitUsed: Math.abs(worstTrade?.pnl || 0) / account.dailyLossLimit * 100
+        riskLimitUsed: account.dailyLossLimit ? (Math.abs(worstTrade?.pnl || 0) / account.dailyLossLimit * 100) : 0
       };
 
       res.json(analytics);
@@ -1296,7 +1296,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Achievement routes
   app.get("/api/achievements", requireAuth, async (req, res) => {
     try {
-      const userId = req.user.id;
+      const userId = req.user?.id;
+      if (!userId) {
+        return res.status(401).json({ message: "User not authenticated" });
+      }
       let achievements = await storage.getAchievements(userId);
       
       // Initialize default achievements if none exist
@@ -1363,7 +1366,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get("/api/user-stats", requireAuth, async (req, res) => {
     try {
-      const userId = req.user.id;
+      const userId = req.user?.id;
+      if (!userId) {
+        return res.status(401).json({ message: "User not authenticated" });
+      }
       let userStats = await storage.getUserStats(userId);
       
       // Initialize user stats if none exist
@@ -1390,7 +1396,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Projection saving routes
   app.post("/api/projections/save", requireAuth, async (req, res) => {
     try {
-      const userId = req.user.id;
+      const userId = req.user?.id;
+      if (!userId) {
+        return res.status(401).json({ message: "User not authenticated" });
+      }
       const projectionData = {
         ...req.body,
         userId
@@ -1406,7 +1415,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get("/api/projections/account/:accountId", requireAuth, async (req, res) => {
     try {
-      const userId = req.user.id;
+      const userId = req.user?.id;
+      if (!userId) {
+        return res.status(401).json({ message: "User not authenticated" });
+      }
       const accountId = parseInt(req.params.accountId);
       
       const projections = await storage.getSavedProjections(userId, accountId);
@@ -1472,7 +1484,7 @@ Current trader context:
 - Win rate: ${userContext.winRate.toFixed(1)}%
 - Active accounts: ${userContext.accounts.length}
 
-Recent trades summary: ${userContext.recentTrades.map(trade => 
+Recent trades summary: ${userContext.recentTrades.map((trade: any) => 
   `${trade.symbol}: ${trade.pnl > 0 ? '+' : ''}$${trade.pnl} (${trade.type})`
 ).join(', ') || 'No recent trades'}
 

@@ -103,7 +103,7 @@ export function setupAuth(app: Express) {
       async (email, password, done) => {
         try {
           const user = await storage.getUserByEmail(email);
-          if (!user || !(await comparePasswords(password, user.password))) {
+          if (!user || !user.password || !(await comparePasswords(password, user.password))) {
             return done(null, false, { message: "Invalid email or password" });
           }
           // Skip email verification check for production launch
@@ -148,6 +148,7 @@ export function setupAuth(app: Express) {
       const hashedPassword = await hashPassword(password);
       
       const user = await storage.createUser({
+        id: crypto.randomUUID(),
         firstName,
         lastName,
         email,
