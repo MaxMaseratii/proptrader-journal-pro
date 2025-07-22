@@ -447,24 +447,13 @@ export default function Projections() {
         </div>
         
         <div className="flex gap-2">
-          <Dialog open={isAccountDialogOpen} onOpenChange={setIsAccountDialogOpen}>
-            <DialogTrigger asChild>
-              <Button className="bg-gradient-to-r from-yellow-400 to-yellow-600 text-black font-semibold hover:from-yellow-500 hover:to-yellow-700">
-                <Plus className="w-4 h-4 mr-2" />
-                New Account
-              </Button>
-            </DialogTrigger>
-            {/* Account creation dialog remains unchanged */}
-            <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto bg-gray-900 border-gray-700">
-              <DialogHeader>
-                <DialogTitle className="text-white">Create Trading Account</DialogTitle>
-              </DialogHeader>
-              {/* Full account creation form preserved - keeping existing form */}
-              <div className="p-4">
-                <p className="text-gray-400">Account creation form goes here...</p>
-              </div>
-            </DialogContent>
-          </Dialog>
+          <Button 
+            onClick={() => setIsAccountDialogOpen(true)}
+            className="bg-gradient-to-r from-yellow-400 to-yellow-600 text-black font-semibold hover:from-yellow-500 hover:to-yellow-700"
+          >
+            <Plus className="w-4 h-4 mr-2" />
+            New Account
+          </Button>
         </div>
       </div>
 
@@ -972,16 +961,268 @@ export default function Projections() {
           </div>
         </div>
 
-        {/* Account Creation Dialog - Temporarily simplified */}
+        {/* Account Creation Dialog */}
         <Dialog open={isAccountDialogOpen} onOpenChange={setIsAccountDialogOpen}>
           <DialogContent className="max-w-4xl max-h-[90vh] bg-gray-900 border-gray-700">
             <DialogHeader>
               <DialogTitle className="text-white text-xl">Create New Trading Account</DialogTitle>
             </DialogHeader>
-            <div className="p-4">
-              <p className="text-gray-400">Account creation form will be restored...</p>
-              <Button onClick={() => setIsAccountDialogOpen(false)} className="mt-4">Close</Button>
-            </div>
+            <ScrollArea className="max-h-[80vh] px-6">
+              <Form {...accountForm}>
+                <form onSubmit={accountForm.handleSubmit((data) => createAccountMutation.mutate(data))} className="space-y-6">
+                  <Tabs defaultValue="basic" className="w-full">
+                    <TabsList className="grid w-full grid-cols-3 bg-gray-800">
+                      <TabsTrigger value="basic">Basic Info</TabsTrigger>
+                      <TabsTrigger value="financial">Financial</TabsTrigger>
+                      <TabsTrigger value="rules">Rules & Risk</TabsTrigger>
+                    </TabsList>
+
+                    <TabsContent value="basic" className="space-y-4">
+                      <div className="grid grid-cols-2 gap-4">
+                        <FormField
+                          control={accountForm.control}
+                          name="name"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="text-white">Account Name</FormLabel>
+                              <FormControl>
+                                <Input {...field} className="bg-gray-800 border-gray-600 text-white" placeholder="My Trading Account" />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={accountForm.control}
+                          name="firm"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="text-white">Prop Firm</FormLabel>
+                              <FormControl>
+                                <Input {...field} className="bg-gray-800 border-gray-600 text-white" placeholder="FTMO, TopstepTrader, etc." />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+
+                      <div className="grid grid-cols-3 gap-4">
+                        <FormField
+                          control={accountForm.control}
+                          name="type"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="text-white">Account Type</FormLabel>
+                              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                <FormControl>
+                                  <SelectTrigger className="bg-gray-800 border-gray-600 text-white">
+                                    <SelectValue placeholder="Select type" />
+                                  </SelectTrigger>
+                                </FormControl>
+                                <SelectContent className="bg-gray-800 border-gray-600">
+                                  <SelectItem value="challenge">Challenge</SelectItem>
+                                  <SelectItem value="funded">Funded</SelectItem>
+                                  <SelectItem value="live">Live</SelectItem>
+                                </SelectContent>
+                              </Select>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={accountForm.control}
+                          name="status"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="text-white">Status</FormLabel>
+                              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                <FormControl>
+                                  <SelectTrigger className="bg-gray-800 border-gray-600 text-white">
+                                    <SelectValue placeholder="Select status" />
+                                  </SelectTrigger>
+                                </FormControl>
+                                <SelectContent className="bg-gray-800 border-gray-600">
+                                  <SelectItem value="active">Active</SelectItem>
+                                  <SelectItem value="passed">Passed</SelectItem>
+                                  <SelectItem value="failed">Failed</SelectItem>
+                                  <SelectItem value="withdrawn">Withdrawn</SelectItem>
+                                </SelectContent>
+                              </Select>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={accountForm.control}
+                          name="startingBalance"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="text-white">Starting Balance</FormLabel>
+                              <FormControl>
+                                <Input 
+                                  {...field} 
+                                  type="number" 
+                                  className="bg-gray-800 border-gray-600 text-white" 
+                                  placeholder="100000"
+                                  onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-4">
+                        <FormField
+                          control={accountForm.control}
+                          name="profitTarget"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="text-white">Profit Target</FormLabel>
+                              <FormControl>
+                                <Input 
+                                  {...field} 
+                                  type="number" 
+                                  className="bg-gray-800 border-gray-600 text-white" 
+                                  placeholder="10000"
+                                  onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={accountForm.control}
+                          name="maxDrawdown"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="text-white">Max Drawdown</FormLabel>
+                              <FormControl>
+                                <Input 
+                                  {...field} 
+                                  type="number" 
+                                  className="bg-gray-800 border-gray-600 text-white" 
+                                  placeholder="5000"
+                                  onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+                    </TabsContent>
+
+                    <TabsContent value="financial" className="space-y-4">
+                      <div className="grid grid-cols-2 gap-4">
+                        <FormField
+                          control={accountForm.control}
+                          name="accountCost"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="text-white">Account Cost</FormLabel>
+                              <FormControl>
+                                <Input 
+                                  {...field} 
+                                  type="number" 
+                                  className="bg-gray-800 border-gray-600 text-white" 
+                                  placeholder="599"
+                                  onChange={(e) => field.onChange(parseFloat(e.target.value) || null)}
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={accountForm.control}
+                          name="activationCost"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="text-white">Activation Cost</FormLabel>
+                              <FormControl>
+                                <Input 
+                                  {...field} 
+                                  type="number" 
+                                  className="bg-gray-800 border-gray-600 text-white" 
+                                  placeholder="200"
+                                  onChange={(e) => field.onChange(parseFloat(e.target.value) || null)}
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+                    </TabsContent>
+
+                    <TabsContent value="rules" className="space-y-4">
+                      <div className="grid grid-cols-2 gap-4">
+                        <FormField
+                          control={accountForm.control}
+                          name="riskPerTrade"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="text-white">Risk Per Trade</FormLabel>
+                              <FormControl>
+                                <Input 
+                                  {...field} 
+                                  type="number" 
+                                  className="bg-gray-800 border-gray-600 text-white" 
+                                  placeholder="500"
+                                  onChange={(e) => field.onChange(parseFloat(e.target.value) || null)}
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={accountForm.control}
+                          name="dailyLossLimit"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="text-white">Daily Loss Limit</FormLabel>
+                              <FormControl>
+                                <Input 
+                                  {...field} 
+                                  type="number" 
+                                  className="bg-gray-800 border-gray-600 text-white" 
+                                  placeholder="2000"
+                                  onChange={(e) => field.onChange(parseFloat(e.target.value) || null)}
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+                    </TabsContent>
+                  </Tabs>
+
+                  <div className="flex justify-end space-x-3 pt-4 border-t border-gray-700">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => setIsAccountDialogOpen(false)}
+                      className="bg-gray-800 border-gray-600 text-white hover:bg-gray-700"
+                    >
+                      Cancel
+                    </Button>
+                    <Button
+                      type="submit"
+                      disabled={createAccountMutation.isPending}
+                      className="bg-blue-600 hover:bg-blue-700 text-white"
+                    >
+                      {createAccountMutation.isPending ? "Creating..." : "Create Account"}
+                    </Button>
+                  </div>
+                </form>
+              </Form>
+            </ScrollArea>
           </DialogContent>
         </Dialog>
       </div>
