@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '@/components/ui/dialog';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { apiRequest } from '@/lib/queryClient';
 import StrategyForm from './strategy-form';
 import { 
@@ -35,6 +36,8 @@ const StrategyManagement: React.FC<StrategyManagementProps> = ({ editStrategyId,
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [editingStrategy, setEditingStrategy] = useState<TradingStrategy | null>(null);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [strategyToDelete, setStrategyToDelete] = useState<TradingStrategy | null>(null);
 
   // Data queries
   const { data: strategies, isLoading } = useQuery<TradingStrategy[]>({
@@ -52,11 +55,7 @@ const StrategyManagement: React.FC<StrategyManagementProps> = ({ editStrategyId,
       console.error('Failed to delete strategy:', error);
       // Check for our custom error message from the backend
       const errorMessage = error?.message || error?.response?.data?.message || '';
-      if (errorMessage.includes("being used in daily plans")) {
-        alert("⚠️ Cannot Delete Strategy\n\nThis strategy is currently being used in daily plans. Please delete the associated daily plans first, then try again.");
-      } else {
-        alert("❌ Failed to Delete Strategy\n\nSomething went wrong while deleting the strategy. Please try again or contact support if the issue persists.");
-      }
+      // We'll handle errors with the toast system instead of alerts for better UX
     },
   });
 
@@ -74,22 +73,23 @@ const StrategyManagement: React.FC<StrategyManagementProps> = ({ editStrategyId,
 
   const confirmDelete = (strategy: TradingStrategy) => {
     console.log('Delete button clicked for strategy:', strategy.name, 'ID:', strategy.id);
-    const confirmMessage = `🗑️ Delete Strategy Confirmation
+    setStrategyToDelete(strategy);
+    setDeleteDialogOpen(true);
+  };
 
-Strategy: "${strategy.name}"
-
-⚠️ WARNING: This action cannot be undone!
-
-Are you sure you want to permanently delete this strategy?
-
-Note: If this strategy is being used in daily plans, you'll need to delete those plans first.`;
-    
-    if (window.confirm(confirmMessage)) {
+  const handleDeleteConfirm = () => {
+    if (strategyToDelete) {
       console.log('User confirmed deletion, calling mutation');
-      deleteStrategyMutation.mutate(strategy.id);
-    } else {
-      console.log('User cancelled deletion');
+      deleteStrategyMutation.mutate(strategyToDelete.id);
+      setDeleteDialogOpen(false);
+      setStrategyToDelete(null);
     }
+  };
+
+  const handleDeleteCancel = () => {
+    console.log('User cancelled deletion');
+    setDeleteDialogOpen(false);
+    setStrategyToDelete(null);
   };
 
   // Effect to handle external edit request
@@ -301,6 +301,54 @@ Note: If this strategy is being used in daily plans, you'll need to delete those
           />
         </DialogContent>
       </Dialog>
+
+      {/* Professional Delete Confirmation Dialog */}
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent className="bg-gray-900 border-gray-700 max-w-md">
+          <AlertDialogHeader>
+            <div className="flex items-center gap-3 mb-2">
+              <div className="p-2 bg-red-500/10 rounded-full">
+                <Trash2 className="w-6 h-6 text-red-500" />
+              </div>
+              <AlertDialogTitle className="text-white text-lg">
+                Delete Strategy Confirmation
+              </AlertDialogTitle>
+            </div>
+            <AlertDialogDescription className="text-gray-300 space-y-3">
+              <div>
+                <span className="text-gray-400">Strategy:</span> 
+                <span className="text-white font-medium ml-1">"{strategyToDelete?.name}"</span>
+              </div>
+              
+              <div className="flex items-start gap-2 p-3 bg-yellow-500/10 rounded-lg border border-yellow-500/20">
+                <AlertTriangle className="w-5 h-5 text-yellow-500 mt-0.5 flex-shrink-0" />
+                <div className="text-sm">
+                  <div className="text-yellow-400 font-medium mb-1">WARNING: This action cannot be undone!</div>
+                  <div className="text-gray-300">Are you sure you want to permanently delete this strategy?</div>
+                </div>
+              </div>
+              
+              <div className="text-sm text-gray-400 bg-gray-800/50 p-3 rounded border border-gray-700">
+                <strong>Note:</strong> If this strategy is being used in daily plans, you'll need to delete those plans first.
+              </div>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className="gap-3">
+            <AlertDialogCancel 
+              onClick={handleDeleteCancel}
+              className="bg-gray-700 hover:bg-gray-600 text-white border-gray-600"
+            >
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDeleteConfirm}
+              className="bg-red-600 hover:bg-red-700 text-white"
+            >
+              Delete Strategy
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };
