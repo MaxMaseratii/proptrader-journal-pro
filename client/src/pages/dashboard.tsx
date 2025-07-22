@@ -1146,7 +1146,7 @@ export default function Dashboard() {
                   Trade
                 </Button>
               </Link>
-              <Link href="/accounts">
+              <Link href="/projections">
                 <Button 
                   size="sm" 
                   className="bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white shadow-md hover:shadow-lg transition-all duration-200"
