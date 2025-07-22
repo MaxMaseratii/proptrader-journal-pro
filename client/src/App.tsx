@@ -23,6 +23,9 @@ import AdvancedDashboard from "@/pages/advanced-dashboard";
 import TradingCompanion from "@/pages/trading-companion";
 import DailyPlan from "@/pages/daily-plan";
 import Signup from "@/pages/signup";
+import PrivacyPolicy from "@/pages/privacy-policy";
+import TermsOfService from "@/pages/terms-of-service";
+import Support from "@/pages/support";
 
 import DisciplineAnalysis from "@/pages/discipline-analysis";
 import DisciplinaryAssistant from "@/pages/disciplinary-assistant";
@@ -46,6 +49,9 @@ function Router() {
     return (
       <Switch>
         <Route path="/signup" component={Signup} />
+        <Route path="/privacy-policy" component={PrivacyPolicy} />
+        <Route path="/terms" component={TermsOfService} />
+        <Route path="/support" component={Support} />
         <Route component={Welcome} />
       </Switch>
     );
@@ -77,6 +83,9 @@ function Router() {
           <Route path="/discipline-analysis" component={DisciplineAnalysis} />
           <Route path="/disciplinary-assistant" component={DisciplinaryAssistant} />
           <Route path="/profile" component={Profile} />
+          <Route path="/privacy-policy" component={PrivacyPolicy} />
+          <Route path="/terms" component={TermsOfService} />
+          <Route path="/support" component={Support} />
           <Route path="/signup" component={Signup} />
           <Route component={NotFound} />
         </Switch>
