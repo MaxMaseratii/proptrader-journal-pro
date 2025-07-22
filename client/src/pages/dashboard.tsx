@@ -66,7 +66,8 @@ import {
   ChevronRight,
   RotateCcw,
   BookOpen,
-  FileText
+  FileText,
+  Edit
 } from "lucide-react";
 import type { Account, Trade } from "@shared/schema";
 
@@ -1016,10 +1017,12 @@ export default function Dashboard() {
     let totalPayouts = 0;
     
     accounts.forEach(account => {
-      if (account.type !== 'funded') return; // Only funded accounts have payouts
+      // Only calculate payouts for accounts that actually have payout settings enabled
+      if (account.type !== 'funded' || !account.fundedPayoutEnabled) return;
       
       const accountTrades = trades.filter(t => t.accountId === account.id);
-      const currentProfit = account.currentBalance - account.startingBalance;
+      const totalPnL = accountTrades.reduce((sum, trade) => sum + (trade.pnl || 0), 0);
+      const currentProfit = totalPnL; // Use actual P&L instead of balance difference
       
       // Check payout requirements - use actual user-entered values
       const daysRequired = account.daysRequiredForPayout || 0;
@@ -1076,7 +1079,8 @@ export default function Dashboard() {
       ? accounts.filter(acc => selectedAccountIds.includes(acc.id))
       : accounts;
     
-    const startingBalance = selectedAccounts.reduce((sum, acc) => sum + (acc.startingBalance || 0), 0);
+    // Equity curve should always start from $0, not account starting balance
+    const startingBalance = 0;
     
     let runningBalance = startingBalance;
     const equityData = [{ date: "Start", balance: startingBalance }];
@@ -1941,16 +1945,56 @@ export default function Dashboard() {
                     .slice(-5)
                     .reverse()
                     .map((trade, index) => (
-                      <div key={trade.id || index} className="bg-black/30 rounded-lg p-3">
+                      <div key={trade.id || index} className="bg-black/30 rounded-lg p-3 hover:bg-black/40 transition-colors duration-200">
                         <div className="flex justify-between items-start mb-1">
                           <span className="text-white font-medium">{trade.symbol}</span>
                           <span className={`font-bold ${(trade.pnl || 0) >= 0 ? 'text-green-400' : 'text-red-400'}`}>
                             {(trade.pnl || 0) >= 0 ? '+' : ''}{formatCurrency(trade.pnl || 0)}
                           </span>
                         </div>
-                        <div className="flex justify-between text-xs text-gray-400">
+                        <div className="flex justify-between items-center text-xs text-gray-400 mb-2">
                           <span>{new Date(trade.date || '').toLocaleDateString()}</span>
                           <span>{trade.side || 'Unknown'}</span>
+                        </div>
+                        
+                        {/* Trade Links and Actions */}
+                        <div className="flex justify-between items-center mt-2 pt-2 border-t border-gray-600">
+                          <div className="flex gap-2">
+                            {trade.tradingViewLink ? (
+                              <a
+                                href={trade.tradingViewLink}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-flex items-center px-2 py-1 text-xs bg-blue-600/20 text-blue-400 rounded hover:bg-blue-600/30 transition-colors"
+                              >
+                                <BarChart3 className="w-3 h-3 mr-1" />
+                                TradingView
+                              </a>
+                            ) : null}
+                            {trade.tradeImage ? (
+                              <a
+                                href={trade.tradeImage}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-flex items-center px-2 py-1 text-xs bg-green-600/20 text-green-400 rounded hover:bg-green-600/30 transition-colors"
+                              >
+                                <FileText className="w-3 h-3 mr-1" />
+                                Chart
+                              </a>
+                            ) : null}
+                            {!trade.tradingViewLink && !trade.tradeImage ? (
+                              <span className="inline-flex items-center px-2 py-1 text-xs bg-gray-600/20 text-gray-400 rounded">
+                                <BarChart3 className="w-3 h-3 mr-1" />
+                                No Links
+                              </span>
+                            ) : null}
+                          </div>
+                          <Link 
+                            href={`/trades?edit=${trade.id}`}
+                            className="inline-flex items-center px-2 py-1 text-xs bg-amber-600/20 text-amber-400 rounded hover:bg-amber-600/30 transition-colors"
+                          >
+                            Edit
+                          </Link>
                         </div>
                       </div>
                     ))

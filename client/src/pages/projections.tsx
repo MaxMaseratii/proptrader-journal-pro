@@ -231,7 +231,7 @@ export default function Projections() {
 
   const saveProjectionMutation = useMutation({
     mutationFn: async (projectionData: any) => {
-      return await apiRequest("POST", "/api/projections/save", projectionData);
+      return await apiRequest("/api/projections/save", "POST", projectionData);
     },
     onSuccess: () => {
       toast({
