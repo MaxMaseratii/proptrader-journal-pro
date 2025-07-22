@@ -10,9 +10,11 @@ export const accounts = pgTable("accounts", {
   startingBalance: real("starting_balance").notNull(),
   // currentBalance removed - now calculated as startingBalance + PnL from trades
   maxDrawdown: real("max_drawdown").notNull(),
+  maxDrawdownType: text("max_drawdown_type"), // 'eod', 'unrealized_profit'
   dailyLossLimit: real("daily_loss_limit"),
   hasDailyLossLimit: boolean("has_daily_loss_limit").default(false),
-  dailyLossLimitType: text("daily_loss_limit_type"), // 'soft', 'hard'
+  dailyLossLimitAmount: real("daily_loss_limit_amount"),
+  dailyLossLimitType: text("daily_loss_limit_type"), // 'soft_breach', 'hard_breach'
   profitTarget: real("profit_target").notNull(),
   status: text("status").notNull().default('active'), // 'active', 'passed', 'failed', 'withdrawn'
   

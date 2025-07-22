@@ -193,6 +193,9 @@ export default function Dashboard() {
       timeLimit: null,
       consistencyRulePercent: null,
       hasDailyLossLimit: false,
+      dailyLossLimitAmount: null,
+      dailyLossLimitType: null,
+      maxDrawdownType: null,
       accountCost: null,
       activationCost: null,
       purchaseMethod: null,
@@ -215,6 +218,9 @@ export default function Dashboard() {
       allowGridMartingale: false
     },
   });
+
+  // Watch form values for conditional rendering
+  const accountFormValues = accountForm.watch();
 
   // Account creation mutation
   const createAccountMutation = useMutation({
@@ -2877,7 +2883,7 @@ export default function Dashboard() {
                         name="maxDrawdown"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel className="text-white">Max Drawdown</FormLabel>
+                            <FormLabel className="text-white">Max Drawdown ($)</FormLabel>
                             <FormControl>
                               <Input 
                                 {...field} 
@@ -2887,6 +2893,30 @@ export default function Dashboard() {
                                 onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
                               />
                             </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+
+                    <div className="grid grid-cols-1 gap-4">
+                      <FormField
+                        control={accountForm.control}
+                        name="maxDrawdownType"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="text-white">Max Drawdown Type</FormLabel>
+                            <Select onValueChange={field.onChange} value={field.value || undefined}>
+                              <FormControl>
+                                <SelectTrigger className="bg-gray-800 border-gray-600 text-white">
+                                  <SelectValue placeholder="Select drawdown type" />
+                                </SelectTrigger>
+                              </FormControl>
+                              <SelectContent className="bg-gray-800 border-gray-600">
+                                <SelectItem value="eod">EOD (End of Day)</SelectItem>
+                                <SelectItem value="unrealized_profit">Unrealized Profit Drawdown</SelectItem>
+                              </SelectContent>
+                            </Select>
                             <FormMessage />
                           </FormItem>
                         )}
@@ -2976,6 +3006,53 @@ export default function Dashboard() {
                         )}
                       />
                     </div>
+
+                    {/* Conditional Daily Loss Limit Fields */}
+                    {accountFormValues.hasDailyLossLimit && (
+                      <div className="grid grid-cols-2 gap-4 p-4 bg-gray-800/50 rounded-lg border border-gray-600">
+                        <FormField
+                          control={accountForm.control}
+                          name="dailyLossLimitAmount"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="text-white">Daily Loss Limit Amount ($)</FormLabel>
+                              <FormControl>
+                                <Input 
+                                  {...field} 
+                                  type="number" 
+                                  className="bg-gray-800 border-gray-600 text-white" 
+                                  placeholder="2000"
+                                  value={field.value || ""}
+                                  onChange={(e) => field.onChange(parseFloat(e.target.value) || null)}
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={accountForm.control}
+                          name="dailyLossLimitType"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="text-white">Daily Loss Limit Type</FormLabel>
+                              <Select onValueChange={field.onChange} value={field.value || undefined}>
+                                <FormControl>
+                                  <SelectTrigger className="bg-gray-800 border-gray-600 text-white">
+                                    <SelectValue placeholder="Select type" />
+                                  </SelectTrigger>
+                                </FormControl>
+                                <SelectContent className="bg-gray-800 border-gray-600">
+                                  <SelectItem value="soft_breach">Soft Breach (Trading suspended for day)</SelectItem>
+                                  <SelectItem value="hard_breach">Hard Breach (Account failed)</SelectItem>
+                                </SelectContent>
+                              </Select>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+                    )}
                   </TabsContent>
 
                   <TabsContent value="financial" className="space-y-4">
