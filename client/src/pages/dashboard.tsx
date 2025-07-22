@@ -2621,9 +2621,9 @@ export default function Dashboard() {
                 <TrendingUp className="w-4 h-4 text-green-400" />
               </div>
               <div className="text-2xl font-bold mb-1 text-green-400">
-                {formatCurrency(combinedAnalytics?.totalPnl || 0)}
+                {formatCurrency(calculateTotalAvailablePayouts())}
               </div>
-              <div className="text-xs text-gray-400">Total received</div>
+              <div className="text-xs text-gray-400">Actual payouts received</div>
             </div>
 
             <div className="bg-gradient-to-br from-gray-900/40 via-gray-800/60 to-black/80 border border-gray-600/30 rounded-lg p-4 hover:border-amber-400/60 transition-all duration-200">
@@ -2631,10 +2631,10 @@ export default function Dashboard() {
                 <span className="text-sm font-medium text-gray-300">Profitability</span>
                 <TrendingUp className="w-4 h-4 text-amber-400" />
               </div>
-              <div className={`text-2xl font-bold mb-1 ${getValueColor((combinedAnalytics?.totalPnl || 0) - (accounts?.reduce((sum, acc) => sum + (acc.accountCost || 0) + (acc.totalResetsCost || 0) + (acc.activationCost || 0), 0) || 0))}`}>
-                {formatCurrency((combinedAnalytics?.totalPnl || 0) - (accounts?.reduce((sum, acc) => sum + (acc.accountCost || 0) + (acc.totalResetsCost || 0) + (acc.activationCost || 0), 0) || 0))}
+              <div className={`text-2xl font-bold mb-1 ${getValueColor(calculateTotalAvailablePayouts() - (accounts?.reduce((sum, acc) => sum + (acc.accountCost || 0) + (acc.totalResetsCost || 0) + (acc.activationCost || 0), 0) || 0))}`}>
+                {formatCurrency(calculateTotalAvailablePayouts() - (accounts?.reduce((sum, acc) => sum + (acc.accountCost || 0) + (acc.totalResetsCost || 0) + (acc.activationCost || 0), 0) || 0))}
               </div>
-              <div className="text-xs text-gray-400">Net result</div>
+              <div className="text-xs text-gray-400">Real profit (received payouts - costs)</div>
             </div>
           </div>
         </section>
