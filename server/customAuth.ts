@@ -108,9 +108,10 @@ export function setupAuth(app: Express) {
           if (!user || !(await comparePasswords(password, user.password))) {
             return done(null, false, { message: "Invalid email or password" });
           }
-          if (!user.emailVerified) {
-            return done(null, false, { message: "Please verify your email address" });
-          }
+          // Skip email verification check for production launch
+          // if (!user.emailVerified) {
+          //   return done(null, false, { message: "Please verify your email address" });
+          // }
           return done(null, user);
         } catch (error) {
           return done(error);
@@ -211,23 +212,26 @@ export function setupAuth(app: Express) {
       }
 
       const hashedPassword = await hashPassword(password);
-      const verificationToken = crypto.randomBytes(32).toString("hex");
       
       const user = await storage.createUser({
         firstName,
         lastName,
         email,
         password: hashedPassword,
-        emailVerified: false,
-        verificationToken,
+        emailVerified: true,
+        verificationToken: null,
       });
 
-      // Send verification email
-      await sendVerificationEmail(email, verificationToken);
-
-      res.status(201).json({ 
-        message: "Account created successfully. Please check your email to verify your account.",
-        user: { id: user.id, email: user.email, firstName: user.firstName }
+      // Auto-login after registration
+      req.login(user, (err) => {
+        if (err) {
+          console.error("Auto-login error:", err);
+          return res.status(500).json({ message: "Registration successful but login failed" });
+        }
+        res.status(201).json({ 
+          message: "Account created successfully",
+          user: { id: user.id, email: user.email, firstName: user.firstName }
+        });
       });
     } catch (error) {
       console.error("Registration error:", error);
