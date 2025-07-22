@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PropTraderJournal - Login</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e1e2e 0%, #000000 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+        .container {
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 4rem;
+            max-width: 1200px;
+            width: 100%;
+            padding: 2rem;
+        }
+        .hero {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .hero h1 {
+            font-size: 3rem;
+            font-weight: bold;
+            background: linear-gradient(45deg, #f59e0b, #06b6d4, #10b981, #3b82f6, #8b5cf6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1.5rem;
+        }
+        .hero p {
+            font-size: 1.25rem;
+            color: #d1d5db;
+            line-height: 1.6;
+            margin-bottom: 2rem;
+        }
+        .features {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        .feature {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            background: rgba(55, 65, 81, 0.3);
+            border-radius: 0.5rem;
+            border: 1px solid rgba(245, 158, 11, 0.2);
+        }
+        .feature-icon {
+            width: 3rem;
+            height: 3rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+        .feature-icon.yellow { background: linear-gradient(45deg, #f59e0b, #d97706); }
+        .feature-icon.green { background: linear-gradient(45deg, #10b981, #059669); }
+        .feature-icon.pink { background: linear-gradient(45deg, #ec4899, #be185d); }
+        .auth-card {
+            background: rgba(17, 24, 39, 0.95);
+            border-radius: 1rem;
+            padding: 2rem;
+            border: 1px solid #374151;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        }
+        .auth-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        .auth-header h2 {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+        .auth-header p {
+            color: #9ca3af;
+        }
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+        .form-input {
+            width: 100%;
+            padding: 0.75rem;
+            background: #374151;
+            border: 1px solid #4b5563;
+            border-radius: 0.375rem;
+            color: white;
+            font-size: 1rem;
+        }
+        .form-input:focus {
+            outline: none;
+            border-color: #f59e0b;
+            box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.1);
+        }
+        .btn {
+            width: 100%;
+            padding: 0.75rem;
+            border: none;
+            border-radius: 0.375rem;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.2s;
+        }
+        .btn-primary {
+            background: linear-gradient(45deg, #f59e0b, #d97706);
+            color: black;
+        }
+        .btn-primary:hover {
+            background: linear-gradient(45deg, #d97706, #b45309);
+        }
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .toggle {
+            text-align: center;
+            margin-top: 1rem;
+        }
+        .toggle a {
+            color: #f59e0b;
+            text-decoration: none;
+        }
+        .toggle a:hover {
+            text-decoration: underline;
+        }
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+        .error {
+            color: #ef4444;
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+        }
+        .success {
+            color: #10b981;
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+        }
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+            .hero {
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="hero">
+            <h1>PropTraderJournal</h1>
+            <p>The ultimate trading journal designed for prop traders. Track your performance, analyze your discipline, and accelerate your path to funded accounts.</p>
+            
+            <div class="features">
+                <div class="feature">
+                    <div class="feature-icon yellow">📊</div>
+                    <div>
+                        <h3>Professional Tracking</h3>
+                        <p style="color: #9ca3af; font-size: 0.875rem;">Track multiple prop accounts with precision</p>
+                    </div>
+                </div>
+                
+                <div class="feature">
+                    <div class="feature-icon green">🧠</div>
+                    <div>
+                        <h3>Discipline Analysis</h3>
+                        <p style="color: #9ca3af; font-size: 0.875rem;">AI-powered insights to improve your trading</p>
+                    </div>
+                </div>
+                
+                <div class="feature">
+                    <div class="feature-icon pink">🛡️</div>
+                    <div>
+                        <h3>Risk Management</h3>
+                        <p style="color: #9ca3af; font-size: 0.875rem;">Advanced tools to protect your capital</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="auth-card">
+            <div class="auth-header">
+                <h2 id="auth-title">Welcome Back</h2>
+                <p id="auth-subtitle">Sign in to your PropTraderJournal account</p>
+            </div>
+
+            <form id="auth-form">
+                <div id="name-fields" style="display: none;">
+                    <div class="grid-2">
+                        <div class="form-group">
+                            <label for="firstName">First Name</label>
+                            <input type="text" id="firstName" class="form-input" placeholder="John">
+                        </div>
+                        <div class="form-group">
+                            <label for="lastName">Last Name</label>
+                            <input type="text" id="lastName" class="form-input" placeholder="Doe">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" class="form-input" placeholder="trader@example.com" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" class="form-input" placeholder="Enter your password" required>
+                </div>
+                
+                <div id="confirm-password-field" style="display: none;" class="form-group">
+                    <label for="confirmPassword">Confirm Password</label>
+                    <input type="password" id="confirmPassword" class="form-input" placeholder="Confirm your password">
+                </div>
+                
+                <button type="submit" class="btn btn-primary" id="submit-btn">Sign In</button>
+                
+                <div id="message"></div>
+            </form>
+
+            <div class="toggle">
+                <span id="toggle-text">Don't have an account?</span>
+                <a href="#" id="toggle-link">Create Account</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let isLogin = true;
+        
+        const authTitle = document.getElementById('auth-title');
+        const authSubtitle = document.getElementById('auth-subtitle');
+        const nameFields = document.getElementById('name-fields');
+        const confirmPasswordField = document.getElementById('confirm-password-field');
+        const submitBtn = document.getElementById('submit-btn');
+        const toggleText = document.getElementById('toggle-text');
+        const toggleLink = document.getElementById('toggle-link');
+        const authForm = document.getElementById('auth-form');
+        const message = document.getElementById('message');
+        
+        function toggleMode() {
+            isLogin = !isLogin;
+            
+            if (isLogin) {
+                authTitle.textContent = 'Welcome Back';
+                authSubtitle.textContent = 'Sign in to your PropTraderJournal account';
+                nameFields.style.display = 'none';
+                confirmPasswordField.style.display = 'none';
+                submitBtn.textContent = 'Sign In';
+                toggleText.textContent = "Don't have an account?";
+                toggleLink.textContent = 'Create Account';
+            } else {
+                authTitle.textContent = 'Create Account';
+                authSubtitle.textContent = 'Join thousands of successful prop traders';
+                nameFields.style.display = 'block';
+                confirmPasswordField.style.display = 'block';
+                submitBtn.textContent = 'Create Account';
+                toggleText.textContent = 'Already have an account?';
+                toggleLink.textContent = 'Sign In';
+            }
+            
+            message.innerHTML = '';
+        }
+        
+        function showMessage(text, type = 'error') {
+            message.innerHTML = `<div class="${type}">${text}</div>`;
+        }
+        
+        toggleLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            toggleMode();
+        });
+        
+        authForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            if (!isLogin) {
+                const firstName = document.getElementById('firstName').value;
+                const lastName = document.getElementById('lastName').value;
+                const confirmPassword = document.getElementById('confirmPassword').value;
+                
+                if (!firstName || !lastName) {
+                    showMessage('Please fill in all fields');
+                    return;
+                }
+                
+                if (password !== confirmPassword) {
+                    showMessage('Passwords do not match');
+                    return;
+                }
+                
+                if (password.length < 8) {
+                    showMessage('Password must be at least 8 characters');
+                    return;
+                }
+            }
+            
+            submitBtn.disabled = true;
+            submitBtn.textContent = isLogin ? 'Signing in...' : 'Creating account...';
+            
+            try {
+                const url = isLogin ? '/api/auth/login' : '/api/auth/register';
+                const payload = isLogin ? 
+                    { email, password } : 
+                    { firstName: document.getElementById('firstName').value, lastName: document.getElementById('lastName').value, email, password };
+                
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(payload)
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showMessage(isLogin ? 'Login successful! Redirecting...' : 'Account created successfully! Redirecting...', 'success');
+                    setTimeout(() => {
+                        window.location.href = '/';
+                    }, 1000);
+                } else {
+                    showMessage(data.message || 'Authentication failed');
+                }
+            } catch (error) {
+                showMessage('Network error. Please try again.');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = isLogin ? 'Sign In' : 'Create Account';
+            }
+        });
+    </script>
+</body>
+</html>

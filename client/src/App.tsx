@@ -49,12 +49,28 @@ function Router() {
   if (!isAuthenticated) {
     return (
       <Switch>
-        <Route path="/auth" component={AuthPage} />
+        <Route path="/standalone-auth.html">
+          {() => {
+            window.location.href = '/standalone-auth.html';
+            return null;
+          }}
+        </Route>
+        <Route path="/auth">
+          {() => {
+            window.location.href = '/standalone-auth.html';
+            return null;
+          }}
+        </Route>
         <Route path="/signup" component={Signup} />
         <Route path="/privacy-policy" component={PrivacyPolicy} />
         <Route path="/terms" component={TermsOfService} />
         <Route path="/support" component={Support} />
-        <Route component={Welcome} />
+        <Route>
+          {() => {
+            window.location.href = '/standalone-auth.html';
+            return null;
+          }}
+        </Route>
       </Switch>
     );
   }
