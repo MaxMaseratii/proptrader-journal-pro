@@ -125,7 +125,7 @@ export default function Welcome() {
             </div>
           </div>
           <Button 
-            onClick={() => window.location.href = '/api/login'}
+            onClick={() => window.location.href = '/auth'}
             className="bg-prop-gradient-gold text-white font-semibold hover:scale-105 smooth-transition border-gradient-gold"
           >
             Sign In
@@ -156,7 +156,7 @@ export default function Welcome() {
 
           <div className="flex flex-col sm:flex-row gap-6 justify-center items-center mb-16">
             <Button 
-              onClick={() => window.location.href = '/api/login'}
+              onClick={() => window.location.href = '/auth'}
               size="lg"
               className="bg-prop-gradient-gold text-white text-xl px-12 py-6 font-bold hover-lift smooth-transition border-gradient-gold"
             >
@@ -164,7 +164,7 @@ export default function Welcome() {
               Start Your Journey
             </Button>
             <Button 
-              onClick={() => window.location.href = '/api/login'}
+              onClick={() => window.location.href = '/auth'}
               variant="outline"
               size="lg"
               className="text-xl px-12 py-6 border-amber-500 text-amber-500 hover:bg-amber-500 hover:text-black smooth-transition font-bold"
@@ -319,13 +319,13 @@ export default function Welcome() {
                 </ul>
                 <div className="space-y-3">
                   <Button 
-                    onClick={() => window.location.href = '/api/login'}
+                    onClick={() => window.location.href = '/auth'}
                     className="w-full bg-prop-gradient-green text-white hover-scale smooth-transition"
                   >
                     Start Free Trial
                   </Button>
                   <Button 
-                    onClick={() => window.location.href = '/api/login'}
+                    onClick={() => window.location.href = '/auth'}
                     variant="outline"
                     className="w-full border-prop-green text-prop-green hover:bg-prop-green hover:text-white smooth-transition"
                   >
@@ -386,13 +386,13 @@ export default function Welcome() {
                 </ul>
                 <div className="space-y-3">
                   <Button 
-                    onClick={() => window.location.href = '/api/login'}
+                    onClick={() => window.location.href = '/auth'}
                     className="w-full bg-prop-gradient-gold text-black font-bold hover-scale smooth-transition"
                   >
                     Start Pro Trial
                   </Button>
                   <Button 
-                    onClick={() => window.location.href = '/api/login'}
+                    onClick={() => window.location.href = '/auth'}
                     variant="outline"
                     className="w-full border-prop-gold text-prop-gold hover:bg-prop-gold hover:text-black smooth-transition"
                   >
@@ -447,13 +447,13 @@ export default function Welcome() {
                 </ul>
                 <div className="space-y-3">
                   <Button 
-                    onClick={() => window.location.href = '/api/login'}
+                    onClick={() => window.location.href = '/auth'}
                     className="w-full bg-prop-gradient-pink text-white hover-scale smooth-transition"
                   >
                     Start Elite Trial
                   </Button>
                   <Button 
-                    onClick={() => window.location.href = '/api/login'}
+                    onClick={() => window.location.href = '/auth'}
                     variant="outline"
                     className="w-full border-prop-pink text-prop-pink hover:bg-prop-pink hover:text-white smooth-transition"
                   >
@@ -860,7 +860,7 @@ export default function Welcome() {
               consistently pass challenges and build profitable trading careers.
             </p>
             <Button 
-              onClick={() => window.location.href = '/api/login'}
+              onClick={() => window.location.href = '/auth'}
               size="lg"
               className="bg-prop-gradient-rainbow text-white text-xl px-12 py-6 font-bold hover-lift smooth-transition"
             >

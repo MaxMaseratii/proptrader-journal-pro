@@ -16,17 +16,24 @@ import {
   type InsertTrade 
 } from "@shared/schema";
 import { z } from "zod";
-import { setupAuth, isAuthenticated } from "./replitAuth";
+import { setupAuth } from "./customAuth";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Setup authentication
-  await setupAuth(app);
+  setupAuth(app);
 
-  // Auth routes
-  app.get('/api/auth/user', isAuthenticated, async (req: any, res) => {
+  // Middleware for protected routes
+  const requireAuth = (req: any, res: any, next: any) => {
+    if (!req.isAuthenticated()) {
+      return res.status(401).json({ message: "Authentication required" });
+    }
+    next();
+  };
+
+  // User route for current user
+  app.get('/api/user', requireAuth, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
-      const user = await storage.getUser(userId);
+      const user = req.user;
       res.json(user);
     } catch (error) {
       console.error("Error fetching user:", error);
@@ -34,9 +41,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post('/api/users/update-wage', isAuthenticated, async (req: any, res) => {
+  app.post('/api/users/update-wage', requireAuth, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const { personalHourlyWage } = req.body;
       
       if (typeof personalHourlyWage !== 'number' || personalHourlyWage < 0) {
@@ -51,7 +58,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   // Account routes
-  app.get("/api/accounts", isAuthenticated, async (req, res) => {
+  app.get("/api/accounts", requireAuth, async (req: any, res) => {
     try {
       const accounts = await storage.getAccounts();
       res.json(accounts);
@@ -61,7 +68,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Check challenge eligibility for conversion to funded account
-  app.get("/api/accounts/:id/challenge-eligibility", isAuthenticated, async (req, res) => {
+  app.get("/api/accounts/:id/challenge-eligibility", requireAuth, async (req, res) => {
     try {
       const accountId = parseInt(req.params.id);
       const eligibility = await storage.checkChallengeEligibility(accountId);
@@ -73,7 +80,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Convert challenge account to funded account
-  app.post("/api/accounts/:id/convert-to-funded", isAuthenticated, async (req, res) => {
+  app.post("/api/accounts/:id/convert-to-funded", requireAuth, async (req, res) => {
     try {
       const challengeAccountId = parseInt(req.params.id);
       const fundedAccountData = req.body;
@@ -95,7 +102,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Convert funded account to live account
-  app.post("/api/accounts/:id/convert-to-live", isAuthenticated, async (req, res) => {
+  app.post("/api/accounts/:id/convert-to-live", requireAuth, async (req, res) => {
     try {
       const fundedAccountId = parseInt(req.params.id);
       const liveAccountData = req.body;
@@ -116,7 +123,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/accounts/:id", isAuthenticated, async (req, res) => {
+  app.get("/api/accounts/:id", requireAuth, async (req, res) => {
     try {
       const id = parseInt(req.params.id);
       const account = await storage.getAccount(id);
@@ -129,7 +136,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/accounts", isAuthenticated, async (req, res) => {
+  app.post("/api/accounts", requireAuth, async (req, res) => {
     try {
       const validatedData = insertAccountSchema.parse(req.body);
       const account = await storage.createAccount(validatedData);
@@ -142,7 +149,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.patch("/api/accounts/:id", isAuthenticated, async (req, res) => {
+  app.patch("/api/accounts/:id", requireAuth, async (req, res) => {
     try {
       const id = parseInt(req.params.id);
       const validatedData = insertAccountSchema.partial().parse(req.body);
@@ -156,7 +163,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.put("/api/accounts/:id", isAuthenticated, async (req, res) => {
+  app.put("/api/accounts/:id", requireAuth, async (req, res) => {
     try {
       const id = parseInt(req.params.id);
       const validatedData = insertAccountSchema.partial().parse(req.body);
@@ -217,7 +224,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.delete("/api/accounts/:id", isAuthenticated, async (req, res) => {
+  app.delete("/api/accounts/:id", requireAuth, async (req, res) => {
     try {
       const id = parseInt(req.params.id);
       
@@ -252,7 +259,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Trade routes
-  app.get("/api/trades", isAuthenticated, async (req, res) => {
+  app.get("/api/trades", requireAuth, async (req, res) => {
     try {
       const accountId = req.query.accountId ? parseInt(req.query.accountId as string) : undefined;
       const trades = await storage.getTrades(accountId);
@@ -262,7 +269,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/trades", isAuthenticated, async (req, res) => {
+  app.post("/api/trades", requireAuth, async (req, res) => {
     try {
       const validatedData = insertTradeSchema.parse(req.body);
       const trade = await storage.createTrade(validatedData);
@@ -275,7 +282,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.put("/api/trades/:id", isAuthenticated, async (req, res) => {
+  app.put("/api/trades/:id", requireAuth, async (req, res) => {
     try {
       const id = parseInt(req.params.id);
       const validatedData = insertTradeSchema.partial().parse(req.body);
@@ -306,7 +313,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Re-process existing trades with improved SL/TP algorithm
-  app.post("/api/trades/reprocess-sltp", isAuthenticated, async (req, res) => {
+  app.post("/api/trades/reprocess-sltp", requireAuth, async (req, res) => {
     try {
       console.log("Re-processing existing trades with improved SL/TP algorithm...");
       
@@ -396,7 +403,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/trades/import-csv", isAuthenticated, async (req, res) => {
+  app.post("/api/trades/import-csv", requireAuth, async (req, res) => {
     try {
       console.log("CSV Import request received:", { 
         accountId: req.body.accountId, 
@@ -1263,7 +1270,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Spending routes
-  app.get("/api/spending", isAuthenticated, async (req, res) => {
+  app.get("/api/spending", requireAuth, async (req, res) => {
     try {
       const accountId = req.query.accountId ? parseInt(req.query.accountId as string) : undefined;
       const spending = await storage.getSpending(accountId);
@@ -1273,7 +1280,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/spending", isAuthenticated, async (req, res) => {
+  app.post("/api/spending", requireAuth, async (req, res) => {
     try {
       const validatedData = insertSpendingSchema.parse(req.body);
       const spending = await storage.createSpending(validatedData);
@@ -1287,7 +1294,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Achievement routes
-  app.get("/api/achievements", isAuthenticated, async (req, res) => {
+  app.get("/api/achievements", requireAuth, async (req, res) => {
     try {
       const userId = req.user.claims.sub;
       let achievements = await storage.getAchievements(userId);
@@ -1354,7 +1361,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/user-stats", isAuthenticated, async (req, res) => {
+  app.get("/api/user-stats", requireAuth, async (req, res) => {
     try {
       const userId = req.user.claims.sub;
       let userStats = await storage.getUserStats(userId);
@@ -1381,7 +1388,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Projection saving routes
-  app.post("/api/projections/save", isAuthenticated, async (req, res) => {
+  app.post("/api/projections/save", requireAuth, async (req, res) => {
     try {
       const userId = req.user.claims.sub;
       const projectionData = {
@@ -1397,7 +1404,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/projections/account/:accountId", isAuthenticated, async (req, res) => {
+  app.get("/api/projections/account/:accountId", requireAuth, async (req, res) => {
     try {
       const userId = req.user.claims.sub;
       const accountId = parseInt(req.params.accountId);
@@ -1410,7 +1417,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.put("/api/projections/:id", isAuthenticated, async (req, res) => {
+  app.put("/api/projections/:id", requireAuth, async (req, res) => {
     try {
       const userId = req.user.claims.sub;
       const projectionId = parseInt(req.params.id);
@@ -1428,7 +1435,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Trading Companion routes
-  app.post("/api/trading-companion/chat", isAuthenticated, async (req, res) => {
+  app.post("/api/trading-companion/chat", requireAuth, async (req, res) => {
     try {
       const { message, context } = req.body;
       
@@ -1533,7 +1540,7 @@ Provide helpful, personalized advice based on this data. Keep responses concise 
   });
 
   // Trading Strategy routes
-  app.get("/api/strategies", isAuthenticated, async (req: any, res) => {
+  app.get("/api/strategies", requireAuth, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
       const strategies = await storage.getTradingStrategies(userId);
@@ -1544,7 +1551,7 @@ Provide helpful, personalized advice based on this data. Keep responses concise 
     }
   });
 
-  app.post("/api/strategies", isAuthenticated, async (req: any, res) => {
+  app.post("/api/strategies", requireAuth, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
       const validatedData = insertTradingStrategySchema.parse({ ...req.body, userId });
@@ -1559,7 +1566,7 @@ Provide helpful, personalized advice based on this data. Keep responses concise 
     }
   });
 
-  app.put("/api/strategies/:id", isAuthenticated, async (req, res) => {
+  app.put("/api/strategies/:id", requireAuth, async (req, res) => {
     try {
       const strategyId = parseInt(req.params.id);
       const strategy = await storage.updateTradingStrategy(strategyId, req.body);
@@ -1573,7 +1580,7 @@ Provide helpful, personalized advice based on this data. Keep responses concise 
     }
   });
 
-  app.delete("/api/strategies/:id", isAuthenticated, async (req, res) => {
+  app.delete("/api/strategies/:id", requireAuth, async (req, res) => {
     try {
       const strategyId = parseInt(req.params.id);
       const success = await storage.deleteTradingStrategy(strategyId);
@@ -1594,7 +1601,7 @@ Provide helpful, personalized advice based on this data. Keep responses concise 
   });
 
   // Daily Plan routes
-  app.get("/api/daily-plans", isAuthenticated, async (req: any, res) => {
+  app.get("/api/daily-plans", requireAuth, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
       const accountId = req.query.accountId ? parseInt(req.query.accountId as string) : undefined;
@@ -1606,7 +1613,7 @@ Provide helpful, personalized advice based on this data. Keep responses concise 
     }
   });
 
-  app.get("/api/daily-plans/by-date", isAuthenticated, async (req: any, res) => {
+  app.get("/api/daily-plans/by-date", requireAuth, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
       const date = req.query.date as string;
@@ -1621,7 +1628,7 @@ Provide helpful, personalized advice based on this data. Keep responses concise 
     }
   });
 
-  app.post("/api/daily-plans", isAuthenticated, async (req: any, res) => {
+  app.post("/api/daily-plans", requireAuth, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
       const validatedData = insertDailyPlanSchema.parse({ ...req.body, userId });
@@ -1636,7 +1643,7 @@ Provide helpful, personalized advice based on this data. Keep responses concise 
     }
   });
 
-  app.put("/api/daily-plans/:id", isAuthenticated, async (req, res) => {
+  app.put("/api/daily-plans/:id", requireAuth, async (req, res) => {
     try {
       const planId = parseInt(req.params.id);
       const existingPlan = await storage.getDailyPlan(planId);
@@ -1666,7 +1673,7 @@ Provide helpful, personalized advice based on this data. Keep responses concise 
     }
   });
 
-  app.delete("/api/daily-plans/:id", isAuthenticated, async (req, res) => {
+  app.delete("/api/daily-plans/:id", requireAuth, async (req, res) => {
     try {
       const planId = parseInt(req.params.id);
       const success = await storage.deleteDailyPlan(planId);
@@ -1681,7 +1688,7 @@ Provide helpful, personalized advice based on this data. Keep responses concise 
   });
 
   // Strategy Rule Tracking routes
-  app.get("/api/daily-plans/:id/rule-tracking", isAuthenticated, async (req, res) => {
+  app.get("/api/daily-plans/:id/rule-tracking", requireAuth, async (req, res) => {
     try {
       const dailyPlanId = parseInt(req.params.id);
       const tracking = await storage.getStrategyRuleTracking(dailyPlanId);
@@ -1692,7 +1699,7 @@ Provide helpful, personalized advice based on this data. Keep responses concise 
     }
   });
 
-  app.post("/api/daily-plans/:id/rule-tracking", isAuthenticated, async (req, res) => {
+  app.post("/api/daily-plans/:id/rule-tracking", requireAuth, async (req, res) => {
     try {
       const dailyPlanId = parseInt(req.params.id);
       const validatedData = insertStrategyRuleTrackingSchema.parse({ 
@@ -1710,7 +1717,7 @@ Provide helpful, personalized advice based on this data. Keep responses concise 
     }
   });
 
-  app.put("/api/rule-tracking/:id", isAuthenticated, async (req, res) => {
+  app.put("/api/rule-tracking/:id", requireAuth, async (req, res) => {
     try {
       const trackingId = parseInt(req.params.id);
       const tracking = await storage.updateStrategyRuleTracking(trackingId, req.body);
@@ -1725,7 +1732,7 @@ Provide helpful, personalized advice based on this data. Keep responses concise 
   });
 
   // Budget Categories routes
-  app.get("/api/budget-categories", isAuthenticated, async (req: any, res) => {
+  app.get("/api/budget-categories", requireAuth, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
       const categories = await storage.getBudgetCategories(userId);
@@ -1736,7 +1743,7 @@ Provide helpful, personalized advice based on this data. Keep responses concise 
     }
   });
 
-  app.post("/api/budget-categories", isAuthenticated, async (req: any, res) => {
+  app.post("/api/budget-categories", requireAuth, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
       const validatedData = insertBudgetCategorySchema.parse({ ...req.body, userId });
@@ -1751,7 +1758,7 @@ Provide helpful, personalized advice based on this data. Keep responses concise 
     }
   });
 
-  app.patch("/api/budget-categories/:id", isAuthenticated, async (req: any, res) => {
+  app.patch("/api/budget-categories/:id", requireAuth, async (req: any, res) => {
     try {
       const categoryId = parseInt(req.params.id);
       const category = await storage.updateBudgetCategory(categoryId, req.body);
@@ -1765,7 +1772,7 @@ Provide helpful, personalized advice based on this data. Keep responses concise 
     }
   });
 
-  app.delete("/api/budget-categories/:id", isAuthenticated, async (req: any, res) => {
+  app.delete("/api/budget-categories/:id", requireAuth, async (req: any, res) => {
     try {
       const categoryId = parseInt(req.params.id);
       const success = await storage.deleteBudgetCategory(categoryId);
@@ -1780,7 +1787,7 @@ Provide helpful, personalized advice based on this data. Keep responses concise 
   });
 
   // Budget Plans routes
-  app.get("/api/budget-plan", isAuthenticated, async (req: any, res) => {
+  app.get("/api/budget-plan", requireAuth, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
       const activePlan = await storage.getActiveBudgetPlan(userId);
@@ -1791,7 +1798,7 @@ Provide helpful, personalized advice based on this data. Keep responses concise 
     }
   });
 
-  app.post("/api/budget-plan", isAuthenticated, async (req: any, res) => {
+  app.post("/api/budget-plan", requireAuth, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
       const validatedData = insertBudgetPlanSchema.parse({ ...req.body, userId });
@@ -1806,7 +1813,7 @@ Provide helpful, personalized advice based on this data. Keep responses concise 
     }
   });
 
-  app.patch("/api/budget-plan/:id", isAuthenticated, async (req: any, res) => {
+  app.patch("/api/budget-plan/:id", requireAuth, async (req: any, res) => {
     try {
       const planId = parseInt(req.params.id);
       const plan = await storage.updateBudgetPlan(planId, req.body);
@@ -1821,7 +1828,7 @@ Provide helpful, personalized advice based on this data. Keep responses concise 
   });
 
   // Notifications routes
-  app.get("/api/notifications", isAuthenticated, async (req: any, res) => {
+  app.get("/api/notifications", requireAuth, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
       const notifications = await storage.getNotifications(userId);
@@ -1832,7 +1839,7 @@ Provide helpful, personalized advice based on this data. Keep responses concise 
     }
   });
 
-  app.post("/api/notifications", isAuthenticated, async (req: any, res) => {
+  app.post("/api/notifications", requireAuth, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
       const validatedData = insertNotificationSchema.parse({ ...req.body, userId });
@@ -1847,7 +1854,7 @@ Provide helpful, personalized advice based on this data. Keep responses concise 
     }
   });
 
-  app.patch("/api/notifications/:id/read", isAuthenticated, async (req: any, res) => {
+  app.patch("/api/notifications/:id/read", requireAuth, async (req: any, res) => {
     try {
       const notificationId = parseInt(req.params.id);
       const userId = req.user.claims.sub;
@@ -1862,7 +1869,7 @@ Provide helpful, personalized advice based on this data. Keep responses concise 
     }
   });
 
-  app.patch("/api/notifications/mark-all-read", isAuthenticated, async (req: any, res) => {
+  app.patch("/api/notifications/mark-all-read", requireAuth, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
       await storage.markAllNotificationsAsRead(userId);
@@ -1874,7 +1881,7 @@ Provide helpful, personalized advice based on this data. Keep responses concise 
   });
 
   // User notification settings routes
-  app.get("/api/notification-settings", isAuthenticated, async (req: any, res) => {
+  app.get("/api/notification-settings", requireAuth, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
       let settings = await storage.getNotificationSettings(userId);
@@ -1901,7 +1908,7 @@ Provide helpful, personalized advice based on this data. Keep responses concise 
     }
   });
 
-  app.patch("/api/notification-settings", isAuthenticated, async (req: any, res) => {
+  app.patch("/api/notification-settings", requireAuth, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
       const settings = await storage.updateNotificationSettings(userId, req.body);
@@ -1913,7 +1920,7 @@ Provide helpful, personalized advice based on this data. Keep responses concise 
   });
 
   // Sample notifications endpoint for demonstration
-  app.post("/api/notifications/sample", isAuthenticated, async (req: any, res) => {
+  app.post("/api/notifications/sample", requireAuth, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
       

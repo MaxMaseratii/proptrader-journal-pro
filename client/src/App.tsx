@@ -16,6 +16,7 @@ import Analytics from "@/pages/analytics";
 import Trades from "@/pages/trades";
 import Profile from "@/pages/profile";
 import Welcome from "@/pages/welcome";
+import AuthPage from "@/pages/auth-page";
 import CsvImport from "@/pages/csv-import";
 import Spending from "@/pages/spending";
 import Achievements from "@/pages/achievements";
@@ -48,6 +49,7 @@ function Router() {
   if (!isAuthenticated) {
     return (
       <Switch>
+        <Route path="/auth" component={AuthPage} />
         <Route path="/signup" component={Signup} />
         <Route path="/privacy-policy" component={PrivacyPolicy} />
         <Route path="/terms" component={TermsOfService} />

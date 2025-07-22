@@ -394,7 +394,10 @@ export const users = pgTable("users", {
   email: varchar("email").unique(),
   firstName: varchar("first_name"),
   lastName: varchar("last_name"),
+  password: varchar("password"), // For email/password authentication
   profileImageUrl: varchar("profile_image_url"),
+  emailVerified: boolean("email_verified").default(false),
+  verificationToken: varchar("verification_token"),
   personalHourlyWage: real("personal_hourly_wage"), // Desired hourly wage for trading profitability calculations
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
@@ -439,16 +442,8 @@ export const projectionAdjustmentHistory = pgTable("projection_adjustment_histor
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 
-export const insertSavedProjectionSchema = createInsertSchema(savedProjections).omit({
-  id: true,
-  createdAt: true,
-  updatedAt: true,
-});
-
-export const insertProjectionAdjustmentSchema = createInsertSchema(projectionAdjustmentHistory).omit({
-  id: true,
-  createdAt: true,
-});
+export const insertSavedProjectionSchema = createInsertSchema(savedProjections);
+export const insertProjectionAdjustmentSchema = createInsertSchema(projectionAdjustmentHistory);
 
 export type SavedProjection = typeof savedProjections.$inferSelect;
 export type InsertSavedProjection = z.infer<typeof insertSavedProjectionSchema>;

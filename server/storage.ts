@@ -53,6 +53,7 @@ import {
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, and, desc, asc, gte, lte, sum, sql } from "drizzle-orm";
+import crypto from "crypto";
 
 // Interface for all storage operations
 export interface IStorage {
@@ -91,10 +92,14 @@ export interface IStorage {
   getSpending(accountId?: number): Promise<Spending[]>;
   createSpending(spending: InsertSpending): Promise<Spending>;
 
-  // User operations for Replit Auth
+  // User operations for Authentication
   getUser(id: string): Promise<User | undefined>;
+  getUserById(id: string): Promise<User | undefined>;
+  getUserByEmail(email: string): Promise<User | undefined>;
+  createUser(user: UpsertUser): Promise<User>;
   upsertUser(user: UpsertUser): Promise<User>;
   updateUserWage(userId: string, personalHourlyWage: number): Promise<User | null>;
+  verifyEmail(token: string): Promise<User | undefined>;
 
   // Achievement operations
   getAchievements(userId: string): Promise<Achievement[]>;
@@ -191,6 +196,34 @@ export class DatabaseStorage implements IStorage {
       .where(eq(users.id, userId))
       .returning();
     return user || null;
+  }
+
+  async getUserById(id: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.id, id));
+    return user || undefined;
+  }
+
+  async getUserByEmail(email: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.email, email));
+    return user || undefined;
+  }
+
+  async createUser(userData: UpsertUser): Promise<User> {
+    const userId = crypto.randomUUID();
+    const [user] = await db
+      .insert(users)
+      .values({ id: userId, ...userData })
+      .returning();
+    return user;
+  }
+
+  async verifyEmail(token: string): Promise<User | undefined> {
+    const [user] = await db
+      .update(users)
+      .set({ emailVerified: true, verificationToken: null })
+      .where(eq(users.verificationToken, token))
+      .returning();
+    return user || undefined;
   }
 
   // Account operations
