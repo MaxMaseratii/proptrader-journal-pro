@@ -2855,7 +2855,8 @@ export default function Dashboard() {
                                 type="number" 
                                 className="bg-gray-800 border-gray-600 text-white" 
                                 placeholder="100000"
-                                onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                                value={field.value === 0 ? "" : field.value}
+                                onChange={(e) => field.onChange(e.target.value === "" ? 0 : parseFloat(e.target.value))}
                               />
                             </FormControl>
                             <FormMessage />
@@ -2877,7 +2878,8 @@ export default function Dashboard() {
                                 type="number" 
                                 className="bg-gray-800 border-gray-600 text-white" 
                                 placeholder="10000"
-                                onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                                value={field.value === 0 ? "" : field.value}
+                                onChange={(e) => field.onChange(e.target.value === "" ? 0 : parseFloat(e.target.value))}
                               />
                             </FormControl>
                             <FormMessage />
@@ -2896,7 +2898,8 @@ export default function Dashboard() {
                                 type="number" 
                                 className="bg-gray-800 border-gray-600 text-white" 
                                 placeholder="5000"
-                                onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                                value={field.value === 0 ? "" : field.value}
+                                onChange={(e) => field.onChange(e.target.value === "" ? 0 : parseFloat(e.target.value))}
                               />
                             </FormControl>
                             <FormMessage />

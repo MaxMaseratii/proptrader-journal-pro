@@ -566,6 +566,15 @@ Changelog:
   * Implemented smaller, more refined action buttons with consistent spacing and gradient styling
   * Created streamlined header layout with better visual hierarchy and professional appearance
   * All buttons now use size="sm" with subtle shadows instead of heavy transform effects for cleaner look
+- July 22, 2025. Critical Form Fixes and Enhanced User Experience:
+  * Fixed number input zero deletion issue in Basic Info section - zeros can now be properly deleted from Starting Balance, Profit Target, and Max Drawdown fields
+  * Made Challenge Target Planner form identical to Dashboard form with complete field synchronization
+  * Added Daily Working Hours field (with 0.5 hour increments) and Hourly Wages field ($) to Personal Trading Time section
+  * Converted time selection fields to dropdown menus with 30-minute intervals (00:00 to 23:30) for faster user selection
+  * Enhanced timezone dropdown with comprehensive options (EST, CST, MST, PST, GMT, CET, JST, AEST)
+  * Made Privacy Policy, Terms of Service, and Support links clickable in welcome page footer with proper hover effects
+  * Updated database schema to include dailyWorkingHours and hourlyWages fields
+  * Applied consistent number input handling across both Dashboard and Challenge Target Planner forms
 ```
 
 ## User Preferences

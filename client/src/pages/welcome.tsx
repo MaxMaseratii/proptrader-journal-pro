@@ -889,9 +889,9 @@ export default function Welcome() {
           </p>
           <div className="flex justify-center space-x-8 text-gray-400">
             <span>© 2025 PropTraderJournal</span>
-            <span>Privacy Policy</span>
-            <span>Terms of Service</span>
-            <span>Support</span>
+            <a href="/privacy-policy" className="hover:text-white transition-colors cursor-pointer">Privacy Policy</a>
+            <a href="/terms-of-service" className="hover:text-white transition-colors cursor-pointer">Terms of Service</a>
+            <a href="/support" className="hover:text-white transition-colors cursor-pointer">Support</a>
           </div>
         </div>
       </footer>
