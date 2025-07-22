@@ -169,6 +169,15 @@ const DailyPlanPage = () => {
     },
   });
 
+  // Check if journal entry already exists for current plan/day
+  const existingJournalEntry = useMemo(() => {
+    if (!journalEntries || !currentPlan || !selectedAccount) return null;
+    return journalEntries.find(entry => 
+      entry.dailyPlanId === currentPlan.id || 
+      (entry.accountId === selectedAccount && entry.date === selectedDate)
+    );
+  }, [journalEntries, currentPlan, selectedAccount, selectedDate]);
+
   // Calculate actual results from trades
   const actualResults = useMemo(() => {
     if (!trades || !selectedAccount || !selectedDate) return {
@@ -880,7 +889,7 @@ const DailyPlanPage = () => {
                   value={journalEntry.whatWentWrong || ''}
                   onChange={(e) => setJournalEntry(prev => ({ ...prev, whatWentWrong: e.target.value }))}
                   placeholder="Mistakes, missed opportunities, emotional trading..."
-                  className="bg-gray-800 border-yellow-400/20 text-white placeholder-gray-400"
+                  className="bg-white border-yellow-400/20 text-black placeholder-gray-400"
                   rows={4}
                 />
               </div>
@@ -894,7 +903,7 @@ const DailyPlanPage = () => {
                   value={journalEntry.whatWentRight || ''}
                   onChange={(e) => setJournalEntry(prev => ({ ...prev, whatWentRight: e.target.value }))}
                   placeholder="Good decisions, successful trades, discipline..."
-                  className="bg-gray-800 border-yellow-400/20 text-white placeholder-gray-400"
+                  className="bg-white border-yellow-400/20 text-black placeholder-gray-400"
                   rows={4}
                 />
               </div>
@@ -909,7 +918,7 @@ const DailyPlanPage = () => {
                   value={journalEntry.lessonsLearned || ''}
                   onChange={(e) => setJournalEntry(prev => ({ ...prev, lessonsLearned: e.target.value }))}
                   placeholder="Key takeaways from today's trading..."
-                  className="bg-gray-800 border-yellow-400/20 text-white placeholder-gray-400"
+                  className="bg-white border-yellow-400/20 text-black placeholder-gray-400"
                   rows={4}
                 />
               </div>
@@ -923,7 +932,7 @@ const DailyPlanPage = () => {
                   value={journalEntry.improvementPlan || ''}
                   onChange={(e) => setJournalEntry(prev => ({ ...prev, improvementPlan: e.target.value }))}
                   placeholder="Improvements and focus areas for tomorrow..."
-                  className="bg-gray-800 border-yellow-400/20 text-white placeholder-gray-400"
+                  className="bg-white border-yellow-400/20 text-black placeholder-gray-400"
                   rows={4}
                 />
               </div>
@@ -940,6 +949,12 @@ const DailyPlanPage = () => {
             </Button>
             <Button 
               onClick={() => {
+                // Check if journal entry already exists for this plan/day
+                if (existingJournalEntry) {
+                  alert(`Journal entry already exists for Day #${historicalPlans.find(p => p.id === currentPlan?.id)?.dayNumber || '?'} (${selectedDate}). Only one journal entry is allowed per day.`);
+                  return;
+                }
+                
                 createJournalEntry.mutate({
                   accountId: selectedAccount,
                   date: selectedDate,
@@ -948,10 +963,11 @@ const DailyPlanPage = () => {
                 });
                 setIsJournalDialogOpen(false);
               }}
-              disabled={createJournalEntry.isPending}
-              className="bg-gradient-to-r from-yellow-400 to-yellow-600 text-black hover:from-yellow-500 hover:to-yellow-700"
+              disabled={createJournalEntry.isPending || !!existingJournalEntry}
+              className="bg-gradient-to-r from-yellow-400 to-yellow-600 text-black hover:from-yellow-500 hover:to-yellow-700 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {createJournalEntry.isPending ? 'Saving...' : 'Save Journal Entry'}
+              {createJournalEntry.isPending ? 'Saving...' : 
+               existingJournalEntry ? 'Journal Entry Exists' : 'Save Journal Entry'}
             </Button>
           </div>
         </DialogContent>
