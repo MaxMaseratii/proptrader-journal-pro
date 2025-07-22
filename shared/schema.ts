@@ -61,6 +61,12 @@ export const accounts = pgTable("accounts", {
   copyTradingAllowed: boolean("copy_trading_allowed").default(true),
   newsTradingAllowed: boolean("news_trading_allowed").default(true),
   
+  // Trading Session Settings
+  tradingSessionStart: text("trading_session_start"), // e.g. "09:30"
+  tradingSessionEnd: text("trading_session_end"), // e.g. "16:00"
+  timezone: text("timezone"), // e.g. "EST", "PST", "GMT"
+  useIntradayMargins: boolean("use_intraday_margins").default(true),
+  
   // Payout Settings (flexible for all account types)
   allowChallengePayouts: boolean("allow_challenge_payouts").default(false), // Whether challenge accounts can receive payouts
   daysRequiredForPayout: integer("days_required_for_payout"),
@@ -102,7 +108,6 @@ export const accounts = pgTable("accounts", {
   primaryAsset: text("primary_asset"), // 'ES', 'MES', 'NQ', 'MNQ', etc.
   secondaryAsset: text("secondary_asset"),
   tertiaryAsset: text("tertiary_asset"),
-  useIntradayMargins: boolean("use_intraday_margins").default(true),
   marginSafetyBuffer: real("margin_safety_buffer").default(50.0), // Percentage
   stopLossPoints: integer("stop_loss_points").default(10), // Typical stop loss in points
   
@@ -110,7 +115,6 @@ export const accounts = pgTable("accounts", {
   disciplineRiskPeriod: text("discipline_risk_period"), // 'daily', 'weekly', 'monthly', 'custom'
   disciplineRiskPeriodDays: integer("discipline_risk_period_days"), // Number of days for custom period
   maxDailyRiskBudget: real("max_daily_risk_budget"), // Maximum daily risk budget for discipline scoring
-  enhancedPayoutsAvailable: boolean("enhanced_payouts_available").default(false),
   
   // Live Account Settings
   liveAccountAvailable: boolean("live_account_available").default(false),

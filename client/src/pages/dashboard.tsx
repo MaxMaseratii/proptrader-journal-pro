@@ -198,6 +198,13 @@ export default function Dashboard() {
       maxDrawdownType: null,
       riskRewardRatio: 2.0,
       maxTradesPerDay: null,
+      tradingSessionStart: null,
+      tradingSessionEnd: null,
+      timezone: null,
+      useIntradayMargins: true,
+      enhancedPayoutsAvailable: false,
+      copyTradingAllowed: true,
+      newsTradingAllowed: true,
       accountCost: null,
       activationCost: null,
       purchaseMethod: null,
@@ -211,11 +218,6 @@ export default function Dashboard() {
       profitSplit: null,
       minimumPayoutAmount: null,
       maxNetBalanceForPayout: null,
-      tradingSessionStart: null,
-      tradingSessionEnd: null,
-      timezone: null,
-      allowWeekendTrading: false,
-      allowNewsTrading: false,
       allowScalpingStrategy: false,
       allowGridMartingale: false
     },
@@ -3545,6 +3547,151 @@ export default function Dashboard() {
                           </FormItem>
                         )}
                       />
+                    </div>
+
+                    {/* Trading Session Configuration */}
+                    <div className="space-y-4">
+                      <h3 className="text-lg font-semibold text-yellow-400 border-b border-yellow-400/20 pb-2">
+                        Trading Session Configuration
+                      </h3>
+                      <div className="grid grid-cols-3 gap-4">
+                        <FormField
+                          control={accountForm.control}
+                          name="tradingSessionStart"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="text-white">Trading Session Start</FormLabel>
+                              <FormControl>
+                                <Input 
+                                  {...field} 
+                                  className="bg-gray-800 border-gray-600 text-white" 
+                                  placeholder="--:-- --"
+                                  value={field.value || ""}
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={accountForm.control}
+                          name="tradingSessionEnd"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="text-white">Trading Session End</FormLabel>
+                              <FormControl>
+                                <Input 
+                                  {...field} 
+                                  className="bg-gray-800 border-gray-600 text-white" 
+                                  placeholder="--:-- --"
+                                  value={field.value || ""}
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={accountForm.control}
+                          name="timezone"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="text-white">Timezone</FormLabel>
+                              <FormControl>
+                                <Input 
+                                  {...field} 
+                                  className="bg-gray-800 border-gray-600 text-white" 
+                                  placeholder="e.g. EST, PST, GMT"
+                                  value={field.value || ""}
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+                      
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="flex items-center space-x-3">
+                          <FormField
+                            control={accountForm.control}
+                            name="useIntradayMargins"
+                            render={({ field }) => (
+                              <FormItem className="flex flex-row items-center space-x-3 space-y-0">
+                                <FormControl>
+                                  <input
+                                    type="checkbox"
+                                    checked={field.value}
+                                    onChange={field.onChange}
+                                    className="w-4 h-4 text-blue-600 bg-gray-800 border-gray-600 rounded focus:ring-blue-500"
+                                  />
+                                </FormControl>
+                                <FormLabel className="text-white">Use Intraday Margins</FormLabel>
+                              </FormItem>
+                            )}
+                          />
+                        </div>
+                        <div className="flex items-center space-x-3">
+                          <FormField
+                            control={accountForm.control}
+                            name="enhancedPayoutsAvailable"
+                            render={({ field }) => (
+                              <FormItem className="flex flex-row items-center space-x-3 space-y-0">
+                                <FormControl>
+                                  <input
+                                    type="checkbox"
+                                    checked={field.value}
+                                    onChange={field.onChange}
+                                    className="w-4 h-4 text-blue-600 bg-gray-800 border-gray-600 rounded focus:ring-blue-500"
+                                  />
+                                </FormControl>
+                                <FormLabel className="text-white">Enhanced Payouts Available</FormLabel>
+                              </FormItem>
+                            )}
+                          />
+                        </div>
+                      </div>
+                      
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="flex items-center space-x-3">
+                          <FormField
+                            control={accountForm.control}
+                            name="copyTradingAllowed"
+                            render={({ field }) => (
+                              <FormItem className="flex flex-row items-center space-x-3 space-y-0">
+                                <FormControl>
+                                  <input
+                                    type="checkbox"
+                                    checked={field.value}
+                                    onChange={field.onChange}
+                                    className="w-4 h-4 text-blue-600 bg-gray-800 border-gray-600 rounded focus:ring-blue-500"
+                                  />
+                                </FormControl>
+                                <FormLabel className="text-white">Copy Trading Allowed</FormLabel>
+                              </FormItem>
+                            )}
+                          />
+                        </div>
+                        <div className="flex items-center space-x-3">
+                          <FormField
+                            control={accountForm.control}
+                            name="newsTradingAllowed"
+                            render={({ field }) => (
+                              <FormItem className="flex flex-row items-center space-x-3 space-y-0">
+                                <FormControl>
+                                  <input
+                                    type="checkbox"
+                                    checked={field.value}
+                                    onChange={field.onChange}
+                                    className="w-4 h-4 text-blue-600 bg-gray-800 border-gray-600 rounded focus:ring-blue-500"
+                                  />
+                                </FormControl>
+                                <FormLabel className="text-white">News Trading Allowed</FormLabel>
+                              </FormItem>
+                            )}
+                          />
+                        </div>
+                      </div>
                     </div>
                   </TabsContent>
                 </Tabs>

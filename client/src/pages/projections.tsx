@@ -1726,8 +1726,12 @@ export default function Projections() {
                         />
                       </div>
 
-                      {/* Trading Session Timing */}
-                      <div className="grid grid-cols-3 gap-4">
+                      {/* Trading Session Configuration */}
+                      <div className="space-y-4">
+                        <h3 className="text-lg font-semibold text-yellow-400 border-b border-yellow-400/20 pb-2">
+                          Trading Session Configuration
+                        </h3>
+                        <div className="grid grid-cols-3 gap-4">
                         <FormField
                           control={accountForm.control}
                           name="tradingSessionStart"
@@ -1782,81 +1786,93 @@ export default function Projections() {
                             </FormItem>
                           )}
                         />
-                      </div>
+                        </div>
 
-                      <div className="flex items-center space-x-4">
-                        <FormField
-                          control={accountForm.control}
-                          name="useIntradayMargins"
-                          render={({ field }) => (
-                            <FormItem className="flex flex-row items-center space-x-3 space-y-0">
-                              <FormControl>
-                                <Checkbox
-                                  checked={field.value}
-                                  onCheckedChange={field.onChange}
-                                  className="border-gray-600 data-[state=checked]:bg-blue-600"
-                                />
-                              </FormControl>
-                              <div className="space-y-1 leading-none">
-                                <FormLabel className="text-white">Use Intraday Margins</FormLabel>
-                              </div>
-                            </FormItem>
-                          )}
-                        />
-                        <FormField
-                          control={accountForm.control}
-                          name="enhancedPayoutsAvailable"
-                          render={({ field }) => (
-                            <FormItem className="flex flex-row items-center space-x-3 space-y-0">
-                              <FormControl>
-                                <Checkbox
-                                  checked={field.value}
-                                  onCheckedChange={field.onChange}
-                                  className="border-gray-600 data-[state=checked]:bg-blue-600"
-                                />
-                              </FormControl>
-                              <div className="space-y-1 leading-none">
-                                <FormLabel className="text-white">Enhanced Payouts Available</FormLabel>
-                              </div>
-                            </FormItem>
-                          )}
-                        />
-                        <FormField
-                          control={accountForm.control}
-                          name="copyTradingAllowed"
-                          render={({ field }) => (
-                            <FormItem className="flex flex-row items-center space-x-3 space-y-0">
-                              <FormControl>
-                                <Checkbox
-                                  checked={field.value}
-                                  onCheckedChange={field.onChange}
-                                  className="border-gray-600 data-[state=checked]:bg-blue-600"
-                                />
-                              </FormControl>
-                              <div className="space-y-1 leading-none">
-                                <FormLabel className="text-white">Copy Trading Allowed</FormLabel>
-                              </div>
-                            </FormItem>
-                          )}
-                        />
-                        <FormField
-                          control={accountForm.control}
-                          name="newsTradingAllowed"
-                          render={({ field }) => (
-                            <FormItem className="flex flex-row items-center space-x-3 space-y-0">
-                              <FormControl>
-                                <Checkbox
-                                  checked={field.value}
-                                  onCheckedChange={field.onChange}
-                                  className="border-gray-600 data-[state=checked]:bg-blue-600"
-                                />
-                              </FormControl>
-                              <div className="space-y-1 leading-none">
-                                <FormLabel className="text-white">News Trading Allowed</FormLabel>
-                              </div>
-                            </FormItem>
-                          )}
-                        />
+                        <div className="grid grid-cols-2 gap-4">
+                          <div className="flex items-center space-x-3">
+                            <FormField
+                              control={accountForm.control}
+                              name="useIntradayMargins"
+                              render={({ field }) => (
+                                <FormItem className="flex flex-row items-center space-x-3 space-y-0">
+                                  <FormControl>
+                                    <Checkbox
+                                      checked={field.value}
+                                      onCheckedChange={field.onChange}
+                                      className="border-gray-600 data-[state=checked]:bg-blue-600"
+                                    />
+                                  </FormControl>
+                                  <div className="space-y-1 leading-none">
+                                    <FormLabel className="text-white">Use Intraday Margins</FormLabel>
+                                  </div>
+                                </FormItem>
+                              )}
+                            />
+                          </div>
+                          <div className="flex items-center space-x-3">
+                            <FormField
+                              control={accountForm.control}
+                              name="enhancedPayoutsAvailable"
+                              render={({ field }) => (
+                                <FormItem className="flex flex-row items-center space-x-3 space-y-0">
+                                  <FormControl>
+                                    <Checkbox
+                                      checked={field.value}
+                                      onCheckedChange={field.onChange}
+                                      className="border-gray-600 data-[state=checked]:bg-blue-600"
+                                    />
+                                  </FormControl>
+                                  <div className="space-y-1 leading-none">
+                                    <FormLabel className="text-white">Enhanced Payouts Available</FormLabel>
+                                  </div>
+                                </FormItem>
+                              )}
+                            />
+                          </div>
+                        </div>
+                        
+                        <div className="grid grid-cols-2 gap-4">
+                          <div className="flex items-center space-x-3">
+                            <FormField
+                              control={accountForm.control}
+                              name="copyTradingAllowed"
+                              render={({ field }) => (
+                                <FormItem className="flex flex-row items-center space-x-3 space-y-0">
+                                  <FormControl>
+                                    <Checkbox
+                                      checked={field.value}
+                                      onCheckedChange={field.onChange}
+                                      className="border-gray-600 data-[state=checked]:bg-blue-600"
+                                    />
+                                  </FormControl>
+                                  <div className="space-y-1 leading-none">
+                                    <FormLabel className="text-white">Copy Trading Allowed</FormLabel>
+                                  </div>
+                                </FormItem>
+                              )}
+                            />
+                          </div>
+                          <div className="flex items-center space-x-3">
+                            <FormField
+                              control={accountForm.control}
+                              name="newsTradingAllowed"
+                              render={({ field }) => (
+                                <FormItem className="flex flex-row items-center space-x-3 space-y-0">
+                                  <FormControl>
+                                    <Checkbox
+                                      checked={field.value}
+                                      onCheckedChange={field.onChange}
+                                      className="border-gray-600 data-[state=checked]:bg-blue-600"
+                                    />
+                                  </FormControl>
+                                  <div className="space-y-1 leading-none">
+                                    <FormLabel className="text-white">News Trading Allowed</FormLabel>
+                                  </div>
+                                </FormItem>
+                              )}
+                            />
+                          </div>
+                        </div>
                       </div>
 
                       {/* Risk Assessment Summary */}
