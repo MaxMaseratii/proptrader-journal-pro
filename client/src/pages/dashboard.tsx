@@ -1326,20 +1326,28 @@ export default function Dashboard() {
                   
                   {/* Risk + Max Daily Loss Combined */}
                   <div className="bg-black/30 rounded-lg p-4 border border-gray-700/50 relative">
-                    <div className="absolute top-3 right-3 text-xs text-red-400">
-                      Max: ${accounts?.[0]?.dailyLossLimit || 1000}
-                    </div>
-                    <div className="text-3xl font-bold text-red-400 mb-1">
-                      ${accounts?.[0]?.riskPerTrade || 20}
-                    </div>
+                    {combinedAnalytics && combinedAnalytics.accounts.length > 0 ? (
+                      <>
+                        <div className="absolute top-3 right-3 text-xs text-red-400">
+                          Max: ${combinedAnalytics.accounts[0]?.dailyLossLimit || 0}
+                        </div>
+                        <div className="text-3xl font-bold text-red-400 mb-1">
+                          ${combinedAnalytics.accounts[0]?.riskPerTrade || 0}
+                        </div>
+                      </>
+                    ) : (
+                      <div className="text-3xl font-bold text-gray-500 mb-1">--</div>
+                    )}
                     <div className="text-sm text-gray-400">Risk Per Trade</div>
                   </div>
 
                   {/* R:R */}
                   <div className="bg-black/30 rounded-lg p-4 border border-gray-700/50 relative">
-                    <div className="absolute top-3 right-3 text-xs text-blue-300">
-                      Target: {accounts?.[0]?.riskRewardRatio || 3.0} RR
-                    </div>
+                    {combinedAnalytics && combinedAnalytics.accounts.length > 0 && (
+                      <div className="absolute top-3 right-3 text-xs text-blue-300">
+                        Target: {combinedAnalytics.accounts[0]?.riskRewardRatio || 0} RR
+                      </div>
+                    )}
                     <div className="text-3xl font-bold text-blue-400 mb-1">
                       {(() => {
                         const avgReward = selectedDayData?.avgRewardRatio || 0;
@@ -1361,9 +1369,11 @@ export default function Dashboard() {
 
                   {/* Trades */}
                   <div className="bg-black/30 rounded-lg p-4 border border-gray-700/50 relative">
-                    <div className="absolute top-3 right-3 text-xs text-purple-300">
-                      {selectedDayData?.totalDayTrades || 0}/{accounts?.[0]?.maxDailyTrades || 5}
-                    </div>
+                    {combinedAnalytics && combinedAnalytics.accounts.length > 0 && (
+                      <div className="absolute top-3 right-3 text-xs text-purple-300">
+                        {selectedDayData?.totalDayTrades || 0}/{combinedAnalytics.accounts[0]?.maxDailyTrades || 0}
+                      </div>
+                    )}
                     <div className="text-3xl font-bold text-purple-400 mb-1">
                       {selectedDayData?.totalDayTrades || 0}
                     </div>
@@ -1371,7 +1381,7 @@ export default function Dashboard() {
                       <div 
                         className="h-1 rounded-full bg-purple-400 transition-all duration-500"
                         style={{ 
-                          width: `${Math.min((selectedDayData?.totalDayTrades || 0) / (accounts?.[0]?.maxDailyTrades || 5) * 100, 100)}%` 
+                          width: `${Math.min((selectedDayData?.totalDayTrades || 0) / ((combinedAnalytics?.accounts[0]?.maxDailyTrades || 1)) * 100, 100)}%` 
                         }}
                       />
                     </div>
@@ -1434,17 +1444,19 @@ export default function Dashboard() {
                       </div>
                     </div>
                     <div className={`text-3xl font-bold mb-1 ${
+                      !combinedAnalytics || combinedAnalytics.totalTrades === 0 ? 'text-gray-500' :
                       (selectedDayData?.disciplineScore || 0) >= 90 ? 'text-green-400' : 
                       (selectedDayData?.disciplineScore || 0) >= 80 ? 'text-green-400' : 
                       (selectedDayData?.disciplineScore || 0) >= 70 ? 'text-yellow-400' : 
                       (selectedDayData?.disciplineScore || 0) >= 60 ? 'text-orange-400' : 'text-red-400'
                     }`}>
-                      {Math.round(selectedDayData?.disciplineScore || 0)}% {
+                      {!combinedAnalytics || combinedAnalytics.totalTrades === 0 ? '--' : 
+                       `${Math.round(selectedDayData?.disciplineScore || 0)}% ${
                         (selectedDayData?.disciplineScore || 0) >= 90 ? 'A' : 
                         (selectedDayData?.disciplineScore || 0) >= 80 ? 'B' : 
                         (selectedDayData?.disciplineScore || 0) >= 70 ? 'C' : 
                         (selectedDayData?.disciplineScore || 0) >= 60 ? 'D' : 'F'
-                      }
+                       }`}
                     </div>
                     <div className="text-sm text-gray-400 mb-1">Discipline Score</div>
                     <div className="text-xs text-gray-300">
@@ -1458,11 +1470,15 @@ export default function Dashboard() {
                       Used
                     </div>
                     <div className="text-3xl font-bold text-orange-400 mb-1">
-                      {Math.min((selectedDayData?.totalDayTrades || 0) / (accounts?.[0]?.maxDailyTrades || 5) * 100, 100).toFixed(0)}%
+                      {combinedAnalytics && combinedAnalytics.accounts.length > 0 
+                        ? Math.min((selectedDayData?.totalDayTrades || 0) / (combinedAnalytics.accounts[0]?.maxDailyTrades || 1) * 100, 100).toFixed(0)
+                        : '0'}%
                     </div>
                     <div className="text-sm text-gray-400 mb-1">Risk Utilization</div>
                     <div className="text-xs text-orange-300">
-                      Total: ${((selectedDayData?.totalDayTrades || 0) * (accounts?.[0]?.riskPerTrade || 20)).toFixed(0)}
+                      Total: ${combinedAnalytics && combinedAnalytics.accounts.length > 0 
+                        ? ((selectedDayData?.totalDayTrades || 0) * (combinedAnalytics.accounts[0]?.riskPerTrade || 0)).toFixed(0)
+                        : '0'}
                     </div>
                   </div>
 

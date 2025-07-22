@@ -26,12 +26,12 @@ import {
 export default function Profile() {
   const [isEditing, setIsEditing] = useState(false);
   const [profile, setProfile] = useState({
-    name: "Max Maserati",
-    email: "max@maserati.trading",
-    phone: "+1 (555) 123-4567",
-    location: "New York, NY",
-    timezone: "Eastern Time (UTC-5)",
-    bio: "Professional trader specializing in prop firm challenges with over 5 years of experience in futures and forex markets.",
+    name: "",
+    email: "",
+    phone: "",
+    location: "",
+    timezone: "",
+    bio: "",
   });
 
   const handleSave = () => {

@@ -90,7 +90,7 @@ export default function Payouts() {
     // Check if account type is eligible for payout
     const isEligibleAccountType = selectedAccount.type === 'funded' || selectedAccount.type === 'live';
     
-    const totalProfit = Math.max(0, accountTrades.reduce((sum, trade) => sum + (trade.pnl || 0), 0));
+    const totalProfit = Math.max(0, trades.reduce((sum, trade) => sum + (trade.pnl || 0), 0));
     const profitableTrades = trades.filter(trade => trade.pnl > 0);
     const totalPnL = trades.reduce((sum, trade) => sum + trade.pnl, 0);
 
@@ -264,7 +264,7 @@ export default function Payouts() {
               <DialogTrigger asChild>
                 <Button 
                   className="bg-success-green hover:bg-green-600"
-                  disabled={!metrics?.fiveDayEligible || !metrics?.fiveDayRule || !metrics?.availablePayout}
+                  disabled={!metrics?.availablePayout}
                 >
                   <DollarSign className="mr-2 h-4 w-4" />
                   Request Payout
@@ -487,8 +487,8 @@ export default function Payouts() {
                       </div>
                       <div className="flex justify-between">
                         <span className="text-gray-400">Current Balance</span>
-                        <span className={`font-medium ${totalProfit >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-                          {formatCurrency(selectedAccount.startingBalance + totalProfit)}
+                        <span className={`font-medium ${(trades?.reduce((sum, trade) => sum + trade.pnl, 0) || 0) >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                          {formatCurrency(selectedAccount.startingBalance + (trades?.reduce((sum, trade) => sum + trade.pnl, 0) || 0))}
                         </span>
                       </div>
                       <div className="flex justify-between">
