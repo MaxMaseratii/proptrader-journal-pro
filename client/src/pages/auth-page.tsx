@@ -101,7 +101,12 @@ export default function AuthPage() {
   });
 
   const handleOAuthLogin = (provider: string) => {
-    window.location.href = `/api/auth/oauth/${provider}`;
+    // OAuth disabled for production launch - only email/password authentication
+    toast({
+      title: "OAuth Coming Soon",
+      description: `${provider} authentication will be available in the next update. Please use email/password for now.`,
+      variant: "default",
+    });
   };
 
   return (
@@ -169,44 +174,7 @@ export default function AuthPage() {
             </CardHeader>
             
             <CardContent className="space-y-6">
-              {/* OAuth Buttons */}
-              <div className="space-y-3">
-                <Button
-                  onClick={() => handleOAuthLogin("google")}
-                  variant="outline"
-                  className="w-full bg-gray-800 border-gray-600 hover:bg-gray-700 text-white"
-                >
-                  <FaGoogle className="w-4 h-4 mr-2" />
-                  Continue with Google
-                </Button>
-                
-                <Button
-                  onClick={() => handleOAuthLogin("apple")}
-                  variant="outline"
-                  className="w-full bg-gray-800 border-gray-600 hover:bg-gray-700 text-white"
-                >
-                  <Apple className="w-4 h-4 mr-2" />
-                  Continue with Apple
-                </Button>
-                
-                <Button
-                  onClick={() => handleOAuthLogin("github")}
-                  variant="outline"
-                  className="w-full bg-gray-800 border-gray-600 hover:bg-gray-700 text-white"
-                >
-                  <Github className="w-4 h-4 mr-2" />
-                  Continue with GitHub
-                </Button>
-              </div>
-
-              <div className="relative">
-                <div className="absolute inset-0 flex items-center">
-                  <Separator className="w-full bg-gray-600" />
-                </div>
-                <div className="relative flex justify-center text-xs uppercase">
-                  <span className="bg-gray-900 px-2 text-gray-400">Or continue with email</span>
-                </div>
-              </div>
+              {/* Email/Password Authentication Only - OAuth Coming Soon */}
 
               {/* Login Form */}
               {isLogin ? (

@@ -83,7 +83,7 @@ export default function Sidebar() {
         </div>
       </div>
       
-      {/* Replit-style toggle button */}
+      {/* Sidebar toggle button */}
       <Button
         variant="ghost"
         size="sm"

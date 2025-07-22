@@ -31,7 +31,7 @@ export default function PrivacyPolicy() {
               <div className="space-y-3">
                 <h3 className="text-lg font-semibold text-white">Account Information</h3>
                 <ul className="list-disc list-inside text-gray-300 space-y-1 ml-4">
-                  <li>Email address (for authentication via Replit Auth)</li>
+                  <li>Email address (for secure authentication)</li>
                   <li>Trading account details you create (account balances, profit targets, risk limits)</li>
                   <li>Trading performance data you input or import</li>
                   <li>Journal entries and trading notes</li>
@@ -98,7 +98,7 @@ export default function PrivacyPolicy() {
                 <ul className="list-disc list-inside text-gray-300 space-y-1 ml-4">
                   <li>End-to-end SSL/TLS encryption for all data transmission</li>
                   <li>Secure PostgreSQL database with encryption at rest</li>
-                  <li>Authentication via Replit's secure OAuth system</li>
+                  <li>Authentication via secure email/password system</li>
                   <li>Regular security audits and vulnerability assessments</li>
                   <li>Access controls and permission-based data access</li>
                 </ul>
@@ -130,12 +130,9 @@ export default function PrivacyPolicy() {
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="bg-gray-800 p-4 rounded-lg">
-                    <h4 className="font-semibold text-white mb-2">Replit Authentication</h4>
+                    <h4 className="font-semibold text-white mb-2">PropTraderJournal Authentication</h4>
                     <p className="text-gray-400 text-sm">
-                      Secure OAuth-based authentication system. 
-                      <a href="https://replit.com/privacy" className="text-blue-400 hover:text-blue-300 ml-1">
-                        View Replit Privacy Policy
-                      </a>
+                      Secure email/password authentication system with industry-standard encryption and security measures.
                     </p>
                   </div>
 

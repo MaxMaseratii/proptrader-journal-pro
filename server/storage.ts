@@ -168,7 +168,7 @@ export interface IStorage {
 
 // Production-ready DatabaseStorage implementation
 export class DatabaseStorage implements IStorage {
-  // User operations for Replit Auth
+  // User operations for authentication
   async getUser(id: string): Promise<User | undefined> {
     const [user] = await db.select().from(users).where(eq(users.id, id));
     return user || undefined;
