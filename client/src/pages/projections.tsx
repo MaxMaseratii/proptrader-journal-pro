@@ -1400,8 +1400,8 @@ export default function Projections() {
                                   type="number" 
                                   className="bg-gray-800 border-gray-600 text-white" 
                                   placeholder="500"
-                                  value={field.value || ""}
-                                  onChange={(e) => field.onChange(parseFloat(e.target.value) || null)}
+                                  value={field.value === null ? "" : field.value}
+                                  onChange={(e) => field.onChange(e.target.value === "" ? null : parseFloat(e.target.value))}
                                 />
                               </FormControl>
                               <FormMessage />
@@ -1436,8 +1436,8 @@ export default function Projections() {
                                   type="number" 
                                   className="bg-gray-800 border-gray-600 text-white" 
                                   placeholder="2000"
-                                  value={field.value || ""}
-                                  onChange={(e) => field.onChange(parseFloat(e.target.value) || null)}
+                                  value={field.value === null ? "" : field.value}
+                                  onChange={(e) => field.onChange(e.target.value === "" ? null : parseFloat(e.target.value))}
                                 />
                               </FormControl>
                               <FormMessage />
@@ -1475,8 +1475,8 @@ export default function Projections() {
                                   type="number" 
                                   className="bg-gray-800 border-gray-600 text-white" 
                                   placeholder="5"
-                                  value={field.value || ""}
-                                  onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
+                                  value={field.value === null ? "" : field.value}
+                                  onChange={(e) => field.onChange(e.target.value === "" ? null : parseInt(e.target.value))}
                                 />
                               </FormControl>
                               <FormMessage />
@@ -1495,8 +1495,8 @@ export default function Projections() {
                                   type="number" 
                                   className="bg-gray-800 border-gray-600 text-white" 
                                   placeholder="3000"
-                                  value={field.value || ""}
-                                  onChange={(e) => field.onChange(parseFloat(e.target.value) || null)}
+                                  value={field.value === null ? "" : field.value}
+                                  onChange={(e) => field.onChange(e.target.value === "" ? null : parseFloat(e.target.value))}
                                 />
                               </FormControl>
                               <FormMessage />
@@ -1523,8 +1523,8 @@ export default function Projections() {
                                   step="0.1"
                                   className="bg-gray-800 border-gray-600 text-white" 
                                   placeholder="2.0"
-                                  value={field.value || ""}
-                                  onChange={(e) => field.onChange(parseFloat(e.target.value) || 2.0)}
+                                  value={field.value === null ? "" : field.value}
+                                  onChange={(e) => field.onChange(e.target.value === "" ? null : parseFloat(e.target.value))}
                                 />
                               </FormControl>
                               <FormMessage />
@@ -1666,15 +1666,15 @@ export default function Projections() {
                           name="winningDayMinimum"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel className="text-white">Minimum Profit Per Day ($)</FormLabel>
+                              <FormLabel className="text-white">Daily Profit Target ($)</FormLabel>
                               <FormControl>
                                 <Input 
                                   {...field} 
                                   type="number" 
                                   className="bg-gray-800 border-gray-600 text-white" 
                                   placeholder="200"
-                                  value={field.value || ""}
-                                  onChange={(e) => field.onChange(parseFloat(e.target.value) || null)}
+                                  value={field.value === null ? "" : field.value}
+                                  onChange={(e) => field.onChange(e.target.value === "" ? null : parseFloat(e.target.value))}
                                 />
                               </FormControl>
                               <FormMessage />

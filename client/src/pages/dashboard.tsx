@@ -159,6 +159,9 @@ export default function Dashboard() {
     return (totalPnl / totalCapital) * 100;
   };
 
+  // Account creation modal state
+  const [showAccountModal, setShowAccountModal] = useState(false);
+
   // Check if a date has journal entries
   const hasJournalEntry = (date: Date) => {
     if (!journalEntries) return false;
@@ -1146,15 +1149,14 @@ export default function Dashboard() {
                   Trade
                 </Button>
               </Link>
-              <Link href="/projections">
-                <Button 
-                  size="sm" 
-                  className="bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white shadow-md hover:shadow-lg transition-all duration-200"
-                >
-                  <Plus className="mr-1 h-3 w-3" />
-                  Account
-                </Button>
-              </Link>
+              <Button 
+                size="sm" 
+                className="bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white shadow-md hover:shadow-lg transition-all duration-200"
+                onClick={() => setShowAccountModal(true)}
+              >
+                <Plus className="mr-1 h-3 w-3" />
+                Account
+              </Button>
               <Link href="/journal">
                 <Button 
                   size="sm" 
@@ -2225,12 +2227,13 @@ export default function Dashboard() {
               </h2>
               <p className="text-sm text-gray-400">Account status, discipline scores, and portfolio overview</p>
             </div>
-            <Link href="/projections">
-              <Button className="bg-gradient-to-r from-amber-500 to-amber-600 text-black font-semibold hover:from-amber-400 hover:to-amber-500 flex items-center gap-2">
-                <Plus className="w-4 h-4" />
-                Add Account
-              </Button>
-            </Link>
+            <Button 
+              className="bg-gradient-to-r from-amber-500 to-amber-600 text-black font-semibold hover:from-amber-400 hover:to-amber-500 flex items-center gap-2"
+              onClick={() => setShowAccountModal(true)}
+            >
+              <Plus className="w-4 h-4" />
+              Add Account
+            </Button>
           </div>
           
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -2659,6 +2662,39 @@ export default function Dashboard() {
                 variant="outline"
                 onClick={() => setShowWageModal(false)}
                 className="flex-1 border-gray-600 text-gray-300 hover:bg-gray-700"
+              >
+                Cancel
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Account Creation Modal */}
+      <Dialog open={showAccountModal} onOpenChange={setShowAccountModal}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Create New Trading Account</DialogTitle>
+          </DialogHeader>
+          <div className="p-4">
+            <p className="text-gray-400 mb-4">
+              You'll be redirected to the account creation form where you can set up your new trading account with comprehensive settings.
+            </p>
+            <div className="flex gap-3">
+              <Button 
+                onClick={() => {
+                  setShowAccountModal(false);
+                  // Navigate to projections page
+                  window.location.href = "/projections";
+                }}
+                className="flex-1 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700"
+              >
+                Continue to Setup
+              </Button>
+              <Button 
+                variant="outline" 
+                onClick={() => setShowAccountModal(false)}
+                className="flex-1"
               >
                 Cancel
               </Button>
