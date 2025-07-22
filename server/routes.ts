@@ -770,8 +770,44 @@ export async function registerRoutes(app: Express): Promise<Server> {
               const buyOrder = openPos.side === 'buy' ? openPos : currentOrder;
               const sellOrder = openPos.side === 'sell' ? openPos : currentOrder;
               
-              // Calculate actual P&L for ES futures ($50 per point)
-              const pointValue = 50;
+              // Calculate actual P&L with correct point values per instrument
+              let pointValue = 50; // Default for ES
+              
+              // Set correct point values based on instrument
+              switch (currentOrder.symbol) {
+                case 'MES': // Micro E-mini S&P 500
+                  pointValue = 5; // $5 per point
+                  break;
+                case 'ES': // E-mini S&P 500
+                  pointValue = 50; // $50 per point
+                  break;
+                case 'NQ': // E-mini NASDAQ 100
+                  pointValue = 20; // $20 per point
+                  break;
+                case 'MNQ': // Micro E-mini NASDAQ 100
+                  pointValue = 2; // $2 per point
+                  break;
+                case 'YM': // E-mini Dow Jones
+                  pointValue = 5; // $5 per point
+                  break;
+                case 'MYM': // Micro E-mini Dow Jones
+                  pointValue = 0.5; // $0.50 per point
+                  break;
+                case 'RTY': // E-mini Russell 2000
+                  pointValue = 50; // $50 per point
+                  break;
+                case 'M2K': // Micro E-mini Russell 2000
+                  pointValue = 5; // $5 per point
+                  break;
+                default:
+                  // For unknown instruments, try to detect by symbol pattern
+                  if (currentOrder.symbol.startsWith('M')) {
+                    pointValue = 5; // Most micro contracts are $5
+                  } else {
+                    pointValue = 20; // Conservative default
+                  }
+              }
+              
               const priceDifference = sellOrder.price - buyOrder.price;
               const pnl = priceDifference * quantityToClose * pointValue;
               
