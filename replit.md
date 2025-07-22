@@ -69,6 +69,17 @@ The application uses PostgreSQL with four main tables:
 4. **Response**: JSON data flows back through the query client to update UI state
 5. **Real-time Updates**: Query invalidation ensures fresh data across components
 
+## Domain Configuration
+
+**CRITICAL**: The application is currently running on the Replit development domain (code-builder-infotrade.replit.app). For production launch with your custom proptraderjournal domain:
+
+1. **Custom Domain Setup**: Configure your proptraderjournal.com domain in Replit's deployment settings
+2. **DNS Configuration**: Point your domain's DNS to Replit's servers
+3. **SSL/TLS**: Replit automatically handles SSL certificates for custom domains
+4. **Authentication**: The authentication system will work seamlessly with your custom domain
+
+**Current Status**: Running on development domain - custom domain configuration needed for production launch.
+
 ## External Dependencies
 
 ### Core Dependencies

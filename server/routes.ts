@@ -1296,7 +1296,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Achievement routes
   app.get("/api/achievements", requireAuth, async (req, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       let achievements = await storage.getAchievements(userId);
       
       // Initialize default achievements if none exist
@@ -1363,7 +1363,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get("/api/user-stats", requireAuth, async (req, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       let userStats = await storage.getUserStats(userId);
       
       // Initialize user stats if none exist
@@ -1390,7 +1390,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Projection saving routes
   app.post("/api/projections/save", requireAuth, async (req, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const projectionData = {
         ...req.body,
         userId
@@ -1406,7 +1406,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get("/api/projections/account/:accountId", requireAuth, async (req, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const accountId = parseInt(req.params.accountId);
       
       const projections = await storage.getSavedProjections(userId, accountId);
@@ -1419,7 +1419,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.put("/api/projections/:id", requireAuth, async (req, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const projectionId = parseInt(req.params.id);
       
       const updatedProjection = await storage.updateSavedProjection(projectionId, req.body, userId);
@@ -1542,7 +1542,7 @@ Provide helpful, personalized advice based on this data. Keep responses concise 
   // Trading Strategy routes
   app.get("/api/strategies", requireAuth, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const strategies = await storage.getTradingStrategies(userId);
       res.json(strategies);
     } catch (error) {
@@ -1553,7 +1553,7 @@ Provide helpful, personalized advice based on this data. Keep responses concise 
 
   app.post("/api/strategies", requireAuth, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const validatedData = insertTradingStrategySchema.parse({ ...req.body, userId });
       const strategy = await storage.createTradingStrategy(validatedData);
       res.status(201).json(strategy);
@@ -1603,7 +1603,7 @@ Provide helpful, personalized advice based on this data. Keep responses concise 
   // Daily Plan routes
   app.get("/api/daily-plans", requireAuth, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const accountId = req.query.accountId ? parseInt(req.query.accountId as string) : undefined;
       const plans = await storage.getDailyPlans(userId, accountId);
       res.json(plans);
@@ -1615,7 +1615,7 @@ Provide helpful, personalized advice based on this data. Keep responses concise 
 
   app.get("/api/daily-plans/by-date", requireAuth, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const date = req.query.date as string;
       if (!date) {
         return res.status(400).json({ message: "Date parameter is required" });
@@ -1630,7 +1630,7 @@ Provide helpful, personalized advice based on this data. Keep responses concise 
 
   app.post("/api/daily-plans", requireAuth, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const validatedData = insertDailyPlanSchema.parse({ ...req.body, userId });
       const plan = await storage.createDailyPlan(validatedData);
       res.status(201).json(plan);
@@ -1734,7 +1734,7 @@ Provide helpful, personalized advice based on this data. Keep responses concise 
   // Budget Categories routes
   app.get("/api/budget-categories", requireAuth, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const categories = await storage.getBudgetCategories(userId);
       res.json(categories);
     } catch (error) {
@@ -1745,7 +1745,7 @@ Provide helpful, personalized advice based on this data. Keep responses concise 
 
   app.post("/api/budget-categories", requireAuth, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const validatedData = insertBudgetCategorySchema.parse({ ...req.body, userId });
       const category = await storage.createBudgetCategory(validatedData);
       res.status(201).json(category);
@@ -1789,7 +1789,7 @@ Provide helpful, personalized advice based on this data. Keep responses concise 
   // Budget Plans routes
   app.get("/api/budget-plan", requireAuth, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const activePlan = await storage.getActiveBudgetPlan(userId);
       res.json(activePlan);
     } catch (error) {
@@ -1800,7 +1800,7 @@ Provide helpful, personalized advice based on this data. Keep responses concise 
 
   app.post("/api/budget-plan", requireAuth, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const validatedData = insertBudgetPlanSchema.parse({ ...req.body, userId });
       const plan = await storage.createBudgetPlan(validatedData);
       res.status(201).json(plan);
@@ -1830,7 +1830,7 @@ Provide helpful, personalized advice based on this data. Keep responses concise 
   // Notifications routes
   app.get("/api/notifications", requireAuth, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const notifications = await storage.getNotifications(userId);
       res.json(notifications);
     } catch (error) {
@@ -1841,7 +1841,7 @@ Provide helpful, personalized advice based on this data. Keep responses concise 
 
   app.post("/api/notifications", requireAuth, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const validatedData = insertNotificationSchema.parse({ ...req.body, userId });
       const notification = await storage.createNotification(validatedData);
       res.status(201).json(notification);
@@ -1857,7 +1857,7 @@ Provide helpful, personalized advice based on this data. Keep responses concise 
   app.patch("/api/notifications/:id/read", requireAuth, async (req: any, res) => {
     try {
       const notificationId = parseInt(req.params.id);
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const notification = await storage.markNotificationAsRead(notificationId, userId);
       if (!notification) {
         return res.status(404).json({ message: "Notification not found" });
@@ -1871,7 +1871,7 @@ Provide helpful, personalized advice based on this data. Keep responses concise 
 
   app.patch("/api/notifications/mark-all-read", requireAuth, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       await storage.markAllNotificationsAsRead(userId);
       res.json({ success: true });
     } catch (error) {
@@ -1883,7 +1883,7 @@ Provide helpful, personalized advice based on this data. Keep responses concise 
   // User notification settings routes
   app.get("/api/notification-settings", requireAuth, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       let settings = await storage.getNotificationSettings(userId);
       
       // Create default settings if none exist
@@ -1910,7 +1910,7 @@ Provide helpful, personalized advice based on this data. Keep responses concise 
 
   app.patch("/api/notification-settings", requireAuth, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const settings = await storage.updateNotificationSettings(userId, req.body);
       res.json(settings);
     } catch (error) {
@@ -1922,7 +1922,7 @@ Provide helpful, personalized advice based on this data. Keep responses concise 
   // Sample notifications endpoint for demonstration
   app.post("/api/notifications/sample", requireAuth, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       
       const sampleNotifications = [
         {
