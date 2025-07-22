@@ -1,7 +1,8 @@
 import passport from "passport";
 import { Strategy as LocalStrategy } from "passport-local";
-import { Strategy as GoogleStrategy } from "passport-google-oauth20";
-import { Strategy as GitHubStrategy } from "passport-github2";
+// OAuth imports disabled for production launch
+// import { Strategy as GoogleStrategy } from "passport-google-oauth20";
+// import { Strategy as GitHubStrategy } from "passport-github2";
 import { Express } from "express";
 import session from "express-session";
 import { scrypt, randomBytes, timingSafeEqual } from "crypto";
@@ -120,71 +121,7 @@ export function setupAuth(app: Express) {
     )
   );
 
-  // Google OAuth Strategy
-  if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
-    passport.use(
-      new GoogleStrategy(
-        {
-          clientID: process.env.GOOGLE_CLIENT_ID,
-          clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-          callbackURL: "/api/auth/oauth/google/callback",
-        },
-        async (accessToken, refreshToken, profile, done) => {
-          try {
-            let user = await storage.getUserByEmail(profile.emails?.[0]?.value || "");
-            
-            if (!user) {
-              user = await storage.createUser({
-                email: profile.emails?.[0]?.value || "",
-                firstName: profile.name?.givenName || "",
-                lastName: profile.name?.familyName || "",
-                password: "", // OAuth users don't need password
-                emailVerified: true, // OAuth emails are pre-verified
-                profileImageUrl: profile.photos?.[0]?.value,
-              });
-            }
-            
-            return done(null, user);
-          } catch (error) {
-            return done(error);
-          }
-        }
-      )
-    );
-  }
-
-  // GitHub OAuth Strategy
-  if (process.env.GITHUB_CLIENT_ID && process.env.GITHUB_CLIENT_SECRET) {
-    passport.use(
-      new GitHubStrategy(
-        {
-          clientID: process.env.GITHUB_CLIENT_ID,
-          clientSecret: process.env.GITHUB_CLIENT_SECRET,
-          callbackURL: "/api/auth/oauth/github/callback",
-        },
-        async (accessToken: string, refreshToken: string, profile: any, done: any) => {
-          try {
-            let user = await storage.getUserByEmail(profile.emails?.[0]?.value || "");
-            
-            if (!user) {
-              user = await storage.createUser({
-                email: profile.emails?.[0]?.value || "",
-                firstName: profile.displayName?.split(" ")[0] || "",
-                lastName: profile.displayName?.split(" ")[1] || "",
-                password: "", // OAuth users don't need password
-                emailVerified: true, // OAuth emails are pre-verified
-                profileImageUrl: profile.photos?.[0]?.value,
-              });
-            }
-            
-            return done(null, user);
-          } catch (error) {
-            return done(error);
-          }
-        }
-      )
-    );
-  }
+  // OAuth strategies completely disabled for production launch
 
   passport.serializeUser((user, done) => done(null, user.id));
   passport.deserializeUser(async (id: string, done) => {
@@ -270,22 +207,9 @@ export function setupAuth(app: Express) {
     }
   });
 
-  // OAuth routes
-  app.get("/api/auth/oauth/google", passport.authenticate("google", { scope: ["profile", "email"] }));
-  app.get("/api/auth/oauth/google/callback", 
-    passport.authenticate("google", { failureRedirect: "/auth" }),
-    (req, res) => res.redirect("/")
-  );
-
-  app.get("/api/auth/oauth/github", passport.authenticate("github", { scope: ["user:email"] }));
-  app.get("/api/auth/oauth/github/callback",
-    passport.authenticate("github", { failureRedirect: "/auth" }),
-    (req, res) => res.redirect("/")
-  );
-
-  // Apple OAuth placeholder (requires more complex setup)
-  app.get("/api/auth/oauth/apple", (req, res) => {
-    res.status(501).json({ message: "Apple OAuth coming soon" });
+  // OAuth routes disabled for production launch
+  app.get("/api/auth/oauth/:provider", (req, res) => {
+    res.status(501).json({ message: "OAuth authentication temporarily disabled. Please use email/password." });
   });
 
   // Logout endpoint
