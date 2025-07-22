@@ -173,6 +173,14 @@ export default function Projections() {
       customRiskAmount: null,
       riskRewardRatio: 2.0,
       primaryAsset: "ES" as AssetSymbol,
+      secondaryAsset: "",
+      tertiaryAsset: "",
+      takeProfitPoints: 20,
+      tradingSessionStart: "",
+      tradingSessionEnd: "",
+      timezone: "",
+      copyTradingAllowed: true,
+      newsTradingAllowed: true,
       useIntradayMargins: true,
       marginSafetyBuffer: 50.0,
       stopLossPoints: 10,
@@ -1378,6 +1386,7 @@ export default function Projections() {
                     </TabsContent>
 
                     <TabsContent value="rules" className="space-y-4">
+                      {/* Risk Per Trade with Real-time Feedback */}
                       <div className="grid grid-cols-2 gap-4">
                         <FormField
                           control={accountForm.control}
@@ -1396,6 +1405,22 @@ export default function Projections() {
                                 />
                               </FormControl>
                               <FormMessage />
+                              {field.value && accountFormValues.startingBalance && (
+                                <div className="text-xs mt-1">
+                                  <span className={`${
+                                    (field.value / accountFormValues.startingBalance) * 100 > 2 
+                                      ? 'text-red-400' 
+                                      : (field.value / accountFormValues.startingBalance) * 100 > 1 
+                                      ? 'text-yellow-400' 
+                                      : 'text-green-400'
+                                  }`}>
+                                    {((field.value / accountFormValues.startingBalance) * 100).toFixed(2)}% of account
+                                  </span>
+                                  {(field.value / accountFormValues.startingBalance) * 100 > 2 && (
+                                    <span className="text-red-400 ml-2">⚠️ High risk</span>
+                                  )}
+                                </div>
+                              )}
                             </FormItem>
                           )}
                         />
@@ -1416,6 +1441,22 @@ export default function Projections() {
                                 />
                               </FormControl>
                               <FormMessage />
+                              {field.value && accountFormValues.startingBalance && (
+                                <div className="text-xs mt-1">
+                                  <span className={`${
+                                    (field.value / accountFormValues.startingBalance) * 100 > 5 
+                                      ? 'text-red-400' 
+                                      : (field.value / accountFormValues.startingBalance) * 100 > 3 
+                                      ? 'text-yellow-400' 
+                                      : 'text-green-400'
+                                  }`}>
+                                    {((field.value / accountFormValues.startingBalance) * 100).toFixed(2)}% of account
+                                  </span>
+                                  {(field.value / accountFormValues.startingBalance) * 100 > 5 && (
+                                    <span className="text-red-400 ml-2">⚠️ Very high daily risk</span>
+                                  )}
+                                </div>
+                              )}
                             </FormItem>
                           )}
                         />
@@ -1459,6 +1500,13 @@ export default function Projections() {
                                 />
                               </FormControl>
                               <FormMessage />
+                              {field.value && accountFormValues.riskPerTrade && (
+                                <div className="text-xs mt-1">
+                                  <span className="text-gray-400">
+                                    ≈ {Math.floor(field.value / accountFormValues.riskPerTrade)} trades max per day
+                                  </span>
+                                </div>
+                              )}
                             </FormItem>
                           )}
                         />
@@ -1467,7 +1515,7 @@ export default function Projections() {
                           name="riskRewardRatio"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel className="text-white">Risk:Reward Ratio</FormLabel>
+                              <FormLabel className="text-white">Risk:Reward Ratio (1:X)</FormLabel>
                               <FormControl>
                                 <Input 
                                   {...field} 
@@ -1480,6 +1528,70 @@ export default function Projections() {
                                 />
                               </FormControl>
                               <FormMessage />
+                              {field.value && accountFormValues.riskPerTrade && (
+                                <div className="text-xs mt-1">
+                                  <span className="text-green-400">
+                                    Target profit: ${(accountFormValues.riskPerTrade * field.value).toFixed(0)} per trade
+                                  </span>
+                                </div>
+                              )}
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+
+                      <div className="grid grid-cols-3 gap-4">
+                        <FormField
+                          control={accountForm.control}
+                          name="primaryAsset"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="text-white">Primary Asset</FormLabel>
+                              <FormControl>
+                                <Input 
+                                  {...field} 
+                                  className="bg-gray-800 border-gray-600 text-white" 
+                                  placeholder="e.g. ES, NQ, EURUSD, BTCUSD"
+                                  value={field.value || ""}
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={accountForm.control}
+                          name="secondaryAsset"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="text-white">Secondary Asset</FormLabel>
+                              <FormControl>
+                                <Input 
+                                  {...field} 
+                                  className="bg-gray-800 border-gray-600 text-white" 
+                                  placeholder="e.g. CL, GC, GBPUSD"
+                                  value={field.value || ""}
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={accountForm.control}
+                          name="tertiaryAsset"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="text-white">Tertiary Asset</FormLabel>
+                              <FormControl>
+                                <Input 
+                                  {...field} 
+                                  className="bg-gray-800 border-gray-600 text-white" 
+                                  placeholder="e.g. RTY, YM, USDJPY"
+                                  value={field.value || ""}
+                                />
+                              </FormControl>
+                              <FormMessage />
                             </FormItem>
                           )}
                         />
@@ -1488,37 +1600,10 @@ export default function Projections() {
                       <div className="grid grid-cols-2 gap-4">
                         <FormField
                           control={accountForm.control}
-                          name="primaryAsset"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel className="text-white">Primary Asset</FormLabel>
-                              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                <FormControl>
-                                  <SelectTrigger className="bg-gray-800 border-gray-600 text-white">
-                                    <SelectValue placeholder="Select primary asset" />
-                                  </SelectTrigger>
-                                </FormControl>
-                                <SelectContent className="bg-gray-800 border-gray-600">
-                                  <SelectItem value="ES">ES - S&P 500 E-mini</SelectItem>
-                                  <SelectItem value="NQ">NQ - NASDAQ 100 E-mini</SelectItem>
-                                  <SelectItem value="YM">YM - Dow Jones E-mini</SelectItem>
-                                  <SelectItem value="RTY">RTY - Russell 2000 E-mini</SelectItem>
-                                  <SelectItem value="CL">CL - Crude Oil</SelectItem>
-                                  <SelectItem value="GC">GC - Gold</SelectItem>
-                                  <SelectItem value="EURUSD">EURUSD</SelectItem>
-                                  <SelectItem value="GBPUSD">GBPUSD</SelectItem>
-                                </SelectContent>
-                              </Select>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                        <FormField
-                          control={accountForm.control}
                           name="stopLossPoints"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel className="text-white">Default Stop Loss (Points)</FormLabel>
+                              <FormLabel className="text-white">Default Stop Loss (Points/Pips)</FormLabel>
                               <FormControl>
                                 <Input 
                                   {...field} 
@@ -1527,6 +1612,26 @@ export default function Projections() {
                                   placeholder="10"
                                   value={field.value || ""}
                                   onChange={(e) => field.onChange(parseInt(e.target.value) || 10)}
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={accountForm.control}
+                          name="takeProfitPoints"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="text-white">Default Take Profit (Points/Pips)</FormLabel>
+                              <FormControl>
+                                <Input 
+                                  {...field} 
+                                  type="number" 
+                                  className="bg-gray-800 border-gray-600 text-white" 
+                                  placeholder="20"
+                                  value={field.value || ""}
+                                  onChange={(e) => field.onChange(parseInt(e.target.value) || 20)}
                                 />
                               </FormControl>
                               <FormMessage />
@@ -1621,6 +1726,64 @@ export default function Projections() {
                         />
                       </div>
 
+                      {/* Trading Session Timing */}
+                      <div className="grid grid-cols-3 gap-4">
+                        <FormField
+                          control={accountForm.control}
+                          name="tradingSessionStart"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="text-white">Trading Session Start</FormLabel>
+                              <FormControl>
+                                <Input 
+                                  {...field} 
+                                  type="time"
+                                  className="bg-gray-800 border-gray-600 text-white" 
+                                  value={field.value || ""}
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={accountForm.control}
+                          name="tradingSessionEnd"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="text-white">Trading Session End</FormLabel>
+                              <FormControl>
+                                <Input 
+                                  {...field} 
+                                  type="time"
+                                  className="bg-gray-800 border-gray-600 text-white" 
+                                  value={field.value || ""}
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={accountForm.control}
+                          name="timezone"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="text-white">Timezone</FormLabel>
+                              <FormControl>
+                                <Input 
+                                  {...field} 
+                                  className="bg-gray-800 border-gray-600 text-white" 
+                                  placeholder="e.g. EST, PST, GMT"
+                                  value={field.value || ""}
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+
                       <div className="flex items-center space-x-4">
                         <FormField
                           control={accountForm.control}
@@ -1658,7 +1821,82 @@ export default function Projections() {
                             </FormItem>
                           )}
                         />
+                        <FormField
+                          control={accountForm.control}
+                          name="copyTradingAllowed"
+                          render={({ field }) => (
+                            <FormItem className="flex flex-row items-center space-x-3 space-y-0">
+                              <FormControl>
+                                <Checkbox
+                                  checked={field.value}
+                                  onCheckedChange={field.onChange}
+                                  className="border-gray-600 data-[state=checked]:bg-blue-600"
+                                />
+                              </FormControl>
+                              <div className="space-y-1 leading-none">
+                                <FormLabel className="text-white">Copy Trading Allowed</FormLabel>
+                              </div>
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={accountForm.control}
+                          name="newsTradingAllowed"
+                          render={({ field }) => (
+                            <FormItem className="flex flex-row items-center space-x-3 space-y-0">
+                              <FormControl>
+                                <Checkbox
+                                  checked={field.value}
+                                  onCheckedChange={field.onChange}
+                                  className="border-gray-600 data-[state=checked]:bg-blue-600"
+                                />
+                              </FormControl>
+                              <div className="space-y-1 leading-none">
+                                <FormLabel className="text-white">News Trading Allowed</FormLabel>
+                              </div>
+                            </FormItem>
+                          )}
+                        />
                       </div>
+
+                      {/* Risk Assessment Summary */}
+                      {(accountFormValues.startingBalance && accountFormValues.riskPerTrade && accountFormValues.dailyLossLimit) && (
+                        <div className="mt-6 p-4 bg-gradient-to-r from-blue-900/20 to-purple-900/20 rounded-lg border border-blue-500/20">
+                          <h4 className="text-lg font-semibold text-yellow-400 mb-3">Risk Assessment Summary</h4>
+                          <div className="grid grid-cols-2 gap-4">
+                            <div>
+                              <div className="text-sm text-gray-300">Risk per trade</div>
+                              <div className={`text-lg font-medium ${
+                                (accountFormValues.riskPerTrade / accountFormValues.startingBalance) * 100 > 2 ? 'text-red-400' : 
+                                (accountFormValues.riskPerTrade / accountFormValues.startingBalance) * 100 > 1 ? 'text-yellow-400' : 'text-green-400'
+                              }`}>
+                                {((accountFormValues.riskPerTrade / accountFormValues.startingBalance) * 100).toFixed(2)}% of account
+                              </div>
+                            </div>
+                            <div>
+                              <div className="text-sm text-gray-300">Daily risk limit</div>
+                              <div className={`text-lg font-medium ${
+                                (accountFormValues.dailyLossLimit / accountFormValues.startingBalance) * 100 > 5 ? 'text-red-400' : 
+                                (accountFormValues.dailyLossLimit / accountFormValues.startingBalance) * 100 > 3 ? 'text-yellow-400' : 'text-green-400'
+                              }`}>
+                                {((accountFormValues.dailyLossLimit / accountFormValues.startingBalance) * 100).toFixed(2)}% of account
+                              </div>
+                            </div>
+                            <div>
+                              <div className="text-sm text-gray-300">Max trades per day</div>
+                              <div className="text-lg font-medium text-blue-400">
+                                {Math.floor(accountFormValues.dailyLossLimit / accountFormValues.riskPerTrade)} trades
+                              </div>
+                            </div>
+                            <div>
+                              <div className="text-sm text-gray-300">Win rate needed (breakeven)</div>
+                              <div className="text-lg font-medium text-purple-400">
+                                {accountFormValues.riskRewardRatio ? (100 / (accountFormValues.riskRewardRatio + 1)).toFixed(1) : 50}%
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      )}
                     </TabsContent>
                   </Tabs>
 
