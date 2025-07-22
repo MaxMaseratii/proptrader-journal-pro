@@ -966,6 +966,9 @@ export default function Projections() {
           <DialogContent className="max-w-4xl max-h-[90vh] bg-gray-900 border-gray-700">
             <DialogHeader>
               <DialogTitle className="text-white text-xl">Create New Trading Account</DialogTitle>
+              <DialogDescription className="text-gray-400">
+                Set up a new trading account with proper risk management and financial tracking.
+              </DialogDescription>
             </DialogHeader>
             <ScrollArea className="max-h-[80vh] px-6">
               <Form {...accountForm}>
@@ -1130,6 +1133,7 @@ export default function Projections() {
                                   type="number" 
                                   className="bg-gray-800 border-gray-600 text-white" 
                                   placeholder="599"
+                                  value={field.value || ""}
                                   onChange={(e) => field.onChange(parseFloat(e.target.value) || null)}
                                 />
                               </FormControl>
@@ -1149,6 +1153,7 @@ export default function Projections() {
                                   type="number" 
                                   className="bg-gray-800 border-gray-600 text-white" 
                                   placeholder="200"
+                                  value={field.value || ""}
                                   onChange={(e) => field.onChange(parseFloat(e.target.value) || null)}
                                 />
                               </FormControl>
@@ -1173,6 +1178,7 @@ export default function Projections() {
                                   type="number" 
                                   className="bg-gray-800 border-gray-600 text-white" 
                                   placeholder="500"
+                                  value={field.value || ""}
                                   onChange={(e) => field.onChange(parseFloat(e.target.value) || null)}
                                 />
                               </FormControl>
@@ -1192,6 +1198,7 @@ export default function Projections() {
                                   type="number" 
                                   className="bg-gray-800 border-gray-600 text-white" 
                                   placeholder="2000"
+                                  value={field.value || ""}
                                   onChange={(e) => field.onChange(parseFloat(e.target.value) || null)}
                                 />
                               </FormControl>
