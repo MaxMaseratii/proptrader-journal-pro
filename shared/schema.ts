@@ -535,6 +535,48 @@ export const insertStrategyRuleTrackingSchema = createInsertSchema(strategyRuleT
   createdAt: true,
 });
 
+// Notifications System
+export const notifications = pgTable("notifications", {
+  id: serial("id").primaryKey(),
+  userId: varchar("user_id").notNull(),
+  type: text("type").notNull(), // 'account_milestone', 'payout_ready', 'risk_warning', 'system_update', 'achievement'
+  title: text("title").notNull(),
+  message: text("message").notNull(),
+  data: jsonb("data"), // Additional notification data (account info, amounts, etc.)
+  isRead: boolean("is_read").default(false),
+  priority: text("priority").default("normal"), // 'low', 'normal', 'high', 'urgent'
+  actionUrl: text("action_url"), // URL to navigate when notification is clicked
+  createdAt: timestamp("created_at").defaultNow(),
+  readAt: timestamp("read_at"),
+});
+
+// User notification preferences
+export const userNotificationSettings = pgTable("user_notification_settings", {
+  id: serial("id").primaryKey(),
+  userId: varchar("user_id").notNull().unique(),
+  emailNotifications: boolean("email_notifications").default(true),
+  accountMilestones: boolean("account_milestones").default(true),
+  payoutAlerts: boolean("payout_alerts").default(true),
+  riskWarnings: boolean("risk_warnings").default(true),
+  systemUpdates: boolean("system_updates").default(true),
+  achievementNotifications: boolean("achievement_notifications").default(true),
+  emailFrequency: text("email_frequency").default("immediate"), // 'immediate', 'daily', 'weekly', 'never'
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Insert schemas for notifications
+export const insertNotificationSchema = createInsertSchema(notifications).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertUserNotificationSettingsSchema = createInsertSchema(userNotificationSettings).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
 // Types
 export type TradingStrategy = typeof tradingStrategies.$inferSelect;
 export type InsertTradingStrategy = z.infer<typeof insertTradingStrategySchema>;
@@ -542,3 +584,7 @@ export type DailyPlan = typeof dailyPlans.$inferSelect;
 export type InsertDailyPlan = z.infer<typeof insertDailyPlanSchema>;
 export type StrategyRuleTracking = typeof strategyRuleTracking.$inferSelect;
 export type InsertStrategyRuleTracking = z.infer<typeof insertStrategyRuleTrackingSchema>;
+export type Notification = typeof notifications.$inferSelect;
+export type InsertNotification = z.infer<typeof insertNotificationSchema>;
+export type UserNotificationSettings = typeof userNotificationSettings.$inferSelect;
+export type InsertUserNotificationSettings = z.infer<typeof insertUserNotificationSettingsSchema>;

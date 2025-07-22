@@ -14,6 +14,8 @@ import {
   strategyRuleTracking,
   budgetCategories,
   budgetPlans,
+  notifications,
+  userNotificationSettings,
   type Account,
   type Trade,
   type JournalEntry,
@@ -29,6 +31,8 @@ import {
   type StrategyRuleTracking,
   type BudgetCategory,
   type BudgetPlan,
+  type Notification,
+  type UserNotificationSettings,
   type InsertAccount,
   type InsertTrade,
   type InsertJournalEntry,
@@ -44,6 +48,8 @@ import {
   type InsertStrategyRuleTracking,
   type InsertBudgetCategory,
   type InsertBudgetPlan,
+  type InsertNotification,
+  type InsertUserNotificationSettings,
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, and, desc, asc, gte, lte, sum, sql } from "drizzle-orm";
@@ -142,6 +148,17 @@ export interface IStorage {
   getActiveBudgetPlan(userId: string): Promise<BudgetPlan | undefined>;
   createBudgetPlan(plan: InsertBudgetPlan): Promise<BudgetPlan>;
   updateBudgetPlan(id: number, plan: Partial<InsertBudgetPlan>): Promise<BudgetPlan | undefined>;
+  
+  // Notification operations
+  getNotifications(userId: string): Promise<Notification[]>;
+  createNotification(notification: InsertNotification): Promise<Notification>;
+  markNotificationAsRead(id: number, userId: string): Promise<Notification | undefined>;
+  markAllNotificationsAsRead(userId: string): Promise<void>;
+  
+  // User notification settings operations
+  getNotificationSettings(userId: string): Promise<UserNotificationSettings | undefined>;
+  createNotificationSettings(settings: InsertUserNotificationSettings): Promise<UserNotificationSettings>;
+  updateNotificationSettings(userId: string, settings: Partial<InsertUserNotificationSettings>): Promise<UserNotificationSettings | undefined>;
 }
 
 // Production-ready DatabaseStorage implementation
@@ -787,6 +804,61 @@ export class DatabaseStorage implements IStorage {
       .where(eq(budgetPlans.id, id))
       .returning();
     return updatedPlan || undefined;
+  }
+
+  // Notification operations
+  async getNotifications(userId: string): Promise<Notification[]> {
+    return await db.select().from(notifications)
+      .where(eq(notifications.userId, userId))
+      .orderBy(desc(notifications.createdAt));
+  }
+
+  async createNotification(notification: InsertNotification): Promise<Notification> {
+    const [newNotification] = await db
+      .insert(notifications)
+      .values(notification)
+      .returning();
+    return newNotification;
+  }
+
+  async markNotificationAsRead(id: number, userId: string): Promise<Notification | undefined> {
+    const [updatedNotification] = await db
+      .update(notifications)
+      .set({ isRead: true, readAt: new Date() })
+      .where(and(eq(notifications.id, id), eq(notifications.userId, userId)))
+      .returning();
+    return updatedNotification || undefined;
+  }
+
+  async markAllNotificationsAsRead(userId: string): Promise<void> {
+    await db
+      .update(notifications)
+      .set({ isRead: true, readAt: new Date() })
+      .where(and(eq(notifications.userId, userId), eq(notifications.isRead, false)));
+  }
+
+  // User notification settings operations
+  async getNotificationSettings(userId: string): Promise<UserNotificationSettings | undefined> {
+    const [settings] = await db.select().from(userNotificationSettings)
+      .where(eq(userNotificationSettings.userId, userId));
+    return settings || undefined;
+  }
+
+  async createNotificationSettings(settings: InsertUserNotificationSettings): Promise<UserNotificationSettings> {
+    const [newSettings] = await db
+      .insert(userNotificationSettings)
+      .values(settings)
+      .returning();
+    return newSettings;
+  }
+
+  async updateNotificationSettings(userId: string, settings: Partial<InsertUserNotificationSettings>): Promise<UserNotificationSettings | undefined> {
+    const [updatedSettings] = await db
+      .update(userNotificationSettings)
+      .set({ ...settings, updatedAt: new Date() })
+      .where(eq(userNotificationSettings.userId, userId))
+      .returning();
+    return updatedSettings || undefined;
   }
 }
 

@@ -30,6 +30,7 @@ import TradeCalendar from "@/components/trade-calendar";
 import TradeEntry from "@/components/trade-entry";
 import TradeAnalysisCalendar from "@/components/trade-analysis-calendar";
 import { SimpleChart } from "@/components/tradingview/SimpleChart";
+import NotificationDropdown from "@/components/notification-dropdown";
 import { 
   Wallet, 
   TrendingDown, 
@@ -1164,9 +1165,7 @@ export default function Dashboard() {
                 </Button>
               </Link>
             </div>
-            <div className="relative">
-              <Bell className="h-5 w-5 text-gray-400" />
-            </div>
+            <NotificationDropdown />
           </div>
         </div>
       </header>

@@ -11,6 +11,8 @@ import {
   insertStrategyRuleTrackingSchema,
   insertBudgetCategorySchema,
   insertBudgetPlanSchema,
+  insertNotificationSchema,
+  insertUserNotificationSettingsSchema,
   type InsertTrade 
 } from "@shared/schema";
 import { z } from "zod";
@@ -1815,6 +1817,169 @@ Provide helpful, personalized advice based on this data. Keep responses concise 
     } catch (error) {
       console.error("Error updating budget plan:", error);
       res.status(500).json({ message: "Failed to update budget plan" });
+    }
+  });
+
+  // Notifications routes
+  app.get("/api/notifications", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const notifications = await storage.getNotifications(userId);
+      res.json(notifications);
+    } catch (error) {
+      console.error("Error fetching notifications:", error);
+      res.status(500).json({ message: "Failed to fetch notifications" });
+    }
+  });
+
+  app.post("/api/notifications", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const validatedData = insertNotificationSchema.parse({ ...req.body, userId });
+      const notification = await storage.createNotification(validatedData);
+      res.status(201).json(notification);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Invalid notification data", errors: error.errors });
+      }
+      console.error("Error creating notification:", error);
+      res.status(500).json({ message: "Failed to create notification" });
+    }
+  });
+
+  app.patch("/api/notifications/:id/read", isAuthenticated, async (req: any, res) => {
+    try {
+      const notificationId = parseInt(req.params.id);
+      const userId = req.user.claims.sub;
+      const notification = await storage.markNotificationAsRead(notificationId, userId);
+      if (!notification) {
+        return res.status(404).json({ message: "Notification not found" });
+      }
+      res.json(notification);
+    } catch (error) {
+      console.error("Error marking notification as read:", error);
+      res.status(500).json({ message: "Failed to mark notification as read" });
+    }
+  });
+
+  app.patch("/api/notifications/mark-all-read", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      await storage.markAllNotificationsAsRead(userId);
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error marking all notifications as read:", error);
+      res.status(500).json({ message: "Failed to mark all notifications as read" });
+    }
+  });
+
+  // User notification settings routes
+  app.get("/api/notification-settings", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      let settings = await storage.getNotificationSettings(userId);
+      
+      // Create default settings if none exist
+      if (!settings) {
+        const defaultSettings = {
+          userId,
+          emailNotifications: true,
+          accountMilestones: true,
+          payoutAlerts: true,
+          riskWarnings: true,
+          systemUpdates: true,
+          achievementNotifications: true,
+          emailFrequency: 'immediate' as const
+        };
+        settings = await storage.createNotificationSettings(defaultSettings);
+      }
+      
+      res.json(settings);
+    } catch (error) {
+      console.error("Error fetching notification settings:", error);
+      res.status(500).json({ message: "Failed to fetch notification settings" });
+    }
+  });
+
+  app.patch("/api/notification-settings", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const settings = await storage.updateNotificationSettings(userId, req.body);
+      res.json(settings);
+    } catch (error) {
+      console.error("Error updating notification settings:", error);
+      res.status(500).json({ message: "Failed to update notification settings" });
+    }
+  });
+
+  // Sample notifications endpoint for demonstration
+  app.post("/api/notifications/sample", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      
+      const sampleNotifications = [
+        {
+          userId,
+          type: 'account_milestone',
+          title: '🎯 Daily Profit Target Reached!',
+          message: 'Congratulations! You hit your daily profit target of $500 on Account #11.',
+          data: JSON.stringify({ accountId: 11, profitAmount: 500, targetAmount: 500 }),
+          priority: 'high',
+          actionUrl: '/projections',
+        },
+        {
+          userId,
+          type: 'payout_ready',
+          title: '💰 Payout Ready for Processing',
+          message: 'Your payout of $2,500 is ready! You can request it from your account dashboard.',
+          data: JSON.stringify({ amount: 2500, accountId: 11 }),
+          priority: 'high',
+          actionUrl: '/projections',
+        },
+        {
+          userId,
+          type: 'risk_warning',
+          title: '⚠️ Daily Loss Limit Warning',
+          message: 'You\'ve used 75% of your daily loss limit. Consider reducing position size.',
+          data: JSON.stringify({ riskUsed: 75, dailyLoss: 375, dailyLimit: 500 }),
+          priority: 'urgent',
+          actionUrl: '/dashboard',
+        },
+        {
+          userId,
+          type: 'achievement',
+          title: '🏆 Achievement Unlocked: Risk Guardian',
+          message: 'You\'ve successfully respected your risk limits for 10 consecutive trades!',
+          data: JSON.stringify({ achievementId: 'risk_guardian', streak: 10 }),
+          priority: 'normal',
+          actionUrl: '/achievements',
+        },
+        {
+          userId,
+          type: 'system_update',
+          title: '🚀 New Feature: Enhanced Analytics',
+          message: 'Check out our new discipline analysis tools in the Analytics section.',
+          data: JSON.stringify({ feature: 'discipline_analysis' }),
+          priority: 'normal',
+          actionUrl: '/analytics',
+        }
+      ];
+
+      // Create all sample notifications
+      const createdNotifications = [];
+      for (const notification of sampleNotifications) {
+        const created = await storage.createNotification(notification);
+        createdNotifications.push(created);
+      }
+
+      res.json({ 
+        success: true, 
+        count: createdNotifications.length,
+        notifications: createdNotifications 
+      });
+    } catch (error) {
+      console.error("Error creating sample notifications:", error);
+      res.status(500).json({ message: "Failed to create sample notifications" });
     }
   });
 
