@@ -3549,10 +3549,10 @@ export default function Dashboard() {
                       />
                     </div>
 
-                    {/* Trading Session Configuration */}
+                    {/* Personal Trading Time */}
                     <div className="space-y-4">
                       <h3 className="text-lg font-semibold text-yellow-400 border-b border-yellow-400/20 pb-2">
-                        Trading Session Configuration
+                        Personal Trading Time
                       </h3>
                       <div className="grid grid-cols-3 gap-4">
                         <FormField
@@ -3610,6 +3610,40 @@ export default function Dashboard() {
                           )}
                         />
                       </div>
+
+                      {/* Automatic Time Calculation */}
+                      {accountFormValues.tradingSessionStart && accountFormValues.tradingSessionEnd && (
+                        <div className="bg-gray-800/50 rounded-lg p-4 border border-yellow-400/20">
+                          <div className="flex items-center justify-between">
+                            <span className="text-white font-medium">Daily Trading Duration:</span>
+                            <span className="text-yellow-400 font-bold text-lg">
+                              {(() => {
+                                const start = accountFormValues.tradingSessionStart;
+                                const end = accountFormValues.tradingSessionEnd;
+                                if (!start || !end) return "-- hours -- minutes";
+                                
+                                try {
+                                  const [startHour, startMin] = start.split(':').map(Number);
+                                  const [endHour, endMin] = end.split(':').map(Number);
+                                  
+                                  const startMinutes = startHour * 60 + startMin;
+                                  const endMinutes = endHour * 60 + endMin;
+                                  
+                                  let diffMinutes = endMinutes - startMinutes;
+                                  if (diffMinutes < 0) diffMinutes += 24 * 60; // Handle overnight sessions
+                                  
+                                  const hours = Math.floor(diffMinutes / 60);
+                                  const minutes = diffMinutes % 60;
+                                  
+                                  return `${hours} hours ${minutes} minutes`;
+                                } catch {
+                                  return "-- hours -- minutes";
+                                }
+                              })()}
+                            </span>
+                          </div>
+                        </div>
+                      )}
                       
                       <div className="grid grid-cols-2 gap-4">
                         <div className="flex items-center space-x-3">
@@ -3626,7 +3660,7 @@ export default function Dashboard() {
                                     className="w-4 h-4 text-blue-600 bg-gray-800 border-gray-600 rounded focus:ring-blue-500"
                                   />
                                 </FormControl>
-                                <FormLabel className="text-white">Use Intraday Margins</FormLabel>
+                                <FormLabel className="text-white">Live Trading Account Available</FormLabel>
                               </FormItem>
                             )}
                           />
@@ -3645,7 +3679,7 @@ export default function Dashboard() {
                                     className="w-4 h-4 text-blue-600 bg-gray-800 border-gray-600 rounded focus:ring-blue-500"
                                   />
                                 </FormControl>
-                                <FormLabel className="text-white">Enhanced Payouts Available</FormLabel>
+                                <FormLabel className="text-white">Challenge Payouts Available</FormLabel>
                               </FormItem>
                             )}
                           />
