@@ -61,7 +61,20 @@ export const accounts = pgTable("accounts", {
   copyTradingAllowed: boolean("copy_trading_allowed").default(true),
   newsTradingAllowed: boolean("news_trading_allowed").default(true),
   
-  // Trading Session Settings
+  // Personal Trading Time Settings (Multiple Time Windows)
+  personalTradingTimeStart1: text("personal_trading_time_start1"), // e.g. "09:30"
+  personalTradingTimeEnd1: text("personal_trading_time_end1"), // e.g. "16:00"
+  personalTradingTimeZone1: text("personal_trading_time_zone1"), // e.g. "EST", "PST", "GMT"
+  
+  personalTradingTimeStart2: text("personal_trading_time_start2"), // Secondary time window
+  personalTradingTimeEnd2: text("personal_trading_time_end2"),
+  personalTradingTimeZone2: text("personal_trading_time_zone2"),
+  
+  personalTradingTimeStart3: text("personal_trading_time_start3"), // Tertiary time window
+  personalTradingTimeEnd3: text("personal_trading_time_end3"),
+  personalTradingTimeZone3: text("personal_trading_time_zone3"),
+  
+  // Legacy fields (keeping for backward compatibility)
   tradingSessionStart: text("trading_session_start"), // e.g. "09:30"
   tradingSessionEnd: text("trading_session_end"), // e.g. "16:00"
   timezone: text("timezone"), // e.g. "EST", "PST", "GMT"

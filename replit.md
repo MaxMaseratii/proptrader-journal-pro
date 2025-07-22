@@ -579,6 +579,14 @@ Changelog:
   * Updated risk percentage feedback to show "% of max drawdown" instead of "% of account" in both forms
   * Risk thresholds: Green (<5% of drawdown), Yellow (5-10%), Red (>10%) for per-trade risk
   * Daily risk thresholds: Green (<30% of drawdown), Yellow (30-50%), Red (>50%) for daily loss limits
+- July 22, 2025. Multiple Personal Trading Time Windows Implementation:
+  * Added support for 3 separate Personal Trading Time windows (Time1, Time2, Time3) for flexible trading schedules
+  * Renamed "Trading Session Start/End" to "Personal Trading Time Start/End - Time1/2/3"
+  * Added database schema fields: personalTradingTimeStart1/2/3, personalTradingTimeEnd1/2/3, personalTradingTimeZone1/2/3
+  * Updated both Dashboard and Challenge Target Planner forms with identical 3-time-slot structure
+  * Each time slot includes Start Time, End Time, and Timezone with 30-minute interval dropdowns
+  * Color-coded time slots: Blue (Primary), Green (Secondary), Purple (Tertiary) for easy identification
+  * Allows traders to set multiple trading windows throughout the day for better opportunity coverage
 ```
 
 ## User Preferences
