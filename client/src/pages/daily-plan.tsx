@@ -94,6 +94,13 @@ const DailyPlanPage = () => {
   const { data: trades } = useQuery<Trade[]>({ queryKey: ['/api/trades'] });
   const { data: dailyPlans } = useQuery<DailyPlan[]>({ queryKey: ['/api/daily-plans'] });
   const { data: journalEntries } = useQuery<JournalEntry[]>({ queryKey: ['/api/journal'] });
+
+  // Auto-select first account when accounts load (so historical plans show immediately)
+  useEffect(() => {
+    if (accounts && accounts.length > 0 && !selectedAccount) {
+      setSelectedAccount(accounts[0].id);
+    }
+  }, [accounts, selectedAccount]);
   const { data: currentPlan } = useQuery<DailyPlan | null>({
     queryKey: [`/api/daily-plans/by-date?date=${selectedDate}&accountId=${selectedAccount}`],
     enabled: !!selectedDate && !!selectedAccount,
