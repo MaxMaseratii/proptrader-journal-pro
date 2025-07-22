@@ -81,7 +81,7 @@ export default function Payouts() {
 
   const selectedAccount = accounts?.find(acc => acc.id.toString() === selectedAccountId);
 
-  // Payout history - will be empty until user requests payouts
+  // Payout history - fetch from API when implemented
   const payoutHistory: PayoutHistory[] = [];
 
   const calculatePayoutMetrics = (): PayoutMetrics | null => {
@@ -127,7 +127,7 @@ export default function Payouts() {
     // Calculate available payout using user-entered profit split and buffer settings
     const profitSplit = selectedAccount.profitSplit ? (selectedAccount.profitSplit / 100) : 0;
     const bufferPercentage = selectedAccount.bufferPercentage ? (selectedAccount.bufferPercentage / 100) : 0;
-    const maxPayoutPercentage = selectedAccount.maximumPayoutPercentage ? (selectedAccount.maximumPayoutPercentage / 100) : 1;
+    const maxPayoutPercentage = selectedAccount.maximumPayoutPerAccount ? (selectedAccount.maximumPayoutPerAccount / 100) : 1;
     
     // Calculate buffer amount
     const bufferAmount = selectedAccount.profitTarget * bufferPercentage;
@@ -559,7 +559,7 @@ export default function Payouts() {
                         <div className="flex justify-between">
                           <span className="text-gray-400">Max Payout Percentage</span>
                           <span className="font-medium text-white">
-                            {selectedAccount.maximumPayoutPercentage ? `${selectedAccount.maximumPayoutPercentage}%` : 'Not set'}
+                            {selectedAccount.maximumPayoutPerAccount ? `${selectedAccount.maximumPayoutPerAccount}%` : 'Not set'}
                           </span>
                         </div>
                       </div>
