@@ -1166,9 +1166,6 @@ export default function Dashboard() {
             </div>
             <div className="relative">
               <Bell className="h-5 w-5 text-gray-400" />
-              <span className="absolute -top-1 -right-1 bg-error-red text-xs rounded-full w-4 h-4 flex items-center justify-center text-white">
-                3
-              </span>
             </div>
           </div>
         </div>
