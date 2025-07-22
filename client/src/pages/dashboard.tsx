@@ -3399,6 +3399,7 @@ export default function Dashboard() {
                                 <SelectItem value="weekly">Weekly</SelectItem>
                                 <SelectItem value="bi-weekly">Bi-weekly</SelectItem>
                                 <SelectItem value="monthly">Monthly</SelectItem>
+                                <SelectItem value="on_demand">On Demand</SelectItem>
                               </SelectContent>
                             </Select>
                             <FormMessage />
