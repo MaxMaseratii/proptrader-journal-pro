@@ -9,7 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Progress } from "@/components/ui/progress";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { EquityChart, MonthlyPerformanceChart } from "@/components/chart-components";
@@ -2675,21 +2675,24 @@ export default function Dashboard() {
         <DialogContent className="max-w-md">
           <DialogHeader>
             <DialogTitle>Create New Trading Account</DialogTitle>
+            <DialogDescription>
+              You'll be redirected to the comprehensive account creation form with all advanced settings.
+            </DialogDescription>
           </DialogHeader>
           <div className="p-4">
             <p className="text-gray-400 mb-4">
-              You'll be redirected to the account creation form where you can set up your new trading account with comprehensive settings.
+              The account creation form includes risk management settings, financial tracking, payout rules, and trading preferences.
             </p>
             <div className="flex gap-3">
               <Button 
                 onClick={() => {
                   setShowAccountModal(false);
-                  // Navigate to projections page
+                  // Use wouter's navigation
                   window.location.href = "/projections";
                 }}
                 className="flex-1 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700"
               >
-                Continue to Setup
+                Open Account Form
               </Button>
               <Button 
                 variant="outline" 

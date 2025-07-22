@@ -1610,8 +1610,8 @@ export default function Projections() {
                                   type="number" 
                                   className="bg-gray-800 border-gray-600 text-white" 
                                   placeholder="10"
-                                  value={field.value || ""}
-                                  onChange={(e) => field.onChange(parseInt(e.target.value) || 10)}
+                                  value={field.value === null || field.value === undefined ? "" : field.value}
+                                  onChange={(e) => field.onChange(e.target.value === "" ? null : parseInt(e.target.value))}
                                 />
                               </FormControl>
                               <FormMessage />
@@ -1630,8 +1630,8 @@ export default function Projections() {
                                   type="number" 
                                   className="bg-gray-800 border-gray-600 text-white" 
                                   placeholder="20"
-                                  value={field.value || ""}
-                                  onChange={(e) => field.onChange(parseInt(e.target.value) || 20)}
+                                  value={field.value === null || field.value === undefined ? "" : field.value}
+                                  onChange={(e) => field.onChange(e.target.value === "" ? null : parseInt(e.target.value))}
                                 />
                               </FormControl>
                               <FormMessage />
