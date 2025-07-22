@@ -242,11 +242,18 @@ export default function Dashboard() {
 
   // Check if a date has journal entries
   const hasJournalEntry = (date: Date) => {
-    if (!journalEntries) return false;
+    if (!journalEntries) {
+      console.log('📝 No journal entries loaded');
+      return false;
+    }
     const dateStr = date.toISOString().split('T')[0];
-    return journalEntries.some((entry: any) => 
+    const hasEntry = journalEntries.some((entry: any) => 
       entry.date?.split('T')[0] === dateStr
     );
+    if (hasEntry) {
+      console.log('📓 Found journal entry for:', dateStr);
+    }
+    return hasEntry;
   };
 
   // Get journal entry for a specific date
@@ -705,6 +712,13 @@ export default function Dashboard() {
   const { data: journalEntries } = useQuery({
     queryKey: ["/api/journal"],
   });
+
+  // Debug journal entries
+  useEffect(() => {
+    if (journalEntries) {
+      console.log('📚 Journal entries loaded:', journalEntries.length, journalEntries);
+    }
+  }, [journalEntries]);
 
   // ===== FIXED: SINGLE SOURCE OF TRUTH FOR DAY DATA =====
   const selectedDayData = useMemo(() => {
