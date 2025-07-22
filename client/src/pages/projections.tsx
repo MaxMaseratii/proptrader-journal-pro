@@ -1410,19 +1410,19 @@ export default function Projections() {
                                 />
                               </FormControl>
                               <FormMessage />
-                              {field.value && accountFormValues.startingBalance && (
+                              {field.value && accountFormValues.maxDrawdown && (
                                 <div className="text-xs mt-1">
                                   <span className={`${
-                                    (field.value / accountFormValues.startingBalance) * 100 > 2 
+                                    (field.value / accountFormValues.maxDrawdown) * 100 > 10 
                                       ? 'text-red-400' 
-                                      : (field.value / accountFormValues.startingBalance) * 100 > 1 
+                                      : (field.value / accountFormValues.maxDrawdown) * 100 > 5 
                                       ? 'text-yellow-400' 
                                       : 'text-green-400'
                                   }`}>
-                                    {((field.value / accountFormValues.startingBalance) * 100).toFixed(2)}% of account
+                                    {((field.value / accountFormValues.maxDrawdown) * 100).toFixed(2)}% of max drawdown
                                   </span>
-                                  {(field.value / accountFormValues.startingBalance) * 100 > 2 && (
-                                    <span className="text-red-400 ml-2">⚠️ High risk</span>
+                                  {(field.value / accountFormValues.maxDrawdown) * 100 > 10 && (
+                                    <span className="text-red-400 ml-2">⚠️ High risk per trade</span>
                                   )}
                                 </div>
                               )}
@@ -1446,18 +1446,18 @@ export default function Projections() {
                                 />
                               </FormControl>
                               <FormMessage />
-                              {field.value && accountFormValues.startingBalance && (
+                              {field.value && accountFormValues.maxDrawdown && (
                                 <div className="text-xs mt-1">
                                   <span className={`${
-                                    (field.value / accountFormValues.startingBalance) * 100 > 5 
+                                    (field.value / accountFormValues.maxDrawdown) * 100 > 50 
                                       ? 'text-red-400' 
-                                      : (field.value / accountFormValues.startingBalance) * 100 > 3 
+                                      : (field.value / accountFormValues.maxDrawdown) * 100 > 30 
                                       ? 'text-yellow-400' 
                                       : 'text-green-400'
                                   }`}>
-                                    {((field.value / accountFormValues.startingBalance) * 100).toFixed(2)}% of account
+                                    {((field.value / accountFormValues.maxDrawdown) * 100).toFixed(2)}% of max drawdown
                                   </span>
-                                  {(field.value / accountFormValues.startingBalance) * 100 > 5 && (
+                                  {(field.value / accountFormValues.maxDrawdown) * 100 > 50 && (
                                     <span className="text-red-400 ml-2">⚠️ Very high daily risk</span>
                                   )}
                                 </div>

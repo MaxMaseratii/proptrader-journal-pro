@@ -575,6 +575,10 @@ Changelog:
   * Made Privacy Policy, Terms of Service, and Support links clickable in welcome page footer with proper hover effects
   * Updated database schema to include dailyWorkingHours and hourlyWages fields
   * Applied consistent number input handling across both Dashboard and Challenge Target Planner forms
+  * CRITICAL FIX: Changed Risk Per Trade calculation from Starting Capital to Max Drawdown amount basis (as per user requirement)
+  * Updated risk percentage feedback to show "% of max drawdown" instead of "% of account" in both forms
+  * Risk thresholds: Green (<5% of drawdown), Yellow (5-10%), Red (>10%) for per-trade risk
+  * Daily risk thresholds: Green (<30% of drawdown), Yellow (30-50%), Red (>50%) for daily loss limits
 ```
 
 ## User Preferences
