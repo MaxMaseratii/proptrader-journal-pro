@@ -312,11 +312,11 @@ export default function Profile() {
                   <div className="grid grid-cols-2 gap-4 text-sm">
                     <div>
                       <span className="text-gray-400">Next billing date:</span>
-                      <p className="font-medium">January 15, 2025</p>
+                      <p className="font-medium">--</p>
                     </div>
                     <div>
                       <span className="text-gray-400">Amount:</span>
-                      <p className="font-medium">$29.99 / month</p>
+                      <p className="font-medium">--</p>
                     </div>
                   </div>
                   
@@ -338,8 +338,8 @@ export default function Profile() {
                         <span className="text-xs font-bold text-white">VISA</span>
                       </div>
                       <div>
-                        <p className="font-medium">•••• •••• •••• 4242</p>
-                        <p className="text-sm text-gray-400">Expires 12/27</p>
+                        <p className="font-medium">No payment method</p>
+                        <p className="text-sm text-gray-400">Add payment method</p>
                       </div>
                     </div>
                     <Button variant="outline" size="sm">

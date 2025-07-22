@@ -527,7 +527,7 @@ export default function Projections() {
                           <SelectContent>
                             {accounts.map(account => (
                               <SelectItem key={account.id} value={account.id.toString()}>
-                                {account.name} - {formatCurrency(account.currentBalance)}
+                                {account.name} - {formatCurrency(account.startingBalance)}
                               </SelectItem>
                             ))}
                           </SelectContent>
@@ -841,7 +841,9 @@ export default function Projections() {
                   <CardContent className="p-4">
                     <div className="text-center">
                       <div className="text-2xl font-bold text-white">
-                        {Math.floor(Math.random() * 30) + 1}
+                        {selectedAccountData ? selectedAccountData.trades.filter((trade, index, self) => 
+                          self.findIndex(t => t.date === trade.date) === index
+                        ).length : 0}
                       </div>
                       <div className="text-sm text-lime-100">Active Trading Days</div>
                     </div>
