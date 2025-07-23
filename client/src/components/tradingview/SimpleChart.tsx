@@ -219,9 +219,9 @@ export const SimpleChart: React.FC<SimpleChartProps> = ({
           <div 
             className="absolute z-10 bg-gray-800 border border-gray-600 rounded-lg p-3 shadow-lg pointer-events-none"
             style={{
-              left: mousePos.x + 10,
-              top: mousePos.y - 100,
-              transform: 'translate(-50%, 0)'
+              left: Math.min(mousePos.x + 10, window.innerWidth - 200),
+              top: Math.max(mousePos.y - 100, 10),
+              transform: mousePos.x > window.innerWidth * 0.8 ? 'translate(-100%, 0)' : 'translate(-50%, 0)'
             }}
           >
             <div className="text-sm">

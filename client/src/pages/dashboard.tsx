@@ -1411,9 +1411,9 @@ export default function Dashboard() {
                       
                       {/* Value labels inside bar */}
                       <div className="absolute inset-0 flex items-center justify-between px-3 text-xs font-medium">
-                        <span className="text-gray-400">$0</span>
-                        <span className="text-gray-300">$50</span>
-                        <span className="text-gray-300">$100</span>
+                        <span className="text-gray-400">0%</span>
+                        <span className="text-gray-300">50%</span>
+                        <span className="text-gray-300">100%</span>
                       </div>
                       
                       {/* Current value indicator */}
@@ -1492,9 +1492,9 @@ export default function Dashboard() {
                       </div>
                       
                       <div className="absolute inset-0 flex items-center justify-between px-3 text-xs font-medium">
-                        <span className="text-gray-400">$0</span>
-                        <span className="text-gray-300">$50</span>
-                        <span className="text-gray-300">$100</span>
+                        <span className="text-gray-400">0%</span>
+                        <span className="text-gray-300">50%</span>
+                        <span className="text-gray-300">100%</span>
                       </div>
                       
                       <div 
@@ -1533,9 +1533,9 @@ export default function Dashboard() {
                   
                   <div className="w-full rounded-full h-6 overflow-hidden bg-gray-700">
                     <div className="absolute inset-0 flex items-center justify-between px-3 text-xs font-medium">
-                      <span className="text-gray-400">$0</span>
-                      <span className="text-gray-400">$50</span>
-                      <span className="text-gray-400">$100</span>
+                      <span className="text-gray-400">0%</span>
+                      <span className="text-gray-400">50%</span>
+                      <span className="text-gray-400">100%</span>
                     </div>
                   </div>
                   
@@ -2463,8 +2463,23 @@ export default function Dashboard() {
                                     const container = document.getElementById('equity-chart-container');
                                     if (container) {
                                       const containerRect = container.getBoundingClientRect();
-                                      tooltip.style.left = (rect.left - containerRect.left + 10) + 'px';
-                                      tooltip.style.top = (rect.top - containerRect.top - 100) + 'px';
+                                      
+                                      // Calculate optimal position to prevent cutoff
+                                      let left = rect.left - containerRect.left + 10;
+                                      let top = rect.top - containerRect.top - 100;
+                                      
+                                      // Prevent tooltip from going off-screen to the right
+                                      if (left + 180 > containerRect.width) {
+                                        left = rect.left - containerRect.left - 190; // Move to left side
+                                      }
+                                      
+                                      // Prevent tooltip from going off-screen at top
+                                      if (top < 10) {
+                                        top = rect.top - containerRect.top + 30; // Move below the point
+                                      }
+                                      
+                                      tooltip.style.left = Math.max(10, left) + 'px';
+                                      tooltip.style.top = Math.max(10, top) + 'px';
                                     }
                                     
                                     const dateEl = document.getElementById('tooltip-date');
