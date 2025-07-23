@@ -1097,14 +1097,14 @@ const DailyPlanPage = () => {
                   </p>
                 </div>
 
-                {selectedStrategyForDetails.rules && (
+                {selectedStrategyForDetails.rules && typeof selectedStrategyForDetails.rules === 'string' && (
                   <div>
                     <h4 className="text-white font-medium mb-2">Strategy Rules</h4>
                     <div className="text-gray-300 text-sm bg-gray-800/30 p-3 rounded-lg">
-                      {selectedStrategyForDetails.rules.split('\n').map((rule: string, index: number) => (
+                      {selectedStrategyForDetails.rules.split('\n').filter((rule: string) => rule.trim()).map((rule: string, index: number) => (
                         <div key={index} className="flex items-start gap-2 mb-1">
                           <div className="w-1.5 h-1.5 bg-yellow-400 rounded-full mt-2 flex-shrink-0"></div>
-                          <span>{rule}</span>
+                          <span>{rule.trim()}</span>
                         </div>
                       ))}
                     </div>
