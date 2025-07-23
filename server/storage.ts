@@ -212,7 +212,7 @@ export class DatabaseStorage implements IStorage {
     const userId = crypto.randomUUID();
     const [user] = await db
       .insert(users)
-      .values({ id: userId, ...userData })
+      .values({ ...userData, id: userId })
       .returning();
     return user;
   }
@@ -497,7 +497,7 @@ export class DatabaseStorage implements IStorage {
     const tradesResult = await db.select({ totalPnl: sum(trades.pnl) }).from(trades)
       .where(eq(trades.accountId, accountId));
     
-    const totalPnl = tradesResult[0]?.totalPnl || 0;
+    const totalPnl = Number(tradesResult[0]?.totalPnl) || 0;
     const currentBalance = account.startingBalance + totalPnl;
 
     // Check if profit target is reached
@@ -535,7 +535,7 @@ export class DatabaseStorage implements IStorage {
       .where(eq(trades.accountId, accountId))
       .groupBy(trades.date);
       
-      const maxDailyProfit = Math.max(...dailyPnlResult.map(d => d.dailyPnl || 0));
+      const maxDailyProfit = Math.max(...dailyPnlResult.map(d => Number(d.dailyPnl) || 0));
       
       if (maxDailyProfit > maxDailyProfitAllowed) {
         return { 
@@ -574,9 +574,9 @@ export class DatabaseStorage implements IStorage {
       winningDayMinimum: fundedAccountData.winningDayMinimum || 200,
       minimumPayoutAmount: fundedAccountData.minimumPayoutAmount || 100,
       maxNetBalanceForPayout: fundedAccountData.maxNetBalanceForPayout || 2000,
-      consistencyRulePercent: fundedAccountData.consistencyRulePercent || 50,
+      consistencyPercentage: fundedAccountData.consistencyPercentage || 50,
       payoutFrequency: fundedAccountData.payoutFrequency || 'weekly',
-      maximumPayoutPercentage: fundedAccountData.maximumPayoutPercentage || 90,
+      maximumPayoutPerAccount: fundedAccountData.maximumPayoutPerAccount || 90,
       profitSplit: fundedAccountData.profitSplit || 80,
       
       // Link to challenge account
@@ -638,7 +638,7 @@ export class DatabaseStorage implements IStorage {
       minimumPayoutAmount: liveAccountData.minimumPayoutAmount || 500,
       
       // Link to funded account
-      parentFundedId: fundedAccountId,
+      parentChallengeId: fundedAccountId,
       transitionStatus: 'live',
       
       // Copy other settings from funded account
@@ -656,8 +656,7 @@ export class DatabaseStorage implements IStorage {
     // Update funded account to mark as converted
     const updatedFundedAccount = await this.updateAccount(fundedAccountId, {
       transitionStatus: 'converted',
-      liveAccountId: liveAccount.id,
-      fundedToLiveDate: new Date()
+      fundedAccountId: liveAccount.id
     });
 
     return { 

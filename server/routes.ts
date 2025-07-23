@@ -193,7 +193,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Update account with reset data
       const updatedAccount = await storage.updateAccount(id, {
-        currentBalance: account.startingBalance,
         status: 'active' as const,
         resetCount: (account.resetCount || 0) + 1,
         totalResetsCost: (account.totalResetsCost || 0) + (resetCost || 0)
@@ -1033,7 +1032,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.put("/api/journal/:id", async (req, res) => {
     try {
       const id = parseInt(req.params.id);
-      const validatedData = insertJournalEntrySchema.deepPartial().parse(req.body);
+      const validatedData = insertJournalEntrySchema.partial().parse(req.body);
       const entry = await storage.updateJournalEntry(id, validatedData);
       if (!entry) {
         return res.status(404).json({ message: "Journal entry not found" });
@@ -1489,10 +1488,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.put("/api/projections/:id", requireAuth, async (req, res) => {
     try {
-      const userId = req.user.id;
+      const userId = req.user?.id;
+      if (!userId) {
+        return res.status(401).json({ message: "User not authenticated" });
+      }
       const projectionId = parseInt(req.params.id);
       
-      const updatedProjection = await storage.updateSavedProjection(projectionId, req.body, userId);
+      const updatedProjection = await storage.updateSavedProjection(projectionId, req.body);
       if (!updatedProjection) {
         return res.status(404).json({ message: "Projection not found" });
       }

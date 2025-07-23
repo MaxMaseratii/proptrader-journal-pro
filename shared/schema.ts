@@ -142,8 +142,8 @@ export const accounts = pgTable("accounts", {
   liveAccountTransitionDrawdownLimit: real("live_account_transition_drawdown_limit"), // Max drawdown allowed during transition period
   
   // Challenge-to-Funded Account Transition
-  parentChallengeId: integer("parent_challenge_id").references(() => accounts.id), // For funded accounts, links to original challenge
-  fundedAccountId: integer("funded_account_id").references(() => accounts.id), // For challenge accounts, links to funded account
+  parentChallengeId: integer("parent_challenge_id"), // For funded accounts, links to original challenge
+  fundedAccountId: integer("funded_account_id"), // For challenge accounts, links to funded account
   challengePassedDate: timestamp("challenge_passed_date"), // When challenge was passed
   transitionStatus: text("transition_status").default('none'), // 'none', 'eligible', 'converted', 'funded'
   

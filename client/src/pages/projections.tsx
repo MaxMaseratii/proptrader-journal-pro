@@ -145,16 +145,12 @@ export default function Projections() {
       minimumTradingDays: null,
       timeLimit: null,
       daysRequiredToPass: null,
-      minimumProfitTarget: null,
-      consistencyRulePercent: null,
-      maximumDailyDrawdown: null,
-      maximumOverallDrawdown: null,
+      consistencyPercentage: null,
       
       // Discipline Scoring
       disciplineRiskPeriod: "daily",
-      disciplineRiskBudget: null,
-      disciplineOverrideRisk: false,
-      disciplineRiskOverride: null,
+      disciplineRiskPeriodDays: null,
+      maxDailyRiskBudget: null,
       
       // Financial tracking fields
       accountCost: null,
