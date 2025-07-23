@@ -12,7 +12,7 @@ import { RotateCcw, LogOut, Trash2, AlertTriangle, DollarSign, CheckCircle, Arro
 import { formatCurrency } from "@/lib/utils";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
-import type { Account } from "@shared/schema";
+import type { Account, Trade } from "@shared/schema";
 
 // Function to trigger congratulations banner
 const triggerCongratulationsBanner = (accountName: string, type: 'funded' | 'live') => {
@@ -33,7 +33,7 @@ interface AccountManagementProps {
 
 export default function AccountManagement({ accounts }: AccountManagementProps) {
   // Get trades data to calculate P&L
-  const { data: trades = [] } = useQuery({
+  const { data: trades = [] } = useQuery<Trade[]>({
     queryKey: ['/api/trades'],
   });
   const [resetCost, setResetCost] = useState(0);
@@ -72,8 +72,8 @@ export default function AccountManagement({ accounts }: AccountManagementProps) 
   const { toast } = useToast();
 
   // Query for saved projections for a specific account
-  const { data: savedProjections = [], isLoading: projectionsLoading } = useQuery({
-    queryKey: ['/api/projections/account', selectedAccountForPlan?.id],
+  const { data: savedProjections = [], isLoading: projectionsLoading } = useQuery<any[]>({
+    queryKey: [`/api/projections/account/${selectedAccountForPlan?.id}`],
     enabled: !!selectedAccountForPlan?.id,
   });
 
@@ -165,7 +165,7 @@ export default function AccountManagement({ accounts }: AccountManagementProps) 
       setSelectedChallengeAccount(null);
       toast({
         title: "Challenge Converted Successfully!",
-        description: `Challenge account converted to funded account: ${data.fundedAccount.name}`,
+        description: `Challenge account converted to funded account: ${(data as any).fundedAccount.name}`,
       });
       // Trigger congratulations banner
       triggerCongratulationsBanner(accountName, 'funded');
@@ -199,7 +199,7 @@ export default function AccountManagement({ accounts }: AccountManagementProps) 
       setSelectedFundedAccount(null);
       toast({
         title: "Funded Account Converted to Live!",
-        description: `Funded account converted to live account: ${data.liveAccount.name}`,
+        description: `Funded account converted to live account: ${(data as any).liveAccount.name}`,
       });
       // Trigger congratulations banner
       triggerCongratulationsBanner(accountName, 'live');
@@ -231,7 +231,7 @@ export default function AccountManagement({ accounts }: AccountManagementProps) 
     let label = '';
     
     // Add reset count if applicable
-    if (resetCount > 0) {
+    if ((resetCount || 0) > 0) {
       label = `CR${resetCount}`;
     } else {
       label = 'C';
@@ -240,7 +240,7 @@ export default function AccountManagement({ accounts }: AccountManagementProps) 
     // Add transitions for funded and live accounts
     if (type === 'funded') {
       label += '>F';
-      if (resetCount > 0) {
+      if ((resetCount || 0) > 0) {
         // If funded account is reset, it becomes FR1, FR2, etc.
         label = `${label.replace('>F', '')}>FR${resetCount}`;
       }
@@ -1192,7 +1192,7 @@ export default function AccountManagement({ accounts }: AccountManagementProps) 
                           <Input
                             type="number"
                             value={liveAccountSettings.profitSplit}
-                            onChange={(e) => setLiveAccountSettings({...liveAccountSettings, profitSplit: parseFloat(e.target.value) || 90})}
+                            onChange={(e) => setLiveAccountSettings({...liveAccountSettings, profitSplit: e.target.value})}
                             className="bg-gray-700 border-gray-600 text-white"
                             placeholder="90"
                           />
@@ -1219,7 +1219,7 @@ export default function AccountManagement({ accounts }: AccountManagementProps) 
                           <Input
                             type="number"
                             value={liveAccountSettings.minimumPayoutAmount}
-                            onChange={(e) => setLiveAccountSettings({...liveAccountSettings, minimumPayoutAmount: parseFloat(e.target.value) || 500})}
+                            onChange={(e) => setLiveAccountSettings({...liveAccountSettings, minimumPayoutAmount: e.target.value})}
                             className="bg-gray-700 border-gray-600 text-white"
                             placeholder="500"
                           />

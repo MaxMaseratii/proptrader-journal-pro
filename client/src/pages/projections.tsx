@@ -56,6 +56,7 @@ interface ProjectionSettings {
   copiedAccounts: number;
   startingCapital: number;
   riskPerTrade: number;
+  riskDivider: number;
   riskRewardRatio: number;
   profitTarget: number;
   maxDrawdown: number;
@@ -256,6 +257,7 @@ export default function Projections() {
       copiedAccounts: 0,
       startingCapital: 0,
       riskPerTrade: 0,
+      riskDivider: 1,
       riskRewardRatio: 0,
       profitTarget: 0,
       maxDrawdown: 0,
@@ -654,6 +656,34 @@ export default function Projections() {
                         className="bg-gray-700 border-gray-600 text-white"
                         placeholder="0"
                       />
+                    </div>
+                  </div>
+
+                  {/* Risk Per Trade Divider */}
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label className="text-white">Risk Per Trade Divider</Label>
+                      <Input
+                        type="number"
+                        min="1"
+                        max="10"
+                        value={settings.riskDivider || ""}
+                        onChange={(e) => updateSetting('riskDivider', e.target.value === "" ? null : Number(e.target.value))}
+                        className="bg-gray-700 border-gray-600 text-white"
+                        placeholder="1"
+                      />
+                      <p className="text-xs text-gray-400">
+                        Split your total risk across {settings.riskDivider || 1} trade{(settings.riskDivider || 1) > 1 ? 's' : ''}
+                      </p>
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="text-white">Risk Per Individual Trade</Label>
+                      <div className="bg-gray-800/50 border border-gray-600 rounded-md p-3 text-white">
+                        ${((settings.riskPerTrade || 0) / (settings.riskDivider || 1)).toFixed(2)}
+                      </div>
+                      <p className="text-xs text-gray-400">
+                        Calculated risk for each individual position
+                      </p>
                     </div>
                   </div>
 
