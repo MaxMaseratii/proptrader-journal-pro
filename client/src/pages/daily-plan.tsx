@@ -59,6 +59,7 @@ const DailyPlanPage = () => {
   const [isCreateStrategyDialogOpen, setIsCreateStrategyDialogOpen] = useState(false);
   const [isJournalDialogOpen, setIsJournalDialogOpen] = useState(false);
   const [selectedPlanForStats, setSelectedPlanForStats] = useState<any>(null);
+  const [selectedStrategyForDetails, setSelectedStrategyForDetails] = useState<any>(null);
   
   // Form data for new plan
   const [newPlanData, setNewPlanData] = useState({
@@ -612,56 +613,40 @@ const DailyPlanPage = () => {
             </CardHeader>
             <CardContent className="max-h-96 overflow-y-auto">
               {strategies && strategies.length > 0 ? (
-                <div className="space-y-4">
+                <div className="space-y-2">
                   {strategies.map((strategy) => (
-                    <div key={strategy.id} className="bg-gradient-to-r from-gray-800/60 to-gray-700/40 rounded-lg p-4 border border-yellow-400/20 hover:border-yellow-400/50 cursor-pointer transition-all hover:shadow-lg hover:shadow-yellow-400/10">
-                      {/* Strategy Header */}
-                      <div className="flex items-center justify-between mb-3">
-                        <div className="flex items-center gap-3">
-                          <div className="w-3 h-3 bg-yellow-400 rounded-full animate-pulse"></div>
-                          <h3 className="text-white font-bold text-lg">{strategy.name}</h3>
-                        </div>
-                        <div className="flex items-center gap-3">
-                          <div className="bg-green-900/30 px-3 py-1 rounded-full border border-green-400/30">
-                            <span className="text-green-400 font-bold text-sm">{strategy.expectedWinRate}% WR</span>
-                          </div>
-                          <div className="bg-blue-900/30 px-3 py-1 rounded-full border border-blue-400/30">
-                            <span className="text-blue-400 font-bold text-sm">1:{strategy.riskRewardRatio} RR</span>
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Strategy Details */}
-                      <div className="space-y-2">
-                        <div className="flex items-start gap-2">
-                          <div className="w-2 h-2 bg-gray-400 rounded-full mt-2 flex-shrink-0"></div>
-                          <p className="text-gray-300 text-sm leading-relaxed">{strategy.description}</p>
-                        </div>
-                        
-                        <div className="flex items-start gap-2">
-                          <div className="w-2 h-2 bg-teal-400 rounded-full mt-2 flex-shrink-0"></div>
-                          <div className="text-sm">
-                            <span className="text-gray-400">Market Conditions: </span>
-                            <span className="text-teal-400 font-medium">{strategy.marketConditions}</span>
+                    <div key={strategy.id} className="bg-gradient-to-r from-gray-800/40 to-gray-700/20 rounded-lg p-3 border border-gray-600/30 hover:border-yellow-400/50 transition-all">
+                      <div className="flex items-center justify-between">
+                        {/* Strategy Name & Time */}
+                        <div className="flex items-center gap-2 flex-1">
+                          <div className="w-2 h-2 bg-yellow-400 rounded-full animate-pulse"></div>
+                          <div className="flex-1">
+                            <div className="text-white font-medium text-sm">{strategy.name}</div>
+                            <div className="text-xs text-gray-400">
+                              Created: {new Date(strategy.createdAt || Date.now()).toLocaleDateString()}
+                            </div>
                           </div>
                         </div>
 
-                        <div className="flex items-start gap-2">
-                          <div className="w-2 h-2 bg-purple-400 rounded-full mt-2 flex-shrink-0"></div>
-                          <div className="text-sm">
-                            <span className="text-gray-400">Assets: </span>
-                            <span className="text-purple-400 font-medium">{strategy.assets || 'Multiple Assets'}</span>
+                        {/* Compact Metrics & Details Button */}
+                        <div className="flex items-center gap-2">
+                          <div className="text-xs text-green-400 font-medium">
+                            {strategy.expectedWinRate}% WR
                           </div>
-                        </div>
-                      </div>
-
-                      {/* Strategy Footer */}
-                      <div className="mt-3 pt-3 border-t border-gray-600/50 flex items-center justify-between">
-                        <div className="text-xs text-gray-500">
-                          Created: {new Date(strategy.createdAt || Date.now()).toLocaleDateString()}
-                        </div>
-                        <div className="text-xs text-yellow-400 hover:text-yellow-300 transition-colors">
-                          Click to select for new plan →
+                          <div className="text-xs text-blue-400 font-medium">
+                            1:{strategy.riskRewardRatio}
+                          </div>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="h-7 px-2 text-xs border-yellow-400/30 text-yellow-400 hover:bg-yellow-400/10 hover:border-yellow-400/50"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setSelectedStrategyForDetails(strategy);
+                            }}
+                          >
+                            Details
+                          </Button>
                         </div>
                       </div>
                     </div>
@@ -1061,6 +1046,91 @@ const DailyPlanPage = () => {
             >
               {createJournalEntry.isPending ? 'Saving...' : 
                existingJournalEntry ? 'Journal Entry Exists' : 'Save Journal Entry'}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Strategy Details Modal */}
+      <Dialog open={!!selectedStrategyForDetails} onOpenChange={() => setSelectedStrategyForDetails(null)}>
+        <DialogContent className="max-w-2xl bg-gradient-to-br from-gray-900 via-gray-800 to-black border border-yellow-400/20">
+          <DialogHeader>
+            <DialogTitle className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-yellow-600">
+              Strategy Details: {selectedStrategyForDetails?.name}
+            </DialogTitle>
+          </DialogHeader>
+          
+          {selectedStrategyForDetails && (
+            <div className="space-y-4">
+              {/* Strategy Metrics */}
+              <div className="grid grid-cols-2 gap-4">
+                <div className="bg-green-900/20 p-4 rounded-lg border border-green-400/20">
+                  <div className="text-green-400 font-bold text-xl">{selectedStrategyForDetails.expectedWinRate}%</div>
+                  <div className="text-gray-400 text-sm">Expected Win Rate</div>
+                </div>
+                <div className="bg-blue-900/20 p-4 rounded-lg border border-blue-400/20">
+                  <div className="text-blue-400 font-bold text-xl">1:{selectedStrategyForDetails.riskRewardRatio}</div>
+                  <div className="text-gray-400 text-sm">Risk Reward Ratio</div>
+                </div>
+              </div>
+
+              {/* Strategy Information */}
+              <div className="space-y-3">
+                <div>
+                  <h4 className="text-white font-medium mb-2">Description</h4>
+                  <p className="text-gray-300 text-sm leading-relaxed bg-gray-800/30 p-3 rounded-lg">
+                    {selectedStrategyForDetails.description}
+                  </p>
+                </div>
+
+                <div>
+                  <h4 className="text-white font-medium mb-2">Market Conditions</h4>
+                  <p className="text-teal-400 text-sm bg-gray-800/30 p-3 rounded-lg">
+                    {selectedStrategyForDetails.marketConditions}
+                  </p>
+                </div>
+
+                <div>
+                  <h4 className="text-white font-medium mb-2">Trading Assets</h4>
+                  <p className="text-purple-400 text-sm bg-gray-800/30 p-3 rounded-lg">
+                    {selectedStrategyForDetails.assets || 'Multiple Assets'}
+                  </p>
+                </div>
+
+                {selectedStrategyForDetails.rules && (
+                  <div>
+                    <h4 className="text-white font-medium mb-2">Strategy Rules</h4>
+                    <div className="text-gray-300 text-sm bg-gray-800/30 p-3 rounded-lg">
+                      {selectedStrategyForDetails.rules.split('\n').map((rule: string, index: number) => (
+                        <div key={index} className="flex items-start gap-2 mb-1">
+                          <div className="w-1.5 h-1.5 bg-yellow-400 rounded-full mt-2 flex-shrink-0"></div>
+                          <span>{rule}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Strategy Stats */}
+              <div className="pt-4 border-t border-gray-600/50">
+                <div className="text-xs text-gray-500 text-center">
+                  Created: {new Date(selectedStrategyForDetails.createdAt || Date.now()).toLocaleDateString()} 
+                  {selectedStrategyForDetails.lastUsed && (
+                    <span> • Last Used: {new Date(selectedStrategyForDetails.lastUsed).toLocaleDateString()}</span>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
+          
+          <div className="flex justify-end pt-4 border-t border-gray-600">
+            <Button
+              variant="outline"
+              onClick={() => setSelectedStrategyForDetails(null)}
+              className="border-gray-600 text-gray-300 hover:bg-gray-700"
+            >
+              Close
             </Button>
           </div>
         </DialogContent>
