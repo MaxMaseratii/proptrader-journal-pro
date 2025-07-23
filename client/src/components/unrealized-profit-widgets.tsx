@@ -112,10 +112,16 @@ export default function UnrealizedProfitWidgets({ trades, selectedAccountIds, ac
 
   const bufferRisk = getBufferRiskLevel(remainingBuffer);
 
-
+  // Calculate R2$1M account specific data
+  const r2m1Account = accounts.find(acc => acc.name === "R2$1M");
+  const r2m1Trades = r2m1Account ? filteredTrades.filter(trade => trade.accountId === r2m1Account.id) : [];
+  const r2m1TotalPnL = r2m1Trades.reduce((sum, trade) => sum + trade.pnl, 0);
+  const r2m1CurrentBalance = r2m1Account ? r2m1Account.startingBalance + r2m1TotalPnL : 0;
+  const r2m1DrawdownUsed = r2m1Account ? Math.max(0, r2m1Account.startingBalance - r2m1CurrentBalance) : 0;
+  const r2m1DrawdownPercent = r2m1Account ? (r2m1DrawdownUsed / r2m1Account.maxDrawdown) * 100 : 0;
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
       {/* Drawdown Buffer Remaining Widget */}
       <Card className="bg-gradient-to-br from-red-900/20 to-orange-900/20 border-red-500/20">
         <CardHeader className="pb-2">
@@ -200,7 +206,54 @@ export default function UnrealizedProfitWidgets({ trades, selectedAccountIds, ac
         </CardContent>
       </Card>
 
-
+      {/* R2$1M Drawdown Widget */}
+      <Card className="bg-gradient-to-br from-indigo-900/20 to-blue-900/20 border-indigo-500/20">
+        <CardHeader className="pb-2">
+          <CardTitle className="text-white flex items-center text-sm">
+            <AlertTriangle className="mr-2 h-4 w-4 text-indigo-400" />
+            R2$1M Drawdown
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-3">
+            <div className="text-center">
+              <div className={`text-2xl font-bold ${
+                r2m1DrawdownPercent > 80 ? 'text-red-400' : 
+                r2m1DrawdownPercent > 60 ? 'text-orange-400' : 
+                r2m1DrawdownPercent > 40 ? 'text-yellow-400' : 'text-green-400'
+              }`}>
+                {r2m1DrawdownPercent.toFixed(1)}%
+              </div>
+              <div className="text-xs text-gray-400">Max Drawdown Used</div>
+            </div>
+            
+            <div className="grid grid-cols-2 gap-2 text-xs">
+              <div className="text-center">
+                <div className="text-indigo-400 font-medium">
+                  ${r2m1DrawdownUsed.toFixed(2)}
+                </div>
+                <div className="text-gray-500">Used</div>
+              </div>
+              <div className="text-center">
+                <div className="text-blue-400 font-medium">
+                  ${r2m1Account ? (r2m1Account.maxDrawdown - r2m1DrawdownUsed).toFixed(2) : '0.00'}
+                </div>
+                <div className="text-gray-500">Remaining</div>
+              </div>
+            </div>
+            
+            <div className={`px-2 py-1 rounded text-xs text-center ${
+              r2m1DrawdownPercent > 80 ? 'bg-red-500/20 text-red-400' : 
+              r2m1DrawdownPercent > 60 ? 'bg-orange-500/20 text-orange-400' : 
+              r2m1DrawdownPercent > 40 ? 'bg-yellow-500/20 text-yellow-400' : 'bg-green-500/20 text-green-400'
+            }`}>
+              {r2m1DrawdownPercent > 80 ? 'CRITICAL' : 
+               r2m1DrawdownPercent > 60 ? 'HIGH RISK' : 
+               r2m1DrawdownPercent > 40 ? 'MODERATE' : 'SAFE'}
+            </div>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }

@@ -2073,154 +2073,21 @@ export default function Dashboard() {
             </div>
           </div>
 
-          {/* ROW 3: Risk Management and Status (4 widgets) */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mt-4">
-            {/* Widget 1: Target Progress Summary */}
-            <div className="bg-gradient-to-br from-gray-900/40 via-gray-800/60 to-black/80 border border-gray-600/30 rounded-lg p-4 hover:border-amber-400/60 transition-all duration-200">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-sm font-medium text-gray-300">Target Progress</span>
-                <Target className="w-4 h-4 text-blue-400" />
-              </div>
-              <div className="text-2xl font-bold mb-1 text-blue-400">
-                {(() => {
-                  const selectedAccount = accounts?.find(acc => 
-                    selectedAccountIds.length === 1 ? selectedAccountIds.includes(acc.id) : false
-                  );
-                  if (!selectedAccount) return '0%';
-                  const netBalance = selectedAccount.startingBalance + (trades?.filter(t => 
-                    selectedAccountIds.length === 0 || selectedAccountIds.includes(t.accountId)
-                  ).reduce((sum, t) => sum + (t.pnl || 0), 0) || 0);
-                  const progress = ((netBalance - selectedAccount.startingBalance) / selectedAccount.profitTarget) * 100;
-                  return Math.max(0, progress).toFixed(1) + '%';
-                })()}
-              </div>
-              <div className="text-xs text-gray-400">Toward profit target</div>
-            </div>
-
-            {/* Widget 2: Drawdown Buffer Remaining */}
-            <div className="bg-gradient-to-br from-red-900/20 to-orange-900/20 border-red-500/20 rounded-lg p-4 hover:border-amber-400/60 transition-all duration-200">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-sm font-medium text-gray-300">Drawdown Buffer</span>
-                <AlertTriangle className="w-4 h-4 text-red-400" />
-              </div>
-              <div className="text-2xl font-bold mb-1 text-red-400">
-                {(() => {
-                  // Calculate remaining buffer from EOD trailing drawdown
-                  const selectedAccount = accounts?.find(acc => 
-                    selectedAccountIds.length === 1 ? selectedAccountIds.includes(acc.id) : false
-                  );
-                  if (!selectedAccount) return '$0.00';
-
-                  const accountTrades = trades?.filter(t => t.accountId === selectedAccount.id) || [];
-                  const dailyBalances = new Map();
-                  let runningBalance = selectedAccount.startingBalance;
-
-                  accountTrades.forEach(trade => {
-                    const tradeDate = new Date(trade.date || '').toDateString();
-                    if (!dailyBalances.has(tradeDate)) {
-                      dailyBalances.set(tradeDate, runningBalance);
-                    }
-                    runningBalance += (trade.pnl || 0);
-                    dailyBalances.set(tradeDate, runningBalance);
-                  });
-
-                  const highestEODBalance = Math.max(selectedAccount.startingBalance, ...Array.from(dailyBalances.values()));
-                  const currentBalance = runningBalance;
-                  const trailingDrawdownFloor = Math.max(selectedAccount.startingBalance, highestEODBalance - selectedAccount.maxDrawdown);
-                  const remainingBuffer = currentBalance - trailingDrawdownFloor;
-
-                  return '$' + Math.max(0, remainingBuffer).toFixed(2);
-                })()}
-              </div>
-              <div className="text-xs text-gray-400">Until drawdown breach</div>
-            </div>
-
-            {/* Widget 3: Consistency Rule Status */}
-            <div className="bg-gradient-to-br from-purple-900/20 to-indigo-900/20 border-purple-500/20 rounded-lg p-4 hover:border-amber-400/60 transition-all duration-200">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-sm font-medium text-gray-300">Consistency Rule</span>
-                <Shield className="w-4 h-4 text-purple-400" />
-              </div>
-              <div className="text-2xl font-bold mb-1">
-                {(() => {
-                  const filteredTrades = trades?.filter(trade => 
-                    selectedAccountIds.length === 0 || selectedAccountIds.includes(trade.accountId)
-                  ) || [];
-                  
-                  const dailyData = new Map();
-                  filteredTrades.forEach(trade => {
-                    const date = new Date(trade.date || '').toDateString();
-                    if (!dailyData.has(date)) {
-                      dailyData.set(date, { trades: [], dayPnL: 0, bestTradeProfit: 0 });
-                    }
-                    const dayData = dailyData.get(date);
-                    dayData.trades.push(trade);
-                    dayData.dayPnL += (trade.pnl || 0);
-                    dayData.bestTradeProfit = Math.max(dayData.bestTradeProfit, trade.pnl || 0);
-                  });
-
-                  const consistencyViolations = Array.from(dailyData.values()).filter(day => 
-                    day.bestTradeProfit > 750
-                  ).length;
-
-                  return (
-                    <span className={consistencyViolations > 0 ? 'text-red-400' : 'text-green-400'}>
-                      {consistencyViolations}
-                    </span>
-                  );
-                })()}
-              </div>
-              <div className="text-xs text-gray-400">$750 max violations</div>
-            </div>
-
-            {/* Widget 4: Risk Level Status */}
-            <div className="bg-gradient-to-br from-gray-900/40 via-gray-800/60 to-black/80 border border-gray-600/30 rounded-lg p-4 hover:border-amber-400/60 transition-all duration-200">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-sm font-medium text-gray-300">Risk Level</span>
-                <Activity className="w-4 h-4 text-yellow-400" />
-              </div>
-              <div className="text-2xl font-bold mb-1">
-                {(() => {
-                  const selectedAccount = accounts?.find(acc => 
-                    selectedAccountIds.length === 1 ? selectedAccountIds.includes(acc.id) : false
-                  );
-                  if (!selectedAccount) return <span className="text-gray-400">LOW</span>;
-
-                  const accountTrades = trades?.filter(t => t.accountId === selectedAccount.id) || [];
-                  const dailyBalances = new Map();
-                  let runningBalance = selectedAccount.startingBalance;
-
-                  accountTrades.forEach(trade => {
-                    const tradeDate = new Date(trade.date || '').toDateString();
-                    if (!dailyBalances.has(tradeDate)) {
-                      dailyBalances.set(tradeDate, runningBalance);
-                    }
-                    runningBalance += (trade.pnl || 0);
-                    dailyBalances.set(tradeDate, runningBalance);
-                  });
-
-                  const highestEODBalance = Math.max(selectedAccount.startingBalance, ...Array.from(dailyBalances.values()));
-                  const currentBalance = runningBalance;
-                  const trailingDrawdownFloor = Math.max(selectedAccount.startingBalance, highestEODBalance - selectedAccount.maxDrawdown);
-                  const remainingBuffer = currentBalance - trailingDrawdownFloor;
-                  const bufferPercent = (remainingBuffer / selectedAccount.maxDrawdown) * 100;
-
-                  if (bufferPercent <= 0) return <span className="text-red-400">CRITICAL</span>;
-                  if (bufferPercent <= 10) return <span className="text-red-400">HIGH</span>;
-                  if (bufferPercent <= 25) return <span className="text-yellow-400">MODERATE</span>;
-                  return <span className="text-green-400">LOW</span>;
-                })()}
-              </div>
-              <div className="text-xs text-gray-400">Current risk status</div>
-            </div>
-          </div>
-
-          {/* ROW 4: Target Progress Detail and Equity Curve */}
+          {/* ROW 3: Target Progress and Risk Status */}
           <div className="mt-4">
             <TargetProgressWidget 
               accounts={accounts || []} 
               trades={trades || []} 
               selectedAccountIds={accountSelectionMode === 'all' ? [] : selectedAccountIds} 
+            />
+          </div>
+
+          {/* ROW 4: Unrealized Profit Tracking Widgets */}
+          <div className="mt-4">
+            <UnrealizedProfitWidgets 
+              trades={trades || []} 
+              selectedAccountIds={accountSelectionMode === 'all' ? [] : selectedAccountIds}
+              accounts={accounts || []}
             />
           </div>
         </section>
@@ -2452,13 +2319,13 @@ export default function Dashboard() {
                           </svg>
                         </div>
 
-                        {/* Always visible floating tooltip */}
-                        <div id="chart-tooltip" className="absolute z-50 bg-gray-800 border border-gray-600 rounded-lg p-2 pointer-events-none opacity-100 transition-opacity duration-200 shadow-lg min-w-[180px] top-4 left-4">
-                          <div className="text-xs text-gray-300 mb-1" id="tooltip-date">Hover over chart points</div>
-                          <div className="text-sm font-medium text-white mb-1" id="tooltip-balance">Balance: $0.00</div>
-                          <div className="text-xs text-gray-400" id="tooltip-trades">Trade #0</div>
-                          <div className="text-xs font-medium" id="tooltip-pnl">Trade P&L: $0.00</div>
-                          <div className="text-xs text-gray-400 mt-1" id="tooltip-performance">Net: $0.00 (0.0%)</div>
+                        {/* Floating tooltip */}
+                        <div id="chart-tooltip" className="absolute z-50 bg-gray-800 border border-gray-600 rounded-lg p-2 pointer-events-none opacity-0 transition-opacity duration-200 shadow-lg min-w-[180px]">
+                          <div className="text-xs text-gray-300 mb-1" id="tooltip-date"></div>
+                          <div className="text-sm font-medium text-white mb-1" id="tooltip-balance"></div>
+                          <div className="text-xs text-gray-400" id="tooltip-trades"></div>
+                          <div className="text-xs font-medium" id="tooltip-pnl"></div>
+                          <div className="text-xs text-gray-400 mt-1" id="tooltip-performance"></div>
                         </div>
 
                         {/* Main Chart SVG */}
