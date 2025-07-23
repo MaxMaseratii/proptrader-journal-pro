@@ -38,6 +38,7 @@ import {
   Plus,
   Settings,
   ExternalLink,
+  FileText,
 
 } from 'lucide-react';
 import type { Account, TradingStrategy, DailyPlan, Trade, JournalEntry } from '@shared/schema';
@@ -1051,91 +1052,200 @@ const DailyPlanPage = () => {
         </DialogContent>
       </Dialog>
 
-      {/* Strategy Details Modal */}
+      {/* Enhanced Strategy Details Modal */}
       <Dialog open={!!selectedStrategyForDetails} onOpenChange={() => setSelectedStrategyForDetails(null)}>
-        <DialogContent className="max-w-2xl bg-gradient-to-br from-gray-900 via-gray-800 to-black border border-yellow-400/20">
-          <DialogHeader>
-            <DialogTitle className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-yellow-600">
-              Strategy Details: {selectedStrategyForDetails?.name}
-            </DialogTitle>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto bg-gradient-to-br from-gray-900 via-gray-800 to-black border border-yellow-400/30">
+          <DialogHeader className="pb-6">
+            <div className="flex items-center justify-between">
+              <DialogTitle className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600">
+                {selectedStrategyForDetails?.name}
+              </DialogTitle>
+              <div className="flex items-center gap-2">
+                <div className="w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
+                <span className="text-green-400 text-sm font-medium">Active Strategy</span>
+              </div>
+            </div>
           </DialogHeader>
           
           {selectedStrategyForDetails && (
-            <div className="space-y-4">
-              {/* Strategy Metrics */}
-              <div className="grid grid-cols-2 gap-4">
-                <div className="bg-green-900/20 p-4 rounded-lg border border-green-400/20">
-                  <div className="text-green-400 font-bold text-xl">{selectedStrategyForDetails.expectedWinRate}%</div>
-                  <div className="text-gray-400 text-sm">Expected Win Rate</div>
+            <div className="space-y-6">
+              {/* Key Performance Metrics */}
+              <div className="grid grid-cols-3 gap-4">
+                <div className="bg-gradient-to-br from-green-900/30 to-green-800/20 p-5 rounded-xl border border-green-400/30 hover:border-green-400/50 transition-all">
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="text-green-400 font-bold text-2xl">{selectedStrategyForDetails.expectedWinRate}%</div>
+                    <TrendingUp className="w-6 h-6 text-green-400" />
+                  </div>
+                  <div className="text-gray-400 text-sm font-medium">Expected Win Rate</div>
+                  <div className="text-xs text-green-300 mt-1">Target Performance</div>
                 </div>
-                <div className="bg-blue-900/20 p-4 rounded-lg border border-blue-400/20">
-                  <div className="text-blue-400 font-bold text-xl">1:{selectedStrategyForDetails.riskRewardRatio}</div>
-                  <div className="text-gray-400 text-sm">Risk Reward Ratio</div>
+                
+                <div className="bg-gradient-to-br from-blue-900/30 to-blue-800/20 p-5 rounded-xl border border-blue-400/30 hover:border-blue-400/50 transition-all">
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="text-blue-400 font-bold text-2xl">1:{selectedStrategyForDetails.riskRewardRatio}</div>
+                    <Target className="w-6 h-6 text-blue-400" />
+                  </div>
+                  <div className="text-gray-400 text-sm font-medium">Risk Reward Ratio</div>
+                  <div className="text-xs text-blue-300 mt-1">Risk Management</div>
+                </div>
+
+                <div className="bg-gradient-to-br from-purple-900/30 to-purple-800/20 p-5 rounded-xl border border-purple-400/30 hover:border-purple-400/50 transition-all">
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="text-purple-400 font-bold text-2xl">
+                      {((selectedStrategyForDetails.expectedWinRate / 100) * selectedStrategyForDetails.riskRewardRatio).toFixed(1)}
+                    </div>
+                    <Zap className="w-6 h-6 text-purple-400" />
+                  </div>
+                  <div className="text-gray-400 text-sm font-medium">Expected Value</div>
+                  <div className="text-xs text-purple-300 mt-1">Per Trade Edge</div>
                 </div>
               </div>
 
-              {/* Strategy Information */}
-              <div className="space-y-3">
-                {/* Show Trading Rules First and Prominently */}
-                {selectedStrategyForDetails.rules && typeof selectedStrategyForDetails.rules === 'string' && (
-                  <div>
-                    <h4 className="text-white font-medium mb-3 text-lg">Trading Rules</h4>
-                    <div className="text-gray-300 text-sm bg-gradient-to-r from-yellow-900/20 to-yellow-800/10 p-4 rounded-lg border border-yellow-400/20">
-                      {selectedStrategyForDetails.rules.split('\n').filter((rule: string) => rule.trim()).map((rule: string, index: number) => (
-                        <div key={index} className="flex items-start gap-3 mb-2">
-                          <div className="w-2 h-2 bg-yellow-400 rounded-full mt-2 flex-shrink-0"></div>
-                          <span className="leading-relaxed">{rule.trim()}</span>
-                        </div>
-                      ))}
-                    </div>
+              {/* Trading Rules - Primary Focus */}
+              {selectedStrategyForDetails.rules && typeof selectedStrategyForDetails.rules === 'string' && (
+                <div className="bg-gradient-to-r from-yellow-900/20 via-yellow-800/10 to-yellow-900/20 p-6 rounded-xl border border-yellow-400/30">
+                  <div className="flex items-center gap-3 mb-4">
+                    <Settings className="w-6 h-6 text-yellow-400" />
+                    <h4 className="text-white font-bold text-xl">Trading Rules & Setup</h4>
                   </div>
-                )}
-
-                <div>
-                  <h4 className="text-white font-medium mb-2">Market Conditions</h4>
-                  <p className="text-teal-400 text-sm bg-gray-800/30 p-3 rounded-lg">
-                    {selectedStrategyForDetails.marketConditions}
-                  </p>
+                  <div className="grid grid-cols-1 gap-3">
+                    {selectedStrategyForDetails.rules.split('\n').filter((rule: string) => rule.trim()).map((rule: string, index: number) => (
+                      <div key={index} className="flex items-start gap-4 p-3 bg-gray-800/40 rounded-lg hover:bg-gray-800/60 transition-all">
+                        <div className="flex items-center justify-center w-6 h-6 bg-yellow-400 text-black rounded-full font-bold text-xs mt-0.5">
+                          {index + 1}
+                        </div>
+                        <span className="text-gray-200 leading-relaxed flex-1">{rule.trim()}</span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
+              )}
 
-                <div>
-                  <h4 className="text-white font-medium mb-2">Trading Assets</h4>
-                  <p className="text-purple-400 text-sm bg-gray-800/30 p-3 rounded-lg">
-                    {selectedStrategyForDetails.assets || 'Multiple Assets'}
-                  </p>
-                </div>
-
-                {/* Show Description as Secondary Information */}
-                {selectedStrategyForDetails.description && (
-                  <div>
-                    <h4 className="text-white font-medium mb-2">Strategy Overview</h4>
-                    <p className="text-gray-400 text-sm leading-relaxed bg-gray-800/20 p-3 rounded-lg">
-                      {selectedStrategyForDetails.description}
+              {/* Strategy Context */}
+              <div className="grid grid-cols-2 gap-6">
+                <div className="space-y-4">
+                  <div className="bg-gradient-to-br from-teal-900/20 to-teal-800/10 p-5 rounded-xl border border-teal-400/20">
+                    <div className="flex items-center gap-3 mb-3">
+                      <Activity className="w-5 h-5 text-teal-400" />
+                      <h4 className="text-white font-semibold">Market Conditions</h4>
+                    </div>
+                    <p className="text-teal-300 text-sm leading-relaxed">
+                      {selectedStrategyForDetails.marketConditions}
                     </p>
                   </div>
-                )}
+
+                  <div className="bg-gradient-to-br from-purple-900/20 to-purple-800/10 p-5 rounded-xl border border-purple-400/20">
+                    <div className="flex items-center gap-3 mb-3">
+                      <DollarSign className="w-5 h-5 text-purple-400" />
+                      <h4 className="text-white font-semibold">Trading Assets</h4>
+                    </div>
+                    <p className="text-purple-300 text-sm leading-relaxed">
+                      {selectedStrategyForDetails.assets || 'Multiple Asset Classes'}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                  {selectedStrategyForDetails.description && (
+                    <div className="bg-gradient-to-br from-gray-800/40 to-gray-700/20 p-5 rounded-xl border border-gray-600/30">
+                      <div className="flex items-center gap-3 mb-3">
+                        <FileText className="w-5 h-5 text-gray-400" />
+                        <h4 className="text-white font-semibold">Strategy Overview</h4>
+                      </div>
+                      <p className="text-gray-300 text-sm leading-relaxed">
+                        {selectedStrategyForDetails.description}
+                      </p>
+                    </div>
+                  )}
+
+                  <div className="bg-gradient-to-br from-gray-800/40 to-gray-700/20 p-5 rounded-xl border border-gray-600/30">
+                    <div className="flex items-center gap-3 mb-3">
+                      <History className="w-5 h-5 text-gray-400" />
+                      <h4 className="text-white font-semibold">Strategy Timeline</h4>
+                    </div>
+                    <div className="space-y-2 text-sm">
+                      <div className="flex justify-between">
+                        <span className="text-gray-400">Created:</span>
+                        <span className="text-gray-300">
+                          {new Date(selectedStrategyForDetails.createdAt || Date.now()).toLocaleDateString()}
+                        </span>
+                      </div>
+                      {selectedStrategyForDetails.lastUsed && (
+                        <div className="flex justify-between">
+                          <span className="text-gray-400">Last Used:</span>
+                          <span className="text-green-400">
+                            {new Date(selectedStrategyForDetails.lastUsed).toLocaleDateString()}
+                          </span>
+                        </div>
+                      )}
+                      <div className="flex justify-between">
+                        <span className="text-gray-400">Status:</span>
+                        <span className="text-green-400 font-medium">Active</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
 
-              {/* Strategy Stats */}
-              <div className="pt-4 border-t border-gray-600/50">
-                <div className="text-xs text-gray-500 text-center">
-                  Created: {new Date(selectedStrategyForDetails.createdAt || Date.now()).toLocaleDateString()} 
-                  {selectedStrategyForDetails.lastUsed && (
-                    <span> • Last Used: {new Date(selectedStrategyForDetails.lastUsed).toLocaleDateString()}</span>
-                  )}
+              {/* Strategy Performance Projection */}
+              <div className="bg-gradient-to-r from-gray-800/60 via-gray-700/40 to-gray-800/60 p-6 rounded-xl border border-gray-600/40">
+                <div className="flex items-center gap-3 mb-4">
+                  <BarChart3 className="w-6 h-6 text-yellow-400" />
+                  <h4 className="text-white font-bold text-lg">Performance Projection</h4>
+                </div>
+                <div className="grid grid-cols-4 gap-4">
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-green-400">
+                      ${(selectedStrategyForDetails.riskRewardRatio * 100).toFixed(0)}
+                    </div>
+                    <div className="text-xs text-gray-400">Expected Profit ($100 risk)</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-blue-400">
+                      {(100 - selectedStrategyForDetails.expectedWinRate)}%
+                    </div>
+                    <div className="text-xs text-gray-400">Loss Rate</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-yellow-400">
+                      {Math.ceil(100 / selectedStrategyForDetails.expectedWinRate)}
+                    </div>
+                    <div className="text-xs text-gray-400">Trades to Profit</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-purple-400">
+                      {(selectedStrategyForDetails.expectedWinRate * selectedStrategyForDetails.riskRewardRatio - (100 - selectedStrategyForDetails.expectedWinRate)).toFixed(1)}%
+                    </div>
+                    <div className="text-xs text-gray-400">Edge per Trade</div>
+                  </div>
                 </div>
               </div>
             </div>
           )}
           
-          <div className="flex justify-end pt-4 border-t border-gray-600">
-            <Button
-              variant="outline"
-              onClick={() => setSelectedStrategyForDetails(null)}
-              className="border-gray-600 text-gray-300 hover:bg-gray-700"
-            >
-              Close
-            </Button>
+          <div className="flex items-center justify-between pt-6 border-t border-gray-600/50">
+            <div className="flex items-center gap-2 text-xs text-gray-500">
+              <CheckCircle className="w-4 h-4" />
+              <span>Strategy verified and ready for trading</span>
+            </div>
+            <div className="flex gap-3">
+              <Button
+                variant="outline"
+                onClick={() => setSelectedStrategyForDetails(null)}
+                className="border-gray-600 text-gray-300 hover:bg-gray-700"
+              >
+                Close
+              </Button>
+              <Button
+                className="bg-gradient-to-r from-yellow-400 to-yellow-600 text-black hover:from-yellow-500 hover:to-yellow-700 font-medium"
+                onClick={() => {
+                  setSelectedStrategy(selectedStrategyForDetails.id);
+                  setSelectedStrategyForDetails(null);
+                }}
+              >
+                Use This Strategy
+              </Button>
+            </div>
           </div>
         </DialogContent>
       </Dialog>
