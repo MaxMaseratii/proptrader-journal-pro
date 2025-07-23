@@ -15,7 +15,7 @@ export default function UnrealizedProfitWidgets({ trades, selectedAccountIds }: 
     selectedAccountIds.length === 0 || selectedAccountIds.includes(trade.accountId)
   );
 
-  // Calculate EOD trailing drawdown based on highest end-of-day balance
+  // Calculate EOD drawdown buffer and consistency rule tracking
   const dailyDrawdownData = React.useMemo(() => {
     const dailyData = new Map<string, DailyDrawdownSummary>();
     
@@ -37,146 +37,115 @@ export default function UnrealizedProfitWidgets({ trades, selectedAccountIds }: 
       const dayData = dailyData.get(dateKey)!;
       dayData.totalDayPnL += trade.pnl;
       
-      // Track best trade profit for consistency rule
+      // Track best single trade profit for consistency rule (not daily total)
       if (trade.pnl > dayData.bestTradeProfit) {
         dayData.bestTradeProfit = trade.pnl;
       }
       
-      // Calculate unrealized profit drawdown (lost potential from peak)
-      if (trade.initialTakeProfit && trade.exitPrice) {
-        const potentialProfit = Math.abs(trade.initialTakeProfit - trade.entryPrice) * trade.quantity * 50; // ES point value
-        const actualPnL = trade.pnl;
-        const unrealizedDrawdown = Math.max(0, potentialProfit - actualPnL);
-        dayData.unrealizedProfitDrawdown += unrealizedDrawdown;
+      // Check consistency rule violation: best trade > $750 (50% of $1,500 target)
+      if (trade.pnl > 750) {
+        dayData.consistencyRuleViolation = true;
       }
     });
     
-    // Calculate EOD trailing drawdown properly
-    const sortedDays = Array.from(dailyData.values()).sort((a, b) => 
+    return Array.from(dailyData.values()).sort((a, b) => 
       new Date(a.date).getTime() - new Date(b.date).getTime()
     );
-    
-    // Assume $50,000 starting balance and $2,000 max drawdown (from your documentation example)
-    let startingBalance = 50000;
-    let maxDrawdownAmount = 2000;
-    let highestEodBalance = startingBalance;
-    let runningBalance = startingBalance;
-    
-    sortedDays.forEach(day => {
-      runningBalance += day.totalDayPnL;
-      
-      // Update highest EOD balance if this is a new high
-      if (runningBalance > highestEodBalance) {
-        highestEodBalance = runningBalance;
-      }
-      
-      // Calculate trailing EOD drawdown (trails the highest EOD balance)
-      const trailingEodDrawdown = highestEodBalance - maxDrawdownAmount;
-      
-      // EOD drawdown violation if current balance falls below trailing drawdown
-      day.eodDrawdown = Math.max(0, trailingEodDrawdown - runningBalance);
-      
-      // Mark if this day failed EOD drawdown rule
-      if (runningBalance < trailingEodDrawdown) {
-        day.drawdownType = 'eod_violation';
-      }
-    });
-    
-    return sortedDays;
   }, [filteredTrades]);
 
-  // Calculate total unrealized profit metrics
-  const totalUnrealizedDrawdown = dailyDrawdownData.reduce((sum, day) => sum + day.unrealizedProfitDrawdown, 0);
-  const totalEodDrawdown = dailyDrawdownData.reduce((sum, day) => sum + day.eodDrawdown, 0);
-  const avgDailyUnrealizedDrawdown = dailyDrawdownData.length > 0 ? totalUnrealizedDrawdown / dailyDrawdownData.length : 0;
-  const maxSingleDayUnrealizedDrawdown = Math.max(...dailyDrawdownData.map(day => day.unrealizedProfitDrawdown), 0);
+  // Calculate actual drawdown buffer and consistency violations
+  const totalActualLoss = filteredTrades.reduce((sum, trade) => sum + Math.min(0, trade.pnl), 0); // Only losses
+  const maxDrawdownAmount = 1500; // Your actual max drawdown
+  const remainingBuffer = maxDrawdownAmount - Math.abs(totalActualLoss);
+  const consistencyViolations = dailyDrawdownData.filter(day => day.consistencyRuleViolation).length;
 
-  // Determine risk level based on unrealized drawdown
-  const getDrawdownRiskLevel = (drawdown: number) => {
-    if (drawdown === 0) return { level: 'safe', color: 'text-green-400', bgColor: 'bg-green-500/20' };
-    if (drawdown < 500) return { level: 'low', color: 'text-yellow-400', bgColor: 'bg-yellow-500/20' };
-    if (drawdown < 1000) return { level: 'moderate', color: 'text-orange-400', bgColor: 'bg-orange-500/20' };
-    return { level: 'high', color: 'text-red-400', bgColor: 'bg-red-500/20' };
+  // Determine risk level based on remaining buffer
+  const getBufferRiskLevel = (buffer: number) => {
+    if (buffer > 1000) return { level: 'safe', color: 'text-green-400', bgColor: 'bg-green-500/20' };
+    if (buffer > 500) return { level: 'moderate', color: 'text-yellow-400', bgColor: 'bg-yellow-500/20' };
+    if (buffer > 200) return { level: 'high', color: 'text-orange-400', bgColor: 'bg-orange-500/20' };
+    return { level: 'critical', color: 'text-red-400', bgColor: 'bg-red-500/20' };
   };
 
-  const unrealizedRisk = getDrawdownRiskLevel(totalUnrealizedDrawdown);
-  const eodRisk = getDrawdownRiskLevel(totalEodDrawdown);
+  const bufferRisk = getBufferRiskLevel(remainingBuffer);
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-      {/* Unrealized Profit Drawdown Widget */}
-      <Card className="bg-gradient-to-br from-purple-900/20 to-blue-900/20 border-purple-500/20">
-        <CardHeader className="pb-2">
-          <CardTitle className="text-white flex items-center text-sm">
-            <TrendingDown className="mr-2 h-4 w-4 text-purple-400" />
-            Unrealized Profit Drawdown
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-3">
-            <div className="text-center">
-              <div className={`text-2xl font-bold ${unrealizedRisk.color}`}>
-                ${totalUnrealizedDrawdown.toFixed(2)}
-              </div>
-              <div className="text-xs text-gray-400">Total Lost Potential</div>
-            </div>
-            
-            <div className="grid grid-cols-2 gap-2 text-xs">
-              <div className="text-center">
-                <div className="text-purple-400 font-medium">
-                  ${avgDailyUnrealizedDrawdown.toFixed(2)}
-                </div>
-                <div className="text-gray-500">Daily Avg</div>
-              </div>
-              <div className="text-center">
-                <div className="text-purple-400 font-medium">
-                  ${maxSingleDayUnrealizedDrawdown.toFixed(2)}
-                </div>
-                <div className="text-gray-500">Max Day</div>
-              </div>
-            </div>
-            
-            <div className={`px-2 py-1 rounded text-xs text-center ${unrealizedRisk.bgColor} ${unrealizedRisk.color}`}>
-              {unrealizedRisk.level.toUpperCase()} IMPACT
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* EOD Trailing Drawdown Widget */}
+      {/* Drawdown Buffer Remaining Widget */}
       <Card className="bg-gradient-to-br from-red-900/20 to-orange-900/20 border-red-500/20">
         <CardHeader className="pb-2">
           <CardTitle className="text-white flex items-center text-sm">
             <Shield className="mr-2 h-4 w-4 text-red-400" />
-            EOD Trailing Drawdown
+            Drawdown Buffer Remaining
           </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="space-y-3">
             <div className="text-center">
-              <div className={`text-2xl font-bold ${eodRisk.color}`}>
-                ${totalEodDrawdown.toFixed(2)}
+              <div className={`text-2xl font-bold ${bufferRisk.color}`}>
+                ${remainingBuffer.toFixed(2)}
               </div>
-              <div className="text-xs text-gray-400">Trailing Drawdown Breach</div>
+              <div className="text-xs text-gray-400">Left from $1,500 Max Drawdown</div>
             </div>
             
             <div className="grid grid-cols-2 gap-2 text-xs">
               <div className="text-center">
                 <div className="text-red-400 font-medium">
-                  {dailyDrawdownData.filter(d => d.drawdownType === 'eod_violation').length}
+                  ${Math.abs(totalActualLoss).toFixed(2)}
                 </div>
-                <div className="text-gray-500">Days Failed</div>
+                <div className="text-gray-500">Total Losses</div>
               </div>
               <div className="text-center">
                 <div className="text-orange-400 font-medium">
-                  {dailyDrawdownData.length > 0 ? (dailyDrawdownData.filter(d => d.drawdownType === 'eod_violation').length / dailyDrawdownData.length * 100).toFixed(0) : 0}%
+                  {((Math.abs(totalActualLoss) / maxDrawdownAmount) * 100).toFixed(1)}%
                 </div>
-                <div className="text-gray-500">Failure Rate</div>
+                <div className="text-gray-500">Used</div>
               </div>
             </div>
             
-            <div className={`px-2 py-1 rounded text-xs text-center ${eodRisk.bgColor} ${eodRisk.color}`}>
-              {dailyDrawdownData.some(d => d.drawdownType === 'eod_violation') ? 'EOD VIOLATIONS' : 'EOD SAFE'}
+            <div className={`px-2 py-1 rounded text-xs text-center ${bufferRisk.bgColor} ${bufferRisk.color}`}>
+              {remainingBuffer <= 200 ? 'CRITICAL RISK' : remainingBuffer <= 500 ? 'HIGH RISK' : 'BUFFER SAFE'}
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Consistency Rule Tracking Widget */}
+      <Card className="bg-gradient-to-br from-purple-900/20 to-blue-900/20 border-purple-500/20">
+        <CardHeader className="pb-2">
+          <CardTitle className="text-white flex items-center text-sm">
+            <TrendingUp className="mr-2 h-4 w-4 text-purple-400" />
+            Consistency Rule ($750 Max)
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-3">
+            <div className="text-center">
+              <div className={`text-2xl font-bold ${consistencyViolations > 0 ? 'text-red-400' : 'text-green-400'}`}>
+                {consistencyViolations}
+              </div>
+              <div className="text-xs text-gray-400">Rule Violations</div>
+            </div>
+            
+            <div className="grid grid-cols-2 gap-2 text-xs">
+              <div className="text-center">
+                <div className="text-purple-400 font-medium">
+                  $750.00
+                </div>
+                <div className="text-gray-500">Daily Limit</div>
+              </div>
+              <div className="text-center">
+                <div className="text-purple-400 font-medium">
+                  {Math.max(...dailyDrawdownData.map(day => day.bestTradeProfit), 0).toFixed(2)}
+                </div>
+                <div className="text-gray-500">Best Trade</div>
+              </div>
+            </div>
+            
+            <div className={`px-2 py-1 rounded text-xs text-center ${
+              consistencyViolations > 0 ? 'bg-red-500/20 text-red-400' : 'bg-green-500/20 text-green-400'
+            }`}>
+              {consistencyViolations > 0 ? 'RULE VIOLATED' : 'COMPLIANT'}
             </div>
           </div>
         </CardContent>
