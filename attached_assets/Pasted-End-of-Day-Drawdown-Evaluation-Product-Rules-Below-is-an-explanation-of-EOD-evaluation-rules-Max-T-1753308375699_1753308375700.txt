@@ -1,0 +1,26 @@
+End of Day Drawdown Evaluation Product Rules
+Below is an explanation of EOD evaluation rules.
+
+Max Trailing Drawdown
+Q How does the trailing drawdown work in EOD evaluations?
+A In your evaluation account your drawdown trails your highest end of day balance. You also have an intraday daily loss limit calculated from the prior day's ending balance.
+
+Be advised that any losses incurred from open positions will affect your daily loss limit. This means that if an open position dips your account balance below the daily loss limit, intraday, you will fail the evaluation.
+
+Example: You start with an account balance $50,000 and your max drawdown is $2,000 (minimum EOD account balance of $48,000). If you trade and end the day with a profit of $1,000 your minimum account balance moves up to $49,000. If your account at any point during the day reaches the daily loss limit you fail your account.
+
+Q How does the end of day trailing drawdown work in Elite (qualified) accounts?
+A In your Elite account the drawdown trails your highest end of day balance until you have earned realized profits equal to max drawdown +$100; then you will no longer have a daily loss limit and your drawdown never moves again. At this point, the starting account balance +$100 becomes your minimum allowable balance in your Elite account; do not let your account balance fall beneath this static level or you will fail.
+
+Here is a working example of the EOD Drawdown. You can see that on Day 8, the EOD balance has fallen below the Trailing EOD Drawdown and has failed. If at any time during these days, the PNL (realized and unrealized) reached the $1,100 daily loss limit, the account would also have failed.
+
+Day	Beginning Balance	Trailing EOD Drawdown	Remaining EOD Drawdown	Day PNL	EOD Balance	Daily Loss Limit Trigger
+1	50,000	48,000	2,000	550	50,550	48,900
+2	50,550	48,550	2,000	(250)	50,300	49,450
+3	50,300	48,550	1,750	(500)	49,800	49,200
+4	49,800	48,550	1,250	(800)	49,000	48,700
+5	49,000	48,550	450	1,800	50,800	47,900
+6	50,800	48,800	2,000	(900)	49,900	49,700
+7	49,900	48,800	1,100	(800)	49,100	48,800
+8	49,100	48,800	300	(400)	48,700	48,000
+The daily loss limit resets daily based on the prior day’s EOD balance. It simply trails the prior day’s balance and does not change intraday. If you are profitable intraday, your daily loss limit trigger remains the same. Using Day 2 as an example, your beginning balance is $50,550 and your daily loss trigger is set at $49,450. If during day 2, you have intraday profits of $1,000 so that your balance is at $51,550, your daily loss limit trigger remains at $49,450. At this point, you would have to lose $2,100 to trigger the daily loss limit.

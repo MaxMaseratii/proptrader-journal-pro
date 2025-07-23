@@ -54,11 +54,18 @@ export default function UnrealizedProfitWidgets({ trades, selectedAccountIds, ac
     );
   }, [filteredTrades]);
 
-  // Calculate actual drawdown buffer and consistency violations
+  // Calculate EOD trailing drawdown buffer and consistency violations
   const totalPnL = filteredTrades.reduce((sum, trade) => sum + trade.pnl, 0); // Total P&L (positive and negative)
+  const startingBalance = 25000; // Account starting balance
   const maxDrawdownAmount = 1500; // Your actual max drawdown
-  const currentLoss = Math.max(0, -totalPnL); // Only count if total P&L is negative
-  const remainingBuffer = maxDrawdownAmount - currentLoss;
+  const currentBalance = startingBalance + totalPnL; // Current account balance
+  
+  // EOD Trailing Drawdown Logic: Trails the highest EOD balance
+  // For now, using current balance as highest (should track daily highs in real implementation)
+  const highestEODBalance = Math.max(startingBalance, currentBalance);
+  const trailingDrawdownFloor = highestEODBalance - maxDrawdownAmount;
+  const remainingBuffer = currentBalance - trailingDrawdownFloor;
+  
   const consistencyViolations = dailyDrawdownData.filter(day => day.consistencyRuleViolation).length;
 
   // Determine risk level based on remaining buffer
@@ -95,21 +102,21 @@ export default function UnrealizedProfitWidgets({ trades, selectedAccountIds, ac
               <div className={`text-2xl font-bold ${bufferRisk.color}`}>
                 ${remainingBuffer.toFixed(2)}
               </div>
-              <div className="text-xs text-gray-400">Left from $1,500 Max Drawdown</div>
+              <div className="text-xs text-gray-400">Above EOD Trailing Drawdown Floor</div>
             </div>
             
             <div className="grid grid-cols-2 gap-2 text-xs">
               <div className="text-center">
                 <div className="text-red-400 font-medium">
-                  ${currentLoss.toFixed(2)}
+                  ${currentBalance.toFixed(2)}
                 </div>
-                <div className="text-gray-500">Current Loss</div>
+                <div className="text-gray-500">Current Balance</div>
               </div>
               <div className="text-center">
                 <div className="text-orange-400 font-medium">
-                  {((currentLoss / maxDrawdownAmount) * 100).toFixed(1)}%
+                  ${trailingDrawdownFloor.toFixed(2)}
                 </div>
-                <div className="text-gray-500">Used</div>
+                <div className="text-gray-500">Drawdown Floor</div>
               </div>
             </div>
             
