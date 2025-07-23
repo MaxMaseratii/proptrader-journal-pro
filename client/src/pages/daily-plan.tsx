@@ -1076,12 +1076,20 @@ const DailyPlanPage = () => {
 
               {/* Strategy Information */}
               <div className="space-y-3">
-                <div>
-                  <h4 className="text-white font-medium mb-2">Description</h4>
-                  <p className="text-gray-300 text-sm leading-relaxed bg-gray-800/30 p-3 rounded-lg">
-                    {selectedStrategyForDetails.description}
-                  </p>
-                </div>
+                {/* Show Trading Rules First and Prominently */}
+                {selectedStrategyForDetails.rules && typeof selectedStrategyForDetails.rules === 'string' && (
+                  <div>
+                    <h4 className="text-white font-medium mb-3 text-lg">Trading Rules</h4>
+                    <div className="text-gray-300 text-sm bg-gradient-to-r from-yellow-900/20 to-yellow-800/10 p-4 rounded-lg border border-yellow-400/20">
+                      {selectedStrategyForDetails.rules.split('\n').filter((rule: string) => rule.trim()).map((rule: string, index: number) => (
+                        <div key={index} className="flex items-start gap-3 mb-2">
+                          <div className="w-2 h-2 bg-yellow-400 rounded-full mt-2 flex-shrink-0"></div>
+                          <span className="leading-relaxed">{rule.trim()}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
 
                 <div>
                   <h4 className="text-white font-medium mb-2">Market Conditions</h4>
@@ -1097,17 +1105,13 @@ const DailyPlanPage = () => {
                   </p>
                 </div>
 
-                {selectedStrategyForDetails.rules && typeof selectedStrategyForDetails.rules === 'string' && (
+                {/* Show Description as Secondary Information */}
+                {selectedStrategyForDetails.description && (
                   <div>
-                    <h4 className="text-white font-medium mb-2">Strategy Rules</h4>
-                    <div className="text-gray-300 text-sm bg-gray-800/30 p-3 rounded-lg">
-                      {selectedStrategyForDetails.rules.split('\n').filter((rule: string) => rule.trim()).map((rule: string, index: number) => (
-                        <div key={index} className="flex items-start gap-2 mb-1">
-                          <div className="w-1.5 h-1.5 bg-yellow-400 rounded-full mt-2 flex-shrink-0"></div>
-                          <span>{rule.trim()}</span>
-                        </div>
-                      ))}
-                    </div>
+                    <h4 className="text-white font-medium mb-2">Strategy Overview</h4>
+                    <p className="text-gray-400 text-sm leading-relaxed bg-gray-800/20 p-3 rounded-lg">
+                      {selectedStrategyForDetails.description}
+                    </p>
                   </div>
                 )}
               </div>
