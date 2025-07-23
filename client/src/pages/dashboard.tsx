@@ -2201,12 +2201,9 @@ export default function Dashboard() {
                     );
                     const accountCost = selectedAccount?.accountCost || selectedAccount?.startingBalance || 0;
                     
-                    let runningBalance = accountCost;
-                    filteredTrades.forEach(trade => {
-                      runningBalance += (trade.pnl || 0);
-                    });
-
-                    const totalPnl = runningBalance - accountCost;
+                    // Calculate total P&L directly from trades (no starting balance)
+                    const totalPnl = filteredTrades.reduce((sum, trade) => sum + (trade.pnl || 0), 0);
+                    let runningBalance = totalPnl; // Equity curve shows P&L only
                     const totalReturn = ((totalPnl / accountCost) * 100);
                     const winningTrades = filteredTrades.filter(t => (t.pnl || 0) > 0).length;
                     const winRate = filteredTrades.length > 0 ? (winningTrades / filteredTrades.length) * 100 : 0;
