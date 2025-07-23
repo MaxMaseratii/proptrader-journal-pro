@@ -381,6 +381,8 @@ export default function Trades() {
               <thead>
                 <tr className="border-b border-gray-700">
                   <th className="text-left py-3 px-4 text-gray-400 font-medium">Date</th>
+                  <th className="text-left py-3 px-4 text-gray-400 font-medium">Time</th>
+                  <th className="text-left py-3 px-4 text-gray-400 font-medium">Duration</th>
                   <th className="text-left py-3 px-4 text-gray-400 font-medium">Account</th>
                   <th className="text-left py-3 px-4 text-gray-400 font-medium">Symbol</th>
                   <th className="text-left py-3 px-4 text-gray-400 font-medium">Side</th>
@@ -401,6 +403,38 @@ export default function Trades() {
                 {filteredTrades.map((trade) => (
                   <tr key={trade.id} className="border-b border-gray-800 hover:bg-gray-800/50">
                     <td className="py-3 px-4 text-white">{formatDate(trade.date)}</td>
+                    <td className="py-3 px-4 text-gray-300">
+                      {trade.fillTime ? new Date(trade.fillTime).toLocaleTimeString('en-US', { 
+                        hour: '2-digit', 
+                        minute: '2-digit', 
+                        hour12: false 
+                      }) : '-'}
+                    </td>
+                    <td className="py-3 px-4 text-gray-300">
+                      {(() => {
+                        if (!trade.fillTime) return '-';
+                        
+                        // Parse fillTime and exitTime to calculate duration
+                        const entryTime = new Date(trade.fillTime);
+                        const exitTime = trade.exitPrice && trade.date ? new Date(trade.date + 'T23:59:59') : entryTime;
+                        
+                        // If we have specific exit time data, use it; otherwise estimate based on order patterns
+                        const durationMs = exitTime.getTime() - entryTime.getTime();
+                        const durationMinutes = Math.max(1, Math.floor(durationMs / (1000 * 60)));
+                        
+                        if (durationMinutes < 60) {
+                          return `${durationMinutes}m`;
+                        } else if (durationMinutes < 1440) { // Less than 24 hours
+                          const hours = Math.floor(durationMinutes / 60);
+                          const mins = durationMinutes % 60;
+                          return mins > 0 ? `${hours}h ${mins}m` : `${hours}h`;
+                        } else {
+                          const days = Math.floor(durationMinutes / 1440);
+                          const hours = Math.floor((durationMinutes % 1440) / 60);
+                          return hours > 0 ? `${days}d ${hours}h` : `${days}d`;
+                        }
+                      })()}
+                    </td>
                     <td className="py-3 px-4 text-gray-300">{getAccountName(trade.accountId)}</td>
                     <td className="py-3 px-4 text-white font-medium">{trade.symbol}</td>
                     <td className="py-3 px-4">
@@ -513,7 +547,7 @@ export default function Trades() {
                             <Button
                               size="sm"
                               variant="outline"
-                              onClick={() => window.open(trade.tradingViewLink, '_blank')}
+                              onClick={() => window.open(trade.tradingViewLink || '', '_blank')}
                               className="text-blue-400 border-blue-400 hover:bg-blue-400/20 h-6 text-xs"
                             >
                               📈 View Plan

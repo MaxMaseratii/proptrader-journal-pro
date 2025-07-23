@@ -2117,10 +2117,10 @@ export default function Dashboard() {
                     );
                     const accountCost = selectedAccount?.accountCost || selectedAccount?.startingBalance || 0;
                     
-                    let runningBalance = accountCost;
+                    let runningBalance = 0; // Always start equity curve from $0
                     const equityPoints = [{ 
                       x: 0, 
-                      y: accountCost, 
+                      y: 0, 
                       trade: null, 
                       tradesCount: 0, 
                       date: 'Start'
@@ -2293,7 +2293,7 @@ export default function Dashboard() {
                           {equityPoints.map((point, index) => {
                             const x = padding.left + (index / (equityPoints.length - 1)) * plotWidth;
                             const y = padding.top + plotHeight - ((point.y - chartMin) / chartRange) * plotHeight;
-                            const isProfit = point.y >= accountCost;
+                            const isProfit = point.y >= 0; // Compare to $0 since curve starts from 0
                             
                             return (
                               <circle
