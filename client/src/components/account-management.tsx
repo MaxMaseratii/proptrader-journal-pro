@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
-import { RotateCcw, LogOut, Trash2, AlertTriangle, DollarSign, CheckCircle, ArrowRight } from "lucide-react";
+import { RotateCcw, LogOut, Trash2, AlertTriangle, DollarSign, CheckCircle, ArrowRight, Bookmark } from "lucide-react";
 import { formatCurrency } from "@/lib/utils";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
@@ -67,7 +67,15 @@ export default function AccountManagement({ accounts }: AccountManagementProps) 
     maximumPayoutPerAccount: '',
     restrictions: 'Standard prop firm live account restrictions apply'
   });
+  const [isSavedPlanDialogOpen, setIsSavedPlanDialogOpen] = useState(false);
+  const [selectedAccountForPlan, setSelectedAccountForPlan] = useState<Account | null>(null);
   const { toast } = useToast();
+
+  // Query for saved projections for a specific account
+  const { data: savedProjections = [], isLoading: projectionsLoading } = useQuery({
+    queryKey: ['/api/projections/account', selectedAccountForPlan?.id],
+    enabled: !!selectedAccountForPlan?.id,
+  });
 
   const resetAccountMutation = useMutation({
     mutationFn: async ({ id, resetCost }: { id: number; resetCost: number }) => {
@@ -475,6 +483,136 @@ export default function AccountManagement({ accounts }: AccountManagementProps) 
                 </div>
               </div>
               <div className="flex items-center gap-1">
+                {/* Saved Plan Button */}
+                <Dialog open={isSavedPlanDialogOpen && selectedAccountForPlan?.id === account.id} onOpenChange={(open) => {
+                  setIsSavedPlanDialogOpen(open);
+                  if (open) setSelectedAccountForPlan(account);
+                  else setSelectedAccountForPlan(null);
+                }}>
+                  <DialogTrigger asChild>
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      className="border-prop-gold text-prop-gold hover:bg-prop-gold hover:text-black h-6 w-6 p-0"
+                      title="View Saved Plans"
+                    >
+                      <Bookmark className="h-3 w-3" />
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="bg-gray-900 border-gray-700 max-w-6xl max-h-[80vh] overflow-y-auto">
+                    <DialogHeader>
+                      <DialogTitle className="text-white flex items-center gap-2">
+                        <Bookmark className="h-5 w-5 text-prop-gold" />
+                        Saved Trading Plans - {account.name}
+                      </DialogTitle>
+                      <DialogDescription className="text-gray-300">
+                        View your saved projections and compare with actual P&L performance
+                      </DialogDescription>
+                    </DialogHeader>
+                    <div className="space-y-4">
+                      {projectionsLoading ? (
+                        <div className="text-center py-8">
+                          <p className="text-gray-400">Loading saved plans...</p>
+                        </div>
+                      ) : savedProjections.length === 0 ? (
+                        <div className="text-center py-8">
+                          <p className="text-gray-400">No saved plans found for this account.</p>
+                          <p className="text-sm text-gray-500 mt-2">
+                            Create a projection in the Challenge Target Planner and save it to see it here.
+                          </p>
+                        </div>
+                      ) : (
+                        <div className="space-y-6">
+                          {savedProjections.map((projection: any) => {
+                            const accountTrades = trades.filter(trade => trade.accountId === account.id);
+                            const totalActualPnl = accountTrades.reduce((sum, trade) => sum + trade.pnl, 0);
+                            const progressPercentage = projection.targetProfit > 0 ? (totalActualPnl / projection.targetProfit) * 100 : 0;
+                            
+                            return (
+                              <Card key={projection.id} className="bg-gray-800 border-gray-700">
+                                <CardHeader>
+                                  <CardTitle className="text-white text-sm flex items-center justify-between">
+                                    <span>Plan #{projection.id} - {new Date(projection.createdAt).toLocaleDateString()}</span>
+                                    <Badge 
+                                      className={
+                                        projection.status === 'active' ? 'bg-blue-600' :
+                                        projection.status === 'completed' ? 'bg-green-600' : 'bg-red-600'
+                                      }
+                                    >
+                                      {projection.status}
+                                    </Badge>
+                                  </CardTitle>
+                                </CardHeader>
+                                <CardContent>
+                                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+                                    <div className="text-center">
+                                      <div className="text-lg font-bold text-blue-400">
+                                        {formatCurrency(projection.targetProfit)}
+                                      </div>
+                                      <div className="text-xs text-gray-400">Target Profit</div>
+                                    </div>
+                                    <div className="text-center">
+                                      <div className="text-lg font-bold text-green-400">
+                                        {formatCurrency(totalActualPnl)}
+                                      </div>
+                                      <div className="text-xs text-gray-400">Actual P&L</div>
+                                    </div>
+                                    <div className="text-center">
+                                      <div className="text-lg font-bold text-prop-gold">
+                                        {progressPercentage.toFixed(1)}%
+                                      </div>
+                                      <div className="text-xs text-gray-400">Progress</div>
+                                    </div>
+                                    <div className="text-center">
+                                      <div className="text-lg font-bold text-purple-400">
+                                        {projection.projectedDays} days
+                                      </div>
+                                      <div className="text-xs text-gray-400">Projected Days</div>
+                                    </div>
+                                  </div>
+                                  
+                                  <div className="bg-gray-900/50 rounded-lg p-3">
+                                    <div className="text-xs text-gray-400 mb-2">Plan Details:</div>
+                                    <div className="grid grid-cols-2 md:grid-cols-3 gap-2 text-xs">
+                                      <span className="text-gray-300">Capital: {formatCurrency(projection.startingCapital)}</span>
+                                      <span className="text-gray-300">Risk/Trade: {formatCurrency(projection.riskPerTrade)}</span>
+                                      <span className="text-gray-300">RR Ratio: 1:{projection.rewardRiskRatio}</span>
+                                      {projection.compoundingEnabled && (
+                                        <span className="text-green-400">Compounding: {projection.compoundingPercentage}%</span>
+                                      )}
+                                      {projection.riskCuttingEnabled && (
+                                        <span className="text-red-400">Risk Cutting: {projection.riskCuttingPercentage}%</span>
+                                      )}
+                                    </div>
+                                  </div>
+                                  
+                                  {/* Progress Bar */}
+                                  <div className="mt-4">
+                                    <div className="flex items-center justify-between mb-1">
+                                      <span className="text-xs text-gray-400">Plan Progress</span>
+                                      <span className="text-xs text-gray-400">{progressPercentage.toFixed(1)}%</span>
+                                    </div>
+                                    <div className="w-full bg-gray-700 rounded-full h-2">
+                                      <div 
+                                        className={`h-2 rounded-full transition-all duration-300 ${
+                                          progressPercentage >= 100 ? 'bg-green-500' :
+                                          progressPercentage >= 75 ? 'bg-yellow-500' :
+                                          progressPercentage >= 50 ? 'bg-blue-500' : 'bg-gray-500'
+                                        }`}
+                                        style={{ width: `${Math.min(progressPercentage, 100)}%` }}
+                                      />
+                                    </div>
+                                  </div>
+                                </CardContent>
+                              </Card>
+                            );
+                          })}
+                        </div>
+                      )}
+                    </div>
+                  </DialogContent>
+                </Dialog>
+
                 {/* Reset Account */}
                 <Dialog open={isResetDialogOpen && selectedAccount?.id === account.id} onOpenChange={(open) => {
                   setIsResetDialogOpen(open);
