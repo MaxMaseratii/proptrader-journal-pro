@@ -121,7 +121,7 @@ export default function Welcome() {
             </div>
             <div>
               <h1 className="text-xl font-bold text-gradient-rainbow">PropTraderJournal</h1>
-              <p className="text-xs text-gray-400">Elite Trading Journal</p>
+              <p className="text-xs text-gray-400">#1 Elite PropTrader Journal</p>
             </div>
           </div>
           <Button 
@@ -881,7 +881,7 @@ export default function Welcome() {
             </div>
             <div>
               <h3 className="text-xl font-bold text-gradient-rainbow">PropTraderJournal</h3>
-              <p className="text-sm text-gray-400">Elite Trading Journal</p>
+              <p className="text-sm text-gray-400">#1 Elite PropTrader Journal</p>
             </div>
           </div>
           <p className="text-gray-400 mb-6">

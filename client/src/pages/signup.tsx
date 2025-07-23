@@ -82,7 +82,7 @@ export default function Signup() {
               <h1 className="text-xl font-bold text-transparent bg-gradient-to-r from-amber-400 to-amber-600 bg-clip-text">
                 PropTraderJournal
               </h1>
-              <p className="text-sm text-gray-400">Elite Trading Journal</p>
+              <p className="text-sm text-gray-400">#1 Elite PropTrader Journal</p>
             </div>
           </div>
           <Link href="/">
