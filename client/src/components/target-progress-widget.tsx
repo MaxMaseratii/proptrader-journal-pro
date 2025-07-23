@@ -123,7 +123,7 @@ export default function TargetProgressWidget({ accounts, trades, selectedAccount
   });
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+    <div className="space-y-4">
       {accountProgress.map((account) => {
         const StatusIcon = account.statusIcon;
         
@@ -162,11 +162,11 @@ export default function TargetProgressWidget({ accounts, trades, selectedAccount
                   </div>
                 </div>
 
-                {/* Financial Summary with EOD Trailing Drawdown */}
-                <div className="grid grid-cols-2 gap-2 text-xs">
+                {/* First row - Core metrics */}
+                <div className="grid grid-cols-4 gap-2 text-xs">
                   <div className="text-center">
                     <div className={`font-medium ${account.totalPnL >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-                      ${account.totalPnL >= 0 ? '+' : ''}${account.totalPnL.toFixed(2)}
+                      ${account.totalPnL >= 0 ? '+' : '-'}${Math.abs(account.totalPnL).toFixed(2)}
                     </div>
                     <div className="text-gray-500">P&L</div>
                   </div>
@@ -176,41 +176,45 @@ export default function TargetProgressWidget({ accounts, trades, selectedAccount
                     </div>
                     <div className="text-gray-500">Balance</div>
                   </div>
-                </div>
-                
-                {/* EOD Trailing Drawdown Info */}
-                <div className="border-t border-gray-700 pt-2 text-xs">
-                  <div className="flex justify-between">
-                    <span className="text-gray-400">Highest EOD:</span>
-                    <span className="text-green-400 font-medium">${account.highestEODBalance.toFixed(2)}</span>
+                  <div className="text-center">
+                    <div className="text-green-400 font-medium">
+                      ${account.highestEODBalance.toFixed(2)}
+                    </div>
+                    <div className="text-gray-500">Highest EOD</div>
                   </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-400">Drawdown Floor:</span>
-                    <span className="text-orange-400 font-medium">${account.trailingDrawdownFloor.toFixed(2)}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-400">Buffer:</span>
-                    <span className={`font-medium ${account.remainingBuffer >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-                      ${account.remainingBuffer >= 0 ? '+' : ''}${account.remainingBuffer.toFixed(2)}
-                    </span>
+                  <div className="text-center">
+                    <div className="text-orange-400 font-medium">
+                      ${account.trailingDrawdownFloor.toFixed(2)}
+                    </div>
+                    <div className="text-gray-500">Drawdown Floor</div>
                   </div>
                 </div>
 
-                {/* Target Information */}
-                <div className="border-t border-gray-700 pt-2 text-xs">
-                  <div className="flex justify-between">
-                    <span className="text-gray-400">Target:</span>
-                    <span className="text-green-400 font-medium">${account.profitTarget.toFixed(2)}</span>
+                {/* Second row - Progress and targets */}
+                <div className="grid grid-cols-4 gap-2 text-xs">
+                  <div className="text-center">
+                    <div className={`font-medium ${account.remainingBuffer >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                      ${account.remainingBuffer >= 0 ? '+' : '-'}${Math.abs(account.remainingBuffer).toFixed(2)}
+                    </div>
+                    <div className="text-gray-500">Buffer</div>
                   </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-400">Remaining:</span>
-                    <span className="text-yellow-400 font-medium">
+                  <div className="text-center">
+                    <div className="text-green-400 font-medium">
+                      ${account.profitTarget.toFixed(2)}
+                    </div>
+                    <div className="text-gray-500">Target</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-yellow-400 font-medium">
                       ${Math.max(0, account.profitTarget - account.totalPnL).toFixed(2)}
-                    </span>
+                    </div>
+                    <div className="text-gray-500">Remaining</div>
                   </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-400">Trades:</span>
-                    <span className="text-blue-400 font-medium">{account.accountTrades}</span>
+                  <div className="text-center">
+                    <div className="text-blue-400 font-medium">
+                      {account.accountTrades}
+                    </div>
+                    <div className="text-gray-500">Trades</div>
                   </div>
                 </div>
               </div>

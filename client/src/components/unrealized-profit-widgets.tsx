@@ -116,14 +116,14 @@ export default function UnrealizedProfitWidgets({ trades, selectedAccountIds, ac
 
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4">
-      {/* Target Progress Widget - Takes up full width on mobile, half on large screens, 1/3 on xl */}
-      <div className="lg:col-span-1">
+    <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+      {/* Target Progress Widget - Takes up 3/5 of the space (60%) */}
+      <div className="md:col-span-3">
         {targetProgressWidget}
       </div>
       
-      {/* Drawdown Buffer Remaining Widget */}
-      <div className="lg:col-span-1 xl:col-span-1">
+      {/* Drawdown Buffer Remaining Widget - Takes up 1/5 of the space (20%) */}
+      <div className="md:col-span-1">
         <Card className="bg-gradient-to-br from-red-900/20 to-orange-900/20 border-red-500/20">
           <CardHeader className="pb-2">
             <CardTitle className="text-white flex items-center text-sm">
@@ -167,8 +167,8 @@ export default function UnrealizedProfitWidgets({ trades, selectedAccountIds, ac
         </Card>
       </div>
 
-      {/* Consistency Rule Tracking Widget */}
-      <div className="lg:col-span-2 xl:col-span-1">
+      {/* Consistency Rule Tracking Widget - Takes up 1/5 of the space (20%) */}
+      <div className="md:col-span-1">
         <Card className="bg-gradient-to-br from-purple-900/20 to-blue-900/20 border-purple-500/20">
           <CardHeader className="pb-2">
             <CardTitle className="text-white flex items-center text-sm">
