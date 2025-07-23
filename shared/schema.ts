@@ -221,6 +221,13 @@ export const dailyStats = pgTable("daily_stats", {
   tradesCount: integer("trades_count").notNull().default(0),
   winRate: real("win_rate").notNull().default(0),
   maxDailyLoss: real("max_daily_loss").notNull(),
+  // Drawdown tracking fields
+  eodDrawdown: real("eod_drawdown").default(0), // End of day drawdown amount
+  unrealizedProfitDrawdown: real("unrealized_profit_drawdown").default(0), // Unrealized profit drawdown amount
+  drawdownType: text("drawdown_type"), // 'eod' or 'unrealized_profit'
+  consistencyRuleViolation: boolean("consistency_rule_violation").default(false), // Whether consistency rule was violated this day
+  bestTradeProfit: real("best_trade_profit").default(0), // Best single trade profit for the day
+  consistencyRulePercentage: real("consistency_rule_percentage"), // The percentage limit for best trade
 });
 
 export const csvImports = pgTable("csv_imports", {
@@ -321,6 +328,17 @@ export const insertJournalEntrySchema = createInsertSchema(journalEntries).omit(
 export const insertDailyStatsSchema = createInsertSchema(dailyStats).omit({
   id: true,
 });
+
+// Daily drawdown summary type for dashboard widgets
+export type DailyDrawdownSummary = {
+  date: string;
+  eodDrawdown: number;
+  unrealizedProfitDrawdown: number;
+  drawdownType: 'eod' | 'unrealized_profit' | null;
+  consistencyRuleViolation: boolean;
+  bestTradeProfit: number;
+  totalDayPnL: number;
+};
 
 export const insertBudgetCategorySchema = createInsertSchema(budgetCategories).omit({
   id: true,

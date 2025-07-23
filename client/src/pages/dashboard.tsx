@@ -37,6 +37,7 @@ import TradeEntry from "@/components/trade-entry";
 import TradeAnalysisCalendar from "@/components/trade-analysis-calendar";
 import { SimpleChart } from "@/components/tradingview/SimpleChart";
 import NotificationDropdown from "@/components/notification-dropdown";
+import UnrealizedProfitWidgets from "@/components/unrealized-profit-widgets";
 import { 
   Wallet, 
   TrendingDown, 
@@ -1939,6 +1940,14 @@ export default function Dashboard() {
               </div>
               <div className="text-xs text-gray-400">Win vs Loss ratio</div>
             </div>
+          </div>
+
+          {/* ROW 3: Unrealized Profit Tracking Widgets */}
+          <div className="mt-4">
+            <UnrealizedProfitWidgets 
+              trades={trades || []} 
+              selectedAccountIds={accountSelectionMode === 'all' ? [] : selectedAccountIds} 
+            />
           </div>
         </section>
 
