@@ -632,6 +632,13 @@ Changelog:
   * Fixed strategy details modal error with proper null checking for rules field
   * Improved visual hierarchy with color-coded badges, bullet points, and hover effects throughout
   * Each strategy widget now takes ~50px height instead of 200px+ for better screen real estate usage
+- July 24, 2025. Critical Widget Layout and Equity Curve Fixes:
+  * Fixed widget status badges appearing outside their containers by correcting indentation in "HIGH RISK" and "COMPLIANT" badges 
+  * Resolved equity curve showing cached -$90 value by updating breakeven line calculation to use $0 baseline instead of account cost
+  * Improved widget layout consistency with equal 1/3 width distribution and proper h-full height alignment
+  * Updated application branding consistently to "#1PropFirm Trader Journal" across all components
+  * Fixed equity curve range calculation to handle edge cases where maxBalance is near zero
+  * All three widgets (Target Progress, Drawdown Buffer, Consistency Rule) now display with professional even alignment
 ```
 
 ## User Preferences

@@ -156,9 +156,9 @@ export default function UnrealizedProfitWidgets({ trades, selectedAccountIds, ac
             </div>
           </div>
           
-            <div className={`px-2 py-1 rounded text-xs text-center mt-3 ${bufferRisk.bgColor} ${bufferRisk.color}`}>
-              {remainingBuffer <= 200 ? 'CRITICAL RISK' : remainingBuffer <= 500 ? 'HIGH RISK' : 'BUFFER SAFE'}
-            </div>
+          <div className={`px-2 py-1 rounded text-xs text-center mt-3 ${bufferRisk.bgColor} ${bufferRisk.color}`}>
+            {remainingBuffer <= 200 ? 'CRITICAL RISK' : remainingBuffer <= 500 ? 'HIGH RISK' : 'BUFFER SAFE'}
+          </div>
           </CardContent>
         </Card>
       </div>
@@ -195,11 +195,11 @@ export default function UnrealizedProfitWidgets({ trades, selectedAccountIds, ac
             </div>
           </div>
           
-            <div className={`px-2 py-1 rounded text-xs text-center mt-3 ${
-              consistencyViolations > 0 ? 'bg-red-500/20 text-red-400' : 'bg-green-500/20 text-green-400'
-            }`}>
-              {consistencyViolations > 0 ? 'RULE VIOLATED' : 'COMPLIANT'}
-            </div>
+          <div className={`px-2 py-1 rounded text-xs text-center mt-3 ${
+            consistencyViolations > 0 ? 'bg-red-500/20 text-red-400' : 'bg-green-500/20 text-green-400'
+          }`}>
+            {consistencyViolations > 0 ? 'RULE VIOLATED' : 'COMPLIANT'}
+          </div>
           </CardContent>
         </Card>
       </div>

@@ -2269,7 +2269,7 @@ export default function Dashboard() {
 
                     const maxBalance = Math.max(...equityPoints.map(p => p.y));
                     const minBalance = Math.min(...equityPoints.map(p => p.y));
-                    const range = Math.max(maxBalance - minBalance, accountCost * 0.1);
+                    const range = Math.max(maxBalance - minBalance, Math.abs(maxBalance) * 0.1 || 100);
                     const bufferPadding = range * 0.15;
                     const chartMin = minBalance - bufferPadding;
                     const chartMax = maxBalance + bufferPadding;
@@ -2282,8 +2282,8 @@ export default function Dashboard() {
                     const plotWidth = chartWidth - padding.left - padding.right;
                     const plotHeight = chartHeight - padding.top - padding.bottom;
 
-                    // Calculate breakeven line position
-                    const breakevenY = padding.top + plotHeight - ((accountCost - chartMin) / chartRange) * plotHeight;
+                    // Calculate breakeven line position (always at $0 since we start from 0)
+                    const breakevenY = padding.top + plotHeight - ((0 - chartMin) / chartRange) * plotHeight;
 
                     return (
                       <div className="h-full relative" id="equity-chart-container">
