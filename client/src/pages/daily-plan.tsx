@@ -540,28 +540,49 @@ const DailyPlanPage = () => {
                   {historicalPlans.map((plan) => (
                     <div 
                       key={plan.id} 
-                      className="bg-gray-800/50 rounded-lg p-4 border border-gray-700 hover:border-yellow-400/30 cursor-pointer transition-all"
+                      className="bg-gradient-to-r from-gray-800/60 to-gray-700/40 rounded-lg p-3 border border-gray-600/50 hover:border-yellow-400/50 cursor-pointer transition-all hover:shadow-lg hover:shadow-yellow-400/10"
                       onClick={() => setSelectedPlanForStats(plan)}
                     >
-                      <div className="flex justify-between items-start mb-2">
-                        <div>
-                          <div className="text-sm font-medium text-white">
-                            Day #{plan.dayNumber} • {plan.strategy?.name}
-                          </div>
-                          <div className="text-xs text-gray-400">
-                            {new Date(plan.date).toLocaleDateString()}
-                          </div>
+                      {/* Plan Header */}
+                      <div className="flex items-center justify-between mb-2">
+                        <div className="flex items-center gap-2">
+                          <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
+                          <span className="text-white font-bold text-sm">Day #{plan.dayNumber}</span>
+                          <div className="w-1 h-1 bg-gray-400 rounded-full"></div>
+                          <span className="text-gray-300 text-sm">{plan.strategy?.name}</span>
                         </div>
-                        <div className="text-right">
-                          <div className={`text-sm font-bold ${plan.performance.totalPnL >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-                            ${plan.performance.totalPnL.toFixed(2)}
-                          </div>
-                          <div className="text-xs text-gray-400">
-                            {plan.performance.tradeCount} trades • {plan.performance.winRate.toFixed(1)}% WR
-                          </div>
+                        <div className={`px-2 py-1 rounded-full text-xs font-bold ${plan.performance.totalPnL >= 0 ? 'bg-green-900/30 text-green-400 border border-green-400/30' : 'bg-red-900/30 text-red-400 border border-red-400/30'}`}>
+                          ${plan.performance.totalPnL.toFixed(2)}
                         </div>
                       </div>
-                      <div className="text-xs text-blue-400 hover:text-blue-300">
+
+                      {/* Plan Details */}
+                      <div className="space-y-1">
+                        <div className="flex items-center gap-2 text-xs">
+                          <div className="w-1.5 h-1.5 bg-gray-400 rounded-full"></div>
+                          <span className="text-gray-400">Date:</span>
+                          <span className="text-gray-300">{new Date(plan.date).toLocaleDateString()}</span>
+                        </div>
+                        
+                        <div className="flex items-center gap-2 text-xs">
+                          <div className="w-1.5 h-1.5 bg-teal-400 rounded-full"></div>
+                          <span className="text-gray-400">Performance:</span>
+                          <span className="text-teal-400">{plan.performance.tradeCount} trades</span>
+                          <div className="w-1 h-1 bg-gray-500 rounded-full"></div>
+                          <span className="text-teal-400">{plan.performance.winRate.toFixed(1)}% WR</span>
+                        </div>
+
+                        <div className="flex items-center gap-2 text-xs">
+                          <div className="w-1.5 h-1.5 bg-purple-400 rounded-full"></div>
+                          <span className="text-gray-400">Target:</span>
+                          <span className="text-purple-400">${plan.targetProfit}</span>
+                          <div className="w-1 h-1 bg-gray-500 rounded-full"></div>
+                          <span className="text-purple-400">Max {plan.maxTrades} trades</span>
+                        </div>
+                      </div>
+
+                      {/* Plan Footer */}
+                      <div className="mt-2 pt-2 border-t border-gray-600/30 text-xs text-yellow-400 hover:text-yellow-300 transition-colors">
                         Click to view detailed stats →
                       </div>
                     </div>
@@ -569,7 +590,13 @@ const DailyPlanPage = () => {
                 </div>
               ) : (
                 <div className="text-center py-8 text-gray-400">
-                  No historical plans found
+                  <History className="w-16 h-16 mx-auto mb-4 text-gray-500" />
+                  <p className="text-gray-400 mb-4">No historical plans found</p>
+                  <div className="text-xs text-gray-500">
+                    • Create daily plans to track your progress<br/>
+                    • View performance statistics and analysis<br/>
+                    • Compare different trading strategies
+                  </div>
                 </div>
               )}
             </CardContent>
@@ -585,21 +612,57 @@ const DailyPlanPage = () => {
             </CardHeader>
             <CardContent className="max-h-96 overflow-y-auto">
               {strategies && strategies.length > 0 ? (
-                <div className="space-y-3">
+                <div className="space-y-4">
                   {strategies.map((strategy) => (
-                    <div key={strategy.id} className="bg-gray-800/50 rounded-lg p-4 border border-gray-700 hover:border-yellow-400/30 cursor-pointer transition-all">
-                      <div className="flex justify-between items-start mb-2">
-                        <div>
-                          <div className="text-sm font-medium text-white">{strategy.name}</div>
-                          <div className="text-xs text-gray-400">{strategy.description}</div>
+                    <div key={strategy.id} className="bg-gradient-to-r from-gray-800/60 to-gray-700/40 rounded-lg p-4 border border-yellow-400/20 hover:border-yellow-400/50 cursor-pointer transition-all hover:shadow-lg hover:shadow-yellow-400/10">
+                      {/* Strategy Header */}
+                      <div className="flex items-center justify-between mb-3">
+                        <div className="flex items-center gap-3">
+                          <div className="w-3 h-3 bg-yellow-400 rounded-full animate-pulse"></div>
+                          <h3 className="text-white font-bold text-lg">{strategy.name}</h3>
                         </div>
-                        <div className="text-right">
-                          <div className="text-sm font-bold text-green-400">{strategy.expectedWinRate}% WR</div>
-                          <div className="text-xs text-gray-400">1:{strategy.riskRewardRatio} RR</div>
+                        <div className="flex items-center gap-3">
+                          <div className="bg-green-900/30 px-3 py-1 rounded-full border border-green-400/30">
+                            <span className="text-green-400 font-bold text-sm">{strategy.expectedWinRate}% WR</span>
+                          </div>
+                          <div className="bg-blue-900/30 px-3 py-1 rounded-full border border-blue-400/30">
+                            <span className="text-blue-400 font-bold text-sm">1:{strategy.riskRewardRatio} RR</span>
+                          </div>
                         </div>
                       </div>
-                      <div className="text-xs text-blue-400">
-                        {strategy.marketConditions}
+
+                      {/* Strategy Details */}
+                      <div className="space-y-2">
+                        <div className="flex items-start gap-2">
+                          <div className="w-2 h-2 bg-gray-400 rounded-full mt-2 flex-shrink-0"></div>
+                          <p className="text-gray-300 text-sm leading-relaxed">{strategy.description}</p>
+                        </div>
+                        
+                        <div className="flex items-start gap-2">
+                          <div className="w-2 h-2 bg-teal-400 rounded-full mt-2 flex-shrink-0"></div>
+                          <div className="text-sm">
+                            <span className="text-gray-400">Market Conditions: </span>
+                            <span className="text-teal-400 font-medium">{strategy.marketConditions}</span>
+                          </div>
+                        </div>
+
+                        <div className="flex items-start gap-2">
+                          <div className="w-2 h-2 bg-purple-400 rounded-full mt-2 flex-shrink-0"></div>
+                          <div className="text-sm">
+                            <span className="text-gray-400">Assets: </span>
+                            <span className="text-purple-400 font-medium">{strategy.assets || 'Multiple Assets'}</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Strategy Footer */}
+                      <div className="mt-3 pt-3 border-t border-gray-600/50 flex items-center justify-between">
+                        <div className="text-xs text-gray-500">
+                          Created: {new Date(strategy.createdAt || Date.now()).toLocaleDateString()}
+                        </div>
+                        <div className="text-xs text-yellow-400 hover:text-yellow-300 transition-colors">
+                          Click to select for new plan →
+                        </div>
                       </div>
                     </div>
                   ))}
@@ -607,7 +670,12 @@ const DailyPlanPage = () => {
               ) : (
                 <div className="text-center py-8 text-gray-400">
                   <TrendingUp className="w-16 h-16 mx-auto mb-4 text-gray-500" />
-                  No strategies created yet
+                  <p className="text-gray-400 mb-4">No strategies created yet</p>
+                  <div className="text-xs text-gray-500">
+                    • Create strategies to organize your trading approach<br/>
+                    • Track win rates and risk-reward ratios<br/>
+                    • Link strategies to daily plans for better analysis
+                  </div>
                 </div>
               )}
             </CardContent>
