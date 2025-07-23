@@ -1388,7 +1388,7 @@ export default function Dashboard() {
                     <div className="w-full rounded-full h-6 overflow-hidden bg-gray-700">
                       <div 
                         className={`h-full transition-all duration-1000 ease-out relative ${
-                          Math.abs(selectedDayData.dayPnL) >= 100 ? 'bg-red-500' : 
+                          Math.abs(selectedDayData.dayPnL) >= 100 ? 'bg-red-400' : 
                           Math.abs(selectedDayData.dayPnL) >= 80 ? 'bg-orange-500' : 
                           'bg-yellow-500'
                         }`}
@@ -1396,7 +1396,7 @@ export default function Dashboard() {
                       >
                         {/* Critical pulsing effect */}
                         {Math.abs(selectedDayData.dayPnL) >= 100 && (
-                          <div className="absolute inset-0 bg-red-400 animate-pulse opacity-50"></div>
+                          <div className="absolute inset-0 bg-red-300 animate-pulse opacity-30"></div>
                         )}
                         
                         {/* Gradient overlay */}
@@ -1411,9 +1411,9 @@ export default function Dashboard() {
                       
                       {/* Value labels inside bar */}
                       <div className="absolute inset-0 flex items-center justify-between px-3 text-xs font-medium">
-                        <span className="text-gray-400">0%</span>
-                        <span className="text-gray-300">50%</span>
-                        <span className="text-gray-300">100%</span>
+                        <span className="text-black">0%</span>
+                        <span className="text-black">50%</span>
+                        <span className="text-black">100%</span>
                       </div>
                       
                       {/* Current value indicator */}
@@ -1492,9 +1492,9 @@ export default function Dashboard() {
                       </div>
                       
                       <div className="absolute inset-0 flex items-center justify-between px-3 text-xs font-medium">
-                        <span className="text-gray-400">0%</span>
-                        <span className="text-gray-300">50%</span>
-                        <span className="text-gray-300">100%</span>
+                        <span className="text-black">0%</span>
+                        <span className="text-black">50%</span>
+                        <span className="text-black">100%</span>
                       </div>
                       
                       <div 
@@ -2215,22 +2215,7 @@ export default function Dashboard() {
 
                     return (
                       <div className="flex items-center space-x-6 text-sm">
-                        <div className="flex items-center space-x-2">
-                          <span className="text-gray-400">Balance:</span>
-                          <span className="text-white font-mono">{formatCurrency(runningBalance)}</span>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                          <span className="text-gray-400">P&L:</span>
-                          <span className={`font-mono ${totalPnl >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-                            {totalPnl >= 0 ? '+' : ''}{formatCurrency(totalPnl)}
-                          </span>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                          <span className="text-gray-400">Return:</span>
-                          <span className={`font-mono ${totalReturn >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-                            {totalReturn >= 0 ? '+' : ''}{totalReturn.toFixed(2)}%
-                          </span>
-                        </div>
+                        <span className="text-gray-400">Live equity curve data</span>
                       </div>
                     );
                   })()}
@@ -2495,7 +2480,7 @@ export default function Dashboard() {
                                       
                                       dateEl.textContent = point.date === 'Start' ? 'Account Start' : `${new Date(point.date).toLocaleDateString()} ${tradeTime}`;
                                       balanceEl.textContent = `Balance: ${formatCurrency(point.y)}`;
-                                      tradesEl.textContent = `Trade #${point.tradesCount}`;
+                                      tradesEl.textContent = point.date === 'Start' ? 'Initial State' : `Trade #${point.tradesCount}`;
                                       pnlEl.textContent = point.trade ? `Trade P&L: ${formatCurrency(point.trade.pnl || 0)}` : 'Initial Capital';
                                       pnlEl.className = `text-xs font-medium ${point.trade ? (point.trade.pnl >= 0 ? 'text-green-400' : 'text-red-400') : 'text-gray-400'}`;
                                       performanceEl.textContent = `Net: ${netPnL >= 0 ? '+' : ''}${formatCurrency(netPnL)} (${netPercent}%)`;

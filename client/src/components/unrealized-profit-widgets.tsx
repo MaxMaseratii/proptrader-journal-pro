@@ -115,7 +115,7 @@ export default function UnrealizedProfitWidgets({ trades, selectedAccountIds, ac
 
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
       {/* Drawdown Buffer Remaining Widget */}
       <Card className="bg-gradient-to-br from-red-900/20 to-orange-900/20 border-red-500/20">
         <CardHeader className="pb-2">
