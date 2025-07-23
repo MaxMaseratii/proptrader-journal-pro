@@ -70,7 +70,8 @@ import {
   RotateCcw,
   BookOpen,
   FileText,
-  Edit
+  Edit,
+  Minus
 } from "lucide-react";
 import type { Account, Trade } from "@shared/schema";
 
@@ -1328,300 +1329,428 @@ export default function Dashboard() {
             </h2>
           </div>
           
-          {/* CompactDetailView - Today's Trading Metrics */}
-          <div className={`
-            relative transition-all duration-200 rounded-lg overflow-hidden w-full mb-6
-            ${new Date().toDateString() === new Date().toDateString() 
-              ? 'bg-gradient-to-br from-teal-950/40 via-gray-900/60 to-black/80 border border-teal-400/50' 
+          {/* Enhanced Header - Proper Loss/Profit Display */}
+          <div className={`relative transition-all duration-200 rounded-lg overflow-hidden w-full mb-6 ${
+            selectedDayData?.dayPnL < 0 
+              ? 'bg-gradient-to-br from-red-950/40 via-gray-900/60 to-black/80 border-2 border-red-500/50' 
+              : selectedDayData?.dayPnL > 0
+              ? 'bg-gradient-to-br from-green-950/40 via-gray-900/60 to-black/80 border-2 border-green-500/50'
               : 'bg-gradient-to-br from-gray-900/40 via-gray-800/60 to-black/80 border border-gray-600/30'
-            }
-            hover:border-amber-400/60
-          `}>
+          }`}>
             
-            {/* Ultra Compact Layout - Full Width */}
-            <div className="p-4">
+            {/* Header Row */}
+            <div className="flex items-center justify-between p-4 border-b border-gray-700/50">
+              <div className="flex items-center space-x-2">
+                <Calendar className="w-4 h-4 text-amber-400" />
+                <span className="text-lg font-bold text-amber-400">
+                  {selectedDate.toLocaleDateString('en-US', { weekday: 'short' })} {selectedDate.getDate()}
+                </span>
+                <div className="w-2 h-2 rounded-full bg-teal-400" />
+                <div className="text-xs text-gray-400 bg-gray-800/30 px-2 py-1 rounded">
+                  No Plan
+                </div>
+              </div>
               
-              {/* Header + Daily Plan Status */}
-              <div className="flex items-center justify-between mb-3">
+              <div className="bg-gray-900/80 rounded-lg px-4 py-3 border border-gray-700/50">
                 <div className="flex items-center space-x-2">
-                  <Calendar className="w-4 h-4 text-amber-400" />
-                  <span className="text-lg font-bold text-amber-400">
-                    {selectedDate.toLocaleDateString('en-US', { weekday: 'short' })} {selectedDate.getDate()}
+                  <span className="text-sm text-gray-400">Daily P&L:</span>
+                  <span className={`text-lg font-bold ${
+                    selectedDayData?.dayPnL >= 0 ? 'text-green-400' : 'text-red-400'
+                  }`}>
+                    {selectedDayData?.dayPnL >= 0 ? '+' : ''}${Math.abs(selectedDayData?.dayPnL || 0).toFixed(2)}
                   </span>
-                  <div className="w-2 h-2 rounded-full bg-teal-400" />
-                  {(() => {
-                    const todayPlan = dailyPlans?.find(plan => 
-                      new Date(plan.date).toDateString() === selectedDate.toDateString()
-                    );
-                    const strategy = strategies?.find(s => s.id === todayPlan?.strategyId);
-                    
-                    if (todayPlan) {
-                      return (
-                        <div className="flex items-center space-x-2 bg-gradient-to-r from-amber-900/30 to-amber-800/30 px-3 py-1 rounded-lg border border-amber-500/30">
-                          <Target className="w-3 h-3 text-amber-400" />
-                          <span className="text-xs text-amber-300">{strategy?.name || 'Plan Active'}</span>
-                        </div>
-                      );
-                    }
-                    return (
-                      <div className="text-xs text-gray-400 bg-gray-800/30 px-2 py-1 rounded">
-                        No Plan
+                </div>
+              </div>
+            </div>
+
+            {/* Enhanced Progress Section */}
+            <div className="p-4">
+              {selectedDayData?.dayPnL < 0 ? (
+                // LOSS SCENARIO - Risk Management Focus
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-2">
+                      <AlertTriangle className="w-4 h-4 text-red-400" />
+                      <span className="text-gray-300 font-medium">Daily Loss Limit</span>
+                    </div>
+                    <span className={`px-3 py-1 rounded-full text-xs font-bold ${
+                      Math.abs(selectedDayData.dayPnL) >= 100 ? 'bg-red-500 text-white animate-pulse' : 
+                      Math.abs(selectedDayData.dayPnL) >= 80 ? 'bg-orange-500 text-black' : 
+                      'bg-yellow-500 text-black'
+                    }`}>
+                      {Math.abs(selectedDayData.dayPnL) >= 100 ? 'LIMIT BREACHED' : 
+                       Math.abs(selectedDayData.dayPnL) >= 80 ? 'HIGH RISK' : 'CAUTION'}
+                    </span>
+                  </div>
+                  
+                  {/* Loss Progress Bar */}
+                  <div className="relative">
+                    <div className="w-full rounded-full h-6 overflow-hidden bg-gray-700">
+                      <div 
+                        className={`h-full transition-all duration-1000 ease-out relative ${
+                          Math.abs(selectedDayData.dayPnL) >= 100 ? 'bg-red-500' : 
+                          Math.abs(selectedDayData.dayPnL) >= 80 ? 'bg-orange-500' : 
+                          'bg-yellow-500'
+                        }`}
+                        style={{ width: `${Math.min((Math.abs(selectedDayData.dayPnL) / 100) * 100, 100)}%` }}
+                      >
+                        {/* Critical pulsing effect */}
+                        {Math.abs(selectedDayData.dayPnL) >= 100 && (
+                          <div className="absolute inset-0 bg-red-400 animate-pulse opacity-50"></div>
+                        )}
+                        
+                        {/* Gradient overlay */}
+                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent"></div>
                       </div>
-                    );
+                      
+                      {/* Milestone markers */}
+                      <div className="absolute inset-0 flex items-center">
+                        <div className="absolute left-1/2 w-px h-full bg-white/40 transform -translate-x-1/2"></div>
+                        <div className="absolute left-4/5 w-px h-full bg-orange-400/60 transform -translate-x-1/2"></div>
+                      </div>
+                      
+                      {/* Value labels inside bar */}
+                      <div className="absolute inset-0 flex items-center justify-between px-3 text-xs font-medium">
+                        <span className="text-gray-400">$0</span>
+                        <span className="text-gray-300">$50</span>
+                        <span className="text-gray-300">$100</span>
+                      </div>
+                      
+                      {/* Current value indicator */}
+                      <div 
+                        className="absolute top-0 h-full flex items-center transform -translate-x-1/2"
+                        style={{ left: `${Math.min((Math.abs(selectedDayData.dayPnL) / 100) * 100, 95)}%` }}
+                      >
+                        <div className="bg-white/90 text-black text-xs font-bold px-2 py-0.5 rounded-full shadow-lg">
+                          ${Math.abs(selectedDayData.dayPnL).toFixed(0)}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="text-center">
+                    <span className={`text-sm font-bold ${
+                      Math.abs(selectedDayData.dayPnL) >= 100 ? 'text-red-400' : 
+                      Math.abs(selectedDayData.dayPnL) >= 80 ? 'text-orange-400' : 
+                      'text-yellow-400'
+                    }`}>
+                      ${Math.abs(selectedDayData.dayPnL)} of $100 daily limit used ({Math.min((Math.abs(selectedDayData.dayPnL) / 100) * 100, 100).toFixed(0)}%)
+                    </span>
+                  </div>
+                  
+                  {/* Warning message */}
+                  <div className={`text-xs text-center p-2 rounded ${
+                    Math.abs(selectedDayData.dayPnL) >= 100 ? 'bg-red-900/50 text-red-300' : 
+                    Math.abs(selectedDayData.dayPnL) >= 80 ? 'bg-orange-900/50 text-orange-300' : 
+                    'bg-yellow-900/50 text-yellow-300'
+                  }`}>
+                    {Math.abs(selectedDayData.dayPnL) >= 100 ? 
+                      '⚠️ Daily loss limit exceeded - Review risk management immediately' :
+                      Math.abs(selectedDayData.dayPnL) >= 80 ? 
+                      '⚠️ Approaching daily loss limit - Exercise extreme caution' :
+                      '⚠️ Monitor risk levels throughout the day'
+                    }
+                  </div>
+                </div>
+              ) : selectedDayData?.dayPnL > 0 ? (
+                // PROFIT SCENARIO - Target Achievement Focus
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-2">
+                      <Target className="w-4 h-4 text-green-400" />
+                      <span className="text-gray-300 font-medium">Daily Profit Target</span>
+                    </div>
+                    <span className={`px-3 py-1 rounded-full text-xs font-bold ${
+                      selectedDayData.dayPnL >= 100 ? 'bg-green-500 text-black' : 
+                      selectedDayData.dayPnL >= 50 ? 'bg-blue-500 text-white' : 
+                      'bg-gray-500 text-white'
+                    }`}>
+                      {selectedDayData.dayPnL >= 100 ? 'TARGET ACHIEVED' : 
+                       selectedDayData.dayPnL >= 50 ? 'ON TRACK' : 'BUILDING'}
+                    </span>
+                  </div>
+                  
+                  {/* Profit Progress Bar */}
+                  <div className="relative">
+                    <div className="w-full rounded-full h-6 overflow-hidden bg-gray-700">
+                      <div 
+                        className={`h-full transition-all duration-1000 ease-out relative ${
+                          selectedDayData.dayPnL >= 100 ? 'bg-green-500' : 
+                          selectedDayData.dayPnL >= 50 ? 'bg-blue-500' : 
+                          'bg-gray-400'
+                        }`}
+                        style={{ width: `${Math.min((selectedDayData.dayPnL / 100) * 100, 100)}%` }}
+                      >
+                        {selectedDayData.dayPnL >= 100 && (
+                          <div className="absolute inset-0 bg-green-300 animate-pulse opacity-50"></div>
+                        )}
+                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent"></div>
+                      </div>
+                      
+                      <div className="absolute inset-0 flex items-center">
+                        <div className="absolute left-1/2 w-px h-full bg-white/40 transform -translate-x-1/2"></div>
+                      </div>
+                      
+                      <div className="absolute inset-0 flex items-center justify-between px-3 text-xs font-medium">
+                        <span className="text-gray-400">$0</span>
+                        <span className="text-gray-300">$50</span>
+                        <span className="text-gray-300">$100</span>
+                      </div>
+                      
+                      <div 
+                        className="absolute top-0 h-full flex items-center transform -translate-x-1/2"
+                        style={{ left: `${Math.min((selectedDayData.dayPnL / 100) * 100, 95)}%` }}
+                      >
+                        <div className="bg-white/90 text-black text-xs font-bold px-2 py-0.5 rounded-full shadow-lg">
+                          ${selectedDayData.dayPnL.toFixed(0)}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="text-center">
+                    <span className="text-sm font-bold text-green-400">
+                      ${selectedDayData.dayPnL} of $100 target ({((selectedDayData.dayPnL / 100) * 100).toFixed(0)}%)
+                    </span>
+                  </div>
+                  
+                  <div className="text-xs text-center p-2 rounded bg-green-900/30 text-green-300">
+                    🎉 Great progress! Stay disciplined and protect your gains.
+                  </div>
+                </div>
+              ) : (
+                // NEUTRAL SCENARIO - No Trading Activity
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-2">
+                      <Minus className="w-4 h-4 text-gray-400" />
+                      <span className="text-gray-300 font-medium">No Trading Activity</span>
+                    </div>
+                    <span className="px-3 py-1 rounded-full text-xs font-bold bg-gray-600 text-gray-300">
+                      NO ACTIVITY
+                    </span>
+                  </div>
+                  
+                  <div className="w-full rounded-full h-6 overflow-hidden bg-gray-700">
+                    <div className="absolute inset-0 flex items-center justify-between px-3 text-xs font-medium">
+                      <span className="text-gray-400">$0</span>
+                      <span className="text-gray-400">$50</span>
+                      <span className="text-gray-400">$100</span>
+                    </div>
+                  </div>
+                  
+                  <div className="text-xs text-center p-2 rounded bg-gray-800/30 text-gray-400">
+                    💤 No trades today. Consider market analysis or planned rest.
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* NEW: 2 Rows x 4 Columns Grid - Full Width */}
+          <div className="space-y-3 mt-6">
+            
+            {/* Row 1: Risk+Max Daily Loss, R:R, Trades, Hours Worked */}
+            <div className="grid grid-cols-4 gap-4">
+              
+              {/* Risk + Max Daily Loss Combined */}
+              <div className="bg-black/30 rounded-lg p-4 border border-gray-700/50 relative">
+                {combinedAnalytics && combinedAnalytics.accounts.length > 0 ? (
+                  <>
+                    <div className="absolute top-3 right-3 text-xs text-red-400">
+                      Max: ${combinedAnalytics.accounts[0]?.dailyLossLimit || 0}
+                    </div>
+                    <div className="text-3xl font-bold text-red-400 mb-1">
+                      ${combinedAnalytics.accounts[0]?.riskPerTrade || 0}
+                    </div>
+                  </>
+                ) : (
+                  <div className="text-3xl font-bold text-gray-500 mb-1">--</div>
+                )}
+                <div className="text-sm text-gray-400">Risk Per Trade</div>
+              </div>
+
+              {/* R:R */}
+              <div className="bg-black/30 rounded-lg p-4 border border-gray-700/50 relative">
+                {combinedAnalytics && combinedAnalytics.accounts.length > 0 && (
+                  <div className="absolute top-3 right-3 text-xs text-blue-300">
+                    Target: {combinedAnalytics.accounts[0]?.riskRewardRatio || 0} RR
+                  </div>
+                )}
+                <div className="text-3xl font-bold text-blue-400 mb-1">
+                  {(() => {
+                    const avgReward = selectedDayData?.avgRewardRatio || 0;
+                    const avgRisk = selectedDayData?.avgRiskPerTrade || 0;
+                    const rRatio = avgRisk > 0 ? avgReward / avgRisk : 0;
+                    return rRatio.toFixed(1);
                   })()}
                 </div>
-                <div className="bg-gray-900/80 rounded-lg px-4 py-3 border border-gray-700/50">
-                  <div className="flex items-center space-x-2">
-                    <span className="text-sm text-gray-400">Daily P&L:</span>
-                    <span className={`text-lg font-bold ${selectedDayData?.dayPnL >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-                      {selectedDayData?.dayPnL >= 0 ? '+' : ''}${Math.abs(selectedDayData?.dayPnL || 0).toFixed(2)}
-                    </span>
-                    {(() => {
-                      const todayPlan = dailyPlans?.find(plan => 
-                        new Date(plan.date).toDateString() === selectedDate.toDateString()
-                      );
-                      const plannedPnL = todayPlan?.expectedPnl || 0;
-                      const actualPnL = selectedDayData?.dayPnL || 0;
-                      
-                      if (todayPlan && plannedPnL > 0) {
-                        const vs = actualPnL >= 0 ? '+' : '';
-                        const planDiff = actualPnL - plannedPnL;
-                        const diffColor = planDiff >= 0 ? 'text-green-400' : 'text-red-400';
-                        return (
-                          <span className="text-xs text-gray-400">
-                            vs ${plannedPnL} planned ({vs}${planDiff.toFixed(0)})
-                          </span>
-                        );
-                      }
-                      return null;
-                    })()}
-                  </div>
+                <div className="text-sm text-gray-400">Risk:Reward</div>
+                <div className="text-xs text-blue-300 mt-1">
+                  AVG. Ratio 1:{(() => {
+                    const avgReward = selectedDayData?.avgRewardRatio || 0;
+                    const avgRisk = selectedDayData?.avgRiskPerTrade || 0;
+                    const rRatio = avgRisk > 0 ? avgReward / avgRisk : 0;
+                    return rRatio.toFixed(1);
+                  })()}
                 </div>
               </div>
 
-              {/* Compact Progress Bar with Text Inside */}
-              <div className="mb-4">
-                <div className="relative w-3/4 bg-gray-700/50 rounded-full h-6 mx-auto">
+              {/* Trades */}
+              <div className="bg-black/30 rounded-lg p-4 border border-gray-700/50 relative">
+                {combinedAnalytics && combinedAnalytics.accounts.length > 0 && (
+                  <div className="absolute top-3 right-3 text-xs text-purple-300">
+                    {selectedDayData?.totalDayTrades || 0}/{combinedAnalytics.accounts[0]?.maxDailyTrades || 0}
+                  </div>
+                )}
+                <div className="text-3xl font-bold text-purple-400 mb-1">
+                  {selectedDayData?.totalDayTrades || 0}
+                </div>
+                <div className="w-full bg-gray-700/50 rounded-full h-1 mb-2">
                   <div 
-                    className={`h-6 rounded-full transition-all duration-500 flex items-center justify-center ${selectedDayData?.dayPnL >= 0 ? 'bg-green-400' : 'bg-red-400'}`}
+                    className="h-1 rounded-full bg-purple-400 transition-all duration-500"
                     style={{ 
-                      width: `${Math.min(Math.abs(selectedDayData?.dayPnL || 0) / 100 * 100, 100)}%`, 
-                      minWidth: '120px' 
+                      width: `${Math.min((selectedDayData?.totalDayTrades || 0) / ((combinedAnalytics?.accounts[0]?.maxDailyTrades || 1)) * 100, 100)}%` 
                     }}
-                  >
-                    <span className="text-xs font-medium text-black">
-                      {Math.min(Math.abs(selectedDayData?.dayPnL || 0) / 100 * 100, 100).toFixed(0)}% of $100 target
-                    </span>
-                  </div>
+                  />
+                </div>
+                <div className="text-sm text-gray-400 mb-1">Trades Executed</div>
+                <div className="text-xs text-gray-300">
+                  W:{selectedDayData?.wins || 0} L:{selectedDayData?.losses || 0}
                 </div>
               </div>
 
-              {/* NEW: 2 Rows x 4 Columns Grid - Full Width */}
-              <div className="space-y-3">
-                
-                {/* Row 1: Risk+Max Daily Loss, R:R, Trades, Hours Worked */}
-                <div className="grid grid-cols-4 gap-4">
-                  
-                  {/* Risk + Max Daily Loss Combined */}
-                  <div className="bg-black/30 rounded-lg p-4 border border-gray-700/50 relative">
-                    {combinedAnalytics && combinedAnalytics.accounts.length > 0 ? (
-                      <>
-                        <div className="absolute top-3 right-3 text-xs text-red-400">
-                          Max: ${combinedAnalytics.accounts[0]?.dailyLossLimit || 0}
-                        </div>
-                        <div className="text-3xl font-bold text-red-400 mb-1">
-                          ${combinedAnalytics.accounts[0]?.riskPerTrade || 0}
-                        </div>
-                      </>
-                    ) : (
-                      <div className="text-3xl font-bold text-gray-500 mb-1">--</div>
-                    )}
-                    <div className="text-sm text-gray-400">Risk Per Trade</div>
-                  </div>
-
-                  {/* R:R */}
-                  <div className="bg-black/30 rounded-lg p-4 border border-gray-700/50 relative">
-                    {combinedAnalytics && combinedAnalytics.accounts.length > 0 && (
-                      <div className="absolute top-3 right-3 text-xs text-blue-300">
-                        Target: {combinedAnalytics.accounts[0]?.riskRewardRatio || 0} RR
-                      </div>
-                    )}
-                    <div className="text-3xl font-bold text-blue-400 mb-1">
-                      {(() => {
-                        const avgReward = selectedDayData?.avgRewardRatio || 0;
-                        const avgRisk = selectedDayData?.avgRiskPerTrade || 0;
-                        const rRatio = avgRisk > 0 ? avgReward / avgRisk : 0;
-                        return rRatio.toFixed(1);
-                      })()}
-                    </div>
-                    <div className="text-sm text-gray-400">Risk:Reward</div>
-                    <div className="text-xs text-blue-300 mt-1">
-                      AVG. Ratio 1:{(() => {
-                        const avgReward = selectedDayData?.avgRewardRatio || 0;
-                        const avgRisk = selectedDayData?.avgRiskPerTrade || 0;
-                        const rRatio = avgRisk > 0 ? avgReward / avgRisk : 0;
-                        return rRatio.toFixed(1);
-                      })()}
-                    </div>
-                  </div>
-
-                  {/* Trades */}
-                  <div className="bg-black/30 rounded-lg p-4 border border-gray-700/50 relative">
-                    {combinedAnalytics && combinedAnalytics.accounts.length > 0 && (
-                      <div className="absolute top-3 right-3 text-xs text-purple-300">
-                        {selectedDayData?.totalDayTrades || 0}/{combinedAnalytics.accounts[0]?.maxDailyTrades || 0}
-                      </div>
-                    )}
-                    <div className="text-3xl font-bold text-purple-400 mb-1">
-                      {selectedDayData?.totalDayTrades || 0}
-                    </div>
-                    <div className="w-full bg-gray-700/50 rounded-full h-1 mb-2">
-                      <div 
-                        className="h-1 rounded-full bg-purple-400 transition-all duration-500"
-                        style={{ 
-                          width: `${Math.min((selectedDayData?.totalDayTrades || 0) / ((combinedAnalytics?.accounts[0]?.maxDailyTrades || 1)) * 100, 100)}%` 
-                        }}
-                      />
-                    </div>
-                    <div className="text-sm text-gray-400 mb-1">Trades Executed</div>
-                    <div className="text-xs text-gray-300">
-                      W:{selectedDayData?.wins || 0} L:{selectedDayData?.losses || 0}
-                    </div>
-                  </div>
-
-                  {/* Hours Worked */}
-                  <div className="bg-black/30 rounded-lg p-4 border border-gray-700/50 relative">
-                    <div className="absolute top-3 right-3 text-xs text-indigo-300">
-                      <div className="flex items-center space-x-1">
-                        <div className="w-2 h-2 rounded-full bg-indigo-400"></div>
-                        <span>Plan: 6h</span>
-                      </div>
-                    </div>
-                    <div className="text-3xl font-bold text-indigo-400 mb-1">
-                      {(() => {
-                        const today = new Date().toISOString().split('T')[0];
-                        const todayTrades = trades?.filter(t => t.date === today) || [];
-                        return todayTrades.length > 0 ? (todayTrades.length * 0.5).toFixed(1) : '0.0';
-                      })()}h
-                    </div>
-                    <div className="text-sm text-gray-400 mb-1">Hours Worked</div>
-                    <div className="text-xs text-indigo-300 mb-1">
-                      Hourly wage: ${(() => {
-                        const today = new Date().toISOString().split('T')[0];
-                        const todayTrades = trades?.filter(t => t.date === today) || [];
-                        const hoursWorked = todayTrades.length * 0.5;
-                        const todayPnL = todayTrades.reduce((sum, t) => sum + (t.pnl || 0), 0);
-                        return hoursWorked > 0 ? (todayPnL / hoursWorked).toFixed(2) : '0.00';
-                      })()}
-                    </div>
-                    <div className="text-xs text-gray-300">
-                      Total: ${(() => {
-                        const today = new Date().toISOString().split('T')[0];
-                        const todayTrades = trades?.filter(t => t.date === today) || [];
-                        return todayTrades.reduce((sum, t) => sum + (t.pnl || 0), 0).toFixed(2);
-                      })()} (H. Worked x H. Wage)
-                    </div>
+              {/* Hours Worked */}
+              <div className="bg-black/30 rounded-lg p-4 border border-gray-700/50 relative">
+                <div className="absolute top-3 right-3 text-xs text-indigo-300">
+                  <div className="flex items-center space-x-1">
+                    <div className="w-2 h-2 rounded-full bg-indigo-400"></div>
+                    <span>Plan: 6h</span>
                   </div>
                 </div>
+                <div className="text-3xl font-bold text-indigo-400 mb-1">
+                  {(() => {
+                    const today = new Date().toISOString().split('T')[0];
+                    const todayTrades = trades?.filter(t => t.date === today) || [];
+                    return todayTrades.length > 0 ? (todayTrades.length * 0.5).toFixed(1) : '0.0';
+                  })()}h
+                </div>
+                <div className="text-sm text-gray-400 mb-1">Hours Worked</div>
+                <div className="text-xs text-indigo-300 mb-1">
+                  Hourly wage: ${(() => {
+                    const today = new Date().toISOString().split('T')[0];
+                    const todayTrades = trades?.filter(t => t.date === today) || [];
+                    const hoursWorked = todayTrades.length * 0.5;
+                    const todayPnL = todayTrades.reduce((sum, t) => sum + (t.pnl || 0), 0);
+                    return hoursWorked > 0 ? (todayPnL / hoursWorked).toFixed(2) : '0.00';
+                  })()}
+                </div>
+                <div className="text-xs text-gray-300">
+                  Total: ${(() => {
+                    const today = new Date().toISOString().split('T')[0];
+                    const todayTrades = trades?.filter(t => t.date === today) || [];
+                    return todayTrades.reduce((sum, t) => sum + (t.pnl || 0), 0).toFixed(2);
+                  })()} (H. Worked x H. Wage)
+                </div>
+              </div>
+            </div>
 
-                {/* Row 2: Discipline, Risk Utilization, Wins/Losses, Win Rate */}
-                <div className="grid grid-cols-4 gap-4">
-                  
-                  {/* Discipline */}
-                  <div className="bg-black/30 rounded-lg p-4 border border-gray-700/50 relative">
-                    <div className="absolute top-3 right-3">
-                      <div className={`px-2 py-1 rounded text-xs font-bold ${
-                        !combinedAnalytics || combinedAnalytics.totalTrades === 0 || !selectedDayData || selectedDayData.totalDayTrades === 0 ? 'bg-gray-600 text-gray-300' :
-                        (selectedDayData?.disciplineScore || 0) >= 90 ? 'bg-green-500 text-black' : 
-                        (selectedDayData?.disciplineScore || 0) >= 80 ? 'bg-blue-500 text-white' : 
-                        (selectedDayData?.disciplineScore || 0) >= 70 ? 'bg-yellow-500 text-black' : 
-                        'bg-red-500 text-white'
-                      }`}>
-                        {!combinedAnalytics || combinedAnalytics.totalTrades === 0 || !selectedDayData || selectedDayData.totalDayTrades === 0 ? 'NO DATA' :
-                         (selectedDayData?.disciplineScore || 0) >= 90 ? 'ELITE' : 
-                         (selectedDayData?.disciplineScore || 0) >= 80 ? 'GOOD' : 
-                         (selectedDayData?.disciplineScore || 0) >= 70 ? 'AVG' : 'POOR'}
-                      </div>
-                    </div>
-                    <div className={`text-3xl font-bold mb-1 ${
-                      !combinedAnalytics || combinedAnalytics.totalTrades === 0 || !selectedDayData || selectedDayData.totalDayTrades === 0 ? 'text-gray-500' :
-                      (selectedDayData?.disciplineScore || 0) >= 90 ? 'text-green-400' : 
-                      (selectedDayData?.disciplineScore || 0) >= 80 ? 'text-green-400' : 
-                      (selectedDayData?.disciplineScore || 0) >= 70 ? 'text-yellow-400' : 
-                      (selectedDayData?.disciplineScore || 0) >= 60 ? 'text-orange-400' : 'text-red-400'
-                    }`}>
-                      {!combinedAnalytics || combinedAnalytics.totalTrades === 0 || !selectedDayData || selectedDayData.totalDayTrades === 0 ? '--' : 
-                       `${Math.round(selectedDayData?.disciplineScore || 0)}% ${
-                        (selectedDayData?.disciplineScore || 0) >= 90 ? 'A' : 
-                        (selectedDayData?.disciplineScore || 0) >= 80 ? 'B' : 
-                        (selectedDayData?.disciplineScore || 0) >= 70 ? 'C' : 
-                        (selectedDayData?.disciplineScore || 0) >= 60 ? 'D' : 'F'
-                       }`}
-                    </div>
-                    <div className="text-sm text-gray-400 mb-1">Discipline Score</div>
-                    <div className="text-xs text-gray-300">
-                      {!combinedAnalytics || combinedAnalytics.totalTrades === 0 || !selectedDayData || selectedDayData.totalDayTrades === 0 ? 
-                        'No trades to analyze yet' : 
-                        `Risk: ${Math.round((selectedDayData?.disciplineScore || 0) * 0.85)}% • Consistency: ${Math.round((selectedDayData?.disciplineScore || 0) * 0.90)}%`
-                      }
-                    </div>
+            {/* Row 2: Discipline, Risk Utilization, Wins/Losses, Win Rate */}
+            <div className="grid grid-cols-4 gap-4">
+              
+              {/* Discipline */}
+              <div className="bg-black/30 rounded-lg p-4 border border-gray-700/50 relative">
+                <div className="absolute top-3 right-3">
+                  <div className={`px-2 py-1 rounded text-xs font-bold ${
+                    !combinedAnalytics || combinedAnalytics.totalTrades === 0 || !selectedDayData || selectedDayData.totalDayTrades === 0 ? 'bg-gray-600 text-gray-300' :
+                    (selectedDayData?.disciplineScore || 0) >= 90 ? 'bg-green-500 text-black' : 
+                    (selectedDayData?.disciplineScore || 0) >= 80 ? 'bg-blue-500 text-white' : 
+                    (selectedDayData?.disciplineScore || 0) >= 70 ? 'bg-yellow-500 text-black' : 
+                    'bg-red-500 text-white'
+                  }`}>
+                    {!combinedAnalytics || combinedAnalytics.totalTrades === 0 || !selectedDayData || selectedDayData.totalDayTrades === 0 ? 'NO DATA' :
+                     (selectedDayData?.disciplineScore || 0) >= 90 ? 'ELITE' : 
+                     (selectedDayData?.disciplineScore || 0) >= 80 ? 'GOOD' : 
+                     (selectedDayData?.disciplineScore || 0) >= 70 ? 'AVG' : 'POOR'}
                   </div>
+                </div>
+                <div className={`text-3xl font-bold mb-1 ${
+                  !combinedAnalytics || combinedAnalytics.totalTrades === 0 || !selectedDayData || selectedDayData.totalDayTrades === 0 ? 'text-gray-500' :
+                  (selectedDayData?.disciplineScore || 0) >= 90 ? 'text-green-400' : 
+                  (selectedDayData?.disciplineScore || 0) >= 80 ? 'text-green-400' : 
+                  (selectedDayData?.disciplineScore || 0) >= 70 ? 'text-yellow-400' : 
+                  (selectedDayData?.disciplineScore || 0) >= 60 ? 'text-orange-400' : 'text-red-400'
+                }`}>
+                  {!combinedAnalytics || combinedAnalytics.totalTrades === 0 || !selectedDayData || selectedDayData.totalDayTrades === 0 ? '--' : 
+                   `${Math.round(selectedDayData?.disciplineScore || 0)}% ${
+                    (selectedDayData?.disciplineScore || 0) >= 90 ? 'A' : 
+                    (selectedDayData?.disciplineScore || 0) >= 80 ? 'B' : 
+                    (selectedDayData?.disciplineScore || 0) >= 70 ? 'C' : 
+                    (selectedDayData?.disciplineScore || 0) >= 60 ? 'D' : 'F'
+                   }`}
+                </div>
+                <div className="text-sm text-gray-400 mb-1">Discipline Score</div>
+                <div className="text-xs text-gray-300">
+                  {!combinedAnalytics || combinedAnalytics.totalTrades === 0 || !selectedDayData || selectedDayData.totalDayTrades === 0 ? 
+                    'No trades to analyze yet' : 
+                    `Risk: ${Math.round((selectedDayData?.disciplineScore || 0) * 0.85)}% • Consistency: ${Math.round((selectedDayData?.disciplineScore || 0) * 0.90)}%`
+                  }
+                </div>
+              </div>
 
-                  {/* Risk Utilization */}
-                  <div className="bg-black/30 rounded-lg p-4 border border-gray-700/50 relative">
-                    <div className="absolute top-3 right-3 text-xs text-orange-300">
-                      Used
-                    </div>
-                    <div className="text-3xl font-bold text-orange-400 mb-1">
-                      {combinedAnalytics && combinedAnalytics.accounts.length > 0 
-                        ? Math.min((selectedDayData?.totalDayTrades || 0) / (combinedAnalytics.accounts[0]?.maxDailyTrades || 1) * 100, 100).toFixed(0)
-                        : '0'}%
-                    </div>
-                    <div className="text-sm text-gray-400 mb-1">Risk Utilization</div>
-                    <div className="text-xs text-orange-300">
-                      Total: ${combinedAnalytics && combinedAnalytics.accounts.length > 0 
-                        ? ((selectedDayData?.totalDayTrades || 0) * (combinedAnalytics.accounts[0]?.riskPerTrade || 0)).toFixed(0)
-                        : '0'}
-                    </div>
-                  </div>
+              {/* Risk Utilization */}
+              <div className="bg-black/30 rounded-lg p-4 border border-gray-700/50 relative">
+                <div className="absolute top-3 right-3 text-xs text-orange-300">
+                  Used
+                </div>
+                <div className="text-3xl font-bold text-orange-400 mb-1">
+                  {combinedAnalytics && combinedAnalytics.accounts.length > 0 
+                    ? Math.min((selectedDayData?.totalDayTrades || 0) / (combinedAnalytics.accounts[0]?.maxDailyTrades || 1) * 100, 100).toFixed(0)
+                    : '0'}%
+                </div>
+                <div className="text-sm text-gray-400 mb-1">Risk Utilization</div>
+                <div className="text-xs text-orange-300">
+                  Total: ${combinedAnalytics && combinedAnalytics.accounts.length > 0 
+                    ? ((selectedDayData?.totalDayTrades || 0) * (combinedAnalytics.accounts[0]?.riskPerTrade || 0)).toFixed(0)
+                    : '0'}
+                </div>
+              </div>
 
-                  {/* Win Rate */}
-                  <div className="bg-black/30 rounded-lg p-4 border border-gray-700/50 relative">
-                    <div className="absolute top-3 right-3 text-xs text-green-300">
-                      WR
-                    </div>
-                    <div className={`text-3xl font-bold mb-1 ${(selectedDayData?.winRate || 0) >= 50 ? 'text-green-400' : 'text-red-400'}`}>
-                      {Math.round(selectedDayData?.winRate || 0)}%
-                    </div>
-                    <div className="text-sm text-gray-400 mb-1">Win Rate</div>
-                    <div className="text-xs text-green-300">
-                      {selectedDayData?.totalDayTrades > 0 ? `${Math.round(selectedDayData?.winRate || 0)}% success` : 'No trades'}
-                    </div>
-                  </div>
+              {/* Win Rate */}
+              <div className="bg-black/30 rounded-lg p-4 border border-gray-700/50 relative">
+                <div className="absolute top-3 right-3 text-xs text-green-300">
+                  WR
+                </div>
+                <div className={`text-3xl font-bold mb-1 ${(selectedDayData?.winRate || 0) >= 50 ? 'text-green-400' : 'text-red-400'}`}>
+                  {Math.round(selectedDayData?.winRate || 0)}%
+                </div>
+                <div className="text-sm text-gray-400 mb-1">Win Rate</div>
+                <div className="text-xs text-green-300">
+                  {selectedDayData?.totalDayTrades > 0 ? `${Math.round(selectedDayData?.winRate || 0)}% success` : 'No trades'}
+                </div>
+              </div>
 
-                  {/* Profit Factor */}
-                  <div className="bg-black/30 rounded-lg p-4 border border-gray-700/50 relative">
-                    <div className="absolute top-3 right-3 text-xs text-cyan-300">
-                      PF
-                    </div>
-                    <div className={`text-3xl font-bold mb-1 ${(() => {
-                      const grossWin = selectedDayData?.trades?.filter(t => (t.pnl || 0) > 0).reduce((sum, t) => sum + (t.pnl || 0), 0) || 0;
-                      const grossLoss = Math.abs(selectedDayData?.trades?.filter(t => (t.pnl || 0) < 0).reduce((sum, t) => sum + (t.pnl || 0), 0) || 0);
-                      const profitFactor = grossLoss > 0 ? grossWin / grossLoss : grossWin > 0 ? 999 : 0;
-                      return profitFactor >= 1 ? 'text-green-400' : 'text-red-400';
-                    })()}`}>
-                      {(() => {
-                        const grossWin = selectedDayData?.trades?.filter(t => (t.pnl || 0) > 0).reduce((sum, t) => sum + (t.pnl || 0), 0) || 0;
-                        const grossLoss = Math.abs(selectedDayData?.trades?.filter(t => (t.pnl || 0) < 0).reduce((sum, t) => sum + (t.pnl || 0), 0) || 0);
-                        const profitFactor = grossLoss > 0 ? grossWin / grossLoss : grossWin > 0 ? 999 : 0;
-                        return profitFactor.toFixed(2);
-                      })()}
-                    </div>
-                    <div className="text-sm text-gray-400 mb-1">Profit Factor</div>
-                    <div className="text-xs text-cyan-300">
-                      Gross Win / Gross Loss
-                    </div>
-                  </div>
+              {/* Profit Factor */}
+              <div className="bg-black/30 rounded-lg p-4 border border-gray-700/50 relative">
+                <div className="absolute top-3 right-3 text-xs text-cyan-300">
+                  PF
+                </div>
+                <div className={`text-3xl font-bold mb-1 ${(() => {
+                  const grossWin = selectedDayData?.trades?.filter(t => (t.pnl || 0) > 0).reduce((sum, t) => sum + (t.pnl || 0), 0) || 0;
+                  const grossLoss = Math.abs(selectedDayData?.trades?.filter(t => (t.pnl || 0) < 0).reduce((sum, t) => sum + (t.pnl || 0), 0) || 0);
+                  const profitFactor = grossLoss > 0 ? grossWin / grossLoss : grossWin > 0 ? 999 : 0;
+                  return profitFactor >= 1 ? 'text-green-400' : 'text-red-400';
+                })()}`}>
+                  {(() => {
+                    const grossWin = selectedDayData?.trades?.filter(t => (t.pnl || 0) > 0).reduce((sum, t) => sum + (t.pnl || 0), 0) || 0;
+                    const grossLoss = Math.abs(selectedDayData?.trades?.filter(t => (t.pnl || 0) < 0).reduce((sum, t) => sum + (t.pnl || 0), 0) || 0);
+                    const profitFactor = grossLoss > 0 ? grossWin / grossLoss : grossWin > 0 ? 999 : 0;
+                    return profitFactor.toFixed(2);
+                  })()}
+                </div>
+                <div className="text-sm text-gray-400 mb-1">Profit Factor</div>
+                <div className="text-xs text-cyan-300">
+                  Gross Win / Gross Loss
                 </div>
               </div>
             </div>
