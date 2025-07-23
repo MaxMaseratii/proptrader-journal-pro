@@ -1449,6 +1449,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Update existing projection
+  app.put("/api/projections/:id", requireAuth, async (req, res) => {
+    try {
+      const userId = req.user?.id;
+      if (!userId) {
+        return res.status(401).json({ message: "User not authenticated" });
+      }
+      
+      const projectionId = parseInt(req.params.id);
+      const projectionData = {
+        ...req.body,
+        userId
+      };
+      
+      const updatedProjection = await storage.updateSavedProjection(projectionId, projectionData);
+      res.json(updatedProjection);
+    } catch (error) {
+      console.error("Error updating projection:", error);
+      res.status(500).json({ message: "Failed to update projection" });
+    }
+  });
+
   app.get("/api/projections/account/:accountId", requireAuth, async (req, res) => {
     try {
       const userId = req.user?.id;

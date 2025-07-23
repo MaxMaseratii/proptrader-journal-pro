@@ -114,7 +114,7 @@ export interface IStorage {
   // Saved projection operations
   getSavedProjections(userId: string, accountId?: number): Promise<SavedProjection[]>;
   createSavedProjection(projection: InsertSavedProjection): Promise<SavedProjection>;
-  updateSavedProjection(id: number, projection: Partial<InsertSavedProjection>, userId: string): Promise<SavedProjection | undefined>;
+  updateSavedProjection(id: number, projection: Partial<InsertSavedProjection>): Promise<SavedProjection | undefined>;
   
   // Challenge-to-Funded Account Transition operations
   checkChallengeEligibility(accountId: number): Promise<{ eligible: boolean, reason?: string }>;
@@ -469,11 +469,11 @@ export class DatabaseStorage implements IStorage {
     return newProjection;
   }
 
-  async updateSavedProjection(id: number, projection: Partial<InsertSavedProjection>, userId: string): Promise<SavedProjection | undefined> {
+  async updateSavedProjection(id: number, projection: Partial<InsertSavedProjection>): Promise<SavedProjection | undefined> {
     const [updatedProjection] = await db
       .update(savedProjections)
       .set(projection)
-      .where(and(eq(savedProjections.id, id), eq(savedProjections.userId, userId)))
+      .where(eq(savedProjections.id, id))
       .returning();
     return updatedProjection || undefined;
   }

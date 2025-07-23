@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
-import { RotateCcw, LogOut, Trash2, AlertTriangle, DollarSign, CheckCircle, ArrowRight, Bookmark } from "lucide-react";
+import { RotateCcw, LogOut, Trash2, AlertTriangle, DollarSign, CheckCircle, ArrowRight, Bookmark, Edit } from "lucide-react";
 import { formatCurrency } from "@/lib/utils";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
@@ -70,6 +70,34 @@ export default function AccountManagement({ accounts }: AccountManagementProps) 
   const [isSavedPlanDialogOpen, setIsSavedPlanDialogOpen] = useState(false);
   const [selectedAccountForPlan, setSelectedAccountForPlan] = useState<Account | null>(null);
   const { toast } = useToast();
+
+  // Handle plan modification
+  const handleModifyPlan = (projection: any) => {
+    // Store the plan data in localStorage for the projections page to pick up
+    const modificationData = {
+      accountId: projection.accountId,
+      projectionId: projection.id,
+      startingCapital: projection.startingCapital,
+      riskPerTrade: projection.riskPerTrade,
+      riskDivider: 1, // Default value
+      riskRewardRatio: projection.rewardRiskRatio,
+      profitTarget: projection.targetProfit,
+      maxDrawdown: projection.startingCapital * 0.1, // Estimate if not available
+      riskCuttingPercent: projection.riskCuttingEnabled ? projection.riskCuttingPercentage : 0,
+      compoundingPercent: projection.compoundingEnabled ? projection.compoundingPercentage : 0,
+      maxLossPerDay: projection.riskPerTrade * 3, // Estimate
+      extraDaysIfLoss: 2, // Default
+      useMaxDrawdownAsCapital: false, // Default
+      mode: 'account' as const,
+      selectedAccountId: projection.accountId,
+      copiedAccounts: 0
+    };
+    
+    localStorage.setItem('modifyProjectionData', JSON.stringify(modificationData));
+    
+    // Navigate to projections page
+    window.location.href = '/projections';
+  };
 
   // Query for saved projections for a specific account
   const { data: savedProjections = [], isLoading: projectionsLoading } = useQuery<any[]>({
@@ -533,14 +561,26 @@ export default function AccountManagement({ accounts }: AccountManagementProps) 
                                 <CardHeader>
                                   <CardTitle className="text-white text-sm flex items-center justify-between">
                                     <span>Plan #{projection.id} - {new Date(projection.createdAt).toLocaleDateString()}</span>
-                                    <Badge 
-                                      className={
-                                        projection.status === 'active' ? 'bg-blue-600' :
-                                        projection.status === 'completed' ? 'bg-green-600' : 'bg-red-600'
-                                      }
-                                    >
-                                      {projection.status}
-                                    </Badge>
+                                    <div className="flex items-center gap-2">
+                                      <Button
+                                        variant="outline"
+                                        size="sm"
+                                        className="border-prop-gold text-prop-gold hover:bg-prop-gold hover:text-black h-6 px-2 text-xs"
+                                        onClick={() => handleModifyPlan(projection)}
+                                        title="Modify Plan"
+                                      >
+                                        <Edit className="h-3 w-3 mr-1" />
+                                        Modify
+                                      </Button>
+                                      <Badge 
+                                        className={
+                                          projection.status === 'active' ? 'bg-blue-600' :
+                                          projection.status === 'completed' ? 'bg-green-600' : 'bg-red-600'
+                                        }
+                                      >
+                                        {projection.status}
+                                      </Badge>
+                                    </div>
                                   </CardTitle>
                                 </CardHeader>
                                 <CardContent>

@@ -83,7 +83,19 @@ export default function Projections() {
   const { toast } = useToast();
   const [isAccountDialogOpen, setIsAccountDialogOpen] = useState(false);
   const [isAccountsMinimized, setIsAccountsMinimized] = useState(false);
+  const [isModifyingPlan, setIsModifyingPlan] = useState(false);
+  const [modifyingProjectionId, setModifyingProjectionId] = useState<number | null>(null);
   const queryClient = useQueryClient();
+
+  // Check if we're in modification mode
+  useEffect(() => {
+    const modifyData = localStorage.getItem('modifyProjectionData');
+    if (modifyData) {
+      const data = JSON.parse(modifyData);
+      setIsModifyingPlan(true);
+      setModifyingProjectionId(data.projectionId);
+    }
+  }, []);
 
   const { data: accounts = [], isLoading: accountsLoading } = useQuery<Account[]>({
     queryKey: ["/api/accounts"],
@@ -232,24 +244,39 @@ export default function Projections() {
 
   const saveProjectionMutation = useMutation({
     mutationFn: async (projectionData: any) => {
-      return await apiRequest("/api/projections/save", "POST", projectionData);
+      if (isModifyingPlan && modifyingProjectionId) {
+        return await apiRequest(`/api/projections/${modifyingProjectionId}`, "PUT", projectionData);
+      } else {
+        return await apiRequest("/api/projections/save", "POST", projectionData);
+      }
     },
     onSuccess: () => {
       toast({
-        title: "Projection Saved",
-        description: "Your projection has been saved successfully",
+        title: isModifyingPlan ? "Projection Updated" : "Projection Saved",
+        description: isModifyingPlan ? "Your projection has been updated successfully" : "Your projection has been saved successfully",
       });
+      if (isModifyingPlan) {
+        setIsModifyingPlan(false);
+        setModifyingProjectionId(null);
+      }
     },
     onError: (error) => {
       toast({
         title: "Error",
-        description: "Failed to save projection",
+        description: isModifyingPlan ? "Failed to update projection" : "Failed to save projection",
         variant: "destructive",
       });
     },
   });
 
   const [settings, setSettings] = useState<ProjectionSettings>(() => {
+    // Check if we're modifying an existing plan
+    const modifyData = localStorage.getItem('modifyProjectionData');
+    if (modifyData) {
+      localStorage.removeItem('modifyProjectionData'); // Clear it after use
+      return JSON.parse(modifyData);
+    }
+    
     const saved = localStorage.getItem('projectionSettings');
     return saved ? JSON.parse(saved) : {
       mode: 'simulation',
@@ -598,7 +625,9 @@ export default function Projections() {
                               className="w-full bg-prop-gold hover:bg-prop-gold/80 text-black font-medium"
                             >
                               <Save className="mr-2 h-4 w-4" />
-                              {saveProjectionMutation.isPending ? 'Starting Plan...' : 'Save to start the Plan'}
+                              {saveProjectionMutation.isPending ? 
+                                (isModifyingPlan ? 'Updating Plan...' : 'Starting Plan...') : 
+                                (isModifyingPlan ? 'Update Plan' : 'Save to start the Plan')}
                             </Button>
                           )}
                         </>
