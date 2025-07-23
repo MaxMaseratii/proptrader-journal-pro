@@ -35,15 +35,48 @@ export default function TargetProgressWidget({ accounts, trades, selectedAccount
     );
   }
 
-  // Calculate progress for each account
+  // Calculate progress for each account with proper EOD trailing drawdown
   const accountProgress = filteredAccounts.map(account => {
     const accountTrades = trades.filter(trade => trade.accountId === account.id);
+    
+    // Calculate daily P&L for EOD tracking
+    const dailyData = new Map<string, number>();
+    accountTrades.forEach(trade => {
+      const dateKey = trade.date;
+      if (!dailyData.has(dateKey)) {
+        dailyData.set(dateKey, 0);
+      }
+      dailyData.set(dateKey, dailyData.get(dateKey)! + trade.pnl);
+    });
+    
+    // Calculate EOD trailing drawdown
+    const startingBalance = account.startingBalance;
+    const maxDrawdownAmount = account.maxDrawdown;
+    let runningBalance = startingBalance;
+    let highestEODBalance = startingBalance;
+    
+    // Track daily balances and find highest EOD balance
+    const sortedDays = Array.from(dailyData.entries()).sort((a, b) => 
+      new Date(a[0]).getTime() - new Date(b[0]).getTime()
+    );
+    
+    sortedDays.forEach(([date, dayPnL]) => {
+      runningBalance += dayPnL;
+      if (runningBalance > highestEODBalance) {
+        highestEODBalance = runningBalance;
+      }
+    });
+    
     const totalPnL = accountTrades.reduce((sum, trade) => sum + trade.pnl, 0);
-    const currentBalance = account.startingBalance + totalPnL;
-    const targetBalance = account.startingBalance + account.profitTarget;
+    const currentBalance = startingBalance + totalPnL;
+    const targetBalance = startingBalance + account.profitTarget;
     const progressPercentage = Math.min(100, Math.max(0, (totalPnL / account.profitTarget) * 100));
     
-    // Determine account status based on balance and rules
+    // EOD trailing drawdown floor
+    const trailingDrawdownFloor = highestEODBalance - maxDrawdownAmount;
+    const remainingBuffer = currentBalance - trailingDrawdownFloor;
+    
+    // Determine account status based on EOD trailing drawdown rules
     let status = 'active';
     let statusColor = 'text-blue-400';
     let statusIcon = TrendingUp;
@@ -52,14 +85,25 @@ export default function TargetProgressWidget({ accounts, trades, selectedAccount
       status = 'Target Reached';
       statusColor = 'text-green-400';
       statusIcon = Target;
-    } else if (currentBalance <= (account.startingBalance - account.maxDrawdown)) {
-      status = 'Failed';
+    } else if (currentBalance <= trailingDrawdownFloor) {
+      status = 'Failed - EOD Drawdown';
       statusColor = 'text-red-400';
       statusIcon = TrendingDown;
     } else if (totalPnL < 0) {
       status = 'Drawdown';
       statusColor = 'text-orange-400';
       statusIcon = AlertCircle;
+    }
+
+    // Debug logging for EOD calculation
+    if (account.name === "R2$1M") {
+      console.log(`🎯 Target Progress - ${account.name} EOD Calculation:`, {
+        currentBalance,
+        highestEODBalance,
+        trailingDrawdownFloor,
+        remainingBuffer,
+        dailyBreakdown: sortedDays
+      });
     }
 
     return {
@@ -71,7 +115,10 @@ export default function TargetProgressWidget({ accounts, trades, selectedAccount
       status,
       statusColor,
       statusIcon,
-      accountTrades: accountTrades.length
+      accountTrades: accountTrades.length,
+      highestEODBalance,
+      trailingDrawdownFloor,
+      remainingBuffer
     };
   });
 
@@ -115,7 +162,7 @@ export default function TargetProgressWidget({ accounts, trades, selectedAccount
                   </div>
                 </div>
 
-                {/* Financial Summary */}
+                {/* Financial Summary with EOD Trailing Drawdown */}
                 <div className="grid grid-cols-2 gap-2 text-xs">
                   <div className="text-center">
                     <div className={`font-medium ${account.totalPnL >= 0 ? 'text-green-400' : 'text-red-400'}`}>
@@ -128,6 +175,24 @@ export default function TargetProgressWidget({ accounts, trades, selectedAccount
                       ${account.currentBalance.toFixed(2)}
                     </div>
                     <div className="text-gray-500">Balance</div>
+                  </div>
+                </div>
+                
+                {/* EOD Trailing Drawdown Info */}
+                <div className="border-t border-gray-700 pt-2 text-xs">
+                  <div className="flex justify-between">
+                    <span className="text-gray-400">Highest EOD:</span>
+                    <span className="text-green-400 font-medium">${account.highestEODBalance.toFixed(2)}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-400">Drawdown Floor:</span>
+                    <span className="text-orange-400 font-medium">${account.trailingDrawdownFloor.toFixed(2)}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-400">Buffer:</span>
+                    <span className={`font-medium ${account.remainingBuffer >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                      ${account.remainingBuffer >= 0 ? '+' : ''}${account.remainingBuffer.toFixed(2)}
+                    </span>
                   </div>
                 </div>
 
