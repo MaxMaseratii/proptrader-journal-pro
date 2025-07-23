@@ -1526,12 +1526,14 @@ export default function Dashboard() {
                   <div className="bg-black/30 rounded-lg p-4 border border-gray-700/50 relative">
                     <div className="absolute top-3 right-3">
                       <div className={`px-2 py-1 rounded text-xs font-bold ${
+                        !combinedAnalytics || combinedAnalytics.totalTrades === 0 ? 'bg-gray-600 text-gray-300' :
                         (selectedDayData?.disciplineScore || 0) >= 90 ? 'bg-green-500 text-black' : 
                         (selectedDayData?.disciplineScore || 0) >= 80 ? 'bg-blue-500 text-white' : 
                         (selectedDayData?.disciplineScore || 0) >= 70 ? 'bg-yellow-500 text-black' : 
                         'bg-red-500 text-white'
                       }`}>
-                        {(selectedDayData?.disciplineScore || 0) >= 90 ? 'ELITE' : 
+                        {!combinedAnalytics || combinedAnalytics.totalTrades === 0 ? 'NO DATA' :
+                         (selectedDayData?.disciplineScore || 0) >= 90 ? 'ELITE' : 
                          (selectedDayData?.disciplineScore || 0) >= 80 ? 'GOOD' : 
                          (selectedDayData?.disciplineScore || 0) >= 70 ? 'AVG' : 'POOR'}
                       </div>
@@ -1553,7 +1555,10 @@ export default function Dashboard() {
                     </div>
                     <div className="text-sm text-gray-400 mb-1">Discipline Score</div>
                     <div className="text-xs text-gray-300">
-                      Risk: {Math.round((selectedDayData?.disciplineScore || 0) * 0.85)}% • Consistency: {Math.round((selectedDayData?.disciplineScore || 0) * 0.90)}%
+                      {!combinedAnalytics || combinedAnalytics.totalTrades === 0 ? 
+                        'No trades to analyze yet' : 
+                        `Risk: ${Math.round((selectedDayData?.disciplineScore || 0) * 0.85)}% • Consistency: ${Math.round((selectedDayData?.disciplineScore || 0) * 0.90)}%`
+                      }
                     </div>
                   </div>
 
