@@ -7,9 +7,10 @@ interface UnrealizedProfitWidgetsProps {
   trades: Trade[];
   selectedAccountIds: number[];
   accounts: Account[];
+  targetProgressWidget?: React.ReactNode;
 }
 
-export default function UnrealizedProfitWidgets({ trades, selectedAccountIds, accounts }: UnrealizedProfitWidgetsProps) {
+export default function UnrealizedProfitWidgets({ trades, selectedAccountIds, accounts, targetProgressWidget }: UnrealizedProfitWidgetsProps) {
   
   // Filter trades based on selected accounts
   const filteredTrades = trades.filter(trade => 
@@ -200,7 +201,8 @@ export default function UnrealizedProfitWidgets({ trades, selectedAccountIds, ac
         </CardContent>
       </Card>
 
-
+      {/* Target Progress Widget */}
+      {targetProgressWidget}
     </div>
   );
 }

@@ -453,7 +453,7 @@ export default function Trades() {
                     <td className={`py-3 px-4 text-right font-medium ${
                       trade.pnl > 0 ? 'text-green-400' : trade.pnl < 0 ? 'text-red-400' : 'text-gray-400'
                     }`}>
-                      {formatCurrency(trade.pnl)}
+                      {trade.pnl >= 0 ? '+' : '-'}{formatCurrency(Math.abs(trade.pnl))}
                     </td>
                     <td className="py-3 px-4 text-center">
                       <Badge 

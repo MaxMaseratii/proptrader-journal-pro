@@ -2073,21 +2073,19 @@ export default function Dashboard() {
             </div>
           </div>
 
-          {/* ROW 3: Target Progress and Risk Status */}
-          <div className="mt-4">
-            <TargetProgressWidget 
-              accounts={accounts || []} 
-              trades={trades || []} 
-              selectedAccountIds={accountSelectionMode === 'all' ? [] : selectedAccountIds} 
-            />
-          </div>
-
-          {/* ROW 4: Unrealized Profit Tracking Widgets */}
+          {/* ROW 3: Combined Widgets - Drawdown Buffer, Consistency Rule, Target Progress */}
           <div className="mt-4">
             <UnrealizedProfitWidgets 
               trades={trades || []} 
               selectedAccountIds={accountSelectionMode === 'all' ? [] : selectedAccountIds}
               accounts={accounts || []}
+              targetProgressWidget={
+                <TargetProgressWidget 
+                  accounts={accounts || []} 
+                  trades={trades || []} 
+                  selectedAccountIds={accountSelectionMode === 'all' ? [] : selectedAccountIds} 
+                />
+              }
             />
           </div>
         </section>
@@ -2120,7 +2118,7 @@ export default function Dashboard() {
                         <div className="flex justify-between items-start mb-1">
                           <span className="text-white font-medium">{trade.symbol}</span>
                           <span className={`font-bold ${(trade.pnl || 0) >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-                            {(trade.pnl || 0) >= 0 ? '+' : ''}{formatCurrency(trade.pnl || 0)}
+                            {(trade.pnl || 0) >= 0 ? '+' : '-'}{formatCurrency(Math.abs(trade.pnl || 0))}
                           </span>
                         </div>
                         <div className="flex justify-between items-center text-xs text-gray-400 mb-2">
@@ -2481,7 +2479,7 @@ export default function Dashboard() {
                                       dateEl.textContent = point.date === 'Start' ? 'Account Start' : `${new Date(point.date).toLocaleDateString()} ${tradeTime}`;
                                       balanceEl.textContent = `Balance: ${formatCurrency(point.y)}`;
                                       tradesEl.textContent = point.date === 'Start' ? 'Initial State' : `Trade #${point.tradesCount}`;
-                                      pnlEl.textContent = point.trade ? `Trade P&L: ${formatCurrency(point.trade.pnl || 0)}` : 'Initial Capital';
+                                      pnlEl.textContent = point.trade ? `Trade P&L: ${(point.trade.pnl || 0) >= 0 ? '+' : '-'}${formatCurrency(Math.abs(point.trade.pnl || 0))}` : 'Initial Capital';
                                       pnlEl.className = `text-xs font-medium ${point.trade ? (point.trade.pnl >= 0 ? 'text-green-400' : 'text-red-400') : 'text-gray-400'}`;
                                       performanceEl.textContent = `Net: ${netPnL >= 0 ? '+' : ''}${formatCurrency(netPnL)} (${netPercent}%)`;
                                       performanceEl.className = `text-xs text-gray-400 mt-1 ${netPnL >= 0 ? 'text-green-400' : 'text-red-400'}`;

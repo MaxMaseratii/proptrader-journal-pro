@@ -293,7 +293,7 @@ export default function TradeAnalysisCalendar({ trades, accounts, viewMode = 'mo
                     <div className={`text-xs font-bold ${
                       day.pnl >= 0 ? 'text-green-400' : 'text-red-400'
                     }`}>
-                      {day.pnl >= 0 ? '+' : ''}{formatCurrency(day.pnl)}
+                      {day.pnl >= 0 ? '+' : '-'}{formatCurrency(Math.abs(day.pnl))}
                     </div>
                     <div className="text-xs text-gray-300">
                       {day.tradeCount}T
