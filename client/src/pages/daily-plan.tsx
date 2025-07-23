@@ -457,6 +457,14 @@ const DailyPlanPage = () => {
                 Create Daily Plan
               </Button>
 
+              <Button 
+                onClick={() => setIsJournalDialogOpen(true)}
+                className="bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white shadow-lg"
+              >
+                <BookOpen className="h-4 w-4 mr-2" />
+                Journal Entry
+              </Button>
+
               <Input
                 type="date"
                 value={selectedDate}
@@ -471,25 +479,16 @@ const DailyPlanPage = () => {
       {/* Main Content */}
       <div className="max-w-7xl mx-auto p-6 space-y-8">
         
-        {/* Today's Plan vs Actual Performance */}
-        <Card className="bg-gradient-to-br from-gray-900 via-gray-800 to-black border border-yellow-400/20">
-          <CardHeader>
-            <CardTitle className="text-yellow-400 flex items-center justify-between">
-              <div className="flex items-center gap-2">
+        {/* Today's Plan vs Actual Performance - Only show if plan exists */}
+        {currentPlan && (
+          <Card className="bg-gradient-to-br from-gray-900 via-gray-800 to-black border border-yellow-400/20">
+            <CardHeader>
+              <CardTitle className="text-yellow-400 flex items-center gap-2">
                 <Target className="h-5 w-5" />
                 Today's Plan vs Actual Performance
-              </div>
-              <Button 
-                onClick={() => setIsJournalDialogOpen(true)}
-                className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white"
-              >
-                <BookOpen className="h-4 w-4 mr-2" />
-                Journal Entry
-              </Button>
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            {currentPlan ? (
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
                 <div className="text-center p-4 bg-gradient-to-r from-gray-800 to-gray-700 rounded-lg border border-yellow-400/10">
                   <div className="text-sm text-gray-400 mb-2">Target Profit</div>
@@ -520,24 +519,12 @@ const DailyPlanPage = () => {
                   <div className="text-xs text-gray-500">{actualResults.wins}W / {actualResults.losses}L</div>
                 </div>
               </div>
-            ) : (
-              <div className="text-center py-8">
-                <Target className="w-16 h-16 text-gray-500 mx-auto mb-4" />
-                <div className="text-gray-400 mb-4">No trading plan for today</div>
-                <Button 
-                  onClick={() => setIsCreatePlanDialogOpen(true)}
-                  className="bg-gradient-to-r from-yellow-400 to-yellow-600 text-black hover:from-yellow-500 hover:to-yellow-700"
-                >
-                  <Plus className="h-4 w-4 mr-2" />
-                  Create Today's Plan
-                </Button>
-              </div>
-            )}
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+        )}
 
         {/* Historical Plans and Plan Stats */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           
           {/* Historical Trading Plans */}
           <Card className="bg-gradient-to-br from-gray-900 via-gray-800 to-black border border-yellow-400/20">
@@ -583,6 +570,44 @@ const DailyPlanPage = () => {
               ) : (
                 <div className="text-center py-8 text-gray-400">
                   No historical plans found
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Your Trading Strategies */}
+          <Card className="bg-gradient-to-br from-gray-900 via-gray-800 to-black border border-yellow-400/20">
+            <CardHeader>
+              <CardTitle className="text-yellow-400 flex items-center gap-2">
+                <TrendingUp className="h-5 w-5" />
+                Your Trading Strategies
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="max-h-96 overflow-y-auto">
+              {strategies && strategies.length > 0 ? (
+                <div className="space-y-3">
+                  {strategies.map((strategy) => (
+                    <div key={strategy.id} className="bg-gray-800/50 rounded-lg p-4 border border-gray-700 hover:border-yellow-400/30 cursor-pointer transition-all">
+                      <div className="flex justify-between items-start mb-2">
+                        <div>
+                          <div className="text-sm font-medium text-white">{strategy.name}</div>
+                          <div className="text-xs text-gray-400">{strategy.description}</div>
+                        </div>
+                        <div className="text-right">
+                          <div className="text-sm font-bold text-green-400">{strategy.expectedWinRate}% WR</div>
+                          <div className="text-xs text-gray-400">1:{strategy.riskRewardRatio} RR</div>
+                        </div>
+                      </div>
+                      <div className="text-xs text-blue-400">
+                        {strategy.marketConditions}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-8 text-gray-400">
+                  <TrendingUp className="w-16 h-16 mx-auto mb-4 text-gray-500" />
+                  No strategies created yet
                 </div>
               )}
             </CardContent>
