@@ -1,9 +1,7 @@
 import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Progress } from '@/components/ui/progress';
-import { Target, TrendingUp, TrendingDown, AlertTriangle } from 'lucide-react';
-import { formatCurrency } from '@/lib/utils';
-import type { Account, Trade } from '@shared/schema';
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Target, TrendingUp, TrendingDown, AlertCircle } from "lucide-react";
+import { Account, Trade } from "@shared/schema";
 
 interface TargetProgressWidgetProps {
   accounts: Account[];
@@ -12,153 +10,149 @@ interface TargetProgressWidgetProps {
 }
 
 export default function TargetProgressWidget({ accounts, trades, selectedAccountIds }: TargetProgressWidgetProps) {
+  
   // Filter accounts based on selection
-  const filteredAccounts = selectedAccountIds.length > 0 
-    ? accounts.filter(acc => selectedAccountIds.includes(acc.id))
-    : accounts;
-
-  // Filter trades based on account selection
-  const filteredTrades = trades.filter(trade => 
-    selectedAccountIds.length === 0 || selectedAccountIds.includes(trade.accountId)
+  const filteredAccounts = accounts.filter(account => 
+    selectedAccountIds.length === 0 || selectedAccountIds.includes(account.id)
   );
 
-  // Calculate aggregated data
-  const totalStartingBalance = filteredAccounts.reduce((sum, acc) => sum + (acc.startingBalance || 0), 0);
-  const totalProfitTarget = filteredAccounts.reduce((sum, acc) => sum + (acc.profitTarget || 0), 0);
-  const totalMaxDrawdown = filteredAccounts.reduce((sum, acc) => sum + (acc.maxDrawdown || 0), 0);
-  
-  // Calculate current P&L from trades
-  const totalCurrentPnL = filteredTrades.reduce((sum, trade) => sum + (trade.pnl || 0), 0);
-  const currentBalance = totalStartingBalance + totalCurrentPnL;
-  
-  // Calculate progress percentages
-  const targetProgress = totalProfitTarget > 0 ? (totalCurrentPnL / totalProfitTarget) * 100 : 0;
-  const drawdownUsed = totalMaxDrawdown > 0 ? (Math.abs(Math.min(0, totalCurrentPnL)) / totalMaxDrawdown) * 100 : 0;
-  
-  // Determine status
-  const isInProfit = totalCurrentPnL > 0;
-  const isTargetReached = totalCurrentPnL >= totalProfitTarget;
-  const isInDanger = drawdownUsed > 80;
-  
-  // Get consistency rule info (average across accounts)
-  const avgConsistencyRule = filteredAccounts.length > 0 
-    ? filteredAccounts.reduce((sum, acc) => sum + (acc.consistencyRulePercent || 50), 0) / filteredAccounts.length
-    : 50;
-  
-  const maxDailyProfit = (totalProfitTarget * avgConsistencyRule) / 100;
+  // If no accounts selected, show placeholder
+  if (filteredAccounts.length === 0) {
+    return (
+      <Card className="bg-gradient-to-br from-blue-900/20 to-indigo-900/20 border-blue-500/20">
+        <CardHeader className="pb-2">
+          <CardTitle className="text-white flex items-center text-sm">
+            <Target className="mr-2 h-4 w-4 text-blue-400" />
+            Target Progress & Account Status
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="text-center text-gray-400 text-sm py-4">
+            No accounts selected. Please select accounts to view progress.
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  // Calculate progress for each account
+  const accountProgress = filteredAccounts.map(account => {
+    const accountTrades = trades.filter(trade => trade.accountId === account.id);
+    const totalPnL = accountTrades.reduce((sum, trade) => sum + trade.pnl, 0);
+    const currentBalance = account.startingBalance + totalPnL;
+    const targetBalance = account.startingBalance + account.profitTarget;
+    const progressPercentage = Math.min(100, Math.max(0, (totalPnL / account.profitTarget) * 100));
+    
+    // Determine account status based on balance and rules
+    let status = 'active';
+    let statusColor = 'text-blue-400';
+    let statusIcon = TrendingUp;
+    
+    if (totalPnL >= account.profitTarget) {
+      status = 'Target Reached';
+      statusColor = 'text-green-400';
+      statusIcon = Target;
+    } else if (currentBalance <= (account.startingBalance - account.maxDrawdown)) {
+      status = 'Failed';
+      statusColor = 'text-red-400';
+      statusIcon = TrendingDown;
+    } else if (totalPnL < 0) {
+      status = 'Drawdown';
+      statusColor = 'text-orange-400';
+      statusIcon = AlertCircle;
+    }
+
+    return {
+      ...account,
+      totalPnL,
+      currentBalance,
+      targetBalance,
+      progressPercentage,
+      status,
+      statusColor,
+      statusIcon,
+      accountTrades: accountTrades.length
+    };
+  });
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-      {/* Target Progress Widget */}
-      <Card className="bg-gradient-to-br from-gray-900/40 via-gray-800/60 to-black/80 border border-gray-600/30 hover:border-amber-400/60 transition-all duration-200">
-        <CardHeader className="pb-3">
-          <CardTitle className="text-lg font-semibold text-white flex items-center">
-            <Target className="mr-2 h-5 w-5 text-amber-400" />
-            Target Progress
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {/* Current Status */}
-          <div className="flex justify-between items-center">
-            <span className="text-sm text-gray-300">Current P&L</span>
-            <span className={`text-lg font-bold ${isInProfit ? 'text-green-400' : 'text-red-400'}`}>
-              {formatCurrency(totalCurrentPnL)}
-            </span>
-          </div>
-          
-          {/* Target Progress Bar */}
-          <div className="space-y-2">
-            <div className="flex justify-between items-center">
-              <span className="text-sm text-gray-300">Progress to Target</span>
-              <span className="text-sm text-gray-400">
-                {formatCurrency(totalCurrentPnL)} / {formatCurrency(totalProfitTarget)}
-              </span>
-            </div>
-            <Progress 
-              value={Math.max(0, Math.min(100, targetProgress))} 
-              className="h-2"
-            />
-            <div className="flex justify-between text-xs text-gray-400">
-              <span>{targetProgress.toFixed(1)}% Complete</span>
-              <span>{formatCurrency(totalProfitTarget - totalCurrentPnL)} Remaining</span>
-            </div>
-          </div>
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      {accountProgress.map((account) => {
+        const StatusIcon = account.statusIcon;
+        
+        return (
+          <Card key={account.id} className="bg-gradient-to-br from-blue-900/20 to-indigo-900/20 border-blue-500/20">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-white flex items-center justify-between text-sm">
+                <div className="flex items-center">
+                  <Target className="mr-2 h-4 w-4 text-blue-400" />
+                  {account.name}
+                </div>
+                <div className={`flex items-center text-xs ${account.statusColor}`}>
+                  <StatusIcon className="mr-1 h-3 w-3" />
+                  {account.status}
+                </div>
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                {/* Progress Bar */}
+                <div className="space-y-1">
+                  <div className="flex justify-between text-xs">
+                    <span className="text-gray-400">Progress</span>
+                    <span className="text-white font-medium">{account.progressPercentage.toFixed(1)}%</span>
+                  </div>
+                  <div className="w-full bg-gray-700 rounded-full h-2">
+                    <div 
+                      className={`h-2 rounded-full ${
+                        account.progressPercentage >= 100 ? 'bg-green-500' :
+                        account.progressPercentage >= 75 ? 'bg-blue-500' :
+                        account.progressPercentage >= 50 ? 'bg-yellow-500' :
+                        account.progressPercentage >= 25 ? 'bg-orange-500' : 'bg-red-500'
+                      }`}
+                      style={{ width: `${Math.min(100, account.progressPercentage)}%` }}
+                    />
+                  </div>
+                </div>
 
-          {/* Account Balance */}
-          <div className="flex justify-between items-center pt-2 border-t border-gray-700">
-            <span className="text-sm text-gray-300">Account Balance</span>
-            <span className="text-lg font-bold text-white">
-              {formatCurrency(currentBalance)}
-            </span>
-          </div>
-        </CardContent>
-      </Card>
+                {/* Financial Summary */}
+                <div className="grid grid-cols-2 gap-2 text-xs">
+                  <div className="text-center">
+                    <div className={`font-medium ${account.totalPnL >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                      ${account.totalPnL >= 0 ? '+' : ''}${account.totalPnL.toFixed(2)}
+                    </div>
+                    <div className="text-gray-500">P&L</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-blue-400 font-medium">
+                      ${account.currentBalance.toFixed(2)}
+                    </div>
+                    <div className="text-gray-500">Balance</div>
+                  </div>
+                </div>
 
-      {/* Risk Status Widget */}
-      <Card className="bg-gradient-to-br from-gray-900/40 via-gray-800/60 to-black/80 border border-gray-600/30 hover:border-amber-400/60 transition-all duration-200">
-        <CardHeader className="pb-3">
-          <CardTitle className="text-lg font-semibold text-white flex items-center">
-            <AlertTriangle className="mr-2 h-5 w-5 text-yellow-400" />
-            Risk Status
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {/* Drawdown Usage */}
-          <div className="space-y-2">
-            <div className="flex justify-between items-center">
-              <span className="text-sm text-gray-300">Drawdown Used</span>
-              <span className={`text-sm font-bold ${isInDanger ? 'text-red-400' : drawdownUsed > 50 ? 'text-yellow-400' : 'text-green-400'}`}>
-                {drawdownUsed.toFixed(1)}%
-              </span>
-            </div>
-            <Progress 
-              value={Math.max(0, Math.min(100, drawdownUsed))} 
-              className="h-2"
-            />
-            <div className="flex justify-between text-xs text-gray-400">
-              <span>{formatCurrency(Math.abs(Math.min(0, totalCurrentPnL)))} Used</span>
-              <span>{formatCurrency(totalMaxDrawdown)} Limit</span>
-            </div>
-          </div>
-
-          {/* Consistency Rule */}
-          <div className="space-y-2 pt-2 border-t border-gray-700">
-            <div className="flex justify-between items-center">
-              <span className="text-sm text-gray-300">Daily Limit ({avgConsistencyRule}%)</span>
-              <span className="text-sm font-bold text-yellow-400">
-                {formatCurrency(maxDailyProfit)}
-              </span>
-            </div>
-            <div className="text-xs text-gray-400">
-              Max profit per day to maintain consistency
-            </div>
-          </div>
-
-          {/* Status Indicator */}
-          <div className={`flex items-center space-x-2 p-2 rounded-lg ${
-            isTargetReached ? 'bg-green-900/30 border border-green-500/30' :
-            isInDanger ? 'bg-red-900/30 border border-red-500/30' :
-            'bg-gray-800/30 border border-gray-600/30'
-          }`}>
-            {isTargetReached ? (
-              <TrendingUp className="h-4 w-4 text-green-400" />
-            ) : isInDanger ? (
-              <TrendingDown className="h-4 w-4 text-red-400" />
-            ) : (
-              <Target className="h-4 w-4 text-yellow-400" />
-            )}
-            <span className={`text-sm font-medium ${
-              isTargetReached ? 'text-green-400' :
-              isInDanger ? 'text-red-400' :
-              'text-yellow-400'
-            }`}>
-              {isTargetReached ? 'Target Reached!' :
-               isInDanger ? 'High Risk Zone' :
-               'Active Trading'}
-            </span>
-          </div>
-        </CardContent>
-      </Card>
+                {/* Target Information */}
+                <div className="border-t border-gray-700 pt-2 text-xs">
+                  <div className="flex justify-between">
+                    <span className="text-gray-400">Target:</span>
+                    <span className="text-green-400 font-medium">${account.profitTarget.toFixed(2)}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-400">Remaining:</span>
+                    <span className="text-yellow-400 font-medium">
+                      ${Math.max(0, account.profitTarget - account.totalPnL).toFixed(2)}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-400">Trades:</span>
+                    <span className="text-blue-400 font-medium">{account.accountTrades}</span>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        );
+      })}
     </div>
   );
 }

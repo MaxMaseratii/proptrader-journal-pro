@@ -15,10 +15,11 @@ export default function UnrealizedProfitWidgets({ trades, selectedAccountIds }: 
     selectedAccountIds.length === 0 || selectedAccountIds.includes(trade.accountId)
   );
 
-  // Calculate daily drawdown data
+  // Calculate EOD trailing drawdown based on highest end-of-day balance
   const dailyDrawdownData = React.useMemo(() => {
     const dailyData = new Map<string, DailyDrawdownSummary>();
     
+    // Group trades by date and calculate daily P&L
     filteredTrades.forEach(trade => {
       const dateKey = trade.date;
       if (!dailyData.has(dateKey)) {
@@ -41,21 +42,47 @@ export default function UnrealizedProfitWidgets({ trades, selectedAccountIds }: 
         dayData.bestTradeProfit = trade.pnl;
       }
       
-      // Calculate unrealized profit drawdown (from peak unrealized to actual close)
+      // Calculate unrealized profit drawdown (lost potential from peak)
       if (trade.initialTakeProfit && trade.exitPrice) {
-        const potentialProfit = Math.abs(trade.initialTakeProfit - trade.entryPrice) * trade.quantity;
+        const potentialProfit = Math.abs(trade.initialTakeProfit - trade.entryPrice) * trade.quantity * 50; // ES point value
         const actualPnL = trade.pnl;
         const unrealizedDrawdown = Math.max(0, potentialProfit - actualPnL);
         dayData.unrealizedProfitDrawdown += unrealizedDrawdown;
       }
+    });
+    
+    // Calculate EOD trailing drawdown properly
+    const sortedDays = Array.from(dailyData.values()).sort((a, b) => 
+      new Date(a.date).getTime() - new Date(b.date).getTime()
+    );
+    
+    // Assume $50,000 starting balance and $2,000 max drawdown (from your documentation example)
+    let startingBalance = 50000;
+    let maxDrawdownAmount = 2000;
+    let highestEodBalance = startingBalance;
+    let runningBalance = startingBalance;
+    
+    sortedDays.forEach(day => {
+      runningBalance += day.totalDayPnL;
       
-      // End of day drawdown (negative P&L)
-      if (trade.pnl < 0) {
-        dayData.eodDrawdown += Math.abs(trade.pnl);
+      // Update highest EOD balance if this is a new high
+      if (runningBalance > highestEodBalance) {
+        highestEodBalance = runningBalance;
+      }
+      
+      // Calculate trailing EOD drawdown (trails the highest EOD balance)
+      const trailingEodDrawdown = highestEodBalance - maxDrawdownAmount;
+      
+      // EOD drawdown violation if current balance falls below trailing drawdown
+      day.eodDrawdown = Math.max(0, trailingEodDrawdown - runningBalance);
+      
+      // Mark if this day failed EOD drawdown rule
+      if (runningBalance < trailingEodDrawdown) {
+        day.drawdownType = 'eod_violation';
       }
     });
     
-    return Array.from(dailyData.values());
+    return sortedDays;
   }, [filteredTrades]);
 
   // Calculate total unrealized profit metrics
@@ -116,52 +143,40 @@ export default function UnrealizedProfitWidgets({ trades, selectedAccountIds }: 
         </CardContent>
       </Card>
 
-      {/* End of Day Drawdown Comparison Widget */}
+      {/* EOD Trailing Drawdown Widget */}
       <Card className="bg-gradient-to-br from-red-900/20 to-orange-900/20 border-red-500/20">
         <CardHeader className="pb-2">
           <CardTitle className="text-white flex items-center text-sm">
             <Shield className="mr-2 h-4 w-4 text-red-400" />
-            EOD vs Unrealized Drawdown
+            EOD Trailing Drawdown
           </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="space-y-3">
-            <div className="space-y-2">
-              <div className="flex justify-between items-center">
-                <span className="text-xs text-gray-400">End of Day</span>
-                <span className={`text-sm font-medium ${eodRisk.color}`}>
-                  ${totalEodDrawdown.toFixed(2)}
-                </span>
+            <div className="text-center">
+              <div className={`text-2xl font-bold ${eodRisk.color}`}>
+                ${totalEodDrawdown.toFixed(2)}
               </div>
-              <div className="flex justify-between items-center">
-                <span className="text-xs text-gray-400">Unrealized</span>
-                <span className={`text-sm font-medium ${unrealizedRisk.color}`}>
-                  ${totalUnrealizedDrawdown.toFixed(2)}
-                </span>
+              <div className="text-xs text-gray-400">Trailing Drawdown Breach</div>
+            </div>
+            
+            <div className="grid grid-cols-2 gap-2 text-xs">
+              <div className="text-center">
+                <div className="text-red-400 font-medium">
+                  {dailyDrawdownData.filter(d => d.drawdownType === 'eod_violation').length}
+                </div>
+                <div className="text-gray-500">Days Failed</div>
+              </div>
+              <div className="text-center">
+                <div className="text-orange-400 font-medium">
+                  {dailyDrawdownData.length > 0 ? (dailyDrawdownData.filter(d => d.drawdownType === 'eod_violation').length / dailyDrawdownData.length * 100).toFixed(0) : 0}%
+                </div>
+                <div className="text-gray-500">Failure Rate</div>
               </div>
             </div>
             
-            <div className="border-t border-gray-700 pt-2">
-              <div className="flex justify-between items-center">
-                <span className="text-xs text-gray-400">Total Risk</span>
-                <span className="text-lg font-bold text-white">
-                  ${(totalEodDrawdown + totalUnrealizedDrawdown).toFixed(2)}
-                </span>
-              </div>
-            </div>
-            
-            <div className="text-xs text-center text-gray-500">
-              {totalUnrealizedDrawdown > totalEodDrawdown ? (
-                <span className="text-purple-400">
-                  <AlertTriangle className="inline h-3 w-3 mr-1" />
-                  Unrealized risk dominant
-                </span>
-              ) : (
-                <span className="text-red-400">
-                  <TrendingDown className="inline h-3 w-3 mr-1" />
-                  EOD losses dominant  
-                </span>
-              )}
+            <div className={`px-2 py-1 rounded text-xs text-center ${eodRisk.bgColor} ${eodRisk.color}`}>
+              {dailyDrawdownData.some(d => d.drawdownType === 'eod_violation') ? 'EOD VIOLATIONS' : 'EOD SAFE'}
             </div>
           </div>
         </CardContent>

@@ -334,7 +334,7 @@ export type DailyDrawdownSummary = {
   date: string;
   eodDrawdown: number;
   unrealizedProfitDrawdown: number;
-  drawdownType: 'eod' | 'unrealized_profit' | null;
+  drawdownType: 'eod' | 'unrealized_profit' | 'eod_violation' | null;
   consistencyRuleViolation: boolean;
   bestTradeProfit: number;
   totalDayPnL: number;
