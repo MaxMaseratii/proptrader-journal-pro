@@ -1081,7 +1081,7 @@ export default function Dashboard() {
     return totalPayouts;
   };
 
-  // Calculate real equity curve from filtered trades
+  // Calculate real equity curve from filtered trades - ALWAYS START FROM $0
   const getEquityData = () => {
     if (!trades || !accounts) return [];
     
@@ -1090,20 +1090,13 @@ export default function Dashboard() {
       ? trades.filter(t => selectedAccountIds.includes(t.accountId))
       : trades;
     
-    if (filteredTrades.length === 0) return [];
+    if (filteredTrades.length === 0) return [{ date: "Start", balance: 0 }];
     
     const sortedTrades = [...filteredTrades].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
     
-    // Calculate starting balance from selected accounts
-    const selectedAccounts = selectedAccountIds.length > 0
-      ? accounts.filter(acc => selectedAccountIds.includes(acc.id))
-      : accounts;
-    
-    // Equity curve should always start from $0, not account starting balance
-    const startingBalance = 0;
-    
-    let runningBalance = startingBalance;
-    const equityData = [{ date: "Start", balance: startingBalance }];
+    // CRITICAL FIX: Always start from $0 regardless of account balances
+    let runningBalance = 0;
+    const equityData = [{ date: "Start", balance: 0 }];
     
     sortedTrades.forEach(trade => {
       runningBalance += trade.pnl || 0;
