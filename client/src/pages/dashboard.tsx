@@ -976,7 +976,9 @@ export default function Dashboard() {
       averageWin,
       averageLoss,
       profitFactor,
-      rFactor
+      rFactor,
+      totalWinnings: grossProfit,
+      totalLosses: grossLoss
     };
   }, [accounts, trades, selectedAccountIds, accountSelectionMode]);
 
@@ -1796,12 +1798,12 @@ export default function Dashboard() {
                     W/L
                   </div>
                   <div className="flex items-center space-x-1 mb-1">
-                    <span className="text-sm font-bold text-green-400">W: ${((combinedAnalytics?.winningTrades || 0) * 60).toFixed(0)}</span>
-                    <span className="text-sm font-bold text-red-400">L: ${((combinedAnalytics?.losingTrades || 0) * 20).toFixed(0)}</span>
+                    <span className="text-sm font-bold text-green-400">W: ${Math.abs(combinedAnalytics?.totalWinnings || 0).toFixed(0)}</span>
+                    <span className="text-sm font-bold text-red-400">L: ${Math.abs(combinedAnalytics?.totalLosses || 0).toFixed(0)}</span>
                   </div>
                   <div className="text-xs text-gray-400">Total Wins and Losses</div>
                   <div className="text-xs text-gray-300 mt-1">
-                    Net: ${(((combinedAnalytics?.winningTrades || 0) * 60) - ((combinedAnalytics?.losingTrades || 0) * 20)).toFixed(0)}
+                    Net: ${((combinedAnalytics?.totalWinnings || 0) + (combinedAnalytics?.totalLosses || 0)).toFixed(0)}
                   </div>
                 </div>
 
