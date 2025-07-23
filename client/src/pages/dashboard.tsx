@@ -1957,7 +1957,8 @@ export default function Dashboard() {
           <div className="mt-4">
             <UnrealizedProfitWidgets 
               trades={trades || []} 
-              selectedAccountIds={accountSelectionMode === 'all' ? [] : selectedAccountIds} 
+              selectedAccountIds={accountSelectionMode === 'all' ? [] : selectedAccountIds}
+              accounts={accounts || []}
             />
           </div>
         </section>
