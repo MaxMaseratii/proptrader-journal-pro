@@ -54,19 +54,53 @@ export default function UnrealizedProfitWidgets({ trades, selectedAccountIds, ac
     );
   }, [filteredTrades]);
 
-  // Calculate EOD trailing drawdown buffer and consistency violations
-  const totalPnL = filteredTrades.reduce((sum, trade) => sum + trade.pnl, 0); // Total P&L (positive and negative)
-  const startingBalance = 25000; // Account starting balance
-  const maxDrawdownAmount = 1500; // Your actual max drawdown
-  const currentBalance = startingBalance + totalPnL; // Current account balance
-  
-  // EOD Trailing Drawdown Logic: Trails the highest EOD balance
-  // For now, using current balance as highest (should track daily highs in real implementation)
-  const highestEODBalance = Math.max(startingBalance, currentBalance);
-  const trailingDrawdownFloor = highestEODBalance - maxDrawdownAmount;
-  const remainingBuffer = currentBalance - trailingDrawdownFloor;
-  
+  // Calculate proper EOD trailing drawdown with daily balance tracking
+  const eodCalculation = React.useMemo(() => {
+    const startingBalance = 25000;
+    const maxDrawdownAmount = 1500;
+    let runningBalance = startingBalance;
+    let highestEODBalance = startingBalance;
+    
+    // Calculate running balance and track highest EOD balance day by day
+    dailyDrawdownData.forEach(dayData => {
+      runningBalance += dayData.totalDayPnL;
+      if (runningBalance > highestEODBalance) {
+        highestEODBalance = runningBalance;
+      }
+    });
+    
+    const currentBalance = runningBalance;
+    const trailingDrawdownFloor = highestEODBalance - maxDrawdownAmount;
+    const remainingBuffer = currentBalance - trailingDrawdownFloor;
+    
+    return {
+      currentBalance,
+      highestEODBalance,
+      trailingDrawdownFloor,
+      remainingBuffer,
+      startingBalance,
+      maxDrawdownAmount
+    };
+  }, [dailyDrawdownData]);
+
+  const { currentBalance, highestEODBalance, trailingDrawdownFloor, remainingBuffer } = eodCalculation;
   const consistencyViolations = dailyDrawdownData.filter(day => day.consistencyRuleViolation).length;
+
+  // Debug logging for daily P&L
+  React.useEffect(() => {
+    console.log('📊 Daily P&L Breakdown:', dailyDrawdownData.map(day => ({
+      date: day.date,
+      pnl: day.totalDayPnL,
+      profitable: day.totalDayPnL > 0
+    })));
+    console.log('💰 EOD Calculation:', {
+      currentBalance,
+      highestEODBalance,
+      trailingDrawdownFloor,
+      remainingBuffer,
+      profitableDays: dailyDrawdownData.filter(day => day.totalDayPnL > 0).length
+    });
+  }, [dailyDrawdownData, currentBalance, highestEODBalance, trailingDrawdownFloor, remainingBuffer]);
 
   // Determine risk level based on remaining buffer
   const getBufferRiskLevel = (buffer: number) => {
@@ -113,11 +147,15 @@ export default function UnrealizedProfitWidgets({ trades, selectedAccountIds, ac
                 <div className="text-gray-500">Current Balance</div>
               </div>
               <div className="text-center">
-                <div className="text-orange-400 font-medium">
-                  ${trailingDrawdownFloor.toFixed(2)}
+                <div className="text-green-400 font-medium">
+                  ${highestEODBalance.toFixed(2)}
                 </div>
-                <div className="text-gray-500">Drawdown Floor</div>
+                <div className="text-gray-500">Highest EOD</div>
               </div>
+            </div>
+            
+            <div className="text-xs text-center text-gray-400 pt-1">
+              Floor: ${trailingDrawdownFloor.toFixed(2)} (Highest - $1,500)
             </div>
             
             <div className={`px-2 py-1 rounded text-xs text-center ${bufferRisk.bgColor} ${bufferRisk.color}`}>
