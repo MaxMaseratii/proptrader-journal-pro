@@ -38,6 +38,8 @@ import TradeAnalysisCalendar from "@/components/trade-analysis-calendar";
 import { SimpleChart } from "@/components/tradingview/SimpleChart";
 import NotificationDropdown from "@/components/notification-dropdown";
 import UnrealizedProfitWidgets from "@/components/unrealized-profit-widgets";
+import TargetProgressWidget from "@/components/target-progress-widget";
+
 import { 
   Wallet, 
   TrendingDown, 
@@ -1942,7 +1944,16 @@ export default function Dashboard() {
             </div>
           </div>
 
-          {/* ROW 3: Unrealized Profit Tracking Widgets */}
+          {/* ROW 3: Target Progress and Risk Status */}
+          <div className="mt-4">
+            <TargetProgressWidget 
+              accounts={accounts || []} 
+              trades={trades || []} 
+              selectedAccountIds={accountSelectionMode === 'all' ? [] : selectedAccountIds} 
+            />
+          </div>
+
+          {/* ROW 4: Unrealized Profit Tracking Widgets */}
           <div className="mt-4">
             <UnrealizedProfitWidgets 
               trades={trades || []} 
