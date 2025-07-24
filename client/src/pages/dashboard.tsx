@@ -2024,7 +2024,18 @@ export default function Dashboard() {
                 <Shield className="w-4 h-4 text-blue-400" />
               </div>
               <div className="text-2xl font-bold mb-1 text-blue-400">
-                {Math.round(combinedAnalytics?.disciplinedScore || 0)}% A
+                {(() => {
+                  const filteredTrades = accountSelectionMode === 'all' ? trades || [] : 
+                    (trades || []).filter(t => selectedAccountIds.includes(t.accountId));
+                  
+                  if (filteredTrades.length === 0) return '--';
+                  
+                  const disciplineMetrics = calculateComprehensiveDisciplineMetrics(filteredTrades, accounts || []);
+                  const score = Math.round(disciplineMetrics.disciplineScore);
+                  const grade = score >= 90 ? 'A' : score >= 80 ? 'B' : score >= 70 ? 'C' : score >= 60 ? 'D' : 'F';
+                  
+                  return `${score}% ${grade}`;
+                })()}
               </div>
               <div className="text-xs text-gray-400">Trading discipline rating</div>
             </div>
@@ -2637,7 +2648,11 @@ export default function Dashboard() {
                     <div className="flex justify-between items-center">
                       <span className="text-gray-400">Overall Score:</span>
                       <span className={`text-xl font-bold ${disciplineMetrics.disciplineScore >= 80 ? 'text-green-400' : disciplineMetrics.disciplineScore >= 60 ? 'text-yellow-400' : 'text-red-400'}`}>
-                        {Math.round(disciplineMetrics.disciplineScore)}%
+                        {(() => {
+                          const score = Math.round(disciplineMetrics.disciplineScore);
+                          const grade = score >= 90 ? 'A' : score >= 80 ? 'B' : score >= 70 ? 'C' : score >= 60 ? 'D' : 'F';
+                          return `${score}% ${grade}`;
+                        })()}
                       </span>
                     </div>
                     <div className="flex justify-between items-center">

@@ -120,6 +120,7 @@ export const accounts = pgTable("accounts", {
   riskCalculationPeriod: text("risk_calculation_period"), // 'weekly', 'bi_weekly', 'monthly', 'custom'
   customRiskAmount: real("custom_risk_amount"), // Fixed dollar amount to risk per trade
   useRiskPercentage: boolean("use_risk_percentage").default(false),
+  riskPerTradeDivider: integer("risk_per_trade_divider").default(1), // Number to divide total risk across multiple trades
   primaryAsset: text("primary_asset"), // 'ES', 'MES', 'NQ', 'MNQ', etc.
   secondaryAsset: text("secondary_asset"),
   tertiaryAsset: text("tertiary_asset"),

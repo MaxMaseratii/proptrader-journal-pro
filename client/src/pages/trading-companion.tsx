@@ -60,7 +60,7 @@ export default function TradingCompanion() {
 
   const chatMutation = useMutation({
     mutationFn: async (data: { message: string; context: any }) => {
-      const response = await apiRequest('POST', '/api/trading-companion/chat', data);
+      const response = await apiRequest('/api/trading-companion/chat', 'POST', data);
       return await response.json();
     },
     onSuccess: (response: any) => {

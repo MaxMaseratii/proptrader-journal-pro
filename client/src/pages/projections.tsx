@@ -1484,6 +1484,41 @@ export default function Projections() {
                             </FormItem>
                           )}
                         />
+                        
+                        {/* Risk Per Trade Divider */}
+                        <FormField
+                          control={accountForm.control}
+                          name="riskPerTradeDivider"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="text-white">Risk Per Trade Divider</FormLabel>
+                              <FormControl>
+                                <Input 
+                                  {...field} 
+                                  type="number" 
+                                  min="1"
+                                  max="10"
+                                  className="bg-gray-800 border-gray-600 text-white" 
+                                  placeholder="1"
+                                  value={field.value === null ? "" : field.value}
+                                  onChange={(e) => field.onChange(e.target.value === "" ? null : parseInt(e.target.value))}
+                                />
+                              </FormControl>
+                              <FormMessage />
+                              <div className="text-xs mt-1 text-gray-400">
+                                Split your total risk across {field.value || 1} trade{(field.value || 1) > 1 ? 's' : ''}
+                              </div>
+                              {field.value && accountFormValues.riskPerTrade && (
+                                <div className="text-xs mt-1">
+                                  <span className="text-green-400">
+                                    Risk Per Individual Trade: ${(accountFormValues.riskPerTrade / field.value).toFixed(2)}
+                                  </span>
+                                </div>
+                              )}
+                            </FormItem>
+                          )}
+                        />
+                        
                         <FormField
                           control={accountForm.control}
                           name="dailyLossLimit"
