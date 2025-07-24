@@ -574,7 +574,6 @@ export class DatabaseStorage implements IStorage {
       winningDayMinimum: fundedAccountData.winningDayMinimum || 200,
       minimumPayoutAmount: fundedAccountData.minimumPayoutAmount || 100,
       maxNetBalanceForPayout: fundedAccountData.maxNetBalanceForPayout || 2000,
-      consistencyPercentage: fundedAccountData.consistencyPercentage || 50,
       payoutFrequency: fundedAccountData.payoutFrequency || 'weekly',
       maximumPayoutPerAccount: fundedAccountData.maximumPayoutPerAccount || 90,
       profitSplit: fundedAccountData.profitSplit || 80,

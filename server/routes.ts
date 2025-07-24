@@ -1155,7 +1155,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.put("/api/journal/:id", async (req, res) => {
     try {
       const id = parseInt(req.params.id);
-      const validatedData = insertJournalEntrySchema.omit({ id: true }).partial().parse(req.body);
+      const validatedData = insertJournalEntrySchema.partial().parse(req.body);
       const entry = await storage.updateJournalEntry(id, validatedData);
       if (!entry) {
         return res.status(404).json({ message: "Journal entry not found" });
