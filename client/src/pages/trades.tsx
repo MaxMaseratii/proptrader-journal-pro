@@ -33,6 +33,18 @@ const formatTimeForCSV = (timestamp: Date | string | null): string => {
   });
 };
 
+// Helper function to get contract multiplier for accurate P&L calculation
+const getContractMultiplier = (symbol: string): number => {
+  const symbolUpper = symbol.toUpperCase();
+  if (symbolUpper.includes('ES') && !symbolUpper.includes('MES')) return 50; // E-mini S&P 500
+  if (symbolUpper.includes('NQ') && !symbolUpper.includes('MNQ')) return 20; // E-mini NASDAQ
+  if (symbolUpper.includes('MES')) return 5; // Micro E-mini S&P 500
+  if (symbolUpper.includes('MNQ')) return 2; // Micro E-mini NASDAQ
+  if (symbolUpper.includes('YM')) return 5; // E-mini Dow
+  if (symbolUpper.includes('RTY')) return 50; // E-mini Russell 2000
+  return 1; // Default multiplier for unknown contracts
+};
+
 // Helper function to calculate duration for CSV
 const calculateDurationForCSV = (trade: Trade): string => {
   if (!trade.fillTime) return 'No entry time';
@@ -492,11 +504,16 @@ const UniversalCsvImport = ({ accounts }: { accounts: Account[] }) => {
             tradingViewLink: null
           };
           
-          // Calculate P&L
+          // Calculate P&L - CRITICAL FIX for accurate P&L calculation
           const priceDiff = trade.exitPrice - trade.entryPrice;
-          trade.pnl = trade.side === 'buy' ? 
-            priceDiff * trade.quantity : 
-            -priceDiff * trade.quantity;
+          const multiplier = getContractMultiplier(trade.symbol);
+          if (trade.side === 'buy') {
+            // Long position: profit = (exit - entry) * quantity * multiplier
+            trade.pnl = priceDiff * trade.quantity * multiplier;
+          } else {
+            // Short position: profit = (entry - exit) * quantity * multiplier
+            trade.pnl = -priceDiff * trade.quantity * multiplier;
+          }
           
           trades.push(trade);
           console.log('🔍 ADVANCED ORDERS: Created partial close trade:', calculateDuration(earliestEntryTime, fillTime));
@@ -552,11 +569,16 @@ const UniversalCsvImport = ({ accounts }: { accounts: Account[] }) => {
             tradingViewLink: null
           };
           
-          // Calculate P&L
+          // Calculate P&L - CRITICAL FIX for accurate P&L calculation
           const priceDiff = trade.exitPrice - trade.entryPrice;
-          trade.pnl = trade.side === 'buy' ? 
-            priceDiff * trade.quantity : 
-            -priceDiff * trade.quantity;
+          const multiplier = getContractMultiplier(trade.symbol);
+          if (trade.side === 'buy') {
+            // Long position: profit = (exit - entry) * quantity * multiplier
+            trade.pnl = priceDiff * trade.quantity * multiplier;
+          } else {
+            // Short position: profit = (entry - exit) * quantity * multiplier
+            trade.pnl = -priceDiff * trade.quantity * multiplier;
+          }
           
           trades.push(trade);
           console.log('🔍 ADVANCED ORDERS: Created complete trade:', calculateDuration(earliestEntryTime, fillTime));
@@ -600,11 +622,16 @@ const UniversalCsvImport = ({ accounts }: { accounts: Account[] }) => {
             tradingViewLink: null
           };
           
-          // Calculate P&L for close trade
+          // Calculate P&L for close trade - CRITICAL FIX
           const priceDiff = closeTrade.exitPrice - closeTrade.entryPrice;
-          closeTrade.pnl = closeTrade.side === 'buy' ? 
-            priceDiff * closeTrade.quantity : 
-            -priceDiff * closeTrade.quantity;
+          const multiplier = getContractMultiplier(closeTrade.symbol);
+          if (closeTrade.side === 'buy') {
+            // Long position: profit = (exit - entry) * quantity * multiplier
+            closeTrade.pnl = priceDiff * closeTrade.quantity * multiplier;
+          } else {
+            // Short position: profit = (entry - exit) * quantity * multiplier
+            closeTrade.pnl = -priceDiff * closeTrade.quantity * multiplier;
+          }
           
           trades.push(closeTrade);
           console.log('🔍 ADVANCED ORDERS: Created reversal close trade:', calculateDuration(earliestEntryTime, fillTime));
@@ -692,11 +719,16 @@ const UniversalCsvImport = ({ accounts }: { accounts: Account[] }) => {
           notes: 'Fills CSV Import'
         };
         
-        // Calculate P&L
+        // Calculate P&L - CRITICAL FIX for accurate P&L calculation
         const priceDiff = trade.exitPrice - trade.entryPrice;
-        trade.pnl = trade.side === 'buy' ? 
-          priceDiff * trade.quantity : 
-          -priceDiff * trade.quantity;
+        const multiplier = getContractMultiplier(trade.symbol);
+        if (trade.side === 'buy') {
+          // Long position: profit = (exit - entry) * quantity * multiplier
+          trade.pnl = priceDiff * trade.quantity * multiplier;
+        } else {
+          // Short position: profit = (entry - exit) * quantity * multiplier
+          trade.pnl = -priceDiff * trade.quantity * multiplier;
+        }
         
         trades.push(trade);
       }
