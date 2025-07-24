@@ -137,34 +137,36 @@ export default function UnrealizedProfitWidgets({ trades, selectedAccountIds, ac
               Drawdown Buffer Remaining
             </CardTitle>
           </CardHeader>
-          <CardContent className="flex flex-col justify-between h-full">
-          <div className="space-y-3">
-            <div className="text-center">
-              <div className={`text-xl font-bold ${bufferRisk.color}`}>
-                ${remainingBuffer.toFixed(2)}
+          <CardContent className="h-full p-4">
+            <div className="flex flex-col h-full">
+              <div className="flex-1 space-y-3">
+                <div className="text-center">
+                  <div className={`text-xl font-bold ${bufferRisk.color}`}>
+                    ${remainingBuffer.toFixed(2)}
+                  </div>
+                  <div className="text-xs text-gray-400">Above EOD Trailing Drawdown Floor</div>
+                </div>
+                
+                <div className="space-y-2 text-xs">
+                  <div className="flex justify-between">
+                    <span className="text-gray-400">Current:</span>
+                    <span className="text-red-400 font-medium">${currentBalance.toFixed(2)}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-400">Highest EOD:</span>
+                    <span className="text-green-400 font-medium">${highestEODBalance.toFixed(2)}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-400">Floor:</span>
+                    <span className="text-orange-400 font-medium">${trailingDrawdownFloor.toFixed(2)}</span>
+                  </div>
+                </div>
               </div>
-              <div className="text-xs text-gray-400">Above EOD Trailing Drawdown Floor</div>
+              
+              <div className={`mt-auto px-2 py-1 rounded text-xs text-center ${bufferRisk.bgColor} ${bufferRisk.color}`}>
+                {remainingBuffer <= 200 ? 'CRITICAL RISK' : remainingBuffer <= 500 ? 'HIGH RISK' : 'BUFFER SAFE'}
+              </div>
             </div>
-            
-            <div className="space-y-2 text-xs">
-              <div className="flex justify-between">
-                <span className="text-gray-400">Current:</span>
-                <span className="text-red-400 font-medium">${currentBalance.toFixed(2)}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-gray-400">Highest EOD:</span>
-                <span className="text-green-400 font-medium">${highestEODBalance.toFixed(2)}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-gray-400">Floor:</span>
-                <span className="text-orange-400 font-medium">${trailingDrawdownFloor.toFixed(2)}</span>
-              </div>
-            </div>
-          </div>
-          
-          <div className={`widget-status-badge px-2 py-1 rounded text-xs text-center ${bufferRisk.bgColor} ${bufferRisk.color}`}>
-            {remainingBuffer <= 200 ? 'CRITICAL RISK' : remainingBuffer <= 500 ? 'HIGH RISK' : 'BUFFER SAFE'}
-          </div>
           </CardContent>
         </Card>
       </div>
@@ -178,34 +180,36 @@ export default function UnrealizedProfitWidgets({ trades, selectedAccountIds, ac
               Consistency Rule ($750 Max)
             </CardTitle>
           </CardHeader>
-          <CardContent className="flex flex-col justify-between h-full">
-          <div className="space-y-3">
-            <div className="text-center">
-              <div className={`text-xl font-bold ${consistencyViolations > 0 ? 'text-red-400' : 'text-green-400'}`}>
-                {consistencyViolations}
+          <CardContent className="h-full p-4">
+            <div className="flex flex-col h-full">
+              <div className="flex-1 space-y-3">
+                <div className="text-center">
+                  <div className={`text-xl font-bold ${consistencyViolations > 0 ? 'text-red-400' : 'text-green-400'}`}>
+                    {consistencyViolations}
+                  </div>
+                  <div className="text-xs text-gray-400">Rule Violations</div>
+                </div>
+                
+                <div className="space-y-2 text-xs">
+                  <div className="flex justify-between">
+                    <span className="text-gray-400">Daily Limit:</span>
+                    <span className="text-purple-400 font-medium">$750.00</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-400">Best Trade:</span>
+                    <span className="text-purple-400 font-medium">
+                      {Math.max(...dailyDrawdownData.map(day => day.bestTradeProfit), 0).toFixed(2)}
+                    </span>
+                  </div>
+                </div>
               </div>
-              <div className="text-xs text-gray-400">Rule Violations</div>
+              
+              <div className={`mt-auto px-2 py-1 rounded text-xs text-center ${
+                consistencyViolations > 0 ? 'bg-red-500/20 text-red-400' : 'bg-green-500/20 text-green-400'
+              }`}>
+                {consistencyViolations > 0 ? 'RULE VIOLATED' : 'COMPLIANT'}
+              </div>
             </div>
-            
-            <div className="space-y-2 text-xs">
-              <div className="flex justify-between">
-                <span className="text-gray-400">Daily Limit:</span>
-                <span className="text-purple-400 font-medium">$750.00</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-gray-400">Best Trade:</span>
-                <span className="text-purple-400 font-medium">
-                  {Math.max(...dailyDrawdownData.map(day => day.bestTradeProfit), 0).toFixed(2)}
-                </span>
-              </div>
-            </div>
-          </div>
-          
-          <div className={`widget-status-badge px-2 py-1 rounded text-xs text-center ${
-            consistencyViolations > 0 ? 'bg-red-500/20 text-red-400' : 'bg-green-500/20 text-green-400'
-          }`}>
-            {consistencyViolations > 0 ? 'RULE VIOLATED' : 'COMPLIANT'}
-          </div>
           </CardContent>
         </Card>
       </div>

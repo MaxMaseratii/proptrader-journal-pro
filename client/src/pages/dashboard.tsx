@@ -2198,7 +2198,7 @@ export default function Dashboard() {
                     
                     // Calculate total P&L directly from trades (no starting balance)
                     const totalPnl = filteredTrades.reduce((sum, trade) => sum + (trade.pnl || 0), 0);
-                    let runningBalance = totalPnl; // Equity curve shows P&L only
+                    const netBalance = totalPnl; // CRITICAL FIX: Show pure P&L, not account balance
                     const totalReturn = ((totalPnl / accountCost) * 100);
                     const winningTrades = filteredTrades.filter(t => (t.pnl || 0) > 0).length;
                     const winRate = filteredTrades.length > 0 ? (winningTrades / filteredTrades.length) * 100 : 0;
@@ -2240,9 +2240,9 @@ export default function Dashboard() {
                     const selectedAccount = accounts?.find(acc => 
                       selectedAccountIds.length === 1 ? selectedAccountIds.includes(acc.id) : false
                     );
-                    const accountCost = selectedAccount?.accountCost || selectedAccount?.startingBalance || 0;
+                    const accountCost = selectedAccount?.accountCost || selectedAccount?.startingBalance || 25000;
                     
-                    let runningBalance = 0; // Always start equity curve from $0
+                    let runningBalance = 0; // CRITICAL FIX: Always start equity curve from $0
                     const equityPoints = [{ 
                       x: 0, 
                       y: 0, 
@@ -2469,7 +2469,7 @@ export default function Dashboard() {
                                       const netPercent = ((netPnL / accountCost) * 100).toFixed(1);
                                       
                                       dateEl.textContent = point.date === 'Start' ? 'Account Start' : `${new Date(point.date).toLocaleDateString()} ${tradeTime}`;
-                                      balanceEl.textContent = `Balance: ${formatCurrency(point.y)}`;
+                                      balanceEl.textContent = `Net: ${formatCurrency(point.y)}`;
                                       tradesEl.textContent = point.date === 'Start' ? 'Initial State' : `Trade #${point.tradesCount}`;
                                       pnlEl.textContent = point.trade ? `Trade P&L: ${(point.trade.pnl || 0) >= 0 ? '+' : '-'}${formatCurrency(Math.abs(point.trade.pnl || 0))}` : 'Initial Capital';
                                       pnlEl.className = `text-xs font-medium ${point.trade ? (point.trade.pnl >= 0 ? 'text-green-400' : 'text-red-400') : 'text-gray-400'}`;
@@ -2560,8 +2560,8 @@ export default function Dashboard() {
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-400">Balance:</span>
-                    <span className="text-white font-semibold">{formatCurrency(accounts[0].startingBalance || 0)}</span>
+                    <span className="text-gray-400">Net:</span>
+                    <span className="text-white font-semibold">{formatCurrency(0)}</span>
                   </div>
                 </div>
               )}
