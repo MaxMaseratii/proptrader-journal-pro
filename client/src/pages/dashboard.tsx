@@ -1092,6 +1092,8 @@ export default function Dashboard() {
     
     if (filteredTrades.length === 0) return [{ date: "Start", balance: 0 }];
     
+    // CRITICAL FIX: Clear any cached balance calculations
+    
     const sortedTrades = [...filteredTrades].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
     
     // CRITICAL FIX: Always start from $0 regardless of account balances

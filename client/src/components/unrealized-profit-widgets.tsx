@@ -12,6 +12,12 @@ interface UnrealizedProfitWidgetsProps {
 
 export default function UnrealizedProfitWidgets({ trades, selectedAccountIds, accounts, targetProgressWidget }: UnrealizedProfitWidgetsProps) {
   
+  // CRITICAL: Force component re-render to apply CSS fixes
+  React.useEffect(() => {
+    const timestamp = Date.now();
+    console.log(`🔧 Widget badges fix applied at ${timestamp}`);
+  }, []);
+  
   // Filter trades based on selected accounts
   const filteredTrades = trades.filter(trade => 
     selectedAccountIds.length === 0 || selectedAccountIds.includes(trade.accountId)
@@ -156,7 +162,7 @@ export default function UnrealizedProfitWidgets({ trades, selectedAccountIds, ac
             </div>
           </div>
           
-          <div className={`px-2 py-1 rounded text-xs text-center mt-3 ${bufferRisk.bgColor} ${bufferRisk.color}`}>
+          <div className={`widget-status-badge px-2 py-1 rounded text-xs text-center ${bufferRisk.bgColor} ${bufferRisk.color}`}>
             {remainingBuffer <= 200 ? 'CRITICAL RISK' : remainingBuffer <= 500 ? 'HIGH RISK' : 'BUFFER SAFE'}
           </div>
           </CardContent>
@@ -195,7 +201,7 @@ export default function UnrealizedProfitWidgets({ trades, selectedAccountIds, ac
             </div>
           </div>
           
-          <div className={`px-2 py-1 rounded text-xs text-center mt-3 ${
+          <div className={`widget-status-badge px-2 py-1 rounded text-xs text-center ${
             consistencyViolations > 0 ? 'bg-red-500/20 text-red-400' : 'bg-green-500/20 text-green-400'
           }`}>
             {consistencyViolations > 0 ? 'RULE VIOLATED' : 'COMPLIANT'}

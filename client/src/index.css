@@ -2,6 +2,15 @@
 @tailwind components;
 @tailwind utilities;
 
+/* CRITICAL FIX: Force status badges to stay inside widgets */
+.widget-status-badge {
+  position: relative !important;
+  z-index: 1 !important;
+  margin-top: 12px !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+}
+
 /* Compact Dashboard Layout - NO EMPTY SPACES */
 .primary-header {
   font-size: 1.875rem;
