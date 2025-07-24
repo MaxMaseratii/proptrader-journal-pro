@@ -1,0 +1,50 @@
+I need you to implement an advanced TradeZella-style position tracking algorithm for Orders CSV import in my React trading journal component. 
+
+**OBJECTIVE:**
+Replace the simple FIFO order matching with sophisticated position tracking that accurately calculates trade durations and handles complex trading scenarios like scaling in/out, partial fills, and position reversals.
+
+**KEY REQUIREMENTS:**
+
+1. **Position Tracking Algorithm:**
+   - Track running position changes instead of simple buy/sell pairing
+   - Group orders by symbol + account + trading day
+   - Process orders chronologically within each group
+   - Maintain position state and entry history
+
+2. **Handle 5 Complex Scenarios:**
+   - Opening new position (from flat to non-zero)
+   - Adding to position (scaling in with multiple entries)
+   - Partial position closes (close some, keep remainder)
+   - Complete position closes (return to flat)
+   - Position reversals (close current + open opposite direction)
+
+3. **Accurate Duration Calculation:**
+   - Entry time = earliest order that built the position
+   - Exit time = final order that closed the position
+   - Duration = time from first entry to final exit (not individual order timing)
+   - Support weighted average entry prices for multiple entries
+
+4. **Expected Features:**
+   - Process orders like: Buy 2 @ 10:00, Buy 1 @ 10:05, Sell 3 @ 10:15
+   - Result: One trade with duration 10:00 → 10:15 (15 minutes)
+   - Handle scaling scenarios that simple FIFO matching fails on
+   - Create separate trades for position reversals
+
+**TECHNICAL IMPLEMENTATION:**
+- Update the `mapOrdersRows` function in the UniversalCsvImport component
+- Add position tracking variables: `position`, `positionEntries`, `tradeCounter`
+- Include helper functions for weighted averages and duration calculation
+- Add comprehensive debug logging for position state changes
+- Maintain compatibility with existing CSV format detection
+
+**SUCCESS CRITERIA:**
+- Orders CSV import shows accurate trade durations
+- Complex trading scenarios (scaling, partials, reversals) work correctly
+- Debug logs show position tracking steps
+- UI displays "Advanced position tracking" for Orders format
+- Sample trades include calculated duration field
+
+**CODE PROVIDED:**
+I'm providing the complete updated React component with the advanced algorithm implemented. Please integrate this into my existing codebase and ensure all dependencies and imports are properly handled.
+
+Focus on the `mapOrdersRows` function which contains the core TradeZella-style position tracking logic. The algorithm should work exactly like professional trading journals for accurate trade analysis.

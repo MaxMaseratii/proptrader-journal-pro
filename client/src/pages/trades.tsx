@@ -270,77 +270,290 @@ const UniversalCsvImport = ({ accounts }: { accounts: Account[] }) => {
     return mappedTrade;
   };
 
-  // Map Orders CSV - requires matching buy/sell orders
+  // Advanced TradeZella-style Orders CSV mapping with position tracking
   const mapOrdersRows = (rows: any[]): any[] => {
-    console.log('🔍 ORDERS: Processing', rows.length, 'order rows');
+    console.log('🔍 ADVANCED ORDERS: Processing', rows.length, 'order rows with position tracking');
     
-    const trades = [];
-    const orderMap = new Map();
+    const trades: any[] = [];
     
-    // Group orders by symbol and account to match entry/exit
-    rows.forEach(row => {
-      const symbol = convertContractToSymbol(row['Contract']);
-      const account = row['Account'];
-      const side = row['B/S'].toLowerCase();
-      const key = `${symbol}-${account}`;
+    // Helper function to group orders
+    const groupBy = (array: any[], keyFn: (item: any) => string) => {
+      const groups: { [key: string]: any[] } = {};
+      array.forEach(item => {
+        const key = keyFn(item);
+        if (!groups[key]) groups[key] = [];
+        groups[key].push(item);
+      });
+      return groups;
+    };
+    
+    // Helper function to calculate weighted average
+    const calculateWeightedAverage = (entries: any[], field: string) => {
+      const totalQty = entries.reduce((sum, entry) => sum + entry.qty, 0);
+      const weightedSum = entries.reduce((sum, entry) => sum + (entry[field] * entry.qty), 0);
+      return weightedSum / totalQty;
+    };
+    
+    // Helper function to calculate duration
+    const calculateDuration = (startTime: string, endTime: string): string => {
+      const start = new Date(startTime);
+      const end = new Date(endTime);
+      const durationMs = end.getTime() - start.getTime();
+      const minutes = Math.floor(durationMs / (60 * 1000));
       
-      if (!orderMap.has(key)) {
-        orderMap.set(key, { buys: [], sells: [] });
-      }
+      if (minutes < 60) return `${minutes}m`;
+      const hours = Math.floor(minutes / 60);
+      const remainingMinutes = minutes % 60;
+      return remainingMinutes > 0 ? `${hours}h ${remainingMinutes}m` : `${hours}h`;
+    };
+    
+    // Group orders by symbol + account + trading day
+    const orderGroups = groupBy(rows.filter(row => row.Status === 'Filled'), (order) => {
+      const symbol = convertContractToSymbol(order['Contract']);
+      const account = order['Account'];
+      const date = order['Date'] || order['Fill Time']?.split(' ')[0] || '';
+      return `${symbol}-${account}-${date}`;
+    });
+    
+    console.log('🔍 ADVANCED ORDERS: Created', Object.keys(orderGroups).length, 'order groups');
+    
+    // Process each group with position tracking
+    Object.entries(orderGroups).forEach(([groupKey, orderGroup]) => {
+      console.log('🔍 ADVANCED ORDERS: Processing group:', groupKey, 'with', orderGroup.length, 'orders');
       
-      const orderGroup = orderMap.get(key);
-      if (side === 'buy' || side === 'b') {
-        orderGroup.buys.push(row);
-      } else if (side === 'sell' || side === 's') {
-        orderGroup.sells.push(row);
+      // Sort orders chronologically
+      orderGroup.sort((a, b) => {
+        const timeA = new Date(a['Fill Time'] || a['Timestamp']).getTime();
+        const timeB = new Date(b['Fill Time'] || b['Timestamp']).getTime();
+        return timeA - timeB;
+      });
+      
+      // Position tracking variables
+      let position = 0; // Current net position
+      let positionEntries: any[] = []; // Orders that built current position
+      let tradeCounter = 1;
+      
+      orderGroup.forEach((order, index) => {
+        const side = order['B/S']?.toLowerCase();
+        const quantity = parseInt(order['Filled Qty'] || order['Quantity'] || 0);
+        const price = parseFloat(order['Avg Fill Price'] || order['Price'] || 0);
+        const fillTime = order['Fill Time'] || order['Timestamp'];
+        
+        if (!quantity || !price || !fillTime) {
+          console.log('🔍 ADVANCED ORDERS: Skipping invalid order:', order);
+          return;
+        }
+        
+        // Calculate position change
+        const orderQty = (side === 'buy' || side === 'b') ? quantity : -quantity;
+        const newPosition = position + orderQty;
+        
+        console.log(`🔍 ADVANCED ORDERS: Order ${index + 1}: ${side.toUpperCase()} ${quantity} @ ${price}`);
+        console.log(`🔍 ADVANCED ORDERS: Position: ${position} → ${newPosition}`);
+        
+        // CASE 1: Opening new position (from flat)
+        if (position === 0 && newPosition !== 0) {
+          console.log('🔍 ADVANCED ORDERS: Opening new position');
+          positionEntries = [{
+            fillTime,
+            price,
+            qty: Math.abs(orderQty),
+            side: newPosition > 0 ? 'buy' : 'sell',
+            order
+          }];
+        }
+        
+        // CASE 2: Adding to existing position (scaling in)
+        else if (position !== 0 && Math.sign(position) === Math.sign(newPosition) && Math.abs(newPosition) > Math.abs(position)) {
+          console.log('🔍 ADVANCED ORDERS: Adding to position (scaling in)');
+          positionEntries.push({
+            fillTime,
+            price,
+            qty: Math.abs(orderQty),
+            side: newPosition > 0 ? 'buy' : 'sell',
+            order
+          });
+        }
+        
+        // CASE 3: Partially closing position
+        else if (position !== 0 && Math.sign(position) === Math.sign(newPosition) && Math.abs(newPosition) < Math.abs(position)) {
+          console.log('🔍 ADVANCED ORDERS: Partially closing position');
+          
+          const closedQuantity = Math.abs(orderQty);
+          
+          // Calculate weighted entry values for the portion being closed
+          const weightedEntryPrice = calculateWeightedAverage(positionEntries, 'price');
+          const earliestEntryTime = positionEntries[0].fillTime; // Use earliest entry for duration
+          
+          const trade = {
+            accountId: findAccountByName(order['Account']).id,
+            symbol: convertContractToSymbol(order['Contract']),
+            side: position > 0 ? 'buy' : 'sell',
+            quantity: closedQuantity,
+            fillTime: earliestEntryTime,
+            exitTime: fillTime,
+            entryPrice: weightedEntryPrice,
+            exitPrice: price,
+            pnl: 0, // Will calculate below
+            status: 'closed',
+            date: order['Date'] || fillTime.split(' ')[0],
+            orderId: `ADV-${groupKey}-${tradeCounter++}`,
+            notes: `Advanced Orders Import - Partial Close (${calculateDuration(earliestEntryTime, fillTime)})`,
+            // Add required fields
+            initialStopLoss: null,
+            finalStopLoss: null,
+            initialTakeProfit: null,
+            finalTakeProfit: null,
+            tradeImage: null,
+            tradingViewLink: null
+          };
+          
+          // Calculate P&L
+          const priceDiff = trade.exitPrice - trade.entryPrice;
+          trade.pnl = trade.side === 'buy' ? 
+            priceDiff * trade.quantity : 
+            -priceDiff * trade.quantity;
+          
+          trades.push(trade);
+          console.log('🔍 ADVANCED ORDERS: Created partial close trade:', calculateDuration(earliestEntryTime, fillTime));
+          
+          // Adjust positionEntries to reflect remaining position (FIFO basis)
+          let qtyToRemove = closedQuantity;
+          positionEntries = positionEntries.filter(entry => {
+            if (qtyToRemove <= 0) return true;
+            
+            if (entry.qty <= qtyToRemove) {
+              qtyToRemove -= entry.qty;
+              return false; // Remove this entry completely
+            } else {
+              entry.qty -= qtyToRemove;
+              qtyToRemove = 0;
+              return true; // Keep partial entry
+            }
+          });
+        }
+        
+        // CASE 4: Completely closing position
+        else if (position !== 0 && newPosition === 0) {
+          console.log('🔍 ADVANCED ORDERS: Completely closing position');
+          
+          // Calculate weighted entry values
+          const weightedEntryPrice = calculateWeightedAverage(positionEntries, 'price');
+          const earliestEntryTime = positionEntries[0].fillTime;
+          
+          const trade = {
+            accountId: findAccountByName(order['Account']).id,
+            symbol: convertContractToSymbol(order['Contract']),
+            side: position > 0 ? 'buy' : 'sell',
+            quantity: Math.abs(position),
+            fillTime: earliestEntryTime,
+            exitTime: fillTime,
+            entryPrice: weightedEntryPrice,
+            exitPrice: price,
+            pnl: 0, // Will calculate below
+            status: 'closed',
+            date: order['Date'] || fillTime.split(' ')[0],
+            orderId: `ADV-${groupKey}-${tradeCounter++}`,
+            notes: `Advanced Orders Import - Complete Close (${calculateDuration(earliestEntryTime, fillTime)})`,
+            // Add required fields
+            initialStopLoss: null,
+            finalStopLoss: null,
+            initialTakeProfit: null,
+            finalTakeProfit: null,
+            tradeImage: null,
+            tradingViewLink: null
+          };
+          
+          // Calculate P&L
+          const priceDiff = trade.exitPrice - trade.entryPrice;
+          trade.pnl = trade.side === 'buy' ? 
+            priceDiff * trade.quantity : 
+            -priceDiff * trade.quantity;
+          
+          trades.push(trade);
+          console.log('🔍 ADVANCED ORDERS: Created complete trade:', calculateDuration(earliestEntryTime, fillTime));
+          
+          // Reset position tracking
+          positionEntries = [];
+        }
+        
+        // CASE 5: Position reversal (close current + open opposite)
+        else if (position !== 0 && newPosition !== 0 && Math.sign(position) !== Math.sign(newPosition)) {
+          console.log('🔍 ADVANCED ORDERS: Position reversal detected');
+          
+          // First, close the existing position
+          const weightedEntryPrice = calculateWeightedAverage(positionEntries, 'price');
+          const earliestEntryTime = positionEntries[0].fillTime;
+          
+          const closeTrade = {
+            accountId: findAccountByName(order['Account']).id,
+            symbol: convertContractToSymbol(order['Contract']),
+            side: position > 0 ? 'buy' : 'sell',
+            quantity: Math.abs(position),
+            fillTime: earliestEntryTime,
+            exitTime: fillTime,
+            entryPrice: weightedEntryPrice,
+            exitPrice: price,
+            pnl: 0, // Will calculate below
+            status: 'closed',
+            date: order['Date'] || fillTime.split(' ')[0],
+            orderId: `ADV-${groupKey}-${tradeCounter++}`,
+            notes: `Advanced Orders Import - Reversal Close (${calculateDuration(earliestEntryTime, fillTime)})`,
+            // Add required fields
+            initialStopLoss: null,
+            finalStopLoss: null,
+            initialTakeProfit: null,
+            finalTakeProfit: null,
+            tradeImage: null,
+            tradingViewLink: null
+          };
+          
+          // Calculate P&L for close trade
+          const priceDiff = closeTrade.exitPrice - closeTrade.entryPrice;
+          closeTrade.pnl = closeTrade.side === 'buy' ? 
+            priceDiff * closeTrade.quantity : 
+            -priceDiff * closeTrade.quantity;
+          
+          trades.push(closeTrade);
+          console.log('🔍 ADVANCED ORDERS: Created reversal close trade:', calculateDuration(earliestEntryTime, fillTime));
+          
+          // Then, start new position in opposite direction
+          const newPositionQty = Math.abs(newPosition);
+          positionEntries = [{
+            fillTime,
+            price,
+            qty: newPositionQty,
+            side: newPosition > 0 ? 'buy' : 'sell',
+            order
+          }];
+          
+          console.log('🔍 ADVANCED ORDERS: Started new position after reversal');
+        }
+        
+        // Update position
+        position = newPosition;
+        console.log(`🔍 ADVANCED ORDERS: Updated position to: ${position}`);
+      });
+      
+      // Handle any remaining open position
+      if (Math.abs(position) > 0) {
+        console.log('🔍 ADVANCED ORDERS: Position remains open:', position);
       }
     });
     
-    // Match buy/sell pairs to create trades
-    for (const [key, orders] of Array.from(orderMap.entries())) {
-      const { buys, sells } = orders;
-      
-      // Simple FIFO matching
-      const maxPairs = Math.min(buys.length, sells.length);
-      for (let i = 0; i < maxPairs; i++) {
-        const buyOrder = buys[i];
-        const sellOrder = sells[i];
-        
-        const account = findAccountByName(buyOrder['Account']);
-        const entryTime = new Date(buyOrder['Fill Time']);
-        const exitTime = new Date(sellOrder['Fill Time']);
-        
-        const trade = {
-          accountId: account.id,
-          symbol: convertContractToSymbol(buyOrder['Contract']),
-          side: entryTime < exitTime ? 'buy' : 'sell',
-          quantity: parseInt(buyOrder['Filled Qty']) || 1,
-          fillTime: entryTime < exitTime ? buyOrder['Fill Time'] : sellOrder['Fill Time'],
-          exitTime: entryTime < exitTime ? sellOrder['Fill Time'] : buyOrder['Fill Time'],
-          entryPrice: entryTime < exitTime ? 
-            parseFloat(buyOrder['Avg Fill Price']) || 0 : 
-            parseFloat(sellOrder['Avg Fill Price']) || 0,
-          exitPrice: entryTime < exitTime ? 
-            parseFloat(sellOrder['Avg Fill Price']) || 0 : 
-            parseFloat(buyOrder['Avg Fill Price']) || 0,
-          pnl: 0, // Calculate later
-          status: 'closed',
-          date: buyOrder['Date'] || sellOrder['Date'] || new Date().toISOString().split('T')[0],
-          orderId: `ORD-${buyOrder['Order ID']}-${sellOrder['Order ID']}`,
-          notes: 'Orders CSV Import - Matched Buy/Sell'
-        };
-        
-        // Calculate P&L
-        const priceDiff = trade.exitPrice - trade.entryPrice;
-        trade.pnl = trade.side === 'buy' ? 
-          priceDiff * trade.quantity : 
-          -priceDiff * trade.quantity;
-        
-        trades.push(trade);
-      }
+    console.log('🔍 ADVANCED ORDERS: Created', trades.length, 'trades with durations');
+    
+    // Log sample trade with duration
+    if (trades.length > 0) {
+      console.log('🔍 ADVANCED ORDERS: Sample trade with duration:', {
+        symbol: trades[0].symbol,
+        side: trades[0].side,
+        fillTime: trades[0].fillTime,
+        exitTime: trades[0].exitTime,
+        pnl: trades[0].pnl
+      });
     }
     
-    console.log('🔍 ORDERS: Created', trades.length, 'matched trades');
     return trades;
   };
 
@@ -481,27 +694,31 @@ const UniversalCsvImport = ({ accounts }: { accounts: Account[] }) => {
       console.log(`🔍 Prepared ${trades.length} trades for import`);
       console.log(`🔍 Sample trade:`, trades[0]);
       
-      // Send to API
-      const response = await apiRequest('/api/trades/import', 'POST', {
+      // Send to Universal CSV Import API
+      const response = await apiRequest('/api/trades/import-csv', 'POST', {
         trades,
+        accountId: trades[0]?.accountId,
         source: `${csvFormat}-csv`
       });
       
       console.log('🔍 API Response:', response);
       
       if (response && (response as any).success) {
+        const imported = (response as any).recordsImported || trades.length;
+        
         setImportStats({
-          imported: trades.length,
+          imported: imported,
           errors: errors.length,
           longTrades: trades.filter(t => t.side === 'buy').length,
           shortTrades: trades.filter(t => t.side === 'sell').length,
           format: csvFormat
         });
         
-        alert(`✅ Successfully imported ${trades.length} trades from ${csvFormat.toUpperCase()} CSV!\n\n` +
+        alert(`✅ Successfully imported ${imported} trades from ${csvFormat.toUpperCase()} CSV!\n\n` +
               `Long trades: ${trades.filter(t => t.side === 'buy').length}\n` +
               `Short trades: ${trades.filter(t => t.side === 'sell').length}\n` +
-              `${errors.length > 0 ? `Errors: ${errors.length}` : ''}`);
+              `${errors.length > 0 ? `Errors: ${errors.length}` : ''}\n\n` +
+              `Format: Advanced TradeZella-style position tracking`);
         
         queryClient.invalidateQueries({ queryKey: ['/api/trades'] });
         
@@ -512,7 +729,7 @@ const UniversalCsvImport = ({ accounts }: { accounts: Account[] }) => {
         setCsvHeaders([]);
         
       } else {
-        throw new Error((response as any).message || 'Import failed');
+        throw new Error((response as any).message || 'Import failed - check server logs');
       }
       
     } catch (error) {
