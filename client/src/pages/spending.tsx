@@ -47,7 +47,9 @@ const Spending = () => {
   const [selectedPeriod, setSelectedPeriod] = useState<string>("monthly");
 
   const [editingCategory, setEditingCategory] = useState<BudgetCategory | null>(null);
-  const [newCategoryName, setNewCategoryName] = useState("");
+  const [newTradingCategoryName, setNewTradingCategoryName] = useState("");
+  const [newPersonalCategoryName, setNewPersonalCategoryName] = useState("");
+  const [selectedEmoji, setSelectedEmoji] = useState("📊");
   const queryClient = useQueryClient();
   const { user } = useAuth();
   const { toast } = useToast();
@@ -228,17 +230,27 @@ const Spending = () => {
   };
 
   const handleCreateCategory = (type: 'trading' | 'personal') => {
-    if (!newCategoryName) return;
+    const categoryName = type === 'trading' ? newTradingCategoryName : newPersonalCategoryName;
+    if (!categoryName) return;
     
     const categoryData = {
       userId: (user as any)?.id || "",
-      name: newCategoryName,
+      name: categoryName,
       type,
+      icon: selectedEmoji,
       budgetAmount: 0,
       isActive: true
     };
 
     createCategoryMutation.mutate(categoryData);
+    
+    // Clear the appropriate field
+    if (type === 'trading') {
+      setNewTradingCategoryName("");
+    } else {
+      setNewPersonalCategoryName("");
+    }
+    setSelectedEmoji("📊");
   };
 
   const getEndDate = (period: string) => {
@@ -543,14 +555,14 @@ const Spending = () => {
                     <div className="flex gap-2">
                       <Input
                         placeholder="Add trading category..."
-                        value={newCategoryName}
-                        onChange={(e) => setNewCategoryName(e.target.value)}
+                        value={newTradingCategoryName}
+                        onChange={(e) => setNewTradingCategoryName(e.target.value)}
                         className="bg-gray-800 border-yellow-400/20 text-white"
                       />
                       <Button 
                         onClick={() => handleCreateCategory('trading')}
                         className="bg-gradient-to-r from-blue-400 to-blue-600 text-white hover:from-blue-500 hover:to-blue-700"
-                        disabled={!newCategoryName || createCategoryMutation.isPending}
+                        disabled={!newTradingCategoryName || createCategoryMutation.isPending}
                       >
                         <Plus className="h-4 w-4" />
                       </Button>
@@ -581,14 +593,14 @@ const Spending = () => {
                     <div className="flex gap-2">
                       <Input
                         placeholder="Add personal category..."
-                        value={newCategoryName}
-                        onChange={(e) => setNewCategoryName(e.target.value)}
+                        value={newPersonalCategoryName}
+                        onChange={(e) => setNewPersonalCategoryName(e.target.value)}
                         className="bg-gray-800 border-yellow-400/20 text-white"
                       />
                       <Button 
                         onClick={() => handleCreateCategory('personal')}
                         className="bg-gradient-to-r from-orange-400 to-orange-600 text-white hover:from-orange-500 hover:to-orange-700"
-                        disabled={!newCategoryName || createCategoryMutation.isPending}
+                        disabled={!newPersonalCategoryName || createCategoryMutation.isPending}
                       >
                         <Plus className="h-4 w-4" />
                       </Button>
@@ -714,17 +726,34 @@ const Spending = () => {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="flex gap-4">
-                <Input
-                  placeholder="Add trading category..."
-                  value={newCategoryName}
-                  onChange={(e) => setNewCategoryName(e.target.value)}
-                  className="bg-gray-800 border-yellow-400/20 text-white"
-                />
+              <div className="flex gap-2">
+                <div className="flex items-center gap-2">
+                  <Select value={selectedEmoji} onValueChange={setSelectedEmoji}>
+                    <SelectTrigger className="w-16 bg-gray-800 border-yellow-400/20">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="bg-gray-800 border-yellow-400/20">
+                      <SelectItem value="📊">📊</SelectItem>
+                      <SelectItem value="💹">💹</SelectItem>
+                      <SelectItem value="📈">📈</SelectItem>
+                      <SelectItem value="💰">💰</SelectItem>
+                      <SelectItem value="🎯">🎯</SelectItem>
+                      <SelectItem value="⚙️">⚙️</SelectItem>
+                      <SelectItem value="📱">📱</SelectItem>
+                      <SelectItem value="💻">💻</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <Input
+                    placeholder="Add trading category..."
+                    value={newTradingCategoryName}
+                    onChange={(e) => setNewTradingCategoryName(e.target.value)}
+                    className="bg-gray-800 border-yellow-400/20 text-white"
+                  />
+                </div>
                 <Button 
                   onClick={() => handleCreateCategory('trading')}
                   className="bg-gradient-to-r from-blue-400 to-blue-600 text-white hover:from-blue-500 hover:to-blue-700"
-                  disabled={!newCategoryName || createCategoryMutation.isPending}
+                  disabled={!newTradingCategoryName || createCategoryMutation.isPending}
                 >
                   <Plus className="h-4 w-4 mr-2" />
                   Add
@@ -799,17 +828,34 @@ const Spending = () => {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="flex gap-4">
-                <Input
-                  placeholder="Add personal category..."
-                  value={newCategoryName}
-                  onChange={(e) => setNewCategoryName(e.target.value)}
-                  className="bg-gray-800 border-yellow-400/20 text-white"
-                />
+              <div className="flex gap-2">
+                <div className="flex items-center gap-2">
+                  <Select value={selectedEmoji} onValueChange={setSelectedEmoji}>
+                    <SelectTrigger className="w-16 bg-gray-800 border-yellow-400/20">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="bg-gray-800 border-yellow-400/20">
+                      <SelectItem value="🍔">🍔</SelectItem>
+                      <SelectItem value="🚗">🚗</SelectItem>
+                      <SelectItem value="🏠">🏠</SelectItem>
+                      <SelectItem value="🛒">🛒</SelectItem>
+                      <SelectItem value="🎬">🎬</SelectItem>
+                      <SelectItem value="👕">👕</SelectItem>
+                      <SelectItem value="⚡">⚡</SelectItem>
+                      <SelectItem value="📚">📚</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <Input
+                    placeholder="Add personal category..."
+                    value={newPersonalCategoryName}
+                    onChange={(e) => setNewPersonalCategoryName(e.target.value)}
+                    className="bg-gray-800 border-yellow-400/20 text-white"
+                  />
+                </div>
                 <Button 
                   onClick={() => handleCreateCategory('personal')}
                   className="bg-gradient-to-r from-orange-400 to-orange-600 text-white hover:from-orange-500 hover:to-orange-700"
-                  disabled={!newCategoryName || createCategoryMutation.isPending}
+                  disabled={!newPersonalCategoryName || createCategoryMutation.isPending}
                 >
                   <Plus className="h-4 w-4 mr-2" />
                   Add

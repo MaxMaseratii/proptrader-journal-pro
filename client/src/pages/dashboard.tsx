@@ -2175,7 +2175,7 @@ export default function Dashboard() {
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-3">
                     <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-                    <h3 className="text-lg font-semibold text-white">Account Equity Curve</h3>
+                    <h3 className="text-lg font-semibold text-white">Equity Curve</h3>
                   </div>
                   
                   {(() => {
@@ -2205,7 +2205,7 @@ export default function Dashboard() {
 
                     return (
                       <div className="flex items-center space-x-6 text-sm">
-                        <span className="text-gray-400">Live equity curve data</span>
+                        <span className="text-gray-400">Equity curve data</span>
                       </div>
                     );
                   })()}

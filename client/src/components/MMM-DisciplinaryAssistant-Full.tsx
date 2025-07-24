@@ -1000,7 +1000,7 @@ export default function MMMDisciplinaryAssistant({ trades, accounts, selectedAcc
             <Settings className="h-6 w-6 text-white" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-gradient-rainbow-discipline">MMM DISCIPLINARY ASSISTANT</h1>
+            <h1 className="text-2xl font-bold text-gradient-rainbow-discipline">Discipline & Psychology Tracker</h1>
             <p className="text-gray-300">Advanced Trading Psychology Analysis & Discipline Coaching</p>
           </div>
         </div>

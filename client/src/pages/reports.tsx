@@ -28,6 +28,7 @@ import type { Account, Trade, JournalEntry } from "@shared/schema";
 
 export default function Reports() {
   const [selectedTab, setSelectedTab] = useState<string>("generator");
+  const [selectedAccountIds, setSelectedAccountIds] = useState<number[]>([]);
 
   const { data: accounts } = useQuery<Account[]>({
     queryKey: ["/api/accounts"],
@@ -45,14 +46,19 @@ export default function Reports() {
   const quickStats = useMemo(() => {
     if (!trades || !accounts) return null;
 
-    const totalTrades = trades.length;
-    const totalPnL = trades.reduce((sum, trade) => sum + trade.pnl, 0);
-    const winningTrades = trades.filter(trade => trade.pnl > 0);
+    // Filter trades based on selected accounts
+    const filteredTrades = selectedAccountIds.length === 0 
+      ? trades 
+      : trades.filter(trade => selectedAccountIds.includes(trade.accountId));
+
+    const totalTrades = filteredTrades.length;
+    const totalPnL = filteredTrades.reduce((sum, trade) => sum + trade.pnl, 0);
+    const winningTrades = filteredTrades.filter(trade => trade.pnl > 0);
     const winRate = totalTrades > 0 ? (winningTrades.length / totalTrades) * 100 : 0;
     
     // Group by month
     const monthlyData = new Map<string, number>();
-    trades.forEach(trade => {
+    filteredTrades.forEach(trade => {
       const month = trade.date.substring(0, 7); // YYYY-MM
       monthlyData.set(month, (monthlyData.get(month) || 0) + trade.pnl);
     });
@@ -66,11 +72,11 @@ export default function Reports() {
       totalTrades,
       totalPnL,
       winRate,
-      accountsTracked: accounts.length,
+      accountsTracked: selectedAccountIds.length === 0 ? accounts.length : selectedAccountIds.length,
       journalEntries: journalEntries?.length || 0,
       monthlyPnL
     };
-  }, [trades, accounts, journalEntries]);
+  }, [trades, accounts, journalEntries, selectedAccountIds]);
 
   const exportQuickReport = () => {
     if (!quickStats || !accounts) return;
@@ -109,6 +115,29 @@ export default function Reports() {
             <p className="text-gray-400 mt-1">Generate comprehensive trading reports and export data</p>
           </div>
           <div className="flex gap-3">
+            {/* Account Selection */}
+            <Select 
+              value={selectedAccountIds.length === 0 ? "all" : selectedAccountIds[0]?.toString()} 
+              onValueChange={(value) => {
+                if (value === "all") {
+                  setSelectedAccountIds([]);
+                } else {
+                  setSelectedAccountIds([parseInt(value)]);
+                }
+              }}
+            >
+              <SelectTrigger className="w-48 bg-gray-800 border-gray-600">
+                <SelectValue placeholder="All Accounts" />
+              </SelectTrigger>
+              <SelectContent className="bg-gray-800 border-gray-600">
+                <SelectItem value="all">All Accounts</SelectItem>
+                {accounts?.map((account) => (
+                  <SelectItem key={account.id} value={account.id.toString()}>
+                    {account.name} ({account.type})
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
             <Button 
               onClick={exportQuickReport} 
               variant="outline"
