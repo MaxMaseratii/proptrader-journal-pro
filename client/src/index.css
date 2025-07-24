@@ -11,6 +11,36 @@
   box-sizing: border-box !important;
 }
 
+/* EMERGENCY CSS CONTAINMENT FIX */
+.unrealized-profit-widgets {
+  contain: layout style !important;
+  overflow: hidden !important;
+}
+
+.unrealized-profit-widgets > div {
+  contain: layout style !important;
+  overflow: hidden !important;
+  position: relative !important;
+}
+
+.unrealized-profit-widgets [data-radix-collection-item] {
+  contain: layout style !important;
+  overflow: hidden !important;
+  position: relative !important;
+}
+
+/* Force all badge-like elements to stay contained */
+[class*="bg-red-500/20"], 
+[class*="bg-green-500/20"], 
+[class*="bg-orange-500/20"], 
+[class*="bg-yellow-500/20"] {
+  position: relative !important;
+  contain: layout !important;
+  overflow: hidden !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+}
+
 /* Compact Dashboard Layout - NO EMPTY SPACES */
 .primary-header {
   font-size: 1.875rem;

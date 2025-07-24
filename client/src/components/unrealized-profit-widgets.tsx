@@ -122,15 +122,15 @@ export default function UnrealizedProfitWidgets({ trades, selectedAccountIds, ac
 
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-full">
+    <div className="unrealized-profit-widgets grid grid-cols-1 lg:grid-cols-3 gap-6 h-full" style={{contain: 'layout', overflow: 'hidden'}}>
       {/* Target Progress Widget - Takes up 1/3 of the space */}
-      <div className="lg:col-span-1 h-full">
+      <div className="lg:col-span-1 h-full" style={{contain: 'layout', overflow: 'hidden'}}>
         {targetProgressWidget}
       </div>
       
       {/* Drawdown Buffer Remaining Widget - Takes up 1/3 of the space */}
-      <div className="lg:col-span-1 h-full">
-        <Card className="bg-gradient-to-br from-red-900/20 to-orange-900/20 border-red-500/20 h-full">
+      <div className="lg:col-span-1 h-full" style={{contain: 'layout', overflow: 'hidden', position: 'relative'}}>
+        <Card className="bg-gradient-to-br from-red-900/20 to-orange-900/20 border-red-500/20 h-full" style={{contain: 'layout', overflow: 'hidden'}}>
           <CardHeader className="pb-2">
             <CardTitle className="text-white flex items-center text-sm">
               <Shield className="mr-2 h-4 w-4 text-red-400" />
@@ -172,8 +172,8 @@ export default function UnrealizedProfitWidgets({ trades, selectedAccountIds, ac
       </div>
 
       {/* Consistency Rule Tracking Widget - Takes up 1/3 of the space */}
-      <div className="lg:col-span-1 h-full">
-        <Card className="bg-gradient-to-br from-purple-900/20 to-blue-900/20 border-purple-500/20 h-full">
+      <div className="lg:col-span-1 h-full" style={{contain: 'layout', overflow: 'hidden', position: 'relative'}}>
+        <Card className="bg-gradient-to-br from-purple-900/20 to-blue-900/20 border-purple-500/20 h-full" style={{contain: 'layout', overflow: 'hidden'}}>
           <CardHeader className="pb-2">
             <CardTitle className="text-white flex items-center text-sm">
               <TrendingUp className="mr-2 h-4 w-4 text-purple-400" />

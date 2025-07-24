@@ -2465,15 +2465,15 @@ export default function Dashboard() {
                                     
                                     if (dateEl && balanceEl && tradesEl && pnlEl && performanceEl) {
                                       const tradeTime = point.trade ? new Date(point.date).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : '';
-                                      const netPnL = point.y - accountCost;
-                                      const netPercent = ((netPnL / accountCost) * 100).toFixed(1);
+                                      const netPnL = point.y; // CRITICAL FIX: point.y already IS the net P&L from $0
+                                      const netPercent = ((netPnL / (accountCost || 25000)) * 100).toFixed(1);
                                       
                                       dateEl.textContent = point.date === 'Start' ? 'Account Start' : `${new Date(point.date).toLocaleDateString()} ${tradeTime}`;
                                       balanceEl.textContent = `Net: ${formatCurrency(point.y)}`;
                                       tradesEl.textContent = point.date === 'Start' ? 'Initial State' : `Trade #${point.tradesCount}`;
-                                      pnlEl.textContent = point.trade ? `Trade P&L: ${(point.trade.pnl || 0) >= 0 ? '+' : '-'}${formatCurrency(Math.abs(point.trade.pnl || 0))}` : 'Initial Capital';
+                                      pnlEl.textContent = point.trade ? `Trade P&L: ${(point.trade.pnl || 0) >= 0 ? '+' : '-'}${formatCurrency(Math.abs(point.trade.pnl || 0))}` : 'Starting Point';
                                       pnlEl.className = `text-xs font-medium ${point.trade ? (point.trade.pnl >= 0 ? 'text-green-400' : 'text-red-400') : 'text-gray-400'}`;
-                                      performanceEl.textContent = `Net: ${netPnL >= 0 ? '+' : ''}${formatCurrency(netPnL)} (${netPercent}%)`;
+                                      performanceEl.textContent = `Return: ${netPnL >= 0 ? '+' : ''}${formatCurrency(netPnL)} (${netPercent}%)`;
                                       performanceEl.className = `text-xs text-gray-400 mt-1 ${netPnL >= 0 ? 'text-green-400' : 'text-red-400'}`;
                                     }
                                     
