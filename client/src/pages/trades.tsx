@@ -33,15 +33,38 @@ const formatTimeForCSV = (timestamp: Date | string | null): string => {
   });
 };
 
-// Helper function to get contract multiplier for accurate P&L calculation
+// Helper function to get contract multiplier for accurate P&L calculation - CRITICAL FIX
 const getContractMultiplier = (symbol: string): number => {
   const symbolUpper = symbol.toUpperCase();
-  if (symbolUpper.includes('ES') && !symbolUpper.includes('MES')) return 50; // E-mini S&P 500
-  if (symbolUpper.includes('NQ') && !symbolUpper.includes('MNQ')) return 20; // E-mini NASDAQ
-  if (symbolUpper.includes('MES')) return 5; // Micro E-mini S&P 500
-  if (symbolUpper.includes('MNQ')) return 2; // Micro E-mini NASDAQ
-  if (symbolUpper.includes('YM')) return 5; // E-mini Dow
-  if (symbolUpper.includes('RTY')) return 50; // E-mini Russell 2000
+  console.log(`🔍 Getting multiplier for symbol: ${symbol} (upper: ${symbolUpper})`);
+  
+  // CRITICAL: MES must be checked BEFORE ES to avoid wrong matching
+  if (symbolUpper.includes('MES')) {
+    console.log(`✅ MES detected: returning multiplier 5`);
+    return 5; // Micro E-mini S&P 500: $5 per point
+  }
+  if (symbolUpper.includes('ESU') || (symbolUpper.includes('ES') && !symbolUpper.includes('MES'))) {
+    console.log(`✅ ES detected: returning multiplier 50`);
+    return 50; // E-mini S&P 500: $50 per point
+  }
+  if (symbolUpper.includes('MNQ')) {
+    console.log(`✅ MNQ detected: returning multiplier 2`);
+    return 2; // Micro E-mini NASDAQ: $2 per point
+  }
+  if (symbolUpper.includes('NQ') && !symbolUpper.includes('MNQ')) {
+    console.log(`✅ NQ detected: returning multiplier 20`);
+    return 20; // E-mini NASDAQ: $20 per point
+  }
+  if (symbolUpper.includes('YM')) {
+    console.log(`✅ YM detected: returning multiplier 5`);
+    return 5; // E-mini Dow: $5 per point
+  }
+  if (symbolUpper.includes('RTY')) {
+    console.log(`✅ RTY detected: returning multiplier 50`);
+    return 50; // E-mini Russell 2000: $50 per point
+  }
+  
+  console.warn(`⚠️ Unknown symbol multiplier for ${symbol}, using 1`);
   return 1; // Default multiplier for unknown contracts
 };
 
@@ -93,13 +116,15 @@ const UniversalCsvImport = ({ accounts }: { accounts: Account[] }) => {
   const [csvHeaders, setCsvHeaders] = useState<string[]>([]);
   const queryClient = useQueryClient();
 
-  // Convert contract symbols to standard format
+  // Convert contract symbols to standard format - CRITICAL FIX for MESU5 detection
   const convertContractToSymbol = (contract: string): string => {
     if (!contract) return 'UNKNOWN';
     
-    // Futures contract mapping
-    if (contract.startsWith('MES')) return 'ES';   // Micro E-mini S&P 500
-    if (contract.startsWith('NQ')) return 'NQ';    // E-mini NASDAQ 100
+    // Futures contract mapping - IMPORTANT: MES must come before ES to avoid wrong matching
+    if (contract.startsWith('MES')) return 'MES';   // Micro E-mini S&P 500 - KEEP AS MES NOT ES!
+    if (contract.startsWith('MNQ')) return 'MNQ';   // Micro E-mini NASDAQ 100
+    if (contract.startsWith('ESU') || contract.startsWith('ES')) return 'ESU';   // E-mini S&P 500
+    if (contract.startsWith('NQU') || contract.startsWith('NQ')) return 'NQ';    // E-mini NASDAQ 100
     if (contract.startsWith('YM')) return 'YM';    // E-mini Dow Jones
     if (contract.startsWith('RTY')) return 'RTY';  // E-mini Russell 2000
     if (contract.startsWith('GC')) return 'GC';    // Gold Futures
@@ -363,21 +388,33 @@ const UniversalCsvImport = ({ accounts }: { accounts: Account[] }) => {
       // Get ALL orders for this group (including cancelled) for SL/TP detection
       const allOrdersInGroup = allOrderGroups[groupKey] || [];
       
-      // Detect Stop Loss and Take Profit orders from cancelled orders
+      // Detect Stop Loss and Take Profit orders from cancelled orders - ENHANCED SL/TP DETECTION
       const detectSLTPOrders = () => {
         const cancelledOrders = allOrdersInGroup.filter(order => 
           order.Status === 'Cancelled' || order.Status === 'Canceled'
         );
         
-        const stopLossOrders = cancelledOrders.filter(order => 
-          order['Order Type']?.toLowerCase().includes('stop') || 
-          order['Type']?.toLowerCase().includes('stop')
-        );
+        console.log(`🔍 SL/TP DETECTION: Found ${cancelledOrders.length} cancelled orders in group`);
         
-        const takeProfitOrders = cancelledOrders.filter(order => 
-          order['Order Type']?.toLowerCase().includes('limit') ||
-          order['Type']?.toLowerCase().includes('limit')
-        );
+        const stopLossOrders = cancelledOrders.filter(order => {
+          const orderType = (order['Order Type'] || order['Type'] || '').toLowerCase();
+          const hasStopPrice = order['Stop Price'] && order['Stop Price'].trim() !== '';
+          const isStopOrder = orderType.includes('stop');
+          
+          console.log(`🔍 Order: ${order['Order ID']} - Type: ${orderType}, HasStopPrice: ${hasStopPrice}, IsStopOrder: ${isStopOrder}`);
+          
+          return isStopOrder || hasStopPrice;
+        });
+        
+        const takeProfitOrders = cancelledOrders.filter(order => {
+          const orderType = (order['Order Type'] || order['Type'] || '').toLowerCase();
+          const hasLimitPrice = order['Limit Price'] && order['Limit Price'].trim() !== '';
+          const isLimitOrder = orderType.includes('limit');
+          
+          return isLimitOrder && hasLimitPrice && !stopLossOrders.includes(order);
+        });
+        
+        console.log(`🔍 SL/TP RESULT: ${stopLossOrders.length} stop losses, ${takeProfitOrders.length} take profits`);
         
         return { stopLossOrders, takeProfitOrders };
       };
@@ -393,16 +430,26 @@ const UniversalCsvImport = ({ accounts }: { accounts: Account[] }) => {
         console.log('🔍 Take Profit Orders:', takeProfitOrders.map(o => ({ price: o['Avg Fill Price'] || o['Price'], type: o['Order Type'] || o['Type'], status: o.Status })));
       }
       
-      // Function to get initial and final SL/TP levels
+      // Function to get initial and final SL/TP levels - ENHANCED DETECTION
       const getSLTPLevels = (isLong: boolean) => {
-        // Get chronologically ordered SL orders
+        // Get chronologically ordered SL orders using Stop Price instead of Avg Fill Price
         const chronoStopLoss = stopLossOrders
-          .filter(order => order['Avg Fill Price'] || order['Price'])
+          .filter(order => order['Stop Price'] || order['Limit Price'] || order['Avg Fill Price'] || order['Price'])
+          .map(order => ({
+            ...order,
+            effectivePrice: parseFloat(order['Stop Price'] || order['Limit Price'] || order['Avg Fill Price'] || order['Price'] || '0')
+          }))
+          .filter(order => order.effectivePrice > 0)
           .sort((a, b) => {
             const timeA = new Date(a['Fill Time'] || a['Timestamp'] || 0).getTime();
             const timeB = new Date(b['Fill Time'] || b['Timestamp'] || 0).getTime();
             return timeA - timeB;
           });
+          
+        console.log(`🔍 SL Analysis: Found ${chronoStopLoss.length} valid stop loss orders with prices`);
+        chronoStopLoss.forEach((order, i) => {
+          console.log(`  ${i+1}. Price: ${order.effectivePrice}, Time: ${order['Fill Time'] || order['Timestamp']}`);
+        });
           
         // Get chronologically ordered TP orders  
         const chronoTakeProfit = takeProfitOrders
