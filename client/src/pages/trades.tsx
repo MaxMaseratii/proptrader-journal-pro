@@ -404,21 +404,47 @@ export default function Trades() {
                   <tr key={trade.id} className="border-b border-gray-800 hover:bg-gray-800/50">
                     <td className="py-3 px-4 text-white">{formatDate(trade.date)}</td>
                     <td className="py-3 px-4 text-gray-300">
-                      {trade.fillTime ? new Date(trade.fillTime).toLocaleTimeString('en-US', { 
-                        hour: '2-digit', 
-                        minute: '2-digit', 
-                        hour12: false 
-                      }) : '-'}
+                      <div className="space-y-1">
+                        <div className="text-green-400 text-xs font-medium">Entry:</div>
+                        <div>
+                          {trade.fillTime ? new Date(trade.fillTime).toLocaleTimeString('en-US', { 
+                            hour: '2-digit', 
+                            minute: '2-digit', 
+                            hour12: false 
+                          }) : '-'}
+                        </div>
+                        <div className="text-red-400 text-xs font-medium">Exit:</div>
+                        <div>
+                          {trade.exitTime ? new Date(trade.exitTime).toLocaleTimeString('en-US', { 
+                            hour: '2-digit', 
+                            minute: '2-digit', 
+                            hour12: false 
+                          }) : (trade.status === 'open' ? 'Open' : 'Missing')}
+                        </div>
+                      </div>
                     </td>
                     <td className="py-3 px-4 text-gray-300">
                       {(() => {
+                        // CRITICAL FIX: Use actual entry and exit timestamps when available
                         if (!trade.fillTime) return '-';
                         
-                        // Parse fillTime and exitTime to calculate duration
                         const entryTime = new Date(trade.fillTime);
-                        const exitTime = trade.exitPrice && trade.date ? new Date(trade.date + 'T23:59:59') : entryTime;
+                        let exitTime;
                         
-                        // If we have specific exit time data, use it; otherwise estimate based on order patterns
+                        // Priority 1: Use actual exitTime if available
+                        if (trade.exitTime) {
+                          exitTime = new Date(trade.exitTime);
+                        }
+                        // Priority 2: For closed trades without exitTime, show that data is missing
+                        else if (trade.status === 'closed' && trade.exitPrice) {
+                          return 'Missing exit time';
+                        }
+                        // Priority 3: Open trades show "Open"
+                        else {
+                          return trade.status === 'open' ? 'Open' : '-';
+                        }
+                        
+                        // Calculate actual duration from real timestamps
                         const durationMs = exitTime.getTime() - entryTime.getTime();
                         const durationMinutes = Math.max(1, Math.floor(durationMs / (1000 * 60)));
                         

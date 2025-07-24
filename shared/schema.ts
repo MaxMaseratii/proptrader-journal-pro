@@ -182,7 +182,8 @@ export const trades = pgTable("trades", {
   notes: text("notes"),
   // Additional fields for order tracking
   orderId: text("order_id"), // External order ID from CSV
-  fillTime: timestamp("fill_time"), // Exact fill timestamp
+  fillTime: timestamp("fill_time"), // Exact entry fill timestamp
+  exitTime: timestamp("exit_time"), // Exact exit fill timestamp
   orderType: text("order_type"), // 'Market', 'Limit', 'Stop'
   originalQuantity: real("original_quantity"), // Original order quantity
   commission: real("commission"), // Trading fees

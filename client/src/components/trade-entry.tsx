@@ -44,6 +44,8 @@ export default function TradeEntry({ accounts }: TradeEntryProps) {
       finalTakeProfit: null,
       tradeImage: "",
       tradingViewLink: "",
+      fillTime: null, // Entry timestamp
+      exitTime: null, // Exit timestamp
     };
   });
 
@@ -258,7 +260,7 @@ export default function TradeEntry({ accounts }: TradeEntryProps) {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                     <div className="space-y-2">
                       <Label className="text-gray-300 font-medium flex items-center">
                         <Hash className="mr-1 h-4 w-4" />
@@ -282,6 +284,34 @@ export default function TradeEntry({ accounts }: TradeEntryProps) {
                         value={formData.date || ""}
                         onChange={(e) => setFormData(prev => ({ ...prev, date: e.target.value }))}
                         className="bg-gray-700 border-gray-600 text-white focus:border-green-400"
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label className="text-gray-300 font-medium text-green-400">Entry Time</Label>
+                      <Input 
+                        type="datetime-local"
+                        value={formData.fillTime ? new Date(formData.fillTime).toISOString().slice(0, 16) : ""}
+                        onChange={(e) => setFormData(prev => ({ 
+                          ...prev, 
+                          fillTime: e.target.value ? new Date(e.target.value).toISOString() : null 
+                        }))}
+                        className="bg-gray-700 border-gray-600 text-white focus:border-green-400"
+                        placeholder="When you entered the trade"
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label className="text-gray-300 font-medium text-red-400">Exit Time</Label>
+                      <Input 
+                        type="datetime-local"
+                        value={formData.exitTime ? new Date(formData.exitTime).toISOString().slice(0, 16) : ""}
+                        onChange={(e) => setFormData(prev => ({ 
+                          ...prev, 
+                          exitTime: e.target.value ? new Date(e.target.value).toISOString() : null 
+                        }))}
+                        className="bg-gray-700 border-gray-600 text-white focus:border-red-400"
+                        placeholder="When you exited the trade (optional)"
                       />
                     </div>
 
