@@ -71,8 +71,8 @@ const calculateDurationForCSV = (trade: Trade): string => {
   }
 };
 
-// Enhanced CSV Import Component with Position History support
-const PositionHistoryCsvImport = ({ accounts }: { accounts: Account[] }) => {
+// Universal CSV Import Component supporting all formats
+const UniversalCsvImport = ({ accounts }: { accounts: Account[] }) => {
   const [csvFile, setCsvFile] = useState<File | null>(null);
   const [csvFormat, setCsvFormat] = useState<string>('unknown');
   const [isUploading, setIsUploading] = useState(false);
@@ -99,38 +99,41 @@ const PositionHistoryCsvImport = ({ accounts }: { accounts: Account[] }) => {
     return contract.substring(0, Math.min(3, contract.length));
   };
 
-  // Detect CSV format from headers
+  // Enhanced format detection for all CSV types
   const detectCsvFormat = (headers: string[]): string => {
-    console.log('Detecting format for headers:', headers);
+    console.log('🔍 Detecting format for headers:', headers);
     
     // Position History CSV detection (most specific first)
     if (headers.includes('Position ID') && 
         headers.includes('Bought Timestamp') && 
         headers.includes('Sold Timestamp') &&
-        headers.includes('Paired Qty')) {
+        (headers.includes('Paired Qty') || headers.includes('Buy Price'))) {
       return 'position-history';
     }
     
-    // Performance CSV detection
-    if (headers.includes('buyFillId') && 
-        headers.includes('sellFillId') && 
-        headers.includes('boughtTimestamp') &&
-        headers.includes('soldTimestamp')) {
+    // Performance CSV detection  
+    if ((headers.includes('buyFillId') || headers.includes('Buy Fill ID')) && 
+        (headers.includes('sellFillId') || headers.includes('Sell Fill ID')) && 
+        (headers.includes('boughtTimestamp') || headers.includes('soldTimestamp') || 
+         headers.includes('buyPrice') || headers.includes('sellPrice'))) {
       return 'performance';
-    }
-    
-    // Fills CSV detection
-    if (headers.includes('Fill ID') && 
-        headers.includes('Order ID') && 
-        headers.includes('Timestamp')) {
-      return 'fills';
     }
     
     // Orders CSV detection
     if (headers.includes('Order ID') && 
-        headers.includes('Fill Time') && 
-        headers.includes('B/S')) {
+        (headers.includes('Fill Time') || headers.includes('Timestamp')) && 
+        (headers.includes('B/S') || headers.includes('Side')) &&
+        (headers.includes('Avg Fill Price') || headers.includes('Price'))) {
       return 'orders';
+    }
+    
+    // Fills/Trades CSV detection
+    if (headers.includes('Fill ID') && 
+        headers.includes('Order ID') && 
+        headers.includes('Timestamp') &&
+        (headers.includes('B/S') || headers.includes('Side')) &&
+        headers.includes('Price')) {
+      return 'fills';
     }
     
     return 'unknown';
@@ -141,78 +144,273 @@ const PositionHistoryCsvImport = ({ accounts }: { accounts: Account[] }) => {
     const lines = text.split('\n').filter(line => line.trim());
     if (lines.length < 2) return { headers: [], data: [] };
     
-    // Parse headers (handle quotes)
-    const headers = lines[0].split(',').map(h => h.trim().replace(/^"|"$/g, ''));
+    // Parse headers (handle quotes and various delimiters)
+    const firstLine = lines[0];
+    const delimiter = firstLine.includes('\t') ? '\t' : ',';
+    const headers = firstLine.split(delimiter).map(h => h.trim().replace(/^"|"$/g, ''));
     
     // Parse data rows
     const data = [];
     for (let i = 1; i < lines.length; i++) {
-      const values = lines[i].split(',').map(v => v.trim().replace(/^"|"$/g, ''));
+      const values = lines[i].split(delimiter).map(v => v.trim().replace(/^"|"$/g, ''));
       const row: any = {};
       headers.forEach((header, index) => {
         row[header] = values[index] || '';
       });
-      data.push(row);
+      
+      // Skip empty rows
+      if (Object.values(row).some(v => v !== '')) {
+        data.push(row);
+      }
     }
     
     return { headers, data };
   };
 
+  // Find account by name or use first available account as fallback
+  const findAccountByName = (accountName: string): any => {
+    // First try exact match
+    let account = accounts.find(acc => acc.name === accountName);
+    
+    // Then try partial match
+    if (!account) {
+      account = accounts.find(acc => acc.name.includes(accountName) || accountName.includes(acc.name));
+    }
+    
+    // Finally, if no match and we have accounts, use the first available account
+    if (!account && accounts.length > 0) {
+      console.warn(`Account "${accountName}" not found. Using first available account: ${accounts[0].name}`);
+      account = accounts[0];
+    }
+    
+    if (!account) {
+      throw new Error(`No accounts available. Please create an account first.`);
+    }
+    
+    return account;
+  };
+
   // Map Position History row to trade format
   const mapPositionHistoryRow = (row: any): any => {
-    console.log('Mapping position history row:', row);
+    console.log('🔍 POSITION HISTORY: Mapping row:', row);
     
-    // Validate required fields
-    if (!row['Account']) throw new Error('Missing Account field');
-    if (!row['Contract']) throw new Error('Missing Contract field');
-    if (!row['Bought Timestamp']) throw new Error('Missing Bought Timestamp');
-    if (!row['Sold Timestamp']) throw new Error('Missing Sold Timestamp');
-    
-    // Detect long vs short trade by comparing timestamps
     const boughtTime = new Date(row['Bought Timestamp']);
     const soldTime = new Date(row['Sold Timestamp']);
-    
-    if (isNaN(boughtTime.getTime()) || isNaN(soldTime.getTime())) {
-      throw new Error('Invalid timestamp format');
-    }
-    
     const isShort = soldTime < boughtTime;
     
-    // Find account by name
-    const account = accounts.find(acc => acc.name === row['Account']);
-    if (!account) {
-      throw new Error(`Account "${row['Account']}" not found. Please create this account first.`);
-    }
-
-    // Convert prices to numbers
+    const account = findAccountByName(row['Account']);
     const buyPrice = parseFloat(row['Buy Price']);
     const sellPrice = parseFloat(row['Sell Price']);
     const pnl = parseFloat(row['P/L']);
     const quantity = parseInt(row['Paired Qty']);
     
-    if (isNaN(buyPrice) || isNaN(sellPrice) || isNaN(pnl) || isNaN(quantity)) {
-      throw new Error('Invalid numeric data in row');
-    }
-
-    return {
+    const mappedTrade = {
       accountId: account.id,
       symbol: convertContractToSymbol(row['Contract']),
       side: isShort ? 'sell' : 'buy',
       quantity: quantity,
-      
-      // Handle entry/exit based on trade direction
       fillTime: isShort ? row['Sold Timestamp'] : row['Bought Timestamp'],
       exitTime: isShort ? row['Bought Timestamp'] : row['Sold Timestamp'],
       entryPrice: isShort ? sellPrice : buyPrice,
       exitPrice: isShort ? buyPrice : sellPrice,
-      
       pnl: pnl,
       status: 'closed',
       date: row['Trade Date'],
       orderId: `POS-${row['Position ID']}`,
       notes: `Position History Import - ${isShort ? 'Short' : 'Long'} Trade`
     };
+
+    console.log('🔍 POSITION HISTORY: Mapped trade:', {
+      fillTime: mappedTrade.fillTime,
+      exitTime: mappedTrade.exitTime,
+      side: mappedTrade.side
+    });
+
+    return mappedTrade;
   };
+
+  // Map Performance CSV row to trade format
+  const mapPerformanceRow = (row: any): any => {
+    console.log('🔍 PERFORMANCE: Mapping row:', row);
+    
+    const account = findAccountByName(row['Account'] || 'Default');
+    const buyPrice = parseFloat(row['buyPrice'] || row['Buy Price']);
+    const sellPrice = parseFloat(row['sellPrice'] || row['Sell Price']);
+    const pnl = parseFloat(row['pnl'] || row['P/L']);
+    const quantity = parseInt(row['qty'] || row['Quantity'] || 1);
+    
+    const mappedTrade = {
+      accountId: account.id,
+      symbol: convertContractToSymbol(row['symbol'] || row['Contract']),
+      side: 'buy', // Performance CSV typically shows completed round trips
+      quantity: quantity,
+      fillTime: row['boughtTimestamp'] || row['Bought Timestamp'],
+      exitTime: row['soldTimestamp'] || row['Sold Timestamp'],
+      entryPrice: buyPrice,
+      exitPrice: sellPrice,
+      pnl: pnl,
+      status: 'closed',
+      date: row['date'] || row['Date'] || new Date().toISOString().split('T')[0],
+      orderId: `PERF-${row['buyFillId'] || Date.now()}`,
+      notes: 'Performance CSV Import'
+    };
+
+    console.log('🔍 PERFORMANCE: Mapped trade:', {
+      fillTime: mappedTrade.fillTime,
+      exitTime: mappedTrade.exitTime
+    });
+
+    return mappedTrade;
+  };
+
+  // Map Orders CSV - requires matching buy/sell orders
+  const mapOrdersRows = (rows: any[]): any[] => {
+    console.log('🔍 ORDERS: Processing', rows.length, 'order rows');
+    
+    const trades = [];
+    const orderMap = new Map();
+    
+    // Group orders by symbol and account to match entry/exit
+    rows.forEach(row => {
+      const symbol = convertContractToSymbol(row['Contract']);
+      const account = row['Account'];
+      const side = row['B/S'].toLowerCase();
+      const key = `${symbol}-${account}`;
+      
+      if (!orderMap.has(key)) {
+        orderMap.set(key, { buys: [], sells: [] });
+      }
+      
+      const orderGroup = orderMap.get(key);
+      if (side === 'buy' || side === 'b') {
+        orderGroup.buys.push(row);
+      } else if (side === 'sell' || side === 's') {
+        orderGroup.sells.push(row);
+      }
+    });
+    
+    // Match buy/sell pairs to create trades
+    for (const [key, orders] of Array.from(orderMap.entries())) {
+      const { buys, sells } = orders;
+      
+      // Simple FIFO matching
+      const maxPairs = Math.min(buys.length, sells.length);
+      for (let i = 0; i < maxPairs; i++) {
+        const buyOrder = buys[i];
+        const sellOrder = sells[i];
+        
+        const account = findAccountByName(buyOrder['Account']);
+        const entryTime = new Date(buyOrder['Fill Time']);
+        const exitTime = new Date(sellOrder['Fill Time']);
+        
+        const trade = {
+          accountId: account.id,
+          symbol: convertContractToSymbol(buyOrder['Contract']),
+          side: entryTime < exitTime ? 'buy' : 'sell',
+          quantity: parseInt(buyOrder['Filled Qty']),
+          fillTime: entryTime < exitTime ? buyOrder['Fill Time'] : sellOrder['Fill Time'],
+          exitTime: entryTime < exitTime ? sellOrder['Fill Time'] : buyOrder['Fill Time'],
+          entryPrice: entryTime < exitTime ? 
+            parseFloat(buyOrder['Avg Fill Price']) : 
+            parseFloat(sellOrder['Avg Fill Price']),
+          exitPrice: entryTime < exitTime ? 
+            parseFloat(sellOrder['Avg Fill Price']) : 
+            parseFloat(buyOrder['Avg Fill Price']),
+          pnl: 0, // Calculate later
+          status: 'closed',
+          date: buyOrder['Date'] || sellOrder['Date'],
+          orderId: `ORD-${buyOrder['Order ID']}-${sellOrder['Order ID']}`,
+          notes: 'Orders CSV Import - Matched Buy/Sell'
+        };
+        
+        // Calculate P&L
+        const priceDiff = trade.exitPrice - trade.entryPrice;
+        trade.pnl = trade.side === 'buy' ? 
+          priceDiff * trade.quantity : 
+          -priceDiff * trade.quantity;
+        
+        trades.push(trade);
+      }
+    }
+    
+    console.log('🔍 ORDERS: Created', trades.length, 'matched trades');
+    return trades;
+  };
+
+  // Map Fills CSV - similar to Orders but with Fill IDs
+  const mapFillsRows = (rows: any[]): any[] => {
+    console.log('🔍 FILLS: Processing', rows.length, 'fill rows');
+    
+    const trades = [];
+    const fillGroups = new Map();
+    
+    // Group fills by Order ID to match entry/exit
+    rows.forEach(row => {
+      const orderId = row['Order ID'];
+      if (!fillGroups.has(orderId)) {
+        fillGroups.set(orderId, []);
+      }
+      fillGroups.get(orderId).push(row);
+    });
+    
+    // Process each order's fills
+    for (const [orderId, fills] of Array.from(fillGroups.entries())) {
+      if (fills.length >= 2) {
+        // Sort by timestamp to determine entry/exit
+        fills.sort((a: any, b: any) => new Date(a.Timestamp).getTime() - new Date(b.Timestamp).getTime());
+        
+        const entryFill = fills[0];
+        const exitFill = fills[fills.length - 1];
+        
+        const account = findAccountByName(entryFill['Account']);
+        
+        const trade = {
+          accountId: account.id,
+          symbol: convertContractToSymbol(entryFill['Contract']),
+          side: entryFill['B/S'].toLowerCase() === 'buy' ? 'buy' : 'sell',
+          quantity: parseInt(entryFill['Quantity']),
+          fillTime: entryFill['Timestamp'],
+          exitTime: exitFill['Timestamp'],
+          entryPrice: parseFloat(entryFill['Price']),
+          exitPrice: parseFloat(exitFill['Price']),
+          pnl: 0, // Calculate later
+          status: 'closed',
+          date: entryFill['Date'] || entryFill['Timestamp'].split(' ')[0],
+          orderId: `FILL-${orderId}`,
+          notes: 'Fills CSV Import'
+        };
+        
+        // Calculate P&L
+        const priceDiff = trade.exitPrice - trade.entryPrice;
+        trade.pnl = trade.side === 'buy' ? 
+          priceDiff * trade.quantity : 
+          -priceDiff * trade.quantity;
+        
+        trades.push(trade);
+      }
+    }
+    
+    console.log('🔍 FILLS: Created', trades.length, 'matched trades');
+    return trades;
+  };
+
+  // Main mapping function - routes to appropriate mapper
+  const mapRowsToTrades = (rows: any[], format: string): any[] => {
+    switch (format) {
+      case 'position-history':
+        return rows.map(mapPositionHistoryRow);
+      case 'performance':
+        return rows.map(mapPerformanceRow);
+      case 'orders':
+        return mapOrdersRows(rows);
+      case 'fills':
+        return mapFillsRows(rows);
+      default:
+        throw new Error(`Unsupported format: ${format}`);
+    }
+  };
+
+
 
   // Handle file selection and preview
   const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -223,21 +421,19 @@ const PositionHistoryCsvImport = ({ accounts }: { accounts: Account[] }) => {
     setImportStats(null);
     
     try {
-      // Parse CSV for preview
       const text = await file.text();
       const { headers, data } = parseCSV(text);
       
       setCsvHeaders(headers);
-      
-      // Detect format
       const detectedFormat = detectCsvFormat(headers);
       setCsvFormat(detectedFormat);
       
-      // Show preview of first few rows
+      // Show preview
       setPreviewData(data.slice(0, 3));
       
-      console.log(`Detected format: ${detectedFormat}`);
-      console.log(`Found ${data.length} data rows`);
+      console.log(`🔍 Detected format: ${detectedFormat}`);
+      console.log(`🔍 Found ${data.length} data rows`);
+      console.log(`🔍 Headers:`, headers);
       
     } catch (error) {
       console.error('Error parsing CSV:', error);
@@ -250,7 +446,7 @@ const PositionHistoryCsvImport = ({ accounts }: { accounts: Account[] }) => {
 
   // Upload and process CSV
   const handleUpload = async () => {
-    if (!csvFile || csvFormat !== 'position-history') return;
+    if (!csvFile || csvFormat === 'unknown') return;
 
     setIsUploading(true);
     
@@ -258,44 +454,44 @@ const PositionHistoryCsvImport = ({ accounts }: { accounts: Account[] }) => {
       const text = await csvFile.text();
       const { headers, data } = parseCSV(text);
       
-      console.log(`Processing ${data.length} rows...`);
+      console.log(`🔍 Processing ${data.length} rows with format: ${csvFormat}`);
       
       const trades = [];
       const errors = [];
       
-      for (let i = 0; i < data.length; i++) {
-        try {
-          const trade = mapPositionHistoryRow(data[i]);
-          trades.push(trade);
-        } catch (error) {
-          console.error(`Error processing row ${i + 1}:`, error);
-          errors.push(`Row ${i + 1}: ${(error as Error).message}`);
-        }
+      try {
+        const mappedTrades = mapRowsToTrades(data, csvFormat);
+        trades.push(...mappedTrades);
+      } catch (error) {
+        console.error(`🔍 Error mapping trades:`, error);
+        errors.push(`Mapping error: ${(error as Error).message}`);
       }
       
-      if (errors.length > 0) {
-        const errorMsg = `${errors.length} rows failed:\n${errors.slice(0, 5).join('\n')}${errors.length > 5 ? '\n...' : ''}`;
-        alert(errorMsg);
-        if (trades.length === 0) return;
+      if (errors.length > 0 && trades.length === 0) {
+        throw new Error(errors.join('\n'));
       }
       
-      console.log(`Prepared ${trades.length} trades for import`);
+      console.log(`🔍 Prepared ${trades.length} trades for import`);
+      console.log(`🔍 Sample trade:`, trades[0]);
       
       // Send to API
       const response = await apiRequest('/api/trades/import', 'POST', {
         trades,
-        source: 'position-history-csv'
+        source: `${csvFormat}-csv`
       });
+      
+      console.log('🔍 API Response:', response);
       
       if (response && (response as any).success) {
         setImportStats({
           imported: trades.length,
           errors: errors.length,
           longTrades: trades.filter(t => t.side === 'buy').length,
-          shortTrades: trades.filter(t => t.side === 'sell').length
+          shortTrades: trades.filter(t => t.side === 'sell').length,
+          format: csvFormat
         });
         
-        alert(`✅ Successfully imported ${trades.length} trades!\n\n` +
+        alert(`✅ Successfully imported ${trades.length} trades from ${csvFormat.toUpperCase()} CSV!\n\n` +
               `Long trades: ${trades.filter(t => t.side === 'buy').length}\n` +
               `Short trades: ${trades.filter(t => t.side === 'sell').length}\n` +
               `${errors.length > 0 ? `Errors: ${errors.length}` : ''}`);
@@ -319,6 +515,46 @@ const PositionHistoryCsvImport = ({ accounts }: { accounts: Account[] }) => {
       setIsUploading(false);
     }
   };
+
+  // Get format info
+  const getFormatInfo = (format: string) => {
+    const formatDetails = {
+      'position-history': {
+        icon: '🏛️',
+        name: 'Position History',
+        description: 'Complete trade pairs with entry/exit timestamps',
+        features: ['✅ Entry & Exit Times', '✅ Long & Short Detection', '✅ Calculated P&L', '✅ Account Info']
+      },
+      'performance': {
+        icon: '📊',
+        name: 'Performance',
+        description: 'Trade performance data with P&L metrics',
+        features: ['✅ Entry & Exit Times', '✅ Pre-calculated P&L', '✅ Fill IDs', '⚠️ May need account mapping']
+      },
+      'orders': {
+        icon: '📋',
+        name: 'Orders',
+        description: 'Individual order records (will match buy/sell pairs)',
+        features: ['✅ Order matching', '✅ Fill times', '⚠️ Requires buy/sell pairing', '✅ Account info']
+      },
+      'fills': {
+        icon: '🔄',
+        name: 'Fills/Trades',
+        description: 'Individual fill records (will group by Order ID)',
+        features: ['✅ Fill-level detail', '✅ Timestamps', '⚠️ Requires fill matching', '✅ Commission data']
+      },
+      'unknown': {
+        icon: '❓',
+        name: 'Unknown Format',
+        description: 'CSV format not recognized',
+        features: ['❌ Unsupported format']
+      }
+    };
+    
+    return formatDetails[format as keyof typeof formatDetails] || formatDetails['unknown'];
+  };
+
+  const formatInfo = getFormatInfo(csvFormat);
 
   return (
     <div className="space-y-6">
@@ -356,18 +592,23 @@ const PositionHistoryCsvImport = ({ accounts }: { accounts: Account[] }) => {
       </div>
 
       {/* Format Information */}
-      {csvFormat === 'position-history' && (
+      {csvFormat !== 'unknown' && csvHeaders.length > 0 && (
         <div className="bg-green-600/20 border border-green-600 rounded-lg p-4">
           <div className="flex items-start">
             <CheckCircle className="h-5 w-5 text-green-400 mr-3 mt-0.5" />
             <div>
-              <h4 className="text-green-400 font-medium">✅ Perfect! Position History CSV Detected</h4>
-              <div className="text-sm text-gray-300 mt-2 space-y-1">
-                <p>• <strong>Complete timing data:</strong> Entry and exit timestamps included</p>
-                <p>• <strong>Long & Short trades:</strong> Automatic direction detection</p>
-                <p>• <strong>Account matching:</strong> Will link to existing account "{accounts.find(acc => previewData[0] && acc.name === previewData[0]['Account'])?.name || 'Not found'}"</p>
-                <p>• <strong>Ready to import:</strong> {previewData.length > 0 ? `${previewData.length} sample trades shown below` : 'Upload to see preview'}</p>
+              <h4 className="text-green-400 font-medium">
+                {formatInfo.icon} {formatInfo.name} CSV Detected!
+              </h4>
+              <p className="text-sm text-gray-300 mt-1">{formatInfo.description}</p>
+              <div className="mt-2 space-y-1">
+                {formatInfo.features.map((feature, index) => (
+                  <div key={index} className="text-xs text-gray-300">• {feature}</div>
+                ))}
               </div>
+              <p className="text-xs text-green-300 mt-2">
+                Ready to import {previewData.length > 0 ? `${previewData.length} sample` : ''} records
+              </p>
             </div>
           </div>
         </div>
@@ -395,7 +636,7 @@ const PositionHistoryCsvImport = ({ accounts }: { accounts: Account[] }) => {
       )}
 
       {/* Preview Section */}
-      {previewData.length > 0 && csvFormat === 'position-history' && (
+      {previewData.length > 0 && csvFormat !== 'unknown' && (
         <div className="space-y-3">
           <h4 className="text-sm font-medium text-gray-300 flex items-center">
             <FileText className="h-4 w-4 mr-2" />
@@ -467,19 +708,19 @@ const PositionHistoryCsvImport = ({ accounts }: { accounts: Account[] }) => {
       {/* Import Button */}
       <Button 
         onClick={handleUpload}
-        disabled={!csvFile || csvFormat !== 'position-history' || isUploading}
+        disabled={!csvFile || csvFormat === 'unknown' || isUploading}
         className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600"
         size="lg"
       >
         {isUploading ? (
           <>
             <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-            Importing Position History...
+            Importing {formatInfo.name}...
           </>
         ) : (
           <>
             <Upload className="mr-2 h-4 w-4" />
-            Import Position History CSV
+            Import {formatInfo.name} CSV
           </>
         )}
       </Button>
@@ -689,7 +930,7 @@ export default function Trades() {
               <p className="text-gray-400">Import trades from any broker: Tradovate, MT4/5, Rithmic, CQG, NinjaTrader, Interactive Brokers, and more. For complete timing data, use Performance CSV exports when available.</p>
             </CardHeader>
             <CardContent>
-              <PositionHistoryCsvImport accounts={accounts || []} />
+              <UniversalCsvImport accounts={accounts || []} />
             </CardContent>
           </Card>
 
