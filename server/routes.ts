@@ -434,10 +434,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
               pnl: trade.pnl || 0,
               date: trade.date || new Date().toISOString().split('T')[0],
               status: trade.status || 'closed',
+              fillTime: trade.fillTime ? new Date(trade.fillTime) : new Date(),
+              exitTime: trade.exitTime ? new Date(trade.exitTime) : new Date(),
               initialStopLoss: trade.initialStopLoss || null,
               finalStopLoss: trade.finalStopLoss || null,
               initialTakeProfit: trade.initialTakeProfit || null,
               finalTakeProfit: trade.finalTakeProfit || null,
+              tradeImage: trade.tradeImage || null,
+              tradingViewLink: trade.tradingViewLink || null,
               notes: trade.notes || 'Imported via Universal CSV'
             };
             
@@ -509,7 +513,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.log("- First few lines:", lines.slice(0, 3));
 
       // Check if this is a position history CSV format
-      const isPositionHistory = headers.some(h => 
+      const isPositionHistory = headers.some((h: string) => 
         ['Position ID', 'Bought Timestamp', 'Sold Timestamp', 'Paired Qty', 'Buy Price', 'Sell Price'].includes(h)
       );
 
@@ -1065,16 +1069,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
             side: isShort ? 'short' : 'long',
             quantity: parseInt(row['Paired Qty']) || 1,
             
-            // Handle entry/exit based on trade direction
-            fillTime: isShort ? row['Sold Timestamp'] : row['Bought Timestamp'],
-            exitTime: isShort ? row['Bought Timestamp'] : row['Sold Timestamp'],
+            // Handle entry/exit based on trade direction (convert to Date objects)
+            fillTime: new Date(isShort ? row['Sold Timestamp'] : row['Bought Timestamp']),
+            exitTime: new Date(isShort ? row['Bought Timestamp'] : row['Sold Timestamp']),
             entryPrice: parseFloat(isShort ? row['Sell Price'] : row['Buy Price']),
             exitPrice: parseFloat(isShort ? row['Buy Price'] : row['Sell Price']),
             
             pnl: parseFloat(row['P/L']) || 0,
             status: 'closed',
             date: row['Trade Date'] || new Date(isShort ? soldTimestamp : boughtTimestamp).toISOString().split('T')[0],
-            orderId: row['Position ID'],
+            
+            // Add required schema fields
+            initialStopLoss: null,
+            finalStopLoss: null,
+            initialTakeProfit: null,
+            finalTakeProfit: null,
+            tradeImage: null,
+            tradingViewLink: null,
             notes: `Position History Import - ${isShort ? 'Short' : 'Long'} trade`
           };
 
@@ -1142,7 +1153,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.put("/api/journal/:id", async (req, res) => {
     try {
       const id = parseInt(req.params.id);
-      const validatedData = insertJournalEntrySchema.partial().parse(req.body);
+      const validatedData = insertJournalEntrySchema.omit({ id: true }).partial().parse(req.body);
       const entry = await storage.updateJournalEntry(id, validatedData);
       if (!entry) {
         return res.status(404).json({ message: "Journal entry not found" });

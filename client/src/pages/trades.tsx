@@ -208,16 +208,23 @@ const UniversalCsvImport = ({ accounts }: { accounts: Account[] }) => {
       accountId: account.id,
       symbol: convertContractToSymbol(row['Contract']),
       side: isShort ? 'sell' : 'buy',
-      quantity: quantity,
+      quantity: quantity || 1,
       fillTime: isShort ? row['Sold Timestamp'] : row['Bought Timestamp'],
       exitTime: isShort ? row['Bought Timestamp'] : row['Sold Timestamp'],
       entryPrice: isShort ? sellPrice : buyPrice,
       exitPrice: isShort ? buyPrice : sellPrice,
-      pnl: pnl,
+      pnl: pnl || 0,
       status: 'closed',
-      date: row['Trade Date'],
+      date: row['Trade Date'] || new Date().toISOString().split('T')[0],
       orderId: `POS-${row['Position ID']}`,
-      notes: `Position History Import - ${isShort ? 'Short' : 'Long'} Trade`
+      notes: `Position History Import - ${isShort ? 'Short' : 'Long'} Trade`,
+      // Add required fields that might be missing
+      initialStopLoss: null,
+      finalStopLoss: null,
+      initialTakeProfit: null,
+      finalTakeProfit: null,
+      tradeImage: null,
+      tradingViewLink: null
     };
 
     console.log('🔍 POSITION HISTORY: Mapped trade:', {
@@ -307,18 +314,18 @@ const UniversalCsvImport = ({ accounts }: { accounts: Account[] }) => {
           accountId: account.id,
           symbol: convertContractToSymbol(buyOrder['Contract']),
           side: entryTime < exitTime ? 'buy' : 'sell',
-          quantity: parseInt(buyOrder['Filled Qty']),
+          quantity: parseInt(buyOrder['Filled Qty']) || 1,
           fillTime: entryTime < exitTime ? buyOrder['Fill Time'] : sellOrder['Fill Time'],
           exitTime: entryTime < exitTime ? sellOrder['Fill Time'] : buyOrder['Fill Time'],
           entryPrice: entryTime < exitTime ? 
-            parseFloat(buyOrder['Avg Fill Price']) : 
-            parseFloat(sellOrder['Avg Fill Price']),
+            parseFloat(buyOrder['Avg Fill Price']) || 0 : 
+            parseFloat(sellOrder['Avg Fill Price']) || 0,
           exitPrice: entryTime < exitTime ? 
-            parseFloat(sellOrder['Avg Fill Price']) : 
-            parseFloat(buyOrder['Avg Fill Price']),
+            parseFloat(sellOrder['Avg Fill Price']) || 0 : 
+            parseFloat(buyOrder['Avg Fill Price']) || 0,
           pnl: 0, // Calculate later
           status: 'closed',
-          date: buyOrder['Date'] || sellOrder['Date'],
+          date: buyOrder['Date'] || sellOrder['Date'] || new Date().toISOString().split('T')[0],
           orderId: `ORD-${buyOrder['Order ID']}-${sellOrder['Order ID']}`,
           notes: 'Orders CSV Import - Matched Buy/Sell'
         };
