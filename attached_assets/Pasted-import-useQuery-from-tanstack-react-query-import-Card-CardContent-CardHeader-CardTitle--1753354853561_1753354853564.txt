@@ -69,6 +69,59 @@ const calculateDurationForCSV = (trade: Trade): string => {
     return hours > 0 ? `${days}d ${hours}h` : `${days}d`;
   }
 };
+
+// Helper function to format time for CSV
+const formatTimeForCSV = (timestamp: string | null): string => {
+  if (!timestamp) return 'Not recorded';
+  return new Date(timestamp).toLocaleString('en-US', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: false
+  });
+};
+
+// Helper function to calculate duration for CSV
+const calculateDurationForCSV = (trade: Trade): string => {
+  if (!trade.fillTime) return 'No entry time';
+  
+  const entryTime = new Date(trade.fillTime);
+  let exitTime;
+  
+  // Priority 1: Use actual exitTime if available
+  if (trade.exitTime) {
+    exitTime = new Date(trade.exitTime);
+  }
+  // Priority 2: For closed trades without exitTime, try to estimate from trade date + some time
+  else if (trade.status === 'closed' && trade.exitPrice) {
+    // Since we don't have exact exit time, we can't calculate precise duration
+    return 'Exit time not recorded';
+  }
+  // Priority 3: Open trades show "Open"
+  else {
+    return trade.status === 'open' ? 'Currently open' : 'No timing data';
+  }
+  
+  // Calculate actual duration from real timestamps
+  const durationMs = exitTime.getTime() - entryTime.getTime();
+  const durationMinutes = Math.max(1, Math.floor(durationMs / (1000 * 60)));
+  
+  if (durationMinutes < 60) {
+    return `${durationMinutes}m`;
+  } else if (durationMinutes < 1440) { // Less than 24 hours
+    const hours = Math.floor(durationMinutes / 60);
+    const mins = durationMinutes % 60;
+    return mins > 0 ? `${hours}h ${mins}m` : `${hours}h`;
+  } else {
+    const days = Math.floor(durationMinutes / 1440);
+    const hours = Math.floor((durationMinutes % 1440) / 60);
+    return hours > 0 ? `${days}d ${hours}h` : `${days}d`;
+  }
+};
+
 import TradeEntry from "@/components/trade-entry";
 import AutomaticCsvImport from "@/components/automatic-csv-import";
 

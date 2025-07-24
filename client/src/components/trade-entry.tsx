@@ -294,7 +294,7 @@ export default function TradeEntry({ accounts }: TradeEntryProps) {
                         value={formData.fillTime ? new Date(formData.fillTime).toISOString().slice(0, 16) : ""}
                         onChange={(e) => setFormData(prev => ({ 
                           ...prev, 
-                          fillTime: e.target.value ? new Date(e.target.value).toISOString() : null 
+                          fillTime: e.target.value ? new Date(e.target.value) : null 
                         }))}
                         className="bg-gray-700 border-gray-600 text-white focus:border-green-400"
                         placeholder="When you entered the trade"
@@ -308,7 +308,7 @@ export default function TradeEntry({ accounts }: TradeEntryProps) {
                         value={formData.exitTime ? new Date(formData.exitTime).toISOString().slice(0, 16) : ""}
                         onChange={(e) => setFormData(prev => ({ 
                           ...prev, 
-                          exitTime: e.target.value ? new Date(e.target.value).toISOString() : null 
+                          exitTime: e.target.value ? new Date(e.target.value) : null 
                         }))}
                         className="bg-gray-700 border-gray-600 text-white focus:border-red-400"
                         placeholder="When you exited the trade (optional)"

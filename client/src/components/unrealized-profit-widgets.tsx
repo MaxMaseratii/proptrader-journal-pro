@@ -163,7 +163,11 @@ export default function UnrealizedProfitWidgets({ trades, selectedAccountIds, ac
                 </div>
               </div>
               
-              <div className={`mt-auto px-2 py-1 rounded text-xs text-center ${bufferRisk.bgColor} ${bufferRisk.color}`}>
+              <div className={`mt-auto px-2 py-1 rounded text-xs text-center font-medium ${
+                remainingBuffer <= 200 ? 'bg-red-500/20 text-red-400' : 
+                remainingBuffer <= 500 ? 'bg-orange-500/20 text-orange-400' : 
+                'bg-green-500/20 text-green-400'
+              }`}>
                 {remainingBuffer <= 200 ? 'CRITICAL RISK' : remainingBuffer <= 500 ? 'HIGH RISK' : 'BUFFER SAFE'}
               </div>
             </div>
@@ -204,7 +208,7 @@ export default function UnrealizedProfitWidgets({ trades, selectedAccountIds, ac
                 </div>
               </div>
               
-              <div className={`mt-auto px-2 py-1 rounded text-xs text-center ${
+              <div className={`mt-auto px-2 py-1 rounded text-xs text-center font-medium ${
                 consistencyViolations > 0 ? 'bg-red-500/20 text-red-400' : 'bg-green-500/20 text-green-400'
               }`}>
                 {consistencyViolations > 0 ? 'RULE VIOLATED' : 'COMPLIANT'}
