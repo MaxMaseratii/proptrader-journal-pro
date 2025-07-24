@@ -507,6 +507,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.log("- Lines count:", lines.length);
       console.log("- Headers:", headers);
       console.log("- First few lines:", lines.slice(0, 3));
+
+      // Check if this is a position history CSV format
+      const isPositionHistory = headers.some(h => 
+        ['Position ID', 'Bought Timestamp', 'Sold Timestamp', 'Paired Qty', 'Buy Price', 'Sell Price'].includes(h)
+      );
+
+      if (isPositionHistory) {
+        console.log("Detected Position History CSV format - using position history processor");
+        return await processPositionHistoryCSV(lines, headers, parseInt(accountId), account, res);
+      }
       
       let recordsProcessed = 0;
       let recordsImported = 0;
@@ -1004,6 +1014,106 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ message: "Failed to import CSV", error: error instanceof Error ? error.message : 'Unknown error' });
     }
   });
+
+  // Position History CSV Processor Function
+  async function processPositionHistoryCSV(lines: string[], headers: string[], accountId: number, account: any, res: any) {
+    try {
+      const trades = [];
+      let recordsProcessed = 0;
+      let recordsImported = 0;
+      const errors: string[] = [];
+
+      // Helper function to convert contract symbols
+      const convertContractToSymbol = (contract: string): string => {
+        if (!contract) return 'UNKNOWN';
+        
+        // Remove month/year codes and convert to standard symbols
+        if (contract.startsWith('MES')) return 'MES'; // Micro E-mini S&P 500
+        if (contract.startsWith('NQ')) return 'NQ';   // E-mini NASDAQ 100
+        if (contract.startsWith('ES')) return 'ES';   // E-mini S&P 500
+        if (contract.startsWith('YM')) return 'YM';   // E-mini Dow Jones
+        if (contract.startsWith('RTY')) return 'RTY'; // E-mini Russell 2000
+        
+        // Extract base symbol for other contracts
+        return contract.replace(/[0-9UHMZFGJKNQVXu]/g, '');
+      };
+
+      // Process each position history row
+      for (let i = 1; i < lines.length; i++) {
+        recordsProcessed++;
+        try {
+          const values = lines[i].split(',').map(v => v.trim().replace(/['"]/g, ''));
+          const row: Record<string, string> = {};
+          
+          headers.forEach((header, index) => {
+            row[header] = values[index] || '';
+          });
+
+          // Skip empty rows
+          if (!row['Position ID'] || !row['Paired Qty']) continue;
+
+          // Extract data from position history row
+          const boughtTimestamp = new Date(row['Bought Timestamp']);
+          const soldTimestamp = new Date(row['Sold Timestamp']);
+          
+          // Detect if this is a short trade (sold first, then bought)
+          const isShort = soldTimestamp < boughtTimestamp;
+          
+          const trade = {
+            accountId: accountId,
+            symbol: convertContractToSymbol(row['Contract']),
+            side: isShort ? 'short' : 'long',
+            quantity: parseInt(row['Paired Qty']) || 1,
+            
+            // Handle entry/exit based on trade direction
+            fillTime: isShort ? row['Sold Timestamp'] : row['Bought Timestamp'],
+            exitTime: isShort ? row['Bought Timestamp'] : row['Sold Timestamp'],
+            entryPrice: parseFloat(isShort ? row['Sell Price'] : row['Buy Price']),
+            exitPrice: parseFloat(isShort ? row['Buy Price'] : row['Sell Price']),
+            
+            pnl: parseFloat(row['P/L']) || 0,
+            status: 'closed',
+            date: row['Trade Date'] || new Date(isShort ? soldTimestamp : boughtTimestamp).toISOString().split('T')[0],
+            orderId: row['Position ID'],
+            notes: `Position History Import - ${isShort ? 'Short' : 'Long'} trade`
+          };
+
+          // Validate required fields
+          if (!trade.symbol || !trade.entryPrice || !trade.exitPrice) {
+            errors.push(`Row ${i}: Missing required data (symbol, prices)`);
+            continue;
+          }
+
+          const insertTrade = await storage.createTrade(trade);
+          if (insertTrade) {
+            recordsImported++;
+            trades.push(trade);
+          }
+
+        } catch (error) {
+          errors.push(`Row ${i}: ${error instanceof Error ? error.message : 'Processing error'}`);
+        }
+      }
+
+      console.log(`Position History CSV processed: ${recordsImported} trades imported from ${recordsProcessed} records`);
+      
+      res.json({
+        success: true,
+        recordsProcessed,
+        recordsImported,
+        errors,
+        message: `Imported ${recordsImported} position history trades`
+      });
+
+    } catch (error) {
+      console.error("Position History CSV processing error:", error);
+      res.status(500).json({ 
+        success: false,
+        message: "Failed to process position history CSV",
+        error: error instanceof Error ? error.message : 'Unknown error'
+      });
+    }
+  }
 
   // Journal routes
   app.get("/api/journal", async (req, res) => {

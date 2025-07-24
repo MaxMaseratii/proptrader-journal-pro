@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -11,7 +12,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Progress } from "@/components/ui/progress";
 import { insertTradeSchema, type Account, type InsertTrade } from "@shared/schema";
 import { queryClient } from "@/lib/queryClient";
-import { Plus, Upload, FileText, AlertCircle, CheckCircle, XCircle, Info, RefreshCw, Shield, Database, Zap } from "lucide-react";
+import { Plus, Upload, FileText, AlertCircle, CheckCircle, XCircle, Info, RefreshCw, Shield, Database, Zap, ArrowLeft, Settings, Brain, Target } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 export default function CsvImport() {

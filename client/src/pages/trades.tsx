@@ -19,9 +19,10 @@ const formatPrice = (price: number): string => {
 };
 
 // Helper function to format time for CSV
-const formatTimeForCSV = (timestamp: string | null): string => {
+const formatTimeForCSV = (timestamp: Date | string | null): string => {
   if (!timestamp) return 'Not recorded';
-  return new Date(timestamp).toLocaleString('en-US', {
+  const date = timestamp instanceof Date ? timestamp : new Date(timestamp);
+  return date.toLocaleString('en-US', {
     year: 'numeric',
     month: '2-digit',
     day: '2-digit',
@@ -589,7 +590,7 @@ export default function Trades() {
                           <Button
                             size="sm"
                             variant="outline"
-                            onClick={() => window.open(trade.tradeImage, '_blank')}
+                            onClick={() => trade.tradeImage && window.open(trade.tradeImage, '_blank')}
                             className="text-purple-400 border-purple-400 hover:bg-purple-400/20"
                           >
                             🖼️ Trade Image
@@ -599,7 +600,7 @@ export default function Trades() {
                           <Button
                             size="sm"
                             variant="outline"
-                            onClick={() => window.open(trade.tradingViewLink, '_blank')}
+                            onClick={() => trade.tradingViewLink && window.open(trade.tradingViewLink, '_blank')}
                             className="text-blue-400 border-blue-400 hover:bg-blue-400/20"
                           >
                             📈 TradingView
