@@ -197,7 +197,7 @@ export default function CsvImport() {
 
   // Enhanced trade grouping with better algorithms
   const groupOrdersIntoTrades = (orders: any[]) => {
-    const trades = [];
+    const trades: any[] = [];
     const processedOrders = new Set();
     
     // Sort orders by timestamp for better matching
@@ -383,20 +383,17 @@ export default function CsvImport() {
       if (response.ok) {
         setUploadResult(result);
         queryClient.invalidateQueries({ queryKey: ['/api/trades'] });
-        toast({
-          title: "Success",
-          description: `Imported ${result.imported} trades with enhanced SL/TP analysis`
-        });
+        // REMOVED: No popup for production app - silent success
       } else {
         throw new Error(result.message || 'Import failed');
       }
       
     } catch (error) {
       console.error('Upload error:', error);
-      toast({
-        title: "Error",
-        description: "Failed to import CSV data",
-        variant: "destructive"
+      // REMOVED: No error popup for production app - log error only
+      setUploadResult({
+        success: false,
+        message: error instanceof Error ? error.message : 'Import failed'
       });
     } finally {
       setIsUploading(false);

@@ -259,7 +259,14 @@ const UniversalCsvImport = ({ accounts }: { accounts: Account[] }) => {
       status: 'closed',
       date: row['date'] || row['Date'] || new Date().toISOString().split('T')[0],
       orderId: `PERF-${row['buyFillId'] || Date.now()}`,
-      notes: 'Performance CSV Import'
+      notes: 'Performance CSV Import',
+      // Performance CSV has no SL/TP data - add required fields as null
+      initialStopLoss: null,
+      finalStopLoss: null,
+      initialTakeProfit: null,
+      finalTakeProfit: null,
+      tradeImage: null,
+      tradingViewLink: null
     };
 
     console.log('🔍 PERFORMANCE: Mapped trade:', {
@@ -366,6 +373,13 @@ const UniversalCsvImport = ({ accounts }: { accounts: Account[] }) => {
       const { stopLossOrders, takeProfitOrders } = detectSLTPOrders();
       
       console.log(`🔍 SL/TP DETECTION: Found ${stopLossOrders.length} stop loss orders and ${takeProfitOrders.length} take profit orders for group ${groupKey}`);
+      
+      if (stopLossOrders.length > 0) {
+        console.log('🔍 Stop Loss Orders:', stopLossOrders.map(o => ({ price: o['Avg Fill Price'] || o['Price'], type: o['Order Type'] || o['Type'], status: o.Status })));
+      }
+      if (takeProfitOrders.length > 0) {
+        console.log('🔍 Take Profit Orders:', takeProfitOrders.map(o => ({ price: o['Avg Fill Price'] || o['Price'], type: o['Order Type'] || o['Type'], status: o.Status })));
+      }
       
       // Function to get initial and final SL/TP levels
       const getSLTPLevels = (isLong: boolean) => {
@@ -735,7 +749,7 @@ const UniversalCsvImport = ({ accounts }: { accounts: Account[] }) => {
       
     } catch (error) {
       console.error('Error parsing CSV:', error);
-      alert(`Error parsing CSV: ${(error as Error).message}`);
+      console.error(`Error parsing CSV: ${(error as Error).message}`);
       setCsvFile(null);
       setPreviewData([]);
       setCsvFormat('unknown');
@@ -796,11 +810,7 @@ const UniversalCsvImport = ({ accounts }: { accounts: Account[] }) => {
           format: csvFormat
         });
         
-        alert(`✅ Successfully imported ${imported} trades from ${csvFormat.toUpperCase()} CSV!\n\n` +
-              `Long trades: ${trades.filter(t => t.side === 'buy').length}\n` +
-              `Short trades: ${trades.filter(t => t.side === 'sell').length}\n` +
-              `${errors.length > 0 ? `Errors: ${errors.length}` : ''}\n\n` +
-              `Format: Advanced position tracking with duration analysis`);
+        // REMOVED: No popup for production app - silent success
         
         queryClient.invalidateQueries({ queryKey: ['/api/trades'] });
         
@@ -817,7 +827,7 @@ const UniversalCsvImport = ({ accounts }: { accounts: Account[] }) => {
       
     } catch (error) {
       console.error('Import error:', error);
-      alert(`Import failed: ${(error as Error).message}`);
+      // REMOVED: No error popup for production app - logged only
     } finally {
       setIsUploading(false);
     }
@@ -1536,16 +1546,20 @@ export default function Trades() {
                       </Badge>
                     </td>
                     <td className="py-3 px-4 text-right text-gray-300">
-                      {trade.initialStopLoss ? formatPrice(trade.initialStopLoss) : 'Not placed'}
+                      {trade.initialStopLoss ? formatPrice(trade.initialStopLoss) : 
+                        <span className="text-gray-500 text-sm">—</span>}
                     </td>
                     <td className="py-3 px-4 text-right text-gray-300">
-                      {trade.initialTakeProfit ? formatPrice(trade.initialTakeProfit) : 'Not placed'}
+                      {trade.initialTakeProfit ? formatPrice(trade.initialTakeProfit) : 
+                        <span className="text-gray-500 text-sm">—</span>}
                     </td>
                     <td className="py-3 px-4 text-right text-gray-300">
-                      {trade.finalStopLoss ? formatPrice(trade.finalStopLoss) : 'Not placed'}
+                      {trade.finalStopLoss ? formatPrice(trade.finalStopLoss) : 
+                        <span className="text-gray-500 text-sm">—</span>}
                     </td>
                     <td className="py-3 px-4 text-right text-gray-300">
-                      {trade.finalTakeProfit ? formatPrice(trade.finalTakeProfit) : 'Not placed'}
+                      {trade.finalTakeProfit ? formatPrice(trade.finalTakeProfit) : 
+                        <span className="text-gray-500 text-sm">—</span>}
                     </td>
                     <td className="py-3 px-4 text-center">
                       <div className="flex flex-col gap-1">
