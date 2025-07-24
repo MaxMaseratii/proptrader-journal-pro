@@ -452,12 +452,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
           }
         }
         
-        return res.json({
+        const responseData = {
           success: true,
           recordsImported,
           errors,
           message: `Successfully imported ${recordsImported} trades`
-        });
+        };
+        console.log('🔍 SERVER: Sending response:', responseData);
+        return res.json(responseData);
       }
       
       if (!accountId || !csvText) {

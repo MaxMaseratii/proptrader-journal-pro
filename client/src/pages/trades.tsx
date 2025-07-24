@@ -702,6 +702,8 @@ const UniversalCsvImport = ({ accounts }: { accounts: Account[] }) => {
       });
       
       console.log('🔍 API Response:', response);
+      console.log('🔍 API Response type:', typeof response);
+      console.log('🔍 API Response success:', (response as any)?.success);
       
       if (response && (response as any).success) {
         const imported = (response as any).recordsImported || trades.length;
@@ -729,6 +731,7 @@ const UniversalCsvImport = ({ accounts }: { accounts: Account[] }) => {
         setCsvHeaders([]);
         
       } else {
+        console.error('🔍 Import failed - Response:', response);
         throw new Error((response as any).message || 'Import failed - check server logs');
       }
       
