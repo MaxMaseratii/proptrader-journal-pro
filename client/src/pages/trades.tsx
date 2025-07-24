@@ -695,18 +695,20 @@ const UniversalCsvImport = ({ accounts }: { accounts: Account[] }) => {
       console.log(`🔍 Sample trade:`, trades[0]);
       
       // Send to Universal CSV Import API
-      const response = await apiRequest('/api/trades/import-csv', 'POST', {
+      const rawResponse = await apiRequest('/api/trades/import-csv', 'POST', {
         trades,
         accountId: trades[0]?.accountId,
         source: `${csvFormat}-csv`
       });
       
+      const response = await rawResponse.json();
+      
       console.log('🔍 API Response:', response);
       console.log('🔍 API Response type:', typeof response);
-      console.log('🔍 API Response success:', (response as any)?.success);
+      console.log('🔍 API Response success:', response?.success);
       
-      if (response && (response as any).success) {
-        const imported = (response as any).recordsImported || trades.length;
+      if (response && response.success) {
+        const imported = response.recordsImported || trades.length;
         
         setImportStats({
           imported: imported,
@@ -732,7 +734,7 @@ const UniversalCsvImport = ({ accounts }: { accounts: Account[] }) => {
         
       } else {
         console.error('🔍 Import failed - Response:', response);
-        throw new Error((response as any).message || 'Import failed - check server logs');
+        throw new Error(response.message || 'Import failed - check server logs');
       }
       
     } catch (error) {
