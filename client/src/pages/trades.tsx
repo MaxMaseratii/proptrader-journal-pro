@@ -270,9 +270,9 @@ const UniversalCsvImport = ({ accounts }: { accounts: Account[] }) => {
     return mappedTrade;
   };
 
-  // Advanced TradeZella-style Orders CSV mapping with position tracking
+  // Advanced Orders CSV mapping with position tracking and SL/TP detection
   const mapOrdersRows = (rows: any[]): any[] => {
-    console.log('🔍 ADVANCED ORDERS: Processing', rows.length, 'order rows with position tracking');
+    console.log('🔍 ADVANCED ORDERS: Processing', rows.length, 'order rows with position tracking and SL/TP detection');
     
     const trades: any[] = [];
     
@@ -307,7 +307,15 @@ const UniversalCsvImport = ({ accounts }: { accounts: Account[] }) => {
       return remainingMinutes > 0 ? `${hours}h ${remainingMinutes}m` : `${hours}h`;
     };
     
-    // Group orders by symbol + account + trading day
+    // Group ALL orders (filled + cancelled) by symbol + account + trading day for SL/TP analysis
+    const allOrderGroups = groupBy(rows, (order) => {
+      const symbol = convertContractToSymbol(order['Contract']);
+      const account = order['Account'];
+      const date = order['Date'] || order['Fill Time']?.split(' ')[0] || '';
+      return `${symbol}-${account}-${date}`;
+    });
+    
+    // Filter filled orders for position tracking
     const orderGroups = groupBy(rows.filter(row => row.Status === 'Filled'), (order) => {
       const symbol = convertContractToSymbol(order['Contract']);
       const account = order['Account'];
@@ -332,6 +340,64 @@ const UniversalCsvImport = ({ accounts }: { accounts: Account[] }) => {
       let position = 0; // Current net position
       let positionEntries: any[] = []; // Orders that built current position
       let tradeCounter = 1;
+      
+      // Get ALL orders for this group (including cancelled) for SL/TP detection
+      const allOrdersInGroup = allOrderGroups[groupKey] || [];
+      
+      // Detect Stop Loss and Take Profit orders from cancelled orders
+      const detectSLTPOrders = () => {
+        const cancelledOrders = allOrdersInGroup.filter(order => 
+          order.Status === 'Cancelled' || order.Status === 'Canceled'
+        );
+        
+        const stopLossOrders = cancelledOrders.filter(order => 
+          order['Order Type']?.toLowerCase().includes('stop') || 
+          order['Type']?.toLowerCase().includes('stop')
+        );
+        
+        const takeProfitOrders = cancelledOrders.filter(order => 
+          order['Order Type']?.toLowerCase().includes('limit') ||
+          order['Type']?.toLowerCase().includes('limit')
+        );
+        
+        return { stopLossOrders, takeProfitOrders };
+      };
+      
+      const { stopLossOrders, takeProfitOrders } = detectSLTPOrders();
+      
+      console.log(`🔍 SL/TP DETECTION: Found ${stopLossOrders.length} stop loss orders and ${takeProfitOrders.length} take profit orders for group ${groupKey}`);
+      
+      // Function to get initial and final SL/TP levels
+      const getSLTPLevels = (isLong: boolean) => {
+        // Get chronologically ordered SL orders
+        const chronoStopLoss = stopLossOrders
+          .filter(order => order['Avg Fill Price'] || order['Price'])
+          .sort((a, b) => {
+            const timeA = new Date(a['Fill Time'] || a['Timestamp'] || 0).getTime();
+            const timeB = new Date(b['Fill Time'] || b['Timestamp'] || 0).getTime();
+            return timeA - timeB;
+          });
+          
+        // Get chronologically ordered TP orders  
+        const chronoTakeProfit = takeProfitOrders
+          .filter(order => order['Avg Fill Price'] || order['Price'])
+          .sort((a, b) => {
+            const timeA = new Date(a['Fill Time'] || a['Timestamp'] || 0).getTime();
+            const timeB = new Date(b['Fill Time'] || b['Timestamp'] || 0).getTime();
+            return timeA - timeB;
+          });
+        
+        return {
+          initialStopLoss: chronoStopLoss.length > 0 ? 
+            parseFloat(chronoStopLoss[0]['Avg Fill Price'] || chronoStopLoss[0]['Price']) : null,
+          finalStopLoss: chronoStopLoss.length > 0 ? 
+            parseFloat(chronoStopLoss[chronoStopLoss.length - 1]['Avg Fill Price'] || chronoStopLoss[chronoStopLoss.length - 1]['Price']) : null,
+          initialTakeProfit: chronoTakeProfit.length > 0 ? 
+            parseFloat(chronoTakeProfit[0]['Avg Fill Price'] || chronoTakeProfit[0]['Price']) : null,
+          finalTakeProfit: chronoTakeProfit.length > 0 ? 
+            parseFloat(chronoTakeProfit[chronoTakeProfit.length - 1]['Avg Fill Price'] || chronoTakeProfit[chronoTakeProfit.length - 1]['Price']) : null
+        };
+      };
       
       orderGroup.forEach((order, index) => {
         const side = order['B/S']?.toLowerCase();
@@ -385,6 +451,10 @@ const UniversalCsvImport = ({ accounts }: { accounts: Account[] }) => {
           const weightedEntryPrice = calculateWeightedAverage(positionEntries, 'price');
           const earliestEntryTime = positionEntries[0].fillTime; // Use earliest entry for duration
           
+          // Get SL/TP levels for this trade
+          const isLong = position > 0;
+          const slTPLevels = getSLTPLevels(isLong);
+          
           const trade = {
             accountId: findAccountByName(order['Account']).id,
             symbol: convertContractToSymbol(order['Contract']),
@@ -399,11 +469,11 @@ const UniversalCsvImport = ({ accounts }: { accounts: Account[] }) => {
             date: order['Date'] || fillTime.split(' ')[0],
             orderId: `ADV-${groupKey}-${tradeCounter++}`,
             notes: `Advanced Orders Import - Partial Close (${calculateDuration(earliestEntryTime, fillTime)})`,
-            // Add required fields
-            initialStopLoss: null,
-            finalStopLoss: null,
-            initialTakeProfit: null,
-            finalTakeProfit: null,
+            // Apply detected SL/TP levels
+            initialStopLoss: slTPLevels.initialStopLoss,
+            finalStopLoss: slTPLevels.finalStopLoss,
+            initialTakeProfit: slTPLevels.initialTakeProfit,
+            finalTakeProfit: slTPLevels.finalTakeProfit,
             tradeImage: null,
             tradingViewLink: null
           };
@@ -441,6 +511,10 @@ const UniversalCsvImport = ({ accounts }: { accounts: Account[] }) => {
           const weightedEntryPrice = calculateWeightedAverage(positionEntries, 'price');
           const earliestEntryTime = positionEntries[0].fillTime;
           
+          // Get SL/TP levels for this trade
+          const isLong = position > 0;
+          const slTPLevels = getSLTPLevels(isLong);
+          
           const trade = {
             accountId: findAccountByName(order['Account']).id,
             symbol: convertContractToSymbol(order['Contract']),
@@ -455,11 +529,11 @@ const UniversalCsvImport = ({ accounts }: { accounts: Account[] }) => {
             date: order['Date'] || fillTime.split(' ')[0],
             orderId: `ADV-${groupKey}-${tradeCounter++}`,
             notes: `Advanced Orders Import - Complete Close (${calculateDuration(earliestEntryTime, fillTime)})`,
-            // Add required fields
-            initialStopLoss: null,
-            finalStopLoss: null,
-            initialTakeProfit: null,
-            finalTakeProfit: null,
+            // Apply detected SL/TP levels
+            initialStopLoss: slTPLevels.initialStopLoss,
+            finalStopLoss: slTPLevels.finalStopLoss,
+            initialTakeProfit: slTPLevels.initialTakeProfit,
+            finalTakeProfit: slTPLevels.finalTakeProfit,
             tradeImage: null,
             tradingViewLink: null
           };
@@ -485,6 +559,10 @@ const UniversalCsvImport = ({ accounts }: { accounts: Account[] }) => {
           const weightedEntryPrice = calculateWeightedAverage(positionEntries, 'price');
           const earliestEntryTime = positionEntries[0].fillTime;
           
+          // Get SL/TP levels for this trade
+          const isLong = position > 0;
+          const slTPLevels = getSLTPLevels(isLong);
+          
           const closeTrade = {
             accountId: findAccountByName(order['Account']).id,
             symbol: convertContractToSymbol(order['Contract']),
@@ -499,11 +577,11 @@ const UniversalCsvImport = ({ accounts }: { accounts: Account[] }) => {
             date: order['Date'] || fillTime.split(' ')[0],
             orderId: `ADV-${groupKey}-${tradeCounter++}`,
             notes: `Advanced Orders Import - Reversal Close (${calculateDuration(earliestEntryTime, fillTime)})`,
-            // Add required fields
-            initialStopLoss: null,
-            finalStopLoss: null,
-            initialTakeProfit: null,
-            finalTakeProfit: null,
+            // Apply detected SL/TP levels
+            initialStopLoss: slTPLevels.initialStopLoss,
+            finalStopLoss: slTPLevels.finalStopLoss,
+            initialTakeProfit: slTPLevels.initialTakeProfit,
+            finalTakeProfit: slTPLevels.finalTakeProfit,
             tradeImage: null,
             tradingViewLink: null
           };
@@ -722,7 +800,7 @@ const UniversalCsvImport = ({ accounts }: { accounts: Account[] }) => {
               `Long trades: ${trades.filter(t => t.side === 'buy').length}\n` +
               `Short trades: ${trades.filter(t => t.side === 'sell').length}\n` +
               `${errors.length > 0 ? `Errors: ${errors.length}` : ''}\n\n` +
-              `Format: Advanced TradeZella-style position tracking`);
+              `Format: Advanced position tracking with duration analysis`);
         
         queryClient.invalidateQueries({ queryKey: ['/api/trades'] });
         
