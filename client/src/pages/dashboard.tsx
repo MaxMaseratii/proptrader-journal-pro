@@ -2305,14 +2305,8 @@ export default function Dashboard() {
                           </svg>
                         </div>
 
-                        {/* Floating tooltip */}
-                        <div id="chart-tooltip" className="absolute z-50 bg-gray-800 border border-gray-600 rounded-lg p-2 pointer-events-none opacity-0 transition-opacity duration-200 shadow-lg min-w-[180px]">
-                          <div className="text-xs text-gray-300 mb-1" id="tooltip-date"></div>
-                          <div className="text-sm font-medium text-white mb-1" id="tooltip-balance"></div>
-                          <div className="text-xs text-gray-400" id="tooltip-trades"></div>
-                          <div className="text-xs font-medium" id="tooltip-pnl"></div>
-                          <div className="text-xs text-gray-400 mt-1" id="tooltip-performance"></div>
-                        </div>
+                        {/* Ultra Compact Pro Tooltip */}
+                        <div id="chart-tooltip" className="absolute z-50 pointer-events-none opacity-0 transition-opacity duration-200" style={{ display: 'none' }}></div>
 
                         {/* Main Chart SVG */}
                         <svg className="w-full h-full relative z-10" viewBox={`0 0 ${chartWidth} ${chartHeight}`}>
@@ -2468,24 +2462,51 @@ export default function Dashboard() {
                                       tooltip.style.top = Math.max(10, top) + 'px';
                                     }
                                     
-                                    const dateEl = document.getElementById('tooltip-date');
-                                    const balanceEl = document.getElementById('tooltip-balance');
-                                    const tradesEl = document.getElementById('tooltip-trades');
-                                    const pnlEl = document.getElementById('tooltip-pnl');
-                                    const performanceEl = document.getElementById('tooltip-performance');
-                                    
-                                    if (dateEl && balanceEl && tradesEl && pnlEl && performanceEl) {
-                                      const tradeTime = point.trade ? new Date(point.date).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : '';
-                                      const netPnL = point.y; // CRITICAL FIX: point.y already IS the net P&L from $0
-                                      const netPercent = ((netPnL / (accountCost || 25000)) * 100).toFixed(1);
+                                    const trade = point.trade;
+                                    if (trade) {
+                                      // Calculate return percentage based on original stop loss risk
+                                      const originalStopLossRisk = trade.riskAmount || Math.abs((trade.entryPrice || 0) - (trade.initialStopLoss || 0)) * (trade.quantity || 1);
+                                      const returnPercent = originalStopLossRisk > 0 ? ((trade.pnl || 0) / originalStopLossRisk) * 100 : 0;
                                       
-                                      dateEl.textContent = point.date === 'Start' ? 'Account Start' : `${new Date(point.date).toLocaleDateString()} ${tradeTime}`;
-                                      balanceEl.textContent = `Net: ${formatCurrency(point.y)}`;
-                                      tradesEl.textContent = point.date === 'Start' ? 'Initial State' : `Trade #${point.tradesCount}`;
-                                      pnlEl.textContent = point.trade ? `Trade P&L: ${(point.trade.pnl || 0) >= 0 ? '+' : '-'}${formatCurrency(Math.abs(point.trade.pnl || 0))}` : 'Starting Point';
-                                      pnlEl.className = `text-xs font-medium ${point.trade ? (point.trade.pnl >= 0 ? 'text-green-400' : 'text-red-400') : 'text-gray-400'}`;
-                                      performanceEl.textContent = `Return: ${netPnL >= 0 ? '+' : ''}${formatCurrency(netPnL)} (${netPercent}%)`;
-                                      performanceEl.className = `text-xs text-gray-400 mt-1 ${netPnL >= 0 ? 'text-green-400' : 'text-red-400'}`;
+                                      // Calculate running balance up to this point
+                                      const runningBalance = point.y;
+                                      
+                                      tooltip.innerHTML = `
+                                        <div class="bg-black/80 backdrop-blur-xl border border-white/10 rounded-xl p-3 w-[180px] shadow-2xl">
+                                          <!-- Header -->
+                                          <div class="mb-2">
+                                            <div class="text-white font-bold text-sm mb-1">${trade.symbol} #${index}</div>
+                                            <div class="text-xs text-gray-400">${new Date(trade.date || '').toLocaleDateString('en-GB')} ${new Date(trade.fillTime || trade.date || '').toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}</div>
+                                          </div>
+
+                                          <!-- Main value -->
+                                          <div class="text-center mb-3">
+                                            <div class="text-xl font-black ${(trade.pnl || 0) >= 0 ? 'text-green-400' : 'text-red-400'}">${(trade.pnl || 0) >= 0 ? '+' : ''}$${Math.abs(trade.pnl || 0).toFixed(2)}</div>
+                                          </div>
+
+                                          <!-- Compact stats -->
+                                          <div class="space-y-1 text-xs">
+                                            <div class="flex justify-between">
+                                              <span class="text-gray-400">Net:</span>
+                                              <span class="text-white font-semibold">$${runningBalance.toFixed(2)}</span>
+                                            </div>
+                                            <div class="flex justify-between">
+                                              <span class="text-gray-400">Return:</span>
+                                              <span class="${returnPercent >= 0 ? 'text-green-400' : 'text-red-400'} font-semibold">${returnPercent.toFixed(1)}%</span>
+                                            </div>
+                                          </div>
+                                        </div>
+                                      `;
+                                    } else {
+                                      tooltip.innerHTML = `
+                                        <div class="bg-black/80 backdrop-blur-xl border border-white/10 rounded-xl p-3 w-[180px] shadow-2xl">
+                                          <div class="text-center">
+                                            <div class="text-white font-bold text-sm mb-1">Start #0</div>
+                                            <div class="text-xl font-black text-white">$0.00</div>
+                                            <div class="text-xs text-gray-400 mt-2">Starting Point</div>
+                                          </div>
+                                        </div>
+                                      `;
                                     }
                                     
                                     tooltip.style.opacity = '1';

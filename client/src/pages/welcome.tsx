@@ -578,10 +578,60 @@ export default function Welcome() {
           </div>
           
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-16">
-            {/* PropFirms Accounts & Risk Planning */}
+            {/* Performance Overview */}
+            <div className="bg-prop-card rounded-xl border border-prop-blue/20 p-6 hover-lift smooth-transition">
+              <div className="mb-4">
+                <h3 className="text-xl font-bold text-prop-blue mb-2">Performance Overview</h3>
+                <p className="text-gray-300">Real-time performance tracking with advanced analytics</p>
+              </div>
+              <div className="bg-gray-800 rounded-lg p-4 space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="bg-gray-700 rounded p-3 text-center">
+                    <div className="text-lg font-bold text-prop-green">$12,450</div>
+                    <div className="text-xs text-gray-300">Net P&L</div>
+                  </div>
+                  <div className="bg-gray-700 rounded p-3 text-center">
+                    <div className="text-lg font-bold text-prop-gold">73.4%</div>
+                    <div className="text-xs text-gray-300">Win Rate</div>
+                  </div>
+                  <div className="bg-gray-700 rounded p-3 text-center">
+                    <div className="text-lg font-bold text-prop-tiffany">2.3</div>
+                    <div className="text-xs text-gray-300">Profit Factor</div>
+                  </div>
+                  <div className="bg-gray-700 rounded p-3 text-center">
+                    <div className="text-lg font-bold text-prop-pink">1:2.8</div>
+                    <div className="text-xs text-gray-300">Avg RR</div>
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <div className="flex justify-between items-center">
+                    <span className="text-gray-300">Total Trades</span>
+                    <span className="text-white font-bold">248</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-gray-300">Winning Days</span>
+                    <span className="text-prop-green font-bold">67%</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-gray-300">Max Drawdown</span>
+                    <span className="text-prop-pink font-bold">-$890</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-gray-300">Largest Win</span>
+                    <span className="text-prop-green font-bold">$2,340</span>
+                  </div>
+                </div>
+                <div className="bg-prop-gradient-blue/20 border border-prop-blue/50 rounded p-3 text-center">
+                  <div className="text-lg font-bold text-prop-blue">Sharpe Ratio: 1.89</div>
+                  <div className="text-xs text-prop-blue font-bold">EXCELLENT PERFORMANCE</div>
+                </div>
+              </div>
+            </div>
+
+            {/* Challenge Target Planner */}
             <div className="bg-prop-card rounded-xl border border-prop-gold/20 p-6 hover-lift smooth-transition">
               <div className="mb-4">
-                <h3 className="text-xl font-bold text-prop-gold mb-2">PropFirms Accounts & Risk Planning</h3>
+                <h3 className="text-xl font-bold text-prop-gold mb-2">Challenge Target Planner</h3>
                 <p className="text-gray-300">Strategic account management with intelligent risk projections</p>
               </div>
               <div className="bg-gray-800 rounded-lg p-4 space-y-4">
@@ -633,10 +683,10 @@ export default function Welcome() {
               </div>
             </div>
 
-            {/* PropFirms Spending Tracker */}
+            {/* Prop Firm Spending */}
             <div className="bg-prop-card rounded-xl border border-prop-tiffany/20 p-6 hover-lift smooth-transition">
               <div className="mb-4">
-                <h3 className="text-xl font-bold text-prop-tiffany mb-2">PropFirms Spending Tracker</h3>
+                <h3 className="text-xl font-bold text-prop-tiffany mb-2">Prop Firm Spending</h3>
                 <p className="text-gray-300">Complete financial overview of your trading investments</p>
               </div>
               <div className="bg-gray-800 rounded-lg p-4 space-y-4">
@@ -684,10 +734,10 @@ export default function Welcome() {
               </div>
             </div>
 
-            {/* Disciplinary Assistant */}
+            {/* Discipline & Psychology Tracker */}
             <div className="bg-prop-card rounded-xl border border-prop-green/20 p-6 hover-lift smooth-transition">
               <div className="mb-4">
-                <h3 className="text-xl font-bold text-prop-green mb-2">Disciplinary Assistant</h3>
+                <h3 className="text-xl font-bold text-prop-green mb-2">Discipline & Psychology Tracker</h3>
                 <p className="text-gray-300">AI-powered psychology analysis and trading discipline tracking</p>
               </div>
               <div className="bg-gray-800 rounded-lg p-4 space-y-4">
@@ -727,11 +777,11 @@ export default function Welcome() {
               </div>
             </div>
 
-            {/* Professional Trading Journal */}
+            {/* Daily Trading Plan and Performance */}
             <div className="bg-prop-card rounded-xl border border-prop-pink/20 p-6 hover-lift smooth-transition">
               <div className="mb-4">
-                <h3 className="text-xl font-bold text-prop-pink mb-2">Professional Trading Journal</h3>
-                <p className="text-gray-300">Structured reflection system with performance analysis</p>
+                <h3 className="text-xl font-bold text-prop-pink mb-2">Daily Trading Plan and Performance</h3>
+                <p className="text-gray-300">Structured reflection system with live performance tracking</p>
               </div>
               <div className="bg-gray-800 rounded-lg p-4 space-y-4">
                 <div className="grid grid-cols-2 gap-3">
