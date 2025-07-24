@@ -312,7 +312,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Re-process existing trades with improved SL/TP algorithm
-  app.post("/api/trades/reprocess-sltp", requireAuth, async (req, res) => {
+  app.post("/api/trades/reprocess-sltp", async (req, res) => {
     try {
       console.log("Re-processing existing trades with improved SL/TP algorithm...");
       
@@ -1155,7 +1155,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.put("/api/journal/:id", async (req, res) => {
     try {
       const id = parseInt(req.params.id);
-      const validatedData = insertJournalEntrySchema.partial().parse(req.body);
+      // Remove id from request body for updates
+      const { id: _, ...updateData } = req.body;
+      const validatedData = insertJournalEntrySchema.parse(updateData);
       const entry = await storage.updateJournalEntry(id, validatedData);
       if (!entry) {
         return res.status(404).json({ message: "Journal entry not found" });

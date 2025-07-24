@@ -1202,7 +1202,14 @@ export default function Trades() {
         (trade.notes?.toLowerCase().includes(searchTerm.toLowerCase()) ?? false);
       
       const matchesAccount = selectedAccount === "all" || trade.accountId.toString() === selectedAccount;
-      const matchesStatus = selectedStatus === "all" || trade.status === selectedStatus;
+      
+      // Fix status filtering - determine result based on P&L
+      let matchesStatus = true;
+      if (selectedStatus !== "all") {
+        if (selectedStatus === "win" && trade.pnl <= 0) matchesStatus = false;
+        if (selectedStatus === "loss" && trade.pnl >= 0) matchesStatus = false;  
+        if (selectedStatus === "breakeven" && trade.pnl !== 0) matchesStatus = false;
+      }
       
       return matchesSearch && matchesAccount && matchesStatus;
     });
