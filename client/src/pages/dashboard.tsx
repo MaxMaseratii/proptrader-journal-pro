@@ -2216,7 +2216,7 @@ export default function Dashboard() {
 
                     return (
                       <div className="flex items-center space-x-6 text-sm">
-                        <span className="text-gray-400">Equity curve data</span>
+                        <span className="text-gray-400">{(combinedAnalytics?.totalPnl || 0) >= 0 ? 'Account Positive' : 'Account Negative'}</span>
                       </div>
                     );
                   })()}
@@ -2306,10 +2306,74 @@ export default function Dashboard() {
                         </div>
 
                         {/* Ultra Compact Pro Tooltip */}
-                        <div id="chart-tooltip" className="absolute z-50 pointer-events-none opacity-0 transition-opacity duration-200" style={{ display: 'none' }}></div>
+                        <div 
+                          id="chart-tooltip" 
+                          className="absolute z-50 pointer-events-none opacity-0 transition-opacity duration-200 bg-black/90 backdrop-blur-sm border border-yellow-400/30 rounded-lg px-3 py-2 text-xs text-white shadow-xl"
+                          style={{ display: 'none' }}
+                        >
+                          <div id="tooltip-content"></div>
+                        </div>
 
                         {/* Main Chart SVG */}
-                        <svg className="w-full h-full relative z-10" viewBox={`0 0 ${chartWidth} ${chartHeight}`}>
+                        <svg 
+                          className="w-full h-full relative z-10" 
+                          viewBox={`0 0 ${chartWidth} ${chartHeight}`}
+                          onMouseMove={(e) => {
+                            const svg = e.currentTarget;
+                            const rect = svg.getBoundingClientRect();
+                            const x = ((e.clientX - rect.left) / rect.width) * chartWidth;
+                            const y = ((e.clientY - rect.top) / rect.height) * chartHeight;
+                            
+                            // Check if mouse is over a data point
+                            const tolerance = 15;
+                            equityPoints.forEach((point, index) => {
+                              const pointX = padding.left + (point.x / (equityPoints.length - 1)) * plotWidth;
+                              const pointY = padding.top + plotHeight - ((point.y - chartMin) / chartRange) * plotHeight;
+                              
+                              if (Math.abs(x - pointX) < tolerance && Math.abs(y - pointY) < tolerance) {
+                                const tooltip = document.getElementById('chart-tooltip');
+                                const tooltipContent = document.getElementById('tooltip-content');
+                                
+                                if (tooltip && tooltipContent) {
+                                  let content = '';
+                                  if (point.trade) {
+                                    content = `
+                                      <div class="font-semibold text-yellow-400">${point.trade.symbol}</div>
+                                      <div class="text-xs mt-1">
+                                        <div>P&L: <span class="${point.trade.pnl >= 0 ? 'text-green-400' : 'text-red-400'}">${point.trade.pnl >= 0 ? '+' : ''}$${Math.abs(point.trade.pnl).toFixed(2)}</span></div>
+                                        <div>Date: ${new Date(point.date).toLocaleDateString()}</div>
+                                        <div>Trade #${point.tradesCount}</div>
+                                      </div>
+                                    `;
+                                  } else {
+                                    content = `
+                                      <div class="font-semibold text-yellow-400">Starting Point</div>
+                                      <div class="text-xs mt-1">
+                                        <div>Balance: $0.00</div>
+                                        <div>Date: ${point.date}</div>
+                                      </div>
+                                    `;
+                                  }
+                                  
+                                  tooltipContent.innerHTML = content;
+                                  tooltip.style.left = `${e.clientX - rect.left + 10}px`;
+                                  tooltip.style.top = `${e.clientY - rect.top - 10}px`;
+                                  tooltip.style.display = 'block';
+                                  tooltip.style.opacity = '1';
+                                }
+                              }
+                            });
+                          }}
+                          onMouseLeave={() => {
+                            const tooltip = document.getElementById('chart-tooltip');
+                            if (tooltip) {
+                              tooltip.style.opacity = '0';
+                              setTimeout(() => {
+                                tooltip.style.display = 'none';
+                              }, 200);
+                            }
+                          }}
+                        >
                           <defs>
                             {/* Premium Gradients */}
                             <linearGradient id="equityAreaGradient" x1="0%" y1="0%" x2="0%" y2="100%">

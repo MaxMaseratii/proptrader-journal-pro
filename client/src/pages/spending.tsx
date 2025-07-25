@@ -237,6 +237,7 @@ const Spending = () => {
       userId: (user as any)?.id || "",
       name: categoryName,
       type,
+      emoji: selectedEmoji,
       icon: selectedEmoji,
       budgetAmount: 0,
       isActive: true
@@ -763,7 +764,7 @@ const Spending = () => {
                 {tradingCategories.map((category) => (
                   <div key={category.id} className="flex items-center justify-between p-3 rounded-lg bg-gray-800/30">
                     <div className="flex items-center gap-3">
-                      <Monitor className="h-5 w-5 text-blue-500" />
+                      <span className="text-lg">{category.emoji || '📊'}</span>
                       {editingCategory?.id === category.id ? (
                         <Input
                           value={editingCategory.name}
@@ -865,7 +866,7 @@ const Spending = () => {
                 {personalCategories.map((category) => (
                   <div key={category.id} className="flex items-center justify-between p-3 rounded-lg bg-gray-800/30">
                     <div className="flex items-center gap-3">
-                      <Coffee className="h-5 w-5 text-orange-500" />
+                      <span className="text-lg">{category.emoji || '🍕'}</span>
                       {editingCategory?.id === category.id ? (
                         <Input
                           value={editingCategory.name}

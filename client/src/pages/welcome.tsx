@@ -1,14 +1,20 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { 
-  TrendingUp, 
-  Shield, 
-  Brain, 
-  Target, 
-  Zap, 
+import {
+  TrendingUp,
+  Shield,
+  Brain,
+  Target,
+  Zap,
   BarChart3,
   CheckCircle,
   Star,
@@ -18,35 +24,49 @@ import {
   Crown,
   Gem,
   ArrowRight,
-  UserPlus
+  UserPlus,
 } from "lucide-react";
 import { formatCurrency } from "@/lib/utils";
 import type { Account, Spending } from "@shared/schema";
 
 export default function Welcome() {
   const [showComparison, setShowComparison] = useState(false);
-  
+
   // Fetch accounts and spending data for the spending tracker
   const { data: accounts } = useQuery<Account[]>({
-    queryKey: ['/api/accounts'],
-    enabled: true // Enable to show real data
+    queryKey: ["/api/accounts"],
+    enabled: true, // Enable to show real data
   });
-  
+
   const { data: spending } = useQuery<Spending[]>({
-    queryKey: ['/api/spending'],
-    enabled: true // Enable to show real data
+    queryKey: ["/api/spending"],
+    enabled: true, // Enable to show real data
   });
 
   // Calculate spending data for the tracker (using real data from accounts and spending)
-  const challengeCost = (spending?.filter(s => s.spendingType === 'account_purchase').reduce((sum, s) => sum + s.amount, 0) || 0) + 
-                       (accounts?.reduce((sum, a) => sum + (a.accountCost || 0), 0) || 0);
-  const activationCost = (spending?.filter(s => s.spendingType === 'activation_fee').reduce((sum, s) => sum + s.amount, 0) || 0) + 
-                        (accounts?.reduce((sum, a) => sum + (a.activationCost || 0), 0) || 0);
-  const totalPayout = spending?.filter(s => s.spendingType === 'payout').reduce((sum, s) => sum + s.amount, 0) || 0;
-  const activeAccounts = accounts?.filter(a => a.status === 'active').length || 0;
-  const failedAccounts = accounts?.filter(a => a.status === 'failed').length || 0;
+  const challengeCost =
+    (spending
+      ?.filter((s) => s.spendingType === "account_purchase")
+      .reduce((sum, s) => sum + s.amount, 0) || 0) +
+    (accounts?.reduce((sum, a) => sum + (a.accountCost || 0), 0) || 0);
+  const activationCost =
+    (spending
+      ?.filter((s) => s.spendingType === "activation_fee")
+      .reduce((sum, s) => sum + s.amount, 0) || 0) +
+    (accounts?.reduce((sum, a) => sum + (a.activationCost || 0), 0) || 0);
+  const totalPayout =
+    spending
+      ?.filter((s) => s.spendingType === "payout")
+      .reduce((sum, s) => sum + s.amount, 0) || 0;
+  const activeAccounts =
+    accounts?.filter((a) => a.status === "active").length || 0;
+  const failedAccounts =
+    accounts?.filter((a) => a.status === "failed").length || 0;
   const totalAccounts = accounts?.length || 0;
-  const totalSpent = challengeCost + activationCost + (accounts?.reduce((sum, a) => sum + (a.totalResetsCost || 0), 0) || 0);
+  const totalSpent =
+    challengeCost +
+    activationCost +
+    (accounts?.reduce((sum, a) => sum + (a.totalResetsCost || 0), 0) || 0);
   const roi = totalPayout - totalSpent;
 
   const spendingData = {
@@ -57,57 +77,64 @@ export default function Welcome() {
     failedAccounts,
     totalAccounts,
     totalSpent,
-    roi
+    roi,
   };
   const features = [
     {
       icon: Target,
       title: "PropFirms Accounts & Risk Planning",
-      description: "Comprehensive account management with responsible day-to-pass planning and risk projections",
-      color: "text-prop-gold"
+      description:
+        "Comprehensive account management with responsible day-to-pass planning and risk projections",
+      color: "text-prop-gold",
     },
     {
       icon: TrendingUp,
       title: "PropFirms Spending Tracker",
-      description: "Track your investments, reset costs, and account expenses with detailed financial analytics",
-      color: "text-prop-tiffany"
+      description:
+        "Track your investments, reset costs, and account expenses with detailed financial analytics",
+      color: "text-prop-tiffany",
     },
     {
       icon: Brain,
       title: "Disciplinary Assistant",
-      description: "AI-powered disciplinary analysis with professional trading psychology insights",
-      color: "text-prop-green"
+      description:
+        "AI-powered disciplinary analysis with professional trading psychology insights",
+      color: "text-prop-green",
     },
     {
       icon: BookOpen,
       title: "Professional Trading Journal",
-      description: "Structured reflection system with improvement tracking and performance analysis",
-      color: "text-prop-pink"
-    }
+      description:
+        "Structured reflection system with improvement tracking and performance analysis",
+      color: "text-prop-pink",
+    },
   ];
 
   const testimonials = [
     {
       name: "Alex Chen",
       title: "FTMO Funded Trader",
-      content: "PropTraderJournal helped me pass my $200K challenge. The risk management tools are incredible.",
+      content:
+        "PropTraderJournal helped me pass my $200K challenge. The risk management tools are incredible.",
       rating: 5,
-      gradient: "bg-prop-gradient-gold"
+      gradient: "bg-prop-gradient-gold",
     },
     {
       name: "Sarah Mitchell",
       title: "MyForexFunds Pro",
-      content: "Finally, a journal that understands prop trading. The analytics saved my account multiple times.",
+      content:
+        "Finally, a journal that understands prop trading. The analytics saved my account multiple times.",
       rating: 5,
-      gradient: "bg-prop-gradient-tiffany"
+      gradient: "bg-prop-gradient-tiffany",
     },
     {
       name: "Marcus Rodriguez",
       title: "The Funded Trader Elite",
-      content: "From failing challenges to consistent payouts. This platform transformed my trading career.",
+      content:
+        "From failing challenges to consistent payouts. This platform transformed my trading career.",
       rating: 5,
-      gradient: "bg-prop-gradient-green"
-    }
+      gradient: "bg-prop-gradient-green",
+    },
   ];
 
   return (
@@ -120,12 +147,14 @@ export default function Welcome() {
               <BookOpen className="h-6 w-6 text-white" />
             </div>
             <div>
-              <h1 className="text-xl font-bold text-gradient-rainbow">PropTraderJournal</h1>
+              <h1 className="text-xl font-bold text-gradient-rainbow">
+                PropTraderJournal
+              </h1>
               <p className="text-xs text-gray-400">#1PropFirm Trader Journal</p>
             </div>
           </div>
-          <Button 
-            onClick={() => window.location.href = '/auth'}
+          <Button
+            onClick={() => (window.location.href = "/auth")}
             className="bg-prop-gradient-gold text-white font-semibold hover:scale-105 smooth-transition border-gradient-gold"
           >
             Sign In
@@ -142,29 +171,30 @@ export default function Welcome() {
               The Elite Choice for Prop Traders
             </Badge>
           </div>
-          
+
           <h1 className="text-6xl md:text-8xl font-bold mb-8 leading-tight">
             Master Your
             <br />
             <span className="text-gradient-rainbow">Trading Journey</span>
           </h1>
-          
+
           <p className="text-xl md:text-2xl text-gray-300 mb-12 max-w-4xl mx-auto leading-relaxed">
-            The most advanced trading journal built exclusively for prop traders. 
-            Transform your performance, pass your challenges, and achieve consistent profitability.
+            The most advanced trading journal built exclusively for prop
+            traders. Transform your performance, pass your challenges, and
+            achieve consistent profitability.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-6 justify-center items-center mb-16">
-            <Button 
-              onClick={() => window.location.href = '/auth'}
+            <Button
+              onClick={() => (window.location.href = "/auth")}
               size="lg"
               className="bg-prop-gradient-gold text-white text-xl px-12 py-6 font-bold hover-lift smooth-transition border-gradient-gold"
             >
               <Sparkles className="w-6 h-6 mr-3" />
               Start Your Journey
             </Button>
-            <Button 
-              onClick={() => window.location.href = '/auth'}
+            <Button
+              onClick={() => (window.location.href = "/auth")}
               variant="outline"
               size="lg"
               className="text-xl px-12 py-6 border-amber-500 text-amber-500 hover:bg-amber-500 hover:text-black smooth-transition font-bold"
@@ -172,7 +202,7 @@ export default function Welcome() {
               <UserPlus className="w-6 h-6 mr-3" />
               Register
             </Button>
-            <Button 
+            <Button
               variant="outline"
               size="lg"
               className="text-xl px-12 py-6 border-prop-tiffany text-prop-tiffany hover:bg-prop-tiffany hover:text-black smooth-transition"
@@ -208,21 +238,26 @@ export default function Welcome() {
               Elite Features for Elite Traders
             </h2>
             <p className="text-xl text-gray-300 max-w-3xl mx-auto">
-              Every tool you need to dominate prop trading challenges and build a sustainable trading career
+              Every tool you need to dominate prop trading challenges and build
+              a sustainable trading career
             </p>
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             {features.map((feature, index) => (
-              <Card 
-                key={index} 
+              <Card
+                key={index}
                 className="bg-prop-card hover:bg-prop-card-hover smooth-transition hover-lift border-gradient-gold"
               >
                 <CardHeader>
-                  <div className={`w-12 h-12 rounded-xl bg-prop-gradient-rainbow flex items-center justify-center mb-4`}>
+                  <div
+                    className={`w-12 h-12 rounded-xl bg-prop-gradient-rainbow flex items-center justify-center mb-4`}
+                  >
                     <feature.icon className="w-6 h-6 text-white" />
                   </div>
-                  <CardTitle className={`text-xl ${feature.color}`}>{feature.title}</CardTitle>
+                  <CardTitle className={`text-xl ${feature.color}`}>
+                    {feature.title}
+                  </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <CardDescription className="text-gray-300 text-base leading-relaxed">
@@ -231,18 +266,21 @@ export default function Welcome() {
                 </CardContent>
               </Card>
             ))}
-            
+
             {/* Daily Risk Management */}
             <Card className="bg-prop-card hover:bg-prop-card-hover smooth-transition hover-lift border-gradient-gold">
               <CardHeader>
                 <div className="w-12 h-12 rounded-xl bg-prop-gradient-rainbow flex items-center justify-center mb-4">
                   <Shield className="w-6 h-6 text-white" />
                 </div>
-                <CardTitle className="text-xl text-prop-blue">Daily Risk Management</CardTitle>
+                <CardTitle className="text-xl text-prop-blue">
+                  Daily Risk Management
+                </CardTitle>
               </CardHeader>
               <CardContent>
                 <CardDescription className="text-gray-300 text-base leading-relaxed">
-                  Real-time daily risk monitoring with drawdown alerts and violation tracking
+                  Real-time daily risk monitoring with drawdown alerts and
+                  violation tracking
                 </CardDescription>
               </CardContent>
             </Card>
@@ -253,11 +291,14 @@ export default function Welcome() {
                 <div className="w-12 h-12 rounded-xl bg-prop-gradient-rainbow flex items-center justify-center mb-4">
                   <Award className="w-6 h-6 text-white" />
                 </div>
-                <CardTitle className="text-xl text-prop-gold">Discipline Score Tracking</CardTitle>
+                <CardTitle className="text-xl text-prop-gold">
+                  Discipline Score Tracking
+                </CardTitle>
               </CardHeader>
               <CardContent>
                 <CardDescription className="text-gray-300 text-base leading-relaxed">
-                  Advanced discipline scoring with risk compliance and trade limits analysis
+                  Advanced discipline scoring with risk compliance and trade
+                  limits analysis
                 </CardDescription>
               </CardContent>
             </Card>
@@ -273,7 +314,8 @@ export default function Welcome() {
               Choose Your Trading Level
             </h2>
             <p className="text-xl text-gray-300">
-              From aspiring traders to professional firms - we have the perfect plan for your journey
+              From aspiring traders to professional firms - we have the perfect
+              plan for your journey
             </p>
           </div>
 
@@ -284,14 +326,22 @@ export default function Welcome() {
                 <div className="w-16 h-16 bg-prop-gradient-green rounded-full flex items-center justify-center mx-auto mb-4">
                   <BookOpen className="w-8 h-8 text-white" />
                 </div>
-                <CardTitle className="text-2xl text-prop-green">Basic</CardTitle>
-                <CardDescription className="text-gray-300 mt-4">Perfect for new traders</CardDescription>
+                <CardTitle className="text-2xl text-prop-green">
+                  Basic
+                </CardTitle>
+                <CardDescription className="text-gray-300 mt-4">
+                  Perfect for new traders
+                </CardDescription>
                 <div className="mt-6">
-                  <span className="text-4xl font-bold text-prop-green">$9.99</span>
+                  <span className="text-4xl font-bold text-prop-green">
+                    $9.99
+                  </span>
                   <span className="text-gray-400">/month</span>
                 </div>
                 <div className="mt-2">
-                  <Badge className="bg-success-green text-white text-xs">7 Days Free Trial</Badge>
+                  <Badge className="bg-success-green text-white text-xs">
+                    7 Days Free Trial
+                  </Badge>
                 </div>
               </CardHeader>
               <CardContent className="p-8 pt-0">
@@ -302,11 +352,15 @@ export default function Welcome() {
                   </li>
                   <li className="flex items-center">
                     <CheckCircle className="w-5 h-5 text-prop-green mr-3" />
-                    <span className="text-gray-300">Basic Performance Analytics</span>
+                    <span className="text-gray-300">
+                      Basic Performance Analytics
+                    </span>
                   </li>
                   <li className="flex items-center">
                     <CheckCircle className="w-5 h-5 text-prop-green mr-3" />
-                    <span className="text-gray-300">Professional Trade Journal</span>
+                    <span className="text-gray-300">
+                      Professional Trade Journal
+                    </span>
                   </li>
                   <li className="flex items-center">
                     <CheckCircle className="w-5 h-5 text-prop-green mr-3" />
@@ -318,14 +372,14 @@ export default function Welcome() {
                   </li>
                 </ul>
                 <div className="space-y-3">
-                  <Button 
-                    onClick={() => window.location.href = '/auth'}
+                  <Button
+                    onClick={() => (window.location.href = "/auth")}
                     className="w-full bg-prop-gradient-green text-white hover-scale smooth-transition"
                   >
                     Start Free Trial
                   </Button>
-                  <Button 
-                    onClick={() => window.location.href = '/auth'}
+                  <Button
+                    onClick={() => (window.location.href = "/auth")}
                     variant="outline"
                     className="w-full border-prop-green text-prop-green hover:bg-prop-green hover:text-white smooth-transition"
                   >
@@ -347,14 +401,22 @@ export default function Welcome() {
                 <div className="w-16 h-16 bg-prop-gradient-gold rounded-full flex items-center justify-center mx-auto mb-4">
                   <Target className="w-8 h-8 text-black" />
                 </div>
-                <CardTitle className="text-2xl text-prop-gold">Pro Trader</CardTitle>
-                <CardDescription className="text-gray-300 mt-4">For serious prop traders</CardDescription>
+                <CardTitle className="text-2xl text-prop-gold">
+                  Pro Trader
+                </CardTitle>
+                <CardDescription className="text-gray-300 mt-4">
+                  For serious prop traders
+                </CardDescription>
                 <div className="mt-6">
-                  <span className="text-4xl font-bold text-prop-gold">$14.99</span>
+                  <span className="text-4xl font-bold text-prop-gold">
+                    $14.99
+                  </span>
                   <span className="text-gray-400">/month</span>
                 </div>
                 <div className="mt-2">
-                  <Badge className="bg-prop-gradient-gold text-white text-xs">7 Days Free Trial</Badge>
+                  <Badge className="bg-prop-gradient-gold text-white text-xs">
+                    7 Days Free Trial
+                  </Badge>
                 </div>
               </CardHeader>
               <CardContent className="p-8 pt-0">
@@ -365,7 +427,9 @@ export default function Welcome() {
                   </li>
                   <li className="flex items-center">
                     <CheckCircle className="w-5 h-5 text-prop-gold mr-3" />
-                    <span className="text-gray-300">Advanced Analytics & Reports</span>
+                    <span className="text-gray-300">
+                      Advanced Analytics & Reports
+                    </span>
                   </li>
                   <li className="flex items-center">
                     <CheckCircle className="w-5 h-5 text-prop-gold mr-3" />
@@ -373,7 +437,9 @@ export default function Welcome() {
                   </li>
                   <li className="flex items-center">
                     <CheckCircle className="w-5 h-5 text-prop-gold mr-3" />
-                    <span className="text-gray-300">Discipline Score Tracking</span>
+                    <span className="text-gray-300">
+                      Discipline Score Tracking
+                    </span>
                   </li>
                   <li className="flex items-center">
                     <CheckCircle className="w-5 h-5 text-prop-gold mr-3" />
@@ -385,14 +451,14 @@ export default function Welcome() {
                   </li>
                 </ul>
                 <div className="space-y-3">
-                  <Button 
-                    onClick={() => window.location.href = '/auth'}
+                  <Button
+                    onClick={() => (window.location.href = "/auth")}
                     className="w-full bg-prop-gradient-gold text-black font-bold hover-scale smooth-transition"
                   >
                     Start Pro Trial
                   </Button>
-                  <Button 
-                    onClick={() => window.location.href = '/auth'}
+                  <Button
+                    onClick={() => (window.location.href = "/auth")}
                     variant="outline"
                     className="w-full border-prop-gold text-prop-gold hover:bg-prop-gold hover:text-black smooth-transition"
                   >
@@ -408,37 +474,55 @@ export default function Welcome() {
                 <div className="w-16 h-16 bg-prop-gradient-pink rounded-full flex items-center justify-center mx-auto mb-4">
                   <Gem className="w-8 h-8 text-white" />
                 </div>
-                <CardTitle className="text-2xl text-prop-pink">Premium</CardTitle>
-                <CardDescription className="text-gray-300 mt-4">For professional traders</CardDescription>
+                <CardTitle className="text-2xl text-prop-pink">
+                  Premium
+                </CardTitle>
+                <CardDescription className="text-gray-300 mt-4">
+                  For professional traders
+                </CardDescription>
                 <div className="mt-6">
-                  <span className="text-4xl font-bold text-prop-pink">$29.99</span>
+                  <span className="text-4xl font-bold text-prop-pink">
+                    $29.99
+                  </span>
                   <span className="text-gray-400">/month</span>
                 </div>
                 <div className="mt-2">
-                  <Badge className="bg-prop-gradient-pink text-white text-xs">7 Days Free Trial</Badge>
+                  <Badge className="bg-prop-gradient-pink text-white text-xs">
+                    7 Days Free Trial
+                  </Badge>
                 </div>
               </CardHeader>
               <CardContent className="p-8 pt-0">
                 <ul className="space-y-3 mb-8">
                   <li className="flex items-center">
                     <CheckCircle className="w-5 h-5 text-prop-pink mr-3" />
-                    <span className="text-gray-300">Unlimited Trading Accounts</span>
+                    <span className="text-gray-300">
+                      Unlimited Trading Accounts
+                    </span>
                   </li>
                   <li className="flex items-center">
                     <CheckCircle className="w-5 h-5 text-prop-pink mr-3" />
-                    <span className="text-gray-300">AI Trading Insights (Marthy AI)</span>
+                    <span className="text-gray-300">
+                      AI Trading Insights (Marthy AI)
+                    </span>
                   </li>
                   <li className="flex items-center">
                     <CheckCircle className="w-5 h-5 text-prop-pink mr-3" />
-                    <span className="text-gray-300">Advanced Discipline Analysis</span>
+                    <span className="text-gray-300">
+                      Advanced Discipline Analysis
+                    </span>
                   </li>
                   <li className="flex items-center">
                     <CheckCircle className="w-5 h-5 text-prop-pink mr-3" />
-                    <span className="text-gray-300">Behavioral Analysis & Alerts</span>
+                    <span className="text-gray-300">
+                      Behavioral Analysis & Alerts
+                    </span>
                   </li>
                   <li className="flex items-center">
                     <CheckCircle className="w-5 h-5 text-prop-pink mr-3" />
-                    <span className="text-gray-300">Custom Risk Parameters</span>
+                    <span className="text-gray-300">
+                      Custom Risk Parameters
+                    </span>
                   </li>
                   <li className="flex items-center">
                     <CheckCircle className="w-5 h-5 text-prop-pink mr-3" />
@@ -446,14 +530,14 @@ export default function Welcome() {
                   </li>
                 </ul>
                 <div className="space-y-3">
-                  <Button 
-                    onClick={() => window.location.href = '/auth'}
+                  <Button
+                    onClick={() => (window.location.href = "/auth")}
                     className="w-full bg-prop-gradient-pink text-white hover-scale smooth-transition"
                   >
                     Start Elite Trial
                   </Button>
-                  <Button 
-                    onClick={() => window.location.href = '/auth'}
+                  <Button
+                    onClick={() => (window.location.href = "/auth")}
                     variant="outline"
                     className="w-full border-prop-pink text-prop-pink hover:bg-prop-pink hover:text-white smooth-transition"
                   >
@@ -463,15 +547,15 @@ export default function Welcome() {
               </CardContent>
             </Card>
           </div>
-          
+
           {/* Plan Comparison Button */}
           <div className="text-center mt-12">
-            <Button 
+            <Button
               onClick={() => setShowComparison(!showComparison)}
               variant="outline"
               className="border-prop-gold text-prop-gold hover:bg-prop-gold hover:text-black smooth-transition"
             >
-              {showComparison ? "Hide" : "Compare Plans"} 
+              {showComparison ? "Hide" : "Compare Plans"}
               <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
           </div>
@@ -479,7 +563,9 @@ export default function Welcome() {
           {/* Plan Comparison Table */}
           {showComparison && (
             <div className="mt-8 bg-prop-card rounded-xl border border-prop-gold/20 p-6">
-              <h3 className="text-2xl font-bold text-prop-gold mb-6 text-center">Feature Comparison</h3>
+              <h3 className="text-2xl font-bold text-prop-gold mb-6 text-center">
+                Feature Comparison
+              </h3>
               <div className="overflow-x-auto">
                 <table className="w-full">
                   <thead>
@@ -487,7 +573,9 @@ export default function Welcome() {
                       <th className="text-left p-4 text-gray-300">Feature</th>
                       <th className="text-center p-4 text-prop-green">Basic</th>
                       <th className="text-center p-4 text-prop-gold">Pro</th>
-                      <th className="text-center p-4 text-prop-pink">Premium</th>
+                      <th className="text-center p-4 text-prop-pink">
+                        Premium
+                      </th>
                     </tr>
                   </thead>
                   <tbody className="text-gray-300">
@@ -499,9 +587,15 @@ export default function Welcome() {
                     </tr>
                     <tr className="border-b border-dark-border">
                       <td className="p-4 font-medium">Trade Journal</td>
-                      <td className="text-center p-4"><CheckCircle className="h-5 w-5 text-prop-green mx-auto" /></td>
-                      <td className="text-center p-4"><CheckCircle className="h-5 w-5 text-prop-gold mx-auto" /></td>
-                      <td className="text-center p-4"><CheckCircle className="h-5 w-5 text-prop-pink mx-auto" /></td>
+                      <td className="text-center p-4">
+                        <CheckCircle className="h-5 w-5 text-prop-green mx-auto" />
+                      </td>
+                      <td className="text-center p-4">
+                        <CheckCircle className="h-5 w-5 text-prop-gold mx-auto" />
+                      </td>
+                      <td className="text-center p-4">
+                        <CheckCircle className="h-5 w-5 text-prop-pink mx-auto" />
+                      </td>
                     </tr>
                     <tr className="border-b border-dark-border">
                       <td className="p-4 font-medium">Performance Analytics</td>
@@ -512,44 +606,74 @@ export default function Welcome() {
                     <tr className="border-b border-dark-border">
                       <td className="p-4 font-medium">Risk Management Tools</td>
                       <td className="text-center p-4">Basic Alerts</td>
-                      <td className="text-center p-4"><CheckCircle className="h-5 w-5 text-prop-gold mx-auto" /></td>
-                      <td className="text-center p-4"><CheckCircle className="h-5 w-5 text-prop-pink mx-auto" /></td>
+                      <td className="text-center p-4">
+                        <CheckCircle className="h-5 w-5 text-prop-gold mx-auto" />
+                      </td>
+                      <td className="text-center p-4">
+                        <CheckCircle className="h-5 w-5 text-prop-pink mx-auto" />
+                      </td>
                     </tr>
                     <tr className="border-b border-dark-border">
-                      <td className="p-4 font-medium">Discipline Score Tracking</td>
+                      <td className="p-4 font-medium">
+                        Discipline Score Tracking
+                      </td>
                       <td className="text-center p-4">❌</td>
-                      <td className="text-center p-4"><CheckCircle className="h-5 w-5 text-prop-gold mx-auto" /></td>
-                      <td className="text-center p-4"><CheckCircle className="h-5 w-5 text-prop-pink mx-auto" /></td>
+                      <td className="text-center p-4">
+                        <CheckCircle className="h-5 w-5 text-prop-gold mx-auto" />
+                      </td>
+                      <td className="text-center p-4">
+                        <CheckCircle className="h-5 w-5 text-prop-pink mx-auto" />
+                      </td>
                     </tr>
                     <tr className="border-b border-dark-border">
                       <td className="p-4 font-medium">Daily Risk Management</td>
                       <td className="text-center p-4">❌</td>
-                      <td className="text-center p-4"><CheckCircle className="h-5 w-5 text-prop-gold mx-auto" /></td>
-                      <td className="text-center p-4"><CheckCircle className="h-5 w-5 text-prop-pink mx-auto" /></td>
+                      <td className="text-center p-4">
+                        <CheckCircle className="h-5 w-5 text-prop-gold mx-auto" />
+                      </td>
+                      <td className="text-center p-4">
+                        <CheckCircle className="h-5 w-5 text-prop-pink mx-auto" />
+                      </td>
                     </tr>
                     <tr className="border-b border-dark-border">
-                      <td className="p-4 font-medium">AI Trading Insights (Marthy AI)</td>
+                      <td className="p-4 font-medium">
+                        AI Trading Insights (Marthy AI)
+                      </td>
                       <td className="text-center p-4">❌</td>
                       <td className="text-center p-4">❌</td>
-                      <td className="text-center p-4"><CheckCircle className="h-5 w-5 text-prop-pink mx-auto" /></td>
+                      <td className="text-center p-4">
+                        <CheckCircle className="h-5 w-5 text-prop-pink mx-auto" />
+                      </td>
                     </tr>
                     <tr className="border-b border-dark-border">
-                      <td className="p-4 font-medium">Advanced Discipline Analysis</td>
+                      <td className="p-4 font-medium">
+                        Advanced Discipline Analysis
+                      </td>
                       <td className="text-center p-4">❌</td>
                       <td className="text-center p-4">❌</td>
-                      <td className="text-center p-4"><CheckCircle className="h-5 w-5 text-prop-pink mx-auto" /></td>
+                      <td className="text-center p-4">
+                        <CheckCircle className="h-5 w-5 text-prop-pink mx-auto" />
+                      </td>
                     </tr>
                     <tr className="border-b border-dark-border">
-                      <td className="p-4 font-medium">Behavioral Analysis & Alerts</td>
+                      <td className="p-4 font-medium">
+                        Behavioral Analysis & Alerts
+                      </td>
                       <td className="text-center p-4">❌</td>
                       <td className="text-center p-4">❌</td>
-                      <td className="text-center p-4"><CheckCircle className="h-5 w-5 text-prop-pink mx-auto" /></td>
+                      <td className="text-center p-4">
+                        <CheckCircle className="h-5 w-5 text-prop-pink mx-auto" />
+                      </td>
                     </tr>
                     <tr className="border-b border-dark-border">
-                      <td className="p-4 font-medium">Custom Risk Parameters</td>
+                      <td className="p-4 font-medium">
+                        Custom Risk Parameters
+                      </td>
                       <td className="text-center p-4">❌</td>
                       <td className="text-center p-4">❌</td>
-                      <td className="text-center p-4"><CheckCircle className="h-5 w-5 text-prop-pink mx-auto" /></td>
+                      <td className="text-center p-4">
+                        <CheckCircle className="h-5 w-5 text-prop-pink mx-auto" />
+                      </td>
                     </tr>
                     <tr>
                       <td className="p-4 font-medium">Support Level</td>
@@ -573,33 +697,46 @@ export default function Welcome() {
               Elite Features in Action
             </h2>
             <p className="text-xl text-gray-300">
-              See how PropTraderJournal transforms your prop trading journey with these powerful tools
+              See how PropTraderJournal transforms your prop trading journey
+              with these powerful tools
             </p>
           </div>
-          
+
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-16">
             {/* Performance Overview */}
             <div className="bg-prop-card rounded-xl border border-prop-blue/20 p-6 hover-lift smooth-transition">
               <div className="mb-4">
-                <h3 className="text-xl font-bold text-prop-blue mb-2">Performance Overview</h3>
-                <p className="text-gray-300">Real-time performance tracking with advanced analytics</p>
+                <h3 className="text-xl font-bold text-prop-blue mb-2">
+                  Performance Overview
+                </h3>
+                <p className="text-gray-300">
+                  Real-time performance tracking with advanced analytics
+                </p>
               </div>
               <div className="bg-gray-800 rounded-lg p-4 space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div className="bg-gray-700 rounded p-3 text-center">
-                    <div className="text-lg font-bold text-prop-green">$12,450</div>
+                    <div className="text-lg font-bold text-prop-green">
+                      $12,450
+                    </div>
                     <div className="text-xs text-gray-300">Net P&L</div>
                   </div>
                   <div className="bg-gray-700 rounded p-3 text-center">
-                    <div className="text-lg font-bold text-prop-gold">73.4%</div>
+                    <div className="text-lg font-bold text-prop-gold">
+                      73.4%
+                    </div>
                     <div className="text-xs text-gray-300">Win Rate</div>
                   </div>
                   <div className="bg-gray-700 rounded p-3 text-center">
-                    <div className="text-lg font-bold text-prop-tiffany">2.3</div>
+                    <div className="text-lg font-bold text-prop-tiffany">
+                      2.3
+                    </div>
                     <div className="text-xs text-gray-300">Profit Factor</div>
                   </div>
                   <div className="bg-gray-700 rounded p-3 text-center">
-                    <div className="text-lg font-bold text-prop-pink">1:2.8</div>
+                    <div className="text-lg font-bold text-prop-pink">
+                      1:2.8
+                    </div>
                     <div className="text-xs text-gray-300">Avg RR</div>
                   </div>
                 </div>
@@ -622,8 +759,12 @@ export default function Welcome() {
                   </div>
                 </div>
                 <div className="bg-prop-gradient-blue/20 border border-prop-blue/50 rounded p-3 text-center">
-                  <div className="text-lg font-bold text-prop-blue">Sharpe Ratio: 1.89</div>
-                  <div className="text-xs text-prop-blue font-bold">EXCELLENT PERFORMANCE</div>
+                  <div className="text-lg font-bold text-prop-blue">
+                    Sharpe Ratio: 1.89
+                  </div>
+                  <div className="text-xs text-prop-blue font-bold">
+                    EXCELLENT PERFORMANCE
+                  </div>
                 </div>
               </div>
             </div>
@@ -631,21 +772,33 @@ export default function Welcome() {
             {/* Challenge Target Planner */}
             <div className="bg-prop-card rounded-xl border border-prop-gold/20 p-6 hover-lift smooth-transition">
               <div className="mb-4">
-                <h3 className="text-xl font-bold text-prop-gold mb-2">Challenge Target Planner</h3>
-                <p className="text-gray-300">Strategic account management with intelligent risk projections</p>
+                <h3 className="text-xl font-bold text-prop-gold mb-2">
+                  Challenge Target Planner
+                </h3>
+                <p className="text-gray-300">
+                  Strategic account management with intelligent risk projections
+                </p>
               </div>
               <div className="bg-gray-800 rounded-lg p-4 space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div className="bg-gray-700 rounded p-3 text-center">
-                    <div className="text-lg font-bold text-prop-gold">$150,000</div>
+                    <div className="text-lg font-bold text-prop-gold">
+                      $150,000
+                    </div>
                     <div className="text-xs text-gray-300">Account Size</div>
                   </div>
                   <div className="bg-gray-700 rounded p-3 text-center">
-                    <div className="text-lg font-bold text-prop-green">$9,000</div>
-                    <div className="text-xs text-gray-300">Target Objective</div>
+                    <div className="text-lg font-bold text-prop-green">
+                      $9,000
+                    </div>
+                    <div className="text-xs text-gray-300">
+                      Target Objective
+                    </div>
                   </div>
                   <div className="bg-gray-700 rounded p-3 text-center">
-                    <div className="text-lg font-bold text-prop-pink">$4,500</div>
+                    <div className="text-lg font-bold text-prop-pink">
+                      $4,500
+                    </div>
                     <div className="text-xs text-gray-300">Max Drawdown</div>
                   </div>
                   <div className="bg-gray-700 rounded p-3 text-center">
@@ -686,21 +839,31 @@ export default function Welcome() {
             {/* Prop Firm Spending */}
             <div className="bg-prop-card rounded-xl border border-prop-tiffany/20 p-6 hover-lift smooth-transition">
               <div className="mb-4">
-                <h3 className="text-xl font-bold text-prop-tiffany mb-2">Prop Firm Spending</h3>
-                <p className="text-gray-300">Complete financial overview of your trading investments</p>
+                <h3 className="text-xl font-bold text-prop-tiffany mb-2">
+                  Prop Firm Spending
+                </h3>
+                <p className="text-gray-300">
+                  Complete financial overview of your trading investments
+                </p>
               </div>
               <div className="bg-gray-800 rounded-lg p-4 space-y-4">
                 <div className="grid grid-cols-3 gap-2">
                   <div className="bg-gray-700 rounded p-3 text-center">
-                    <div className="text-xl font-bold text-prop-tiffany">{formatCurrency(spendingData.challengeCost)}</div>
+                    <div className="text-xl font-bold text-prop-tiffany">
+                      {formatCurrency(spendingData.challengeCost)}
+                    </div>
                     <div className="text-xs text-gray-300">Challenge Cost</div>
                   </div>
                   <div className="bg-gray-700 rounded p-3 text-center">
-                    <div className="text-xl font-bold text-prop-pink">{formatCurrency(spendingData.activationCost)}</div>
+                    <div className="text-xl font-bold text-prop-pink">
+                      {formatCurrency(spendingData.activationCost)}
+                    </div>
                     <div className="text-xs text-gray-300">Activation Cost</div>
                   </div>
                   <div className="bg-gray-700 rounded p-3 text-center">
-                    <div className="text-xl font-bold text-prop-green">{formatCurrency(spendingData.totalPayout)}</div>
+                    <div className="text-xl font-bold text-prop-green">
+                      {formatCurrency(spendingData.totalPayout)}
+                    </div>
                     <div className="text-xs text-gray-300">Total Payout</div>
                   </div>
                 </div>
@@ -708,28 +871,46 @@ export default function Welcome() {
                   <div className="bg-gray-700 rounded p-2">
                     <div className="flex justify-between items-center">
                       <span className="text-gray-300">Active Accounts</span>
-                      <span className="text-prop-green font-bold">{spendingData.activeAccounts}</span>
+                      <span className="text-prop-green font-bold">
+                        {spendingData.activeAccounts}
+                      </span>
                     </div>
-                    <div className="text-xs text-gray-400">{spendingData.activeAccounts} accounts</div>
+                    <div className="text-xs text-gray-400">
+                      {spendingData.activeAccounts} accounts
+                    </div>
                   </div>
                   <div className="bg-gray-700 rounded p-2">
                     <div className="flex justify-between items-center">
                       <span className="text-gray-300">Failed Accounts</span>
-                      <span className="text-prop-pink font-bold">{spendingData.failedAccounts}</span>
+                      <span className="text-prop-pink font-bold">
+                        {spendingData.failedAccounts}
+                      </span>
                     </div>
-                    <div className="text-xs text-gray-400">{spendingData.failedAccounts} accounts</div>
+                    <div className="text-xs text-gray-400">
+                      {spendingData.failedAccounts} accounts
+                    </div>
                   </div>
                   <div className="bg-gray-700 rounded p-2">
                     <div className="flex justify-between items-center">
                       <span className="text-gray-300">Total Accounts</span>
-                      <span className="text-prop-tiffany font-bold">{spendingData.totalAccounts}</span>
+                      <span className="text-prop-tiffany font-bold">
+                        {spendingData.totalAccounts}
+                      </span>
                     </div>
-                    <div className="text-xs text-gray-400">Overall spent: {formatCurrency(spendingData.totalSpent)}</div>
+                    <div className="text-xs text-gray-400">
+                      Overall spent: {formatCurrency(spendingData.totalSpent)}
+                    </div>
                   </div>
                 </div>
                 <div className="bg-prop-gradient-green/20 border border-prop-green/50 rounded p-3 text-center">
-                  <div className="text-lg font-bold text-prop-green">ROI: {formatCurrency(spendingData.roi)}</div>
-                  <div className="text-xs text-prop-green font-bold">{spendingData.roi > 0 ? 'PROFITABLE TRADER' : 'WORKING TOWARD PROFIT'}</div>
+                  <div className="text-lg font-bold text-prop-green">
+                    ROI: {formatCurrency(spendingData.roi)}
+                  </div>
+                  <div className="text-xs text-prop-green font-bold">
+                    {spendingData.roi > 0
+                      ? "PROFITABLE TRADER"
+                      : "WORKING TOWARD PROFIT"}
+                  </div>
                 </div>
               </div>
             </div>
@@ -737,42 +918,68 @@ export default function Welcome() {
             {/* Discipline & Psychology Tracker */}
             <div className="bg-prop-card rounded-xl border border-prop-green/20 p-6 hover-lift smooth-transition">
               <div className="mb-4">
-                <h3 className="text-xl font-bold text-prop-green mb-2">Discipline & Psychology Tracker</h3>
-                <p className="text-gray-300">AI-powered psychology analysis and trading discipline tracking</p>
+                <h3 className="text-xl font-bold text-prop-green mb-2">
+                  Discipline & Psychology Tracker
+                </h3>
+                <p className="text-gray-300">
+                  AI-powered psychology analysis and trading discipline tracking
+                </p>
               </div>
               <div className="bg-gray-800 rounded-lg p-4 space-y-4">
                 <div className="text-center">
-                  <div className="text-3xl font-bold text-prop-green">92.7%</div>
-                  <div className="text-sm text-gray-300">Overall Discipline Score</div>
+                  <div className="text-3xl font-bold text-prop-green">
+                    92.7%
+                  </div>
+                  <div className="text-sm text-gray-300">
+                    Overall Discipline Score
+                  </div>
                   <div className="w-full bg-gray-600 rounded-full h-2 mt-2">
                     <div className="bg-prop-green h-2 rounded-full w-11/12"></div>
                   </div>
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div className="bg-gray-700 rounded p-3">
-                    <div className="text-sm font-semibold text-prop-green">Risk Management</div>
+                    <div className="text-sm font-semibold text-prop-green">
+                      Risk Management
+                    </div>
                     <div className="text-lg font-bold text-prop-green">96%</div>
-                    <div className="text-xs text-gray-400">Excellent control</div>
+                    <div className="text-xs text-gray-400">
+                      Excellent control
+                    </div>
                   </div>
                   <div className="bg-gray-700 rounded p-3">
-                    <div className="text-sm font-semibold text-yellow-400">Emotional Control</div>
+                    <div className="text-sm font-semibold text-yellow-400">
+                      Emotional Control
+                    </div>
                     <div className="text-lg font-bold text-yellow-400">84%</div>
-                    <div className="text-xs text-gray-400">Room for improvement</div>
+                    <div className="text-xs text-gray-400">
+                      Room for improvement
+                    </div>
                   </div>
                   <div className="bg-gray-700 rounded p-3">
-                    <div className="text-sm font-semibold text-prop-green">Strategy Adherence</div>
+                    <div className="text-sm font-semibold text-prop-green">
+                      Strategy Adherence
+                    </div>
                     <div className="text-lg font-bold text-prop-green">98%</div>
                     <div className="text-xs text-gray-400">Outstanding</div>
                   </div>
                   <div className="bg-gray-700 rounded p-3">
-                    <div className="text-sm font-semibold text-prop-tiffany">Stop Loss Respect</div>
-                    <div className="text-lg font-bold text-prop-tiffany">89%</div>
+                    <div className="text-sm font-semibold text-prop-tiffany">
+                      Stop Loss Respect
+                    </div>
+                    <div className="text-lg font-bold text-prop-tiffany">
+                      89%
+                    </div>
                     <div className="text-xs text-gray-400">Very good</div>
                   </div>
                 </div>
                 <div className="bg-prop-gradient-gold/20 border border-prop-gold/50 rounded p-3">
-                  <div className="text-sm font-semibold text-prop-gold">🎯 Current Focus</div>
-                  <div className="text-xs text-gray-300">Improve patience during news events</div>
+                  <div className="text-sm font-semibold text-prop-gold">
+                    🎯 Current Focus
+                  </div>
+                  <div className="text-xs text-gray-300">
+                    Improve patience during news events
+                  </div>
                 </div>
               </div>
             </div>
@@ -780,8 +987,12 @@ export default function Welcome() {
             {/* Daily Trading Plan and Performance */}
             <div className="bg-prop-card rounded-xl border border-prop-pink/20 p-6 hover-lift smooth-transition">
               <div className="mb-4">
-                <h3 className="text-xl font-bold text-prop-pink mb-2">Daily Trading Plan and Performance</h3>
-                <p className="text-gray-300">Structured reflection system with live performance tracking</p>
+                <h3 className="text-xl font-bold text-prop-pink mb-2">
+                  Daily Trading Plan and Performance
+                </h3>
+                <p className="text-gray-300">
+                  Structured reflection system with live performance tracking
+                </p>
               </div>
               <div className="bg-gray-800 rounded-lg p-4 space-y-4">
                 <div className="grid grid-cols-2 gap-3">
@@ -791,32 +1002,54 @@ export default function Welcome() {
                   </div>
                   <div className="bg-gray-700 rounded p-3 text-center">
                     <div className="text-lg font-bold text-prop-green">89%</div>
-                    <div className="text-xs text-gray-300">Consistency Rate</div>
+                    <div className="text-xs text-gray-300">
+                      Consistency Rate
+                    </div>
                   </div>
                 </div>
                 <div className="space-y-3">
                   <div className="bg-gray-700 rounded p-3">
                     <div className="border-l-4 border-prop-green pl-3">
-                      <h5 className="text-xs font-semibold text-prop-green">What Went Right</h5>
-                      <p className="text-gray-300 text-xs">Perfect entry on EUR/USD breakout at 1.0850 support. Followed my 3-confirmation rule and held through minor pullback.</p>
+                      <h5 className="text-xs font-semibold text-prop-green">
+                        What Went Right
+                      </h5>
+                      <p className="text-gray-300 text-xs">
+                        Perfect entry on EUR/USD breakout at 1.0850 support.
+                        Followed my 3-confirmation rule and held through minor
+                        pullback.
+                      </p>
                     </div>
                   </div>
                   <div className="bg-gray-700 rounded p-3">
                     <div className="border-l-4 border-red-500 pl-3">
-                      <h5 className="text-xs font-semibold text-red-400">What Went Wrong</h5>
-                      <p className="text-gray-300 text-xs">Moved stop loss from 1.0820 to 1.0810 on GBP/JPY trade, reducing my risk management edge.</p>
+                      <h5 className="text-xs font-semibold text-red-400">
+                        What Went Wrong
+                      </h5>
+                      <p className="text-gray-300 text-xs">
+                        Moved stop loss from 1.0820 to 1.0810 on GBP/JPY trade,
+                        reducing my risk management edge.
+                      </p>
                     </div>
                   </div>
                   <div className="bg-gray-700 rounded p-3">
                     <div className="border-l-4 border-prop-gold pl-3">
-                      <h5 className="text-xs font-semibold text-prop-gold">Tomorrow's Focus</h5>
-                      <p className="text-gray-300 text-xs">Maintain original stop levels. Trust the initial analysis and avoid emotional adjustments.</p>
+                      <h5 className="text-xs font-semibold text-prop-gold">
+                        Tomorrow's Focus
+                      </h5>
+                      <p className="text-gray-300 text-xs">
+                        Maintain original stop levels. Trust the initial
+                        analysis and avoid emotional adjustments.
+                      </p>
                     </div>
                   </div>
                 </div>
                 <div className="bg-prop-gradient-pink/20 border border-prop-pink/50 rounded p-3 text-center">
-                  <div className="text-sm font-semibold text-prop-pink">📈 Weekly Progress</div>
-                  <div className="text-xs text-gray-300">Discipline improved by 12% this week</div>
+                  <div className="text-sm font-semibold text-prop-pink">
+                    📈 Weekly Progress
+                  </div>
+                  <div className="text-xs text-gray-300">
+                    Discipline improved by 12% this week
+                  </div>
                 </div>
               </div>
             </div>
@@ -832,28 +1065,41 @@ export default function Welcome() {
               Trusted by Elite Traders
             </h2>
             <p className="text-xl text-gray-300">
-              Join thousands of successful prop traders who use PropTraderJournal
+              Join thousands of successful prop traders who use
+              PropTraderJournal
             </p>
           </div>
 
           <div className="grid md:grid-cols-3 gap-8">
             {testimonials.map((testimonial, index) => (
-              <Card key={index} className="bg-prop-card hover:bg-prop-card-hover smooth-transition hover-lift">
+              <Card
+                key={index}
+                className="bg-prop-card hover:bg-prop-card-hover smooth-transition hover-lift"
+              >
                 <CardContent className="p-8">
                   <div className="flex mb-4">
                     {[...Array(testimonial.rating)].map((_, i) => (
-                      <Star key={i} className="w-5 h-5 text-prop-gold fill-current" />
+                      <Star
+                        key={i}
+                        className="w-5 h-5 text-prop-gold fill-current"
+                      />
                     ))}
                   </div>
-                  <p className="text-gray-300 mb-6 text-lg leading-relaxed">"{testimonial.content}"</p>
+                  <p className="text-gray-300 mb-6 text-lg leading-relaxed">
+                    "{testimonial.content}"
+                  </p>
                   <div className="flex items-center">
-                    <div className={`w-12 h-12 rounded-full ${testimonial.gradient} flex items-center justify-center mr-4`}>
+                    <div
+                      className={`w-12 h-12 rounded-full ${testimonial.gradient} flex items-center justify-center mr-4`}
+                    >
                       <span className="text-white font-bold text-lg">
                         {testimonial.name.charAt(0)}
                       </span>
                     </div>
                     <div>
-                      <p className="font-semibold text-white">{testimonial.name}</p>
+                      <p className="font-semibold text-white">
+                        {testimonial.name}
+                      </p>
                       <p className="text-gray-400">{testimonial.title}</p>
                     </div>
                   </div>
@@ -867,18 +1113,25 @@ export default function Welcome() {
       {/* Trial Information */}
       <section className="py-16 px-4 bg-gray-900/30">
         <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-3xl font-bold mb-6 text-white">15 Days Free Trial • Cancel Anytime</h2>
+          <h2 className="text-3xl font-bold mb-6 text-white">
+            15 Days Free Trial • Cancel Anytime
+          </h2>
           <p className="text-lg text-gray-300 mb-8 leading-relaxed">
-            Start your journey risk-free with our 15-day trial period. Experience all premium features 
-            and see why thousands of prop traders choose PropTraderJournal. No commitments, no hidden fees.
+            Start your journey risk-free with our 15-day trial period.
+            Experience all premium features and see why thousands of prop
+            traders choose PropTraderJournal. No commitments, no hidden fees.
           </p>
           <div className="grid md:grid-cols-3 gap-6">
             <div className="text-center">
               <div className="w-16 h-16 bg-prop-gradient-green rounded-full flex items-center justify-center mx-auto mb-4">
                 <CheckCircle className="w-8 h-8 text-white" />
               </div>
-              <h3 className="text-lg font-semibold text-white mb-2">Full Access</h3>
-              <p className="text-gray-400">All features unlocked during trial</p>
+              <h3 className="text-lg font-semibold text-white mb-2">
+                Full Access
+              </h3>
+              <p className="text-gray-400">
+                All features unlocked during trial
+              </p>
             </div>
             <div className="text-center">
               <div className="w-16 h-16 bg-prop-gradient-gold rounded-full flex items-center justify-center mx-auto mb-4">
@@ -891,7 +1144,9 @@ export default function Welcome() {
               <div className="w-16 h-16 bg-prop-gradient-pink rounded-full flex items-center justify-center mx-auto mb-4">
                 <Zap className="w-8 h-8 text-white" />
               </div>
-              <h3 className="text-lg font-semibold text-white mb-2">Instant Setup</h3>
+              <h3 className="text-lg font-semibold text-white mb-2">
+                Instant Setup
+              </h3>
               <p className="text-gray-400">Start trading in under 2 minutes</p>
             </div>
           </div>
@@ -906,18 +1161,21 @@ export default function Welcome() {
               Ready to Elevate Your Trading?
             </h2>
             <p className="text-xl text-gray-300 mb-8 leading-relaxed">
-              Join the elite community of prop traders who use PropJournal Pro to 
-              consistently pass challenges and build profitable trading careers.
+              Join the elite community of prop traders who use PropJournal Pro
+              to consistently pass challenges and build profitable trading
+              careers.
             </p>
-            <Button 
-              onClick={() => window.location.href = '/auth'}
+            <Button
+              onClick={() => (window.location.href = "/auth")}
               size="lg"
               className="bg-prop-gradient-rainbow text-white text-xl px-12 py-6 font-bold hover-lift smooth-transition"
             >
               <Sparkles className="w-6 h-6 mr-3" />
               Start Your Free Trial
             </Button>
-            <p className="text-gray-400 mt-4 text-sm">15 days free • Cancel anytime • No credit card required</p>
+            <p className="text-gray-400 mt-4 text-sm">
+              15 days free • Cancel anytime • No credit card required
+            </p>
           </div>
         </div>
       </section>
@@ -930,18 +1188,36 @@ export default function Welcome() {
               <BookOpen className="h-6 w-6 text-white" />
             </div>
             <div>
-              <h3 className="text-xl font-bold text-gradient-rainbow">PropTraderJournal</h3>
+              <h3 className="text-xl font-bold text-gradient-rainbow">
+                PropTraderJournal
+              </h3>
               <p className="text-sm text-gray-400">#1PropFirm Trader Journal</p>
             </div>
           </div>
           <p className="text-gray-400 mb-6">
-            Empowering prop traders worldwide to achieve consistent profitability
+            Empowering prop traders worldwide to achieve consistent
+            profitability
           </p>
           <div className="flex justify-center space-x-8 text-gray-400">
             <span>© 2025 PropTraderJournal</span>
-            <a href="/privacy-policy" className="hover:text-white transition-colors cursor-pointer">Privacy Policy</a>
-            <a href="/terms-of-service" className="hover:text-white transition-colors cursor-pointer">Terms of Service</a>
-            <a href="/support" className="hover:text-white transition-colors cursor-pointer">Support</a>
+            <a
+              href="/privacy-policy"
+              className="hover:text-white transition-colors cursor-pointer"
+            >
+              Privacy Policy
+            </a>
+            <a
+              href="/terms-of-service"
+              className="hover:text-white transition-colors cursor-pointer"
+            >
+              Terms of Service
+            </a>
+            <a
+              href="/support"
+              className="hover:text-white transition-colors cursor-pointer"
+            >
+              Support
+            </a>
           </div>
         </div>
       </footer>

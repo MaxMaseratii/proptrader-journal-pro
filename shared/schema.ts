@@ -261,7 +261,8 @@ export const budgetCategories = pgTable("budget_categories", {
   userId: varchar("user_id").notNull(),
   name: text("name").notNull(),
   type: text("type").notNull(), // 'trading' or 'personal'
-  icon: text("icon").default('DollarSign'), // Lucide icon name
+  emoji: text("emoji").default('📊'), // Emoji character for distinctive symbols
+  icon: text("icon").default('DollarSign'), // Lucide icon name (fallback)
   color: text("color").default('text-gray-500'),
   budgetAmount: real("budget_amount").notNull().default(0),
   isActive: boolean("is_active").default(true),
