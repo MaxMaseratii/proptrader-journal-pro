@@ -31,6 +31,7 @@ import Support from "@/pages/support";
 import DisciplineAnalysis from "@/pages/discipline-analysis";
 import DisciplinaryAssistant from "@/pages/disciplinary-assistant";
 import Charts from "@/pages/charts";
+import KnowledgeBase from "@/pages/knowledge-base";
 import Sidebar from "@/components/sidebar";
 import NotFound from "@/pages/not-found";
 import { useAuth } from "@/hooks/useAuth";
@@ -100,6 +101,7 @@ function Router() {
 
           <Route path="/discipline-analysis" component={DisciplineAnalysis} />
           <Route path="/disciplinary-assistant" component={DisciplinaryAssistant} />
+          <Route path="/knowledge-base" component={KnowledgeBase} />
           <Route path="/profile" component={Profile} />
           <Route path="/welcome" component={Welcome} />
           <Route path="/privacy-policy" component={PrivacyPolicy} />

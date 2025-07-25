@@ -52,7 +52,7 @@ const navItems = [
   { href: "/spending", label: "Prop Firm Spending", icon: Wallet, section: "main" },
   { href: "/payouts", label: "Payout Records", icon: DollarSign, section: "main" },
   { href: "/reports", label: "Reports", icon: Calendar, section: "main" },
-
+  { href: "/knowledge-base", label: "Knowledge Base", icon: BookOpen, section: "main" },
   { href: "/achievements", label: "Achievement", icon: Trophy, section: "main" },
 ];
 
@@ -83,13 +83,24 @@ export default function Sidebar() {
     )}>
       <div className="p-6 border-b border-prop-gold/20">
         <div className="flex items-center space-x-3">
-          <Link href="/welcome" className="bg-prop-gradient-rainbow p-3 rounded-xl hover-glow smooth-transition cursor-pointer">
+          <div 
+            onClick={async () => {
+              try {
+                await fetch('/api/auth/logout', { method: 'POST' });
+                window.location.href = '/welcome';
+              } catch (error) {
+                console.error('Logout error:', error);
+                window.location.href = '/welcome';
+              }
+            }}
+            className="bg-prop-gradient-rainbow p-3 rounded-xl hover-glow smooth-transition cursor-pointer"
+          >
             <BookOpen className="h-6 w-6 text-white" />
-          </Link>
+          </div>
           {!isCollapsed && !isPartiallyCollapsed && (
             <div>
-              <h1 className="text-lg font-bold text-gradient-rainbow">PropTraderJournal</h1>
-              <p className="text-xs text-gray-400">#1PropFirm Trader Journal</p>
+              <h1 className="text-lg font-bold text-gradient-rainbow">#1 PropFirm Trader's Journal</h1>
+              <p className="text-xs text-gray-400">PropTrader Journal</p>
             </div>
           )}
         </div>
@@ -229,7 +240,15 @@ export default function Sidebar() {
               
               <DropdownMenuItem 
                 className="text-red-400 hover:bg-red-600/20 cursor-pointer"
-                onClick={() => window.location.href = '/welcome'}
+                onClick={async () => {
+                  try {
+                    await fetch('/api/auth/logout', { method: 'POST' });
+                    window.location.href = '/welcome';
+                  } catch (error) {
+                    console.error('Logout error:', error);
+                    window.location.href = '/welcome';
+                  }
+                }}
               >
                 <LogOut className="mr-2 h-4 w-4 text-red-400" />
                 Sign Out

@@ -5,7 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Calendar, CalendarDays, Download, Filter, Search, Plus, Edit3, Save, X, Upload, FileText, AlertCircle, CheckCircle } from "lucide-react";
+import { Calendar, CalendarDays, Download, Filter, Search, Plus, Edit3, Save, X, Upload, FileText, AlertCircle, CheckCircle, Target } from "lucide-react";
+import { Label } from "@/components/ui/label";
 import { formatCurrency, formatDate } from "@/lib/utils";
 import type { Trade, Account } from "@shared/schema";
 import { useState, useMemo, useEffect } from "react";
@@ -865,10 +866,16 @@ const UniversalCsvImport = ({ accounts }: { accounts: Account[] }) => {
       console.log(`🔍 Prepared ${trades.length} trades for import`);
       console.log(`🔍 Sample trade:`, trades[0]);
       
+      // Override trades with selected account ID
+      const tradesWithAccount = trades.map(trade => ({
+        ...trade,
+        accountId: parseInt(selectedImportAccount)
+      }));
+
       // Send to Universal CSV Import API
       const rawResponse = await apiRequest('/api/trades/import-csv', 'POST', {
-        trades,
-        accountId: trades[0]?.accountId,
+        trades: tradesWithAccount,
+        accountId: parseInt(selectedImportAccount),
         source: `${csvFormat}-csv`
       });
       
@@ -952,8 +959,62 @@ const UniversalCsvImport = ({ accounts }: { accounts: Account[] }) => {
 
   const formatInfo = getFormatInfo(csvFormat);
 
+  // Account selection state for CSV import
+  const [selectedImportAccount, setSelectedImportAccount] = useState<string>("");
+
   return (
     <div className="space-y-6">
+      {/* Account Selection for CSV Import */}
+      <Card className="bg-gradient-to-br from-blue-500/10 to-purple-500/10 border-blue-500/30">
+        <CardHeader>
+          <div className="flex items-center gap-3">
+            <Target className="w-6 h-6 text-blue-400" />
+            <CardTitle className="text-blue-400">Account Selection</CardTitle>
+          </div>
+          <p className="text-gray-400">Choose which trading account to import your trades to</p>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            <div>
+              <Label className="text-gray-300 font-medium">Select Trading Account</Label>
+              <Select 
+                value={selectedImportAccount} 
+                onValueChange={setSelectedImportAccount}
+              >
+                <SelectTrigger className="bg-gray-700 border-gray-600 text-white focus:border-blue-400">
+                  <SelectValue placeholder="Choose your trading account for CSV import" />
+                </SelectTrigger>
+                <SelectContent className="bg-gray-700 border-gray-600">
+                  {accounts?.map((account) => (
+                    <SelectItem key={account.id} value={account.id.toString()} className="text-white hover:bg-gray-600">
+                      <div className="flex items-center justify-between w-full">
+                        <span>{account.name}</span>
+                        <Badge variant="outline" className="ml-2 text-xs">
+                          {account.type}
+                        </Badge>
+                      </div>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              {selectedImportAccount && (
+                <p className="text-sm text-green-400 mt-2">
+                  ✓ Selected: {accounts?.find(acc => acc.id.toString() === selectedImportAccount)?.name}
+                </p>
+              )}
+            </div>
+            
+            {!selectedImportAccount && (
+              <div className="bg-yellow-600/20 border border-yellow-600 rounded-lg p-3">
+                <div className="flex items-center gap-2">
+                  <AlertCircle className="w-4 h-4 text-yellow-400" />
+                  <span className="text-yellow-400 text-sm">Please select an account before uploading CSV files</span>
+                </div>
+              </div>
+            )}
+          </div>
+        </CardContent>
+      </Card>
       {/* File Upload Section */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
@@ -964,8 +1025,14 @@ const UniversalCsvImport = ({ accounts }: { accounts: Account[] }) => {
             type="file"
             accept=".csv"
             onChange={handleFileChange}
-            className="bg-gray-700 border-gray-600 text-white file:bg-blue-600 file:text-white file:border-0 file:rounded file:px-3 file:py-1"
+            disabled={!selectedImportAccount}
+            className={`bg-gray-700 border-gray-600 text-white file:bg-blue-600 file:text-white file:border-0 file:rounded file:px-3 file:py-1 ${
+              !selectedImportAccount ? 'opacity-50 cursor-not-allowed' : ''
+            }`}
           />
+          {!selectedImportAccount && (
+            <p className="text-xs text-yellow-400 mt-1">Select an account first</p>
+          )}
         </div>
         
         <div>
@@ -1104,19 +1171,24 @@ const UniversalCsvImport = ({ accounts }: { accounts: Account[] }) => {
       {/* Import Button */}
       <Button 
         onClick={handleUpload}
-        disabled={!csvFile || csvFormat === 'unknown' || isUploading}
+        disabled={!csvFile || csvFormat === 'unknown' || isUploading || !selectedImportAccount}
         className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600"
         size="lg"
       >
         {isUploading ? (
           <>
             <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-            Importing {formatInfo.name}...
+            Importing {formatInfo.name} to {accounts?.find(acc => acc.id.toString() === selectedImportAccount)?.name}...
+          </>
+        ) : !selectedImportAccount ? (
+          <>
+            <AlertCircle className="mr-2 h-4 w-4" />
+            Select Account to Import
           </>
         ) : (
           <>
             <Upload className="mr-2 h-4 w-4" />
-            Import {formatInfo.name} CSV
+            Import {formatInfo.name} to {accounts?.find(acc => acc.id.toString() === selectedImportAccount)?.name}
           </>
         )}
       </Button>
