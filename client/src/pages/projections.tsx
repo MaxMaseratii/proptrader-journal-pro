@@ -31,6 +31,7 @@ import {
   BarChart3,
   AlertTriangle,
   CheckCircle2,
+  CheckCircle,
   Clock,
   Save,
   Bookmark,
@@ -953,70 +954,135 @@ export default function Projections() {
                 </Card>
               )}
 
-              {/* Projection Table */}
-              <Card className="bg-dark-card border-dark-border">
+              {/* Daily Projection Timeline - Redesigned */}
+              <Card className="bg-gradient-to-br from-black/95 via-gray-900/90 to-black/95 border border-gray-700">
                 <CardHeader>
-                  <CardTitle className="text-white flex items-center">
-                    <BarChart3 className="mr-2 h-5 w-5" />
-                    Daily Projection Timeline
-                  </CardTitle>
+                  {/* Header with chart icon and title */}
+                  <div className="flex items-center gap-3 mb-4">
+                    <BarChart3 className="w-6 h-6 text-yellow-500" />
+                    <div>
+                      <CardTitle className="text-white text-xl">Daily Trading Projection</CardTitle>
+                      <p className="text-gray-400 text-sm mt-1">
+                        Day-by-day breakdown of your path to ${formatCurrency(settings.profitTarget)} target
+                      </p>
+                    </div>
+                  </div>
+                  
+                  {/* Three info banner cards in a grid */}
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                    {/* Risk Per Trade Card */}
+                    <div className="bg-blue-500/10 border border-blue-500/30 rounded-lg p-4">
+                      <div className="flex items-center gap-2 mb-2">
+                        <Shield className="w-4 h-4 text-blue-400" />
+                        <span className="text-blue-400 font-medium text-sm">RISK PER TRADE</span>
+                      </div>
+                      <div className="text-2xl font-bold text-white">${formatCurrency(settings.riskPerTrade)}</div>
+                      <div className="text-xs text-gray-400">Amount you risk per trade</div>
+                    </div>
+                    
+                    {/* Daily Profit Target Card */}
+                    <div className="bg-green-500/10 border border-green-500/30 rounded-lg p-4">
+                      <div className="flex items-center gap-2 mb-2">
+                        <Target className="w-4 h-4 text-green-400" />
+                        <span className="text-green-400 font-medium text-sm">DAILY PROFIT TARGET</span>
+                      </div>
+                      <div className="text-2xl font-bold text-white">${formatCurrency(settings.riskPerTrade * settings.riskRewardRatio)}</div>
+                      <div className="text-xs text-gray-400">Single account only</div>
+                    </div>
+                    
+                    {/* Estimated Timeline Card */}
+                    <div className="bg-purple-500/10 border border-purple-500/30 rounded-lg p-4">
+                      <div className="flex items-center gap-2 mb-2">
+                        <TrendingUp className="w-4 h-4 text-purple-400" />
+                        <span className="text-purple-400 font-medium text-sm">ESTIMATED TIMELINE</span>
+                      </div>
+                      <div className="text-2xl font-bold text-white">{projectionData.length} days</div>
+                      <div className="text-xs text-gray-400">To reach your target goal</div>
+                    </div>
+                  </div>
                 </CardHeader>
+                
                 <CardContent>
-                  <div className="overflow-x-auto">
+                  {/* How This Works Section */}
+                  <div className="bg-gray-800/50 rounded-lg p-4 mb-6">
+                    <h4 className="text-white font-semibold mb-2 flex items-center gap-2">
+                      <Calculator className="w-4 h-4" />
+                      How This Works
+                    </h4>
+                    <div className="text-sm text-gray-300 space-y-1">
+                      <p>• <span className="text-blue-400">Risk per trade:</span> ${formatCurrency(settings.riskPerTrade)} × <span className="text-purple-400">{settings.riskRewardRatio}:1 ratio</span> = ${formatCurrency(settings.riskPerTrade * settings.riskRewardRatio)} profit per winning trade</p>
+                      <p>• <span className="text-yellow-400">Target:</span> ${formatCurrency(settings.profitTarget)} ÷ ${formatCurrency(settings.riskPerTrade * settings.riskRewardRatio)} = {Math.ceil(settings.profitTarget / (settings.riskPerTrade * settings.riskRewardRatio))} trading days needed</p>
+                    </div>
+                  </div>
+
+                  {/* Timeline Table */}
+                  <div className="bg-gray-800/30 rounded-lg overflow-hidden">
                     <table className="w-full">
-                      <thead>
-                        <tr className="border-b border-gray-700">
-                          <th className="text-left py-3 px-4 text-gray-300">Date</th>
-                          <th className="text-center py-3 px-4 text-gray-300"># Days</th>
-                          <th className="text-right py-3 px-4 text-gray-300">Risk</th>
-                          <th className="text-right py-3 px-4 text-gray-300">Daily Reward</th>
-                          <th className="text-right py-3 px-4 text-gray-300">Target Expectation</th>
-                          {settings.mode === 'account' && (
-                            <th className="text-right py-3 px-4 text-gray-300">Actual P&L</th>
-                          )}
+                      <thead className="bg-gray-800/50">
+                        <tr>
+                          <th className="text-left p-4 text-gray-300 font-semibold">Trading Day</th>
+                          <th className="text-center p-4 text-gray-300 font-semibold">Risk Amount<br/><span className="text-xs font-normal text-gray-400">(per trade)</span></th>
+                          <th className="text-center p-4 text-gray-300 font-semibold">Expected Profit<br/><span className="text-xs font-normal text-gray-400">(if win)</span></th>
+                          <th className="text-center p-4 text-gray-300 font-semibold">Progress to Goal<br/><span className="text-xs font-normal text-gray-400">(cumulative)</span></th>
+                          <th className="text-center p-4 text-gray-300 font-semibold">Actual Results<br/><span className="text-xs font-normal text-gray-400">(track here)</span></th>
                         </tr>
                       </thead>
                       <tbody>
-                        {projectionData.map((day, index) => (
-                          <tr 
-                            key={index} 
-                            className={`border-b border-gray-800 ${
-                              day.targetExpectation >= settings.profitTarget ? 'bg-green-900/20' : ''
-                            }`}
-                          >
-                            <td className="py-3 px-4 text-blue-400">
-                              {formatDate(day.date)}
-                            </td>
-                            <td className="py-3 px-4 text-center text-gray-300">
-                              Day {day.dayNumber}
-                            </td>
-                            <td className="py-3 px-4 text-right text-blue-400">
-                              {formatCurrency(day.risk)}
-                            </td>
-                            <td className="py-3 px-4 text-right text-green-400">
-                              {formatCurrency(day.reward)}
-                            </td>
-                            <td className="py-3 px-4 text-right font-bold">
-                              <span className={day.targetExpectation >= settings.profitTarget ? 'text-green-400' : 'text-prop-gold'}>
-                                {formatCurrency(day.targetExpectation)}
-                              </span>
-                              {day.targetExpectation >= settings.profitTarget && (
-                                <CheckCircle2 className="inline ml-2 h-4 w-4 text-green-400" />
-                              )}
-                            </td>
-                            {settings.mode === 'account' && (
-                              <td className="py-3 px-4 text-right">
-                                {day.actualPnl !== undefined ? (
-                                  <span className={day.actualPnl >= 0 ? 'text-green-400' : 'text-red-400'}>
-                                    {formatCurrency(day.actualPnl)}
-                                  </span>
+                        {projectionData.map((day, index) => {
+                          const progressPercent = (day.targetExpectation / settings.profitTarget) * 100;
+                          const isTargetReached = day.targetExpectation >= settings.profitTarget;
+                          return (
+                            <tr key={index} className="border-b border-gray-700/50 hover:bg-gray-700/30">
+                              <td className="p-4">
+                                <div className="flex items-center gap-3">
+                                  <div className="flex items-center justify-center w-8 h-8 rounded-full bg-blue-500/20 text-blue-400 text-sm font-semibold">{day.dayNumber}</div>
+                                  <div>
+                                    <div className="text-white font-medium">{formatDate(day.date)}</div>
+                                    <div className="text-xs text-gray-400">Day {day.dayNumber}</div>
+                                  </div>
+                                </div>
+                              </td>
+                              <td className="p-4 text-center">
+                                <div className="text-blue-400 font-bold text-lg">${formatCurrency(day.risk)}</div>
+                              </td>
+                              <td className="p-4 text-center">
+                                <div className="text-green-400 font-bold text-lg">${formatCurrency(day.reward)}</div>
+                              </td>
+                              <td className="p-4 text-center">
+                                <div className="space-y-2">
+                                  <div className={`font-bold text-lg ${isTargetReached ? 'text-green-400' : 'text-yellow-400'}`}>
+                                    ${formatCurrency(day.targetExpectation)}
+                                  </div>
+                                  <div className="w-full bg-gray-700 rounded-full h-2">
+                                    <div 
+                                      className={`h-2 rounded-full ${isTargetReached ? 'bg-green-400' : 'bg-yellow-400'}`} 
+                                      style={{width: `${Math.min(progressPercent, 100)}%`}}
+                                    ></div>
+                                  </div>
+                                  <div className="text-xs text-gray-400">{progressPercent.toFixed(1)}% of goal</div>
+                                  {isTargetReached && (
+                                    <div className="flex items-center justify-center gap-1">
+                                      <CheckCircle className="w-4 h-4 text-green-400" />
+                                      <span className="text-xs text-green-400 font-medium">TARGET REACHED!</span>
+                                    </div>
+                                  )}
+                                </div>
+                              </td>
+                              <td className="p-4 text-center">
+                                {settings.mode === 'account' && day.actualPnl !== undefined ? (
+                                  <div className={`font-medium ${day.actualPnl >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                                    ${formatCurrency(Math.abs(day.actualPnl))}
+                                  </div>
                                 ) : (
-                                  <span className="text-gray-500">-</span>
+                                  <>
+                                    <div className="text-gray-500 font-medium">—</div>
+                                    <div className="text-xs text-gray-600">Add your results</div>
+                                  </>
                                 )}
                               </td>
-                            )}
-                          </tr>
-                        ))}
+                            </tr>
+                          );
+                        })}
                       </tbody>
                     </table>
                   </div>

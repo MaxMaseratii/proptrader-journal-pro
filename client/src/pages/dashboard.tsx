@@ -2308,7 +2308,7 @@ export default function Dashboard() {
                         {/* Ultra Compact Pro Tooltip */}
                         <div 
                           id="chart-tooltip" 
-                          className="absolute z-50 pointer-events-none opacity-0 transition-opacity duration-200 bg-black/90 backdrop-blur-sm border border-yellow-400/30 rounded-lg px-3 py-2 text-xs text-white shadow-xl"
+                          className="absolute z-50 pointer-events-none opacity-0 transition-opacity duration-200 bg-black/90 backdrop-blur-sm border border-yellow-400/30 rounded-md px-2 py-1 text-xs text-white shadow-xl max-w-36"
                           style={{ display: 'none' }}
                         >
                           <div id="tooltip-content"></div>
@@ -2356,8 +2356,16 @@ export default function Dashboard() {
                                   }
                                   
                                   tooltipContent.innerHTML = content;
-                                  tooltip.style.left = `${e.clientX - rect.left + 10}px`;
-                                  tooltip.style.top = `${e.clientY - rect.top - 10}px`;
+                                  // Center the tooltip and keep it compact
+                                  const tooltipRect = tooltip.getBoundingClientRect();
+                                  const containerRect = e.currentTarget.getBoundingClientRect();
+                                  
+                                  // Position tooltip in center of chart, always visible
+                                  const leftPos = Math.max(10, Math.min(containerRect.width / 2 - 75, containerRect.width - 160));
+                                  const topPos = Math.max(10, containerRect.height / 2 - 40);
+                                  
+                                  tooltip.style.left = `${leftPos}px`;
+                                  tooltip.style.top = `${topPos}px`;
                                   tooltip.style.display = 'block';
                                   tooltip.style.opacity = '1';
                                 }
