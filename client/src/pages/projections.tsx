@@ -976,7 +976,7 @@ export default function Projections() {
                         <Shield className="w-4 h-4 text-blue-400" />
                         <span className="text-blue-400 font-medium text-sm">RISK PER TRADE</span>
                       </div>
-                      <div className="text-2xl font-bold text-white">${formatCurrency(settings.riskPerTrade)}</div>
+                      <div className="text-2xl font-bold text-white">{formatCurrency(settings.riskPerTrade)}</div>
                       <div className="text-xs text-gray-400">Amount you risk per trade</div>
                     </div>
                     
@@ -986,7 +986,7 @@ export default function Projections() {
                         <Target className="w-4 h-4 text-green-400" />
                         <span className="text-green-400 font-medium text-sm">DAILY PROFIT TARGET</span>
                       </div>
-                      <div className="text-2xl font-bold text-white">${formatCurrency(settings.riskPerTrade * settings.riskRewardRatio)}</div>
+                      <div className="text-2xl font-bold text-white">{formatCurrency(settings.riskPerTrade * settings.riskRewardRatio)}</div>
                       <div className="text-xs text-gray-400">Single account only</div>
                     </div>
                     
@@ -1105,7 +1105,6 @@ export default function Projections() {
                               resultDisplay = (
                                 <div className="space-y-1">
                                   <div className="text-gray-500 font-medium">—</div>
-                                  <div className="text-xs text-gray-600">Will auto-populate from CSV</div>
                                 </div>
                               );
                             }

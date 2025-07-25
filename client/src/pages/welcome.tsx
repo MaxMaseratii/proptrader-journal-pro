@@ -193,15 +193,7 @@ export default function Welcome() {
               <Sparkles className="w-6 h-6 mr-3" />
               Start Your Journey
             </Button>
-            <Button
-              onClick={() => (window.location.href = "/auth")}
-              variant="outline"
-              size="lg"
-              className="text-xl px-12 py-6 border-amber-500 text-amber-500 hover:bg-amber-500 hover:text-black smooth-transition font-bold"
-            >
-              <UserPlus className="w-6 h-6 mr-3" />
-              Register
-            </Button>
+
             <Button
               variant="outline"
               size="lg"
