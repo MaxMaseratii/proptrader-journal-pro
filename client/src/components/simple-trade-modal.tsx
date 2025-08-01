@@ -146,7 +146,7 @@ const SimpleTradeModal = ({ trade, isOpen, onClose }: SimpleTradeModalProps) => 
                 src={`https://www.tradingview.com/embed-widget/advanced-chart/?symbol=CME%3A${trade.symbol}&interval=5&timezone=America%2FNew_York&theme=dark&style=1&locale=en&backgroundColor=rgb(0%2C0%2C0)&gridLineColor=rgb(26%2C26%2C26)&fontColor=rgb(255%2C255%2C255)&autosize=true`}
                 className="w-full h-full rounded-lg border-0"
                 frameBorder={0}
-                allowTransparency={true}
+                allow="encrypted-media"
                 scrolling="no"
                 title={`${trade.symbol} Chart`}
               />
