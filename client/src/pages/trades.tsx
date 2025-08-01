@@ -13,6 +13,7 @@ import { useState, useMemo, useEffect } from "react";
 import { useLocation } from "wouter";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
+import TradeDetailModal from "@/components/trade-detail-modal";
 
 // Format price levels (not currency)
 const formatPrice = (price: number): string => {
@@ -1209,6 +1210,8 @@ export default function Trades() {
   const [location] = useLocation();
   const [editingTradeId, setEditingTradeId] = useState<number | null>(null);
   const [editingLink, setEditingLink] = useState<string>("");
+  const [selectedTrade, setSelectedTrade] = useState<Trade | null>(null);
+  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
 
   // Check if we should open the "Add Trade" tab automatically
   useEffect(() => {
@@ -1261,6 +1264,16 @@ export default function Trades() {
   const cancelEditing = () => {
     setEditingTradeId(null);
     setEditingLink("");
+  };
+
+  const openTradeDetail = (trade: Trade) => {
+    setSelectedTrade(trade);
+    setIsDetailModalOpen(true);
+  };
+
+  const closeTradeDetail = () => {
+    setSelectedTrade(null);
+    setIsDetailModalOpen(false);
   };
 
   // Filter and sort trades
@@ -1602,7 +1615,11 @@ export default function Trades() {
               </thead>
               <tbody>
                 {filteredTrades.map((trade) => (
-                  <tr key={trade.id} className="border-b border-gray-800 hover:bg-gray-800/50">
+                  <tr 
+                    key={trade.id} 
+                    className="border-b border-gray-800 hover:bg-gray-800/50 cursor-pointer"
+                    onClick={() => openTradeDetail(trade)}
+                  >
                     <td className="py-3 px-4 text-white">{formatDate(trade.date)}</td>
                     <td className="py-3 px-4 text-gray-300">
                       <div className="space-y-1">
@@ -1821,6 +1838,13 @@ export default function Trades() {
       </Card>
         </TabsContent>
       </Tabs>
+
+      {/* Trade Detail Modal */}
+      <TradeDetailModal 
+        trade={selectedTrade}
+        isOpen={isDetailModalOpen}
+        onClose={closeTradeDetail}
+      />
       </div>
     </div>
   );
