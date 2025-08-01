@@ -13,7 +13,7 @@ import { useState, useMemo, useEffect } from "react";
 import { useLocation } from "wouter";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
-import TradeDetailModal from "@/components/trade-detail-modal";
+import SimpleTradeModal from "@/components/simple-trade-modal";
 
 // Format price levels (not currency)
 const formatPrice = (price: number): string => {
@@ -1845,7 +1845,7 @@ export default function Trades() {
       </Tabs>
 
       {/* Trade Detail Modal */}
-      <TradeDetailModal 
+      <SimpleTradeModal 
         trade={selectedTrade}
         isOpen={isDetailModalOpen}
         onClose={closeTradeDetail}
