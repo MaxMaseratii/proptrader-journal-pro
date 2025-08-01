@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 // Note: Using regular textarea since Textarea component is not available
 import { X, ExternalLink, Save, Plus, TrendingUp, TrendingDown, Clock, DollarSign, Target, BarChart3 } from 'lucide-react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
@@ -140,6 +140,9 @@ const TradeDetailModal = ({ trade, isOpen, onClose }: TradeDetailModalProps) => 
               </Badge>
             </div>
           </DialogTitle>
+          <DialogDescription className="text-gray-400">
+            Detailed trade analysis with TradingView chart integration
+          </DialogDescription>
         </DialogHeader>
 
         <div className="p-6">
@@ -230,8 +233,7 @@ const TradeDetailModal = ({ trade, isOpen, onClose }: TradeDetailModalProps) => 
                     <iframe
                       src={`https://www.tradingview.com/embed-widget/advanced-chart/?symbol=CME%3A${trade.symbol}&interval=5&timezone=America%2FNew_York&theme=dark&style=1&locale=en&backgroundColor=rgb(0%2C0%2C0)&gridLineColor=rgb(26%2C26%2C26)&fontColor=rgb(255%2C255%2C255)&underLineColor=rgb(55%2C65%2C81)&trendLineColor=rgb(147%2C51%2C234)&isTransparent=false&autosize=true&studies=%5B%22Volume%40tv-basicstudies%22%2C%22VWAP%40tv-basicstudies%22%2C%22BB%40tv-basicstudies%22%2C%22MAExp%40tv-basicstudies%22%2C%22RSI%40tv-basicstudies%22%5D&show_popup_button=true&popup_width=1000&popup_height=650&utm_source=max-maserati&utm_medium=widget&utm_campaign=chart&utm_term=CME%3A${trade.symbol}`}
                       className="w-full h-full rounded-lg border-0"
-                      frameBorder={0}
-                      allowTransparency={true}
+                      frameBorder="0"
                       scrolling="no"
                       allow="encrypted-media"
                       title={`${trade.symbol} TradingView Chart`}
