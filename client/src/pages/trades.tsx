@@ -13,7 +13,7 @@ import { useState, useMemo, useEffect } from "react";
 import { useLocation } from "wouter";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
-import SimpleTradeModal from "@/components/simple-trade-modal";
+import TradeDetailModal from "@/components/trade-detail-modal";
 
 // Format price levels (not currency)
 const formatPrice = (price: number): string => {
@@ -1267,7 +1267,6 @@ export default function Trades() {
   };
 
   const openTradeDetail = (trade: Trade) => {
-    console.log('Opening trade detail for:', trade.symbol, trade.id);
     setSelectedTrade(trade);
     setIsDetailModalOpen(true);
   };
@@ -1438,18 +1437,6 @@ export default function Trades() {
         <TabsContent value="view" className="space-y-6">
           <div className="flex items-center justify-between">
             <h2 className="text-xl font-semibold text-white">All Trades</h2>
-            <Button 
-              onClick={() => {
-                const firstTrade = filteredTrades[0];
-                if (firstTrade) {
-                  console.log('Testing modal with first trade:', firstTrade.symbol);
-                  openTradeDetail(firstTrade);
-                }
-              }}
-              className="bg-yellow-600 hover:bg-yellow-700 text-black font-bold"
-            >
-              TEST: Open First Trade Modal
-            </Button>
             <div className="flex gap-2">
               {/* Show data quality warning if there are trades with missing exit times */}
               {filteredTrades.some(trade => trade.status === 'closed' && trade.exitPrice && !trade.exitTime) && (
@@ -1631,11 +1618,7 @@ export default function Trades() {
                   <tr 
                     key={trade.id} 
                     className="border-b border-gray-800 hover:bg-gray-800/50 cursor-pointer"
-                    onClick={(e) => {
-                      // Don't trigger on button clicks within the row
-                      if ((e.target as HTMLElement).closest('button')) return;
-                      openTradeDetail(trade);
-                    }}
+                    onClick={() => openTradeDetail(trade)}
                   >
                     <td className="py-3 px-4 text-white">{formatDate(trade.date)}</td>
                     <td className="py-3 px-4 text-gray-300">
@@ -1857,7 +1840,7 @@ export default function Trades() {
       </Tabs>
 
       {/* Trade Detail Modal */}
-      <SimpleTradeModal 
+      <TradeDetailModal 
         trade={selectedTrade}
         isOpen={isDetailModalOpen}
         onClose={closeTradeDetail}
