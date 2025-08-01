@@ -1267,6 +1267,7 @@ export default function Trades() {
   };
 
   const openTradeDetail = (trade: Trade) => {
+    console.log('Opening trade detail for:', trade.symbol, trade.id);
     setSelectedTrade(trade);
     setIsDetailModalOpen(true);
   };
@@ -1618,7 +1619,11 @@ export default function Trades() {
                   <tr 
                     key={trade.id} 
                     className="border-b border-gray-800 hover:bg-gray-800/50 cursor-pointer"
-                    onClick={() => openTradeDetail(trade)}
+                    onClick={(e) => {
+                      // Don't trigger on button clicks within the row
+                      if ((e.target as HTMLElement).closest('button')) return;
+                      openTradeDetail(trade);
+                    }}
                   >
                     <td className="py-3 px-4 text-white">{formatDate(trade.date)}</td>
                     <td className="py-3 px-4 text-gray-300">
