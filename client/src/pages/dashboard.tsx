@@ -1930,7 +1930,7 @@ export default function Dashboard() {
                   </div>
                   <div className="text-xs text-gray-400">Total Wins and Losses</div>
                   <div className="text-xs text-gray-300 mt-1">
-                    Net: ${((combinedAnalytics?.totalWinnings || 0) + (combinedAnalytics?.totalLosses || 0)).toFixed(0)}
+                    Net: ${((combinedAnalytics?.totalWinnings || 0) - Math.abs(combinedAnalytics?.totalLosses || 0)).toFixed(0)}
                   </div>
                 </div>
 
