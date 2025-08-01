@@ -23,10 +23,12 @@ const SimpleTradeModal = ({ trade, isOpen, onClose }: SimpleTradeModalProps) => 
     });
   };
 
+  console.log('SimpleTradeModal render:', { isOpen, trade: trade?.symbol });
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl w-[90vw] bg-gray-900 border border-gray-700 text-white">
-        <DialogHeader className="border-b border-gray-700 pb-4">
+      <DialogContent className="max-w-4xl w-[90vw] max-h-[90vh] overflow-y-auto bg-black border-4 border-yellow-400 text-white shadow-2xl relative">
+        <DialogHeader className="border-b border-yellow-400 pb-4 bg-gray-800 p-4">
           <DialogTitle className="text-2xl font-bold text-white flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full">

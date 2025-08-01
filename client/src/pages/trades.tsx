@@ -1438,6 +1438,18 @@ export default function Trades() {
         <TabsContent value="view" className="space-y-6">
           <div className="flex items-center justify-between">
             <h2 className="text-xl font-semibold text-white">All Trades</h2>
+            <Button 
+              onClick={() => {
+                const firstTrade = filteredTrades[0];
+                if (firstTrade) {
+                  console.log('Testing modal with first trade:', firstTrade.symbol);
+                  openTradeDetail(firstTrade);
+                }
+              }}
+              className="bg-yellow-600 hover:bg-yellow-700 text-black font-bold"
+            >
+              TEST: Open First Trade Modal
+            </Button>
             <div className="flex gap-2">
               {/* Show data quality warning if there are trades with missing exit times */}
               {filteredTrades.some(trade => trade.status === 'closed' && trade.exitPrice && !trade.exitTime) && (
