@@ -86,6 +86,49 @@ const TradeDetailModal = ({ trade, isOpen, onClose }: TradeDetailModalProps) => 
     });
   };
 
+  const getChartSymbol = (symbol: string) => {
+    // Map your CSV symbols to proper TradingView symbols
+    const symbolMappings: { [key: string]: string } = {
+      'ES': 'CME:ES1!',
+      'ESU': 'CME:ES1!',
+      'ESH': 'CME:ES1!', 
+      'ESM': 'CME:ES1!',
+      'ESZ': 'CME:ES1!',
+      'MES': 'CME:MES1!',
+      'NQ': 'CME:NQ1!',
+      'NQU': 'CME:NQ1!',
+      'NQH': 'CME:NQ1!',
+      'NQM': 'CME:NQ1!',
+      'NQZ': 'CME:NQ1!',
+      'MNQ': 'CME:MNQ1!',
+      'YM': 'CME:YM1!',
+      'MYM': 'CME:MYM1!',
+      'RTY': 'CME:RTY1!',
+      'M2K': 'CME:M2K1!',
+      'CL': 'NYMEX:CL1!',
+      'GC': 'COMEX:GC1!',
+      'SI': 'COMEX:SI1!',
+      'ZB': 'CBOT:ZB1!',
+      'ZN': 'CBOT:ZN1!',
+      'ZF': 'CBOT:ZF1!',
+      'ZT': 'CBOT:ZT1!'
+    };
+
+    // First try exact match
+    if (symbolMappings[symbol]) {
+      return symbolMappings[symbol];
+    }
+
+    // Then try to match base symbol (remove contract month)
+    const baseSymbol = symbol.replace(/[HMUZ]\d*$/, '');
+    if (symbolMappings[baseSymbol]) {
+      return symbolMappings[baseSymbol];
+    }
+
+    // Default fallback - assume it's already in correct format or use ES
+    return symbol.includes(':') ? symbol : 'CME:ES1!';
+  };
+
   const calculateDuration = () => {
     if (!trade?.fillTime || !trade?.exitTime) return "N/A";
     const entry = new Date(trade.fillTime);
@@ -153,7 +196,7 @@ const TradeDetailModal = ({ trade, isOpen, onClose }: TradeDetailModalProps) => 
                 <Target className="w-4 h-4 text-blue-400" />
                 <span className="text-blue-300 text-sm font-medium">Entry</span>
               </div>
-              <div className="text-xl font-bold text-white">${trade.entryPrice}</div>
+              <div className="text-xl font-bold text-white">${trade.entryPrice?.toFixed(2) || 'N/A'}</div>
               <div className="text-xs text-blue-300 mt-1">{formatTime(trade.fillTime)}</div>
             </div>
             
@@ -162,7 +205,7 @@ const TradeDetailModal = ({ trade, isOpen, onClose }: TradeDetailModalProps) => 
                 <Target className="w-4 h-4 text-purple-400" />
                 <span className="text-purple-300 text-sm font-medium">Exit</span>
               </div>
-              <div className="text-xl font-bold text-white">${trade.exitPrice || 'Open'}</div>
+              <div className="text-xl font-bold text-white">${trade.exitPrice?.toFixed(2) || 'Open'}</div>
               <div className="text-xs text-purple-300 mt-1">{formatTime(trade.exitTime)}</div>
             </div>
             
@@ -171,8 +214,8 @@ const TradeDetailModal = ({ trade, isOpen, onClose }: TradeDetailModalProps) => 
                 <X className="w-4 h-4 text-red-400" />
                 <span className="text-red-300 text-sm font-medium">Stop Loss</span>
               </div>
-              <div className="text-xl font-bold text-white">${trade.initialStopLoss || 'N/A'}</div>
-              <div className="text-xs text-red-300 mt-1">Initial: ${trade.initialStopLoss || 'N/A'}</div>
+              <div className="text-xl font-bold text-white">${trade.initialStopLoss?.toFixed(2) || 'N/A'}</div>
+              <div className="text-xs text-red-300 mt-1">Final: ${trade.finalStopLoss?.toFixed(2) || 'N/A'}</div>
             </div>
 
             <div className="bg-gradient-to-br from-green-500/10 to-emerald-500/10 border border-green-500/20 rounded-xl p-4">
@@ -180,7 +223,7 @@ const TradeDetailModal = ({ trade, isOpen, onClose }: TradeDetailModalProps) => 
                 <Target className="w-4 h-4 text-green-400" />
                 <span className="text-green-300 text-sm font-medium">Take Profit</span>
               </div>
-              <div className="text-xl font-bold text-white">${trade.initialTakeProfit || 'N/A'}</div>
+              <div className="text-xl font-bold text-white">${trade.initialTakeProfit?.toFixed(2) || 'N/A'}</div>
               <div className="text-xs text-green-300 mt-1">Target Level</div>
             </div>
             
@@ -231,7 +274,7 @@ const TradeDetailModal = ({ trade, isOpen, onClose }: TradeDetailModalProps) => 
                   {/* TradingView Chart */}
                   <div className="bg-black rounded-lg h-[500px] relative overflow-hidden">
                     <iframe
-                      src={`https://www.tradingview.com/embed-widget/advanced-chart/?symbol=CME%3A${trade.symbol}&interval=5&timezone=America%2FNew_York&theme=dark&style=1&locale=en&backgroundColor=rgb(0%2C0%2C0)&gridLineColor=rgb(26%2C26%2C26)&fontColor=rgb(255%2C255%2C255)&underLineColor=rgb(55%2C65%2C81)&trendLineColor=rgb(147%2C51%2C234)&isTransparent=false&autosize=true&studies=%5B%22Volume%40tv-basicstudies%22%2C%22VWAP%40tv-basicstudies%22%2C%22BB%40tv-basicstudies%22%2C%22MAExp%40tv-basicstudies%22%2C%22RSI%40tv-basicstudies%22%5D&show_popup_button=true&popup_width=1000&popup_height=650&utm_source=max-maserati&utm_medium=widget&utm_campaign=chart&utm_term=CME%3A${trade.symbol}`}
+                      src={`https://www.tradingview.com/embed-widget/advanced-chart/?symbol=${getChartSymbol(trade.symbol)}&interval=5&timezone=America%2FNew_York&theme=dark&style=1&locale=en&backgroundColor=rgb(0%2C0%2C0)&gridLineColor=rgb(26%2C26%2C26)&fontColor=rgb(255%2C255%2C255)&underLineColor=rgb(55%2C65%2C81)&trendLineColor=rgb(147%2C51%2C234)&isTransparent=false&autosize=true&studies=%5B%22Volume%40tv-basicstudies%22%2C%22VWAP%40tv-basicstudies%22%2C%22BB%40tv-basicstudies%22%2C%22MAExp%40tv-basicstudies%22%2C%22RSI%40tv-basicstudies%22%5D&show_popup_button=true&popup_width=1000&popup_height=650&utm_source=max-maserati&utm_medium=widget&utm_campaign=chart&utm_term=${getChartSymbol(trade.symbol)}`}
                       className="w-full h-full rounded-lg border-0"
                       frameBorder="0"
                       scrolling="no"
@@ -251,71 +294,31 @@ const TradeDetailModal = ({ trade, isOpen, onClose }: TradeDetailModalProps) => 
                       </div>
                     )}
                     
-                    {/* Trade Markers Overlay */}
-                    {chartLoaded && (
-                      <div className="absolute inset-0 pointer-events-none">
-                        {/* Entry Marker */}
-                        <div className="absolute top-4 left-4 bg-blue-500/90 backdrop-blur border border-blue-400 rounded-lg px-3 py-2 text-xs text-white font-semibold shadow-lg">
-                          📍 ENTRY: ${trade.entryPrice} • {trade.side.toUpperCase()}
-                        </div>
-                        
-                        {/* Exit Marker */}
-                        {trade.exitPrice && (
-                          <div className={`absolute top-4 right-4 backdrop-blur border rounded-lg px-3 py-2 text-xs font-semibold shadow-lg ${
-                            trade.pnl >= 0 ? 
-                            'bg-green-500/90 border-green-400 text-white' : 
-                            'bg-red-500/90 border-red-400 text-white'
-                          }`}>
-                            🎯 EXIT: ${trade.exitPrice} • P&L: {trade.pnl >= 0 ? '+' : ''}${trade.pnl}
-                          </div>
-                        )}
-                        
-                        {/* Stop Loss Marker */}
-                        {trade.initialStopLoss && (
-                          <div className="absolute bottom-20 left-4 bg-red-500/90 backdrop-blur border border-red-400 rounded-lg px-3 py-2 text-xs text-white font-semibold shadow-lg">
-                            🛑 STOP: ${trade.initialStopLoss}
-                          </div>
-                        )}
-                        
-                        {/* Take Profit Marker */}
-                        {trade.initialTakeProfit && (
-                          <div className="absolute bottom-20 right-4 bg-green-500/90 backdrop-blur border border-green-400 rounded-lg px-3 py-2 text-xs text-white font-semibold shadow-lg">
-                            💰 TARGET: ${trade.initialTakeProfit}
-                          </div>
-                        )}
-                        
-                        {/* Duration & Time Info */}
-                        {trade.fillTime && trade.exitTime && (
-                          <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-purple-500/90 backdrop-blur border border-purple-400 rounded-lg px-4 py-2 text-xs text-white font-semibold shadow-lg">
-                            ⏱️ {calculateDuration()} • {formatTime(trade.fillTime)} - {formatTime(trade.exitTime)}
-                          </div>
-                        )}
-                      </div>
-                    )}
+
                   </div>
 
                   {/* Trade Levels Legend */}
                   <div className="mt-4 grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                     <div className="flex items-center gap-2">
                       <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
-                      <span className="text-blue-300">Entry: ${trade.entryPrice}</span>
+                      <span className="text-blue-300">Entry: ${trade.entryPrice?.toFixed(2)}</span>
                     </div>
                     {trade.exitPrice && (
                       <div className="flex items-center gap-2">
                         <div className="w-3 h-3 bg-purple-500 rounded-full"></div>
-                        <span className="text-purple-300">Exit: ${trade.exitPrice}</span>
+                        <span className="text-purple-300">Exit: ${trade.exitPrice.toFixed(2)}</span>
                       </div>
                     )}
                     {trade.initialStopLoss && (
                       <div className="flex items-center gap-2">
                         <div className="w-3 h-3 bg-red-500 rounded-full"></div>
-                        <span className="text-red-300">Stop: ${trade.initialStopLoss}</span>
+                        <span className="text-red-300">Stop: ${trade.initialStopLoss.toFixed(2)}</span>
                       </div>
                     )}
                     {trade.initialTakeProfit && (
                       <div className="flex items-center gap-2">
                         <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-                        <span className="text-green-300">Target: ${trade.initialTakeProfit}</span>
+                        <span className="text-green-300">Target: ${trade.initialTakeProfit.toFixed(2)}</span>
                       </div>
                     )}
                   </div>
@@ -341,18 +344,18 @@ const TradeDetailModal = ({ trade, isOpen, onClose }: TradeDetailModalProps) => 
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-400">Points</span>
-                    <span className="text-white font-mono">{((trade.exitPrice || trade.entryPrice) - trade.entryPrice).toFixed(2)}</span>
+                    <span className="text-white font-mono">{trade.exitPrice ? (trade.exitPrice - trade.entryPrice).toFixed(2) : 'Open'}</span>
                   </div>
                   {trade.initialStopLoss && (
                     <div className="flex justify-between">
                       <span className="text-gray-400">Risk (per contract)</span>
-                      <span className="text-red-400 font-mono">${Math.abs(trade.entryPrice - trade.initialStopLoss).toFixed(2)}</span>
+                      <span className="text-red-400 font-mono">{Math.abs(trade.entryPrice - trade.initialStopLoss).toFixed(2)} pts</span>
                     </div>
                   )}
                   {trade.initialTakeProfit && (
                     <div className="flex justify-between">
                       <span className="text-gray-400">Reward (target)</span>
-                      <span className="text-green-400 font-mono">${Math.abs(trade.initialTakeProfit - trade.entryPrice).toFixed(2)}</span>
+                      <span className="text-green-400 font-mono">{Math.abs(trade.initialTakeProfit - trade.entryPrice).toFixed(2)} pts</span>
                     </div>
                   )}
                 </div>
