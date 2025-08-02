@@ -87,24 +87,31 @@ const TradeDetailModal = ({ trade, isOpen, onClose }: TradeDetailModalProps) => 
   };
 
   const getChartSymbol = (symbol: string) => {
+    if (!symbol) return 'CME:ES1!';
+    
+    // Clean the symbol - remove any extra characters
+    const cleanSymbol = symbol.trim().toUpperCase();
+    
     // Map your CSV symbols to proper TradingView symbols
     const symbolMappings: { [key: string]: string } = {
-      'ES': 'CME:ES1!',
-      'ESU': 'CME:ES1!',
-      'ESH': 'CME:ES1!', 
-      'ESM': 'CME:ES1!',
-      'ESZ': 'CME:ES1!',
-      'MES': 'CME:MES1!',
-      'NQ': 'CME:NQ1!',
-      'NQU': 'CME:NQ1!',
-      'NQH': 'CME:NQ1!',
-      'NQM': 'CME:NQ1!',
-      'NQZ': 'CME:NQ1!',
-      'MNQ': 'CME:MNQ1!',
-      'YM': 'CME:YM1!',
-      'MYM': 'CME:MYM1!',
-      'RTY': 'CME:RTY1!',
-      'M2K': 'CME:M2K1!',
+      'ES': 'CME_MINI:ES1!',
+      'ESU': 'CME_MINI:ES1!',
+      'ESU24': 'CME_MINI:ES1!',
+      'ESH': 'CME_MINI:ES1!', 
+      'ESM': 'CME_MINI:ES1!',
+      'ESZ': 'CME_MINI:ES1!',
+      'MES': 'CME_MINI:MES1!',
+      'NQ': 'CME_MINI:NQ1!',
+      'NQU': 'CME_MINI:NQ1!',
+      'NQU24': 'CME_MINI:NQ1!',
+      'NQH': 'CME_MINI:NQ1!',
+      'NQM': 'CME_MINI:NQ1!',
+      'NQZ': 'CME_MINI:NQ1!',
+      'MNQ': 'CME_MINI:MNQ1!',
+      'YM': 'CME_MINI:YM1!',
+      'MYM': 'CME_MINI:MYM1!',
+      'RTY': 'CME_MINI:RTY1!',
+      'M2K': 'CME_MINI:M2K1!',
       'CL': 'NYMEX:CL1!',
       'GC': 'COMEX:GC1!',
       'SI': 'COMEX:SI1!',
@@ -115,18 +122,18 @@ const TradeDetailModal = ({ trade, isOpen, onClose }: TradeDetailModalProps) => 
     };
 
     // First try exact match
-    if (symbolMappings[symbol]) {
-      return symbolMappings[symbol];
+    if (symbolMappings[cleanSymbol]) {
+      return symbolMappings[cleanSymbol];
     }
 
-    // Then try to match base symbol (remove contract month)
-    const baseSymbol = symbol.replace(/[HMUZ]\d*$/, '');
+    // Then try to match base symbol (remove contract month and year)
+    const baseSymbol = cleanSymbol.replace(/[HMUZ]\d*$/, '');
     if (symbolMappings[baseSymbol]) {
       return symbolMappings[baseSymbol];
     }
 
-    // Default fallback - assume it's already in correct format or use ES
-    return symbol.includes(':') ? symbol : 'CME:ES1!';
+    // Default fallback for futures
+    return 'CME_MINI:ES1!';
   };
 
   const calculateDuration = () => {
@@ -256,17 +263,15 @@ const TradeDetailModal = ({ trade, isOpen, onClose }: TradeDetailModalProps) => 
                     <h3 className="text-lg font-semibold text-white flex items-center gap-2">
                       📈 Live TradingView Chart with Trade Markers
                     </h3>
-                    {trade.tradingViewLink && (
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => window.open(trade.tradingViewLink || '', '_blank')}
-                        className="border-purple-500/30 text-purple-300 hover:bg-purple-500/20"
-                      >
-                        <ExternalLink className="w-3 h-3 mr-1" />
-                        Open Full Chart
-                      </Button>
-                    )}
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => window.open(`/full-chart?symbol=${getChartSymbol(trade.symbol)}`, '_blank')}
+                      className="border-purple-500/30 text-purple-300 hover:bg-purple-500/20"
+                    >
+                      <ExternalLink className="w-3 h-3 mr-1" />
+                      Open Full Chart
+                    </Button>
                   </div>
                 </div>
                 

@@ -31,6 +31,7 @@ import Support from "@/pages/support";
 import DisciplineAnalysis from "@/pages/discipline-analysis";
 import DisciplinaryAssistant from "@/pages/disciplinary-assistant";
 import Charts from "@/pages/charts";
+import FullChart from "@/pages/full-chart";
 import KnowledgeBase from "@/pages/knowledge-base";
 import Sidebar from "@/components/sidebar";
 import NotFound from "@/pages/not-found";
@@ -98,6 +99,7 @@ function Router() {
           <Route path="/trades" component={Trades} />
           <Route path="/achievements" component={Achievements} />
           <Route path="/charts" component={Charts} />
+          <Route path="/full-chart" component={FullChart} />
 
           <Route path="/discipline-analysis" component={DisciplineAnalysis} />
           <Route path="/disciplinary-assistant" component={DisciplinaryAssistant} />
