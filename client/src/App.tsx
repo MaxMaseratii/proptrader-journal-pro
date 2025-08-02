@@ -49,25 +49,30 @@ function Router() {
 
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen bg-gray-900 flex items-center justify-center">
-        <div className="max-w-md w-full space-y-8 p-8">
-          <div className="text-center">
-            <h2 className="text-3xl font-bold text-white mb-4">PropTraderJournal</h2>
-            <p className="text-gray-300 mb-8">Please log in to access your trading journal</p>
-            <div className="bg-gray-800 p-4 rounded-lg mb-4">
-              <p className="text-sm text-gray-300 mb-2">Demo Credentials:</p>
-              <p className="text-yellow-400 font-mono">testdemo@example.com</p>
-              <p className="text-yellow-400 font-mono">demo123</p>
-            </div>
-            <button 
-              onClick={() => window.location.href = '/auth.html'}
-              className="w-full bg-yellow-500 hover:bg-yellow-600 text-black font-semibold py-2 px-4 rounded"
-            >
-              Go to Login Page
-            </button>
-          </div>
-        </div>
-      </div>
+      <Switch>
+        <Route path="/standalone-auth.html">
+          {() => {
+            window.location.href = '/standalone-auth.html';
+            return null;
+          }}
+        </Route>
+        <Route path="/auth">
+          {() => {
+            window.location.href = '/auth.html';
+            return null;
+          }}
+        </Route>
+        <Route path="/signup" component={Signup} />
+        <Route path="/privacy-policy" component={PrivacyPolicy} />
+        <Route path="/terms" component={TermsOfService} />
+        <Route path="/support" component={Support} />
+        <Route>
+          {() => {
+            window.location.href = '/auth.html';
+            return null;
+          }}
+        </Route>
+      </Switch>
     );
   }
 
