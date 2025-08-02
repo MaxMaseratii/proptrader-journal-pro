@@ -267,11 +267,11 @@ const TradeDetailModal = ({ trade, isOpen, onClose }: TradeDetailModalProps) => 
                     <Button
                       size="sm"
                       variant="outline"
-                      onClick={() => window.open(`/full-chart?symbol=${getChartSymbol(trade.symbol)}`, '_blank')}
+                      onClick={() => window.open(`https://www.tradingview.com/chart/?symbol=${getChartSymbol(trade.symbol)}`, '_blank')}
                       className="border-purple-500/30 text-purple-300 hover:bg-purple-500/20"
                     >
                       <ExternalLink className="w-3 h-3 mr-1" />
-                      Open Full Chart
+                      Open in TradingView
                     </Button>
                   </div>
                 </div>
@@ -353,62 +353,7 @@ const TradeDetailModal = ({ trade, isOpen, onClose }: TradeDetailModalProps) => 
                   </div>
                 </div>
                 
-                {/* Individual Executions */}
-                <div className="p-6">
-                  <h4 className="text-white font-medium mb-4 flex items-center gap-2">
-                    ⚡ Individual Executions
-                  </h4>
-                  <div className="space-y-3">
-                    {/* Entry Execution */}
-                    <div className="flex items-center justify-between p-3 bg-blue-500/10 border border-blue-500/20 rounded-lg">
-                      <div className="flex items-center gap-3">
-                        <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
-                        <div>
-                          <div className="text-blue-300 text-sm font-medium">ENTRY</div>
-                          <div className="text-xs text-gray-400">{formatTime(trade.fillTime)}</div>
-                        </div>
-                      </div>
-                      <div className="text-right">
-                        <div className="text-white font-mono">${trade.entryPrice?.toFixed(2)}</div>
-                        <div className="text-xs text-blue-300">{trade.quantity} contracts</div>
-                      </div>
-                    </div>
 
-                    {/* Exit Execution (if trade is closed) */}
-                    {trade.exitPrice && (
-                      <div className="flex items-center justify-between p-3 bg-purple-500/10 border border-purple-500/20 rounded-lg">
-                        <div className="flex items-center gap-3">
-                          <div className="w-2 h-2 bg-purple-400 rounded-full"></div>
-                          <div>
-                            <div className="text-purple-300 text-sm font-medium">EXIT</div>
-                            <div className="text-xs text-gray-400">{formatTime(trade.exitTime)}</div>
-                          </div>
-                        </div>
-                        <div className="text-right">
-                          <div className="text-white font-mono">${trade.exitPrice.toFixed(2)}</div>
-                          <div className="text-xs text-purple-300">{trade.quantity} contracts</div>
-                        </div>
-                      </div>
-                    )}
-
-                    {/* Show partial fills if available */}
-                    {trade.partialFills?.map((fill, index) => (
-                      <div key={index} className="flex items-center justify-between p-3 bg-gray-500/10 border border-gray-500/20 rounded-lg">
-                        <div className="flex items-center gap-3">
-                          <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
-                          <div>
-                            <div className="text-gray-300 text-sm font-medium">PARTIAL</div>
-                            <div className="text-xs text-gray-400">{formatTime(fill.time)}</div>
-                          </div>
-                        </div>
-                        <div className="text-right">
-                          <div className="text-white font-mono">${fill.price?.toFixed(2)}</div>
-                          <div className="text-xs text-gray-300">{fill.quantity} contracts</div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
               </div>
             </div>
 
@@ -473,6 +418,80 @@ const TradeDetailModal = ({ trade, isOpen, onClose }: TradeDetailModalProps) => 
                       <Plus className="w-4 h-4" />
                     </Button>
                   </div>
+                </div>
+              </div>
+
+              {/* Individual Executions Widget */}
+              <div className="bg-gradient-to-br from-gray-900/50 to-gray-800/50 backdrop-blur border border-gray-700/50 rounded-xl overflow-hidden">
+                <div className="p-4 border-b border-gray-700/50">
+                  <h3 className="text-lg font-semibold text-white flex items-center gap-2">
+                    ⚡ Individual Executions
+                  </h3>
+                </div>
+                
+                <div className="p-4">
+                  <div className="space-y-3">
+                    <div className="grid grid-cols-4 gap-4 text-xs text-gray-400 font-medium border-b border-gray-600/50 pb-2">
+                      <span>Time</span>
+                      <span>Price</span>
+                      <span>Qty</span>
+                      <span>P&L</span>
+                    </div>
+                    
+                    {/* Entry Execution */}
+                    <div className="grid grid-cols-4 gap-4 text-sm text-white py-2 hover:bg-gray-700/20 rounded">
+                      <span className="font-mono">{formatTime(trade.fillTime)}</span>
+                      <span className="font-mono">${trade.entryPrice?.toFixed(2)}</span>
+                      <span className={`font-mono font-semibold ${trade.side === 'sell' ? 'text-red-400' : 'text-green-400'}`}>
+                        {trade.side === 'sell' ? '-' : '+'}{trade.quantity}
+                      </span>
+                      <span className="font-mono">$0</span>
+                    </div>
+                    
+                    {/* Exit Execution (if trade is closed) */}
+                    {trade.exitPrice && (
+                      <div className="grid grid-cols-4 gap-4 text-sm text-white py-2 hover:bg-gray-700/20 rounded">
+                        <span className="font-mono">{formatTime(trade.exitTime)}</span>
+                        <span className="font-mono">${trade.exitPrice.toFixed(2)}</span>
+                        <span className={`font-mono font-semibold ${trade.side === 'sell' ? 'text-green-400' : 'text-red-400'}`}>
+                          {trade.side === 'sell' ? '+' : '-'}{trade.quantity}
+                        </span>
+                        <span className={`font-mono font-semibold ${trade.pnl >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                          {trade.pnl >= 0 ? '+' : ''}${trade.pnl}
+                        </span>
+                      </div>
+                    )}
+
+                    {/* Show partial fills if available */}
+                    {trade.partialFills?.map((fill, index) => (
+                      <div key={index} className="grid grid-cols-4 gap-4 text-sm text-white py-2 hover:bg-gray-700/20 rounded">
+                        <span className="font-mono">{formatTime(fill.time)}</span>
+                        <span className="font-mono">${fill.price?.toFixed(2)}</span>
+                        <span className="text-gray-400 font-mono font-semibold">{fill.quantity}</span>
+                        <span className="font-mono">$0</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* Notes Section */}
+              <div className="bg-gradient-to-br from-gray-900/50 to-gray-800/50 backdrop-blur border border-gray-700/50 rounded-xl overflow-hidden">
+                <div className="p-4 border-b border-gray-700/50">
+                  <h3 className="text-lg font-semibold text-white">📝 Trade Analysis</h3>
+                </div>
+                
+                <div className="p-4">
+                  <textarea
+                    className="w-full h-32 bg-white border border-gray-600/50 rounded-lg p-4 text-black placeholder-gray-600 resize-none backdrop-blur focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/50"
+                    placeholder="What did you learn from this trade?"
+                    value={notes}
+                    onChange={(e) => setNotes(e.target.value)}
+                  />
+                  <Button className="mt-3 bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 border-0">
+                    <Save className="w-4 h-4 mr-2" />
+                    Save Analysis
+                  </Button>
                 </div>
               </div>
             </div>
