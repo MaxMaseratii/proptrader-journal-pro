@@ -112,6 +112,32 @@ const TradeDetailModal = ({ trade, isOpen, onClose }: TradeDetailModalProps) => 
     });
   };
 
+  // Map trading symbols to TradingView compatible symbols
+  const mapToTradingViewSymbol = (symbol: string) => {
+    const symbolMap: { [key: string]: string } = {
+      'ESU': 'CME:ES1!',        // E-mini S&P 500 Futures
+      'ES': 'CME:ES1!',         // E-mini S&P 500 Futures
+      'MES': 'CME:MES1!',       // Micro E-mini S&P 500 Futures
+      'NQ': 'CME:NQ1!',         // E-mini NASDAQ 100 Futures
+      'YM': 'CME:YM1!',         // E-mini Dow Jones Futures
+      'CL': 'NYMEX:CL1!',       // Crude Oil Futures
+      'GC': 'COMEX:GC1!',       // Gold Futures
+      'SI': 'COMEX:SI1!',       // Silver Futures
+      'EUR/USD': 'FX:EURUSD',   // EUR/USD Forex
+      'GBP/USD': 'FX:GBPUSD',   // GBP/USD Forex
+      'USD/JPY': 'FX:USDJPY',   // USD/JPY Forex
+      'BTC': 'BINANCE:BTCUSDT', // Bitcoin
+      'ETH': 'BINANCE:ETHUSDT', // Ethereum
+    };
+    
+    return symbolMap[symbol.toUpperCase()] || `CME:${symbol.toUpperCase()}1!`;
+  };
+
+  const getTradingViewSymbol = () => {
+    if (!trade) return 'CME:ES1!';
+    return mapToTradingViewSymbol(trade.symbol);
+  };
+
   if (!trade) return null;
 
   return (
@@ -231,7 +257,7 @@ const TradeDetailModal = ({ trade, isOpen, onClose }: TradeDetailModalProps) => 
                   {/* TradingView Chart */}
                   <div className="bg-black rounded-lg h-[500px] relative overflow-hidden">
                     <iframe
-                      src={`https://www.tradingview.com/embed-widget/advanced-chart/?symbol=CME%3A${trade.symbol}&interval=5&timezone=America%2FNew_York&theme=dark&style=1&locale=en&backgroundColor=rgb(0%2C0%2C0)&gridLineColor=rgb(26%2C26%2C26)&fontColor=rgb(255%2C255%2C255)&underLineColor=rgb(55%2C65%2C81)&trendLineColor=rgb(147%2C51%2C234)&isTransparent=false&autosize=true&studies=%5B%22Volume%40tv-basicstudies%22%2C%22VWAP%40tv-basicstudies%22%2C%22BB%40tv-basicstudies%22%2C%22MAExp%40tv-basicstudies%22%2C%22RSI%40tv-basicstudies%22%5D&show_popup_button=true&popup_width=1000&popup_height=650&utm_source=max-maserati&utm_medium=widget&utm_campaign=chart&utm_term=CME%3A${trade.symbol}`}
+                      src={`https://www.tradingview.com/embed-widget/advanced-chart/?symbol=${encodeURIComponent(getTradingViewSymbol())}&interval=5&timezone=America%2FNew_York&theme=dark&style=1&locale=en&backgroundColor=rgb(0%2C0%2C0)&gridLineColor=rgb(26%2C26%2C26)&fontColor=rgb(255%2C255%2C255)&underLineColor=rgb(55%2C65%2C81)&trendLineColor=rgb(147%2C51%2C234)&isTransparent=false&autosize=true&studies=%5B%22Volume%40tv-basicstudies%22%2C%22VWAP%40tv-basicstudies%22%2C%22BB%40tv-basicstudies%22%2C%22MAExp%40tv-basicstudies%22%2C%22RSI%40tv-basicstudies%22%5D&show_popup_button=true&popup_width=1000&popup_height=650&utm_source=max-maserati&utm_medium=widget&utm_campaign=chart&utm_term=${encodeURIComponent(getTradingViewSymbol())}`}
                       className="w-full h-full rounded-lg border-0"
                       frameBorder="0"
                       scrolling="no"
