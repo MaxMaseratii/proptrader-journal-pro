@@ -180,6 +180,7 @@ const TradeDetailModal = ({ trade, isOpen, onClose }: TradeDetailModalProps) => 
               <div>
                 <div className="text-2xl font-bold">{trade.symbol}</div>
                 <div className="text-sm text-purple-300">{trade.side.toUpperCase()} • {trade.quantity} Contracts</div>
+                <div className="text-sm text-gray-300">{trade.exitPrice ? (trade.exitPrice - trade.entryPrice).toFixed(2) : 'Open'} points</div>
               </div>
             </div>
             <div className="text-right">
@@ -312,49 +313,7 @@ const TradeDetailModal = ({ trade, isOpen, onClose }: TradeDetailModalProps) => 
                 </div>
               </div>
 
-              {/* Combined Trade Summary + Executions Widget */}
-              <div className="bg-gradient-to-br from-gray-900/50 to-gray-800/50 backdrop-blur border border-gray-700/50 rounded-xl overflow-hidden">
-                {/* Trade Summary Header */}
-                <div className="p-6 border-b border-gray-700/50">
-                  <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-                    📊 Trade Summary & Executions
-                  </h3>
-                  <div className="grid grid-cols-2 gap-6">
-                    <div className="space-y-3">
-                      <div className="flex justify-between">
-                        <span className="text-gray-400">Symbol</span>
-                        <span className="text-white font-mono">{trade.symbol}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-gray-400">Net Position</span>
-                        <span className={`font-mono ${trade.side === 'sell' ? 'text-red-400' : 'text-green-400'}`}>
-                          {trade.side === 'sell' ? 'SHORT' : 'LONG'} {trade.quantity}
-                        </span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-gray-400">Points</span>
-                        <span className="text-white font-mono">{trade.exitPrice ? (trade.exitPrice - trade.entryPrice).toFixed(2) : 'Open'} pts</span>
-                      </div>
-                    </div>
-                    <div className="space-y-3">
-                      <div className="flex justify-between">
-                        <span className="text-gray-400">Entry Price</span>
-                        <span className="text-white font-mono">${trade.entryPrice?.toFixed(2)}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-gray-400">Exit Price</span>
-                        <span className="text-white font-mono">${trade.exitPrice?.toFixed(2) || 'Open'}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-gray-400">Duration</span>
-                        <span className="text-white font-mono">{calculateDuration()}</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                
 
-              </div>
             </div>
 
             {/* Right Column - Trade Analysis */}
@@ -462,38 +421,12 @@ const TradeDetailModal = ({ trade, isOpen, onClose }: TradeDetailModalProps) => 
                       </div>
                     )}
 
-                    {/* Show partial fills if available */}
-                    {trade.partialFills?.map((fill, index) => (
-                      <div key={index} className="grid grid-cols-4 gap-4 text-sm text-white py-2 hover:bg-gray-700/20 rounded">
-                        <span className="font-mono">{formatTime(fill.time)}</span>
-                        <span className="font-mono">${fill.price?.toFixed(2)}</span>
-                        <span className="text-gray-400 font-mono font-semibold">{fill.quantity}</span>
-                        <span className="font-mono">$0</span>
-                      </div>
-                    ))}
+                    {/* No partial fills data available in current schema */}
                   </div>
                 </div>
               </div>
 
-              {/* Notes Section */}
-              <div className="bg-gradient-to-br from-gray-900/50 to-gray-800/50 backdrop-blur border border-gray-700/50 rounded-xl overflow-hidden">
-                <div className="p-4 border-b border-gray-700/50">
-                  <h3 className="text-lg font-semibold text-white">📝 Trade Analysis</h3>
-                </div>
-                
-                <div className="p-4">
-                  <textarea
-                    className="w-full h-32 bg-white border border-gray-600/50 rounded-lg p-4 text-black placeholder-gray-600 resize-none backdrop-blur focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/50"
-                    placeholder="What did you learn from this trade?"
-                    value={notes}
-                    onChange={(e) => setNotes(e.target.value)}
-                  />
-                  <Button className="mt-3 bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 border-0">
-                    <Save className="w-4 h-4 mr-2" />
-                    Save Analysis
-                  </Button>
-                </div>
-              </div>
+
             </div>
           </div>
         </div>
