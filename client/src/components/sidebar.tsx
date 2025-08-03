@@ -45,6 +45,7 @@ const navItems = [
   { href: "/projections", label: "Challenge Target Planner", icon: TrendingUp, section: "main" },
   { href: "/daily-plan", label: "Daily Trading Plan", icon: Target, section: "main" },
   { href: "/trading-companion", label: "Trading Companion", icon: Bot, section: "main" },
+  { href: "/trading-dashboard", label: "Trading Dashboard", icon: Brain, section: "main" },
   { href: "/trades", label: "Trades Log", icon: FileText, section: "main" },
   { href: "/charts", label: "Charts & Analytics", icon: ChartLine, section: "main" },
   { href: "/disciplinary-assistant", label: "Discipline & Psychology Tracker", icon: Settings, section: "main" },

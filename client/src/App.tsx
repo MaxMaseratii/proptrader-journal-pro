@@ -33,6 +33,7 @@ import DisciplinaryAssistant from "@/pages/disciplinary-assistant";
 import Charts from "@/pages/charts";
 import FullChart from "@/pages/full-chart";
 import KnowledgeBase from "@/pages/knowledge-base";
+import TradingDashboard from "@/pages/trading-dashboard";
 import Sidebar from "@/components/sidebar";
 import NotFound from "@/pages/not-found";
 import { useAuth } from "@/hooks/useAuth";
@@ -86,6 +87,7 @@ function Router() {
           <Route path="/dashboard-simple" component={DashboardShowcase} />
           <Route path="/daily-plan" component={DailyPlan} />
           <Route path="/trading-companion" component={TradingCompanion} />
+          <Route path="/trading-dashboard" component={TradingDashboard} />
           <Route path="/projections" component={Projections} />
 
           <Route path="/csv-import" component={CsvImport} />
