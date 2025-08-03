@@ -95,6 +95,82 @@ const mockAccounts = [
   { id: 3, name: "Swing Trading", type: "Live" }
 ];
 
+// Mock historical trading plans data
+const mockHistoricalPlans = [
+  {
+    id: 1,
+    date: "2025-01-03",
+    account: "Main Trading",
+    strategy: "Morning Breakout",
+    riskAmount: 150,
+    targetProfit: 300,
+    maxTrades: 3,
+    plannedTrades: 2,
+    startTime: "09:30",
+    endTime: "16:00",
+    notes: "Strong pre-market movers on TSLA and NVDA. Looking for breakout above VWAP with volume confirmation. Market seems bullish after yesterday's close.",
+    mentalState: { emotionalClarity: 4, physicalEnergy: 5, focusLevel: 4, confidence: 4 },
+    overallReadiness: 17,
+    actualTrades: 2,
+    actualPnl: 245,
+    disciplineScore: 23
+  },
+  {
+    id: 2,
+    date: "2025-01-02",
+    account: "Main Trading", 
+    strategy: "Reversal Scalp",
+    riskAmount: 100,
+    targetProfit: 200,
+    maxTrades: 4,
+    plannedTrades: 3,
+    startTime: "10:00",
+    endTime: "15:30",
+    notes: "Market consolidating after New Year. Looking for oversold bounces on high-volume stocks. RSI divergences on several large caps.",
+    mentalState: { emotionalClarity: 3, physicalEnergy: 4, focusLevel: 4, confidence: 3 },
+    overallReadiness: 14,
+    actualTrades: 3,
+    actualPnl: -85,
+    disciplineScore: 18
+  },
+  {
+    id: 3,
+    date: "2024-12-31",
+    account: "Demo Account",
+    strategy: "Gap Fill Strategy", 
+    riskAmount: 75,
+    targetProfit: 150,
+    maxTrades: 2,
+    plannedTrades: 1,
+    startTime: "09:30",
+    endTime: "12:00",
+    notes: "End of year trading. Light volume expected. Only taking high-probability setups. AAPL has significant gap from Friday.",
+    mentalState: { emotionalClarity: 5, physicalEnergy: 4, focusLevel: 5, confidence: 4 },
+    overallReadiness: 18,
+    actualTrades: 1,
+    actualPnl: 120,
+    disciplineScore: 25
+  },
+  {
+    id: 4,
+    date: "2024-12-30",
+    account: "Main Trading",
+    strategy: "Morning Breakout",
+    riskAmount: 125,
+    targetProfit: 250,
+    maxTrades: 3,
+    plannedTrades: 2,
+    startTime: "09:30",
+    endTime: "16:00",
+    notes: "Holiday trading week. Reduced volume but some good setups on tech stocks. Focusing on momentum plays with tight stops.",
+    mentalState: { emotionalClarity: 4, physicalEnergy: 3, focusLevel: 3, confidence: 4 },
+    overallReadiness: 14,
+    actualTrades: 2,
+    actualPnl: 180,
+    disciplineScore: 21
+  }
+];
+
 export default function CompleteTradingDashboard() {
   // Main tab state
   const [activeTab, setActiveTab] = useState('psychology');
@@ -106,6 +182,11 @@ export default function CompleteTradingDashboard() {
   const [isDetailsDialogOpen, setIsDetailsDialogOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState('all');
+  
+  // Historical plans states
+  const [historicalPlans] = useState(mockHistoricalPlans);
+  const [selectedPlan, setSelectedPlan] = useState(null);
+  const [isHistoryDialogOpen, setIsHistoryDialogOpen] = useState(false);
 
   // Psychology/Daily Plan states
   const [currentStep, setCurrentStep] = useState('pre-session');
@@ -637,12 +718,22 @@ export default function CompleteTradingDashboard() {
             >
               Back to Pre-Session
             </Button>
-            <Button
-              onClick={() => setCurrentStep('real-time')}
-              className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white px-8"
-            >
-              Start Trading Session
-            </Button>
+            <div className="flex gap-4">
+              <Button
+                onClick={() => setIsHistoryDialogOpen(true)}
+                variant="outline"
+                className="border-purple-400 text-purple-300 hover:bg-purple-900/20"
+              >
+                <History className="w-4 h-4 mr-2" />
+                Historical Plans
+              </Button>
+              <Button
+                onClick={() => setCurrentStep('real-time')}
+                className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white px-8"
+              >
+                Start Trading Session
+              </Button>
+            </div>
           </div>
         </CardContent>
       </Card>
@@ -1173,7 +1264,7 @@ export default function CompleteTradingDashboard() {
                   value={newStrategy.name}
                   onChange={(e) => setNewStrategy(prev => ({ ...prev, name: e.target.value }))}
                   placeholder="e.g., Morning Breakout"
-                  className="bg-slate-900/50 border-blue-500/30 text-white"
+                  className="bg-white border-blue-500/30 text-black"
                 />
               </div>
               <div>
@@ -1197,7 +1288,7 @@ export default function CompleteTradingDashboard() {
                 value={newStrategy.description}
                 onChange={(e) => setNewStrategy(prev => ({ ...prev, description: e.target.value }))}
                 placeholder="Brief description of the strategy..."
-                className="bg-slate-900/50 border-blue-500/30 text-white"
+                className="bg-white border-blue-500/30 text-black"
               />
             </div>
 
@@ -1208,7 +1299,7 @@ export default function CompleteTradingDashboard() {
                   type="number"
                   value={newStrategy.expectedWinRate}
                   onChange={(e) => setNewStrategy(prev => ({ ...prev, expectedWinRate: parseFloat(e.target.value) || 0 }))}
-                  className="bg-slate-900/50 border-blue-500/30 text-white"
+                  className="bg-white border-blue-500/30 text-black"
                 />
               </div>
               <div>
@@ -1218,7 +1309,7 @@ export default function CompleteTradingDashboard() {
                   step="0.1"
                   value={newStrategy.riskRewardRatio}
                   onChange={(e) => setNewStrategy(prev => ({ ...prev, riskRewardRatio: parseFloat(e.target.value) || 0 }))}
-                  className="bg-slate-900/50 border-blue-500/30 text-white"
+                  className="bg-white border-blue-500/30 text-black"
                 />
               </div>
             </div>
@@ -1229,7 +1320,7 @@ export default function CompleteTradingDashboard() {
                 value={newStrategy.rules}
                 onChange={(e) => setNewStrategy(prev => ({ ...prev, rules: e.target.value }))}
                 placeholder="• Entry criteria&#10;• Exit criteria&#10;• Risk management rules"
-                className="bg-slate-900/50 border-blue-500/30 text-white h-24"
+                className="bg-white border-blue-500/30 text-black h-24"
               />
             </div>
 
@@ -1240,7 +1331,7 @@ export default function CompleteTradingDashboard() {
                   value={newStrategy.marketConditions}
                   onChange={(e) => setNewStrategy(prev => ({ ...prev, marketConditions: e.target.value }))}
                   placeholder="e.g., High volatility, trending markets"
-                  className="bg-slate-900/50 border-blue-500/30 text-white"
+                  className="bg-white border-blue-500/30 text-black"
                 />
               </div>
               <div>
@@ -1249,7 +1340,7 @@ export default function CompleteTradingDashboard() {
                   value={newStrategy.assets}
                   onChange={(e) => setNewStrategy(prev => ({ ...prev, assets: e.target.value }))}
                   placeholder="e.g., Large cap stocks, ETFs"
-                  className="bg-slate-900/50 border-blue-500/30 text-white"
+                  className="bg-white border-blue-500/30 text-black"
                 />
               </div>
             </div>
@@ -1404,8 +1495,24 @@ export default function CompleteTradingDashboard() {
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-900 to-slate-950 p-6">
       <div className="max-w-7xl mx-auto">
         <div className="mb-8">
-          <h1 className="text-gradient-rainbow text-4xl font-bold mb-4">Complete Trading Dashboard</h1>
-          <p className="text-gray-400 text-lg">Comprehensive psychology and strategy management platform</p>
+          <div className="flex justify-between items-start mb-4">
+            <div>
+              <h1 className="text-gradient-rainbow text-4xl font-bold mb-4">Complete Trading Dashboard</h1>
+              <p className="text-gray-400 text-lg">Comprehensive psychology and strategy management platform</p>
+            </div>
+            <div className="text-right">
+              <div className="text-2xl font-bold text-white">{new Date().toLocaleDateString('en-US', { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+              })}</div>
+              <div className="text-gray-400">{new Date().toLocaleTimeString('en-US', { 
+                hour: '2-digit', 
+                minute: '2-digit'
+              })}</div>
+            </div>
+          </div>
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
@@ -1463,6 +1570,134 @@ export default function CompleteTradingDashboard() {
           }
         }
       `}</style>
+
+      {/* Historical Trading Plans Dialog */}
+      <Dialog open={isHistoryDialogOpen} onOpenChange={setIsHistoryDialogOpen}>
+        <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 border border-purple-500/30">
+          <DialogHeader>
+            <DialogTitle className="text-gradient-rainbow text-xl">
+              Historical Trading Plans & Journal Notes
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 p-6">
+            {historicalPlans.map(plan => (
+              <Card key={plan.id} className="bg-gradient-to-br from-slate-900/50 to-slate-800/50 border border-purple-500/30 hover:border-purple-400/50 transition-all">
+                <CardHeader>
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <CardTitle className="text-white text-lg flex items-center gap-2">
+                        {plan.date}
+                      </CardTitle>
+                      <div className="flex gap-4 mt-2 text-sm">
+                        <Badge className="bg-blue-900/30 text-blue-300 border-blue-400/30">
+                          {plan.account}
+                        </Badge>
+                        <Badge className="bg-green-900/30 text-green-300 border-green-400/30">
+                          {plan.strategy}
+                        </Badge>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <div className="text-sm text-gray-400">Readiness Score</div>
+                      <div className={`text-xl font-bold ${
+                        plan.overallReadiness >= 16 ? 'text-green-400' : 
+                        plan.overallReadiness >= 12 ? 'text-yellow-400' : 'text-red-400'
+                      }`}>
+                        {plan.overallReadiness}/20
+                      </div>
+                    </div>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    {/* Plan Details */}
+                    <div className="space-y-3">
+                      <h4 className="text-purple-300 font-semibold">Plan Details</h4>
+                      <div className="space-y-2 text-sm">
+                        <div className="flex justify-between">
+                          <span className="text-gray-400">Risk Amount:</span>
+                          <span className="text-white">${plan.riskAmount}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-gray-400">Target Profit:</span>
+                          <span className="text-white">${plan.targetProfit}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-gray-400">Max Trades:</span>
+                          <span className="text-white">{plan.maxTrades}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-gray-400">Planned Trades:</span>
+                          <span className="text-white">{plan.plannedTrades}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-gray-400">Session:</span>
+                          <span className="text-white">{plan.startTime} - {plan.endTime}</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Mental State */}
+                    <div className="space-y-3">
+                      <h4 className="text-purple-300 font-semibold">Mental State</h4>
+                      <div className="space-y-2 text-sm">
+                        <div className="flex justify-between">
+                          <span className="text-gray-400">Emotional Clarity:</span>
+                          <span className="text-white">{plan.mentalState.emotionalClarity}/5</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-gray-400">Physical Energy:</span>
+                          <span className="text-white">{plan.mentalState.physicalEnergy}/5</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-gray-400">Focus Level:</span>
+                          <span className="text-white">{plan.mentalState.focusLevel}/5</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-gray-400">Confidence:</span>
+                          <span className="text-white">{plan.mentalState.confidence}/5</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Results */}
+                    <div className="space-y-3">
+                      <h4 className="text-purple-300 font-semibold">Results</h4>
+                      <div className="space-y-2 text-sm">
+                        <div className="flex justify-between">
+                          <span className="text-gray-400">Actual Trades:</span>
+                          <span className="text-white">{plan.actualTrades}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-gray-400">Actual P&L:</span>
+                          <span className={plan.actualPnl >= 0 ? 'text-green-400' : 'text-red-400'}>
+                            {plan.actualPnl >= 0 ? '+' : ''}${plan.actualPnl}
+                          </span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-gray-400">Discipline Score:</span>
+                          <span className={`font-bold ${
+                            plan.disciplineScore >= 20 ? 'text-green-400' : 
+                            plan.disciplineScore >= 15 ? 'text-yellow-400' : 'text-red-400'
+                          }`}>
+                            {plan.disciplineScore}/25
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Journal Notes */}
+                  <div className="mt-4 p-4 bg-slate-800/50 border border-gray-600/30 rounded-lg">
+                    <h4 className="text-purple-300 font-semibold mb-2">Journal Notes</h4>
+                    <p className="text-gray-300 text-sm">{plan.notes}</p>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
