@@ -187,6 +187,10 @@ export default function CompleteTradingDashboard() {
   const [historicalPlans] = useState(mockHistoricalPlans);
   const [selectedPlan, setSelectedPlan] = useState(null);
   const [isHistoryDialogOpen, setIsHistoryDialogOpen] = useState(false);
+  
+  // Individual trade execution state
+  const [currentTradeIndex, setCurrentTradeIndex] = useState(0);
+  const [tradeExecutionData, setTradeExecutionData] = useState([]);
 
   // Psychology/Daily Plan states
   const [currentStep, setCurrentStep] = useState('pre-session');
@@ -718,22 +722,12 @@ export default function CompleteTradingDashboard() {
             >
               Back to Pre-Session
             </Button>
-            <div className="flex gap-4">
-              <Button
-                onClick={() => setIsHistoryDialogOpen(true)}
-                variant="outline"
-                className="border-purple-400 text-purple-300 hover:bg-purple-900/20"
-              >
-                <History className="w-4 h-4 mr-2" />
-                Historical Plans
-              </Button>
-              <Button
-                onClick={() => setCurrentStep('real-time')}
-                className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white px-8"
-              >
-                Start Trading Session
-              </Button>
-            </div>
+            <Button
+              onClick={() => setCurrentStep('real-time')}
+              className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white px-8"
+            >
+              Start Trading Session
+            </Button>
           </div>
         </CardContent>
       </Card>
@@ -1491,13 +1485,145 @@ export default function CompleteTradingDashboard() {
     </div>
   );
 
+  // Render Historical Plans Section
+  const renderHistoricalPlansSection = () => (
+    <div className="space-y-6">
+      <Card className="bg-gradient-to-br from-slate-900/90 to-slate-800/90 border border-purple-500/30">
+        <CardHeader>
+          <CardTitle className="text-gradient-rainbow text-xl flex items-center gap-2">
+            <History className="w-6 h-6" />
+            Historical Trading Plans & Journal Review
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {historicalPlans.map(plan => (
+            <Card key={plan.id} className="bg-gradient-to-br from-slate-900/50 to-slate-800/50 border border-purple-500/30 hover:border-purple-400/50 transition-all">
+              <CardHeader>
+                <div className="flex justify-between items-start">
+                  <div>
+                    <CardTitle className="text-white text-lg flex items-center gap-2">
+                      <Calendar className="w-5 h-5 text-purple-400" />
+                      {plan.date}
+                    </CardTitle>
+                    <div className="flex gap-4 mt-2 text-sm">
+                      <Badge className="bg-blue-900/30 text-blue-300 border-blue-400/30">
+                        {plan.account}
+                      </Badge>
+                      <Badge className="bg-green-900/30 text-green-300 border-green-400/30">
+                        {plan.strategy}
+                      </Badge>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <div className="text-sm text-gray-400">Readiness Score</div>
+                    <div className={`text-xl font-bold ${
+                      plan.overallReadiness >= 16 ? 'text-green-400' : 
+                      plan.overallReadiness >= 12 ? 'text-yellow-400' : 'text-red-400'
+                    }`}>
+                      {plan.overallReadiness}/20
+                    </div>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  {/* Plan Details */}
+                  <div className="space-y-3">
+                    <h4 className="text-purple-300 font-semibold">Plan Details</h4>
+                    <div className="space-y-2 text-sm">
+                      <div className="flex justify-between">
+                        <span className="text-gray-400">Risk Amount:</span>
+                        <span className="text-white">${plan.riskAmount}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-400">Target Profit:</span>
+                        <span className="text-white">${plan.targetProfit}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-400">Max Trades:</span>
+                        <span className="text-white">{plan.maxTrades}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-400">Planned Trades:</span>
+                        <span className="text-white">{plan.plannedTrades}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-400">Session:</span>
+                        <span className="text-white">{plan.startTime} - {plan.endTime}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Mental State */}
+                  <div className="space-y-3">
+                    <h4 className="text-purple-300 font-semibold">Mental State</h4>
+                    <div className="space-y-2 text-sm">
+                      <div className="flex justify-between">
+                        <span className="text-gray-400">Emotional Clarity:</span>
+                        <span className="text-white">{plan.mentalState.emotionalClarity}/5</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-400">Physical Energy:</span>
+                        <span className="text-white">{plan.mentalState.physicalEnergy}/5</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-400">Focus Level:</span>
+                        <span className="text-white">{plan.mentalState.focusLevel}/5</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-400">Confidence:</span>
+                        <span className="text-white">{plan.mentalState.confidence}/5</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Results */}
+                  <div className="space-y-3">
+                    <h4 className="text-purple-300 font-semibold">Results</h4>
+                    <div className="space-y-2 text-sm">
+                      <div className="flex justify-between">
+                        <span className="text-gray-400">Actual Trades:</span>
+                        <span className="text-white">{plan.actualTrades}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-400">Actual P&L:</span>
+                        <span className={plan.actualPnl >= 0 ? 'text-green-400' : 'text-red-400'}>
+                          {plan.actualPnl >= 0 ? '+' : ''}${plan.actualPnl}
+                        </span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-400">Discipline Score:</span>
+                        <span className={`font-bold ${
+                          plan.disciplineScore >= 20 ? 'text-green-400' : 
+                          plan.disciplineScore >= 15 ? 'text-yellow-400' : 'text-red-400'
+                        }`}>
+                          {plan.disciplineScore}/25
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Journal Notes */}
+                <div className="mt-4 p-4 bg-slate-800/50 border border-gray-600/30 rounded-lg">
+                  <h4 className="text-purple-300 font-semibold mb-2">Journal Notes</h4>
+                  <p className="text-gray-300 text-sm">{plan.notes}</p>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </CardContent>
+      </Card>
+    </div>
+  );
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-900 to-slate-950 p-6">
       <div className="max-w-7xl mx-auto">
         <div className="mb-8">
           <div className="flex justify-between items-start mb-4">
             <div>
-              <h1 className="text-gradient-rainbow text-4xl font-bold mb-4">Complete Trading Dashboard</h1>
+              <h1 className="text-gradient-rainbow text-4xl font-bold mb-4">Pre-session Mental Check & Daily Plan</h1>
               <p className="text-gray-400 text-lg">Comprehensive psychology and strategy management platform</p>
             </div>
             <div className="text-right">
@@ -1516,13 +1642,13 @@ export default function CompleteTradingDashboard() {
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-2 bg-slate-900/50 border border-blue-500/30">
+          <TabsList className="grid w-full grid-cols-3 bg-slate-900/50 border border-blue-500/30">
             <TabsTrigger 
               value="psychology" 
               className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-purple-600 data-[state=active]:text-white"
             >
               <Brain className="w-5 h-5 mr-2" />
-              Pre-session Mental Check & Daily Plan
+              Mental Check & Plan
             </TabsTrigger>
             <TabsTrigger 
               value="strategies"
@@ -1530,6 +1656,13 @@ export default function CompleteTradingDashboard() {
             >
               <Target className="w-5 h-5 mr-2" />
               Trading Strategies
+            </TabsTrigger>
+            <TabsTrigger 
+              value="history"
+              className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-600 data-[state=active]:to-pink-600 data-[state=active]:text-white"
+            >
+              <History className="w-5 h-5 mr-2" />
+              Historical Plans
             </TabsTrigger>
           </TabsList>
 
@@ -1539,6 +1672,10 @@ export default function CompleteTradingDashboard() {
 
           <TabsContent value="strategies" className="space-y-6">
             {renderStrategiesSection()}
+          </TabsContent>
+
+          <TabsContent value="history" className="space-y-6">
+            {renderHistoricalPlansSection()}
           </TabsContent>
         </Tabs>
       </div>
@@ -1571,133 +1708,7 @@ export default function CompleteTradingDashboard() {
         }
       `}</style>
 
-      {/* Historical Trading Plans Dialog */}
-      <Dialog open={isHistoryDialogOpen} onOpenChange={setIsHistoryDialogOpen}>
-        <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 border border-purple-500/30">
-          <DialogHeader>
-            <DialogTitle className="text-gradient-rainbow text-xl">
-              Historical Trading Plans & Journal Notes
-            </DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4 p-6">
-            {historicalPlans.map(plan => (
-              <Card key={plan.id} className="bg-gradient-to-br from-slate-900/50 to-slate-800/50 border border-purple-500/30 hover:border-purple-400/50 transition-all">
-                <CardHeader>
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <CardTitle className="text-white text-lg flex items-center gap-2">
-                        {plan.date}
-                      </CardTitle>
-                      <div className="flex gap-4 mt-2 text-sm">
-                        <Badge className="bg-blue-900/30 text-blue-300 border-blue-400/30">
-                          {plan.account}
-                        </Badge>
-                        <Badge className="bg-green-900/30 text-green-300 border-green-400/30">
-                          {plan.strategy}
-                        </Badge>
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <div className="text-sm text-gray-400">Readiness Score</div>
-                      <div className={`text-xl font-bold ${
-                        plan.overallReadiness >= 16 ? 'text-green-400' : 
-                        plan.overallReadiness >= 12 ? 'text-yellow-400' : 'text-red-400'
-                      }`}>
-                        {plan.overallReadiness}/20
-                      </div>
-                    </div>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    {/* Plan Details */}
-                    <div className="space-y-3">
-                      <h4 className="text-purple-300 font-semibold">Plan Details</h4>
-                      <div className="space-y-2 text-sm">
-                        <div className="flex justify-between">
-                          <span className="text-gray-400">Risk Amount:</span>
-                          <span className="text-white">${plan.riskAmount}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-400">Target Profit:</span>
-                          <span className="text-white">${plan.targetProfit}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-400">Max Trades:</span>
-                          <span className="text-white">{plan.maxTrades}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-400">Planned Trades:</span>
-                          <span className="text-white">{plan.plannedTrades}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-400">Session:</span>
-                          <span className="text-white">{plan.startTime} - {plan.endTime}</span>
-                        </div>
-                      </div>
-                    </div>
 
-                    {/* Mental State */}
-                    <div className="space-y-3">
-                      <h4 className="text-purple-300 font-semibold">Mental State</h4>
-                      <div className="space-y-2 text-sm">
-                        <div className="flex justify-between">
-                          <span className="text-gray-400">Emotional Clarity:</span>
-                          <span className="text-white">{plan.mentalState.emotionalClarity}/5</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-400">Physical Energy:</span>
-                          <span className="text-white">{plan.mentalState.physicalEnergy}/5</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-400">Focus Level:</span>
-                          <span className="text-white">{plan.mentalState.focusLevel}/5</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-400">Confidence:</span>
-                          <span className="text-white">{plan.mentalState.confidence}/5</span>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Results */}
-                    <div className="space-y-3">
-                      <h4 className="text-purple-300 font-semibold">Results</h4>
-                      <div className="space-y-2 text-sm">
-                        <div className="flex justify-between">
-                          <span className="text-gray-400">Actual Trades:</span>
-                          <span className="text-white">{plan.actualTrades}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-400">Actual P&L:</span>
-                          <span className={plan.actualPnl >= 0 ? 'text-green-400' : 'text-red-400'}>
-                            {plan.actualPnl >= 0 ? '+' : ''}${plan.actualPnl}
-                          </span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-400">Discipline Score:</span>
-                          <span className={`font-bold ${
-                            plan.disciplineScore >= 20 ? 'text-green-400' : 
-                            plan.disciplineScore >= 15 ? 'text-yellow-400' : 'text-red-400'
-                          }`}>
-                            {plan.disciplineScore}/25
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Journal Notes */}
-                  <div className="mt-4 p-4 bg-slate-800/50 border border-gray-600/30 rounded-lg">
-                    <h4 className="text-purple-300 font-semibold mb-2">Journal Notes</h4>
-                    <p className="text-gray-300 text-sm">{plan.notes}</p>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 }
