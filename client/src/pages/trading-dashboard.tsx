@@ -525,7 +525,7 @@ export default function CompleteTradingDashboard() {
                   value={preSessionData.biggestFear}
                   onChange={(e) => setPreSessionData(prev => ({ ...prev, biggestFear: e.target.value }))}
                   placeholder="e.g., Losing money, missing opportunities..."
-                  className="bg-slate-900/50 border-blue-500/30 text-white"
+                  className="bg-white border-blue-500/30 text-black placeholder:text-gray-500"
                 />
               </div>
               <div>
@@ -534,7 +534,7 @@ export default function CompleteTradingDashboard() {
                   value={preSessionData.strongestDesire}
                   onChange={(e) => setPreSessionData(prev => ({ ...prev, strongestDesire: e.target.value }))}
                   placeholder="e.g., Making consistent profits, following my plan..."
-                  className="bg-slate-900/50 border-blue-500/30 text-white"
+                  className="bg-white border-blue-500/30 text-black placeholder:text-gray-500"
                 />
               </div>
             </div>
@@ -592,7 +592,7 @@ export default function CompleteTradingDashboard() {
             <div>
               <Label className="text-green-300 mb-2 block">Trading Account</Label>
               <Select value={selectedAccount.toString()} onValueChange={(value) => setSelectedAccount(parseInt(value))}>
-                <SelectTrigger className="bg-slate-900/50 border-green-500/30 text-white">
+                <SelectTrigger className="bg-white border-green-500/30 text-black">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -607,7 +607,7 @@ export default function CompleteTradingDashboard() {
             <div>
               <Label className="text-green-300 mb-2 block">Primary Strategy</Label>
               <Select value={selectedStrategyId.toString()} onValueChange={(value) => setSelectedStrategyId(parseInt(value))}>
-                <SelectTrigger className="bg-slate-900/50 border-green-500/30 text-white">
+                <SelectTrigger className="bg-white border-green-500/30 text-black">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -632,7 +632,7 @@ export default function CompleteTradingDashboard() {
                 type="number"
                 value={dailyPlanData.riskAmount}
                 onChange={(e) => setDailyPlanData(prev => ({ ...prev, riskAmount: parseFloat(e.target.value) || 0 }))}
-                className="bg-slate-900/50 border-green-500/30 text-white"
+                className="bg-white border-green-500/30 text-black placeholder:text-gray-500"
               />
             </div>
             <div>
@@ -644,7 +644,7 @@ export default function CompleteTradingDashboard() {
                 type="number"
                 value={dailyPlanData.targetProfit}
                 onChange={(e) => setDailyPlanData(prev => ({ ...prev, targetProfit: parseFloat(e.target.value) || 0 }))}
-                className="bg-slate-900/50 border-green-500/30 text-white"
+                className="bg-white border-green-500/30 text-black placeholder:text-gray-500"
               />
             </div>
             <div>
@@ -656,7 +656,7 @@ export default function CompleteTradingDashboard() {
                 type="number"
                 value={dailyPlanData.maxTrades}
                 onChange={(e) => setDailyPlanData(prev => ({ ...prev, maxTrades: parseInt(e.target.value) || 0 }))}
-                className="bg-slate-900/50 border-green-500/30 text-white"
+                className="bg-white border-green-500/30 text-black placeholder:text-gray-500"
               />
             </div>
             <div>
@@ -668,7 +668,7 @@ export default function CompleteTradingDashboard() {
                 type="number"
                 value={dailyPlanData.plannedTrades}
                 onChange={(e) => setDailyPlanData(prev => ({ ...prev, plannedTrades: parseInt(e.target.value) || 0 }))}
-                className="bg-slate-900/50 border-green-500/30 text-white"
+                className="bg-white border-green-500/30 text-black placeholder:text-gray-500"
               />
             </div>
           </div>
@@ -684,7 +684,7 @@ export default function CompleteTradingDashboard() {
                 type="time"
                 value={dailyPlanData.startTime}
                 onChange={(e) => setDailyPlanData(prev => ({ ...prev, startTime: e.target.value }))}
-                className="bg-slate-900/50 border-green-500/30 text-white"
+                className="bg-white border-green-500/30 text-black"
               />
             </div>
             <div>
@@ -696,7 +696,7 @@ export default function CompleteTradingDashboard() {
                 type="time"
                 value={dailyPlanData.endTime}
                 onChange={(e) => setDailyPlanData(prev => ({ ...prev, endTime: e.target.value }))}
-                className="bg-slate-900/50 border-green-500/30 text-white"
+                className="bg-white border-green-500/30 text-black"
               />
             </div>
           </div>
@@ -711,7 +711,7 @@ export default function CompleteTradingDashboard() {
               value={dailyPlanData.notes}
               onChange={(e) => setDailyPlanData(prev => ({ ...prev, notes: e.target.value }))}
               placeholder="Market outlook, key levels to watch, news events, setup ideas..."
-              className="bg-slate-900/50 border-green-500/30 text-white h-24"
+              className="bg-white border-green-500/30 text-black placeholder:text-gray-500 h-24"
             />
           </div>
 
@@ -764,12 +764,12 @@ export default function CompleteTradingDashboard() {
             <Label className="text-blue-300 font-semibold text-lg mb-4 block">Select Which Trade You're Tracking</Label>
             <div className="flex items-center gap-4">
               <Select value={selectedTradeNumber.toString()} onValueChange={(value) => setSelectedTradeNumber(parseInt(value))}>
-                <SelectTrigger className="w-48 bg-slate-800/50 border-blue-500/30 text-white">
+                <SelectTrigger className="w-48 bg-white border-blue-500/30 text-black">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent className="bg-slate-800 border-blue-500/30">
+                <SelectContent className="bg-white border-blue-500/30">
                   {Array.from({ length: dailyPlanData.maxTrades }, (_, index) => (
-                    <SelectItem key={index + 1} value={(index + 1).toString()} className="text-white hover:bg-blue-900/50">
+                    <SelectItem key={index + 1} value={(index + 1).toString()} className="text-black hover:bg-blue-100">
                       Trade #{index + 1}
                     </SelectItem>
                   ))}
@@ -826,7 +826,7 @@ export default function CompleteTradingDashboard() {
                         }
                       }))}
                       placeholder="Calm, anxious, excited..."
-                      className="bg-slate-800/50 border-orange-500/30 text-white text-sm"
+                      className="bg-white border-orange-500/30 text-black placeholder:text-gray-500 text-sm"
                     />
                   </div>
                   <div>
@@ -841,7 +841,7 @@ export default function CompleteTradingDashboard() {
                         }
                       }))}
                       placeholder="Add size, close early..."
-                      className="bg-slate-800/50 border-orange-500/30 text-white text-sm"
+                      className="bg-white border-orange-500/30 text-black placeholder:text-gray-500 text-sm"
                     />
                   </div>
                 </CardContent>
@@ -864,7 +864,7 @@ export default function CompleteTradingDashboard() {
                         }
                       }))}
                       placeholder="Calm, anxious, excited..."
-                      className="bg-slate-800/50 border-orange-500/30 text-white text-sm"
+                      className="bg-white border-orange-500/30 text-black placeholder:text-gray-500 text-sm"
                     />
                   </div>
                   <div>
@@ -879,7 +879,7 @@ export default function CompleteTradingDashboard() {
                         }
                       }))}
                       placeholder="Add size, close early..."
-                      className="bg-slate-800/50 border-orange-500/30 text-white text-sm"
+                      className="bg-white border-orange-500/30 text-black placeholder:text-gray-500 text-sm"
                     />
                   </div>
                 </CardContent>
@@ -902,7 +902,7 @@ export default function CompleteTradingDashboard() {
                         }
                       }))}
                       placeholder="Relief, regret, satisfaction..."
-                      className="bg-slate-800/50 border-orange-500/30 text-white text-sm"
+                      className="bg-white border-orange-500/30 text-black placeholder:text-gray-500 text-sm"
                     />
                   </div>
                   <div>
@@ -917,7 +917,7 @@ export default function CompleteTradingDashboard() {
                         }
                       }))}
                       placeholder="Plan, stop loss, target..."
-                      className="bg-slate-800/50 border-orange-500/30 text-white text-sm"
+                      className="bg-white border-orange-500/30 text-black placeholder:text-gray-500 text-sm"
                     />
                   </div>
                 </CardContent>
@@ -1204,11 +1204,11 @@ export default function CompleteTradingDashboard() {
               placeholder="Search strategies..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 bg-slate-900/50 border-blue-500/30 text-white w-64"
+              className="pl-10 bg-white border-blue-500/30 text-black placeholder:text-gray-500 w-64"
             />
           </div>
           <Select value={filterStatus} onValueChange={setFilterStatus}>
-            <SelectTrigger className="w-40 bg-slate-900/50 border-blue-500/30 text-white">
+            <SelectTrigger className="w-40 bg-white border-blue-500/30 text-black">
               <Filter className="w-4 h-4 mr-2" />
               <SelectValue />
             </SelectTrigger>
@@ -1333,13 +1333,13 @@ export default function CompleteTradingDashboard() {
                   value={newStrategy.name}
                   onChange={(e) => setNewStrategy(prev => ({ ...prev, name: e.target.value }))}
                   placeholder="e.g., Morning Breakout"
-                  className="bg-white border-blue-500/30 text-black"
+                  className="bg-white border-blue-500/30 text-black placeholder:text-gray-500"
                 />
               </div>
               <div>
                 <Label className="text-blue-300 mb-2 block">Status</Label>
                 <Select value={newStrategy.status} onValueChange={(value) => setNewStrategy(prev => ({ ...prev, status: value }))}>
-                  <SelectTrigger className="bg-slate-900/50 border-blue-500/30 text-white">
+                  <SelectTrigger className="bg-white border-blue-500/30 text-black">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -1357,7 +1357,7 @@ export default function CompleteTradingDashboard() {
                 value={newStrategy.description}
                 onChange={(e) => setNewStrategy(prev => ({ ...prev, description: e.target.value }))}
                 placeholder="Brief description of the strategy..."
-                className="bg-white border-blue-500/30 text-black"
+                className="bg-white border-blue-500/30 text-black placeholder:text-gray-500"
               />
             </div>
 
@@ -1368,7 +1368,7 @@ export default function CompleteTradingDashboard() {
                   type="number"
                   value={newStrategy.expectedWinRate}
                   onChange={(e) => setNewStrategy(prev => ({ ...prev, expectedWinRate: parseFloat(e.target.value) || 0 }))}
-                  className="bg-white border-blue-500/30 text-black"
+                  className="bg-white border-blue-500/30 text-black placeholder:text-gray-500"
                 />
               </div>
               <div>
@@ -1378,7 +1378,7 @@ export default function CompleteTradingDashboard() {
                   step="0.1"
                   value={newStrategy.riskRewardRatio}
                   onChange={(e) => setNewStrategy(prev => ({ ...prev, riskRewardRatio: parseFloat(e.target.value) || 0 }))}
-                  className="bg-white border-blue-500/30 text-black"
+                  className="bg-white border-blue-500/30 text-black placeholder:text-gray-500"
                 />
               </div>
             </div>
@@ -1389,7 +1389,7 @@ export default function CompleteTradingDashboard() {
                 value={newStrategy.rules}
                 onChange={(e) => setNewStrategy(prev => ({ ...prev, rules: e.target.value }))}
                 placeholder="• Entry criteria&#10;• Exit criteria&#10;• Risk management rules"
-                className="bg-white border-blue-500/30 text-black h-24"
+                className="bg-white border-blue-500/30 text-black placeholder:text-gray-500 h-24"
               />
             </div>
 
@@ -1400,7 +1400,7 @@ export default function CompleteTradingDashboard() {
                   value={newStrategy.marketConditions}
                   onChange={(e) => setNewStrategy(prev => ({ ...prev, marketConditions: e.target.value }))}
                   placeholder="e.g., High volatility, trending markets"
-                  className="bg-white border-blue-500/30 text-black"
+                  className="bg-white border-blue-500/30 text-black placeholder:text-gray-500"
                 />
               </div>
               <div>
@@ -1409,7 +1409,7 @@ export default function CompleteTradingDashboard() {
                   value={newStrategy.assets}
                   onChange={(e) => setNewStrategy(prev => ({ ...prev, assets: e.target.value }))}
                   placeholder="e.g., Large cap stocks, ETFs"
-                  className="bg-white border-blue-500/30 text-black"
+                  className="bg-white border-blue-500/30 text-black placeholder:text-gray-500"
                 />
               </div>
             </div>
@@ -1703,14 +1703,14 @@ export default function CompleteTradingDashboard() {
             </div>
             <div className="text-right">
               <div className="text-2xl font-bold text-white">{new Date().toLocaleDateString('en-US', { 
-                weekday: 'long', 
-                year: 'numeric', 
                 month: 'long', 
-                day: 'numeric' 
+                day: 'numeric', 
+                year: 'numeric' 
               })}</div>
               <div className="text-gray-400">{new Date().toLocaleTimeString('en-US', { 
                 hour: '2-digit', 
-                minute: '2-digit'
+                minute: '2-digit',
+                hour12: true
               })}</div>
             </div>
           </div>
