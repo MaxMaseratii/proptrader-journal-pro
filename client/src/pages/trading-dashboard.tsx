@@ -190,6 +190,7 @@ export default function CompleteTradingDashboard() {
   
   // Individual trade execution state
   const [currentTradeIndex, setCurrentTradeIndex] = useState(0);
+  const [selectedTradeNumber, setSelectedTradeNumber] = useState(1);
   const [tradeExecutionData, setTradeExecutionData] = useState([]);
 
   // Psychology/Daily Plan states
@@ -758,6 +759,28 @@ export default function CompleteTradingDashboard() {
             </Button>
           </div>
 
+          {/* Trade Selection */}
+          <div className="p-4 bg-blue-950/30 border border-blue-500/30 rounded-lg">
+            <Label className="text-blue-300 font-semibold text-lg mb-4 block">Select Which Trade You're Tracking</Label>
+            <div className="flex items-center gap-4">
+              <Select value={selectedTradeNumber.toString()} onValueChange={(value) => setSelectedTradeNumber(parseInt(value))}>
+                <SelectTrigger className="w-48 bg-slate-800/50 border-blue-500/30 text-white">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent className="bg-slate-800 border-blue-500/30">
+                  {Array.from({ length: dailyPlanData.maxTrades }, (_, index) => (
+                    <SelectItem key={index + 1} value={(index + 1).toString()} className="text-white hover:bg-blue-900/50">
+                      Trade #{index + 1}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <div className="text-blue-300">
+                out of {dailyPlanData.maxTrades} max trades for today
+              </div>
+            </div>
+          </div>
+
           {/* Entry Decision Tracking */}
           <div>
             <h3 className="text-white font-semibold mb-4 text-lg">Entry Decision Made By:</h3>
@@ -1046,10 +1069,62 @@ export default function CompleteTradingDashboard() {
                 Back to Real-Time
               </Button>
               <Button
-                onClick={() => setCurrentStep('pre-session')}
+                onClick={() => {
+                  // Reset for next day's session
+                  setCurrentStep('pre-session');
+                  setSelectedTradeNumber(1);
+                  setTradeExecutionData([]);
+                  // Reset all session data for tomorrow
+                  setPreSessionData({
+                    emotionalClarity: 4,
+                    physicalEnergy: 5,
+                    focusLevel: 4,
+                    confidence: 4,
+                    overallReadiness: 17,
+                    traderIdentity: 'disciplined_professional',
+                    biggestFear: '',
+                    strongestDesire: '',
+                    tradingEdgeOrOutcome: 'edge',
+                    goNoGoDecision: 'go'
+                  });
+                  setDailyPlanData({
+                    riskAmount: 100,
+                    targetProfit: 200,
+                    maxTrades: 3,
+                    plannedTrades: 2,
+                    maxRiskPercentage: 2,
+                    plannedHours: 6,
+                    hourlyWage: 50,
+                    startTime: '09:30',
+                    endTime: '16:00',
+                    notes: '',
+                    tradeSetupLinks: []
+                  });
+                  setRealTimeData({
+                    entryDecisionBy: '',
+                    realTimeTracking: {
+                      minute1: { feeling: '', urge: '' },
+                      minute5: { feeling: '', urge: '' },
+                      exit: { feeling: '', reason: '' }
+                    }
+                  });
+                  setPostTradeData({
+                    disciplineScore: {
+                      followedEntryRules: 3,
+                      respectedStopLoss: 3,
+                      managedEmotions: 3,
+                      stuckToPositionSize: 3,
+                      exitedPerPlan: 3
+                    },
+                    primaryEmotion: '',
+                    keyInsight: '',
+                    whatWentWell: '',
+                    needsImprovement: ''
+                  });
+                }}
                 className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white px-8"
               >
-                Complete & Start New Session
+                Complete & Start Tomorrow's Session
               </Button>
             </div>
           </CardContent>
