@@ -1313,13 +1313,13 @@ export default function Dashboard() {
         </div>
       )}
 
-      <div className="p-6 space-y-6 bg-gray-50 dark:bg-gray-900">
+      <div className="p-6 space-y-6 bg-dark-bg min-h-screen">
         
         {/* Daily Trading Plan & Performance - Consolidated Section */}
         <div className="mb-8">
-          <div className="flex items-center justify-between mb-6 border-b border-gray-300 dark:border-gray-700 pb-3">
-            <h2 className="text-xl font-bold text-gray-900 dark:text-white flex items-center">
-              <BarChart3 className="mr-3 h-5 w-5 text-blue-600 dark:text-prop-gold" />
+          <div className="flex items-center justify-between mb-6 border-b border-gray-700 pb-3">
+            <h2 className="text-xl font-bold text-white flex items-center">
+              <BarChart3 className="mr-3 h-5 w-5 text-prop-gold" />
               Daily Trading Plan & Performance
             </h2>
           </div>
@@ -1327,30 +1327,30 @@ export default function Dashboard() {
           {/* Enhanced Header - Proper Loss/Profit Display */}
           <div className={`relative transition-all duration-200 rounded-lg overflow-hidden w-full mb-6 ${
             selectedDayData?.dayPnL < 0 
-              ? 'bg-gradient-to-br from-red-50 via-red-100 to-red-50 dark:from-red-950/40 dark:via-gray-900/60 dark:to-black/80 border-2 border-red-300 dark:border-red-500/50' 
+              ? 'bg-gradient-to-br from-red-950/40 via-gray-900/60 to-black/80 border-2 border-red-500/50' 
               : selectedDayData?.dayPnL > 0
-              ? 'bg-gradient-to-br from-green-50 via-green-100 to-green-50 dark:from-green-950/40 dark:via-gray-900/60 dark:to-black/80 border-2 border-green-300 dark:border-green-500/50'
-              : 'bg-gradient-to-br from-gray-100 via-gray-200 to-gray-100 dark:from-gray-900/40 dark:via-gray-800/60 dark:to-black/80 border border-gray-300 dark:border-gray-600/30'
+              ? 'bg-gradient-to-br from-green-950/40 via-gray-900/60 to-black/80 border-2 border-green-500/50'
+              : 'bg-gradient-to-br from-gray-900/40 via-gray-800/60 to-black/80 border border-gray-600/30'
           }`}>
             
             {/* Header Row */}
-            <div className="flex items-center justify-between p-4 border-b border-gray-300 dark:border-gray-700/50">
+            <div className="flex items-center justify-between p-4 border-b border-gray-700/50">
               <div className="flex items-center space-x-2">
                 <Calendar className="w-4 h-4 text-amber-400" />
-                <span className="text-lg font-bold text-blue-600 dark:text-amber-400">
+                <span className="text-lg font-bold text-amber-400">
                   {selectedDate.toLocaleDateString('en-US', { weekday: 'short' })} {selectedDate.getDate()}
                 </span>
-                <div className="w-2 h-2 rounded-full bg-blue-500 dark:bg-teal-400" />
-                <div className="text-xs text-gray-600 dark:text-gray-400 bg-gray-200 dark:bg-gray-800/30 px-2 py-1 rounded">
+                <div className="w-2 h-2 rounded-full bg-teal-400" />
+                <div className="text-xs text-gray-400 bg-gray-800/30 px-2 py-1 rounded">
                   No Plan
                 </div>
               </div>
               
-              <div className="bg-white/80 dark:bg-gray-900/80 rounded-lg px-4 py-3 border border-gray-300 dark:border-gray-700/50">
+              <div className="bg-gray-900/80 rounded-lg px-4 py-3 border border-gray-700/50">
                 <div className="flex items-center space-x-2">
-                  <span className="text-sm text-gray-600 dark:text-gray-400">Daily P&L:</span>
+                  <span className="text-sm text-gray-400">Daily P&L:</span>
                   <span className={`text-lg font-bold ${
-                    selectedDayData?.dayPnL >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'
+                    selectedDayData?.dayPnL >= 0 ? 'text-green-400' : 'text-red-400'
                   }`}>
                     {selectedDayData?.dayPnL >= 0 ? '+' : ''}${Math.abs(selectedDayData?.dayPnL || 0).toFixed(2)}
                   </span>

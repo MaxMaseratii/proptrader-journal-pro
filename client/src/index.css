@@ -308,28 +308,7 @@
   gap: 24px;
 }
 
-.dark {
-  --background: hsl(0, 0%, 7.1%);
-  --foreground: hsl(0, 0%, 98%);
-  --muted: hsl(0, 0%, 15.9%);
-  --muted-foreground: hsl(0, 0%, 64.9%);
-  --popover: hsl(0, 0%, 7.1%);
-  --popover-foreground: hsl(0, 0%, 98%);
-  --card: hsl(0, 0%, 17.6%);
-  --card-foreground: hsl(0, 0%, 98%);
-  --border: hsl(0, 0%, 25.1%);
-  --input: hsl(0, 0%, 25.1%);
-  --primary: hsl(207, 90%, 54%);
-  --primary-foreground: hsl(211, 100%, 99%);
-  --secondary: hsl(0, 0%, 15.9%);
-  --secondary-foreground: hsl(0, 0%, 98%);
-  --accent: hsl(0, 0%, 15.9%);
-  --accent-foreground: hsl(0, 0%, 98%);
-  --destructive: hsl(4, 90.6%, 58.4%);
-  --destructive-foreground: hsl(0, 0%, 98%);
-  --ring: hsl(0, 0%, 83.9%);
-  --radius: 0.5rem;
-}
+/* Removed .dark class - using consistent dark theme only */
 
 @layer base {
   * {
@@ -342,7 +321,7 @@
   }
 
   html {
-    @apply dark;
+    /* Removed dark class application */
   }
 }
 
