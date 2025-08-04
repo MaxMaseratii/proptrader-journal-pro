@@ -57,6 +57,8 @@ import Blog from "@/pages/blog";
 import Contact from "@/pages/contact";
 import About from "@/pages/about";
 import KnowledgeBase from "@/pages/knowledge-base";
+import Terms from "@/pages/terms";
+import Privacy from "@/pages/privacy";
 import Pricing from "@/pages/pricing";
 import Sidebar from "@/components/sidebar";
 import NotFound from "@/pages/not-found";
@@ -158,7 +160,8 @@ function Router() {
           <Route path="/pricing" component={Pricing} />
           <Route path="/welcome" component={Welcome} />
           <Route path="/privacy-policy" component={PrivacyPolicy} />
-          <Route path="/terms" component={TermsOfService} />
+          <Route path="/privacy" component={Privacy} />
+          <Route path="/terms" component={Terms} />
           <Route path="/support" component={Support} />
           <Route path="/signup" component={Signup} />
           <Route component={NotFound} />

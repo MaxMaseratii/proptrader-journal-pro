@@ -77,7 +77,7 @@ export default function Profile() {
         </div>
 
         <Tabs defaultValue="profile" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4 bg-gray-800">
+          <TabsList className="grid w-full grid-cols-3 bg-gray-800">
             <TabsTrigger value="profile" className="flex items-center gap-2">
               <User className="h-4 w-4" />
               Profile
@@ -89,10 +89,6 @@ export default function Profile() {
             <TabsTrigger value="notifications" className="flex items-center gap-2">
               <Bell className="h-4 w-4" />
               Notifications
-            </TabsTrigger>
-            <TabsTrigger value="billing" className="flex items-center gap-2">
-              <CreditCard className="h-4 w-4" />
-              Billing
             </TabsTrigger>
           </TabsList>
 
@@ -296,65 +292,7 @@ export default function Profile() {
             <NotificationSettings />
           </TabsContent>
 
-          <TabsContent value="billing" className="space-y-6">
-            <Card className="bg-gray-800 border-gray-700">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <CreditCard className="h-5 w-5" />
-                  Billing & Subscription
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="bg-purple-900 bg-opacity-30 p-4 rounded-lg border border-purple-600 border-opacity-30 mb-6">
-                  <div className="flex items-center justify-between mb-4">
-                    <div>
-                      <h3 className="text-lg font-semibold">MMM Stats Pro</h3>
-                      <p className="text-gray-400">Monthly subscription</p>
-                    </div>
-                    <Badge className="bg-purple-600 text-white">Active</Badge>
-                  </div>
-                  
-                  <div className="grid grid-cols-2 gap-4 text-sm">
-                    <div>
-                      <span className="text-gray-400">Next billing date:</span>
-                      <p className="font-medium">--</p>
-                    </div>
-                    <div>
-                      <span className="text-gray-400">Amount:</span>
-                      <p className="font-medium">--</p>
-                    </div>
-                  </div>
-                  
-                  <div className="flex gap-3 mt-4">
-                    <Button variant="outline" size="sm">
-                      Change Plan
-                    </Button>
-                    <Button variant="outline" size="sm">
-                      Cancel Subscription
-                    </Button>
-                  </div>
-                </div>
 
-                <div>
-                  <h4 className="font-mediumAnd mb-3">Payment Method</h4>
-                  <div className="flex justify-between items-center p-4 bg-gray-900 rounded-lg">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-6 bg-blue-600 rounded flex items-center justify-center">
-                        <span className="text-xs font-bold text-white">VISA</span>
-                      </div>
-                      <div>
-                        <p className="font-medium">No payment method</p>
-                        <p className="text-sm text-gray-400">Add payment method</p>
-                      </div>
-                    </div>
-                    <Button variant="outline" size="sm">
-                      Update
-                    </Button>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
         </Tabs>
       </div>
     </div>

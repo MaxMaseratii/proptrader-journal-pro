@@ -198,27 +198,42 @@ export default function Sidebar() {
               
 
               
-              <DropdownMenuItem 
-                className="text-gray-300 hover:bg-dark-surface cursor-pointer"
-                onClick={() => window.location.href = '/security'}
-              >
-                <Shield className="mr-2 h-4 w-4 text-yellow-400" />
-                Security Settings
-              </DropdownMenuItem>
+
               
               <DropdownMenuSeparator className="bg-prop-gold/20" />
               
-              {/* Reports moved to profile section */}
-              {profileItems.map(({ href, label, icon: Icon }) => (
-                <DropdownMenuItem 
-                  key={href}
-                  className="text-gray-300 hover:bg-dark-surface cursor-pointer"
-                  onClick={() => window.location.href = href}
-                >
-                  <Icon className="mr-2 h-4 w-4 text-prop-gold" />
-                  {label}
-                </DropdownMenuItem>
-              ))}
+              {/* Keep only requested pages */}
+              <DropdownMenuItem 
+                className="text-gray-300 hover:bg-dark-surface cursor-pointer"
+                onClick={() => window.location.href = '/knowledge-base'}
+              >
+                <BookOpen className="mr-2 h-4 w-4 text-blue-400" />
+                Knowledge Base
+              </DropdownMenuItem>
+              
+              <DropdownMenuItem 
+                className="text-gray-300 hover:bg-dark-surface cursor-pointer"
+                onClick={() => window.location.href = '/support'}
+              >
+                <Shield className="mr-2 h-4 w-4 text-green-400" />
+                Support Center
+              </DropdownMenuItem>
+              
+              <DropdownMenuItem 
+                className="text-gray-300 hover:bg-dark-surface cursor-pointer"
+                onClick={() => window.location.href = '/terms'}
+              >
+                <FileText className="mr-2 h-4 w-4 text-yellow-400" />
+                Terms of Service
+              </DropdownMenuItem>
+              
+              <DropdownMenuItem 
+                className="text-gray-300 hover:bg-dark-surface cursor-pointer"
+                onClick={() => window.location.href = '/privacy'}
+              >
+                <Shield className="mr-2 h-4 w-4 text-purple-400" />
+                Privacy Policy
+              </DropdownMenuItem>
               
               <DropdownMenuSeparator className="bg-prop-gold/20" />
               
