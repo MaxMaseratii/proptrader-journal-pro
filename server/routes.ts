@@ -13,6 +13,10 @@ import {
   insertBudgetPlanSchema,
   insertNotificationSchema,
   insertUserNotificationSettingsSchema,
+  insertWatchlistSchema,
+  insertWatchlistSymbolSchema,
+  insertRiskRuleSchema,
+  insertRiskAlertSchema,
   type InsertTrade 
 } from "@shared/schema";
 import { z } from "zod";
@@ -2113,6 +2117,190 @@ Provide helpful, personalized advice based on this data. Keep responses concise 
     } catch (error) {
       console.error("Error updating notification settings:", error);
       res.status(500).json({ message: "Failed to update notification settings" });
+    }
+  });
+
+  // Watchlists API routes
+  app.get("/api/watchlists", requireAuth, async (req: any, res) => {
+    try {
+      const userId = req.user.id;
+      const watchlists = await storage.getWatchlists(userId);
+      res.json(watchlists);
+    } catch (error) {
+      console.error("Error fetching watchlists:", error);
+      res.status(500).json({ message: "Failed to fetch watchlists" });
+    }
+  });
+
+  app.post("/api/watchlists", requireAuth, async (req: any, res) => {
+    try {
+      const userId = req.user.id;
+      const validatedData = insertWatchlistSchema.parse({ ...req.body, userId });
+      const watchlist = await storage.createWatchlist(validatedData);
+      res.status(201).json(watchlist);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Invalid watchlist data", errors: error.errors });
+      }
+      console.error("Error creating watchlist:", error);
+      res.status(500).json({ message: "Failed to create watchlist" });
+    }
+  });
+
+  app.patch("/api/watchlists/:id", requireAuth, async (req: any, res) => {
+    try {
+      const watchlistId = parseInt(req.params.id);
+      const userId = req.user.id;
+      const watchlist = await storage.updateWatchlist(watchlistId, userId, req.body);
+      if (!watchlist) {
+        return res.status(404).json({ message: "Watchlist not found" });
+      }
+      res.json(watchlist);
+    } catch (error) {
+      console.error("Error updating watchlist:", error);
+      res.status(500).json({ message: "Failed to update watchlist" });
+    }
+  });
+
+  app.delete("/api/watchlists/:id", requireAuth, async (req: any, res) => {
+    try {
+      const watchlistId = parseInt(req.params.id);
+      const userId = req.user.id;
+      const success = await storage.deleteWatchlist(watchlistId, userId);
+      if (!success) {
+        return res.status(404).json({ message: "Watchlist not found" });
+      }
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error deleting watchlist:", error);
+      res.status(500).json({ message: "Failed to delete watchlist" });
+    }
+  });
+
+  // Watchlist symbols API routes  
+  app.get("/api/watchlists/:id/symbols", requireAuth, async (req: any, res) => {
+    try {
+      const watchlistId = parseInt(req.params.id);
+      const symbols = await storage.getWatchlistSymbols(watchlistId);
+      res.json(symbols);
+    } catch (error) {
+      console.error("Error fetching watchlist symbols:", error);
+      res.status(500).json({ message: "Failed to fetch watchlist symbols" });
+    }
+  });
+
+  app.post("/api/watchlists/:id/symbols", requireAuth, async (req: any, res) => {
+    try {
+      const watchlistId = parseInt(req.params.id);
+      const validatedData = insertWatchlistSymbolSchema.parse({ ...req.body, watchlistId });
+      const symbol = await storage.addWatchlistSymbol(validatedData);
+      res.status(201).json(symbol);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Invalid symbol data", errors: error.errors });
+      }
+      console.error("Error adding symbol to watchlist:", error);
+      res.status(500).json({ message: "Failed to add symbol to watchlist" });
+    }
+  });
+
+  app.delete("/api/watchlists/:watchlistId/symbols/:symbolId", requireAuth, async (req: any, res) => {
+    try {
+      const symbolId = parseInt(req.params.symbolId);
+      const success = await storage.removeWatchlistSymbol(symbolId);
+      if (!success) {
+        return res.status(404).json({ message: "Symbol not found" });
+      }
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error removing symbol from watchlist:", error);
+      res.status(500).json({ message: "Failed to remove symbol from watchlist" });
+    }
+  });
+
+  // Risk Rules API routes
+  app.get("/api/risk-rules", requireAuth, async (req: any, res) => {
+    try {
+      const userId = req.user.id;
+      const accountId = req.query.accountId ? parseInt(req.query.accountId as string) : undefined;
+      const riskRules = await storage.getRiskRules(userId, accountId);
+      res.json(riskRules);
+    } catch (error) {
+      console.error("Error fetching risk rules:", error);
+      res.status(500).json({ message: "Failed to fetch risk rules" });
+    }
+  });
+
+  app.post("/api/risk-rules", requireAuth, async (req: any, res) => {
+    try {
+      const userId = req.user.id;
+      const validatedData = insertRiskRuleSchema.parse({ ...req.body, userId });
+      const riskRule = await storage.createRiskRule(validatedData);
+      res.status(201).json(riskRule);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Invalid risk rule data", errors: error.errors });
+      }
+      console.error("Error creating risk rule:", error);
+      res.status(500).json({ message: "Failed to create risk rule" });
+    }
+  });
+
+  app.patch("/api/risk-rules/:id", requireAuth, async (req: any, res) => {
+    try {
+      const ruleId = parseInt(req.params.id);
+      const userId = req.user.id;
+      const riskRule = await storage.updateRiskRule(ruleId, userId, req.body);
+      if (!riskRule) {
+        return res.status(404).json({ message: "Risk rule not found" });
+      }
+      res.json(riskRule);
+    } catch (error) {
+      console.error("Error updating risk rule:", error);
+      res.status(500).json({ message: "Failed to update risk rule" });
+    }
+  });
+
+  app.delete("/api/risk-rules/:id", requireAuth, async (req: any, res) => {
+    try {
+      const ruleId = parseInt(req.params.id);
+      const userId = req.user.id;
+      const success = await storage.deleteRiskRule(ruleId, userId);
+      if (!success) {
+        return res.status(404).json({ message: "Risk rule not found" });
+      }
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error deleting risk rule:", error);
+      res.status(500).json({ message: "Failed to delete risk rule" });
+    }
+  });
+
+  // Risk Alerts API routes
+  app.get("/api/risk-alerts", requireAuth, async (req: any, res) => {
+    try {
+      const userId = req.user.id;
+      const accountId = req.query.accountId ? parseInt(req.query.accountId as string) : undefined;
+      const riskAlerts = await storage.getRiskAlerts(userId, accountId);
+      res.json(riskAlerts);
+    } catch (error) {
+      console.error("Error fetching risk alerts:", error);
+      res.status(500).json({ message: "Failed to fetch risk alerts" });
+    }
+  });
+
+  app.patch("/api/risk-alerts/:id/resolve", requireAuth, async (req: any, res) => {
+    try {
+      const alertId = parseInt(req.params.id);
+      const userId = req.user.id;
+      const alert = await storage.resolveRiskAlert(alertId, userId, req.body.notes);
+      if (!alert) {
+        return res.status(404).json({ message: "Risk alert not found" });
+      }
+      res.json(alert);
+    } catch (error) {
+      console.error("Error resolving risk alert:", error);
+      res.status(500).json({ message: "Failed to resolve risk alert" });
     }
   });
 

@@ -16,6 +16,10 @@ import {
   budgetPlans,
   notifications,
   userNotificationSettings,
+  watchlists,
+  watchlistSymbols,
+  riskRules,
+  riskAlerts,
   type Account,
   type Trade,
   type JournalEntry,
@@ -33,6 +37,10 @@ import {
   type BudgetPlan,
   type Notification,
   type UserNotificationSettings,
+  type Watchlist,
+  type WatchlistSymbol,
+  type RiskRule,
+  type RiskAlert,
   type InsertAccount,
   type InsertTrade,
   type InsertJournalEntry,
@@ -50,6 +58,10 @@ import {
   type InsertBudgetPlan,
   type InsertNotification,
   type InsertUserNotificationSettings,
+  type InsertWatchlist,
+  type InsertWatchlistSymbol,
+  type InsertRiskRule,
+  type InsertRiskAlert,
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, and, desc, asc, gte, lte, sum, sql } from "drizzle-orm";
@@ -164,6 +176,27 @@ export interface IStorage {
   getNotificationSettings(userId: string): Promise<UserNotificationSettings | undefined>;
   createNotificationSettings(settings: InsertUserNotificationSettings): Promise<UserNotificationSettings>;
   updateNotificationSettings(userId: string, settings: Partial<InsertUserNotificationSettings>): Promise<UserNotificationSettings | undefined>;
+
+  // Watchlist operations
+  getWatchlists(userId: string): Promise<Watchlist[]>;
+  createWatchlist(watchlist: InsertWatchlist): Promise<Watchlist>;
+  updateWatchlist(id: number, userId: string, watchlist: Partial<InsertWatchlist>): Promise<Watchlist | undefined>;
+  deleteWatchlist(id: number, userId: string): Promise<boolean>;
+  
+  // Watchlist symbol operations
+  getWatchlistSymbols(watchlistId: number): Promise<WatchlistSymbol[]>;
+  addWatchlistSymbol(symbol: InsertWatchlistSymbol): Promise<WatchlistSymbol>;
+  removeWatchlistSymbol(id: number): Promise<boolean>;
+  
+  // Risk rules operations
+  getRiskRules(userId: string, accountId?: number): Promise<RiskRule[]>;
+  createRiskRule(riskRule: InsertRiskRule): Promise<RiskRule>;
+  updateRiskRule(id: number, userId: string, riskRule: Partial<InsertRiskRule>): Promise<RiskRule | undefined>;
+  deleteRiskRule(id: number, userId: string): Promise<boolean>;
+  
+  // Risk alerts operations
+  getRiskAlerts(userId: string, accountId?: number): Promise<RiskAlert[]>;
+  resolveRiskAlert(id: number, userId: string, notes?: string): Promise<RiskAlert | undefined>;
 }
 
 // Production-ready DatabaseStorage implementation
@@ -890,6 +923,127 @@ export class DatabaseStorage implements IStorage {
       .where(eq(userNotificationSettings.userId, userId))
       .returning();
     return updatedSettings || undefined;
+  }
+
+  // Watchlist operations
+  async getWatchlists(userId: string): Promise<Watchlist[]> {
+    return await db.select().from(watchlists)
+      .where(eq(watchlists.userId, userId))
+      .orderBy(desc(watchlists.createdAt));
+  }
+
+  async createWatchlist(watchlist: InsertWatchlist): Promise<Watchlist> {
+    const [newWatchlist] = await db
+      .insert(watchlists)
+      .values(watchlist)
+      .returning();
+    return newWatchlist;
+  }
+
+  async updateWatchlist(id: number, userId: string, watchlist: Partial<InsertWatchlist>): Promise<Watchlist | undefined> {
+    const [updatedWatchlist] = await db
+      .update(watchlists)
+      .set({ ...watchlist, updatedAt: new Date() })
+      .where(and(eq(watchlists.id, id), eq(watchlists.userId, userId)))
+      .returning();
+    return updatedWatchlist || undefined;
+  }
+
+  async deleteWatchlist(id: number, userId: string): Promise<boolean> {
+    // First delete all symbols in this watchlist
+    await db.delete(watchlistSymbols).where(eq(watchlistSymbols.watchlistId, id));
+    
+    // Then delete the watchlist
+    const result = await db
+      .delete(watchlists)
+      .where(and(eq(watchlists.id, id), eq(watchlists.userId, userId)))
+      .returning();
+    return result.length > 0;
+  }
+
+  // Watchlist symbol operations
+  async getWatchlistSymbols(watchlistId: number): Promise<WatchlistSymbol[]> {
+    return await db.select().from(watchlistSymbols)
+      .where(eq(watchlistSymbols.watchlistId, watchlistId))
+      .orderBy(desc(watchlistSymbols.addedAt));
+  }
+
+  async addWatchlistSymbol(symbol: InsertWatchlistSymbol): Promise<WatchlistSymbol> {
+    const [newSymbol] = await db
+      .insert(watchlistSymbols)
+      .values(symbol)
+      .returning();
+    return newSymbol;
+  }
+
+  async removeWatchlistSymbol(id: number): Promise<boolean> {
+    const result = await db
+      .delete(watchlistSymbols)
+      .where(eq(watchlistSymbols.id, id))
+      .returning();
+    return result.length > 0;
+  }
+
+  // Risk rules operations
+  async getRiskRules(userId: string, accountId?: number): Promise<RiskRule[]> {
+    let query = db.select().from(riskRules)
+      .where(eq(riskRules.userId, userId));
+    
+    if (accountId) {
+      query = query.where(and(eq(riskRules.userId, userId), eq(riskRules.accountId, accountId)));
+    }
+    
+    return query.orderBy(desc(riskRules.createdAt));
+  }
+
+  async createRiskRule(riskRule: InsertRiskRule): Promise<RiskRule> {
+    const [newRiskRule] = await db
+      .insert(riskRules)
+      .values(riskRule)
+      .returning();
+    return newRiskRule;
+  }
+
+  async updateRiskRule(id: number, userId: string, riskRule: Partial<InsertRiskRule>): Promise<RiskRule | undefined> {
+    const [updatedRiskRule] = await db
+      .update(riskRules)
+      .set({ ...riskRule, updatedAt: new Date() })
+      .where(and(eq(riskRules.id, id), eq(riskRules.userId, userId)))
+      .returning();
+    return updatedRiskRule || undefined;
+  }
+
+  async deleteRiskRule(id: number, userId: string): Promise<boolean> {
+    const result = await db
+      .delete(riskRules)
+      .where(and(eq(riskRules.id, id), eq(riskRules.userId, userId)))
+      .returning();
+    return result.length > 0;
+  }
+
+  // Risk alerts operations
+  async getRiskAlerts(userId: string, accountId?: number): Promise<RiskAlert[]> {
+    let query = db.select().from(riskAlerts)
+      .where(eq(riskAlerts.userId, userId));
+    
+    if (accountId) {
+      query = query.where(and(eq(riskAlerts.userId, userId), eq(riskAlerts.accountId, accountId)));
+    }
+    
+    return query.orderBy(desc(riskAlerts.triggeredAt));
+  }
+
+  async resolveRiskAlert(id: number, userId: string, notes?: string): Promise<RiskAlert | undefined> {
+    const [resolvedAlert] = await db
+      .update(riskAlerts)
+      .set({ 
+        isResolved: true, 
+        resolvedAt: new Date(), 
+        notes: notes || null 
+      })
+      .where(and(eq(riskAlerts.id, id), eq(riskAlerts.userId, userId)))
+      .returning();
+    return resolvedAlert || undefined;
   }
 }
 

@@ -34,6 +34,11 @@ import Charts from "@/pages/charts";
 import FullChart from "@/pages/full-chart";
 import KnowledgeBase from "@/pages/knowledge-base";
 import TradingDashboard from "@/pages/trading-dashboard";
+import Notifications from "@/pages/notifications";
+import Watchlists from "@/pages/watchlists";
+import PositionSizing from "@/pages/position-sizing";
+import Accounts from "@/pages/accounts";
+import RiskManagement from "@/pages/risk-management";
 import Sidebar from "@/components/sidebar";
 import NotFound from "@/pages/not-found";
 import { useAuth } from "@/hooks/useAuth";
@@ -106,6 +111,14 @@ function Router() {
           <Route path="/discipline-analysis" component={DisciplineAnalysis} />
           <Route path="/disciplinary-assistant" component={DisciplinaryAssistant} />
           <Route path="/knowledge-base" component={KnowledgeBase} />
+          
+          {/* Missing critical pages */}
+          <Route path="/accounts" component={Accounts} />
+          <Route path="/notifications" component={Notifications} />
+          <Route path="/risk-management" component={RiskManagement} />
+          <Route path="/watchlists" component={Watchlists} />
+          <Route path="/position-sizing" component={PositionSizing} />
+          
           <Route path="/profile" component={Profile} />
           <Route path="/welcome" component={Welcome} />
           <Route path="/privacy-policy" component={PrivacyPolicy} />

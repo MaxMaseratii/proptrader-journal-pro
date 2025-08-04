@@ -614,6 +614,85 @@ export const insertUserNotificationSettingsSchema = createInsertSchema(userNotif
   updatedAt: true,
 });
 
+// Watchlists System
+export const watchlists = pgTable("watchlists", {
+  id: serial("id").primaryKey(),
+  userId: varchar("user_id").notNull(),
+  name: text("name").notNull(),
+  description: text("description"),
+  isPublic: boolean("is_public").default(false),
+  category: text("category").default("default"), // 'default', 'forex', 'crypto', 'indices', 'commodities'
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const watchlistSymbols = pgTable("watchlist_symbols", {
+  id: serial("id").primaryKey(),
+  watchlistId: integer("watchlist_id").references(() => watchlists.id).notNull(),
+  symbol: text("symbol").notNull(),
+  exchange: text("exchange"),
+  name: text("name"),
+  category: text("category"), // 'forex', 'crypto', 'indices', 'commodities', 'stocks'
+  addedAt: timestamp("added_at").defaultNow(),
+  alertPrice: real("alert_price"), // Price alert level
+  alertEnabled: boolean("alert_enabled").default(false),
+  notes: text("notes"),
+});
+
+// Risk Rules System
+export const riskRules = pgTable("risk_rules", {
+  id: serial("id").primaryKey(),
+  userId: varchar("user_id").notNull(),
+  accountId: integer("account_id").references(() => accounts.id),
+  ruleType: text("rule_type").notNull(), // 'daily_loss', 'max_drawdown', 'position_size', 'max_trades'
+  name: text("name").notNull(),
+  description: text("description"),
+  condition: text("condition").notNull(), // 'greater_than', 'less_than', 'equals'
+  threshold: real("threshold").notNull(),
+  action: text("action").notNull(), // 'alert', 'block_trading', 'close_positions'
+  isActive: boolean("is_active").default(true),
+  priority: text("priority").default("medium"), // 'low', 'medium', 'high', 'critical'
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const riskAlerts = pgTable("risk_alerts", {
+  id: serial("id").primaryKey(),
+  userId: varchar("user_id").notNull(),
+  accountId: integer("account_id").references(() => accounts.id),
+  ruleId: integer("rule_id").references(() => riskRules.id),
+  triggeredAt: timestamp("triggered_at").defaultNow(),
+  currentValue: real("current_value").notNull(),
+  threshold: real("threshold").notNull(),
+  severity: text("severity").notNull(), // 'warning', 'critical', 'emergency'
+  isResolved: boolean("is_resolved").default(false),
+  resolvedAt: timestamp("resolved_at"),
+  notes: text("notes"),
+});
+
+// Insert schemas for new tables
+export const insertWatchlistSchema = createInsertSchema(watchlists).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertWatchlistSymbolSchema = createInsertSchema(watchlistSymbols).omit({
+  id: true,
+  addedAt: true,
+});
+
+export const insertRiskRuleSchema = createInsertSchema(riskRules).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertRiskAlertSchema = createInsertSchema(riskAlerts).omit({
+  id: true,
+  triggeredAt: true,
+});
+
 // Types
 export type TradingStrategy = typeof tradingStrategies.$inferSelect;
 export type InsertTradingStrategy = z.infer<typeof insertTradingStrategySchema>;
@@ -625,3 +704,11 @@ export type Notification = typeof notifications.$inferSelect;
 export type InsertNotification = z.infer<typeof insertNotificationSchema>;
 export type UserNotificationSettings = typeof userNotificationSettings.$inferSelect;
 export type InsertUserNotificationSettings = z.infer<typeof insertUserNotificationSettingsSchema>;
+export type Watchlist = typeof watchlists.$inferSelect;
+export type InsertWatchlist = z.infer<typeof insertWatchlistSchema>;
+export type WatchlistSymbol = typeof watchlistSymbols.$inferSelect;
+export type InsertWatchlistSymbol = z.infer<typeof insertWatchlistSymbolSchema>;
+export type RiskRule = typeof riskRules.$inferSelect;
+export type InsertRiskRule = z.infer<typeof insertRiskRuleSchema>;
+export type RiskAlert = typeof riskAlerts.$inferSelect;
+export type InsertRiskAlert = z.infer<typeof insertRiskAlertSchema>;
