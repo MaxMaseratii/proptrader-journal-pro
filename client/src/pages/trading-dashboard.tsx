@@ -39,7 +39,8 @@ import {
   MoreVertical,
   Copy,
   Trash2,
-  Star
+  Star,
+  Crown
 } from 'lucide-react';
 
 // Mock data for strategies

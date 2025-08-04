@@ -22,6 +22,7 @@ Preferred communication style: Simple, everyday language.
 - **Account Selection Improved**: Added mandatory account selection for CSV imports with validation to prevent importing to wrong accounts.
 - **UI Layout Optimizations**: Mental Check & Plan widget now uses entire available screen space with flex layout and minimal padding for maximum utilization.
 - **Security Grade Implementation**: Renamed and moved security settings from profile page to welcome page as "Security Grade" with A+ ratings and comprehensive security metrics display.
+- **Enhanced Pre-Session Psychology Assessment**: Added 4 professional trading assessment sliders (Market Regime Awareness, Risk Respect Level, Humility Check, Professional Trader Mindset) with 40-point scoring system and wisdom guidance text.
 
 ### Backend
 - **Runtime**: Node.js with Express.js
