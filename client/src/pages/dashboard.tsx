@@ -793,6 +793,21 @@ export default function Dashboard() {
 
   // ===== LEGACY HANDLER REMOVED - using enhanced version above =====
 
+  // Function to get filtered trades based on current account selection
+  const getFilteredTrades = useCallback(() => {
+    if (!trades) return [];
+    
+    if (accountSelectionMode === 'all') {
+      return trades;
+    } else if (accountSelectionMode === 'single' && selectedAccountIds.length > 0) {
+      return trades.filter(trade => trade.accountId === selectedAccountIds[0]);
+    } else if (accountSelectionMode === 'multiple' && selectedAccountIds.length > 0) {
+      return trades.filter(trade => selectedAccountIds.includes(trade.accountId));
+    }
+    
+    return trades;
+  }, [trades, accountSelectionMode, selectedAccountIds]);
+
   // Function to get day-specific data for widgets (legacy support)
   const getDayData = (clickedDate: Date, tradesData: Trade[] = []) => {
     const dayTrades = getTradesForDate(clickedDate, tradesData, selectedAccountIds);
