@@ -4,8 +4,8 @@ export function useWidgetStyling() {
   const { theme } = useTheme();
   
   const getWidgetBackground = () => {
-    // NEVER change widget colors - keep them exactly the same in both themes
-    return 'bg-black/30 border-gray-700/50';
+    // Return empty string to let widgets use their original specific colors
+    return '';
   };
 
   const getContentBackground = () => {

@@ -16,9 +16,9 @@ export function WidgetCard({
   headerClassName,
   contentClassName
 }: WidgetCardProps) {
-  // NEVER change widget colors - always keep the same styling regardless of theme
+  // Keep original widget colors - use default background that inherits proper colors
   return (
-    <Card className={cn("bg-gray-900/80 border-gray-700 backdrop-blur-sm", className)}>
+    <Card className={cn("backdrop-blur-sm", className)}>
       {title && (
         <CardHeader className={cn("pb-2", headerClassName)}>
           <CardTitle className="text-sm font-medium text-gray-700 dark:text-gray-300">
