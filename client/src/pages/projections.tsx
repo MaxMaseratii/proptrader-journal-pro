@@ -82,6 +82,7 @@ interface ProjectionDay {
 }
 
 export default function Projections() {
+  const { getContentBackground } = useWidgetStyling();
   const { toast } = useToast();
   const [isAccountDialogOpen, setIsAccountDialogOpen] = useState(false);
   const [isAccountsMinimized, setIsAccountsMinimized] = useState(false);
@@ -475,7 +476,7 @@ export default function Projections() {
   };
 
   return (
-    <div className="p-6 space-y-8">
+    <div className={`p-6 space-y-8 min-h-screen ${getContentBackground()}`}>
       {/* Enhanced Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>

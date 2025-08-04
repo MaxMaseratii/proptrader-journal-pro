@@ -55,7 +55,7 @@ const navItems = [
   { href: "/reports", label: "Reports", icon: Calendar, section: "main" },
   { href: "/achievements", label: "Achievement", icon: Trophy, section: "main" },
   { href: "/profile", label: "Profile", icon: User, section: "main" },
-  { action: "theme", label: "Theme", icon: Settings, section: "main" },
+  { href: "/security", label: "Security", icon: Shield, section: "main" },
 ];
 
 export default function Sidebar() {
@@ -153,6 +153,39 @@ export default function Sidebar() {
               </Link>
             </li>
           ))}
+          
+          {/* Theme Switcher */}
+          <li>
+            <div className="px-4 py-2">
+              <ThemeSwitcherModal />
+            </div>
+          </li>
+          
+          {/* Logout */}
+          <li>
+            <button
+              onClick={async () => {
+                try {
+                  await fetch('/api/auth/logout', { method: 'POST' });
+                  window.location.href = '/welcome';
+                } catch (error) {
+                  console.error('Logout error:', error);
+                  window.location.href = '/welcome';
+                }
+              }}
+              className={cn(
+                "w-full flex items-center px-4 py-3 text-sm font-medium rounded-xl smooth-transition cursor-pointer group relative",
+                "text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-600/20",
+                (isCollapsed || isPartiallyCollapsed) ? "justify-center" : ""
+              )}
+            >
+              <LogOut className={cn(
+                "h-5 w-5 smooth-transition text-red-600 dark:text-red-400",
+                !(isCollapsed || isPartiallyCollapsed) ? "mr-3" : ""
+              )} />
+              {!isCollapsed && !isPartiallyCollapsed && "Sign Out"}
+            </button>
+          </li>
         </ul>
       </nav>
     </aside>

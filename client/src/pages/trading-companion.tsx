@@ -38,6 +38,7 @@ interface ChatMessage {
 }
 
 export default function TradingCompanion() {
+  const { getContentBackground } = useWidgetStyling();
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
       id: '1',
@@ -139,7 +140,7 @@ export default function TradingCompanion() {
   ];
 
   return (
-    <div className="space-y-6">
+    <div className={`space-y-6 min-h-screen p-6 ${getContentBackground()}`}>
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold text-gradient-rainbow">Trading Companion</h1>
