@@ -403,8 +403,13 @@ export default function KnowledgeBase() {
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {popularArticles.map((article, index) => (
-                <div key={index} className="p-4 border border-gray-700 rounded-lg hover:bg-gray-800 cursor-pointer">
+                <div 
+                  key={index} 
+                  className="p-4 border border-gray-700 rounded-lg hover:bg-gray-800 cursor-pointer"
+                  onClick={() => window.location.href = `/knowledge-base/article/popular/${article.title.toLowerCase().replace(/\s+/g, '-')}`}
+                >
                   <h3 className="font-medium text-white mb-2">{article.title}</h3>
+                  <p className="text-gray-400 text-xs mb-2">{article.description}</p>
                   <div className="flex justify-between items-center text-sm text-gray-400">
                     <span>{article.category}</span>
                     <div className="flex items-center space-x-3">
@@ -424,52 +429,7 @@ export default function KnowledgeBase() {
           </CardContent>
         </Card>
 
-        {/* 8 Core Features Section */}
-        <Card className="mb-16 bg-gradient-to-r from-purple-900/20 to-blue-900/20 border-purple-500/30">
-          <CardHeader>
-            <CardTitle className="text-center text-2xl text-white mb-4">
-              PropTrader Journal: 8 Unique Features
-            </CardTitle>
-            <p className="text-center text-gray-300 max-w-4xl mx-auto">
-              The only trading journal exclusively designed for prop firm traders. Master these 8 features to transform your trading performance and achieve consistent profitability.
-            </p>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              {eightFeatures.map((feature, index) => {
-                const IconComponent = feature.icon;
-                return (
-                  <Card key={index} className="bg-gray-800 border-gray-600 hover:border-gray-500 transition-colors">
-                    <CardHeader>
-                      <CardTitle className="flex items-center space-x-3">
-                        <div className={`p-3 rounded-lg bg-gray-700`}>
-                          <IconComponent className={`h-6 w-6 ${feature.color}`} />
-                        </div>
-                        <div>
-                          <h3 className="text-white font-semibold">{feature.title}</h3>
-                        </div>
-                      </CardTitle>
-                      <p className="text-gray-300 text-sm">{feature.description}</p>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="space-y-2">
-                        {feature.features.map((item, itemIndex) => (
-                          <div key={itemIndex} className="flex items-center space-x-2">
-                            <CheckCircle className="h-4 w-4 text-green-500 flex-shrink-0" />
-                            <span className="text-gray-400 text-sm">{item}</span>
-                          </div>
-                        ))}
-                      </div>
-                      <Button className="w-full mt-4 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white">
-                        Learn More
-                      </Button>
-                    </CardContent>
-                  </Card>
-                );
-              })}
-            </div>
-          </CardContent>
-        </Card>
+
 
         {/* Categories */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -508,7 +468,12 @@ export default function KnowledgeBase() {
                               {article.rating}
                             </span>
                           </div>
-                          <Button variant="ghost" size="sm" className="text-xs text-blue-400 hover:text-blue-300">
+                          <Button 
+                            variant="ghost" 
+                            size="sm" 
+                            className="text-xs text-blue-400 hover:text-blue-300"
+                            onClick={() => window.location.href = `/knowledge-base/article/${category.title.toLowerCase().replace(/\s+/g, '-')}/${article.title.toLowerCase().replace(/\s+/g, '-')}`}
+                          >
                             Read
                           </Button>
                         </div>

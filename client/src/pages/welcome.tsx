@@ -247,25 +247,12 @@ function WelcomeFooter() {
       ]
     },
     {
-      title: 'Resources',
+      title: 'Help & Support',
       links: [
         { name: 'Knowledge Base', href: '/knowledge-base' },
-        { name: 'Documentation', href: '/docs' },
-        { name: 'Tutorials', href: '/tutorials' },
-        { name: 'Blog', href: '/blog' },
-        { name: 'Community', href: '/community' },
         { name: 'Support Center', href: '/support' },
-      ]
-    },
-    {
-      title: 'Company',
-      links: [
-        { name: 'About Us', href: '/about' },
-        { name: 'Careers', href: '/careers' },
-        { name: 'Contact', href: '/contact' },
-        { name: 'Privacy Policy', href: '/privacy-policy' },
         { name: 'Terms of Service', href: '/terms' },
-        { name: 'Cookie Policy', href: '/cookies' },
+        { name: 'Privacy Policy', href: '/privacy' },
       ]
     }
   ];

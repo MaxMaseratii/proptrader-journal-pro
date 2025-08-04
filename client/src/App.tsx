@@ -57,6 +57,7 @@ import Blog from "@/pages/blog";
 import Contact from "@/pages/contact";
 import About from "@/pages/about";
 import KnowledgeBase from "@/pages/knowledge-base";
+import KnowledgeBaseArticle from "@/pages/knowledge-base-article";
 import Terms from "@/pages/terms";
 import Privacy from "@/pages/privacy";
 import Pricing from "@/pages/pricing";
@@ -130,6 +131,7 @@ function Router() {
           <Route path="/discipline-analysis" component={DisciplineAnalysis} />
           <Route path="/disciplinary-assistant" component={DisciplinaryAssistant} />
           <Route path="/knowledge-base" component={KnowledgeBase} />
+          <Route path="/knowledge-base/article/:category/:article" component={KnowledgeBaseArticle} />
           
           {/* Missing critical pages */}
           <Route path="/accounts" component={Accounts} />

@@ -10,8 +10,12 @@ import {
   Users,
   BookOpen,
   BarChart3,
-  CheckCircle
+  CheckCircle,
+  Edit3,
+  Trash2,
+  MoreVertical
 } from "lucide-react";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
 export default function StrategyBuilder() {
   return (
@@ -56,7 +60,26 @@ export default function StrategyBuilder() {
                 <CardHeader className="pb-3">
                   <div className="flex justify-between items-start">
                     <CardTitle className="text-lg">Breakout Master</CardTitle>
-                    <Badge className="bg-green-100 text-green-700">Active</Badge>
+                    <div className="flex items-center space-x-2">
+                      <Badge className="bg-green-100 text-green-700">Active</Badge>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" size="sm" className="p-1 h-6 w-6">
+                            <MoreVertical className="h-4 w-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent>
+                          <DropdownMenuItem>
+                            <Edit3 className="h-4 w-4 mr-2" />
+                            Edit Strategy
+                          </DropdownMenuItem>
+                          <DropdownMenuItem className="text-red-600">
+                            <Trash2 className="h-4 w-4 mr-2" />
+                            Delete Strategy
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </div>
                   </div>
                   <CardDescription>Support/Resistance breakout strategy</CardDescription>
                 </CardHeader>
