@@ -1755,7 +1755,7 @@ export default function CompleteTradingDashboard() {
         </Tabs>
       </div>
 
-      <style jsx>{`
+      <style>{`
         .text-gradient-rainbow {
           background: linear-gradient(
             90deg,

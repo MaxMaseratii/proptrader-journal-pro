@@ -38,28 +38,35 @@ export function ThemeProvider({
     
     const root = window.document.documentElement
 
-    root.classList.remove("light", "dark")
+    // Use setTimeout to prevent freezing during rapid theme changes
+    const timeoutId = setTimeout(() => {
+      root.classList.remove("light", "dark")
 
-    if (theme === "auto") {
-      const systemTheme = window.matchMedia("(prefers-color-scheme: dark)")
-        .matches
-        ? "dark"
-        : "light"
+      if (theme === "auto") {
+        const systemTheme = window.matchMedia("(prefers-color-scheme: dark)")
+          .matches
+          ? "dark"
+          : "light"
 
-      root.classList.add(systemTheme)
-      
-      // Listen for system theme changes
-      const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)")
-      const handleChange = (e: MediaQueryListEvent) => {
-        root.classList.remove("light", "dark")
-        root.classList.add(e.matches ? "dark" : "light")
+        root.classList.add(systemTheme)
+        
+        // Listen for system theme changes
+        const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)")
+        const handleChange = (e: MediaQueryListEvent) => {
+          setTimeout(() => {
+            root.classList.remove("light", "dark")
+            root.classList.add(e.matches ? "dark" : "light")
+          }, 10)
+        }
+        
+        mediaQuery.addEventListener('change', handleChange)
+        return () => mediaQuery.removeEventListener('change', handleChange)
       }
-      
-      mediaQuery.addEventListener('change', handleChange)
-      return () => mediaQuery.removeEventListener('change', handleChange)
-    }
 
-    root.classList.add(theme)
+      root.classList.add(theme)
+    }, 10)
+
+    return () => clearTimeout(timeoutId)
   }, [theme])
 
   const value = {

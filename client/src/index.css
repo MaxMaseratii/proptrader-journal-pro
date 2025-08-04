@@ -523,6 +523,18 @@
   .bg-prop-gradient-gold-discipline {
     background: var(--discipline-gold);
   }
+
+  /* Light Theme Widget Backgrounds */
+  .light-widget-bg {
+    background: linear-gradient(135deg, #fefce8 0%, #fef3c7 50%, #fde68a 100%);
+    border: 1px solid rgba(251, 191, 36, 0.3);
+  }
+
+  .dark-widget-bg {
+    background: rgba(26, 26, 26, 0.8);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 215, 0, 0.1);
+  }
   
   .bg-prop-gradient-red-discipline {
     background: var(--discipline-red);

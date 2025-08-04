@@ -20,6 +20,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { EquityChart, MonthlyPerformanceChart } from "@/components/chart-components";
 import { formatCurrency, formatPercentage, formatDate } from "@/lib/utils";
+import { useWidgetStyling } from "@/lib/widget-utils";
 import { calculateDisciplinedScore, getScoreColor, getGradeColor } from "@/lib/disciplined-score";
 import { calculateComprehensiveDisciplineMetrics } from "@/lib/discipline-calculator";
 import DailyPlanningWidget from "@/components/daily-planning-widget";
@@ -142,6 +143,7 @@ interface DashboardAnalytics {
 
 export default function Dashboard() {
   const queryClient = useQueryClient();
+  const { getWidgetBackground, getWidgetTextColor } = useWidgetStyling();
   
   // ===== FIXED STATE MANAGEMENT =====
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -1549,7 +1551,7 @@ export default function Dashboard() {
             <div className="grid grid-cols-4 gap-4">
               
               {/* Risk + Max Daily Loss Combined */}
-              <div className="bg-black/30 rounded-lg p-4 border border-gray-700/50 relative">
+              <div className={`${getWidgetBackground()} rounded-lg p-4 border relative`}>
                 {combinedAnalytics && combinedAnalytics.accounts.length > 0 ? (
                   <>
                     <div className="absolute top-3 right-3 text-xs text-red-400">
@@ -1562,11 +1564,11 @@ export default function Dashboard() {
                 ) : (
                   <div className="text-3xl font-bold text-gray-500 mb-1">--</div>
                 )}
-                <div className="text-sm text-gray-400">Risk Per Trade</div>
+                <div className={`text-sm ${getWidgetTextColor('secondary')}`}>Risk Per Trade</div>
               </div>
 
               {/* R:R */}
-              <div className="bg-black/30 rounded-lg p-4 border border-gray-700/50 relative">
+              <div className={`${getWidgetBackground()} rounded-lg p-4 border relative`}>
                 {combinedAnalytics && combinedAnalytics.accounts.length > 0 && (
                   <div className="absolute top-3 right-3 text-xs text-blue-300">
                     Target: {combinedAnalytics.accounts[0]?.riskRewardRatio || 0} RR
@@ -1580,7 +1582,7 @@ export default function Dashboard() {
                     return rRatio.toFixed(1);
                   })()}
                 </div>
-                <div className="text-sm text-gray-400">Risk:Reward</div>
+                <div className={`text-sm ${getWidgetTextColor('secondary')}`}>Risk:Reward</div>
                 <div className="text-xs text-blue-300 mt-1">
                   AVG. Ratio 1:{(() => {
                     const avgReward = selectedDayData?.avgRewardRatio || 0;
@@ -1592,7 +1594,7 @@ export default function Dashboard() {
               </div>
 
               {/* Trades */}
-              <div className="bg-black/30 rounded-lg p-4 border border-gray-700/50 relative">
+              <div className={`${getWidgetBackground()} rounded-lg p-4 border relative`}>
                 {combinedAnalytics && combinedAnalytics.accounts.length > 0 && (
                   <div className="absolute top-3 right-3 text-xs text-purple-300">
                     {selectedDayData?.totalDayTrades || 0}/{combinedAnalytics.accounts[0]?.maxDailyTrades || 0}
@@ -1609,14 +1611,14 @@ export default function Dashboard() {
                     }}
                   />
                 </div>
-                <div className="text-sm text-gray-400 mb-1">Trades Executed</div>
+                <div className={`text-sm ${getWidgetTextColor('secondary')} mb-1`}>Trades Executed</div>
                 <div className="text-xs text-gray-300">
                   W:{selectedDayData?.wins || 0} L:{selectedDayData?.losses || 0}
                 </div>
               </div>
 
               {/* Hours Worked */}
-              <div className="bg-black/30 rounded-lg p-4 border border-gray-700/50 relative">
+              <div className={`${getWidgetBackground()} rounded-lg p-4 border relative`}>
                 <div className="absolute top-3 right-3 text-xs text-indigo-300">
                   <div className="flex items-center space-x-1">
                     <div className="w-2 h-2 rounded-full bg-indigo-400"></div>
@@ -1630,7 +1632,7 @@ export default function Dashboard() {
                     return todayTrades.length > 0 ? (todayTrades.length * 0.5).toFixed(1) : '0.0';
                   })()}h
                 </div>
-                <div className="text-sm text-gray-400 mb-1">Hours Worked</div>
+                <div className={`text-sm ${getWidgetTextColor('secondary')} mb-1`}>Hours Worked</div>
                 <div className="text-xs text-indigo-300 mb-1">
                   Hourly wage: ${(() => {
                     const today = new Date().toISOString().split('T')[0];
@@ -1654,7 +1656,7 @@ export default function Dashboard() {
             <div className="grid grid-cols-4 gap-4">
               
               {/* Discipline */}
-              <div className="bg-black/30 rounded-lg p-4 border border-gray-700/50 relative">
+              <div className={`${getWidgetBackground()} rounded-lg p-4 border relative`}>
                 <div className="absolute top-3 right-3">
                   <div className={`px-2 py-1 rounded text-xs font-bold ${
                     !combinedAnalytics || combinedAnalytics.totalTrades === 0 || !selectedDayData || selectedDayData.totalDayTrades === 0 ? 'bg-gray-600 text-gray-300' :
@@ -1967,31 +1969,31 @@ export default function Dashboard() {
           {/* ROW 1: Main Performance Metrics (4 widgets) */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
             {/* Net Balance */}
-            <div className="bg-gradient-to-br from-gray-900/40 via-gray-800/60 to-black/80 border border-gray-600/30 rounded-lg p-4 hover:border-amber-400/60 transition-all duration-200">
+            <div className={`${getWidgetBackground()} rounded-lg p-4 hover:border-amber-600/40 dark:hover:border-amber-400/60 transition-all duration-200`}>
               <div className="flex items-center justify-between mb-2">
-                <span className="text-sm font-medium text-gray-300">Net Balance</span>
+                <span className={`text-sm font-medium ${getWidgetTextColor('secondary')}`}>Net Balance</span>
                 <DollarSign className="w-4 h-4 text-amber-400" />
               </div>
               <div className={`text-2xl font-bold mb-1 ${getValueColor(calculateNetBalance())}`}>
                 {formatCurrency(calculateNetBalance())}
               </div>
-              <div className="text-xs text-gray-400">Starting balance + Total P&L</div>
+              <div className={`text-xs ${getWidgetTextColor('secondary')}`}>Starting balance + Total P&L</div>
             </div>
 
             {/* Total P&L */}
-            <div className="bg-gradient-to-br from-gray-900/40 via-gray-800/60 to-black/80 border border-gray-600/30 rounded-lg p-4 hover:border-amber-400/60 transition-all duration-200">
+            <div className={`${getWidgetBackground()} rounded-lg p-4 hover:border-amber-600/40 dark:hover:border-amber-400/60 transition-all duration-200`}>
               <div className="flex items-center justify-between mb-2">
-                <span className="text-sm font-medium text-gray-300">Total P&L</span>
+                <span className={`text-sm font-medium ${getWidgetTextColor('secondary')}`}>Total P&L</span>
                 <TrendingUp className="w-4 h-4 text-green-400" />
               </div>
               <div className={`text-2xl font-bold mb-1 ${getValueColor(combinedAnalytics?.totalPnl || 0)}`}>
                 {formatCurrency(combinedAnalytics?.totalPnl || 0)}
               </div>
-              <div className="text-xs text-gray-400">Net profit/loss</div>
+              <div className={`text-xs ${getWidgetTextColor('secondary')}`}>Net profit/loss</div>
             </div>
 
             {/* Win Rate */}
-            <div className="bg-gradient-to-br from-gray-900/40 via-gray-800/60 to-black/80 border border-gray-600/30 rounded-lg p-4 hover:border-amber-400/60 transition-all duration-200">
+            <div className={`${getWidgetBackground()} rounded-lg p-4 hover:border-amber-600/40 dark:hover:border-amber-400/60 transition-all duration-200`}>
               <div className="flex items-center justify-between mb-2">
                 <span className="text-sm font-medium text-gray-300">Win Rate</span>
                 <Target className="w-4 h-4 text-green-400" />
