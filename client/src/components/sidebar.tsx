@@ -39,6 +39,7 @@ import {
   DropdownMenuTrigger 
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { ThemeSwitcherModal } from "@/components/theme-switcher-modal";
 
 const navItems = [
   { href: "/", label: "Dashboard", icon: BarChart3, section: "main" },
@@ -153,6 +154,11 @@ export default function Sidebar() {
           ))}
         </ul>
         
+        {/* Theme Switcher Modal */}
+        <div className="px-4 mb-4">
+          <ThemeSwitcherModal />
+        </div>
+        
         {/* User Profile with just initials */}
         <div className="px-4 mt-8">
           <DropdownMenu>
@@ -195,7 +201,13 @@ export default function Sidebar() {
               
               <DropdownMenuItem 
                 className="text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
-                onClick={() => window.location.href = '/appearance'}
+                onClick={() => {
+                  // Open theme modal instead of navigating to page
+                  const themeModal = document.querySelector('[data-theme-modal]');
+                  if (themeModal) {
+                    (themeModal as HTMLButtonElement).click();
+                  }
+                }}
               >
                 <Settings className="mr-2 h-4 w-4 text-purple-600 dark:text-purple-400" />
                 Appearance

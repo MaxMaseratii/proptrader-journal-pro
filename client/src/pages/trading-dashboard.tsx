@@ -1693,21 +1693,21 @@ export default function CompleteTradingDashboard() {
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-900 to-slate-950 p-6">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-6">
       <div className="max-w-7xl mx-auto">
         <div className="mb-8">
           <div className="flex justify-between items-start mb-4">
             <div>
-              <h1 className="text-gradient-rainbow text-4xl font-bold mb-4">Pre-session Mental Check & Daily Plan</h1>
-              <p className="text-gray-400 text-lg">Comprehensive psychology and strategy management platform</p>
+              <h1 className="text-4xl font-bold mb-4 text-gray-900 dark:text-white">Pre-session Mental Check & Daily Plan</h1>
+              <p className="text-gray-600 dark:text-gray-400 text-lg">Comprehensive psychology and strategy management platform</p>
             </div>
             <div className="text-right">
-              <div className="text-2xl font-bold text-white">{new Date().toLocaleDateString('en-US', { 
+              <div className="text-2xl font-bold text-gray-900 dark:text-white">{new Date().toLocaleDateString('en-US', { 
                 month: 'long', 
                 day: 'numeric', 
                 year: 'numeric' 
               })}</div>
-              <div className="text-gray-400">{new Date().toLocaleTimeString('en-US', { 
+              <div className="text-gray-600 dark:text-gray-400">{new Date().toLocaleTimeString('en-US', { 
                 hour: '2-digit', 
                 minute: '2-digit',
                 hour12: true
@@ -1717,7 +1717,7 @@ export default function CompleteTradingDashboard() {
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-3 bg-slate-900/50 border border-blue-500/30">
+          <TabsList className="grid w-full grid-cols-3 bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-blue-500/30">
             <TabsTrigger 
               value="psychology" 
               className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-purple-600 data-[state=active]:text-white"
