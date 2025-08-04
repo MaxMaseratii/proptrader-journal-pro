@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { useWidgetStyling } from "@/lib/widget-utils";
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -173,8 +172,6 @@ const mockHistoricalPlans = [
 ];
 
 export default function CompleteTradingDashboard() {
-  const { getContentBackground } = useWidgetStyling();
-  
   // Main tab state
   const [activeTab, setActiveTab] = useState('psychology');
   
@@ -1696,7 +1693,7 @@ export default function CompleteTradingDashboard() {
   );
 
   return (
-    <div className={`min-h-screen ${getContentBackground()} p-6`}>
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-6">
       <div className="max-w-7xl mx-auto">
         <div className="mb-8">
           <div className="flex justify-between items-start mb-4">
@@ -1758,7 +1755,7 @@ export default function CompleteTradingDashboard() {
         </Tabs>
       </div>
 
-      <style>{`
+      <style jsx>{`
         .text-gradient-rainbow {
           background: linear-gradient(
             90deg,

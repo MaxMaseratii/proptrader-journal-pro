@@ -1,5 +1,4 @@
 import { useState, useEffect, useMemo } from "react";
-import { useWidgetStyling } from "@/lib/widget-utils";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -82,7 +81,6 @@ interface ProjectionDay {
 }
 
 export default function Projections() {
-  const { getContentBackground } = useWidgetStyling();
   const { toast } = useToast();
   const [isAccountDialogOpen, setIsAccountDialogOpen] = useState(false);
   const [isAccountsMinimized, setIsAccountsMinimized] = useState(false);
@@ -476,7 +474,7 @@ export default function Projections() {
   };
 
   return (
-    <div className={`p-6 space-y-8 min-h-screen ${getContentBackground()}`}>
+    <div className="p-6 space-y-8">
       {/* Enhanced Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>

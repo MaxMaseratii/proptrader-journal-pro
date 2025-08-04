@@ -53,6 +53,7 @@ const navItems = [
   { href: "/spending", label: "Prop Firm Spending", icon: Wallet, section: "main" },
   { href: "/payouts", label: "Payout Records", icon: DollarSign, section: "main" },
   { href: "/reports", label: "Reports", icon: Calendar, section: "main" },
+
   { href: "/achievements", label: "Achievement", icon: Trophy, section: "main" },
 ];
 
@@ -113,7 +114,7 @@ export default function Sidebar() {
          <ChevronLeft className="h-3 w-3" />}
       </Button>
       
-      <nav className="mt-6 flex-1 overflow-y-auto pb-4">
+      <nav className="mt-6 flex-1 overflow-y-auto pb-20">
         {!isCollapsed && !isPartiallyCollapsed && (
           <div className="px-6 mb-4">
             <h3 className="text-xs font-medium text-gray-600 dark:text-prop-gold uppercase tracking-wider">Main</h3>
@@ -121,8 +122,8 @@ export default function Sidebar() {
         )}
         <ul className="space-y-2 px-4">
           {mainItems.map(({ href, label, icon: Icon }, index) => (
-            <li key={href || `item-${index}`}>
-              <Link href={href || "/"} className={cn(
+            <li key={href}>
+              <Link href={href} className={cn(
                 "flex items-center px-4 py-3 text-sm font-medium rounded-xl smooth-transition cursor-pointer group relative",
                 location === href 
                   ? "bg-blue-100 dark:bg-prop-gradient-gold text-blue-900 dark:text-black font-bold" 
@@ -153,7 +154,12 @@ export default function Sidebar() {
           ))}
         </ul>
         
-        {/* User Profile Dropdown at Bottom */}
+        {/* Theme Switcher Modal */}
+        <div className="px-4 mb-4">
+          <ThemeSwitcherModal />
+        </div>
+        
+        {/* User Profile with just initials */}
         <div className="px-4 mt-8">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -195,6 +201,20 @@ export default function Sidebar() {
               
               <DropdownMenuItem 
                 className="text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
+                onClick={() => {
+                  // Open theme modal instead of navigating to page
+                  const themeModal = document.querySelector('[data-theme-modal]');
+                  if (themeModal) {
+                    (themeModal as HTMLButtonElement).click();
+                  }
+                }}
+              >
+                <Settings className="mr-2 h-4 w-4 text-purple-600 dark:text-purple-400" />
+                Appearance
+              </DropdownMenuItem>
+              
+              <DropdownMenuItem 
+                className="text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
                 onClick={() => window.location.href = '/security'}
               >
                 <Shield className="mr-2 h-4 w-4 text-yellow-600 dark:text-yellow-400" />
@@ -203,9 +223,17 @@ export default function Sidebar() {
               
               <DropdownMenuSeparator className="bg-gray-200 dark:bg-prop-gold/20" />
               
-              <div className="px-2 py-1">
-                <ThemeSwitcherModal />
-              </div>
+              {/* Reports moved to profile section */}
+              {profileItems.map(({ href, label, icon: Icon }) => (
+                <DropdownMenuItem 
+                  key={href}
+                  className="text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
+                  onClick={() => window.location.href = href}
+                >
+                  <Icon className="mr-2 h-4 w-4 text-blue-600 dark:text-prop-gold" />
+                  {label}
+                </DropdownMenuItem>
+              ))}
               
               <DropdownMenuSeparator className="bg-gray-200 dark:bg-prop-gold/20" />
               
