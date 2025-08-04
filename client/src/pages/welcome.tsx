@@ -32,7 +32,9 @@ import {
   Eye,
   Calculator,
   Settings,
-  PieChart
+  PieChart,
+  Calendar,
+  MessageSquare
 } from "lucide-react";
 
 // Header Component  
@@ -45,13 +47,15 @@ function WelcomeHeader() {
       name: 'Features',
       href: '#features',
       dropdown: [
-        { name: 'Account Management', href: '/account-manager', icon: Settings },
-        { name: 'Risk Management', href: '/risk-management', icon: Shield },
-        { name: 'Trading Journal', href: '/trading-journal-page', icon: BookOpen },
-        { name: 'Analytics & Reports', href: '/analytics-reports', icon: BarChart3 },
-        { name: 'Position Sizing', href: '/position-sizing', icon: Calculator },
-        { name: 'Watchlists', href: '/watchlists', icon: Eye },
-        { name: 'Notifications', href: '/notifications', icon: Bell },
+        { name: 'Mental Fitness Check', href: '/mental-fitness', icon: Brain },
+        { name: 'Daily Trading Plan', href: '/daily-plan', icon: Calendar },
+        { name: 'Target Projections', href: '/projections', icon: Target },
+        { name: 'Prop Firm Spending', href: '/spending', icon: DollarSign },
+        { name: 'Risk-Integrated Journal', href: '/trading-journal-page', icon: BookOpen },
+        { name: 'Performance vs Plan', href: '/analytics-reports', icon: BarChart3 },
+        { name: 'News Calendar', href: '/news-calendar', icon: Bell },
+        { name: 'AI Assistant (Marthy)', href: '/trading-companion', icon: MessageSquare },
+        { name: 'Strategy Builder', href: '/strategy-builder', icon: Settings },
       ]
     },
     { name: 'Pricing', href: '#pricing' },
@@ -234,12 +238,12 @@ function WelcomeFooter() {
     {
       title: 'Trading Tools',
       links: [
-        { name: 'Account Manager', href: '/account-manager' },
-        { name: 'Risk Management', href: '/risk-management' },
-        { name: 'Position Sizing', href: '/position-sizing' },
-        { name: 'Watchlists', href: '/watchlists' },
-        { name: 'Trading Journal', href: '/trading-journal-page' },
-        { name: 'Analytics', href: '/analytics-reports' },
+        { name: 'Mental Fitness', href: '/mental-fitness' },
+        { name: 'Daily Plan', href: '/daily-plan' },
+        { name: 'Target Projections', href: '/projections' },
+        { name: 'Prop Spending', href: '/spending' },
+        { name: 'News Calendar', href: '/news-calendar' },
+        { name: 'Strategy Builder', href: '/strategy-builder' },
       ]
     },
     {
@@ -351,60 +355,67 @@ export default function Welcome() {
 
   const features = [
     {
-      icon: Settings,
-      title: "Account Management",
-      description: "Comprehensive prop firm account tracking with real-time balance monitoring, payout eligibility, and multi-account portfolio management.",
-      color: "text-blue-500",
-      gradient: "from-blue-500/10 to-blue-600/10",
-    },
-    {
-      icon: Bell,
-      title: "Smart Notifications",
-      description: "Stay informed with intelligent alerts for account milestones, payout readiness, risk warnings, and trading achievements.",
+      icon: Brain,
+      title: "Pre-Session Mental Fitness Check",
+      description: "Mandatory psychological readiness assessment before each trading session to ensure optimal decision-making state and emotional control.",
       color: "text-purple-500",
       gradient: "from-purple-500/10 to-purple-600/10",
     },
     {
-      icon: Shield,
-      title: "Risk Management",
-      description: "Advanced risk controls with daily loss limits, drawdown tracking, position sizing calculators, and rule violation detection.",
-      color: "text-red-500",
-      gradient: "from-red-500/10 to-red-600/10",
+      icon: Calendar,
+      title: "Daily Trading Plan Builder",
+      description: "Structured pre-market planning with strategy selection, risk parameters, and live performance tracking against your daily plan.",
+      color: "text-blue-500",
+      gradient: "from-blue-500/10 to-blue-600/10",
     },
     {
-      icon: Eye,
-      title: "Watchlists",
-      description: "Organized symbol tracking with price alerts, category-based grouping, and real-time market data integration.",
+      icon: Target,
+      title: "Target Projection System",
+      description: "Advanced profit target calculations based on your risk-reward ratios, account growth projections, and prop firm requirements.",
       color: "text-green-500",
       gradient: "from-green-500/10 to-green-600/10",
     },
     {
-      icon: Calculator,
-      title: "Position Sizing",
-      description: "Professional position sizing calculator with risk/reward analysis, lot size optimization, and educational resources.",
+      icon: DollarSign,
+      title: "Prop Firm Spending & Payout Eligibility",
+      description: "Track all prop firm expenses, monitor payout requirements, and get real-time eligibility status with automated calculations.",
       color: "text-yellow-500",
       gradient: "from-yellow-500/10 to-yellow-600/10",
     },
     {
       icon: BookOpen,
-      title: "Trading Journal",
-      description: "Structured reflection system with trade analysis, performance tracking, and disciplinary improvement insights.",
+      title: "Risk-Integrated Trading Journal",
+      description: "Journal entries automatically linked to risk violations, discipline scores, emotional trading patterns, and improvement tracking.",
+      color: "text-red-500",
+      gradient: "from-red-500/10 to-red-600/10",
+    },
+    {
+      icon: BarChart3,
+      title: "Daily Performance vs Plan Analysis",
+      description: "Real-time comparison of actual trading results against your pre-session plan with deviation alerts and adjustment recommendations.",
       color: "text-indigo-500",
       gradient: "from-indigo-500/10 to-indigo-600/10",
     },
     {
-      icon: BarChart3,
-      title: "Advanced Analytics",
-      description: "Deep performance insights with profit factor analysis, drawdown studies, equity curves, and custom reporting.",
-      color: "text-teal-500",
-      gradient: "from-teal-500/10 to-teal-600/10",
+      icon: Bell,
+      title: "Prop Trader News Calendar",
+      description: "Curated economic events and news specifically relevant to prop firm traders with risk impact assessments and trading session timing.",
+      color: "text-orange-500",
+      gradient: "from-orange-500/10 to-orange-600/10",
     },
     {
-      icon: Brain,
-      title: "AI Trading Assistant",
-      description: "Intelligent trading companion with disciplinary analysis, psychology tracking, and personalized improvement recommendations.",
+      icon: MessageSquare,
+      title: "AI Trading Assistant (Marthy)",
+      description: "Personal AI coach trained on prop trading psychology, discipline enforcement, performance optimization, and behavioral pattern recognition.",
       color: "text-pink-500",
       gradient: "from-pink-500/10 to-pink-600/10",
+    },
+    {
+      icon: Settings,
+      title: "Strategy Builder & Sharing",
+      description: "Create, test, and share custom trading strategies with the prop trader community while tracking adherence and performance metrics.",
+      color: "text-teal-500",
+      gradient: "from-teal-500/10 to-teal-600/10",
     },
   ];
 
@@ -634,16 +645,31 @@ export default function Welcome() {
                       </li>
                     ))}
                   </ul>
-                  <Button
-                    onClick={() => setLocation('/signup')}
-                    className={`w-full ${
-                      plan.popular
-                        ? 'bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-white'
-                        : 'bg-gray-900 dark:bg-white text-white dark:text-gray-900 hover:bg-gray-800 dark:hover:bg-gray-100'
-                    }`}
-                  >
-                    Start Free Trial
-                  </Button>
+                  <div className="space-y-3">
+                    <Button
+                      onClick={() => setLocation('/signup')}
+                      className={`w-full ${
+                        plan.popular
+                          ? 'bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-white'
+                          : 'bg-gray-900 dark:bg-white text-white dark:text-gray-900 hover:bg-gray-800 dark:hover:bg-gray-100'
+                      }`}
+                    >
+                      Start Free Trial
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      className="w-full text-sm"
+                      onClick={() => {
+                        const modal = document.getElementById('pricing-comparison-modal');
+                        if (modal) {
+                          modal.classList.remove('hidden');
+                          modal.classList.add('flex');
+                        }
+                      }}
+                    >
+                      Compare All Plans
+                    </Button>
+                  </div>
                 </CardContent>
               </Card>
             ))}
@@ -722,6 +748,132 @@ export default function Welcome() {
       </section>
 
       <WelcomeFooter />
+      
+      {/* Pricing Comparison Modal */}
+      <div 
+        id="pricing-comparison-modal" 
+        className="hidden fixed inset-0 bg-black bg-opacity-50 z-50 items-center justify-center p-4"
+        onClick={(e) => {
+          if (e.target === e.currentTarget) {
+            e.currentTarget.classList.add('hidden');
+            e.currentTarget.classList.remove('flex');
+          }
+        }}
+      >
+        <div className="bg-white dark:bg-gray-900 rounded-lg max-w-6xl w-full max-h-[90vh] overflow-y-auto">
+          <div className="p-6">
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Compare All Plans</h2>
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={() => {
+                  const modal = document.getElementById('pricing-comparison-modal');
+                  if (modal) {
+                    modal.classList.add('hidden');
+                    modal.classList.remove('flex');
+                  }
+                }}
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
+            
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b">
+                    <th className="text-left p-4 font-medium">Features</th>
+                    <th className="text-center p-4 font-medium">Starter</th>
+                    <th className="text-center p-4 font-medium">Professional</th>
+                    <th className="text-center p-4 font-medium">Enterprise</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr className="border-b">
+                    <td className="p-4 font-medium">Trading Accounts</td>
+                    <td className="text-center p-4">Up to 2</td>
+                    <td className="text-center p-4">Unlimited</td>
+                    <td className="text-center p-4">Unlimited</td>
+                  </tr>
+                  <tr className="border-b bg-purple-50 dark:bg-purple-900/20">
+                    <td className="p-4 font-medium">🧠 Pre-Session Mental Fitness Check</td>
+                    <td className="text-center p-4">Basic</td>
+                    <td className="text-center p-4">✓ Advanced</td>
+                    <td className="text-center p-4">✓ Advanced + Custom</td>
+                  </tr>
+                  <tr className="border-b bg-blue-50 dark:bg-blue-900/20">
+                    <td className="p-4 font-medium">📅 Daily Trading Plan Builder</td>
+                    <td className="text-center p-4">✓ Basic</td>
+                    <td className="text-center p-4">✓ Advanced</td>
+                    <td className="text-center p-4">✓ Team Plans</td>
+                  </tr>
+                  <tr className="border-b bg-green-50 dark:bg-green-900/20">
+                    <td className="p-4 font-medium">🎯 Target Projection System</td>
+                    <td className="text-center p-4">-</td>
+                    <td className="text-center p-4">✓ Full Access</td>
+                    <td className="text-center p-4">✓ Advanced + API</td>
+                  </tr>
+                  <tr className="border-b bg-yellow-50 dark:bg-yellow-900/20">
+                    <td className="p-4 font-medium">💰 Prop Firm Spending & Payout Eligibility</td>
+                    <td className="text-center p-4">-</td>
+                    <td className="text-center p-4">✓ Full Tracking</td>
+                    <td className="text-center p-4">✓ Multi-Firm + Reports</td>
+                  </tr>
+                  <tr className="border-b bg-red-50 dark:bg-red-900/20">
+                    <td className="p-4 font-medium">📖 Risk-Integrated Trading Journal</td>
+                    <td className="text-center p-4">✓ Basic</td>
+                    <td className="text-center p-4">✓ Advanced</td>
+                    <td className="text-center p-4">✓ AI Analysis</td>
+                  </tr>
+                  <tr className="border-b bg-indigo-50 dark:bg-indigo-900/20">
+                    <td className="p-4 font-medium">📊 Daily Performance vs Plan Analysis</td>
+                    <td className="text-center p-4">-</td>
+                    <td className="text-center p-4">✓ Real-time</td>
+                    <td className="text-center p-4">✓ Real-time + Alerts</td>
+                  </tr>
+                  <tr className="border-b bg-orange-50 dark:bg-orange-900/20">
+                    <td className="p-4 font-medium">📰 Prop Trader News Calendar</td>
+                    <td className="text-center p-4">-</td>
+                    <td className="text-center p-4">✓ Full Access</td>
+                    <td className="text-center p-4">✓ Custom Alerts</td>
+                  </tr>
+                  <tr className="border-b bg-pink-50 dark:bg-pink-900/20">
+                    <td className="p-4 font-medium">🤖 AI Trading Assistant (Marthy)</td>
+                    <td className="text-center p-4">-</td>
+                    <td className="text-center p-4">✓ Full Access</td>
+                    <td className="text-center p-4">✓ Priority + Custom</td>
+                  </tr>
+                  <tr className="border-b bg-teal-50 dark:bg-teal-900/20">
+                    <td className="p-4 font-medium">⚙️ Strategy Builder & Sharing</td>
+                    <td className="text-center p-4">-</td>
+                    <td className="text-center p-4">✓ Community</td>
+                    <td className="text-center p-4">✓ Private + Teams</td>
+                  </tr>
+                  <tr className="border-b">
+                    <td className="p-4 font-medium">Support</td>
+                    <td className="text-center p-4">Email</td>
+                    <td className="text-center p-4">Priority</td>
+                    <td className="text-center p-4">Dedicated Manager</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            
+            <div className="mt-6 text-center">
+              <p className="text-gray-600 dark:text-gray-400 mb-4">
+                All plans include 14-day free trial • No setup fees • Cancel anytime
+              </p>
+              <Button 
+                onClick={() => setLocation('/signup')}
+                className="bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-white px-8"
+              >
+                Start Your Free Trial
+              </Button>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

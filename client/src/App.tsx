@@ -44,6 +44,9 @@ import Appearance from "@/pages/appearance";
 import AccountManager from "@/pages/account-manager";
 import TradingJournalPage from "@/pages/trading-journal-page";
 import AnalyticsReports from "@/pages/analytics-reports";
+import MentalFitness from "@/pages/mental-fitness";
+import NewsCalendar from "@/pages/news-calendar";
+import StrategyBuilder from "@/pages/strategy-builder";
 import Sidebar from "@/components/sidebar";
 import NotFound from "@/pages/not-found";
 import { useAuth } from "@/hooks/useAuth";
@@ -127,6 +130,9 @@ function Router() {
           <Route path="/account-manager" component={AccountManager} />
           <Route path="/trading-journal-page" component={TradingJournalPage} />
           <Route path="/analytics-reports" component={AnalyticsReports} />
+          <Route path="/mental-fitness" component={MentalFitness} />
+          <Route path="/news-calendar" component={NewsCalendar} />
+          <Route path="/strategy-builder" component={StrategyBuilder} />
           <Route path="/welcome" component={Welcome} />
           <Route path="/privacy-policy" component={PrivacyPolicy} />
           <Route path="/terms" component={TermsOfService} />
