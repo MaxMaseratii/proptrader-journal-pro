@@ -114,7 +114,7 @@ export default function Sidebar() {
          <ChevronLeft className="h-3 w-3" />}
       </Button>
       
-      <nav className="mt-6 flex-1 overflow-y-auto">
+      <nav className="mt-6 flex-1 overflow-y-auto pb-4">
         {!isCollapsed && !isPartiallyCollapsed && (
           <div className="px-6 mb-4">
             <h3 className="text-xs font-medium text-prop-gold uppercase tracking-wider">Navigation</h3>
