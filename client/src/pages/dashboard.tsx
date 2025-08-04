@@ -1145,10 +1145,10 @@ export default function Dashboard() {
   return (
     <>
       {/* Enhanced Header */}
-      <header className="bg-gradient-to-r from-gray-100 via-gray-200 to-gray-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 border-b border-gray-300 dark:border-gray-700 px-8 py-6">
+      <header className="bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 border-b border-gray-700 px-8 py-6">
         <div className="flex justify-between items-center">
           <div>
-            <h2 className="text-3xl font-bold text-gray-900 dark:text-white">
+            <h2 className="text-3xl font-bold text-gradient-rainbow">
               Trading Dashboard
             </h2>
 
@@ -1156,7 +1156,7 @@ export default function Dashboard() {
           <div className="flex items-center space-x-4">
             {/* Account Selection */}
             <div className="flex items-center space-x-2">
-              <Filter className="h-4 w-4 text-gray-600 dark:text-gray-400" />
+              <Filter className="h-4 w-4 text-gray-400" />
               <Select value={accountSelectionMode} onValueChange={(value: any) => setAccountSelectionMode(value)}>
                 <SelectTrigger className="w-40">
                   <SelectValue placeholder="View mode" />

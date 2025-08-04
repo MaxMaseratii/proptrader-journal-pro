@@ -39,7 +39,7 @@ import {
   DropdownMenuTrigger 
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { ThemeSwitcherModal } from "@/components/theme-switcher-modal";
+
 
 const navItems = [
   { href: "/", label: "Dashboard", icon: BarChart3, section: "main" },
@@ -154,10 +154,7 @@ export default function Sidebar() {
           ))}
         </ul>
         
-        {/* Theme Switcher Modal */}
-        <div className="px-4 mb-4">
-          <ThemeSwitcherModal />
-        </div>
+
         
         {/* User Profile with just initials */}
         <div className="px-4 mt-8">
@@ -166,12 +163,12 @@ export default function Sidebar() {
               <Button 
                 variant="ghost" 
                 className={cn(
-                  "w-full flex items-center px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg",
+                  "w-full flex items-center px-3 py-2 text-sm font-medium text-gray-300 hover:bg-dark-card rounded-lg",
                   isCollapsed ? "justify-center" : "justify-start"
                 )}
               >
                 <div className={cn(
-                  "h-4 w-4 bg-blue-500 dark:bg-prop-gradient-gold rounded-full flex items-center justify-center text-xs font-bold text-white dark:text-black",
+                  "h-4 w-4 bg-prop-gradient-gold rounded-full flex items-center justify-center text-xs font-bold text-black",
                   !isCollapsed ? "mr-3" : ""
                 )}>
                   {user ? (
@@ -184,61 +181,49 @@ export default function Sidebar() {
             </DropdownMenuTrigger>
             
             <DropdownMenuContent 
-              className="w-64 bg-white dark:bg-gray-800 border-gray-200 dark:border-prop-gold/20 shadow-xl" 
+              className="w-64 bg-dark-card border-prop-gold/20 shadow-xl" 
               align="start"
               side="right"
             >
-              <DropdownMenuLabel className="text-gray-700 dark:text-prop-gold">My Account</DropdownMenuLabel>
-              <DropdownMenuSeparator className="bg-gray-200 dark:bg-prop-gold/20" />
+              <DropdownMenuLabel className="text-prop-gold">My Account</DropdownMenuLabel>
+              <DropdownMenuSeparator className="bg-prop-gold/20" />
               
               <DropdownMenuItem 
-                className="text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
+                className="text-gray-300 hover:bg-dark-surface cursor-pointer"
                 onClick={() => window.location.href = '/profile'}
               >
-                <User className="mr-2 h-4 w-4 text-blue-600 dark:text-blue-400" />
+                <User className="mr-2 h-4 w-4 text-blue-400" />
                 Profile Settings
               </DropdownMenuItem>
               
-              <DropdownMenuItem 
-                className="text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
-                onClick={() => {
-                  // Open theme modal instead of navigating to page
-                  const themeModal = document.querySelector('[data-theme-modal]');
-                  if (themeModal) {
-                    (themeModal as HTMLButtonElement).click();
-                  }
-                }}
-              >
-                <Settings className="mr-2 h-4 w-4 text-purple-600 dark:text-purple-400" />
-                Appearance
-              </DropdownMenuItem>
+
               
               <DropdownMenuItem 
-                className="text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
+                className="text-gray-300 hover:bg-dark-surface cursor-pointer"
                 onClick={() => window.location.href = '/security'}
               >
-                <Shield className="mr-2 h-4 w-4 text-yellow-600 dark:text-yellow-400" />
+                <Shield className="mr-2 h-4 w-4 text-yellow-400" />
                 Security Settings
               </DropdownMenuItem>
               
-              <DropdownMenuSeparator className="bg-gray-200 dark:bg-prop-gold/20" />
+              <DropdownMenuSeparator className="bg-prop-gold/20" />
               
               {/* Reports moved to profile section */}
               {profileItems.map(({ href, label, icon: Icon }) => (
                 <DropdownMenuItem 
                   key={href}
-                  className="text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
+                  className="text-gray-300 hover:bg-dark-surface cursor-pointer"
                   onClick={() => window.location.href = href}
                 >
-                  <Icon className="mr-2 h-4 w-4 text-blue-600 dark:text-prop-gold" />
+                  <Icon className="mr-2 h-4 w-4 text-prop-gold" />
                   {label}
                 </DropdownMenuItem>
               ))}
               
-              <DropdownMenuSeparator className="bg-gray-200 dark:bg-prop-gold/20" />
+              <DropdownMenuSeparator className="bg-prop-gold/20" />
               
               <DropdownMenuItem 
-                className="text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-600/20 cursor-pointer"
+                className="text-red-400 hover:bg-red-600/20 cursor-pointer"
                 onClick={async () => {
                   try {
                     await fetch('/api/auth/logout', { method: 'POST' });
@@ -249,7 +234,7 @@ export default function Sidebar() {
                   }
                 }}
               >
-                <LogOut className="mr-2 h-4 w-4 text-red-600 dark:text-red-400" />
+                <LogOut className="mr-2 h-4 w-4 text-red-400" />
                 Sign Out
               </DropdownMenuItem>
             </DropdownMenuContent>

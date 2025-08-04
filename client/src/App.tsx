@@ -3,7 +3,7 @@ import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { ThemeProvider } from "@/components/theme-provider";
+
 import Dashboard from "@/pages/dashboard";
 import DashboardShowcase from "@/pages/dashboard-showcase";
 import Projections from "@/pages/projections";
@@ -39,7 +39,7 @@ import Watchlists from "@/pages/watchlists";
 import PositionSizing from "@/pages/position-sizing";
 import Accounts from "@/pages/accounts";
 import RiskManagement from "@/pages/risk-management";
-import Appearance from "@/pages/appearance";
+
 import AccountManager from "@/pages/account-manager";
 import TradingJournalPage from "@/pages/trading-journal-page";
 import AnalyticsReports from "@/pages/analytics-reports";
@@ -101,9 +101,9 @@ function Router() {
   }
 
   return (
-    <div className="flex h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white">
+    <div className="flex h-screen bg-gray-900 text-white">
       <Sidebar />
-      <main className="flex-1 overflow-y-auto bg-gray-50 dark:bg-gray-900">
+      <main className="flex-1 overflow-y-auto bg-gray-900">
         <Switch>
           <Route path="/" component={Dashboard} />
           <Route path="/dashboard-simple" component={DashboardShowcase} />
@@ -137,7 +137,7 @@ function Router() {
           <Route path="/position-sizing" component={PositionSizing} />
           
           <Route path="/profile" component={Profile} />
-          <Route path="/appearance" component={Appearance} />
+
           <Route path="/account-manager" component={AccountManager} />
           <Route path="/trading-journal-page" component={TradingJournalPage} />
           <Route path="/analytics-reports" component={AnalyticsReports} />
@@ -171,12 +171,10 @@ function Router() {
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <ThemeProvider defaultTheme="dark" storageKey="prop-trader-theme">
-        <TooltipProvider>
-          <Toaster />
-          <Router />
-        </TooltipProvider>
-      </ThemeProvider>
+      <TooltipProvider>
+        <Toaster />
+        <Router />
+      </TooltipProvider>
     </QueryClientProvider>
   );
 }
