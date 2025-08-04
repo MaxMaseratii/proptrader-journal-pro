@@ -1,5 +1,4 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useTheme } from "@/components/theme-provider";
 import { cn } from "@/lib/utils";
 
 interface WidgetCardProps {
@@ -17,17 +16,9 @@ export function WidgetCard({
   headerClassName,
   contentClassName
 }: WidgetCardProps) {
-  const { theme } = useTheme();
-  const resolvedTheme = theme === 'auto' ? 
-    (typeof window !== 'undefined' && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') : 
-    theme;
-
-  const cardBackground = resolvedTheme === 'light' 
-    ? 'bg-gradient-to-br from-yellow-50 via-yellow-100 to-amber-50 border-amber-200'
-    : 'bg-gray-900/80 border-gray-700';
-
+  // NEVER change widget colors - always keep the same styling regardless of theme
   return (
-    <Card className={cn(cardBackground, "backdrop-blur-sm", className)}>
+    <Card className={cn("bg-gray-900/80 border-gray-700 backdrop-blur-sm", className)}>
       {title && (
         <CardHeader className={cn("pb-2", headerClassName)}>
           <CardTitle className="text-sm font-medium text-gray-700 dark:text-gray-300">
