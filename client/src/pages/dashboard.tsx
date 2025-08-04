@@ -1551,7 +1551,7 @@ export default function Dashboard() {
             <div className="grid grid-cols-4 gap-4">
               
               {/* Risk + Max Daily Loss Combined */}
-              <div className={`${getWidgetBackground()} rounded-lg p-4 border relative`}>
+              <div className="bg-gradient-to-br from-red-900/40 via-red-800/60 to-red-950/80 border border-red-600/30 rounded-lg p-4 hover:border-red-400/60 transition-all duration-200 relative">
                 {combinedAnalytics && combinedAnalytics.accounts.length > 0 ? (
                   <>
                     <div className="absolute top-3 right-3 text-xs text-red-400">
@@ -1568,7 +1568,7 @@ export default function Dashboard() {
               </div>
 
               {/* R:R */}
-              <div className={`${getWidgetBackground()} rounded-lg p-4 border relative`}>
+              <div className="bg-gradient-to-br from-blue-900/40 via-blue-800/60 to-blue-950/80 border border-blue-600/30 rounded-lg p-4 hover:border-blue-400/60 transition-all duration-200 relative">
                 {combinedAnalytics && combinedAnalytics.accounts.length > 0 && (
                   <div className="absolute top-3 right-3 text-xs text-blue-300">
                     Target: {combinedAnalytics.accounts[0]?.riskRewardRatio || 0} RR
@@ -1969,7 +1969,7 @@ export default function Dashboard() {
           {/* ROW 1: Main Performance Metrics (4 widgets) */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
             {/* Net Balance */}
-            <div className={`${getWidgetBackground()} rounded-lg p-4 hover:border-amber-600/40 dark:hover:border-amber-400/60 transition-all duration-200`}>
+            <div className="bg-gradient-to-br from-amber-900/40 via-amber-800/60 to-amber-950/80 border border-amber-600/30 rounded-lg p-4 hover:border-amber-400/60 transition-all duration-200">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-sm font-medium text-gray-300">Net Balance</span>
                 <DollarSign className="w-4 h-4 text-amber-400" />
@@ -1981,7 +1981,7 @@ export default function Dashboard() {
             </div>
 
             {/* Total P&L */}
-            <div className={`${getWidgetBackground()} rounded-lg p-4 hover:border-amber-600/40 dark:hover:border-amber-400/60 transition-all duration-200`}>
+            <div className="bg-gradient-to-br from-red-900/40 via-red-800/60 to-red-950/80 border border-red-600/30 rounded-lg p-4 hover:border-red-400/60 transition-all duration-200">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-sm font-medium text-gray-300">Total P&L</span>
                 <TrendingUp className="w-4 h-4 text-green-400" />
@@ -1993,7 +1993,7 @@ export default function Dashboard() {
             </div>
 
             {/* Win Rate */}
-            <div className={`${getWidgetBackground()} rounded-lg p-4 hover:border-amber-600/40 dark:hover:border-amber-400/60 transition-all duration-200`}>
+            <div className="bg-gradient-to-br from-teal-900/40 via-teal-800/60 to-teal-950/80 border border-teal-600/30 rounded-lg p-4 hover:border-teal-400/60 transition-all duration-200">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-sm font-medium text-gray-300">Win Rate</span>
                 <Target className="w-4 h-4 text-green-400" />
@@ -2674,7 +2674,7 @@ export default function Dashboard() {
             </div>
 
             {/* Portfolio Summary */}
-            <div className="bg-gradient-to-br from-gray-900/40 via-gray-800/60 to-black/80 border border-gray-600/30 rounded-lg p-6 hover:border-amber-400/60 transition-all duration-200">
+            <div className="bg-gradient-to-br from-indigo-900/40 via-indigo-800/60 to-indigo-950/80 border border-indigo-600/30 rounded-lg p-6 hover:border-indigo-400/60 transition-all duration-200">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-semibold text-white">Portfolio Summary</h3>
                 <BarChart3 className="w-5 h-5 text-amber-400" />
@@ -2713,7 +2713,7 @@ export default function Dashboard() {
           
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Discipline Score Breakdown */}
-            <div className="bg-gradient-to-br from-gray-900/40 via-gray-800/60 to-black/80 border border-gray-600/30 rounded-lg p-6 hover:border-amber-400/60 transition-all duration-200">
+            <div className="bg-gradient-to-br from-violet-900/40 via-violet-800/60 to-violet-950/80 border border-violet-600/30 rounded-lg p-6 hover:border-violet-400/60 transition-all duration-200">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-semibold text-white">Discipline Score Breakdown</h3>
                 <Brain className="w-5 h-5 text-amber-400" />
@@ -2839,7 +2839,7 @@ export default function Dashboard() {
           
           {/* ROW 1: Basic Costs (3 widgets) */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-            <div className="bg-gradient-to-br from-gray-900/40 via-gray-800/60 to-black/80 border border-gray-600/30 rounded-lg p-4 hover:border-amber-400/60 transition-all duration-200">
+            <div className="bg-gradient-to-br from-yellow-900/40 via-yellow-800/60 to-yellow-950/80 border border-yellow-600/30 rounded-lg p-4 hover:border-yellow-400/60 transition-all duration-200">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-sm font-medium text-gray-300">Total Spent on Accounts</span>
                 <DollarSign className="w-4 h-4 text-amber-400" />
@@ -2850,7 +2850,7 @@ export default function Dashboard() {
               <div className="text-xs text-gray-400">Challenge & setup costs</div>
             </div>
 
-            <div className="bg-gradient-to-br from-gray-900/40 via-gray-800/60 to-black/80 border border-gray-600/30 rounded-lg p-4 hover:border-amber-400/60 transition-all duration-200">
+            <div className="bg-gradient-to-br from-lime-900/40 via-lime-800/60 to-lime-950/80 border border-lime-600/30 rounded-lg p-4 hover:border-lime-400/60 transition-all duration-200">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-sm font-medium text-gray-300">Reset Cost</span>
                 <RotateCcw className="w-4 h-4 text-orange-400" />
@@ -2861,7 +2861,7 @@ export default function Dashboard() {
               <div className="text-xs text-gray-400">Failed account resets</div>
             </div>
 
-            <div className="bg-gradient-to-br from-gray-900/40 via-gray-800/60 to-black/80 border border-gray-600/30 rounded-lg p-4 hover:border-amber-400/60 transition-all duration-200">
+            <div className="bg-gradient-to-br from-sky-900/40 via-sky-800/60 to-sky-950/80 border border-sky-600/30 rounded-lg p-4 hover:border-sky-400/60 transition-all duration-200">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-sm font-medium text-gray-300">Activation Costs</span>
                 <CheckCircle className="w-4 h-4 text-blue-400" />
