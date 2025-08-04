@@ -52,7 +52,7 @@ const navItems = [
   { href: "/spending", label: "Prop Firm Spending", icon: Wallet, section: "main" },
   { href: "/payouts", label: "Payout Records", icon: DollarSign, section: "main" },
   { href: "/reports", label: "Reports", icon: Calendar, section: "main" },
-  { href: "/knowledge-base", label: "Knowledge Base", icon: BookOpen, section: "main" },
+
   { href: "/achievements", label: "Achievement", icon: Trophy, section: "main" },
 ];
 
@@ -83,20 +83,12 @@ export default function Sidebar() {
     )}>
       <div className="p-6 border-b border-prop-gold/20">
         <div className="flex items-center space-x-3">
-          <div 
-            onClick={async () => {
-              try {
-                await fetch('/api/auth/logout', { method: 'POST' });
-                window.location.href = '/welcome';
-              } catch (error) {
-                console.error('Logout error:', error);
-                window.location.href = '/welcome';
-              }
-            }}
-            className="bg-prop-gradient-rainbow p-3 rounded-xl hover-glow smooth-transition cursor-pointer"
+          <Link 
+            href="/welcome"
+            className="bg-prop-gradient-rainbow p-3 rounded-xl hover-glow smooth-transition cursor-pointer block"
           >
             <BookOpen className="h-6 w-6 text-white" />
-          </div>
+          </Link>
           {!isCollapsed && !isPartiallyCollapsed && (
             <div>
               <h1 className="text-lg font-bold text-gradient-rainbow">#1 PropFirm Trader's Journal</h1>

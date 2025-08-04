@@ -70,15 +70,13 @@ function Router() {
           }}
         </Route>
         <Route path="/signup" component={Signup} />
+        <Route path="/welcome" component={Welcome} />
         <Route path="/privacy-policy" component={PrivacyPolicy} />
         <Route path="/terms" component={TermsOfService} />
         <Route path="/support" component={Support} />
-        <Route>
-          {() => {
-            window.location.href = '/auth.html';
-            return null;
-          }}
-        </Route>
+        <Route path="/knowledge-base" component={KnowledgeBase} />
+        <Route path="/" component={Welcome} />
+        <Route component={Welcome} />
       </Switch>
     );
   }

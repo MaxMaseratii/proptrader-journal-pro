@@ -32,13 +32,17 @@ import {
   Eye,
   Calculator,
   Settings,
-  PieChart
+  PieChart,
+  FileText,
+  GraduationCap,
+  HelpCircle
 } from "lucide-react";
 
-// Header Component  
+// Header Component
 function WelcomeHeader() {
   const [, setLocation] = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [resourcesOpen, setResourcesOpen] = useState(false);
 
   const navigation = [
     {
