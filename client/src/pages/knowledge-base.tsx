@@ -1,368 +1,214 @@
-import React from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { 
   BookOpen, 
-  Upload, 
-  BarChart3, 
-  Target, 
-  Shield, 
+  Search, 
+  Star, 
+  Clock, 
+  Users, 
   TrendingUp,
-  FileText,
-  CheckCircle,
-  ArrowRight,
-  Play,
-  Download,
-  Calendar,
-  DollarSign,
   Brain,
-  Trophy,
-  Lightbulb,
-  MessageSquare,
-  Settings,
-  HelpCircle
+  Target,
+  DollarSign,
+  BarChart3
 } from "lucide-react";
 
 export default function KnowledgeBase() {
+  const categories = [
+    {
+      title: "Getting Started",
+      icon: BookOpen,
+      color: "text-blue-500",
+      articles: [
+        { title: "Setting up your first trading account", views: 2847, rating: 4.8 },
+        { title: "Importing trades from your broker", views: 1923, rating: 4.9 },
+        { title: "Understanding the dashboard", views: 1654, rating: 4.7 },
+        { title: "Creating your first journal entry", views: 1432, rating: 4.6 }
+      ]
+    },
+    {
+      title: "Mental Fitness",
+      icon: Brain,
+      color: "text-purple-500",
+      articles: [
+        { title: "How to use the Mental Fitness Check", views: 987, rating: 4.9 },
+        { title: "Understanding your psychology scores", views: 743, rating: 4.8 },
+        { title: "Building emotional discipline", views: 612, rating: 4.7 },
+        { title: "Pre-session preparation guide", views: 534, rating: 4.6 }
+      ]
+    },
+    {
+      title: "Target Projections",
+      icon: Target,
+      color: "text-green-500",
+      articles: [
+        { title: "Setting realistic profit targets", views: 1234, rating: 4.8 },
+        { title: "Risk-reward ratio calculations", views: 876, rating: 4.7 },
+        { title: "Account growth projection methods", views: 665, rating: 4.6 },
+        { title: "Managing target expectations", views: 543, rating: 4.5 }
+      ]
+    },
+    {
+      title: "Prop Firm Management",
+      icon: DollarSign,
+      color: "text-yellow-500",
+      articles: [
+        { title: "Tracking prop firm expenses", views: 1543, rating: 4.9 },
+        { title: "Understanding payout eligibility", views: 1234, rating: 4.8 },
+        { title: "Managing multiple prop firm accounts", views: 987, rating: 4.7 },
+        { title: "Maximizing your payout potential", views: 765, rating: 4.6 }
+      ]
+    },
+    {
+      title: "Advanced Analytics",
+      icon: BarChart3,
+      color: "text-indigo-500",
+      articles: [
+        { title: "Reading your performance reports", views: 1876, rating: 4.8 },
+        { title: "Understanding discipline scores", views: 1432, rating: 4.7 },
+        { title: "Analyzing trading patterns", views: 1098, rating: 4.6 },
+        { title: "Using AI insights effectively", views: 876, rating: 4.5 }
+      ]
+    },
+    {
+      title: "Troubleshooting",
+      icon: Search,
+      color: "text-red-500",
+      articles: [
+        { title: "Common import issues and solutions", views: 2134, rating: 4.7 },
+        { title: "Fixing calculation discrepancies", views: 1654, rating: 4.6 },
+        { title: "Resolving sync problems", views: 1234, rating: 4.5 },
+        { title: "Account connection troubleshooting", views: 987, rating: 4.4 }
+      ]
+    }
+  ];
+
+  const popularArticles = [
+    { title: "Complete Guide to Prop Trading Success", category: "Getting Started", views: 5643, rating: 4.9 },
+    { title: "Mental Fitness: The Trader's Secret Weapon", category: "Mental Fitness", views: 4321, rating: 4.8 },
+    { title: "Maximizing Prop Firm Payouts", category: "Prop Firm Management", views: 3876, rating: 4.7 },
+    { title: "Advanced Risk Management Strategies", category: "Advanced Analytics", views: 3542, rating: 4.6 }
+  ];
+
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex flex-col gap-4">
-        <h1 className="text-3xl font-bold text-gradient-rainbow">Knowledge Base</h1>
-        <p className="text-gray-400 text-lg">
-          Learn how to master your trading journey with #1 PropFirm Trader's Journal
-        </p>
-      </div>
-
-      {/* Quick Start Guide */}
-      <Card className="bg-gradient-to-br from-blue-500/10 to-purple-500/10 border-blue-500/30">
-        <CardHeader>
-          <div className="flex items-center gap-3">
-            <Play className="w-6 h-6 text-blue-400" />
-            <CardTitle className="text-blue-400">Quick Start Guide</CardTitle>
-          </div>
-          <CardDescription>Get up and running in 5 minutes</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="bg-gray-800/50 rounded-lg p-4">
-              <div className="flex items-center gap-2 mb-2">
-                <span className="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center text-white text-sm font-bold">1</span>
-                <span className="text-white font-medium">Create Account</span>
-              </div>
-              <p className="text-gray-400 text-sm">Set up your prop firm trading account with balance, drawdown limits, and profit targets.</p>
-            </div>
-            <div className="bg-gray-800/50 rounded-lg p-4">
-              <div className="flex items-center gap-2 mb-2">
-                <span className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center text-white text-sm font-bold">2</span>
-                <span className="text-white font-medium">Upload Trades</span>
-              </div>
-              <p className="text-gray-400 text-sm">Import your trading data via CSV or add trades manually to start tracking performance.</p>
-            </div>
-            <div className="bg-gray-800/50 rounded-lg p-4">
-              <div className="flex items-center gap-2 mb-2">
-                <span className="w-6 h-6 bg-purple-500 rounded-full flex items-center justify-center text-white text-sm font-bold">3</span>
-                <span className="text-white font-medium">Analyze & Improve</span>
-              </div>
-              <p className="text-gray-400 text-sm">Review analytics, journal your trades, and track your progress toward consistent profitability.</p>
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-6">
+      <div className="max-w-6xl mx-auto">
+        {/* Header */}
+        <div className="text-center mb-16">
+          <div className="flex justify-center mb-4">
+            <div className="p-3 bg-blue-100 dark:bg-blue-900/20 rounded-full">
+              <BookOpen className="h-8 w-8 text-blue-600 dark:text-blue-400" />
             </div>
           </div>
-        </CardContent>
-      </Card>
+          <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
+            Knowledge Base
+          </h1>
+          <p className="text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
+            Everything you need to know about PropTraderJournal, prop trading, and maximizing your success.
+          </p>
+        </div>
 
-      {/* Core Features */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        
-        {/* Trading Account Management */}
-        <Card className="bg-gray-800/30 border-gray-700">
-          <CardHeader>
-            <div className="flex items-center gap-3">
-              <Shield className="w-5 h-5 text-yellow-500" />
-              <CardTitle className="text-white">Trading Account Management</CardTitle>
-            </div>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            <div className="space-y-2">
-              <h4 className="text-yellow-400 font-medium">✓ Multi-Account Support</h4>
-              <p className="text-gray-400 text-sm">Track multiple prop firm accounts, challenges, and funded accounts simultaneously.</p>
-            </div>
-            <div className="space-y-2">
-              <h4 className="text-yellow-400 font-medium">✓ Risk Management</h4>
-              <p className="text-gray-400 text-sm">Monitor daily loss limits, drawdown buffers, and risk per trade automatically.</p>
-            </div>
-            <div className="space-y-2">
-              <h4 className="text-yellow-400 font-medium">✓ Payout Tracking</h4>
-              <p className="text-gray-400 text-sm">Track payout eligibility with 5-day rules, consistency requirements, and profit splits.</p>
+        {/* Search */}
+        <Card className="mb-12">
+          <CardContent className="pt-6">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
+              <input
+                type="text"
+                placeholder="Search articles, guides, and tutorials..."
+                className="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
             </div>
           </CardContent>
         </Card>
 
-        {/* CSV Import System */}
-        <Card className="bg-gray-800/30 border-gray-700">
+        {/* Popular Articles */}
+        <Card className="mb-12">
           <CardHeader>
-            <div className="flex items-center gap-3">
-              <Upload className="w-5 h-5 text-green-500" />
-              <CardTitle className="text-white">CSV Import System</CardTitle>
-            </div>
+            <CardTitle className="flex items-center space-x-2">
+              <Star className="h-5 w-5 text-yellow-500" />
+              <span>Popular Articles</span>
+            </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-3">
-            <div className="space-y-2">
-              <h4 className="text-green-400 font-medium">✓ Universal Platform Support</h4>
-              <p className="text-gray-400 text-sm">Supports Tradovate, MetaTrader, NinjaTrader, Interactive Brokers, and more.</p>
-            </div>
-            <div className="space-y-2">
-              <h4 className="text-green-400 font-medium">✓ Intelligent Detection</h4>
-              <p className="text-gray-400 text-sm">Automatically detects CSV format and maps columns for seamless import.</p>
-            </div>
-            <div className="space-y-2">
-              <h4 className="text-green-400 font-medium">✓ Trade Analysis</h4>
-              <p className="text-gray-400 text-sm">Analyzes stop loss movements, profit target hits, and trading discipline.</p>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Performance Analytics */}
-        <Card className="bg-gray-800/30 border-gray-700">
-          <CardHeader>
-            <div className="flex items-center gap-3">
-              <BarChart3 className="w-5 h-5 text-blue-500" />
-              <CardTitle className="text-white">Performance Analytics</CardTitle>
-            </div>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            <div className="space-y-2">
-              <h4 className="text-blue-400 font-medium">✓ Advanced Metrics</h4>
-              <p className="text-gray-400 text-sm">Sharpe ratio, profit factor, expectancy, win rate, and Kelly criterion calculations.</p>
-            </div>
-            <div className="space-y-2">
-              <h4 className="text-blue-400 font-medium">✓ Discipline Scoring</h4>
-              <p className="text-gray-400 text-sm">Comprehensive analysis of trading discipline, emotional control, and risk adherence.</p>
-            </div>
-            <div className="space-y-2">
-              <h4 className="text-blue-400 font-medium">✓ Visual Charts</h4>
-              <p className="text-gray-400 text-sm">Equity curves, P&L charts, and performance heatmaps with interactive tooltips.</p>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Daily Planning */}
-        <Card className="bg-gray-800/30 border-gray-700">
-          <CardHeader>
-            <div className="flex items-center gap-3">
-              <Target className="w-5 h-5 text-purple-500" />
-              <CardTitle className="text-white">Daily Trading Plans</CardTitle>
-            </div>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            <div className="space-y-2">
-              <h4 className="text-purple-400 font-medium">✓ Strategy Builder</h4>
-              <p className="text-gray-400 text-sm">Create custom trading strategies with rules, risk parameters, and expected values.</p>
-            </div>
-            <div className="space-y-2">
-              <h4 className="text-purple-400 font-medium">✓ Session Tracking</h4>
-              <p className="text-gray-400 text-sm">Live session timer with plan vs actual performance comparison.</p>
-            </div>
-            <div className="space-y-2">
-              <h4 className="text-purple-400 font-medium">✓ Journal Integration</h4>
-              <p className="text-gray-400 text-sm">Daily reflections linked to specific trading plans for continuous improvement.</p>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* How to Upload Trades */}
-      <Card className="bg-gradient-to-br from-green-500/10 to-blue-500/10 border-green-500/30">
-        <CardHeader>
-          <div className="flex items-center gap-3">
-            <Upload className="w-6 h-6 text-green-400" />
-            <CardTitle className="text-green-400">How to Upload Trades</CardTitle>
-          </div>
-          <CardDescription>Step-by-step guide to importing your trading data</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          
-          {/* Method 1: CSV Import */}
-          <div>
-            <h3 className="text-white font-semibold mb-4 flex items-center gap-2">
-              <FileText className="w-5 h-5 text-green-400" />
-              Method 1: CSV Import (Recommended)
-            </h3>
+          <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-3">
-                <div className="bg-gray-800/50 rounded-lg p-4">
-                  <h4 className="text-green-400 font-medium mb-2">Step 1: Export from Platform</h4>
-                  <p className="text-gray-400 text-sm">Export your trades from your trading platform (Tradovate, MT4/5, NinjaTrader, etc.) as CSV file.</p>
+              {popularArticles.map((article, index) => (
+                <div key={index} className="p-4 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 cursor-pointer">
+                  <h3 className="font-medium text-gray-900 dark:text-white mb-2">{article.title}</h3>
+                  <div className="flex justify-between items-center text-sm text-gray-600 dark:text-gray-400">
+                    <span>{article.category}</span>
+                    <div className="flex items-center space-x-3">
+                      <span className="flex items-center">
+                        <Users className="h-3 w-3 mr-1" />
+                        {article.views.toLocaleString()}
+                      </span>
+                      <span className="flex items-center">
+                        <Star className="h-3 w-3 mr-1 text-yellow-500" />
+                        {article.rating}
+                      </span>
+                    </div>
+                  </div>
                 </div>
-                <div className="bg-gray-800/50 rounded-lg p-4">
-                  <h4 className="text-green-400 font-medium mb-2">Step 2: Go to Trades Log</h4>
-                  <p className="text-gray-400 text-sm">Navigate to Trades Log page and click on the "Import CSV" tab.</p>
-                </div>
-              </div>
-              <div className="space-y-3">
-                <div className="bg-gray-800/50 rounded-lg p-4">
-                  <h4 className="text-green-400 font-medium mb-2">Step 3: Select Account</h4>
-                  <p className="text-gray-400 text-sm">Choose which trading account to import the trades to from the dropdown.</p>
-                </div>
-                <div className="bg-gray-800/50 rounded-lg p-4">
-                  <h4 className="text-green-400 font-medium mb-2">Step 4: Upload & Analyze</h4>
-                  <p className="text-gray-400 text-sm">Upload your CSV file and review the automatic analysis before importing.</p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Method 2: Manual Entry */}
-          <div>
-            <h3 className="text-white font-semibold mb-4 flex items-center gap-2">
-              <Settings className="w-5 h-5 text-blue-400" />
-              Method 2: Manual Entry
-            </h3>
-            <div className="bg-gray-800/50 rounded-lg p-4">
-              <p className="text-gray-400 text-sm mb-3">For individual trades or when CSV import isn't available:</p>
-              <ul className="space-y-2 text-gray-400 text-sm">
-                <li className="flex items-center gap-2"><CheckCircle className="w-4 h-4 text-green-400" />Go to Trades Log → "Add Trade" tab</li>
-                <li className="flex items-center gap-2"><CheckCircle className="w-4 h-4 text-green-400" />Select account, symbol, and trade direction</li>
-                <li className="flex items-center gap-2"><CheckCircle className="w-4 h-4 text-green-400" />Enter entry/exit prices, dates, and P&L</li>
-                <li className="flex items-center gap-2"><CheckCircle className="w-4 h-4 text-green-400" />Add trade documentation (images, TradingView links)</li>
-              </ul>
-            </div>
-          </div>
-
-          {/* Supported Platforms */}
-          <div>
-            <h3 className="text-white font-semibold mb-4">Supported Trading Platforms</h3>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-              {["Tradovate", "MetaTrader 4/5", "NinjaTrader", "Interactive Brokers", "Rithmic", "CQG", "ThinkorSwim", "TopstepTrader", "FTMO", "Binance"].map((platform) => (
-                <Badge key={platform} variant="outline" className="justify-center p-2 text-gray-300 border-gray-600">
-                  {platform}
-                </Badge>
               ))}
             </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Key Features Overview */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        <Card className="bg-gray-800/30 border-gray-700 hover:border-yellow-500/50 transition-colors">
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3 mb-3">
-              <Calendar className="w-5 h-5 text-yellow-500" />
-              <h3 className="text-white font-medium">Trading Calendar</h3>
-            </div>
-            <p className="text-gray-400 text-sm">Visual calendar showing daily P&L, trade counts, and performance metrics with color-coded indicators.</p>
           </CardContent>
         </Card>
 
-        <Card className="bg-gray-800/30 border-gray-700 hover:border-green-500/50 transition-colors">
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3 mb-3">
-              <DollarSign className="w-5 h-5 text-green-500" />
-              <h3 className="text-white font-medium">Spending Tracker</h3>
-            </div>
-            <p className="text-gray-400 text-sm">Track all prop firm expenses: account costs, activation fees, resets, and calculate your trading ROI.</p>
-          </CardContent>
-        </Card>
+        {/* Categories */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {categories.map((category, index) => {
+            const IconComponent = category.icon;
+            return (
+              <Card key={index}>
+                <CardHeader>
+                  <CardTitle className="flex items-center space-x-2">
+                    <IconComponent className={`h-5 w-5 ${category.color}`} />
+                    <span>{category.title}</span>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3">
+                    {category.articles.map((article, articleIndex) => (
+                      <div key={articleIndex} className="p-3 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 cursor-pointer">
+                        <h4 className="font-medium text-sm text-gray-900 dark:text-white mb-2">{article.title}</h4>
+                        <div className="flex justify-between items-center text-xs text-gray-600 dark:text-gray-400">
+                          <span className="flex items-center">
+                            <Users className="h-3 w-3 mr-1" />
+                            {article.views}
+                          </span>
+                          <span className="flex items-center">
+                            <Star className="h-3 w-3 mr-1 text-yellow-500" />
+                            {article.rating}
+                          </span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  <Button variant="outline" className="w-full mt-4 text-sm">
+                    View All Articles
+                  </Button>
+                </CardContent>
+              </Card>
+            );
+          })}
+        </div>
 
-        <Card className="bg-gray-800/30 border-gray-700 hover:border-purple-500/50 transition-colors">
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3 mb-3">
-              <Brain className="w-5 h-5 text-purple-500" />
-              <h3 className="text-white font-medium">AI Trading Coach</h3>
-            </div>
-            <p className="text-gray-400 text-sm">Marthy AI provides personalized trading insights, discipline feedback, and performance recommendations.</p>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-gray-800/30 border-gray-700 hover:border-blue-500/50 transition-colors">
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3 mb-3">
-              <Trophy className="w-5 h-5 text-blue-500" />
-              <h3 className="text-white font-medium">Achievement System</h3>
-            </div>
-            <p className="text-gray-400 text-sm">Gamified progress tracking with discipline badges, streak counters, and milestone achievements.</p>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-gray-800/30 border-gray-700 hover:border-teal-500/50 transition-colors">
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3 mb-3">
-              <TrendingUp className="w-5 h-5 text-teal-500" />
-              <h3 className="text-white font-medium">Projection Planning</h3>
-            </div>
-            <p className="text-gray-400 text-sm">Create day-by-day projections to reach profit targets with risk management and timeline planning.</p>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-gray-800/30 border-gray-700 hover:border-pink-500/50 transition-colors">
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3 mb-3">
-              <BookOpen className="w-5 h-5 text-pink-500" />
-              <h3 className="text-white font-medium">Trading Journal</h3>
-            </div>
-            <p className="text-gray-400 text-sm">Daily reflection entries with structured prompts for continuous improvement and emotional tracking.</p>
+        {/* Help */}
+        <Card className="mt-16">
+          <CardContent className="pt-6 text-center">
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+              Can't find what you're looking for?
+            </h3>
+            <p className="text-gray-600 dark:text-gray-400 mb-4">
+              Our support team is here to help you succeed with PropTraderJournal.
+            </p>
+            <Button className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white">
+              Contact Support
+            </Button>
           </CardContent>
         </Card>
       </div>
-
-      {/* Tips & Best Practices */}
-      <Card className="bg-gradient-to-br from-yellow-500/10 to-orange-500/10 border-yellow-500/30">
-        <CardHeader>
-          <div className="flex items-center gap-3">
-            <Lightbulb className="w-6 h-6 text-yellow-400" />
-            <CardTitle className="text-yellow-400">Tips & Best Practices</CardTitle>
-          </div>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-3">
-              <h4 className="text-white font-medium">📈 For Better Analytics</h4>
-              <ul className="space-y-1 text-gray-400 text-sm">
-                <li>• Import trades daily for real-time tracking</li>
-                <li>• Add trade documentation (screenshots, notes)</li>
-                <li>• Use consistent symbol naming across accounts</li>
-                <li>• Review discipline scores weekly</li>
-              </ul>
-            </div>
-            <div className="space-y-3">
-              <h4 className="text-white font-medium">🎯 For Prop Firm Success</h4>
-              <ul className="space-y-1 text-gray-400 text-sm">
-                <li>• Monitor drawdown buffers constantly</li>
-                <li>• Track 5-day payout requirements</li>
-                <li>• Journal every trading session</li>
-                <li>• Set realistic daily profit targets</li>
-              </ul>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Contact & Support */}
-      <Card className="bg-gray-800/30 border-gray-700">
-        <CardHeader>
-          <div className="flex items-center gap-3">
-            <MessageSquare className="w-6 h-6 text-blue-400" />
-            <CardTitle className="text-white">Need Help?</CardTitle>
-          </div>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <Button variant="outline" className="flex items-center gap-2 border-blue-500 text-blue-400 hover:bg-blue-500/10">
-              <HelpCircle className="w-4 h-4" />
-              FAQ Section
-            </Button>
-            <Button variant="outline" className="flex items-center gap-2 border-green-500 text-green-400 hover:bg-green-500/10">
-              <MessageSquare className="w-4 h-4" />
-              Live Support
-            </Button>
-            <Button variant="outline" className="flex items-center gap-2 border-purple-500 text-purple-400 hover:bg-purple-500/10">
-              <Download className="w-4 h-4" />
-              User Guide PDF
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
     </div>
   );
 }

@@ -33,7 +33,6 @@ import DisciplineAnalysis from "@/pages/discipline-analysis";
 import DisciplinaryAssistant from "@/pages/disciplinary-assistant";
 import Charts from "@/pages/charts";
 import FullChart from "@/pages/full-chart";
-import KnowledgeBase from "@/pages/knowledge-base";
 import TradingDashboard from "@/pages/trading-dashboard";
 import Notifications from "@/pages/notifications";
 import Watchlists from "@/pages/watchlists";
@@ -47,6 +46,17 @@ import AnalyticsReports from "@/pages/analytics-reports";
 import MentalFitness from "@/pages/mental-fitness";
 import NewsCalendar from "@/pages/news-calendar";
 import StrategyBuilder from "@/pages/strategy-builder";
+import Product from "@/pages/product";
+import Security from "@/pages/security";
+import Integrations from "@/pages/integrations";
+import API from "@/pages/api";
+import Changelog from "@/pages/changelog";
+import Documentation from "@/pages/documentation";
+import Tutorials from "@/pages/tutorials";
+import Blog from "@/pages/blog";
+import Contact from "@/pages/contact";
+import About from "@/pages/about";
+import KnowledgeBase from "@/pages/knowledge-base";
 import Sidebar from "@/components/sidebar";
 import NotFound from "@/pages/not-found";
 import { useAuth } from "@/hooks/useAuth";
@@ -133,6 +143,17 @@ function Router() {
           <Route path="/mental-fitness" component={MentalFitness} />
           <Route path="/news-calendar" component={NewsCalendar} />
           <Route path="/strategy-builder" component={StrategyBuilder} />
+          <Route path="/product" component={Product} />
+          <Route path="/security" component={Security} />
+          <Route path="/integrations" component={Integrations} />
+          <Route path="/api" component={API} />
+          <Route path="/changelog" component={Changelog} />
+          <Route path="/knowledge-base" component={KnowledgeBase} />
+          <Route path="/documentation" component={Documentation} />
+          <Route path="/tutorials" component={Tutorials} />
+          <Route path="/blog" component={Blog} />
+          <Route path="/contact" component={Contact} />
+          <Route path="/about" component={About} />
           <Route path="/welcome" component={Welcome} />
           <Route path="/privacy-policy" component={PrivacyPolicy} />
           <Route path="/terms" component={TermsOfService} />

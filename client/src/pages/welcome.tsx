@@ -384,8 +384,8 @@ export default function Welcome() {
     },
     {
       icon: BookOpen,
-      title: "Risk-Integrated Trading Journal",
-      description: "Journal entries automatically linked to risk violations, discipline scores, emotional trading patterns, and improvement tracking.",
+      title: "AI-Integrated Trading Journal & Assistant",
+      description: "Risk-linked journal entries with AI coach Marthy providing real-time psychology analysis, discipline scoring, and personalized improvement recommendations.",
       color: "text-red-500",
       gradient: "from-red-500/10 to-red-600/10",
     },
@@ -402,13 +402,6 @@ export default function Welcome() {
       description: "Curated economic events and news specifically relevant to prop firm traders with risk impact assessments and trading session timing.",
       color: "text-orange-500",
       gradient: "from-orange-500/10 to-orange-600/10",
-    },
-    {
-      icon: MessageSquare,
-      title: "AI Trading Assistant (Marthy)",
-      description: "Personal AI coach trained on prop trading psychology, discipline enforcement, performance optimization, and behavioral pattern recognition.",
-      color: "text-pink-500",
-      gradient: "from-pink-500/10 to-pink-600/10",
     },
     {
       icon: Settings,
@@ -796,59 +789,53 @@ export default function Welcome() {
                     <td className="text-center p-4">Unlimited</td>
                     <td className="text-center p-4">Unlimited</td>
                   </tr>
-                  <tr className="border-b bg-purple-50 dark:bg-purple-900/20">
-                    <td className="p-4 font-medium">🧠 Pre-Session Mental Fitness Check</td>
-                    <td className="text-center p-4">Basic</td>
-                    <td className="text-center p-4">✓ Advanced</td>
-                    <td className="text-center p-4">✓ Advanced + Custom</td>
+                  <tr className="border-b bg-gray-50 dark:bg-gray-800">
+                    <td className="p-4 font-medium text-gray-900 dark:text-white">Pre-Session Mental Fitness Check</td>
+                    <td className="text-center p-4 text-gray-700 dark:text-gray-300">Basic</td>
+                    <td className="text-center p-4 text-green-700 dark:text-green-400">Advanced</td>
+                    <td className="text-center p-4 text-green-700 dark:text-green-400">Advanced + Custom</td>
                   </tr>
-                  <tr className="border-b bg-blue-50 dark:bg-blue-900/20">
-                    <td className="p-4 font-medium">📅 Daily Trading Plan Builder</td>
-                    <td className="text-center p-4">✓ Basic</td>
-                    <td className="text-center p-4">✓ Advanced</td>
-                    <td className="text-center p-4">✓ Team Plans</td>
+                  <tr className="border-b">
+                    <td className="p-4 font-medium text-gray-900 dark:text-white">Daily Trading Plan Builder</td>
+                    <td className="text-center p-4 text-green-700 dark:text-green-400">Basic</td>
+                    <td className="text-center p-4 text-green-700 dark:text-green-400">Advanced</td>
+                    <td className="text-center p-4 text-green-700 dark:text-green-400">Team Plans</td>
                   </tr>
-                  <tr className="border-b bg-green-50 dark:bg-green-900/20">
-                    <td className="p-4 font-medium">🎯 Target Projection System</td>
-                    <td className="text-center p-4">-</td>
-                    <td className="text-center p-4">✓ Full Access</td>
-                    <td className="text-center p-4">✓ Advanced + API</td>
+                  <tr className="border-b bg-gray-50 dark:bg-gray-800">
+                    <td className="p-4 font-medium text-gray-900 dark:text-white">Target Projection System</td>
+                    <td className="text-center p-4 text-gray-500 dark:text-gray-400">-</td>
+                    <td className="text-center p-4 text-green-700 dark:text-green-400">Full Access</td>
+                    <td className="text-center p-4 text-green-700 dark:text-green-400">Advanced + API</td>
                   </tr>
-                  <tr className="border-b bg-yellow-50 dark:bg-yellow-900/20">
-                    <td className="p-4 font-medium">💰 Prop Firm Spending & Payout Eligibility</td>
-                    <td className="text-center p-4">-</td>
-                    <td className="text-center p-4">✓ Full Tracking</td>
-                    <td className="text-center p-4">✓ Multi-Firm + Reports</td>
+                  <tr className="border-b">
+                    <td className="p-4 font-medium text-gray-900 dark:text-white">Prop Firm Spending & Payout Eligibility</td>
+                    <td className="text-center p-4 text-gray-500 dark:text-gray-400">-</td>
+                    <td className="text-center p-4 text-green-700 dark:text-green-400">Full Tracking</td>
+                    <td className="text-center p-4 text-green-700 dark:text-green-400">Multi-Firm + Reports</td>
                   </tr>
-                  <tr className="border-b bg-red-50 dark:bg-red-900/20">
-                    <td className="p-4 font-medium">📖 Risk-Integrated Trading Journal</td>
-                    <td className="text-center p-4">✓ Basic</td>
-                    <td className="text-center p-4">✓ Advanced</td>
-                    <td className="text-center p-4">✓ AI Analysis</td>
+                  <tr className="border-b bg-gray-50 dark:bg-gray-800">
+                    <td className="p-4 font-medium text-gray-900 dark:text-white">AI-Integrated Trading Journal & Assistant</td>
+                    <td className="text-center p-4 text-green-700 dark:text-green-400">Basic</td>
+                    <td className="text-center p-4 text-green-700 dark:text-green-400">Advanced</td>
+                    <td className="text-center p-4 text-green-700 dark:text-green-400">AI Analysis</td>
                   </tr>
-                  <tr className="border-b bg-indigo-50 dark:bg-indigo-900/20">
-                    <td className="p-4 font-medium">📊 Daily Performance vs Plan Analysis</td>
-                    <td className="text-center p-4">-</td>
-                    <td className="text-center p-4">✓ Real-time</td>
-                    <td className="text-center p-4">✓ Real-time + Alerts</td>
+                  <tr className="border-b">
+                    <td className="p-4 font-medium text-gray-900 dark:text-white">Daily Performance vs Plan Analysis</td>
+                    <td className="text-center p-4 text-gray-500 dark:text-gray-400">-</td>
+                    <td className="text-center p-4 text-green-700 dark:text-green-400">Real-time</td>
+                    <td className="text-center p-4 text-green-700 dark:text-green-400">Real-time + Alerts</td>
                   </tr>
-                  <tr className="border-b bg-orange-50 dark:bg-orange-900/20">
-                    <td className="p-4 font-medium">📰 Prop Trader News Calendar</td>
-                    <td className="text-center p-4">-</td>
-                    <td className="text-center p-4">✓ Full Access</td>
-                    <td className="text-center p-4">✓ Custom Alerts</td>
+                  <tr className="border-b bg-gray-50 dark:bg-gray-800">
+                    <td className="p-4 font-medium text-gray-900 dark:text-white">Prop Trader News Calendar</td>
+                    <td className="text-center p-4 text-gray-500 dark:text-gray-400">-</td>
+                    <td className="text-center p-4 text-green-700 dark:text-green-400">Full Access</td>
+                    <td className="text-center p-4 text-green-700 dark:text-green-400">Custom Alerts</td>
                   </tr>
-                  <tr className="border-b bg-pink-50 dark:bg-pink-900/20">
-                    <td className="p-4 font-medium">🤖 AI Trading Assistant (Marthy)</td>
-                    <td className="text-center p-4">-</td>
-                    <td className="text-center p-4">✓ Full Access</td>
-                    <td className="text-center p-4">✓ Priority + Custom</td>
-                  </tr>
-                  <tr className="border-b bg-teal-50 dark:bg-teal-900/20">
-                    <td className="p-4 font-medium">⚙️ Strategy Builder & Sharing</td>
-                    <td className="text-center p-4">-</td>
-                    <td className="text-center p-4">✓ Community</td>
-                    <td className="text-center p-4">✓ Private + Teams</td>
+                  <tr className="border-b">
+                    <td className="p-4 font-medium text-gray-900 dark:text-white">Strategy Builder & Sharing</td>
+                    <td className="text-center p-4 text-gray-500 dark:text-gray-400">-</td>
+                    <td className="text-center p-4 text-green-700 dark:text-green-400">Community</td>
+                    <td className="text-center p-4 text-green-700 dark:text-green-400">Private + Teams</td>
                   </tr>
                   <tr className="border-b">
                     <td className="p-4 font-medium">Support</td>
