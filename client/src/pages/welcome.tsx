@@ -225,28 +225,6 @@ function WelcomeFooter() {
 
   const footerSections = [
     {
-      title: 'Product',
-      links: [
-        { name: 'Features', href: '#features' },
-        { name: 'Pricing', href: '#pricing' },
-        { name: 'Security', href: '/security' },
-        { name: 'Integrations', href: '#integrations' },
-        { name: 'API', href: '/api-docs' },
-        { name: 'Changelog', href: '/changelog' },
-      ]
-    },
-    {
-      title: 'Trading Tools',
-      links: [
-        { name: 'Mental Fitness', href: '/mental-fitness' },
-        { name: 'Daily Plan', href: '/daily-plan' },
-        { name: 'Target Projections', href: '/projections' },
-        { name: 'Prop Spending', href: '/spending' },
-        { name: 'News Calendar', href: '/news-calendar' },
-        { name: 'Strategy Builder', href: '/strategy-builder' },
-      ]
-    },
-    {
       title: 'Help & Support',
       links: [
         { name: 'Knowledge Base', href: '/knowledge-base' },
@@ -825,10 +803,10 @@ export default function Welcome() {
                     <td className="text-center p-4 text-green-700 dark:text-green-400">Private + Teams</td>
                   </tr>
                   <tr className="border-b">
-                    <td className="p-4 font-medium">Support</td>
-                    <td className="text-center p-4">Email</td>
-                    <td className="text-center p-4">Priority</td>
-                    <td className="text-center p-4">Dedicated Manager</td>
+                    <td className="p-4 font-medium text-gray-900 dark:text-white">Support</td>
+                    <td className="text-center p-4 text-gray-700 dark:text-gray-300">Email</td>
+                    <td className="text-center p-4 text-gray-700 dark:text-gray-300">Priority</td>
+                    <td className="text-center p-4 text-gray-700 dark:text-gray-300">Dedicated Manager</td>
                   </tr>
                 </tbody>
               </table>

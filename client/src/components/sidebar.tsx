@@ -53,7 +53,6 @@ const navItems = [
   { href: "/spending", label: "Prop Firm Spending", icon: Wallet, section: "main" },
   { href: "/payouts", label: "Payout Records", icon: DollarSign, section: "main" },
   { href: "/reports", label: "Reports", icon: Calendar, section: "main" },
-
   { href: "/achievements", label: "Achievement", icon: Trophy, section: "main" },
 ];
 

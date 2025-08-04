@@ -472,7 +472,11 @@ export default function KnowledgeBase() {
                             variant="ghost" 
                             size="sm" 
                             className="text-xs text-blue-400 hover:text-blue-300"
-                            onClick={() => window.location.href = `/knowledge-base/article/${category.title.toLowerCase().replace(/\s+/g, '-')}/${article.title.toLowerCase().replace(/\s+/g, '-')}`}
+                            onClick={() => {
+                              const categorySlug = category.title.toLowerCase().replace(/\s+/g, '-');
+                              const articleSlug = article.title.toLowerCase().replace(/\s+/g, '-');
+                              window.location.href = `/knowledge-base/article/${categorySlug}/${articleSlug}`;
+                            }}
                           >
                             Read
                           </Button>
