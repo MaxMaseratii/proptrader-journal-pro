@@ -53,8 +53,9 @@ const navItems = [
   { href: "/spending", label: "Prop Firm Spending", icon: Wallet, section: "main" },
   { href: "/payouts", label: "Payout Records", icon: DollarSign, section: "main" },
   { href: "/reports", label: "Reports", icon: Calendar, section: "main" },
-
   { href: "/achievements", label: "Achievement", icon: Trophy, section: "main" },
+  { href: "/profile", label: "Profile", icon: User, section: "main" },
+  { action: "theme", label: "Theme", icon: Settings, section: "main" },
 ];
 
 export default function Sidebar() {
@@ -122,8 +123,8 @@ export default function Sidebar() {
         )}
         <ul className="space-y-2 px-4">
           {mainItems.map(({ href, label, icon: Icon }, index) => (
-            <li key={href}>
-              <Link href={href} className={cn(
+            <li key={href || `item-${index}`}>
+              <Link href={href || "/"} className={cn(
                 "flex items-center px-4 py-3 text-sm font-medium rounded-xl smooth-transition cursor-pointer group relative",
                 location === href 
                   ? "bg-blue-100 dark:bg-prop-gradient-gold text-blue-900 dark:text-black font-bold" 
@@ -153,96 +154,6 @@ export default function Sidebar() {
             </li>
           ))}
         </ul>
-        
-        {/* Theme Switcher Modal */}
-        <div className="px-4 mb-4">
-          <ThemeSwitcherModal />
-        </div>
-        
-        {/* User Profile with just initials */}
-        <div className="px-4 mt-8">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button 
-                variant="ghost" 
-                className={cn(
-                  "w-full flex items-center px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg",
-                  isCollapsed ? "justify-center" : "justify-start"
-                )}
-              >
-                <div className={cn(
-                  "h-4 w-4 bg-blue-500 dark:bg-prop-gradient-gold rounded-full flex items-center justify-center text-xs font-bold text-white dark:text-black",
-                  !isCollapsed ? "mr-3" : ""
-                )}>
-                  {user ? (
-                    (user as any)?.firstName?.charAt(0) || 
-                    (user as any)?.email?.charAt(0).toUpperCase() || 'U'
-                  ) : 'U'}
-                </div>
-                {!isCollapsed && "Profile"}
-              </Button>
-            </DropdownMenuTrigger>
-            
-            <DropdownMenuContent 
-              className="w-64 bg-white dark:bg-gray-800 border-gray-200 dark:border-prop-gold/20 shadow-xl" 
-              align="start"
-              side="right"
-            >
-              <DropdownMenuLabel className="text-gray-700 dark:text-prop-gold">My Account</DropdownMenuLabel>
-              <DropdownMenuSeparator className="bg-gray-200 dark:bg-prop-gold/20" />
-              
-              <DropdownMenuItem 
-                className="text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
-                onClick={() => window.location.href = '/profile'}
-              >
-                <User className="mr-2 h-4 w-4 text-blue-600 dark:text-blue-400" />
-                Profile Settings
-              </DropdownMenuItem>
-              
-
-              
-              <DropdownMenuItem 
-                className="text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
-                onClick={() => window.location.href = '/security'}
-              >
-                <Shield className="mr-2 h-4 w-4 text-yellow-600 dark:text-yellow-400" />
-                Security Settings
-              </DropdownMenuItem>
-              
-              <DropdownMenuSeparator className="bg-gray-200 dark:bg-prop-gold/20" />
-              
-              {/* Reports moved to profile section */}
-              {profileItems.map(({ href, label, icon: Icon }) => (
-                <DropdownMenuItem 
-                  key={href}
-                  className="text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
-                  onClick={() => window.location.href = href}
-                >
-                  <Icon className="mr-2 h-4 w-4 text-blue-600 dark:text-prop-gold" />
-                  {label}
-                </DropdownMenuItem>
-              ))}
-              
-              <DropdownMenuSeparator className="bg-gray-200 dark:bg-prop-gold/20" />
-              
-              <DropdownMenuItem 
-                className="text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-600/20 cursor-pointer"
-                onClick={async () => {
-                  try {
-                    await fetch('/api/auth/logout', { method: 'POST' });
-                    window.location.href = '/welcome';
-                  } catch (error) {
-                    console.error('Logout error:', error);
-                    window.location.href = '/welcome';
-                  }
-                }}
-              >
-                <LogOut className="mr-2 h-4 w-4 text-red-600 dark:text-red-400" />
-                Sign Out
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
       </nav>
     </aside>
   );

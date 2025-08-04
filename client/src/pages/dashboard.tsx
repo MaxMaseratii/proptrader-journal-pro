@@ -143,7 +143,7 @@ interface DashboardAnalytics {
 
 export default function Dashboard() {
   const queryClient = useQueryClient();
-  const { getWidgetBackground } = useWidgetStyling();
+  const { getWidgetBackground, getContentBackground } = useWidgetStyling();
   
   // ===== FIXED STATE MANAGEMENT =====
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -1315,7 +1315,7 @@ export default function Dashboard() {
         </div>
       )}
 
-      <div className="p-6 space-y-6 bg-gray-50 dark:bg-gray-900">
+      <div className={`p-6 space-y-6 ${getContentBackground()}`}>
         
         {/* Daily Trading Plan & Performance - Consolidated Section */}
         <div className="mb-8">

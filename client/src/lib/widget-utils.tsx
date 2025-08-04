@@ -10,7 +10,15 @@ export function useWidgetStyling() {
     return 'bg-black/30 border-gray-700/50';
   };
 
+  const getContentBackground = () => {
+    if (theme === 'light') {
+      return 'bg-gradient-to-br from-yellow-50 via-amber-50 to-yellow-100';
+    }
+    return 'bg-background';
+  };
+
   return {
-    getWidgetBackground
+    getWidgetBackground,
+    getContentBackground
   };
 }
