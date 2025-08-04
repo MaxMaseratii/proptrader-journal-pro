@@ -219,7 +219,11 @@ export default function CompleteTradingDashboard() {
     physicalEnergy: 5,
     focusLevel: 4,
     confidence: 4,
-    overallReadiness: 17,
+    marketRegimeAwareness: 4,
+    riskRespectLevel: 5,
+    humilityCheck: 4,
+    wizardMindset: 4,
+    overallReadiness: 33,
     traderIdentity: 'disciplined_professional',
     biggestFear: '',
     strongestDesire: '',
@@ -427,17 +431,22 @@ export default function CompleteTradingDashboard() {
             <h3 className="text-white font-semibold mb-4 text-lg">Mental State Assessment (Rate 1-5)</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {[
-                { label: 'Emotional Clarity', key: 'emotionalClarity', desc: 'Calm vs. Anxious/Excited', icon: Heart },
-                { label: 'Physical Energy', key: 'physicalEnergy', desc: 'Alert vs. Tired/Wired', icon: Zap },
-                { label: 'Focus Level', key: 'focusLevel', desc: 'Sharp vs. Scattered', icon: Target },
-                { label: 'Confidence', key: 'confidence', desc: 'Assured vs. Uncertain', icon: Shield }
-              ].map(({ label, key, desc, icon: Icon }) => (
+                { label: 'Emotional Clarity', key: 'emotionalClarity', desc: 'Calm vs. Anxious/Excited', icon: Heart, wisdom: 'Clarity breeds consistency' },
+                { label: 'Physical Energy', key: 'physicalEnergy', desc: 'Alert vs. Tired/Wired', icon: Zap, wisdom: 'Energy fuels execution' },
+                { label: 'Focus Level', key: 'focusLevel', desc: 'Sharp vs. Scattered', icon: Target, wisdom: 'Focus determines outcome' },
+                { label: 'Confidence', key: 'confidence', desc: 'Assured vs. Uncertain', icon: Shield, wisdom: 'Confidence enables action' },
+                { label: 'Market Regime Awareness', key: 'marketRegimeAwareness', desc: 'Do you understand current conditions?', icon: TrendingUp, wisdom: 'Know the market you\'re trading' },
+                { label: 'Risk Respect Level', key: 'riskRespectLevel', desc: 'Will you honor your stops?', icon: Shield, wisdom: 'Risk management is everything' },
+                { label: 'Humility Check', key: 'humilityCheck', desc: 'Ready to be wrong?', icon: Heart, wisdom: 'Market will humble everyone' },
+                { label: 'Professional Trader Mindset', key: 'wizardMindset', desc: 'Thinking like the masters?', icon: Crown, wisdom: 'Discipline over discretion' }
+              ].map(({ label, key, desc, icon: Icon, wisdom }) => (
                 <div key={key} className="space-y-3">
                   <div className="flex items-center gap-2">
-                    <Icon className="w-5 h-5 text-blue-400" />
+                    <Icon className="w-5 h-5 text-amber-400" />
                     <Label className="text-white font-medium">{label}</Label>
                   </div>
                   <p className="text-blue-300 text-sm">{desc}</p>
+                  <p className="text-purple-400 text-xs italic">{wisdom}</p>
                   <div className="flex items-center gap-4">
                     <span className="text-red-400 text-sm w-8">1</span>
                     <Slider
@@ -445,7 +454,7 @@ export default function CompleteTradingDashboard() {
                       onValueChange={(value) => setPreSessionData(prev => ({
                         ...prev,
                         [key]: value[0],
-                        overallReadiness: prev.emotionalClarity + prev.physicalEnergy + prev.focusLevel + prev.confidence
+                        overallReadiness: prev.emotionalClarity + prev.physicalEnergy + prev.focusLevel + prev.confidence + prev.marketRegimeAwareness + prev.riskRespectLevel + prev.humilityCheck + prev.wizardMindset
                       }))}
                       max={5}
                       min={1}
@@ -466,22 +475,22 @@ export default function CompleteTradingDashboard() {
           <div className="text-center p-6 bg-gradient-to-br from-slate-900/50 to-slate-800/50 border border-blue-500/30 rounded-lg">
             <h3 className="text-white font-semibold mb-2">Overall Readiness Score</h3>
             <div className="text-4xl font-bold mb-2">
-              <span className={`${preSessionData.overallReadiness >= 16 ? 'text-green-400' : 
-                                 preSessionData.overallReadiness >= 12 ? 'text-yellow-400' : 'text-red-400'}`}>
-                {preSessionData.overallReadiness}/20
+              <span className={`${preSessionData.overallReadiness >= 32 ? 'text-green-400' : 
+                                 preSessionData.overallReadiness >= 24 ? 'text-yellow-400' : 'text-red-400'}`}>
+                {preSessionData.overallReadiness}/40
               </span>
             </div>
             <Badge className={`text-lg px-4 py-2 ${
-              preSessionData.overallReadiness >= 16 ? 'bg-green-900/30 text-green-400 border-green-400/30' :
-              preSessionData.overallReadiness >= 12 ? 'bg-yellow-900/30 text-yellow-400 border-yellow-400/30' :
+              preSessionData.overallReadiness >= 32 ? 'bg-green-900/30 text-green-400 border-green-400/30' :
+              preSessionData.overallReadiness >= 24 ? 'bg-yellow-900/30 text-yellow-400 border-yellow-400/30' :
               'bg-red-900/30 text-red-400 border-red-400/30'
             }`}>
-              {preSessionData.overallReadiness >= 16 ? 'GO' : 
-               preSessionData.overallReadiness >= 12 ? 'REDUCED' : 'NO-GO'}
+              {preSessionData.overallReadiness >= 32 ? 'GO' : 
+               preSessionData.overallReadiness >= 24 ? 'REDUCED' : 'NO-GO'}
             </Badge>
             <p className="text-blue-300 text-sm mt-2">
-              {preSessionData.overallReadiness >= 16 ? 'Full trading capacity' :
-               preSessionData.overallReadiness >= 12 ? 'Reduce position size by 50%' :
+              {preSessionData.overallReadiness >= 32 ? 'Full trading capacity' :
+               preSessionData.overallReadiness >= 24 ? 'Reduce position size by 50%' :
                'Take the day off or paper trade only'}
             </p>
           </div>
