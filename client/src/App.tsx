@@ -34,8 +34,6 @@ import Charts from "@/pages/charts";
 import FullChart from "@/pages/full-chart";
 import KnowledgeBase from "@/pages/knowledge-base";
 import TradingDashboard from "@/pages/trading-dashboard";
-import Accounts from "@/pages/accounts";
-import Strategies from "@/pages/strategies";
 import Sidebar from "@/components/sidebar";
 import NotFound from "@/pages/not-found";
 import { useAuth } from "@/hooks/useAuth";
@@ -108,8 +106,6 @@ function Router() {
           <Route path="/discipline-analysis" component={DisciplineAnalysis} />
           <Route path="/disciplinary-assistant" component={DisciplinaryAssistant} />
           <Route path="/knowledge-base" component={KnowledgeBase} />
-          <Route path="/accounts" component={Accounts} />
-          <Route path="/strategies" component={Strategies} />
           <Route path="/profile" component={Profile} />
           <Route path="/welcome" component={Welcome} />
           <Route path="/privacy-policy" component={PrivacyPolicy} />
