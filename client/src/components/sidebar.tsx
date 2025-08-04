@@ -199,19 +199,7 @@ export default function Sidebar() {
                 Profile Settings
               </DropdownMenuItem>
               
-              <DropdownMenuItem 
-                className="text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
-                onClick={() => {
-                  // Open theme modal instead of navigating to page
-                  const themeModal = document.querySelector('[data-theme-modal]');
-                  if (themeModal) {
-                    (themeModal as HTMLButtonElement).click();
-                  }
-                }}
-              >
-                <Settings className="mr-2 h-4 w-4 text-purple-600 dark:text-purple-400" />
-                Appearance
-              </DropdownMenuItem>
+
               
               <DropdownMenuItem 
                 className="text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
