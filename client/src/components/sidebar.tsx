@@ -116,7 +116,7 @@ export default function Sidebar() {
       <nav className="mt-6 flex-1 overflow-y-auto pb-20">
         {!isCollapsed && !isPartiallyCollapsed && (
           <div className="px-6 mb-4">
-            <h3 className="text-xs font-medium text-prop-gold uppercase tracking-wider">Main</h3>
+            <h3 className="text-xs font-medium text-prop-gold uppercase tracking-wider">Navigation</h3>
           </div>
         )}
         <ul className="space-y-2 px-4">
@@ -151,109 +151,103 @@ export default function Sidebar() {
               </Link>
             </li>
           ))}
-        </ul>
-        
-
-        
-        {/* User Profile with just initials */}
-        <div className="px-4 mt-8">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button 
-                variant="ghost" 
-                className={cn(
-                  "w-full flex items-center px-3 py-2 text-sm font-medium text-gray-300 hover:bg-dark-card rounded-lg",
-                  isCollapsed ? "justify-center" : "justify-start"
-                )}
-              >
-                <div className={cn(
-                  "h-4 w-4 bg-prop-gradient-gold rounded-full flex items-center justify-center text-xs font-bold text-black",
-                  !isCollapsed ? "mr-3" : ""
+          
+          {/* Add Profile as a regular navigation item */}
+          <li key="/profile">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button className={cn(
+                  "w-full flex items-center px-4 py-3 text-sm font-medium rounded-xl smooth-transition cursor-pointer group relative",
+                  location === "/profile" 
+                    ? "bg-prop-gradient-gold text-black font-bold" 
+                    : "text-gray-300 hover:bg-prop-card hover:text-prop-gold hover-scale",
+                  (isCollapsed || isPartiallyCollapsed) ? "justify-center" : ""
                 )}>
-                  {user ? (
-                    (user as any)?.firstName?.charAt(0) || 
-                    (user as any)?.email?.charAt(0).toUpperCase() || 'U'
-                  ) : 'U'}
-                </div>
-                {!isCollapsed && "Profile"}
-              </Button>
-            </DropdownMenuTrigger>
-            
-            <DropdownMenuContent 
-              className="w-64 bg-dark-card border-prop-gold/20 shadow-xl" 
-              align="start"
-              side="right"
-            >
-              <DropdownMenuLabel className="text-prop-gold">My Account</DropdownMenuLabel>
-              <DropdownMenuSeparator className="bg-prop-gold/20" />
+                  <User className={cn(
+                    "h-5 w-5 smooth-transition",
+                    location === "/profile" ? "text-black" : "text-gray-400 group-hover:text-prop-gold",
+                    !(isCollapsed || isPartiallyCollapsed) ? "mr-3" : ""
+                  )} />
+                  {!isCollapsed && !isPartiallyCollapsed && "Profile"}
+                  {(isCollapsed || isPartiallyCollapsed) && (
+                    <div className="absolute left-full ml-2 px-2 py-1 bg-gray-800 border border-prop-gold/20 rounded-md text-xs text-gray-300 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50 shadow-md">
+                      Profile
+                    </div>
+                  )}
+                </button>
+              </DropdownMenuTrigger>
               
-              <DropdownMenuItem 
-                className="text-gray-300 hover:bg-dark-surface cursor-pointer"
-                onClick={() => window.location.href = '/profile'}
+              <DropdownMenuContent 
+                className="w-64 bg-dark-card border-prop-gold/20 shadow-xl" 
+                align="start"
+                side="right"
               >
-                <User className="mr-2 h-4 w-4 text-blue-400" />
-                Profile Settings
-              </DropdownMenuItem>
-              
-
-              
-
-              
-              <DropdownMenuSeparator className="bg-prop-gold/20" />
-              
-              {/* Keep only requested pages */}
-              <DropdownMenuItem 
-                className="text-gray-300 hover:bg-dark-surface cursor-pointer"
-                onClick={() => window.location.href = '/knowledge-base'}
-              >
-                <BookOpen className="mr-2 h-4 w-4 text-blue-400" />
-                Knowledge Base
-              </DropdownMenuItem>
-              
-              <DropdownMenuItem 
-                className="text-gray-300 hover:bg-dark-surface cursor-pointer"
-                onClick={() => window.location.href = '/support'}
-              >
-                <Shield className="mr-2 h-4 w-4 text-green-400" />
-                Support Center
-              </DropdownMenuItem>
-              
-              <DropdownMenuItem 
-                className="text-gray-300 hover:bg-dark-surface cursor-pointer"
-                onClick={() => window.location.href = '/terms'}
-              >
-                <FileText className="mr-2 h-4 w-4 text-yellow-400" />
-                Terms of Service
-              </DropdownMenuItem>
-              
-              <DropdownMenuItem 
-                className="text-gray-300 hover:bg-dark-surface cursor-pointer"
-                onClick={() => window.location.href = '/privacy'}
-              >
-                <Shield className="mr-2 h-4 w-4 text-purple-400" />
-                Privacy Policy
-              </DropdownMenuItem>
-              
-              <DropdownMenuSeparator className="bg-prop-gold/20" />
-              
-              <DropdownMenuItem 
-                className="text-red-400 hover:bg-red-600/20 cursor-pointer"
-                onClick={async () => {
-                  try {
-                    await fetch('/api/auth/logout', { method: 'POST' });
-                    window.location.href = '/welcome';
-                  } catch (error) {
-                    console.error('Logout error:', error);
-                    window.location.href = '/welcome';
-                  }
-                }}
-              >
-                <LogOut className="mr-2 h-4 w-4 text-red-400" />
-                Sign Out
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
+                <DropdownMenuLabel className="text-prop-gold">My Account</DropdownMenuLabel>
+                <DropdownMenuSeparator className="bg-prop-gold/20" />
+                
+                <DropdownMenuItem 
+                  className="text-gray-300 hover:bg-dark-surface cursor-pointer"
+                  onClick={() => window.location.href = '/profile'}
+                >
+                  <User className="mr-2 h-4 w-4 text-blue-400" />
+                  Profile Settings
+                </DropdownMenuItem>
+                
+                <DropdownMenuSeparator className="bg-prop-gold/20" />
+                
+                <DropdownMenuItem 
+                  className="text-gray-300 hover:bg-dark-surface cursor-pointer"
+                  onClick={() => window.location.href = '/knowledge-base'}
+                >
+                  <BookOpen className="mr-2 h-4 w-4 text-blue-400" />
+                  Knowledge Base
+                </DropdownMenuItem>
+                
+                <DropdownMenuItem 
+                  className="text-gray-300 hover:bg-dark-surface cursor-pointer"
+                  onClick={() => window.location.href = '/support'}
+                >
+                  <Shield className="mr-2 h-4 w-4 text-green-400" />
+                  Support Center
+                </DropdownMenuItem>
+                
+                <DropdownMenuItem 
+                  className="text-gray-300 hover:bg-dark-surface cursor-pointer"
+                  onClick={() => window.location.href = '/terms'}
+                >
+                  <FileText className="mr-2 h-4 w-4 text-yellow-400" />
+                  Terms of Service
+                </DropdownMenuItem>
+                
+                <DropdownMenuItem 
+                  className="text-gray-300 hover:bg-dark-surface cursor-pointer"
+                  onClick={() => window.location.href = '/privacy'}
+                >
+                  <Shield className="mr-2 h-4 w-4 text-purple-400" />
+                  Privacy Policy
+                </DropdownMenuItem>
+                
+                <DropdownMenuSeparator className="bg-prop-gold/20" />
+                
+                <DropdownMenuItem 
+                  className="text-red-400 hover:bg-red-600/20 cursor-pointer"
+                  onClick={async () => {
+                    try {
+                      await fetch('/api/auth/logout', { method: 'POST' });
+                      window.location.href = '/welcome';
+                    } catch (error) {
+                      console.error('Logout error:', error);
+                      window.location.href = '/welcome';
+                    }
+                  }}
+                >
+                  <LogOut className="mr-2 h-4 w-4 text-red-400" />
+                  Sign Out
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </li>
+        </ul>
       </nav>
     </aside>
   );
