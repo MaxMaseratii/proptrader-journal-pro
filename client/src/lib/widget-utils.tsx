@@ -4,9 +4,7 @@ export function useWidgetStyling() {
   const { theme } = useTheme();
   
   const getWidgetBackground = () => {
-    if (theme === 'light') {
-      return 'bg-gradient-to-br from-yellow-50 via-amber-50 to-yellow-100 border-amber-200/50';
-    }
+    // NEVER change widget colors - keep them exactly the same in both themes
     return 'bg-black/30 border-gray-700/50';
   };
 
