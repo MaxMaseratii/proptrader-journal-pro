@@ -94,10 +94,7 @@ export default function Profile() {
               <CreditCard className="h-4 w-4" />
               Billing
             </TabsTrigger>
-            <TabsTrigger value="security" className="flex items-center gap-2">
-              <Shield className="h-4 w-4" />
-              Security
-            </TabsTrigger>
+
           </TabsList>
 
           <TabsContent value="profile" className="space-y-6">
@@ -355,59 +352,6 @@ export default function Profile() {
                       Update
                     </Button>
                   </div>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="security" className="space-y-6">
-            <Card className="bg-gray-800 border-gray-700">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Shield className="h-5 w-5" />
-                  Security Settings
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex justify-between items-center p-4 bg-gray-900 rounded-lg">
-                  <div>
-                    <h4 className="font-medium">Change Password</h4>
-                    <p className="text-sm text-gray-400">Update your account password</p>
-                  </div>
-                  <Button variant="outline" size="sm">
-                    <Key className="h-4 w-4 mr-2" />
-                    Change
-                  </Button>
-                </div>
-
-                <div className="flex justify-between items-center p-4 bg-gray-900 rounded-lg">
-                  <div>
-                    <h4 className="font-medium">Two-Factor Authentication</h4>
-                    <p className="text-sm text-gray-400">Add an extra layer of security</p>
-                  </div>
-                  <Button variant="outline" size="sm">
-                    Enable 2FA
-                  </Button>
-                </div>
-
-                <div className="flex justify-between items-center p-4 bg-gray-900 rounded-lg">
-                  <div>
-                    <h4 className="font-medium">API Keys</h4>
-                    <p className="text-sm text-gray-400">Manage your API access keys</p>
-                  </div>
-                  <Button variant="outline" size="sm">
-                    Manage Keys
-                  </Button>
-                </div>
-
-                <div className="flex justify-between items-center p-4 bg-gray-900 rounded-lg">
-                  <div>
-                    <h4 className="font-medium">Login History</h4>
-                    <p className="text-sm text-gray-400">View recent account activity</p>
-                  </div>
-                  <Button variant="outline" size="sm">
-                    View History
-                  </Button>
                 </div>
               </CardContent>
             </Card>

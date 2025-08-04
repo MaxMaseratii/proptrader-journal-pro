@@ -1693,21 +1693,21 @@ export default function CompleteTradingDashboard() {
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-900 to-slate-950 p-2">
-      <div className="max-w-full mx-auto">
-        <div className="mb-4">
-          <div className="flex justify-between items-start mb-4">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-900 to-slate-950 flex flex-col">
+      <div className="flex-1 flex flex-col p-1">
+        <div className="mb-2">
+          <div className="flex justify-between items-start mb-2">
             <div>
-              <h1 className="text-gradient-rainbow text-3xl font-bold mb-2">Pre-session Mental Check & Daily Plan</h1>
-              <p className="text-gray-400 text-base">Comprehensive psychology and strategy management platform</p>
+              <h1 className="text-gradient-rainbow text-2xl font-bold mb-1">Pre-session Mental Check & Daily Plan</h1>
+              <p className="text-gray-400 text-sm">Comprehensive psychology and strategy management platform</p>
             </div>
             <div className="text-right">
-              <div className="text-2xl font-bold text-white">{new Date().toLocaleDateString('en-US', { 
+              <div className="text-lg font-bold text-white">{new Date().toLocaleDateString('en-US', { 
                 month: 'long', 
                 day: 'numeric', 
                 year: 'numeric' 
               })}</div>
-              <div className="text-gray-400">{new Date().toLocaleTimeString('en-US', { 
+              <div className="text-gray-400 text-sm">{new Date().toLocaleTimeString('en-US', { 
                 hour: '2-digit', 
                 minute: '2-digit',
                 hour12: true
@@ -1716,7 +1716,7 @@ export default function CompleteTradingDashboard() {
           </div>
         </div>
 
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4 h-full">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="flex flex-col flex-1 min-h-0">
           <TabsList className="grid w-full grid-cols-3 bg-slate-900/50 border border-blue-500/30">
             <TabsTrigger 
               value="psychology" 
@@ -1741,20 +1741,20 @@ export default function CompleteTradingDashboard() {
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="psychology" className="space-y-4 flex-1 min-h-0">
-            <div className="h-full">
+          <TabsContent value="psychology" className="flex-1 min-h-0 overflow-hidden">
+            <div className="h-full overflow-auto">
               {renderPsychologyWorkflow()}
             </div>
           </TabsContent>
 
-          <TabsContent value="strategies" className="space-y-4 flex-1 min-h-0">
-            <div className="h-full">
+          <TabsContent value="strategies" className="flex-1 min-h-0 overflow-hidden">
+            <div className="h-full overflow-auto">
               {renderStrategiesSection()}
             </div>
           </TabsContent>
 
-          <TabsContent value="history" className="space-y-4 flex-1 min-h-0">
-            <div className="h-full">
+          <TabsContent value="history" className="flex-1 min-h-0 overflow-hidden">
+            <div className="h-full overflow-auto">
               {renderHistoricalPlansSection()}
             </div>
           </TabsContent>
