@@ -841,7 +841,7 @@ export default function Welcome() {
           </p>
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
           {/* Password Security */}
           <Card className="bg-gradient-to-br from-gray-800/50 via-gray-900/60 to-black/70 border border-amber-500/20">
             <CardContent className="p-3 text-center">
@@ -877,20 +877,13 @@ export default function Welcome() {
               <div className="text-lg font-bold text-yellow-400">A+</div>
             </CardContent>
           </Card>
-        </div>
 
-        {/* Overall Security Score */}
-        <div className="mt-12 text-center">
-          <Card className="bg-gradient-to-br from-amber-900/20 via-yellow-900/30 to-amber-800/20 border border-amber-500/30 max-w-md mx-auto">
-            <CardContent className="p-8">
-              <Trophy className="h-16 w-16 text-amber-400 mx-auto mb-4" />
-              <h3 className="text-2xl font-bold text-white mb-2">Overall Security Grade</h3>
-              <div className="text-6xl font-bold bg-gradient-to-r from-yellow-400 to-amber-500 bg-clip-text text-transparent mb-4">
-                A+
-              </div>
-              <p className="text-gray-300">
-                Industry-leading security standards protecting millions of traders worldwide
-              </p>
+          {/* Overall Security Score */}
+          <Card className="bg-gradient-to-br from-gray-800/50 via-gray-900/60 to-black/70 border border-amber-500/20">
+            <CardContent className="p-3 text-center">
+              <Trophy className="h-6 w-6 text-amber-400 mx-auto mb-1" />
+              <h3 className="text-xs font-semibold text-white mb-1">Overall</h3>
+              <div className="text-lg font-bold text-amber-400">A+</div>
             </CardContent>
           </Card>
         </div>
