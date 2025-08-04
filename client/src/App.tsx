@@ -3,6 +3,7 @@ import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { ThemeProvider } from "@/components/theme-provider";
 import Dashboard from "@/pages/dashboard";
 import DashboardShowcase from "@/pages/dashboard-showcase";
 import Projections from "@/pages/projections";
@@ -39,6 +40,10 @@ import Watchlists from "@/pages/watchlists";
 import PositionSizing from "@/pages/position-sizing";
 import Accounts from "@/pages/accounts";
 import RiskManagement from "@/pages/risk-management";
+import Appearance from "@/pages/appearance";
+import AccountManager from "@/pages/account-manager";
+import TradingJournalPage from "@/pages/trading-journal-page";
+import AnalyticsReports from "@/pages/analytics-reports";
 import Sidebar from "@/components/sidebar";
 import NotFound from "@/pages/not-found";
 import { useAuth } from "@/hooks/useAuth";
@@ -118,6 +123,10 @@ function Router() {
           <Route path="/position-sizing" component={PositionSizing} />
           
           <Route path="/profile" component={Profile} />
+          <Route path="/appearance" component={Appearance} />
+          <Route path="/account-manager" component={AccountManager} />
+          <Route path="/trading-journal-page" component={TradingJournalPage} />
+          <Route path="/analytics-reports" component={AnalyticsReports} />
           <Route path="/welcome" component={Welcome} />
           <Route path="/privacy-policy" component={PrivacyPolicy} />
           <Route path="/terms" component={TermsOfService} />
@@ -133,10 +142,12 @@ function Router() {
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <Toaster />
-        <Router />
-      </TooltipProvider>
+      <ThemeProvider defaultTheme="dark" storageKey="prop-trader-theme">
+        <TooltipProvider>
+          <Toaster />
+          <Router />
+        </TooltipProvider>
+      </ThemeProvider>
     </QueryClientProvider>
   );
 }

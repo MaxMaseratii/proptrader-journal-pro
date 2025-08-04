@@ -209,6 +209,14 @@ export default function Sidebar() {
               
               <DropdownMenuItem 
                 className="text-gray-300 hover:bg-dark-surface cursor-pointer"
+                onClick={() => window.location.href = '/appearance'}
+              >
+                <Settings className="mr-2 h-4 w-4 text-purple-400" />
+                Appearance
+              </DropdownMenuItem>
+              
+              <DropdownMenuItem 
+                className="text-gray-300 hover:bg-dark-surface cursor-pointer"
               >
                 <Shield className="mr-2 h-4 w-4 text-yellow-400" />
                 Security Settings

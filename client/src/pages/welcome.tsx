@@ -45,13 +45,13 @@ function WelcomeHeader() {
       name: 'Features',
       href: '#features',
       dropdown: [
-        { name: 'Account Management', href: '#features', icon: Settings },
-        { name: 'Risk Management', href: '#features', icon: Shield },
-        { name: 'Trading Journal', href: '#features', icon: BookOpen },
-        { name: 'Analytics & Reports', href: '#features', icon: BarChart3 },
-        { name: 'Position Sizing', href: '#features', icon: Calculator },
-        { name: 'Watchlists', href: '#features', icon: Eye },
-        { name: 'Notifications', href: '#features', icon: Bell },
+        { name: 'Account Management', href: '/account-manager', icon: Settings },
+        { name: 'Risk Management', href: '/risk-management', icon: Shield },
+        { name: 'Trading Journal', href: '/trading-journal-page', icon: BookOpen },
+        { name: 'Analytics & Reports', href: '/analytics-reports', icon: BarChart3 },
+        { name: 'Position Sizing', href: '/position-sizing', icon: Calculator },
+        { name: 'Watchlists', href: '/watchlists', icon: Eye },
+        { name: 'Notifications', href: '/notifications', icon: Bell },
       ]
     },
     { name: 'Pricing', href: '#pricing' },
@@ -103,6 +103,10 @@ function WelcomeHeader() {
                             key={subItem.name}
                             href={subItem.href}
                             className="flex items-center space-x-3 px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              setLocation(subItem.href);
+                            }}
                           >
                             {subItem.icon && <subItem.icon className="h-4 w-4" />}
                             <span>{subItem.name}</span>
@@ -176,6 +180,10 @@ function WelcomeHeader() {
                           key={subItem.name}
                           href={subItem.href}
                           className="block px-3 py-2 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            setLocation(subItem.href);
+                          }}
                         >
                           {subItem.name}
                         </Link>
@@ -226,12 +234,12 @@ function WelcomeFooter() {
     {
       title: 'Trading Tools',
       links: [
-        { name: 'Account Manager', href: '/accounts' },
+        { name: 'Account Manager', href: '/account-manager' },
         { name: 'Risk Management', href: '/risk-management' },
         { name: 'Position Sizing', href: '/position-sizing' },
         { name: 'Watchlists', href: '/watchlists' },
-        { name: 'Trading Journal', href: '/journal' },
-        { name: 'Analytics', href: '/analytics' },
+        { name: 'Trading Journal', href: '/trading-journal-page' },
+        { name: 'Analytics', href: '/analytics-reports' },
       ]
     },
     {
@@ -404,6 +412,7 @@ export default function Welcome() {
     {
       name: "Starter",
       price: "$9",
+      originalPrice: "$19",
       period: "month",
       description: "Perfect for new prop traders",
       features: [
@@ -412,30 +421,40 @@ export default function Welcome() {
         "Trading journal",
         "Basic analytics",
         "Email support",
+        "Daily planning tools",
+        "Basic mental fitness checks",
       ],
       popular: false,
       gradient: "from-gray-500 to-gray-600",
+      savings: "Save $10/month",
     },
     {
       name: "Professional",
       price: "$19",
+      originalPrice: "$39",
       period: "month",
       description: "For serious prop traders",
       features: [
         "Unlimited trading accounts",
         "Advanced risk management",
-        "AI trading assistant",
+        "AI trading assistant (Marthy)",
         "Advanced analytics & reports",
         "Position sizing calculator",
         "Watchlists & notifications",
+        "Target projection system",
+        "Prop firm spending tracker",
+        "Pre-session mental fitness",
+        "High discipline tracking",
         "Priority support",
       ],
       popular: true,
       gradient: "from-yellow-500 to-yellow-600",
+      savings: "Save $20/month",
     },
     {
       name: "Enterprise",
       price: "$39",
+      originalPrice: "$79",
       period: "month",
       description: "For trading teams & firms",
       features: [
@@ -445,9 +464,12 @@ export default function Welcome() {
         "White-label options",
         "Dedicated account manager",
         "24/7 phone support",
+        "Custom reporting",
+        "API access",
       ],
       popular: false,
       gradient: "from-purple-500 to-purple-600",
+      savings: "Save $40/month",
     },
   ];
 
@@ -487,16 +509,17 @@ export default function Welcome() {
               🚀 Trusted by 10,000+ Prop Traders
             </Badge>
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 dark:text-white mb-6">
-              Master Your{" "}
+              The <span className="bg-gradient-to-r from-yellow-500 via-yellow-600 to-yellow-700 bg-clip-text text-transparent">#1 Journal</span>{" "}
+              Exclusively for{" "}
               <span className="bg-gradient-to-r from-yellow-500 via-yellow-600 to-yellow-700 bg-clip-text text-transparent">
-                Prop Trading
+                Prop Firm
               </span>
               <br />
-              Journey
+              Traders Success
             </h1>
             <p className="text-xl text-gray-600 dark:text-gray-300 mb-8 max-w-3xl mx-auto">
-              The complete trading journal and risk management platform designed specifically for proprietary trading firms. 
-              Track performance, manage risk, and scale your funded accounts with confidence.
+              The only trading journal fully focused on prop firm traders success. Master high discipline, daily planning, 
+              pre-session mental fitness checks, target projections, and prop firm spending tracking to scale your funded accounts.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button
@@ -588,7 +611,19 @@ export default function Welcome() {
                       {plan.price}
                     </span>
                     <span className="text-gray-600 dark:text-gray-300 ml-1">/{plan.period}</span>
+                    {plan.originalPrice && (
+                      <span className="ml-2 text-lg text-gray-500 line-through">
+                        {plan.originalPrice}
+                      </span>
+                    )}
                   </div>
+                  {plan.savings && (
+                    <div className="mt-2">
+                      <span className="text-sm text-green-600 dark:text-green-400 font-medium">
+                        {plan.savings}
+                      </span>
+                    </div>
+                  )}
                 </CardHeader>
                 <CardContent>
                   <ul className="space-y-3 mb-6">
