@@ -57,6 +57,7 @@ import Blog from "@/pages/blog";
 import Contact from "@/pages/contact";
 import About from "@/pages/about";
 import KnowledgeBase from "@/pages/knowledge-base";
+import Pricing from "@/pages/pricing";
 import Sidebar from "@/components/sidebar";
 import NotFound from "@/pages/not-found";
 import { useAuth } from "@/hooks/useAuth";
@@ -154,6 +155,7 @@ function Router() {
           <Route path="/blog" component={Blog} />
           <Route path="/contact" component={Contact} />
           <Route path="/about" component={About} />
+          <Route path="/pricing" component={Pricing} />
           <Route path="/welcome" component={Welcome} />
           <Route path="/privacy-policy" component={PrivacyPolicy} />
           <Route path="/terms" component={TermsOfService} />

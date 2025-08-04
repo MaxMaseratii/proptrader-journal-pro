@@ -34,6 +34,8 @@ export function ThemeProvider({
   })
 
   useEffect(() => {
+    if (typeof window === 'undefined') return;
+    
     const root = window.document.documentElement
 
     root.classList.remove("light", "dark")
@@ -53,8 +55,8 @@ export function ThemeProvider({
         root.classList.add(e.matches ? "dark" : "light")
       }
       
-      mediaQuery.addListener(handleChange)
-      return () => mediaQuery.removeListener(handleChange)
+      mediaQuery.addEventListener('change', handleChange)
+      return () => mediaQuery.removeEventListener('change', handleChange)
     }
 
     root.classList.add(theme)
@@ -62,9 +64,9 @@ export function ThemeProvider({
 
   const value = {
     theme,
-    setTheme: (theme: Theme) => {
-      localStorage.setItem(storageKey, theme)
-      setTheme(theme)
+    setTheme: (newTheme: Theme) => {
+      localStorage.setItem(storageKey, newTheme)
+      setTheme(newTheme)
     },
   }
 

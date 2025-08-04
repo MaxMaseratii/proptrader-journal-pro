@@ -195,6 +195,7 @@ export default function Sidebar() {
               
               <DropdownMenuItem 
                 className="text-gray-300 hover:bg-dark-surface cursor-pointer"
+                onClick={() => window.location.href = '/account-manager'}
               >
                 <Shield className="mr-2 h-4 w-4 text-blue-500" />
                 Account Management
@@ -202,6 +203,7 @@ export default function Sidebar() {
               
               <DropdownMenuItem 
                 className="text-gray-300 hover:bg-dark-surface cursor-pointer"
+                onClick={() => window.location.href = '/payouts'}
               >
                 <CreditCard className="mr-2 h-4 w-4 text-green-400" />
                 Billing & Subscription
@@ -217,6 +219,7 @@ export default function Sidebar() {
               
               <DropdownMenuItem 
                 className="text-gray-300 hover:bg-dark-surface cursor-pointer"
+                onClick={() => window.location.href = '/security'}
               >
                 <Shield className="mr-2 h-4 w-4 text-yellow-400" />
                 Security Settings
