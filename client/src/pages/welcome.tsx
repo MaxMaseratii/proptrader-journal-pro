@@ -238,9 +238,9 @@ function WelcomeFooter() {
   return (
     <footer className="bg-gray-900 text-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
           {/* Company Info */}
-          <div className="lg:col-span-1">
+          <div>
             <div className="flex items-center space-x-2 mb-4">
               <Crown className="h-8 w-8 text-yellow-500" />
               <span className="text-xl font-bold bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 bg-clip-text text-transparent">
@@ -248,7 +248,7 @@ function WelcomeFooter() {
               </span>
               <span className="text-xl font-bold text-white">Journal</span>
             </div>
-            <p className="text-gray-400 text-sm mb-4">
+            <p className="text-gray-400 text-sm mb-6 max-w-md">
               Professional trading journal and risk management platform designed for prop traders and funded accounts.
             </p>
             <div className="flex space-x-4">
@@ -274,25 +274,27 @@ function WelcomeFooter() {
           </div>
 
           {/* Footer Sections */}
-          {footerSections.map((section) => (
-            <div key={section.title} className="lg:col-span-1">
-              <h3 className="text-sm font-semibold text-white uppercase tracking-wider mb-4">
-                {section.title}
-              </h3>
-              <ul className="space-y-2">
-                {section.links.map((link) => (
-                  <li key={link.name}>
-                    <Link
-                      href={link.href}
-                      className="text-sm text-gray-400 hover:text-white transition-colors"
-                    >
-                      {link.name}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
+          <div>
+            {footerSections.map((section) => (
+              <div key={section.title}>
+                <h3 className="text-sm font-semibold text-white uppercase tracking-wider mb-4">
+                  {section.title}
+                </h3>
+                <ul className="grid grid-cols-2 gap-2">
+                  {section.links.map((link) => (
+                    <li key={link.name}>
+                      <Link
+                        href={link.href}
+                        className="text-sm text-gray-400 hover:text-white transition-colors"
+                      >
+                        {link.name}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
         </div>
 
         <Separator className="my-8 bg-gray-800" />
@@ -828,63 +830,51 @@ export default function Welcome() {
       </div>
 
       {/* Security Grade Section */}
-    <div className="py-16 bg-gradient-to-br from-gray-900 via-slate-900 to-black">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold mb-4 bg-gradient-to-r from-yellow-400 via-yellow-500 to-amber-500 bg-clip-text text-transparent">
+    <div className="py-8 bg-gradient-to-br from-gray-900 via-slate-900 to-black">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-center mb-6">
+          <h2 className="text-xl font-bold mb-2 bg-gradient-to-r from-yellow-400 via-yellow-500 to-amber-500 bg-clip-text text-transparent">
             Security Grade
           </h2>
-          <p className="text-xl text-gray-300 max-w-3xl mx-auto">
-            Enterprise-grade security measures protecting your trading data and ensuring platform reliability
+          <p className="text-sm text-gray-300">
+            Enterprise-grade security protecting your trading data
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {/* Password Security */}
-          <Card className="bg-gradient-to-br from-gray-800/50 via-gray-900/60 to-black/70 border border-amber-500/20 hover:border-amber-400/40 transition-all duration-300">
-            <CardContent className="p-6 text-center">
-              <div className="flex justify-center mb-4">
-                <Shield className="h-12 w-12 text-green-400" />
-              </div>
-              <h3 className="text-lg font-semibold text-white mb-2">Password Protection</h3>
-              <div className="text-2xl font-bold text-green-400 mb-2">A+</div>
-              <p className="text-sm text-gray-400">Encrypted password storage with bcrypt hashing</p>
+          <Card className="bg-gradient-to-br from-gray-800/50 via-gray-900/60 to-black/70 border border-amber-500/20">
+            <CardContent className="p-3 text-center">
+              <Shield className="h-6 w-6 text-green-400 mx-auto mb-1" />
+              <h3 className="text-xs font-semibold text-white mb-1">Password</h3>
+              <div className="text-lg font-bold text-green-400">A+</div>
             </CardContent>
           </Card>
 
           {/* Session Security */}
-          <Card className="bg-gradient-to-br from-gray-800/50 via-gray-900/60 to-black/70 border border-amber-500/20 hover:border-amber-400/40 transition-all duration-300">
-            <CardContent className="p-6 text-center">
-              <div className="flex justify-center mb-4">
-                <Clock className="h-12 w-12 text-blue-400" />
-              </div>
-              <h3 className="text-lg font-semibold text-white mb-2">Session Management</h3>
-              <div className="text-2xl font-bold text-blue-400 mb-2">A+</div>
-              <p className="text-sm text-gray-400">Secure PostgreSQL session store with auto-expiry</p>
+          <Card className="bg-gradient-to-br from-gray-800/50 via-gray-900/60 to-black/70 border border-amber-500/20">
+            <CardContent className="p-3 text-center">
+              <Clock className="h-6 w-6 text-blue-400 mx-auto mb-1" />
+              <h3 className="text-xs font-semibold text-white mb-1">Sessions</h3>
+              <div className="text-lg font-bold text-blue-400">A+</div>
             </CardContent>
           </Card>
 
           {/* Data Encryption */}
-          <Card className="bg-gradient-to-br from-gray-800/50 via-gray-900/60 to-black/70 border border-amber-500/20 hover:border-amber-400/40 transition-all duration-300">
-            <CardContent className="p-6 text-center">
-              <div className="flex justify-center mb-4">
-                <Eye className="h-12 w-12 text-purple-400" />
-              </div>
-              <h3 className="text-lg font-semibold text-white mb-2">Data Encryption</h3>
-              <div className="text-2xl font-bold text-purple-400 mb-2">A+</div>
-              <p className="text-sm text-gray-400">End-to-end encryption for sensitive trading data</p>
+          <Card className="bg-gradient-to-br from-gray-800/50 via-gray-900/60 to-black/70 border border-amber-500/20">
+            <CardContent className="p-3 text-center">
+              <Eye className="h-6 w-6 text-purple-400 mx-auto mb-1" />
+              <h3 className="text-xs font-semibold text-white mb-1">Encryption</h3>
+              <div className="text-lg font-bold text-purple-400">A+</div>
             </CardContent>
           </Card>
 
           {/* Infrastructure Security */}
-          <Card className="bg-gradient-to-br from-gray-800/50 via-gray-900/60 to-black/70 border border-amber-500/20 hover:border-amber-400/40 transition-all duration-300">
-            <CardContent className="p-6 text-center">
-              <div className="flex justify-center mb-4">
-                <Award className="h-12 w-12 text-yellow-400" />
-              </div>
-              <h3 className="text-lg font-semibold text-white mb-2">Infrastructure</h3>
-              <div className="text-2xl font-bold text-yellow-400 mb-2">A+</div>
-              <p className="text-sm text-gray-400">Enterprise-grade hosting with 99.9% uptime SLA</p>
+          <Card className="bg-gradient-to-br from-gray-800/50 via-gray-900/60 to-black/70 border border-amber-500/20">
+            <CardContent className="p-3 text-center">
+              <Award className="h-6 w-6 text-yellow-400 mx-auto mb-1" />
+              <h3 className="text-xs font-semibold text-white mb-1">Infrastructure</h3>
+              <div className="text-lg font-bold text-yellow-400">A+</div>
             </CardContent>
           </Card>
         </div>

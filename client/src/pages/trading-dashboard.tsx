@@ -1056,7 +1056,7 @@ export default function CompleteTradingDashboard() {
                   value={postTradeData.whatWentWell}
                   onChange={(e) => setPostTradeData(prev => ({ ...prev, whatWentWell: e.target.value }))}
                   placeholder="Celebrate your wins, both big and small..."
-                  className="bg-slate-900/50 border-purple-500/30 text-white"
+                  className="bg-gray-800 border-gray-600 text-white placeholder:text-gray-400"
                 />
               </div>
               <div>
@@ -1065,7 +1065,7 @@ export default function CompleteTradingDashboard() {
                   value={postTradeData.needsImprovement}
                   onChange={(e) => setPostTradeData(prev => ({ ...prev, needsImprovement: e.target.value }))}
                   placeholder="Areas to focus on for tomorrow..."
-                  className="bg-slate-900/50 border-purple-500/30 text-white"
+                  className="bg-gray-800 border-gray-600 text-white placeholder:text-gray-400"
                 />
               </div>
             </div>
