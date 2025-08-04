@@ -2005,7 +2005,7 @@ export default function Dashboard() {
             </div>
 
             {/* Total Trades */}
-            <div className="bg-gradient-to-br from-gray-900/40 via-gray-800/60 to-black/80 border border-gray-600/30 rounded-lg p-4 hover:border-amber-400/60 transition-all duration-200">
+            <div className="bg-gradient-to-br from-purple-900/40 via-purple-800/60 to-purple-950/80 border border-purple-600/30 rounded-lg p-4 hover:border-purple-400/60 transition-all duration-200">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-sm font-medium text-gray-300">Total Trades</span>
                 <Activity className="w-4 h-4 text-purple-400" />
@@ -2020,7 +2020,7 @@ export default function Dashboard() {
           {/* ROW 2: Performance Analysis (4 widgets) */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             {/* Discipline Score */}
-            <div className="bg-gradient-to-br from-gray-900/40 via-gray-800/60 to-black/80 border border-gray-600/30 rounded-lg p-4 hover:border-amber-400/60 transition-all duration-200">
+            <div className="bg-gradient-to-br from-blue-900/40 via-blue-800/60 to-blue-950/80 border border-blue-600/30 rounded-lg p-4 hover:border-blue-400/60 transition-all duration-200">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-sm font-medium text-gray-300">Discipline Score</span>
                 <Shield className="w-4 h-4 text-blue-400" />
@@ -2043,7 +2043,7 @@ export default function Dashboard() {
             </div>
 
             {/* R Factor */}
-            <div className="bg-gradient-to-br from-gray-900/40 via-gray-800/60 to-black/80 border border-gray-600/30 rounded-lg p-4 hover:border-amber-400/60 transition-all duration-200">
+            <div className="bg-gradient-to-br from-cyan-900/40 via-cyan-800/60 to-cyan-950/80 border border-cyan-600/30 rounded-lg p-4 hover:border-cyan-400/60 transition-all duration-200">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-sm font-medium text-gray-300">R Factor</span>
                 <BarChart3 className="w-4 h-4 text-cyan-400" />
@@ -2055,7 +2055,7 @@ export default function Dashboard() {
             </div>
 
             {/* Profit Factor */}
-            <div className="bg-gradient-to-br from-gray-900/40 via-gray-800/60 to-black/80 border border-gray-600/30 rounded-lg p-4 hover:border-amber-400/60 transition-all duration-200">
+            <div className="bg-gradient-to-br from-green-900/40 via-green-800/60 to-green-950/80 border border-green-600/30 rounded-lg p-4 hover:border-green-400/60 transition-all duration-200">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-sm font-medium text-gray-300">Profit Factor</span>
                 <TrendingUp className="w-4 h-4 text-green-400" />
@@ -2067,7 +2067,7 @@ export default function Dashboard() {
             </div>
 
             {/* Avg Win/Loss */}
-            <div className="bg-gradient-to-br from-gray-900/40 via-gray-800/60 to-black/80 border border-gray-600/30 rounded-lg p-4 hover:border-amber-400/60 transition-all duration-200">
+            <div className="bg-gradient-to-br from-orange-900/40 via-orange-800/60 to-orange-950/80 border border-orange-600/30 rounded-lg p-4 hover:border-orange-400/60 transition-all duration-200">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-sm font-medium text-gray-300">Avg Win/Loss</span>
                 <BarChart3 className="w-4 h-4 text-orange-400" />
@@ -2110,7 +2110,7 @@ export default function Dashboard() {
           
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Latest Trades */}
-            <div className="bg-gradient-to-br from-gray-900/40 via-gray-800/60 to-black/80 border border-gray-600/30 rounded-lg p-6 hover:border-amber-400/60 transition-all duration-200">
+            <div className="bg-gradient-to-br from-slate-900/40 via-slate-800/60 to-slate-950/80 border border-slate-600/30 rounded-lg p-6 hover:border-slate-400/60 transition-all duration-200">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-semibold text-white">Latest Trades</h3>
                 <Activity className="w-5 h-5 text-amber-400" />
@@ -2626,7 +2626,7 @@ export default function Dashboard() {
           
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Account Status */}
-            <div className="bg-gradient-to-br from-gray-900/40 via-gray-800/60 to-black/80 border border-gray-600/30 rounded-lg p-6 hover:border-amber-400/60 transition-all duration-200">
+            <div className="bg-gradient-to-br from-emerald-900/40 via-emerald-800/60 to-emerald-950/80 border border-emerald-600/30 rounded-lg p-6 hover:border-emerald-400/60 transition-all duration-200">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-semibold text-white">Account Status</h3>
                 <User className="w-5 h-5 text-amber-400" />
@@ -2648,7 +2648,7 @@ export default function Dashboard() {
             </div>
 
             {/* Max Maserati Account */}
-            <div className="bg-gradient-to-br from-gray-900/40 via-gray-800/60 to-black/80 border border-gray-600/30 rounded-lg p-6 hover:border-amber-400/60 transition-all duration-200">
+            <div className="bg-gradient-to-br from-rose-900/40 via-rose-800/60 to-rose-950/80 border border-rose-600/30 rounded-lg p-6 hover:border-rose-400/60 transition-all duration-200">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-semibold text-white">Primary Account</h3>
                 <User className="w-5 h-5 text-amber-400" />
