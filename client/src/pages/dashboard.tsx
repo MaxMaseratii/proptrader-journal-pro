@@ -71,7 +71,13 @@ import {
   BookOpen,
   FileText,
   Edit,
-  Minus
+  Minus,
+  Scale,
+  MessageSquare,
+  Eye,
+  EyeOff,
+  ChevronDown,
+  ChevronUp
 } from "lucide-react";
 import type { Account, Trade } from "@shared/schema";
 
@@ -2908,7 +2914,149 @@ export default function Dashboard() {
           </div>
         </section>
 
+        {/* SECTION 7: ADVANCED STATISTICS */}
+        <section className="mb-8">
+          <div className="flex items-center justify-between mb-6 border-b border-gray-700 pb-3">
+            <h2 className="text-xl font-bold text-gradient-rainbow flex items-center">
+              <BarChart3 className="mr-3 h-5 w-5 text-prop-gold" />
+              Advanced Statistics
+            </h2>
+            <p className="text-sm text-gray-400">Deep performance analytics and behavioral insights</p>
+          </div>
+          
+          {/* ROW 1: Core Advanced Metrics (4 widgets) */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+            {/* Profit Factor */}
+            <div className="bg-gradient-to-br from-gray-900/40 via-gray-800/60 to-black/80 border border-gray-600/30 rounded-lg p-4 hover:border-amber-400/60 transition-all duration-200">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-sm font-medium text-gray-300">Profit Factor</span>
+                <Target className="w-4 h-4 text-green-400" />
+              </div>
+              <div className="text-2xl font-bold mb-1 text-green-400">
+                {(() => {
+                  const filteredTrades = getFilteredTrades();
+                  const totalWinnings = filteredTrades.filter(t => (t.pnl || 0) > 0).reduce((sum, t) => sum + (t.pnl || 0), 0);
+                  const totalLosses = Math.abs(filteredTrades.filter(t => (t.pnl || 0) < 0).reduce((sum, t) => sum + (t.pnl || 0), 0));
+                  return totalLosses > 0 ? (totalWinnings / totalLosses).toFixed(2) : totalWinnings > 0 ? '∞' : '0.00';
+                })()}
+              </div>
+              <div className="text-xs text-gray-400">Gross profits / gross losses</div>
+            </div>
 
+            {/* Sharpe Ratio */}
+            <div className="bg-gradient-to-br from-gray-900/40 via-gray-800/60 to-black/80 border border-gray-600/30 rounded-lg p-4 hover:border-amber-400/60 transition-all duration-200">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-sm font-medium text-gray-300">Sharpe Ratio</span>
+                <TrendingUp className="w-4 h-4 text-blue-400" />
+              </div>
+              <div className="text-2xl font-bold mb-1 text-blue-400">
+                {(() => {
+                  const filteredTrades = getFilteredTrades();
+                  if (filteredTrades.length === 0) return '0.00';
+                  const returns = filteredTrades.map(t => t.pnl || 0);
+                  const avgReturn = returns.reduce((sum, r) => sum + r, 0) / returns.length;
+                  const variance = returns.reduce((sum, r) => sum + Math.pow(r - avgReturn, 2), 0) / returns.length;
+                  const stdDev = Math.sqrt(variance);
+                  return stdDev > 0 ? (avgReturn / stdDev).toFixed(2) : '0.00';
+                })()}
+              </div>
+              <div className="text-xs text-gray-400">Risk-adjusted returns</div>
+            </div>
+
+            {/* Max Consecutive Wins */}
+            <div className="bg-gradient-to-br from-gray-900/40 via-gray-800/60 to-black/80 border border-gray-600/30 rounded-lg p-4 hover:border-amber-400/60 transition-all duration-200">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-sm font-medium text-gray-300">Max Consecutive Wins</span>
+                <TrendingUp className="w-4 h-4 text-green-400" />
+              </div>
+              <div className="text-2xl font-bold mb-1 text-green-400">
+                {(() => {
+                  const filteredTrades = getFilteredTrades();
+                  let maxWins = 0, currentWins = 0;
+                  filteredTrades.forEach(trade => {
+                    if ((trade.pnl || 0) > 0) {
+                      currentWins++;
+                      maxWins = Math.max(maxWins, currentWins);
+                    } else {
+                      currentWins = 0;
+                    }
+                  });
+                  return maxWins;
+                })()}
+              </div>
+              <div className="text-xs text-gray-400">Best winning streak</div>
+            </div>
+
+            {/* Max Consecutive Losses */}
+            <div className="bg-gradient-to-br from-gray-900/40 via-gray-800/60 to-black/80 border border-gray-600/30 rounded-lg p-4 hover:border-amber-400/60 transition-all duration-200">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-sm font-medium text-gray-300">Max Consecutive Losses</span>
+                <TrendingDown className="w-4 h-4 text-red-400" />
+              </div>
+              <div className="text-2xl font-bold mb-1 text-red-400">
+                {(() => {
+                  const filteredTrades = getFilteredTrades();
+                  let maxLosses = 0, currentLosses = 0;
+                  filteredTrades.forEach(trade => {
+                    if ((trade.pnl || 0) < 0) {
+                      currentLosses++;
+                      maxLosses = Math.max(maxLosses, currentLosses);
+                    } else {
+                      currentLosses = 0;
+                    }
+                  });
+                  return maxLosses;
+                })()}
+              </div>
+              <div className="text-xs text-gray-400">Worst losing streak</div>
+            </div>
+          </div>
+
+          {/* ROW 2: Risk Metrics (3 widgets) */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {/* Largest Win */}
+            <div className="bg-gradient-to-br from-gray-900/40 via-gray-800/60 to-black/80 border border-gray-600/30 rounded-lg p-4 hover:border-amber-400/60 transition-all duration-200">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-sm font-medium text-gray-300">Largest Win</span>
+                <Trophy className="w-4 h-4 text-yellow-400" />
+              </div>
+              <div className="text-2xl font-bold mb-1 text-green-400">
+                {formatCurrency(Math.max(...getFilteredTrades().map(t => t.pnl || 0), 0))}
+              </div>
+              <div className="text-xs text-gray-400">Best single trade</div>
+            </div>
+
+            {/* Largest Loss */}
+            <div className="bg-gradient-to-br from-gray-900/40 via-gray-800/60 to-black/80 border border-gray-600/30 rounded-lg p-4 hover:border-amber-400/60 transition-all duration-200">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-sm font-medium text-gray-300">Largest Loss</span>
+                <AlertTriangle className="w-4 h-4 text-red-400" />
+              </div>
+              <div className="text-2xl font-bold mb-1 text-red-400">
+                {formatCurrency(Math.min(...getFilteredTrades().map(t => t.pnl || 0), 0))}
+              </div>
+              <div className="text-xs text-gray-400">Worst single trade</div>
+            </div>
+
+            {/* Average R:R Ratio */}
+            <div className="bg-gradient-to-br from-gray-900/40 via-gray-800/60 to-black/80 border border-gray-600/30 rounded-lg p-4 hover:border-amber-400/60 transition-all duration-200">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-sm font-medium text-gray-300">Avg R:R Ratio</span>
+                <Scale className="w-4 h-4 text-purple-400" />
+              </div>
+              <div className="text-2xl font-bold mb-1 text-purple-400">
+                {(() => {
+                  const filteredTrades = getFilteredTrades();
+                  const validRRTrades = filteredTrades.filter(t => t.riskRewardRatio && t.riskRewardRatio > 0);
+                  if (validRRTrades.length === 0) return '0.00';
+                  const avgRR = validRRTrades.reduce((sum, t) => sum + (t.riskRewardRatio || 0), 0) / validRRTrades.length;
+                  return avgRR.toFixed(2);
+                })()}
+              </div>
+              <div className="text-xs text-gray-400">Risk to reward ratio</div>
+            </div>
+          </div>
+        </section>
 
       </div>
 

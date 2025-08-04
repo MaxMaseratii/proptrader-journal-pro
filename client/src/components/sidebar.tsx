@@ -79,10 +79,10 @@ export default function Sidebar() {
 
   return (
     <aside className={cn(
-      "bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-prop-gold/20 flex-shrink-0 transition-all duration-300 ease-in-out relative",
+      "bg-gray-900 border-r border-prop-gold/20 flex-shrink-0 transition-all duration-300 ease-in-out relative",
       isCollapsed ? "w-16" : isPartiallyCollapsed ? "w-20" : "w-64"
     )}>
-      <div className="p-6 border-b border-gray-200 dark:border-prop-gold/20">
+      <div className="p-6 border-b border-prop-gold/20">
         <div className="flex items-center space-x-3">
           <Link 
             href="/welcome"
@@ -92,8 +92,8 @@ export default function Sidebar() {
           </Link>
           {!isCollapsed && !isPartiallyCollapsed && (
             <div>
-              <h1 className="text-lg font-bold text-gray-900 dark:text-white">#1 PropFirm Trader's Journal</h1>
-              <p className="text-xs text-gray-600 dark:text-gray-400">PropTrader Journal</p>
+              <h1 className="text-lg font-bold text-white">#1 PropFirm Trader's Journal</h1>
+              <p className="text-xs text-gray-400">PropTrader Journal</p>
             </div>
           )}
         </div>
@@ -105,7 +105,7 @@ export default function Sidebar() {
         size="sm"
         onClick={handleToggleCollapse}
         className={cn(
-          "absolute top-4 -right-3 z-10 h-6 w-6 p-0 rounded-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-prop-gold/20 text-gray-700 dark:text-prop-gold hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-prop-gold/20 hover:border-gray-400 dark:hover:border-prop-gold/40 transition-all duration-200 shadow-md",
+          "absolute top-4 -right-3 z-10 h-6 w-6 p-0 rounded-full bg-gray-800 border border-prop-gold/20 text-prop-gold hover:text-white hover:bg-prop-gold/20 hover:border-prop-gold/40 transition-all duration-200 shadow-md",
           "flex items-center justify-center"
         )}
       >
@@ -117,7 +117,7 @@ export default function Sidebar() {
       <nav className="mt-6 flex-1 overflow-y-auto pb-20">
         {!isCollapsed && !isPartiallyCollapsed && (
           <div className="px-6 mb-4">
-            <h3 className="text-xs font-medium text-gray-600 dark:text-prop-gold uppercase tracking-wider">Main</h3>
+            <h3 className="text-xs font-medium text-prop-gold uppercase tracking-wider">Main</h3>
           </div>
         )}
         <ul className="space-y-2 px-4">
@@ -126,24 +126,24 @@ export default function Sidebar() {
               <Link href={href} className={cn(
                 "flex items-center px-4 py-3 text-sm font-medium rounded-xl smooth-transition cursor-pointer group relative",
                 location === href 
-                  ? "bg-blue-100 dark:bg-prop-gradient-gold text-blue-900 dark:text-black font-bold" 
-                  : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-prop-card hover:text-blue-700 dark:hover:text-prop-gold hover-scale",
+                  ? "bg-prop-gradient-gold text-black font-bold" 
+                  : "text-gray-300 hover:bg-prop-card hover:text-prop-gold hover-scale",
                 (isCollapsed || isPartiallyCollapsed) ? "justify-center" : ""
               )}>
                 <Icon className={cn(
                   "h-5 w-5 smooth-transition",
-                  location === href ? "text-blue-900 dark:text-black" : "text-gray-600 dark:text-gray-400 group-hover:text-blue-700 dark:group-hover:text-prop-gold",
+                  location === href ? "text-black" : "text-gray-400 group-hover:text-prop-gold",
                   !(isCollapsed || isPartiallyCollapsed) ? "mr-3" : ""
                 )} />
                 {!isCollapsed && !isPartiallyCollapsed && label}
                 {(isCollapsed || isPartiallyCollapsed) && (
                   <>
-                    <div className="absolute left-full ml-2 px-2 py-1 bg-white dark:bg-gray-800 border border-gray-300 dark:border-prop-gold/20 rounded-md text-xs text-gray-700 dark:text-gray-300 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50 shadow-md">
+                    <div className="absolute left-full ml-2 px-2 py-1 bg-gray-800 border border-prop-gold/20 rounded-md text-xs text-gray-300 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50 shadow-md">
                       {label}
                     </div>
                     {/* Show first letter of first menu item when collapsed */}
                     {index === 0 && (
-                      <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-blue-500 dark:bg-prop-gold rounded-full flex items-center justify-center text-xs font-bold text-white dark:text-black">
+                      <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-prop-gold rounded-full flex items-center justify-center text-xs font-bold text-black">
                         {label.charAt(0)}
                       </div>
                     )}
