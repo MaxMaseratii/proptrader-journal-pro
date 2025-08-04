@@ -417,8 +417,8 @@ export default function CompleteTradingDashboard() {
   };
 
   const renderPreSessionCheck = () => (
-    <div className="max-w-4xl mx-auto space-y-6">
-      <Card className="bg-gradient-to-br from-blue-950 via-indigo-950 to-purple-950 border-2 border-blue-500/30 shadow-2xl">
+    <div className="h-full space-y-4">
+      <Card className="bg-gradient-to-br from-blue-950 via-indigo-950 to-purple-950 border-2 border-blue-500/30 shadow-2xl h-full flex flex-col">
         <CardHeader className="bg-gradient-to-r from-blue-900/50 to-purple-900/50">
           <CardTitle className="text-gradient-rainbow flex items-center gap-2 text-xl">
             <Brain className="h-6 w-6 text-yellow-400" />
@@ -426,7 +426,7 @@ export default function CompleteTradingDashboard() {
           </CardTitle>
           <p className="text-blue-200">Complete assessment before trading (2 minutes)</p>
         </CardHeader>
-        <CardContent className="space-y-8 p-6">
+        <CardContent className="space-y-8 p-6 flex-1 overflow-auto">
           {/* Mental State Assessment */}
           <div>
             <h3 className="text-white font-semibold mb-4 text-lg">Mental State Assessment (Rate 1-5)</h3>
@@ -587,7 +587,7 @@ export default function CompleteTradingDashboard() {
   );
 
   const renderDailyPlan = () => (
-    <div className="max-w-4xl mx-auto space-y-6">
+    <div className="h-full space-y-4">
       <Card className="bg-gradient-to-br from-green-950 via-emerald-950 to-teal-950 border-2 border-green-500/30 shadow-2xl">
         <CardHeader className="bg-gradient-to-r from-green-900/50 to-teal-900/50">
           <CardTitle className="text-gradient-rainbow flex items-center gap-2 text-xl">
@@ -746,7 +746,7 @@ export default function CompleteTradingDashboard() {
   );
 
   const renderRealTimeExecution = () => (
-    <div className="max-w-4xl mx-auto space-y-6">
+    <div className="h-full space-y-4">
       <Card className="bg-gradient-to-br from-orange-950 via-red-950 to-pink-950 border-2 border-orange-500/30 shadow-2xl">
         <CardHeader className="bg-gradient-to-r from-orange-900/50 to-red-900/50">
           <CardTitle className="text-gradient-rainbow flex items-center gap-2 text-xl">
@@ -959,7 +959,7 @@ export default function CompleteTradingDashboard() {
     const totalDisciplineScore = Object.values(postTradeData.disciplineScore).reduce((sum, score) => sum + score, 0);
 
     return (
-      <div className="max-w-4xl mx-auto space-y-6">
+      <div className="h-full space-y-4">
         <Card className="bg-gradient-to-br from-purple-950 via-indigo-950 to-blue-950 border-2 border-purple-500/30 shadow-2xl">
           <CardHeader className="bg-gradient-to-r from-purple-900/50 to-blue-900/50">
             <CardTitle className="text-gradient-rainbow flex items-center gap-2 text-xl">
@@ -1154,10 +1154,10 @@ export default function CompleteTradingDashboard() {
     const currentStepIndex = steps.findIndex(step => step.id === currentStep);
 
     return (
-      <div className="space-y-6">
+      <div className="h-full flex flex-col space-y-4">
         {/* Progress Indicator */}
-        <div className="max-w-4xl mx-auto">
-          <div className="flex items-center justify-between mb-8">
+        <div className="flex-shrink-0">
+          <div className="flex items-center justify-between mb-6">
             {steps.map((step, index) => (
               <div key={step.id} className="flex items-center">
                 <div
@@ -1191,7 +1191,9 @@ export default function CompleteTradingDashboard() {
         </div>
 
         {/* Current Step Content */}
-        {steps.find(step => step.id === currentStep)?.component()}
+        <div className="flex-1 min-h-0 overflow-auto">
+          {steps.find(step => step.id === currentStep)?.component()}
+        </div>
 
         {/* Emergency Protocol Modal */}
         {emergencyProtocol && renderEmergencyProtocol()}
