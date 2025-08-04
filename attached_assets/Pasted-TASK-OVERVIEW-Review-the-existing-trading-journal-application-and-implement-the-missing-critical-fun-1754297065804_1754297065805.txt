@@ -1,0 +1,288 @@
+TASK OVERVIEW
+Review the existing trading journal application and implement the missing critical functionality. NOTE: Strategy Management is already fully implemented and should not be modified.
+✅ CONFIRMED EXISTING FUNCTIONALITY (DO NOT MODIFY)
+
+Strategy Creation, Display, and Management (fully implemented)
+All 27 core trading pages mentioned in the application structure
+Daily Planning, Psychology tracking, Analytics, etc.
+
+🚨 MISSING CRITICAL PAGES - IMPLEMENT IMMEDIATELY
+1. Account Management (/accounts)
+jsxFeatures Required:
+- Add/edit multiple trading accounts
+- Account type selection (Live, Demo, Paper)
+- Account balance tracking and synchronization
+- Account-specific settings and preferences
+- Account switching interface in navigation
+- Account performance comparison dashboard
+- Account risk settings and limits
+- Account connection status monitoring
+- Multi-account portfolio overview
+
+UI Requirements:
+- Account cards showing key metrics (balance, P&L, trades)
+- Add account wizard with step-by-step setup
+- Account settings panels with tabs
+- Account performance comparison charts
+- Account switching dropdown in main navigation
+- Account verification and connection status indicators
+2. Notifications & Alerts (/notifications)
+jsxFeatures Required:
+- Comprehensive alert creation and management system
+- Risk-based notifications (drawdown limits, daily loss limits)
+- Performance milestone alerts (profit targets, loss limits)
+- Trading rule violation alerts
+- Market condition change notifications
+- Goal achievement notifications
+- Custom alert rules with conditions
+- Alert history and tracking
+- Real-time notification display system
+- Email/SMS notification integration
+
+UI Requirements:
+- Notification center with categorized recent alerts
+- Alert configuration forms with rule builder
+- Alert history table with filtering and search
+- Real-time notification bell icon in navigation
+- Alert categorization (Risk, Performance, Goals, System)
+- Alert priority levels and visual indicators
+3. Risk Management (/risk-management)
+jsxFeatures Required:
+- Account-wide risk limits and rules
+- Dynamic position sizing rules based on account equity
+- Maximum drawdown limits with automatic enforcement
+- Daily/weekly/monthly loss limits
+- Risk monitoring dashboard with real-time updates
+- Risk alert system integration
+- Risk rule templates for different account types
+- Account protection settings and emergency protocols
+- Risk metrics calculation and tracking
+- Risk-adjusted performance analysis
+
+UI Requirements:
+- Risk dashboard showing current risk status
+- Risk rule configuration forms with validation
+- Risk alert displays with actionable recommendations
+- Risk metric visualizations and charts
+- Emergency risk protocol activation buttons
+- Risk limit progress bars and indicators
+4. Watchlists (/watchlists)
+jsxFeatures Required:
+- Multiple watchlist creation and management
+- Advanced symbol search and addition
+- Watchlist organization with categories
+- Real-time symbol performance tracking
+- Market data integration for live prices
+- Watchlist sharing between accounts
+- Symbol-specific alerts and notifications
+- Watchlist templates and presets
+- Symbol performance analytics
+- Watchlist import/export functionality
+
+UI Requirements:
+- Watchlist grid with real-time symbol data
+- Symbol search interface with autocomplete
+- Watchlist management tools (create, delete, rename)
+- Symbol detail modals with charts and data
+- Watchlist performance comparison charts
+- Symbol categorization and tagging system
+5. Position Sizing Calculator (/position-sizing)
+jsxFeatures Required:
+- Risk-based position sizing calculator
+- Multiple calculation methods (fixed risk, percentage, volatility-based)
+- Account equity integration for real-time calculations
+- Strategy-specific sizing rules and templates
+- Position size recommendations based on account risk
+- Risk visualization and impact analysis
+- Historical sizing analysis and optimization
+- Sizing rule templates for different strategies
+- Monte Carlo position sizing simulations
+- Position sizing performance tracking
+
+UI Requirements:
+- Interactive position sizing calculator form
+- Risk visualization charts and graphs
+- Sizing recommendations with explanations
+- Historical analysis charts and trends
+- Rule configuration interface with presets
+- Position sizing impact visualization
+📚 HELP/SUPPORT INFRASTRUCTURE - IMPLEMENT PHASE 2
+6. Getting Started Hub (/getting-started)
+jsxFeatures Required:
+- Multi-step onboarding flow for new users
+- Interactive feature introduction tours
+- Account setup guidance and tutorials
+- Initial configuration wizard
+- Progress tracking and completion badges
+- Skip options for experienced users
+- Platform overview and key concepts
+- Quick start checklist with links
+- Video tutorials integration
+- Help documentation links
+
+UI Requirements:
+- Step-by-step wizard interface with progress
+- Interactive feature callouts and tooltips
+- Tutorial videos embedded in interface
+- Completion tracking with visual progress
+- Quick access to key platform features
+7. Video Tutorial Library (/tutorials)
+jsxFeatures Required:
+- Comprehensive video library organization
+- Tutorial categories (Trading, Platform, Psychology)
+- Advanced search functionality
+- Tutorial progress tracking
+- Curated tutorial playlists
+- Video quality options and playback controls
+- Transcript support for accessibility
+- Related tutorial suggestions
+- User ratings and feedback system
+- Tutorial bookmark system
+
+UI Requirements:
+- Video gallery layout with categories
+- Video player with full controls
+- Progress indicators and completion tracking
+- Tutorial metadata display (duration, difficulty)
+- Search and filter interface
+8. Interactive Help System (/interactive-help)
+jsxFeatures Required:
+- Contextual help tooltips throughout platform
+- Interactive feature tours and walkthroughs
+- Step-by-step guided assistance
+- Floating help widget overlay
+- Feature spotlights and announcements
+- Smart help content search
+- User guidance tracking and analytics
+- Personalized help suggestions
+- Help content voting and feedback
+- Integration with support ticketing
+
+UI Requirements:
+- Floating help widget accessible from any page
+- Tooltip overlays with contextual information
+- Interactive tour modals and highlights
+- Help search interface with instant results
+- Contextual help panels and sidebars
+9. FAQ System (/faq)
+jsxFeatures Required:
+- Categorized FAQ sections by topic
+- Advanced search functionality
+- Expandable Q&A accordion items
+- Related question suggestions
+- User voting on answer helpfulness
+- FAQ analytics and popular questions
+- Easy content management and updates
+- Question submission form for users
+- FAQ integration with help search
+- Multi-language support preparation
+
+UI Requirements:
+- Clean accordion-style FAQ layout
+- Category navigation with icons
+- Search bar with real-time filtering
+- Vote buttons and helpfulness indicators
+- Related questions sidebar
+10. System Status Dashboard (/status)
+jsxFeatures Required:
+- Real-time system status monitoring
+- Maintenance scheduling and notifications
+- Incident reporting and status updates
+- Performance metrics and uptime tracking
+- Service availability monitoring
+- Historical uptime data and reports
+- Status change notifications
+- API endpoint status monitoring
+- Third-party integration status
+- User impact assessments
+
+UI Requirements:
+- Status dashboard with color-coded indicators
+- Incident timeline with detailed information
+- Performance charts and metrics
+- Maintenance calendar with scheduling
+- Status subscription and notification options
+👥 SOCIAL/COMMUNITY FEATURES - IMPLEMENT PHASE 3
+11. Public User Profiles (/users/[username])
+jsxFeatures Required:
+- Public profile display with trading statistics
+- Strategy sharing and showcase
+- Trading achievement display
+- Following/follower system
+- Profile customization options
+- Privacy controls and settings
+- Activity feed and trading updates
+- Performance verification badges
+- Social interaction features
+- Profile analytics and insights
+
+UI Requirements:
+- Professional profile header with key stats
+- Strategy showcase section with performance
+- Achievement and badge display
+- Follow/unfollow functionality
+- Activity timeline and updates
+12. Social Trading Feed (/feed)
+jsxFeatures Required:
+- Following user activities and updates
+- Trade performance posts and highlights
+- Strategy sharing and discussions
+- Community highlights and featured content
+- Content filtering and customization
+- Engagement metrics and interactions
+- Feed customization and preferences
+- Real-time updates and notifications
+- Content moderation and reporting
+- Trending topics and discussions
+
+UI Requirements:
+- Social media style feed layout
+- Post interaction buttons (like, comment, share)
+- Filter and sort options with preferences
+- Infinite scroll loading with performance
+- Engagement indicators and metrics
+🎯 REVISED IMPLEMENTATION PRIORITIES
+Phase 1 (Critical - Implement First):
+
+Account Management (/accounts) - Essential for multi-account support
+Notifications & Alerts (/notifications) - Critical for risk management
+Risk Management (/risk-management) - Core trading safety
+Watchlists (/watchlists) - Essential trading tool
+Position Sizing (/position-sizing) - Risk management utility
+
+Phase 2 (User Support):
+
+Getting Started (/getting-started) - User onboarding
+Interactive Help (/interactive-help) - User assistance
+FAQ System (/faq) - User support
+Video Tutorials (/tutorials) - User education
+System Status (/status) - Platform transparency
+
+Phase 3 (Community Building):
+
+Public Profiles (/users/[username]) - Social foundation
+Social Feed (/feed) - Community engagement
+
+🔧 TECHNICAL IMPLEMENTATION REQUIREMENTS
+Navigation Updates:
+
+Add account switcher to main navigation
+Add notification bell icon with real-time updates
+Add help icon with quick access to support
+Update routing for all new pages
+
+Database Schema:
+
+Create tables for accounts, notifications, risk rules, watchlists
+Add proper relationships and foreign keys
+Implement indexes for performance
+Add audit trails for sensitive operations
+
+Integration Requirements:
+
+Connect new pages to existing data flows
+Update API endpoints for new functionality
+Add real-time notification system
+Implement proper error handling and loading states
+
+Start with Phase 1 (5 critical pages) as these are essential for basic platform functionality, then proceed with user support infrastructure in Phase 2.
