@@ -115,14 +115,16 @@ export default function Sidebar() {
          <ChevronLeft className="h-3 w-3" />}
       </Button>
       
-      <nav className="mt-6 flex-1 overflow-y-auto pb-4">
-        {!isCollapsed && !isPartiallyCollapsed && (
-          <div className="px-6 mb-4">
-            <h3 className="text-xs font-medium text-prop-gold uppercase tracking-wider">Navigation</h3>
-          </div>
-        )}
-        <ul className="space-y-2 px-4">
-          {mainItems.filter(item => item.label !== "Profile").map(({ href, label, icon: Icon }, index) => (
+      <nav className="mt-6 flex-1 flex flex-col overflow-y-auto pb-4">
+        {/* Main Navigation Section */}
+        <div className="flex-1">
+          {!isCollapsed && !isPartiallyCollapsed && (
+            <div className="px-6 mb-4">
+              <h3 className="text-xs font-medium text-prop-gold uppercase tracking-wider">Navigation</h3>
+            </div>
+          )}
+          <ul className="space-y-2 px-4">
+            {mainItems.filter(item => item.label !== "Profile").map(({ href, label, icon: Icon }, index) => (
             <li key={href}>
               <Link href={href} className={cn(
                 "flex items-center px-4 py-3 text-sm font-medium rounded-xl smooth-transition cursor-pointer group relative",
@@ -153,111 +155,117 @@ export default function Sidebar() {
               </Link>
             </li>
           ))}
-          
-          {/* Profile with dropdown including Billing */}
-          <li key="/profile">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <button className={cn(
-                  "w-full flex items-center px-4 py-3 text-sm font-medium rounded-xl smooth-transition cursor-pointer group relative",
-                  location === "/profile" 
-                    ? "bg-prop-gradient-gold text-black font-bold" 
-                    : "text-gray-300 hover:bg-prop-card hover:text-prop-gold hover-scale",
-                  (isCollapsed || isPartiallyCollapsed) ? "justify-center" : ""
-                )}>
-                  <User className={cn(
-                    "h-5 w-5 smooth-transition",
-                    location === "/profile" ? "text-black" : "text-gray-400 group-hover:text-prop-gold",
-                    !(isCollapsed || isPartiallyCollapsed) ? "mr-3" : ""
-                  )} />
-                  {!isCollapsed && !isPartiallyCollapsed && "Profile"}
-                  {(isCollapsed || isPartiallyCollapsed) && (
-                    <div className="absolute left-full ml-2 px-2 py-1 bg-gray-800 border border-prop-gold/20 rounded-md text-xs text-gray-300 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50 shadow-md">
-                      Profile
-                    </div>
-                  )}
-                </button>
-              </DropdownMenuTrigger>
-              
-              <DropdownMenuContent 
-                className="w-64 bg-gray-800 border-prop-gold/20 shadow-xl" 
-                align="start"
-                side="right"
-              >
-                <DropdownMenuLabel className="text-prop-gold">Profile Settings</DropdownMenuLabel>
-                <DropdownMenuSeparator className="bg-prop-gold/20" />
+          </ul>
+        </div>
+        
+        {/* Profile Section - Bottom Black Area */}
+        <div className="mt-auto border-t border-gray-700 pt-4">
+          <ul className="space-y-2 px-4">
+            {/* Profile with dropdown including Billing */}
+            <li key="/profile">
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button className={cn(
+                    "w-full flex items-center px-4 py-3 text-sm font-medium rounded-xl smooth-transition cursor-pointer group relative",
+                    location === "/profile" 
+                      ? "bg-prop-gradient-gold text-black font-bold" 
+                      : "text-gray-300 hover:bg-prop-card hover:text-prop-gold hover-scale",
+                    (isCollapsed || isPartiallyCollapsed) ? "justify-center" : ""
+                  )}>
+                    <User className={cn(
+                      "h-5 w-5 smooth-transition",
+                      location === "/profile" ? "text-black" : "text-gray-400 group-hover:text-prop-gold",
+                      !(isCollapsed || isPartiallyCollapsed) ? "mr-3" : ""
+                    )} />
+                    {!isCollapsed && !isPartiallyCollapsed && "Profile"}
+                    {(isCollapsed || isPartiallyCollapsed) && (
+                      <div className="absolute left-full ml-2 px-2 py-1 bg-gray-800 border border-prop-gold/20 rounded-md text-xs text-gray-300 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50 shadow-md">
+                        Profile
+                      </div>
+                    )}
+                  </button>
+                </DropdownMenuTrigger>
                 
-                <DropdownMenuItem 
-                  className="text-gray-300 hover:bg-gray-700 cursor-pointer"
-                  onClick={() => window.location.href = '/profile'}
+                <DropdownMenuContent 
+                  className="w-64 bg-gray-800 border-prop-gold/20 shadow-xl" 
+                  align="start"
+                  side="right"
                 >
-                  <User className="mr-2 h-4 w-4 text-blue-400" />
-                  Account Settings
-                </DropdownMenuItem>
-                
-                <DropdownMenuItem 
-                  className="text-gray-300 hover:bg-gray-700 cursor-pointer"
-                  onClick={() => window.location.href = '/billing'}
-                >
-                  <Activity className="mr-2 h-4 w-4 text-green-400" />
-                  Billing & Subscription
-                </DropdownMenuItem>
-                
-                <DropdownMenuSeparator className="bg-prop-gold/20" />
-                
-                <DropdownMenuItem 
-                  className="text-gray-300 hover:bg-gray-700 cursor-pointer"
-                  onClick={() => window.location.href = '/knowledge-base'}
-                >
-                  <BookOpen className="mr-2 h-4 w-4 text-blue-400" />
-                  Knowledge Base
-                </DropdownMenuItem>
-                
-                <DropdownMenuItem 
-                  className="text-gray-300 hover:bg-gray-700 cursor-pointer"
-                  onClick={() => window.location.href = '/support'}
-                >
-                  <Shield className="mr-2 h-4 w-4 text-green-400" />
-                  Support Center
-                </DropdownMenuItem>
-                
-                <DropdownMenuItem 
-                  className="text-gray-300 hover:bg-gray-700 cursor-pointer"
-                  onClick={() => window.location.href = '/terms'}
-                >
-                  <FileText className="mr-2 h-4 w-4 text-yellow-400" />
-                  Terms of Service
-                </DropdownMenuItem>
-                
-                <DropdownMenuItem 
-                  className="text-gray-300 hover:bg-gray-700 cursor-pointer"
-                  onClick={() => window.location.href = '/privacy'}
-                >
-                  <Shield className="mr-2 h-4 w-4 text-purple-400" />
-                  Privacy Policy
-                </DropdownMenuItem>
-                
-                <DropdownMenuSeparator className="bg-prop-gold/20" />
-                
-                <DropdownMenuItem 
-                  className="text-red-400 hover:bg-red-900/20 hover:text-red-300 cursor-pointer"
-                  onClick={async () => {
-                    try {
-                      await fetch('/api/auth/logout', { method: 'POST' });
-                      window.location.href = '/welcome';
-                    } catch (error) {
-                      console.error('Logout error:', error);
-                      window.location.href = '/welcome';
-                    }
-                  }}
-                >
-                  <LogOut className="mr-2 h-4 w-4 text-red-400" />
-                  Sign Out
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </li>
-        </ul>
+                  <DropdownMenuLabel className="text-prop-gold">Profile Settings</DropdownMenuLabel>
+                  <DropdownMenuSeparator className="bg-prop-gold/20" />
+                  
+                  <DropdownMenuItem 
+                    className="text-gray-300 hover:bg-gray-700 cursor-pointer"
+                    onClick={() => window.location.href = '/profile'}
+                  >
+                    <User className="mr-2 h-4 w-4 text-blue-400" />
+                    Account Settings
+                  </DropdownMenuItem>
+                  
+                  <DropdownMenuItem 
+                    className="text-gray-300 hover:bg-gray-700 cursor-pointer"
+                    onClick={() => window.location.href = '/billing'}
+                  >
+                    <Activity className="mr-2 h-4 w-4 text-green-400" />
+                    Billing & Subscription
+                  </DropdownMenuItem>
+                  
+                  <DropdownMenuSeparator className="bg-prop-gold/20" />
+                  
+                  <DropdownMenuItem 
+                    className="text-gray-300 hover:bg-gray-700 cursor-pointer"
+                    onClick={() => window.location.href = '/knowledge-base'}
+                  >
+                    <BookOpen className="mr-2 h-4 w-4 text-blue-400" />
+                    Knowledge Base
+                  </DropdownMenuItem>
+                  
+                  <DropdownMenuItem 
+                    className="text-gray-300 hover:bg-gray-700 cursor-pointer"
+                    onClick={() => window.location.href = '/support'}
+                  >
+                    <Shield className="mr-2 h-4 w-4 text-green-400" />
+                    Support Center
+                  </DropdownMenuItem>
+                  
+                  <DropdownMenuItem 
+                    className="text-gray-300 hover:bg-gray-700 cursor-pointer"
+                    onClick={() => window.location.href = '/terms'}
+                  >
+                    <FileText className="mr-2 h-4 w-4 text-yellow-400" />
+                    Terms of Service
+                  </DropdownMenuItem>
+                  
+                  <DropdownMenuItem 
+                    className="text-gray-300 hover:bg-gray-700 cursor-pointer"
+                    onClick={() => window.location.href = '/privacy'}
+                  >
+                    <Shield className="mr-2 h-4 w-4 text-purple-400" />
+                    Privacy Policy
+                  </DropdownMenuItem>
+                  
+                  <DropdownMenuSeparator className="bg-prop-gold/20" />
+                  
+                  <DropdownMenuItem 
+                    className="text-red-400 hover:bg-red-900/20 hover:text-red-300 cursor-pointer"
+                    onClick={async () => {
+                      try {
+                        await fetch('/api/auth/logout', { method: 'POST' });
+                        window.location.href = '/welcome';
+                      } catch (error) {
+                        console.error('Logout error:', error);
+                        window.location.href = '/welcome';
+                      }
+                    }}
+                  >
+                    <LogOut className="mr-2 h-4 w-4 text-red-400" />
+                    Sign Out
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </li>
+          </ul>
+        </div>
       </nav>
     </aside>
   );
