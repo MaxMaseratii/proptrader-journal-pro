@@ -155,6 +155,7 @@
 }
 
 :root {
+  /* Dark Theme - Default */
   --background: hsl(0, 0%, 3%);
   --foreground: hsl(0, 0%, 98%);
   --muted: hsl(0, 0%, 12%);
@@ -176,7 +177,7 @@
   --ring: hsl(45, 100%, 65%);
   --radius: 0.75rem;
 
-  /* PropTraderJournal Unique Colors */
+  /* PropTraderJournal Dark Colors */
   --prop-black: hsl(0, 0%, 4%);
   --prop-dark: hsl(0, 0%, 10%);
   --prop-surface: hsl(0, 0%, 12%);
@@ -191,7 +192,7 @@
   --prop-pink: hsl(322, 100%, 70%);
   --prop-pink-light: hsl(322, 100%, 80%);
   
-  /* Additional Color Aliases */
+  /* Additional Dark Color Aliases */
   --dark-bg: hsl(0, 0%, 4%);
   --dark-card: hsl(0, 0%, 8%);
   --dark-border: hsl(0, 0%, 15%);
@@ -199,7 +200,7 @@
   --warning-orange: hsl(25, 100%, 50%);
   --error-red: hsl(0, 84%, 60%);
   
-  /* Discipline Analysis Colors - matching uploaded ZIP file */
+  /* Discipline Analysis Colors - Dark */
   --discipline-card: hsl(220, 26%, 14%);
   --discipline-border: hsl(220, 13%, 26%);
   --discipline-rainbow: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -207,21 +208,76 @@
   --discipline-red: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
 }
 
-/* Dashboard Widget Styling */
+.light {
+  /* Light Theme Variables */
+  --background: hsl(0, 0%, 100%);
+  --foreground: hsl(0, 0%, 3%);
+  --muted: hsl(0, 0%, 96%);
+  --muted-foreground: hsl(0, 0%, 45%);
+  --popover: hsl(0, 0%, 100%);
+  --popover-foreground: hsl(0, 0%, 3%);
+  --card: hsl(0, 0%, 100%);
+  --card-foreground: hsl(0, 0%, 3%);
+  --border: hsl(0, 0%, 89%);
+  --input: hsl(0, 0%, 89%);
+  --primary: hsl(45, 100%, 45%);
+  --primary-foreground: hsl(0, 0%, 100%);
+  --secondary: hsl(180, 100%, 35%);
+  --secondary-foreground: hsl(0, 0%, 100%);
+  --accent: hsl(322, 100%, 50%);
+  --accent-foreground: hsl(0, 0%, 100%);
+  --destructive: hsl(0, 84.2%, 60.2%);
+  --destructive-foreground: hsl(60, 9.1%, 97.8%);
+  --ring: hsl(45, 100%, 45%);
+
+  /* PropTraderJournal Light Colors */
+  --prop-black: hsl(0, 0%, 100%);
+  --prop-dark: hsl(0, 0%, 96%);
+  --prop-surface: hsl(0, 0%, 98%);
+  --prop-gold: hsl(45, 100%, 45%);
+  --prop-gold-light: hsl(45, 100%, 55%);
+  --prop-tiffany: hsl(180, 70%, 45%);
+  --prop-tiffany-light: hsl(180, 80%, 55%);
+  --prop-green: hsl(142, 76%, 36%);
+  --prop-green-light: hsl(142, 76%, 46%);
+  --prop-blue: hsl(217, 91%, 50%);
+  --prop-blue-light: hsl(217, 91%, 60%);
+  --prop-pink: hsl(322, 100%, 60%);
+  --prop-pink-light: hsl(322, 100%, 70%);
+  
+  /* Additional Light Color Aliases */
+  --dark-bg: hsl(0, 0%, 100%);
+  --dark-card: hsl(0, 0%, 98%);
+  --dark-border: hsl(0, 0%, 89%);
+  --success-green: hsl(142, 76%, 36%);
+  --warning-orange: hsl(25, 100%, 50%);
+  --error-red: hsl(0, 84%, 60%);
+  
+  /* Discipline Analysis Colors - Light */
+  --discipline-card: hsl(220, 26%, 96%);
+  --discipline-border: hsl(220, 13%, 89%);
+  --discipline-rainbow: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  --discipline-gold: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  --discipline-red: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
+}
+
+/* Dashboard Widget Styling - Theme Adaptive */
 .widget-container {
-  background: #000000;
-  border: 1px solid rgba(255, 215, 0, 0.2);
+  background: var(--prop-black);
+  border: 1px solid var(--prop-gold);
   border-radius: 12px;
   padding: 24px;
   transition: all 0.3s ease;
   width: auto;
   height: auto;
+  opacity: 0.9;
 }
 
 .widget-container:hover {
-  border-color: rgba(217, 163, 26, 0.5);
-  box-shadow: 0 0 30px rgba(255, 215, 0, 0.3);
+  border-color: var(--prop-gold-light);
+  box-shadow: 0 0 30px var(--prop-gold);
   transform: translateY(-2px);
+  opacity: 1;
 }
 
 .widget-content {
@@ -245,7 +301,7 @@
 .widget-label {
   font-size: 14px;
   font-weight: 500;
-  color: #9CA3AF;
+  color: var(--muted-foreground);
   margin: 0 0 8px 0;
   line-height: 1.2;
 }
@@ -253,31 +309,31 @@
 .widget-value {
   font-size: 24px;
   font-weight: 700;
-  color: #D4AF37;
+  color: var(--prop-gold);
   margin: 0;
   line-height: 1.1;
 }
 
-/* Color overrides for widget values */
+/* Color overrides for widget values - Theme Adaptive */
 .text-green-400 {
-  color: #34d399 !important;
+  color: var(--prop-green) !important;
 }
 
 .text-red-400 {
-  color: #f87171 !important;
+  color: var(--error-red) !important;
 }
 
 .text-yellow-400 {
-  color: #fbbf24 !important;
+  color: var(--prop-gold-light) !important;
 }
 
 .text-white {
-  color: #ffffff !important;
+  color: var(--foreground) !important;
 }
 
 .widget-description {
   font-size: 12px;
-  color: #9CA3AF;
+  color: var(--muted-foreground);
   margin: 4px 0 0 0;
   line-height: 1.2;
 }
@@ -289,7 +345,7 @@
   min-height: 60px;
   padding: 12px;
   border-radius: 12px;
-  background: linear-gradient(135deg, #D4AF37 0%, #E6C547 100%);
+  background: linear-gradient(135deg, var(--prop-gold) 0%, var(--prop-gold-light) 100%);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -299,7 +355,7 @@
 .widget-icon {
   width: 24px;
   height: 24px;
-  color: #000000;
+  color: var(--prop-black);
 }
 
 .widget-grid {
@@ -318,10 +374,12 @@
   body {
     @apply font-sans antialiased bg-background text-foreground;
     font-family: 'Roboto', sans-serif;
+    transition: background-color 0.3s ease, color 0.3s ease;
   }
 
   html {
-    /* Removed dark class application */
+    /* Theme transitions applied to all elements */
+    transition: background-color 0.3s ease, color 0.3s ease;
   }
 }
 
@@ -419,6 +477,60 @@
 
   .bg-prop-gradient-main {
     background: linear-gradient(135deg, var(--prop-black) 0%, var(--prop-dark) 50%, var(--prop-black) 100%);
+  }
+
+  .bg-prop-gradient-hero {
+    background: linear-gradient(135deg, 
+      var(--prop-black) 0%, 
+      var(--prop-dark) 50%, 
+      var(--prop-black) 100%);
+  }
+
+  /* Light Theme Specific Component Overrides */
+  .light .widget-container {
+    background: var(--card);
+    border: 1px solid var(--border);
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+  }
+
+  .light .widget-container:hover {
+    border-color: var(--prop-gold);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  }
+
+  .light .widget-icon {
+    color: var(--background);
+  }
+
+  /* Light theme sidebar styling */
+  .light aside {
+    background: var(--background);
+    border-color: var(--border);
+  }
+
+  .light .bg-gray-900 {
+    background: var(--background) !important;
+  }
+
+  .light .bg-gray-800 {
+    background: var(--muted) !important;
+  }
+
+  .light .text-gray-300 {
+    color: var(--foreground) !important;
+  }
+
+  .light .text-gray-400 {
+    color: var(--muted-foreground) !important;
+  }
+
+  .light .border-gray-700 {
+    border-color: var(--border) !important;
+  }
+
+  /* Light theme welcome page */
+  .light .bg-gradient-to-br {
+    background: linear-gradient(135deg, var(--background) 0%, var(--muted) 100%) !important;
   }
 
   .bg-prop-gradient-hero {

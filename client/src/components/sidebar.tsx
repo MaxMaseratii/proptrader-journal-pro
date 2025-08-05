@@ -26,8 +26,11 @@ import {
   PanelLeftOpen,
   Target,
   Activity,
-  FileText
+  FileText,
+  Sun,
+  Moon
 } from "lucide-react";
+import { useTheme } from "@/contexts/ThemeContext";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
 import { 
@@ -61,6 +64,7 @@ const navItems = [
 export default function Sidebar() {
   const [location] = useLocation();
   const { user } = useAuth();
+  const { theme, toggleTheme } = useTheme();
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isPartiallyCollapsed, setIsPartiallyCollapsed] = useState(false);
 
@@ -205,6 +209,18 @@ export default function Sidebar() {
                   >
                     <Activity className="mr-2 h-4 w-4 text-green-400" />
                     Billing & Subscription
+                  </DropdownMenuItem>
+                  
+                  <DropdownMenuItem 
+                    className="text-gray-300 hover:bg-gray-700 cursor-pointer"
+                    onClick={toggleTheme}
+                  >
+                    {theme === 'dark' ? (
+                      <Sun className="mr-2 h-4 w-4 text-yellow-400" />
+                    ) : (
+                      <Moon className="mr-2 h-4 w-4 text-blue-400" />
+                    )}
+                    {theme === 'dark' ? 'Light Mode' : 'Dark Mode'}
                   </DropdownMenuItem>
                   
                   <DropdownMenuSeparator className="bg-prop-gold/20" />
