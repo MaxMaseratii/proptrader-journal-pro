@@ -55,8 +55,6 @@ const navItems = [
   { href: "/achievements", label: "Achievement", icon: Trophy, section: "main" },
   { href: "/journal", label: "Trading Journal", icon: Book, section: "main" },
   { href: "/accounts", label: "Accounts", icon: Target, section: "main" },
-  { href: "/billing", label: "Billing", icon: Activity, section: "main" },
-  { href: "/notifications", label: "Notifications", icon: Menu, section: "main" },
   { href: "/profile", label: "Profile", icon: User, section: "main" },
 ];
 
@@ -124,7 +122,7 @@ export default function Sidebar() {
           </div>
         )}
         <ul className="space-y-2 px-4">
-          {mainItems.map(({ href, label, icon: Icon }, index) => (
+          {mainItems.filter(item => item.label !== "Profile").map(({ href, label, icon: Icon }, index) => (
             <li key={href}>
               <Link href={href} className={cn(
                 "flex items-center px-4 py-3 text-sm font-medium rounded-xl smooth-transition cursor-pointer group relative",
@@ -155,6 +153,92 @@ export default function Sidebar() {
               </Link>
             </li>
           ))}
+          
+          {/* Profile with dropdown including Billing */}
+          <li key="/profile">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button className={cn(
+                  "w-full flex items-center px-4 py-3 text-sm font-medium rounded-xl smooth-transition cursor-pointer group relative",
+                  location === "/profile" 
+                    ? "bg-prop-gradient-gold text-black font-bold" 
+                    : "text-gray-300 hover:bg-prop-card hover:text-prop-gold hover-scale",
+                  (isCollapsed || isPartiallyCollapsed) ? "justify-center" : ""
+                )}>
+                  <User className={cn(
+                    "h-5 w-5 smooth-transition",
+                    location === "/profile" ? "text-black" : "text-gray-400 group-hover:text-prop-gold",
+                    !(isCollapsed || isPartiallyCollapsed) ? "mr-3" : ""
+                  )} />
+                  {!isCollapsed && !isPartiallyCollapsed && "Profile"}
+                  {(isCollapsed || isPartiallyCollapsed) && (
+                    <div className="absolute left-full ml-2 px-2 py-1 bg-gray-800 border border-prop-gold/20 rounded-md text-xs text-gray-300 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50 shadow-md">
+                      Profile
+                    </div>
+                  )}
+                </button>
+              </DropdownMenuTrigger>
+              
+              <DropdownMenuContent 
+                className="w-64 bg-gray-800 border-prop-gold/20 shadow-xl" 
+                align="start"
+                side="right"
+              >
+                <DropdownMenuLabel className="text-prop-gold">Profile Settings</DropdownMenuLabel>
+                <DropdownMenuSeparator className="bg-prop-gold/20" />
+                
+                <DropdownMenuItem 
+                  className="text-gray-300 hover:bg-gray-700 cursor-pointer"
+                  onClick={() => window.location.href = '/profile'}
+                >
+                  <User className="mr-2 h-4 w-4 text-blue-400" />
+                  Account Settings
+                </DropdownMenuItem>
+                
+                <DropdownMenuItem 
+                  className="text-gray-300 hover:bg-gray-700 cursor-pointer"
+                  onClick={() => window.location.href = '/billing'}
+                >
+                  <Activity className="mr-2 h-4 w-4 text-green-400" />
+                  Billing & Subscription
+                </DropdownMenuItem>
+                
+                <DropdownMenuSeparator className="bg-prop-gold/20" />
+                
+                <DropdownMenuItem 
+                  className="text-gray-300 hover:bg-gray-700 cursor-pointer"
+                  onClick={() => window.location.href = '/knowledge-base'}
+                >
+                  <BookOpen className="mr-2 h-4 w-4 text-blue-400" />
+                  Knowledge Base
+                </DropdownMenuItem>
+                
+                <DropdownMenuItem 
+                  className="text-gray-300 hover:bg-gray-700 cursor-pointer"
+                  onClick={() => window.location.href = '/support'}
+                >
+                  <Shield className="mr-2 h-4 w-4 text-green-400" />
+                  Support Center
+                </DropdownMenuItem>
+                
+                <DropdownMenuItem 
+                  className="text-gray-300 hover:bg-gray-700 cursor-pointer"
+                  onClick={() => window.location.href = '/terms'}
+                >
+                  <FileText className="mr-2 h-4 w-4 text-yellow-400" />
+                  Terms of Service
+                </DropdownMenuItem>
+                
+                <DropdownMenuItem 
+                  className="text-gray-300 hover:bg-gray-700 cursor-pointer"
+                  onClick={() => window.location.href = '/privacy'}
+                >
+                  <Shield className="mr-2 h-4 w-4 text-purple-400" />
+                  Privacy Policy
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </li>
           
           
           {/* Logout Button */}
