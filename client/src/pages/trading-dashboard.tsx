@@ -43,8 +43,8 @@ import {
   Crown
 } from 'lucide-react';
 
-// Mock data for strategies
-const mockStrategies = [
+// Strategy data - using actual data from API
+const defaultStrategies = [
   {
     id: 1,
     name: "Morning Breakout",

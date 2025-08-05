@@ -160,9 +160,9 @@ export default function AuthPage() {
 
         {/* Right Side - Auth Form */}
         <div className="w-full max-w-md mx-auto">
-          <Card className="bg-gray-900/95 border-gray-700 shadow-2xl">
+          <Card className="widget-card shadow-2xl">
             <CardHeader className="space-y-1">
-              <CardTitle className="text-2xl text-center text-white">
+              <CardTitle className="text-2xl text-center widget-header">
                 {isLogin ? "Welcome Back" : "Create Account"}
               </CardTitle>
               <CardDescription className="text-center text-gray-400">

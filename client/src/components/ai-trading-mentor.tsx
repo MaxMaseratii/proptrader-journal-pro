@@ -75,7 +75,7 @@ I can analyze your trades, suggest improvements, remind you of prop firm rules, 
     const winRate = trades.length > 0 
       ? (trades.filter(trade => trade.pnl > 0).length / trades.length) * 100 
       : 0;
-    const totalBalance = accounts.reduce((sum, acc) => sum + acc.currentBalance, 0);
+    const totalBalance = accounts.reduce((sum, acc) => sum + (acc.startingBalance || 0), 0);
     const recentTrades = trades.slice(-5);
     
     return {

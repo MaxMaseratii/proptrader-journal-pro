@@ -191,57 +191,57 @@ const EnhancedAchievementSystem = () => {
 
       {/* Player Stats */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card className="bg-gradient-to-br from-gray-900 via-gray-800 to-black border border-yellow-400/20">
+        <Card className="widget-card">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-white">Total Points</CardTitle>
+            <CardTitle className="text-sm font-medium widget-header">Total Points</CardTitle>
             <Star className="h-4 w-4 text-yellow-400" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-yellow-400">{playerStats.totalPoints.toLocaleString()}</div>
+            <div className="text-2xl font-bold text-yellow-400 widget-value">{playerStats.totalPoints.toLocaleString()}</div>
             <p className="text-xs text-gray-400">{playerStats.pointsToNextRank} to next rank</p>
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-gray-900 via-gray-800 to-black border border-yellow-400/20">
+        <Card className="widget-card">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-white">Achievements</CardTitle>
+            <CardTitle className="text-sm font-medium widget-header">Achievements</CardTitle>
             <Trophy className="h-4 w-4 text-blue-400" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-blue-400">
+            <div className="text-2xl font-bold text-blue-400 widget-value">
               {playerStats.unlockedAchievements}/{playerStats.totalAchievements}
             </div>
             <p className="text-xs text-gray-400">{playerStats.completionRate}% complete</p>
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-gray-900 via-gray-800 to-black border border-yellow-400/20">
+        <Card className="widget-card">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-white">Current Rank</CardTitle>
+            <CardTitle className="text-sm font-medium widget-header">Current Rank</CardTitle>
             <Crown className="h-4 w-4 text-purple-400" />
           </CardHeader>
           <CardContent>
-            <div className="text-lg font-bold text-purple-400">{playerStats.currentRank}</div>
+            <div className="text-lg font-bold text-purple-400 widget-value">{playerStats.currentRank}</div>
             <p className="text-xs text-gray-400">Next: {playerStats.nextRank}</p>
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-gray-900 via-gray-800 to-black border border-yellow-400/20">
+        <Card className="widget-card">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-white">Progress</CardTitle>
+            <CardTitle className="text-sm font-medium widget-header">Progress</CardTitle>
             <TrendingUp className="h-4 w-4 text-green-400" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-green-400">{playerStats.completionRate}%</div>
+            <div className="text-2xl font-bold text-green-400 widget-value">{playerStats.completionRate}%</div>
             <Progress value={playerStats.completionRate} className="mt-2" />
           </CardContent>
         </Card>
       </div>
 
       {/* Recent Achievements */}
-      <Card className="bg-gradient-to-br from-gray-900 via-gray-800 to-black border border-yellow-400/20">
+      <Card className="widget-card">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-yellow-600">
+          <CardTitle className="flex items-center gap-2 widget-header">
             <Award className="h-5 w-5 text-yellow-400" />
             Recently Unlocked
           </CardTitle>
@@ -267,9 +267,9 @@ const EnhancedAchievementSystem = () => {
         const CategoryIcon = category.icon;
         
         return (
-          <Card key={categoryIndex} className="bg-gradient-to-br from-gray-900 via-gray-800 to-black border border-yellow-400/20">
+          <Card key={categoryIndex} className="widget-card">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-yellow-600">
+              <CardTitle className="flex items-center gap-2 widget-header">
                 <CategoryIcon className={`h-5 w-5 ${category.color}`} />
                 {category.name}
               </CardTitle>
