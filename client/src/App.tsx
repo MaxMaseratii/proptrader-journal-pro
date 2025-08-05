@@ -16,6 +16,7 @@ import Reports from "@/pages/reports";
 import Analytics from "@/pages/analytics";
 import Trades from "@/pages/trades";
 import Profile from "@/pages/profile";
+import Billing from "@/pages/billing";
 import Welcome from "@/pages/welcome";
 import AuthPage from "@/pages/auth-page";
 import CsvImport from "@/pages/csv-import";
@@ -141,6 +142,7 @@ function Router() {
           <Route path="/position-sizing" component={PositionSizing} />
           
           <Route path="/profile" component={Profile} />
+          <Route path="/billing" component={Billing} />
 
           <Route path="/account-manager" component={AccountManager} />
           <Route path="/trading-journal-page" component={TradingJournalPage} />

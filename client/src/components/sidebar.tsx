@@ -46,15 +46,15 @@ const navItems = [
   { href: "/trading-dashboard", label: "Mental Check & Daily Plan", icon: Brain, section: "main" },
   { href: "/projections", label: "Challenge Target Planner", icon: TrendingUp, section: "main" },
   { href: "/trading-companion", label: "Trading Companion", icon: Bot, section: "main" },
+  { href: "/accounts", label: "Accounts", icon: Target, section: "main" },
   { href: "/trades", label: "Trades Log", icon: FileText, section: "main" },
+  { href: "/journal", label: "Trading Journal", icon: Book, section: "main" },
   { href: "/charts", label: "Charts & Analytics", icon: ChartLine, section: "main" },
   { href: "/disciplinary-assistant", label: "Discipline & Psychology Tracker", icon: Settings, section: "main" },
   { href: "/spending", label: "Prop Firm Spending", icon: Wallet, section: "main" },
   { href: "/payouts", label: "Payout Records", icon: DollarSign, section: "main" },
   { href: "/reports", label: "Reports", icon: Calendar, section: "main" },
   { href: "/achievements", label: "Achievement", icon: Trophy, section: "main" },
-  { href: "/journal", label: "Trading Journal", icon: Book, section: "main" },
-  { href: "/accounts", label: "Accounts", icon: Target, section: "main" },
   { href: "/profile", label: "Profile", icon: User, section: "main" },
 ];
 
