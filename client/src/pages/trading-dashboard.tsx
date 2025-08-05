@@ -177,7 +177,7 @@ export default function CompleteTradingDashboard() {
   const [activeTab, setActiveTab] = useState('psychology');
   
   // Strategy management states
-  const [strategies, setStrategies] = useState(mockStrategies);
+  const [strategies, setStrategies] = useState(defaultStrategies);
   const [selectedStrategy, setSelectedStrategy] = useState(null);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [isDetailsDialogOpen, setIsDetailsDialogOpen] = useState(false);

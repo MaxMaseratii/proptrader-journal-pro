@@ -165,7 +165,7 @@ export default function AuthPage() {
               <CardTitle className="text-2xl text-center widget-header">
                 {isLogin ? "Welcome Back" : "Create Account"}
               </CardTitle>
-              <CardDescription className="text-center text-gray-400">
+              <CardDescription className="text-center widget-text">
                 {isLogin 
                   ? "Sign in to your PropTraderJournal account" 
                   : "Join thousands of successful prop traders"
@@ -185,7 +185,7 @@ export default function AuthPage() {
                       name="email"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-white">Email</FormLabel>
+                          <FormLabel className="widget-header">Email</FormLabel>
                           <FormControl>
                             <div className="relative">
                               <Mail className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
@@ -193,7 +193,7 @@ export default function AuthPage() {
                                 {...field}
                                 type="email"
                                 placeholder="trader@example.com"
-                                className="pl-10 bg-gray-800 border-gray-600 text-white"
+                                className="pl-10 widget-bg border-gray-600 widget-text"
                               />
                             </div>
                           </FormControl>
@@ -207,7 +207,7 @@ export default function AuthPage() {
                       name="password"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-white">Password</FormLabel>
+                          <FormLabel className="widget-header">Password</FormLabel>
                           <FormControl>
                             <div className="relative">
                               <Lock className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
@@ -215,12 +215,12 @@ export default function AuthPage() {
                                 {...field}
                                 type={showPassword ? "text" : "password"}
                                 placeholder="Enter your password"
-                                className="pl-10 pr-10 bg-gray-800 border-gray-600 text-white"
+                                className="pl-10 pr-10 widget-bg border-gray-600 widget-text"
                               />
                               <button
                                 type="button"
                                 onClick={() => setShowPassword(!showPassword)}
-                                className="absolute right-3 top-3 text-gray-400 hover:text-white"
+                                className="absolute right-3 top-3 text-gray-400 hover:widget-text"
                               >
                                 {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                               </button>
@@ -250,12 +250,12 @@ export default function AuthPage() {
                         name="firstName"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel className="text-white">First Name</FormLabel>
+                            <FormLabel className="widget-header">First Name</FormLabel>
                             <FormControl>
                               <Input
                                 {...field}
                                 placeholder="John"
-                                className="bg-gray-800 border-gray-600 text-white"
+                                className="widget-bg border-gray-600 widget-text"
                               />
                             </FormControl>
                             <FormMessage />
@@ -268,12 +268,12 @@ export default function AuthPage() {
                         name="lastName"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel className="text-white">Last Name</FormLabel>
+                            <FormLabel className="widget-header">Last Name</FormLabel>
                             <FormControl>
                               <Input
                                 {...field}
                                 placeholder="Doe"
-                                className="bg-gray-800 border-gray-600 text-white"
+                                className="widget-bg border-gray-600 widget-text"
                               />
                             </FormControl>
                             <FormMessage />
@@ -287,7 +287,7 @@ export default function AuthPage() {
                       name="email"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-white">Email</FormLabel>
+                          <FormLabel className="widget-header">Email</FormLabel>
                           <FormControl>
                             <div className="relative">
                               <Mail className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
@@ -295,7 +295,7 @@ export default function AuthPage() {
                                 {...field}
                                 type="email"
                                 placeholder="trader@example.com"
-                                className="pl-10 bg-gray-800 border-gray-600 text-white"
+                                className="pl-10 widget-bg border-gray-600 widget-text"
                               />
                             </div>
                           </FormControl>
@@ -309,7 +309,7 @@ export default function AuthPage() {
                       name="password"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-white">Password</FormLabel>
+                          <FormLabel className="widget-header">Password</FormLabel>
                           <FormControl>
                             <div className="relative">
                               <Lock className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
@@ -317,7 +317,7 @@ export default function AuthPage() {
                                 {...field}
                                 type={showPassword ? "text" : "password"}
                                 placeholder="Create a strong password"
-                                className="pl-10 pr-10 bg-gray-800 border-gray-600 text-white"
+                                className="pl-10 pr-10 widget-bg border-gray-600 widget-text"
                               />
                               <button
                                 type="button"
@@ -338,7 +338,7 @@ export default function AuthPage() {
                       name="confirmPassword"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-white">Confirm Password</FormLabel>
+                          <FormLabel className="widget-header">Confirm Password</FormLabel>
                           <FormControl>
                             <div className="relative">
                               <Lock className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
@@ -346,7 +346,7 @@ export default function AuthPage() {
                                 {...field}
                                 type={showConfirmPassword ? "text" : "password"}
                                 placeholder="Confirm your password"
-                                className="pl-10 pr-10 bg-gray-800 border-gray-600 text-white"
+                                className="pl-10 pr-10 widget-bg border-gray-600 widget-text"
                               />
                               <button
                                 type="button"
