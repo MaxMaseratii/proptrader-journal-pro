@@ -234,7 +234,7 @@ Would you like me to analyze any specific aspect of your trading? I can look at 
             </div>
             <div>
               <CardTitle className="text-sm widget-header">{mentorPersonality.name}</CardTitle>
-              <p className="text-xs text-gray-400">{mentorPersonality.role}</p>
+              <p className="text-xs widget-text opacity-70">{mentorPersonality.role}</p>
             </div>
           </div>
           <div className="flex items-center space-x-1">
@@ -242,7 +242,7 @@ Would you like me to analyze any specific aspect of your trading? I can look at 
               variant="ghost"
               size="sm"
               onClick={onToggleMinimize}
-              className="h-8 w-8 p-0 hover:bg-gray-700"
+              className="h-8 w-8 p-0 hover:bg-border"
             >
               <Minimize2 className="h-4 w-4" />
             </Button>
@@ -271,7 +271,7 @@ Would you like me to analyze any specific aspect of your trading? I can look at 
                   className={`max-w-[80%] rounded-lg p-3 ${
                     message.sender === 'user'
                       ? 'bg-prop-gold text-black'
-                      : 'bg-gray-700 text-white'
+                      : 'widget-bg widget-text border border-border'
                   }`}
                 >
                   <div className="flex items-start space-x-2">
@@ -299,7 +299,7 @@ Would you like me to analyze any specific aspect of your trading? I can look at 
             
             {isLoading && (
               <div className="flex justify-start">
-                <div className="bg-gray-700 rounded-lg p-3 max-w-[80%]">
+                <div className="widget-bg border border-border rounded-lg p-3 max-w-[80%]">
                   <div className="flex items-center space-x-2">
                     <Bot className="h-4 w-4 text-prop-gold" />
                     <div className="flex space-x-1">

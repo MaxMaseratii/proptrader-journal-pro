@@ -177,12 +177,12 @@ const EnhancedAchievementSystem = () => {
   };
 
   return (
-    <div className="space-y-6 bg-black min-h-screen p-6">
+    <div className="space-y-6 bg-background min-h-screen p-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h1 className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-yellow-600">Achievements</h1>
-          <p className="text-gray-400">Track your trading milestones and unlock rewards</p>
+          <p className="text-muted-foreground">Track your trading milestones and unlock rewards</p>
         </div>
         <Badge className="bg-yellow-400/20 text-yellow-400 border-yellow-400 text-lg px-4 py-2">
           {playerStats.currentRank}
@@ -198,7 +198,7 @@ const EnhancedAchievementSystem = () => {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-yellow-400 widget-value">{playerStats.totalPoints.toLocaleString()}</div>
-            <p className="text-xs text-gray-400">{playerStats.pointsToNextRank} to next rank</p>
+            <p className="text-xs text-muted-foreground">{playerStats.pointsToNextRank} to next rank</p>
           </CardContent>
         </Card>
 
@@ -211,7 +211,7 @@ const EnhancedAchievementSystem = () => {
             <div className="text-2xl font-bold text-blue-400 widget-value">
               {playerStats.unlockedAchievements}/{playerStats.totalAchievements}
             </div>
-            <p className="text-xs text-gray-400">{playerStats.completionRate}% complete</p>
+            <p className="text-xs text-muted-foreground">{playerStats.completionRate}% complete</p>
           </CardContent>
         </Card>
 
@@ -222,7 +222,7 @@ const EnhancedAchievementSystem = () => {
           </CardHeader>
           <CardContent>
             <div className="text-lg font-bold text-purple-400 widget-value">{playerStats.currentRank}</div>
-            <p className="text-xs text-gray-400">Next: {playerStats.nextRank}</p>
+            <p className="text-xs text-muted-foreground">Next: {playerStats.nextRank}</p>
           </CardContent>
         </Card>
 
@@ -251,8 +251,8 @@ const EnhancedAchievementSystem = () => {
             {recentAchievements.map((achievement, index) => (
               <div key={index} className="flex-shrink-0 text-center p-4 rounded-lg bg-yellow-400/10 border border-yellow-400/30">
                 <Trophy className="h-8 w-8 text-yellow-400 mx-auto mb-2" />
-                <div className="font-semibold text-sm text-white">{achievement.title}</div>
-                <div className="text-xs text-gray-400">{achievement.unlockedDate}</div>
+                <div className="font-semibold text-sm widget-text">{achievement.title}</div>
+                <div className="text-xs text-muted-foreground">{achievement.unlockedDate}</div>
                 <Badge className="mt-2 bg-yellow-400/20 text-yellow-400 border-yellow-400">
                   +{achievement.points} pts
                 </Badge>
@@ -284,8 +284,8 @@ const EnhancedAchievementSystem = () => {
                       key={achievementIndex}
                       className={`p-4 rounded-lg border-2 transition-all duration-300 ${
                         achievement.unlocked
-                          ? `${getRarityColor(achievement.rarity)} hover:scale-105 ring-2 ring-yellow-400/30`
-                          : 'bg-gray-800/20 border-gray-600 text-gray-400'
+                          ? `${getRarityColor(achievement.rarity)} hover:scale-105 ring-2 ring-yellow-400/30 widget-bg`
+                          : 'widget-bg border-border text-muted-foreground'
                       }`}
                     >
                       <div className="flex items-center gap-3 mb-3">
@@ -293,7 +293,7 @@ const EnhancedAchievementSystem = () => {
                           achievement.unlocked ? category.color : 'text-gray-500'
                         }`} />
                         <div className="flex-1">
-                          <div className={`font-semibold ${achievement.unlocked ? 'text-white' : 'text-gray-400'}`}>
+                          <div className={`font-semibold ${achievement.unlocked ? 'widget-text' : 'text-muted-foreground'}`}>
                             {achievement.title}
                           </div>
                           <Badge variant="outline" className={`text-xs ${getRarityColor(achievement.rarity)}`}>
@@ -302,7 +302,7 @@ const EnhancedAchievementSystem = () => {
                         </div>
                       </div>
                       
-                      <p className={`text-sm mb-3 ${achievement.unlocked ? 'text-gray-300' : 'text-gray-500'}`}>
+                      <p className={`text-sm mb-3 ${achievement.unlocked ? 'widget-text' : 'text-muted-foreground'}`}>
                         {achievement.description}
                       </p>
                       
@@ -316,13 +316,13 @@ const EnhancedAchievementSystem = () => {
                           {achievement.progress && (
                             <div>
                               <div className="flex justify-between text-xs mb-1">
-                                <span className="text-gray-400">Progress</span>
-                                <span className="text-white">{achievement.progress}%</span>
+                                <span className="text-muted-foreground">Progress</span>
+                                <span className="widget-text">{achievement.progress}%</span>
                               </div>
                               <Progress value={achievement.progress} className="h-2" />
                             </div>
                           )}
-                          <Badge variant="outline" className="border-gray-600 text-gray-400">
+                          <Badge variant="outline" className="border-border text-muted-foreground">
                             {achievement.points} points
                           </Badge>
                         </div>

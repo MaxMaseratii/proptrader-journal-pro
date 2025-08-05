@@ -110,7 +110,7 @@ export default function AuthPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-background flex items-center justify-center p-4">
       <div className="w-full max-w-6xl grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
         
         {/* Left Side - Hero Section */}
@@ -119,40 +119,40 @@ export default function AuthPage() {
             <h1 className="text-5xl font-bold text-gradient-rainbow">
               PropTraderJournal
             </h1>
-            <p className="text-xl text-gray-300 leading-relaxed">
+            <p className="text-xl text-muted-foreground leading-relaxed">
               The ultimate trading journal designed for prop traders. Track your performance, 
               analyze your discipline, and accelerate your path to funded accounts.
             </p>
           </div>
           
           <div className="space-y-4">
-            <div className="flex items-center space-x-4 p-4 bg-gray-800/50 rounded-lg border border-yellow-400/20">
+            <div className="flex items-center space-x-4 p-4 widget-bg rounded-lg border border-yellow-400/20">
               <div className="w-12 h-12 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full flex items-center justify-center">
                 <User className="w-6 h-6 text-black" />
               </div>
               <div>
-                <h3 className="text-white font-semibold">Professional Tracking</h3>
-                <p className="text-gray-400 text-sm">Track multiple prop accounts with precision</p>
+                <h3 className="widget-text font-semibold">Professional Tracking</h3>
+                <p className="text-muted-foreground text-sm">Track multiple prop accounts with precision</p>
               </div>
             </div>
             
-            <div className="flex items-center space-x-4 p-4 bg-gray-800/50 rounded-lg border border-green-400/20">
+            <div className="flex items-center space-x-4 p-4 widget-bg rounded-lg border border-green-400/20">
               <div className="w-12 h-12 bg-gradient-to-r from-green-400 to-teal-500 rounded-full flex items-center justify-center">
                 <Mail className="w-6 h-6 text-black" />
               </div>
               <div>
-                <h3 className="text-white font-semibold">Discipline Analysis</h3>
-                <p className="text-gray-400 text-sm">AI-powered insights to improve your trading</p>
+                <h3 className="widget-text font-semibold">Discipline Analysis</h3>
+                <p className="text-muted-foreground text-sm">AI-powered insights to improve your trading</p>
               </div>
             </div>
             
-            <div className="flex items-center space-x-4 p-4 bg-gray-800/50 rounded-lg border border-pink-400/20">
+            <div className="flex items-center space-x-4 p-4 widget-bg rounded-lg border border-pink-400/20">
               <div className="w-12 h-12 bg-gradient-to-r from-pink-400 to-purple-500 rounded-full flex items-center justify-center">
                 <Lock className="w-6 h-6 text-black" />
               </div>
               <div>
-                <h3 className="text-white font-semibold">Risk Management</h3>
-                <p className="text-gray-400 text-sm">Advanced tools to protect your capital</p>
+                <h3 className="widget-text font-semibold">Risk Management</h3>
+                <p className="text-muted-foreground text-sm">Advanced tools to protect your capital</p>
               </div>
             </div>
           </div>
