@@ -79,9 +79,9 @@ export function DailyPlanningWidget({ trades = [], selectedAccount, dailyPlan, c
   };
 
   return (
-    <Card className={cn("bg-gradient-to-br from-blue-900/20 to-blue-800/20 border-blue-500", className)}>
+    <Card className={cn("widget-card", className)}>
       <CardHeader className="pb-3">
-        <CardTitle className="text-white flex items-center justify-between">
+        <CardTitle className="widget-header flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Target className="w-5 h-5 text-blue-400" />
             Today's Trading Plan

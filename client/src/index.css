@@ -533,6 +533,234 @@
     background: linear-gradient(135deg, var(--background) 0%, var(--muted) 100%) !important;
   }
 
+  /* Universal Widget Color Consistency Rules */
+  /* These rules ensure ALL widgets match Performance, Investment, Advanced Stats, and Accounts widget styling */
+  
+  /* Base widget container - applies to all Card components used as widgets */
+  .widget-card,
+  .card-widget,
+  [class*="widget-container"],
+  .bg-gradient-to-br.from-gray-900,
+  .bg-black\/30,
+  .bg-gray-900\/40 {
+    background: linear-gradient(135deg, rgba(0, 0, 0, 0.4) 0%, rgba(31, 41, 55, 0.6) 50%, rgba(0, 0, 0, 0.8) 100%) !important;
+    border: 1px solid rgba(107, 114, 128, 0.3) !important;
+    border-radius: 0.5rem !important;
+    transition: all 0.2s ease !important;
+  }
+
+  /* Widget hover states */
+  .widget-card:hover,
+  .card-widget:hover,
+  [class*="widget-container"]:hover,
+  .bg-gradient-to-br.from-gray-900:hover,
+  .bg-black\/30:hover,
+  .bg-gray-900\/40:hover {
+    border-color: rgba(251, 191, 36, 0.6) !important;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
+    transform: translateY(-1px) !important;
+  }
+
+  /* Widget headers and titles */
+  .widget-header,
+  .card-header,
+  .widget-title,
+  .card-title {
+    color: var(--foreground) !important;
+    font-weight: 600 !important;
+  }
+
+  /* Widget content text colors */
+  .widget-value,
+  .widget-amount,
+  .widget-number {
+    color: var(--prop-gold) !important;
+    font-weight: 700 !important;
+  }
+
+  /* Widget labels and descriptions */
+  .widget-label,
+  .widget-description,
+  .widget-subtitle {
+    color: var(--muted-foreground) !important;
+  }
+
+  /* Force consistency for all card-based widgets */
+  .card,
+  [data-widget="true"],
+  .dashboard-widget,
+  .performance-widget,
+  .analytics-widget,
+  .account-widget,
+  .stats-widget {
+    background: linear-gradient(135deg, rgba(0, 0, 0, 0.4) 0%, rgba(31, 41, 55, 0.6) 50%, rgba(0, 0, 0, 0.8) 100%) !important;
+    border: 1px solid rgba(107, 114, 128, 0.3) !important;
+    border-radius: 0.5rem !important;
+  }
+
+  /* Light theme widget overrides */
+  .light .widget-card,
+  .light .card-widget,
+  .light [class*="widget-container"],
+  .light .bg-gradient-to-br.from-gray-900,
+  .light .bg-black\/30,
+  .light .bg-gray-900\/40,
+  .light .card,
+  .light [data-widget="true"],
+  .light .dashboard-widget,
+  .light .performance-widget,
+  .light .analytics-widget,
+  .light .account-widget,
+  .light .stats-widget {
+    background: var(--card) !important;
+    border: 1px solid var(--border) !important;
+    color: var(--card-foreground) !important;
+  }
+
+  .light .widget-card:hover,
+  .light .card-widget:hover,
+  .light [class*="widget-container"]:hover {
+    border-color: var(--prop-gold) !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+  }
+
+  /* Override specific Tailwind patterns used in dashboard widgets */
+  .bg-gradient-to-br.from-gray-900\/40.via-gray-800\/60.to-black\/80,
+  .bg-gradient-to-br.from-red-950\/40.via-gray-900\/60.to-black\/80,
+  .bg-gradient-to-br.from-green-950\/40.via-gray-900\/60.to-black\/80 {
+    background: linear-gradient(135deg, rgba(0, 0, 0, 0.4) 0%, rgba(31, 41, 55, 0.6) 50%, rgba(0, 0, 0, 0.8) 100%) !important;
+    border: 1px solid rgba(107, 114, 128, 0.3) !important;
+  }
+
+  /* Ensure all performance metrics use consistent colors */
+  .text-green-400, .text-green-500 {
+    color: var(--prop-green) !important;
+  }
+
+  .text-red-400, .text-red-500 {
+    color: var(--destructive) !important;
+  }
+
+  .text-amber-400, .text-yellow-400 {
+    color: var(--prop-gold) !important;
+  }
+
+  .text-blue-400, .text-blue-500 {
+    color: var(--prop-blue) !important;
+  }
+
+  .text-purple-400, .text-purple-500 {
+    color: var(--prop-pink) !important;
+  }
+
+  .text-emerald-400, .text-emerald-500 {
+    color: var(--prop-tiffany) !important;
+  }
+
+  /* Border colors for consistency */
+  .border-gray-600\/30, .border-gray-700\/50 {
+    border-color: rgba(107, 114, 128, 0.3) !important;
+  }
+
+  .border-red-500\/50 {
+    border-color: rgba(239, 68, 68, 0.5) !important;
+  }
+
+  .border-green-500\/50 {
+    border-color: rgba(34, 197, 94, 0.5) !important;
+  }
+
+  .border-amber-400\/60 {
+    border-color: rgba(251, 191, 36, 0.6) !important;
+  }
+
+  /* Light theme color overrides */
+  .light .text-green-400, .light .text-green-500 {
+    color: var(--prop-green) !important;
+  }
+
+  .light .text-red-400, .light .text-red-500 {
+    color: var(--destructive) !important;
+  }
+
+  .light .text-amber-400, .light .text-yellow-400 {
+    color: var(--prop-gold) !important;
+  }
+
+  .light .bg-gradient-to-br.from-gray-900\/40.via-gray-800\/60.to-black\/80,
+  .light .bg-gradient-to-br.from-red-950\/40.via-gray-900\/60.to-black\/80,
+  .light .bg-gradient-to-br.from-green-950\/40.via-gray-900\/60.to-black\/80 {
+    background: var(--card) !important;
+    border: 1px solid var(--border) !important;
+  }
+
+  /* Force all card-based containers to use widget styling */
+  .dashboard-container .card,
+  .performance-container .card,
+  .analytics-container .card,
+  .accounts-container .card,
+  .stats-container .card,
+  [class*="dashboard"] .card,
+  [class*="performance"] .card,
+  [class*="analytics"] .card,
+  [class*="account"] .card,
+  [class*="stats"] .card,
+  [class*="widget"] .card {
+    background: linear-gradient(135deg, rgba(0, 0, 0, 0.4) 0%, rgba(31, 41, 55, 0.6) 50%, rgba(0, 0, 0, 0.8) 100%) !important;
+    border: 1px solid rgba(107, 114, 128, 0.3) !important;
+    border-radius: 0.5rem !important;
+  }
+
+  /* Override specific background patterns from dashboard */
+  .bg-gradient-to-br.from-gray-900\/40,
+  .bg-gradient-to-br.from-red-950\/40,
+  .bg-gradient-to-br.from-green-950\/40,
+  .bg-gradient-to-br.from-blue-900\/20,
+  .bg-gradient-to-br.from-purple-900\/20 {
+    background: linear-gradient(135deg, rgba(0, 0, 0, 0.4) 0%, rgba(31, 41, 55, 0.6) 50%, rgba(0, 0, 0, 0.8) 100%) !important;
+  }
+
+  /* Widget label colors - consistent across all widgets */
+  .widget-label,
+  .text-gray-400,
+  .text-gray-500 {
+    color: var(--muted-foreground) !important;
+  }
+
+  /* Widget value colors - consistent for all numeric displays */
+  .widget-value,
+  .widget-amount,
+  .widget-number,
+  .text-xl.font-bold,
+  .text-2xl.font-bold {
+    color: var(--foreground) !important;
+    font-weight: 700 !important;
+  }
+
+  /* Light theme updates for forced consistency */
+  .light .dashboard-container .card,
+  .light .performance-container .card,
+  .light .analytics-container .card,
+  .light .accounts-container .card,
+  .light .stats-container .card,
+  .light [class*="dashboard"] .card,
+  .light [class*="performance"] .card,
+  .light [class*="analytics"] .card,
+  .light [class*="account"] .card,
+  .light [class*="stats"] .card,
+  .light [class*="widget"] .card {
+    background: var(--card) !important;
+    border: 1px solid var(--border) !important;
+  }
+
+  .light .bg-gradient-to-br.from-gray-900\/40,
+  .light .bg-gradient-to-br.from-red-950\/40,
+  .light .bg-gradient-to-br.from-green-950\/40,
+  .light .bg-gradient-to-br.from-blue-900\/20,
+  .light .bg-gradient-to-br.from-purple-900\/20 {
+    background: var(--card) !important;
+  }
+
   .bg-prop-gradient-hero {
     background: linear-gradient(135deg, 
       var(--prop-black) 0%, 

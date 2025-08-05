@@ -19,9 +19,9 @@ export default function TargetProgressWidget({ accounts, trades, selectedAccount
   // If no accounts selected, show placeholder
   if (filteredAccounts.length === 0) {
     return (
-      <Card className="bg-gradient-to-br from-blue-900/20 to-indigo-900/20 border-blue-500/20">
+      <Card className="widget-card">
         <CardHeader className="pb-2">
-          <CardTitle className="text-white flex items-center text-sm">
+          <CardTitle className="widget-header flex items-center text-sm">
             <Target className="mr-2 h-4 w-4 text-blue-400" />
             Target Progress & Account Status
           </CardTitle>
@@ -128,9 +128,9 @@ export default function TargetProgressWidget({ accounts, trades, selectedAccount
         const StatusIcon = account.statusIcon;
         
         return (
-          <Card key={account.id} className="bg-gradient-to-br from-blue-900/20 to-indigo-900/20 border-blue-500/20 h-full">
+          <Card key={account.id} className="widget-card h-full">
             <CardHeader className="pb-2">
-              <CardTitle className="text-white flex items-center justify-between text-sm">
+              <CardTitle className="widget-header flex items-center justify-between text-sm">
                 <div className="flex items-center">
                   <Target className="mr-2 h-4 w-4 text-blue-400" />
                   {account.name}
@@ -165,7 +165,7 @@ export default function TargetProgressWidget({ accounts, trades, selectedAccount
                 {/* Key metrics in compact format */}
                 <div className="grid grid-cols-2 gap-2 text-xs">
                   <div className="text-center">
-                    <div className={`font-medium ${account.totalPnL >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                    <div className={`widget-value ${account.totalPnL >= 0 ? 'text-green-400' : 'text-red-400'}`}>
                       ${account.totalPnL >= 0 ? '+' : '-'}${Math.abs(account.totalPnL).toFixed(2)}
                     </div>
                     <div className="text-gray-500">P&L</div>

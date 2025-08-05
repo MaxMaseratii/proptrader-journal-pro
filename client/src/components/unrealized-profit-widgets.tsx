@@ -130,9 +130,9 @@ export default function UnrealizedProfitWidgets({ trades, selectedAccountIds, ac
       
       {/* Drawdown Buffer Remaining Widget - Takes up 1/3 of the space */}
       <div className="lg:col-span-1 h-full" style={{contain: 'layout', overflow: 'hidden', position: 'relative'}}>
-        <Card className="bg-gradient-to-br from-red-900/20 to-orange-900/20 border-red-500/20 h-full" style={{contain: 'layout', overflow: 'hidden'}}>
+        <Card className="widget-card h-full" style={{contain: 'layout', overflow: 'hidden'}}>
           <CardHeader className="pb-2">
-            <CardTitle className="text-white flex items-center text-sm">
+            <CardTitle className="widget-header flex items-center text-sm">
               <Shield className="mr-2 h-4 w-4 text-red-400" />
               Drawdown Buffer Remaining
             </CardTitle>
@@ -177,9 +177,9 @@ export default function UnrealizedProfitWidgets({ trades, selectedAccountIds, ac
 
       {/* Consistency Rule Tracking Widget - Takes up 1/3 of the space */}
       <div className="lg:col-span-1 h-full" style={{contain: 'layout', overflow: 'hidden', position: 'relative'}}>
-        <Card className="bg-gradient-to-br from-purple-900/20 to-blue-900/20 border-purple-500/20 h-full" style={{contain: 'layout', overflow: 'hidden'}}>
+        <Card className="widget-card h-full" style={{contain: 'layout', overflow: 'hidden'}}>
           <CardHeader className="pb-2">
-            <CardTitle className="text-white flex items-center text-sm">
+            <CardTitle className="widget-header flex items-center text-sm">
               <TrendingUp className="mr-2 h-4 w-4 text-purple-400" />
               Consistency Rule ($750 Max)
             </CardTitle>
