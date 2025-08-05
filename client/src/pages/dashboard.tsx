@@ -320,7 +320,7 @@ export default function Dashboard() {
     const dayNames = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
     return (
-      <div className="bg-gray-800/40 rounded-lg border border-gray-600/30 p-4">
+      <div className="widget-card p-4">
         {/* Week Header */}
         <div className="grid grid-cols-7 gap-2 mb-4">
           {dayNames.map(dayName => (
@@ -453,7 +453,7 @@ export default function Dashboard() {
     const dayNames = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
     return (
-      <div className="bg-gray-800/40 rounded-lg border border-gray-600/30 p-4">
+      <div className="widget-card p-4">
         {/* Month Header */}
         <div className="grid grid-cols-7 gap-2 mb-4">
           {dayNames.map(dayName => (
@@ -577,7 +577,7 @@ export default function Dashboard() {
     ];
 
     return (
-      <div className="bg-gray-800/40 rounded-lg border border-gray-600/30 p-4">
+      <div className="widget-card p-4">
         <div className="grid grid-cols-6 gap-4">
           {months.map((month, index) => {
             // Calculate month metrics by getting all days in the month
@@ -1555,7 +1555,7 @@ export default function Dashboard() {
                     </div>
                   </div>
                   
-                  <div className="text-xs text-center p-2 rounded bg-gray-800/30 text-gray-400">
+                  <div className="text-xs text-center p-2 rounded widget-card text-gray-400">
                     💤 No trades today. Consider market analysis or planned rest.
                   </div>
                 </div>

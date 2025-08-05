@@ -570,8 +570,8 @@ const Spending = () => {
                     </div>
                     <div className="space-y-2 max-h-48 overflow-y-auto">
                       {tradingCategories.map((category) => (
-                        <div key={category.id} className="flex items-center justify-between p-2 rounded bg-gray-800/30">
-                          <span className="text-white text-sm">{category.name}</span>
+                        <div key={category.id} className="widget-card flex items-center justify-between p-2 rounded">
+                          <span className="widget-value text-sm">{category.name}</span>
                           <div className="flex gap-1">
                             <Button size="sm" variant="outline" onClick={() => setEditingCategory(category)}>
                               <Edit3 className="h-3 w-3" />
@@ -608,8 +608,8 @@ const Spending = () => {
                     </div>
                     <div className="space-y-2 max-h-48 overflow-y-auto">
                       {personalCategories.map((category) => (
-                        <div key={category.id} className="flex items-center justify-between p-2 rounded bg-gray-800/30">
-                          <span className="text-white text-sm">{category.name}</span>
+                        <div key={category.id} className="widget-card flex items-center justify-between p-2 rounded">
+                          <span className="widget-value text-sm">{category.name}</span>
                           <div className="flex gap-1">
                             <Button size="sm" variant="outline" onClick={() => setEditingCategory(category)}>
                               <Edit3 className="h-3 w-3" />

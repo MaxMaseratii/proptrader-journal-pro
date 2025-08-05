@@ -225,7 +225,7 @@ Would you like me to analyze any specific aspect of your trading? I can look at 
   }
 
   return (
-    <Card className="fixed bottom-4 right-4 w-96 h-[600px] z-50 bg-gray-800 border-prop-gold/30 shadow-2xl">
+    <Card className="fixed bottom-4 right-4 w-96 h-[600px] z-50 widget-card shadow-2xl">
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-2">
@@ -233,7 +233,7 @@ Would you like me to analyze any specific aspect of your trading? I can look at 
               <Bot className="h-5 w-5 text-prop-gold" />
             </div>
             <div>
-              <CardTitle className="text-sm text-white">{mentorPersonality.name}</CardTitle>
+              <CardTitle className="text-sm widget-header">{mentorPersonality.name}</CardTitle>
               <p className="text-xs text-gray-400">{mentorPersonality.role}</p>
             </div>
           </div>

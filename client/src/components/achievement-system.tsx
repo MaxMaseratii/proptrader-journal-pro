@@ -37,7 +37,7 @@ function AchievementCard({ achievement, userStats }: AchievementCardProps) {
   };
 
   return (
-    <Card className={`bg-gray-900/50 border-gray-700 transition-all duration-300 hover:bg-gray-800/50 ${
+    <Card className={`widget-card transition-all duration-300 ${
       achievement.isUnlocked ? 'ring-2 ring-prop-gold/50' : ''
     }`}>
       <CardHeader className="pb-3">
@@ -47,7 +47,7 @@ function AchievementCard({ achievement, userStats }: AchievementCardProps) {
               {achievement.isUnlocked ? achievement.badge : '🔒'}
             </div>
             <div>
-              <CardTitle className="text-white text-lg">{achievement.title}</CardTitle>
+              <CardTitle className="widget-header text-lg">{achievement.title}</CardTitle>
               <Badge variant="outline" className={`${getLevelColor(achievement.level)} text-white border-none`}>
                 {getLevelName(achievement.level)}
               </Badge>
@@ -63,7 +63,7 @@ function AchievementCard({ achievement, userStats }: AchievementCardProps) {
         <div className="space-y-2">
           <div className="flex justify-between text-sm">
             <span className="text-gray-400">Progress</span>
-            <span className="text-white">{achievement.progress}/{achievement.target}</span>
+            <span className="widget-value">{achievement.progress}/{achievement.target}</span>
           </div>
           <Progress 
             value={progressPercentage} 

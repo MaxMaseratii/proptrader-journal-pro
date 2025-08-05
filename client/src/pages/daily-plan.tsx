@@ -483,16 +483,16 @@ const DailyPlanPage = () => {
         
         {/* Today's Plan vs Actual Performance - Only show if plan exists */}
         {currentPlan && (
-          <Card className="bg-gradient-to-br from-gray-900 via-gray-800 to-black border border-yellow-400/20">
+          <Card className="widget-card">
             <CardHeader>
-              <CardTitle className="text-yellow-400 flex items-center gap-2">
+              <CardTitle className="widget-header flex items-center gap-2">
                 <Target className="h-5 w-5" />
                 Today's Plan vs Actual Performance
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-                <div className="text-center p-4 bg-gradient-to-r from-gray-800 to-gray-700 rounded-lg border border-yellow-400/10">
+                <div className="text-center p-4 widget-card">
                   <div className="text-sm text-gray-400 mb-2">Target Profit</div>
                   <div className="text-2xl font-bold text-yellow-400">${currentPlan.targetProfit}</div>
                   <div className="text-xs text-gray-500">Actual: ${actualResults.actualPnL.toFixed(2)}</div>
@@ -501,7 +501,7 @@ const DailyPlanPage = () => {
                     className="mt-2 h-2" 
                   />
                 </div>
-                <div className="text-center p-4 bg-gradient-to-r from-gray-800 to-gray-700 rounded-lg border border-yellow-400/10">
+                <div className="text-center p-4 widget-card">
                   <div className="text-sm text-gray-400 mb-2">Max Trades</div>
                   <div className="text-2xl font-bold text-blue-400">{currentPlan.maxTrades}</div>
                   <div className="text-xs text-gray-500">Executed: {actualResults.tradesExecuted}</div>
@@ -510,12 +510,12 @@ const DailyPlanPage = () => {
                     className="mt-2 h-2" 
                   />
                 </div>
-                <div className="text-center p-4 bg-gradient-to-r from-gray-800 to-gray-700 rounded-lg border border-yellow-400/10">
+                <div className="text-center p-4 widget-card">
                   <div className="text-sm text-gray-400 mb-2">Risk Amount</div>
                   <div className="text-2xl font-bold text-red-400">${currentPlan.riskAmount}</div>
                   <div className="text-xs text-gray-500">Used: ${actualResults.riskUsed.toFixed(2)}</div>
                 </div>
-                <div className="text-center p-4 bg-gradient-to-r from-gray-800 to-gray-700 rounded-lg border border-yellow-400/10">
+                <div className="text-center p-4 widget-card">
                   <div className="text-sm text-gray-400 mb-2">Win Rate</div>
                   <div className="text-2xl font-bold text-green-400">{calculateWinRate()}%</div>
                   <div className="text-xs text-gray-500">{actualResults.wins}W / {actualResults.losses}L</div>
@@ -529,9 +529,9 @@ const DailyPlanPage = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           
           {/* Historical Trading Plans */}
-          <Card className="bg-gradient-to-br from-gray-900 via-gray-800 to-black border border-yellow-400/20">
+          <Card className="widget-card">
             <CardHeader>
-              <CardTitle className="text-yellow-400 flex items-center gap-2">
+              <CardTitle className="widget-header flex items-center gap-2">
                 <History className="h-5 w-5" />
                 Historical Trading Plans
               </CardTitle>
@@ -605,9 +605,9 @@ const DailyPlanPage = () => {
           </Card>
 
           {/* Your Trading Strategies */}
-          <Card className="bg-gradient-to-br from-gray-900 via-gray-800 to-black border border-yellow-400/20">
+          <Card className="widget-card">
             <CardHeader>
-              <CardTitle className="text-yellow-400 flex items-center gap-2">
+              <CardTitle className="widget-header flex items-center gap-2">
                 <TrendingUp className="h-5 w-5" />
                 Your Trading Strategies
               </CardTitle>
@@ -668,9 +668,9 @@ const DailyPlanPage = () => {
           </Card>
 
           {/* Plan Statistics */}
-          <Card className="bg-gradient-to-br from-gray-900 via-gray-800 to-black border border-yellow-400/20">
+          <Card className="widget-card">
             <CardHeader>
-              <CardTitle className="text-yellow-400 flex items-center gap-2">
+              <CardTitle className="widget-header flex items-center gap-2">
                 <BarChart3 className="h-5 w-5" />
                 {selectedPlanForStats ? `Plan Statistics - Day #${selectedPlanForStats.dayNumber}` : 'Plan Statistics'}
               </CardTitle>

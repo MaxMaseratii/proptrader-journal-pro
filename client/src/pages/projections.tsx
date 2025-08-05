@@ -529,9 +529,9 @@ export default function Projections() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Enhanced Settings Panel */}
           <div className="lg:col-span-1">
-            <Card className="bg-gradient-to-br from-gray-900 via-gray-800 to-black border border-yellow-400/20">
+            <Card className="widget-card">
               <CardHeader>
-                  <CardTitle className="text-white flex items-center">
+                  <CardTitle className="widget-header flex items-center">
                     <Calculator className="mr-2 h-5 w-5" />
                     Projection Settings
                   </CardTitle>
