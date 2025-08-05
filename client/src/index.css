@@ -273,7 +273,7 @@
 
 /* Dashboard Widget Styling - Theme Adaptive */
 .widget-container {
-  background: var(--prop-black);
+  background: var(--card);
   border: 1px solid var(--prop-gold);
   border-radius: 12px;
   padding: 24px;
@@ -311,7 +311,7 @@
 .widget-label {
   font-size: 14px;
   font-weight: 500;
-  color: var(--muted-foreground);
+  color: var(--foreground);
   margin: 0 0 8px 0;
   line-height: 1.2;
 }
@@ -319,7 +319,7 @@
 .widget-value {
   font-size: 24px;
   font-weight: 700;
-  color: var(--prop-gold);
+  color: var(--foreground);
   margin: 0;
   line-height: 1.1;
 }
@@ -497,9 +497,14 @@
   }
   
   /* Widget Theme Utility Classes */
-  .widget-bg { background-color: var(--widget-bg); }
-  .widget-text { color: var(--widget-text); }
-  .widget-header { color: var(--widget-header); }
+  .widget-bg { background-color: var(--card); }
+  .widget-text { color: var(--foreground); }
+  .widget-header { color: var(--foreground); }
+  .widget-card { 
+    background-color: var(--card);
+    color: var(--foreground);
+    border: 1px solid var(--border);
+  }
 
   /* Light Theme Specific Component Overrides */
   .light .widget-container {
@@ -932,14 +937,14 @@
 
 .widget-container {
   @apply rounded-lg border-2 p-6 transition-all duration-300;
-  border-color: rgba(183, 142, 53, 0.2);
-  background: linear-gradient(135deg, rgba(0, 0, 0, 0.5), rgba(31, 41, 55, 0.5));
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  border-color: var(--border);
+  background: var(--card);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
 }
 
 .widget-container:hover {
-  border-color: rgba(183, 142, 53, 0.6);
-  background: linear-gradient(135deg, rgba(0, 0, 0, 0.7), rgba(31, 41, 55, 0.7));
+  border-color: var(--prop-gold);
+  background: var(--card);
   box-shadow: 0 8px 40px rgba(183, 142, 53, 0.15);
   transform: translateY(-2px);
 }
@@ -953,15 +958,18 @@
 }
 
 .widget-label {
-  @apply text-sm font-medium text-gray-300 mb-1;
+  @apply text-sm font-medium mb-1;
+  color: var(--foreground);
 }
 
 .widget-value {
-  @apply text-2xl font-bold text-white mb-1;
+  @apply text-2xl font-bold mb-1;
+  color: var(--foreground);
 }
 
 .widget-description {
-  @apply text-xs text-gray-400;
+  @apply text-xs;
+  color: var(--muted-foreground);
 }
 
 .widget-icon-square {
