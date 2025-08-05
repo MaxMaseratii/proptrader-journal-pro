@@ -533,6 +533,87 @@
     background: linear-gradient(135deg, var(--background) 0%, var(--muted) 100%) !important;
   }
 
+  /* Universal Card Standardization - ALL widgets same color as Account Management */
+  /* Target all possible card and widget backgrounds */
+  [class*="card"] {
+    background: rgb(31 41 55) !important; /* bg-gray-800 */
+    border-color: rgb(55 65 81) !important; /* border-gray-700 */
+  }
+
+  [class*="card"]:hover {
+    border-color: rgb(75 85 99) !important; /* border-gray-600 */
+  }
+
+  /* Override all dark gradient backgrounds with consistent bg-gray-800 */
+  [class*="bg-gradient-to-br"][class*="from-black"],
+  [class*="bg-gradient-to-br"][class*="from-gray-900"],
+  [class*="bg-black"],
+  [class*="bg-gray-900"] {
+    background: rgb(31 41 55) !important; /* bg-gray-800 */
+  }
+
+  /* Specific widget targeting */
+  .widget-container,
+  .performance-widget,
+  .analytics-widget,
+  .trading-widget {
+    background: rgb(31 41 55) !important; /* bg-gray-800 */
+    border-color: rgb(55 65 81) !important; /* border-gray-700 */
+  }
+
+  /* Force specific shadcn Card components */
+  div[class*="rounded-lg"][class*="border"][class*="bg-"] {
+    background: rgb(31 41 55) !important; /* bg-gray-800 */
+    border-color: rgb(55 65 81) !important; /* border-gray-700 */
+  }
+
+  /* Target cards with any dark background */
+  .bg-gray-900,
+  .bg-gray-800,
+  .bg-black {
+    background: rgb(31 41 55) !important; /* bg-gray-800 */
+  }
+
+  .border-gray-700,
+  .border-gray-600,
+  .border-gray-800 {
+    border-color: rgb(55 65 81) !important; /* border-gray-700 */
+  }
+
+  /* MASTER OVERRIDE: Force ALL widgets to match Account Management colors */
+  .bg-gray-900 {
+    background-color: rgb(31 41 55) !important; /* bg-gray-800 exact match */
+  }
+
+  .bg-black {
+    background-color: rgb(31 41 55) !important; /* bg-gray-800 exact match */
+  }
+
+  /* Override all gradient backgrounds */
+  .bg-gradient-to-br {
+    background: rgb(31 41 55) !important; /* bg-gray-800 exact match */
+  }
+
+  /* Performance and analytics widgets specifically */
+  [class*="performance"], 
+  [class*="analytics"],
+  [class*="trading"] {
+    background-color: rgb(31 41 55) !important;
+    border-color: rgb(55 65 81) !important;
+  }
+
+  /* Light theme card overrides */
+  .light [data-shadcn~="card"], .light .card {
+    background: var(--card) !important;
+    border-color: var(--border) !important;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+  }
+
+  .light [data-shadcn~="card"]:hover, .light .card:hover {
+    border-color: var(--prop-gold) !important;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  }
+
   .bg-prop-gradient-hero {
     background: linear-gradient(135deg, 
       var(--prop-black) 0%, 
