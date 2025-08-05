@@ -55,7 +55,7 @@ const navItems = [
   { href: "/payouts", label: "Payout Records", icon: DollarSign, section: "main" },
   { href: "/reports", label: "Reports", icon: Calendar, section: "main" },
   { href: "/achievements", label: "Achievement", icon: Trophy, section: "main" },
-  { href: "/profile", label: "Profile", icon: User, section: "main" },
+  { href: "/profile", label: "Profile", icon: User, section: "profile" },
 ];
 
 export default function Sidebar() {
