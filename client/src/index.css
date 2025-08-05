@@ -206,6 +206,11 @@
   --discipline-rainbow: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   --discipline-gold: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
   --discipline-red: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
+  
+  /* Widget theme variables for dark mode */
+  --widget-bg: hsl(0, 0%, 8%);
+  --widget-text: hsl(0, 0%, 98%);
+  --widget-header: hsl(0, 0%, 98%);
 }
 
 .light {
@@ -259,6 +264,11 @@
   --discipline-rainbow: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   --discipline-gold: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
   --discipline-red: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
+  
+  /* Widget theme variables for light mode */
+  --widget-bg: hsl(0, 0%, 100%);
+  --widget-text: hsl(0, 0%, 3%);
+  --widget-header: hsl(0, 0%, 3%);
 }
 
 /* Dashboard Widget Styling - Theme Adaptive */
@@ -485,6 +495,11 @@
       var(--prop-dark) 50%, 
       var(--prop-black) 100%);
   }
+  
+  /* Widget Theme Utility Classes */
+  .widget-bg { background-color: var(--widget-bg); }
+  .widget-text { color: var(--widget-text); }
+  .widget-header { color: var(--widget-header); }
 
   /* Light Theme Specific Component Overrides */
   .light .widget-container {
