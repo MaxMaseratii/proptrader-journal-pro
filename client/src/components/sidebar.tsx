@@ -116,75 +116,75 @@ export default function Sidebar() {
       </Button>
       
       <nav className="mt-6 flex-1 flex flex-col overflow-y-auto pb-4">
-        {/* Main Navigation Section */}
+        {!isCollapsed && !isPartiallyCollapsed && (
+          <div className="px-6 mb-4">
+            <h3 className="text-xs font-medium text-prop-gold uppercase tracking-wider">Navigation</h3>
+          </div>
+        )}
+        
         <div className="flex-1">
-          {!isCollapsed && !isPartiallyCollapsed && (
-            <div className="px-6 mb-4">
-              <h3 className="text-xs font-medium text-prop-gold uppercase tracking-wider">Navigation</h3>
-            </div>
-          )}
           <ul className="space-y-2 px-4">
-            {mainItems.filter(item => item.label !== "Profile").map(({ href, label, icon: Icon }, index) => (
-            <li key={href}>
-              <Link href={href} className={cn(
-                "flex items-center px-4 py-3 text-sm font-medium rounded-xl smooth-transition cursor-pointer group relative",
-                location === href 
-                  ? "bg-prop-gradient-gold text-black font-bold" 
-                  : "text-gray-300 hover:bg-prop-card hover:text-prop-gold hover-scale",
-                (isCollapsed || isPartiallyCollapsed) ? "justify-center" : ""
-              )}>
-                <Icon className={cn(
-                  "h-5 w-5 smooth-transition",
-                  location === href ? "text-black" : "text-gray-400 group-hover:text-prop-gold",
-                  !(isCollapsed || isPartiallyCollapsed) ? "mr-3" : ""
-                )} />
-                {!isCollapsed && !isPartiallyCollapsed && label}
-                {(isCollapsed || isPartiallyCollapsed) && (
-                  <>
-                    <div className="absolute left-full ml-2 px-2 py-1 bg-gray-800 border border-prop-gold/20 rounded-md text-xs text-gray-300 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50 shadow-md">
-                      {label}
-                    </div>
-                    {/* Show first letter of first menu item when collapsed */}
-                    {index === 0 && (
-                      <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-prop-gold rounded-full flex items-center justify-center text-xs font-bold text-black">
-                        {label.charAt(0)}
+            {mainItems.map(({ href, label, icon: Icon }, index) => (
+              <li key={href}>
+                <Link href={href} className={cn(
+                  "flex items-center px-4 py-3 text-sm font-medium rounded-xl smooth-transition cursor-pointer group relative",
+                  location === href 
+                    ? "bg-prop-gradient-gold text-black font-bold" 
+                    : "text-gray-300 hover:bg-prop-card hover:text-prop-gold hover-scale",
+                  (isCollapsed || isPartiallyCollapsed) ? "justify-center" : ""
+                )}>
+                  <Icon className={cn(
+                    "h-5 w-5 smooth-transition",
+                    location === href ? "text-black" : "text-gray-400 group-hover:text-prop-gold",
+                    !(isCollapsed || isPartiallyCollapsed) ? "mr-3" : ""
+                  )} />
+                  {!isCollapsed && !isPartiallyCollapsed && label}
+                  {(isCollapsed || isPartiallyCollapsed) && (
+                    <>
+                      <div className="absolute left-full ml-2 px-2 py-1 bg-gray-800 border border-prop-gold/20 rounded-md text-xs text-gray-300 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50 shadow-md">
+                        {label}
                       </div>
-                    )}
-                  </>
-                )}
-              </Link>
-            </li>
-          ))}
+                      {/* Show first letter of first menu item when collapsed */}
+                      {index === 0 && (
+                        <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-prop-gold rounded-full flex items-center justify-center text-xs font-bold text-black">
+                          {label.charAt(0)}
+                        </div>
+                      )}
+                    </>
+                  )}
+                </Link>
+              </li>
+            ))}
           </ul>
         </div>
         
         {/* Profile Section - Bottom Black Area */}
         <div className="mt-auto border-t border-gray-700 pt-4">
           <ul className="space-y-2 px-4">
-            {/* Profile with dropdown including Billing */}
-            <li key="/profile">
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <button className={cn(
-                    "w-full flex items-center px-4 py-3 text-sm font-medium rounded-xl smooth-transition cursor-pointer group relative",
-                    location === "/profile" 
-                      ? "bg-prop-gradient-gold text-black font-bold" 
-                      : "text-gray-300 hover:bg-prop-card hover:text-prop-gold hover-scale",
-                    (isCollapsed || isPartiallyCollapsed) ? "justify-center" : ""
-                  )}>
-                    <User className={cn(
-                      "h-5 w-5 smooth-transition",
-                      location === "/profile" ? "text-black" : "text-gray-400 group-hover:text-prop-gold",
-                      !(isCollapsed || isPartiallyCollapsed) ? "mr-3" : ""
-                    )} />
-                    {!isCollapsed && !isPartiallyCollapsed && "Profile"}
-                    {(isCollapsed || isPartiallyCollapsed) && (
-                      <div className="absolute left-full ml-2 px-2 py-1 bg-gray-800 border border-prop-gold/20 rounded-md text-xs text-gray-300 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50 shadow-md">
-                        Profile
-                      </div>
-                    )}
-                  </button>
-                </DropdownMenuTrigger>
+            {profileItems.map(({ href, label, icon: Icon }) => (
+              <li key={href}>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <button className={cn(
+                      "w-full flex items-center px-4 py-3 text-sm font-medium rounded-xl smooth-transition cursor-pointer group relative",
+                      location === href 
+                        ? "bg-prop-gradient-gold text-black font-bold" 
+                        : "text-gray-300 hover:bg-prop-card hover:text-prop-gold hover-scale",
+                      (isCollapsed || isPartiallyCollapsed) ? "justify-center" : ""
+                    )}>
+                      <Icon className={cn(
+                        "h-5 w-5 smooth-transition",
+                        location === href ? "text-black" : "text-gray-400 group-hover:text-prop-gold",
+                        !(isCollapsed || isPartiallyCollapsed) ? "mr-3" : ""
+                      )} />
+                      {!isCollapsed && !isPartiallyCollapsed && label}
+                      {(isCollapsed || isPartiallyCollapsed) && (
+                        <div className="absolute left-full ml-2 px-2 py-1 bg-gray-800 border border-prop-gold/20 rounded-md text-xs text-gray-300 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50 shadow-md">
+                          {label}
+                        </div>
+                      )}
+                    </button>
+                  </DropdownMenuTrigger>
                 
                 <DropdownMenuContent 
                   className="w-64 bg-gray-800 border-prop-gold/20 shadow-xl" 
@@ -264,6 +264,7 @@ export default function Sidebar() {
                 </DropdownMenuContent>
               </DropdownMenu>
             </li>
+            ))}
           </ul>
         </div>
       </nav>
