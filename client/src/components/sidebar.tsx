@@ -54,6 +54,9 @@ const navItems = [
   { href: "/reports", label: "Reports", icon: Calendar, section: "main" },
   { href: "/achievements", label: "Achievement", icon: Trophy, section: "main" },
   { href: "/journal", label: "Trading Journal", icon: Book, section: "main" },
+  { href: "/accounts", label: "Accounts", icon: Target, section: "main" },
+  { href: "/billing", label: "Billing", icon: Activity, section: "main" },
+  { href: "/notifications", label: "Notifications", icon: Menu, section: "main" },
   { href: "/profile", label: "Profile", icon: User, section: "main" },
 ];
 
@@ -153,6 +156,37 @@ export default function Sidebar() {
             </li>
           ))}
           
+          
+          {/* Logout Button */}
+          <li key="logout">
+            <button 
+              onClick={async () => {
+                try {
+                  await fetch('/api/auth/logout', { method: 'POST' });
+                  window.location.href = '/welcome';
+                } catch (error) {
+                  console.error('Logout error:', error);
+                  window.location.href = '/welcome';
+                }
+              }}
+              className={cn(
+                "w-full flex items-center px-4 py-3 text-sm font-medium rounded-xl smooth-transition cursor-pointer group relative",
+                "text-red-400 hover:bg-red-900/20 hover:text-red-300 hover-scale",
+                (isCollapsed || isPartiallyCollapsed) ? "justify-center" : ""
+              )}
+            >
+              <LogOut className={cn(
+                "h-5 w-5 smooth-transition text-red-400 group-hover:text-red-300",
+                !(isCollapsed || isPartiallyCollapsed) ? "mr-3" : ""
+              )} />
+              {!isCollapsed && !isPartiallyCollapsed && "Sign Out"}
+              {(isCollapsed || isPartiallyCollapsed) && (
+                <div className="absolute left-full ml-2 px-2 py-1 bg-gray-800 border border-prop-gold/20 rounded-md text-xs text-gray-300 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50 shadow-md">
+                  Sign Out
+                </div>
+              )}
+            </button>
+          </li>
         </ul>
       </nav>
     </aside>
