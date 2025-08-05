@@ -751,9 +751,9 @@ const DailyPlanPage = () => {
 
       {/* Dialogs */}
       <Dialog open={isCreatePlanDialogOpen} onOpenChange={setIsCreatePlanDialogOpen}>
-        <DialogContent className="max-w-4xl bg-gradient-to-br from-gray-900 via-gray-800 to-black border border-yellow-400/20">
+        <DialogContent className="max-w-4xl widget-card">
           <DialogHeader>
-            <DialogTitle className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-yellow-600">Create Daily Trading Plan</DialogTitle>
+            <DialogTitle className="widget-header">Create Daily Trading Plan</DialogTitle>
           </DialogHeader>
           <div className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

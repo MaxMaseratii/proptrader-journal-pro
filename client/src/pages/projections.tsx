@@ -511,7 +511,7 @@ export default function Projections() {
         </div>
         
         {!isAccountsMinimized && (
-          <Card className="bg-gradient-to-br from-gray-900 via-gray-800 to-black border border-yellow-400/20">
+          <Card className="widget-card">
             <CardContent className="p-6">
               <AccountManagement accounts={accounts} />
             </CardContent>

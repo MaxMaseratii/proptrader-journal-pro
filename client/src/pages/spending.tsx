@@ -319,13 +319,13 @@ const Spending = () => {
 
       {/* Investment Summary Section */}
       <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-        <Card className="bg-gradient-to-br from-gray-900 via-gray-800 to-black border border-yellow-400/20">
+        <Card className="widget-card">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-white">Total Accounts Bought</CardTitle>
+            <CardTitle className="text-sm font-medium widget-header">Total Accounts Bought</CardTitle>
             <Target className="h-4 w-4 text-yellow-400" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-yellow-400">
+            <div className="text-2xl font-bold text-yellow-400 widget-value">
               {accounts.length}
             </div>
             <p className="text-xs text-gray-400">
@@ -334,52 +334,52 @@ const Spending = () => {
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-gray-900 via-gray-800 to-black border border-yellow-400/20">
+        <Card className="widget-card">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-white">Activation Cost</CardTitle>
+            <CardTitle className="text-sm font-medium widget-header">Activation Cost</CardTitle>
             <TrendingUp className="h-4 w-4 text-orange-400" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-orange-400">
+            <div className="text-2xl font-bold text-orange-400 widget-value">
               {formatCurrency(accounts.reduce((sum, acc) => sum + (acc.activationCost || 0), 0))}
             </div>
             <p className="text-xs text-gray-400">Total activation fees</p>
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-gray-900 via-gray-800 to-black border border-yellow-400/20">
+        <Card className="widget-card">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-white">Reset Cost</CardTitle>
+            <CardTitle className="text-sm font-medium widget-header">Reset Cost</CardTitle>
             <RotateCcw className="h-4 w-4 text-red-400" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-red-400">
+            <div className="text-2xl font-bold text-red-400 widget-value">
               {formatCurrency(accounts.reduce((sum, acc) => sum + (acc.totalResetsCost || 0), 0))}
             </div>
             <p className="text-xs text-gray-400">Total reset costs</p>
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-gray-900 via-gray-800 to-black border border-yellow-400/20">
+        <Card className="widget-card">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-white">Payout Total</CardTitle>
+            <CardTitle className="text-sm font-medium widget-header">Payout Total</CardTitle>
             <DollarSign className="h-4 w-4 text-green-400" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-green-400">
+            <div className="text-2xl font-bold text-green-400 widget-value">
               {formatCurrency(0)}
             </div>
             <p className="text-xs text-gray-400">Total payouts received</p>
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-gray-900 via-gray-800 to-black border border-yellow-400/20">
+        <Card className="widget-card">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-white">Profitability</CardTitle>
+            <CardTitle className="text-sm font-medium widget-header">Profitability</CardTitle>
             <TrendingUp className="h-4 w-4 text-blue-400" />
           </CardHeader>
           <CardContent>
-            <div className={`text-2xl font-bold ${(0 - totalPropTradingCosts) >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+            <div className={`text-2xl font-bold widget-value ${(0 - totalPropTradingCosts) >= 0 ? 'text-green-400' : 'text-red-400'}`}>
               {formatCurrency(0 - totalPropTradingCosts)}
             </div>
             <p className="text-xs text-gray-400">Net profit/loss</p>
@@ -388,9 +388,9 @@ const Spending = () => {
       </div>
 
       {/* Budget Management Section - Always Visible */}
-      <Card className="bg-gradient-to-br from-gray-900 via-gray-800 to-black border border-yellow-400/20">
+      <Card className="widget-card">
         <CardHeader>
-          <CardTitle className="flex items-center justify-between text-white">
+          <CardTitle className="flex items-center justify-between widget-header">
             <div className="flex items-center gap-2">
               <Settings className="h-5 w-5 text-yellow-400" />
               Budget Management
@@ -411,7 +411,7 @@ const Spending = () => {
                   {!activeBudgetPlan ? "Create Budget Plan" : "Update Budget Plan"}
                 </Button>
               </DialogTrigger>
-              <DialogContent className="max-w-2xl bg-gray-900 border-gray-700">
+              <DialogContent className="max-w-2xl widget-card">
                 <DialogHeader>
                   <DialogTitle className="text-white">
                     {!activeBudgetPlan ? "Create New Budget Plan" : "Update Budget Plan"}
@@ -542,9 +542,9 @@ const Spending = () => {
                   Manage Categories
                 </Button>
               </DialogTrigger>
-              <DialogContent className="max-w-4xl bg-gray-900 border-gray-700">
+              <DialogContent className="max-w-4xl widget-card">
                 <DialogHeader>
-                  <DialogTitle className="text-white">Manage Budget Categories</DialogTitle>
+                  <DialogTitle className="widget-header">Manage Budget Categories</DialogTitle>
                 </DialogHeader>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
                   {/* Trading Categories in Dialog */}

@@ -1988,7 +1988,7 @@ export default function Dashboard() {
           {/* ROW 1: Main Performance Metrics (4 widgets) */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
             {/* Net Balance */}
-            <div className="bg-gradient-to-br from-gray-900/40 via-gray-800/60 to-black/80 border border-gray-600/30 rounded-lg p-4 hover:border-amber-400/60 transition-all duration-200">
+            <div className="widget-card p-4 transition-all duration-200">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-sm font-medium text-gray-300">Net Balance</span>
                 <DollarSign className="w-4 h-4 text-amber-400" />
@@ -2000,7 +2000,7 @@ export default function Dashboard() {
             </div>
 
             {/* Total P&L */}
-            <div className="bg-gradient-to-br from-gray-900/40 via-gray-800/60 to-black/80 border border-gray-600/30 rounded-lg p-4 hover:border-amber-400/60 transition-all duration-200">
+            <div className="widget-card p-4 transition-all duration-200">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-sm font-medium text-gray-300">Total P&L</span>
                 <TrendingUp className="w-4 h-4 text-green-400" />
@@ -2012,7 +2012,7 @@ export default function Dashboard() {
             </div>
 
             {/* Win Rate */}
-            <div className="bg-gradient-to-br from-gray-900/40 via-gray-800/60 to-black/80 border border-gray-600/30 rounded-lg p-4 hover:border-amber-400/60 transition-all duration-200">
+            <div className="widget-card p-4 transition-all duration-200">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-sm font-medium text-gray-300">Win Rate</span>
                 <Target className="w-4 h-4 text-green-400" />
@@ -2024,7 +2024,7 @@ export default function Dashboard() {
             </div>
 
             {/* Total Trades */}
-            <div className="bg-gradient-to-br from-gray-900/40 via-gray-800/60 to-black/80 border border-gray-600/30 rounded-lg p-4 hover:border-amber-400/60 transition-all duration-200">
+            <div className="widget-card p-4 transition-all duration-200">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-sm font-medium text-gray-300">Total Trades</span>
                 <Activity className="w-4 h-4 text-purple-400" />
@@ -2039,7 +2039,7 @@ export default function Dashboard() {
           {/* ROW 2: Performance Analysis (4 widgets) */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             {/* Discipline Score */}
-            <div className="bg-gradient-to-br from-gray-900/40 via-gray-800/60 to-black/80 border border-gray-600/30 rounded-lg p-4 hover:border-amber-400/60 transition-all duration-200">
+            <div className="widget-card p-4 transition-all duration-200">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-sm font-medium text-gray-300">Discipline Score</span>
                 <Shield className="w-4 h-4 text-blue-400" />
@@ -2062,7 +2062,7 @@ export default function Dashboard() {
             </div>
 
             {/* R Factor */}
-            <div className="bg-gradient-to-br from-gray-900/40 via-gray-800/60 to-black/80 border border-gray-600/30 rounded-lg p-4 hover:border-amber-400/60 transition-all duration-200">
+            <div className="widget-card p-4 transition-all duration-200">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-sm font-medium text-gray-300">R Factor</span>
                 <BarChart3 className="w-4 h-4 text-cyan-400" />
@@ -2074,7 +2074,7 @@ export default function Dashboard() {
             </div>
 
             {/* Profit Factor */}
-            <div className="bg-gradient-to-br from-gray-900/40 via-gray-800/60 to-black/80 border border-gray-600/30 rounded-lg p-4 hover:border-amber-400/60 transition-all duration-200">
+            <div className="widget-card p-4 transition-all duration-200">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-sm font-medium text-gray-300">Profit Factor</span>
                 <TrendingUp className="w-4 h-4 text-green-400" />
@@ -2086,7 +2086,7 @@ export default function Dashboard() {
             </div>
 
             {/* Avg Win/Loss */}
-            <div className="bg-gradient-to-br from-gray-900/40 via-gray-800/60 to-black/80 border border-gray-600/30 rounded-lg p-4 hover:border-amber-400/60 transition-all duration-200">
+            <div className="widget-card p-4 transition-all duration-200">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-sm font-medium text-gray-300">Avg Win/Loss</span>
                 <BarChart3 className="w-4 h-4 text-orange-400" />
