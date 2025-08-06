@@ -6,7 +6,9 @@ import { Label } from "@/components/ui/label";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import NotificationSettings from "@/components/notification-settings";
+import { useToast } from "@/hooks/use-toast";
 import { 
   User, 
   Settings, 
@@ -34,6 +36,7 @@ export default function Profile() {
     timezone: "",
     bio: "",
   });
+  const { toast } = useToast();
 
   const handleSave = () => {
     // Save profile logic would go here
@@ -254,23 +257,23 @@ export default function Profile() {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="flex justify-between items-center p-4 bg-gray-900 rounded-lg">
-                  <div>
-                    <h4 className="font-medium">Email Notifications</h4>
-                    <p className="text-sm text-gray-400">Receive updates about your trading activity</p>
-                  </div>
-                  <Button variant="outline" size="sm">
-                    <Bell className="h-4 w-4 mr-2" />
-                    Manage
-                  </Button>
-                </div>
+
 
                 <div className="flex justify-between items-center p-4 bg-gray-900 rounded-lg">
                   <div>
                     <h4 className="font-medium">Data Export</h4>
                     <p className="text-sm text-gray-400">Export your trading data and reports</p>
                   </div>
-                  <Button variant="outline" size="sm">
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => {
+                      toast({
+                        title: "Export Started",
+                        description: "Your data export is being prepared. You'll receive an email when ready.",
+                      });
+                    }}
+                  >
                     Export Data
                   </Button>
                 </div>
@@ -280,9 +283,35 @@ export default function Profile() {
                     <h4 className="font-medium">Account Deletion</h4>
                     <p className="text-sm text-gray-400">Permanently delete your account and data</p>
                   </div>
-                  <Button variant="destructive" size="sm">
-                    Delete Account
-                  </Button>
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button variant="destructive" size="sm">
+                        Delete Account
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>Delete Account</AlertDialogTitle>
+                        <AlertDialogDescription>
+                          This will permanently delete your account and all associated data. This action cannot be undone.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction 
+                          onClick={() => {
+                            toast({
+                              title: "Account Deletion Initiated",
+                              description: "Account deletion process started. You'll receive confirmation via email.",
+                              variant: "destructive",
+                            });
+                          }}
+                        >
+                          Delete Account
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
                 </div>
               </CardContent>
             </Card>

@@ -677,6 +677,129 @@ export default function AccountManagement() {
                           />
                         </div>
 
+                        <div className="grid grid-cols-2 gap-4 mb-6">
+                          <FormField
+                            control={form.control}
+                            name="dailyWorkingHours"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel className="text-white">Daily Working Hours</FormLabel>
+                                <FormControl>
+                                  <Input 
+                                    {...field} 
+                                    type="number" 
+                                    step="0.1"
+                                    className="bg-gray-800 dark:bg-gray-800 border-gray-600 text-white dark:text-white bg-white light:bg-white light:text-black" 
+                                    placeholder="8.0"
+                                    value={field.value || ""}
+                                    onChange={(e) => field.onChange(parseFloat(e.target.value) || null)}
+                                  />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                          <FormField
+                            control={form.control}
+                            name="hourlyWages"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel className="text-white">Hourly Wages ($)</FormLabel>
+                                <FormControl>
+                                  <Input 
+                                    {...field} 
+                                    type="number" 
+                                    step="0.01"
+                                    className="bg-gray-800 dark:bg-gray-800 border-gray-600 text-white dark:text-white bg-white light:bg-white light:text-black" 
+                                    placeholder="25.00"
+                                    value={field.value || ""}
+                                    onChange={(e) => field.onChange(parseFloat(e.target.value) || null)}
+                                  />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                        </div>
+
+                        <div className="flex flex-wrap items-center gap-8 mb-6">
+                          <FormField
+                            control={form.control}
+                            name="liveAccountAvailable"
+                            render={({ field }) => (
+                              <FormItem className="flex flex-row items-center space-x-3 space-y-0">
+                                <FormControl>
+                                  <Checkbox
+                                    checked={field.value}
+                                    onCheckedChange={field.onChange}
+                                    className="border-gray-600 data-[state=checked]:bg-blue-600"
+                                  />
+                                </FormControl>
+                                <div className="space-y-1 leading-none">
+                                  <FormLabel className="text-white">Live Trading Account Available</FormLabel>
+                                </div>
+                              </FormItem>
+                            )}
+                          />
+                          <FormField
+                            control={form.control}
+                            name="allowChallengePayouts"
+                            render={({ field }) => (
+                              <FormItem className="flex flex-row items-center space-x-3 space-y-0">
+                                <FormControl>
+                                  <Checkbox
+                                    checked={field.value}
+                                    onCheckedChange={field.onChange}
+                                    className="border-gray-600 data-[state=checked]:bg-blue-600"
+                                  />
+                                </FormControl>
+                                <div className="space-y-1 leading-none">
+                                  <FormLabel className="text-white">Challenge Payouts Available</FormLabel>
+                                </div>
+                              </FormItem>
+                            )}
+                          />
+                        </div>
+
+                        <div className="flex flex-wrap items-center gap-8 mb-6">
+                          <FormField
+                            control={form.control}
+                            name="copyTradingAllowed"
+                            render={({ field }) => (
+                              <FormItem className="flex flex-row items-center space-x-3 space-y-0">
+                                <FormControl>
+                                  <Checkbox
+                                    checked={field.value}
+                                    onCheckedChange={field.onChange}
+                                    className="border-gray-600 data-[state=checked]:bg-blue-600"
+                                  />
+                                </FormControl>
+                                <div className="space-y-1 leading-none">
+                                  <FormLabel className="text-white">Copy Trading Allowed</FormLabel>
+                                </div>
+                              </FormItem>
+                            )}
+                          />
+                          <FormField
+                            control={form.control}
+                            name="newsTradingAllowed"
+                            render={({ field }) => (
+                              <FormItem className="flex flex-row items-center space-x-3 space-y-0">
+                                <FormControl>
+                                  <Checkbox
+                                    checked={field.value}
+                                    onCheckedChange={field.onChange}
+                                    className="border-gray-600 data-[state=checked]:bg-blue-600"
+                                  />
+                                </FormControl>
+                                <div className="space-y-1 leading-none">
+                                  <FormLabel className="text-white">News Trading Allowed</FormLabel>
+                                </div>
+                              </FormItem>
+                            )}
+                          />
+                        </div>
+
                         <div className="flex items-center space-x-2">
                           <FormField
                             control={form.control}
