@@ -63,6 +63,15 @@ const accountFormSchema = z.object({
   personalTradingTimeStart2: z.string().optional().nullable(),
   personalTradingTimeEnd2: z.string().optional().nullable(),
   personalTradingTimeZone2: z.string().optional().nullable(),
+  personalTradingTimeStart3: z.string().optional().nullable(),
+  personalTradingTimeEnd3: z.string().optional().nullable(),
+  personalTradingTimeZone3: z.string().optional().nullable(),
+  activationCost: z.number().optional().nullable(),
+  purchaseMethod: z.string().optional().nullable(),
+  maxRiskPerDay: z.number().optional().nullable(),
+  primaryAsset: z.string().optional().nullable(),
+  secondaryAsset: z.string().optional().nullable(),
+  tertiaryAsset: z.string().optional().nullable(),
 });
 
 type AccountFormData = z.infer<typeof accountFormSchema>;
@@ -128,6 +137,15 @@ export default function AccountManagement() {
       personalTradingTimeStart2: null,
       personalTradingTimeEnd2: null,
       personalTradingTimeZone2: null,
+      personalTradingTimeStart3: null,
+      personalTradingTimeEnd3: null,
+      personalTradingTimeZone3: null,
+      activationCost: null,
+      purchaseMethod: null,
+      maxRiskPerDay: null,
+      primaryAsset: null,
+      secondaryAsset: null,
+      tertiaryAsset: null,
     },
   });
 
@@ -653,6 +671,53 @@ export default function AccountManagement() {
                               </FormItem>
                             )}
                           />
+                          <FormField
+                            control={form.control}
+                            name="activationCost"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel className="text-white">Activation Cost</FormLabel>
+                                <FormControl>
+                                  <Input 
+                                    {...field} 
+                                    type="number" 
+                                    className="bg-gray-800 border-gray-600 text-white" 
+                                    placeholder="200"
+                                    value={field.value || ""}
+                                    onChange={(e) => field.onChange(parseFloat(e.target.value) || null)}
+                                  />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                        </div>
+
+                        <div className="grid grid-cols-1 gap-4">
+                          <FormField
+                            control={form.control}
+                            name="purchaseMethod"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel className="text-white">Purchase Method</FormLabel>
+                                <Select onValueChange={field.onChange} value={field.value || ""}>
+                                  <FormControl>
+                                    <SelectTrigger className="bg-gray-800 border-gray-600 text-white">
+                                      <SelectValue placeholder="Select payment method" />
+                                    </SelectTrigger>
+                                  </FormControl>
+                                  <SelectContent className="bg-gray-800 border-gray-600">
+                                    <SelectItem value="credit_card">Credit Card</SelectItem>
+                                    <SelectItem value="paypal">PayPal</SelectItem>
+                                    <SelectItem value="crypto">Cryptocurrency</SelectItem>
+                                    <SelectItem value="bank_transfer">Bank Transfer</SelectItem>
+                                    <SelectItem value="other">Other</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
                         </div>
 
                         <div className="flex items-center space-x-2">
@@ -789,6 +854,29 @@ export default function AccountManagement() {
                           
                           <FormField
                             control={form.control}
+                            name="maxRiskPerDay"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel className="text-white">Max Risk Per Day ($)</FormLabel>
+                                <FormControl>
+                                  <Input 
+                                    {...field} 
+                                    type="number" 
+                                    className="bg-gray-800 border-gray-600 text-white" 
+                                    placeholder="3000"
+                                    value={field.value === null ? "" : field.value}
+                                    onChange={(e) => field.onChange(e.target.value === "" ? null : parseFloat(e.target.value))}
+                                  />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                        </div>
+
+                        <div className="grid grid-cols-1 gap-4">
+                          <FormField
+                            control={form.control}
                             name="riskRewardRatio"
                             render={({ field }) => (
                               <FormItem>
@@ -808,6 +896,69 @@ export default function AccountManagement() {
                               </FormItem>
                             )}
                           />
+                        </div>
+
+                        {/* Asset Selection */}
+                        <div className="space-y-4">
+                          <h3 className="text-lg font-semibold text-yellow-400 border-b border-yellow-400/20 pb-2">
+                            Trading Assets
+                          </h3>
+                          <div className="grid grid-cols-3 gap-4">
+                            <FormField
+                              control={form.control}
+                              name="primaryAsset"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel className="text-white">Primary Asset</FormLabel>
+                                  <FormControl>
+                                    <Input 
+                                      {...field} 
+                                      className="bg-gray-800 border-gray-600 text-white" 
+                                      placeholder="e.g. ES, NQ, EURUSD, BTCUSD"
+                                      value={field.value || ""}
+                                    />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                            <FormField
+                              control={form.control}
+                              name="secondaryAsset"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel className="text-white">Secondary Asset</FormLabel>
+                                  <FormControl>
+                                    <Input 
+                                      {...field} 
+                                      className="bg-gray-800 border-gray-600 text-white" 
+                                      placeholder="e.g. CL, GC, GBPUSD"
+                                      value={field.value || ""}
+                                    />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                            <FormField
+                              control={form.control}
+                              name="tertiaryAsset"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel className="text-white">Tertiary Asset</FormLabel>
+                                  <FormControl>
+                                    <Input 
+                                      {...field} 
+                                      className="bg-gray-800 border-gray-600 text-white" 
+                                      placeholder="e.g. YM, RTY, USDJPY"
+                                      value={field.value || ""}
+                                    />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                          </div>
                         </div>
 
                         <div className="grid grid-cols-2 gap-4">
@@ -1016,6 +1167,98 @@ export default function AccountManagement() {
                               <FormField
                                 control={form.control}
                                 name="personalTradingTimeZone2"
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormLabel className="text-white">Timezone</FormLabel>
+                                    <Select onValueChange={field.onChange} value={field.value || ""}>
+                                      <FormControl>
+                                        <SelectTrigger className="bg-gray-800 border-gray-600 text-white">
+                                          <SelectValue placeholder="Select timezone" />
+                                        </SelectTrigger>
+                                      </FormControl>
+                                      <SelectContent className="bg-gray-800 border-gray-600">
+                                        <SelectItem value="EST">EST - Eastern Standard Time</SelectItem>
+                                        <SelectItem value="CST">CST - Central Standard Time</SelectItem>
+                                        <SelectItem value="MST">MST - Mountain Standard Time</SelectItem>
+                                        <SelectItem value="PST">PST - Pacific Standard Time</SelectItem>
+                                        <SelectItem value="GMT">GMT - Greenwich Mean Time</SelectItem>
+                                        <SelectItem value="CET">CET - Central European Time</SelectItem>
+                                        <SelectItem value="JST">JST - Japan Standard Time</SelectItem>
+                                        <SelectItem value="AEST">AEST - Australian Eastern Standard Time</SelectItem>
+                                      </SelectContent>
+                                    </Select>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+                            </div>
+                          </div>
+
+                          {/* Time Slot 3 */}
+                          <div className="space-y-2">
+                            <h4 className="text-md font-medium text-purple-400">Time Slot 3 (Optional)</h4>
+                            <div className="grid grid-cols-3 gap-4">
+                              <FormField
+                                control={form.control}
+                                name="personalTradingTimeStart3"
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormLabel className="text-white">Personal Trading Time Start - Time3</FormLabel>
+                                    <Select onValueChange={field.onChange} value={field.value || ""}>
+                                      <FormControl>
+                                        <SelectTrigger className="bg-gray-800 border-gray-600 text-white">
+                                          <SelectValue placeholder="--:-- --" />
+                                        </SelectTrigger>
+                                      </FormControl>
+                                      <SelectContent className="bg-gray-800 border-gray-600 max-h-60">
+                                        {Array.from({ length: 48 }, (_, i) => {
+                                          const hour = Math.floor(i / 2);
+                                          const minute = i % 2 === 0 ? "00" : "30";
+                                          const time = `${hour.toString().padStart(2, '0')}:${minute}`;
+                                          return (
+                                            <SelectItem key={time} value={time}>
+                                              {time}
+                                            </SelectItem>
+                                          );
+                                        })}
+                                      </SelectContent>
+                                    </Select>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+                              <FormField
+                                control={form.control}
+                                name="personalTradingTimeEnd3"
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormLabel className="text-white">Personal Trading Time End - Time3</FormLabel>
+                                    <Select onValueChange={field.onChange} value={field.value || ""}>
+                                      <FormControl>
+                                        <SelectTrigger className="bg-gray-800 border-gray-600 text-white">
+                                          <SelectValue placeholder="--:-- --" />
+                                        </SelectTrigger>
+                                      </FormControl>
+                                      <SelectContent className="bg-gray-800 border-gray-600 max-h-60">
+                                        {Array.from({ length: 48 }, (_, i) => {
+                                          const hour = Math.floor(i / 2);
+                                          const minute = i % 2 === 0 ? "00" : "30";
+                                          const time = `${hour.toString().padStart(2, '0')}:${minute}`;
+                                          return (
+                                            <SelectItem key={time} value={time}>
+                                              {time}
+                                            </SelectItem>
+                                          );
+                                        })}
+                                      </SelectContent>
+                                    </Select>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+                              <FormField
+                                control={form.control}
+                                name="personalTradingTimeZone3"
                                 render={({ field }) => (
                                   <FormItem>
                                     <FormLabel className="text-white">Timezone</FormLabel>
