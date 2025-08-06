@@ -287,6 +287,12 @@ export class DatabaseStorage implements IStorage {
   }
 
   async deleteAccount(id: number): Promise<boolean> {
+    // Delete related records first to avoid foreign key constraint violations
+    await db.delete(dailyPlans).where(eq(dailyPlans.accountId, id));
+    await db.delete(trades).where(eq(trades.accountId, id));
+    await db.delete(journalEntries).where(eq(journalEntries.accountId, id));
+    await db.delete(dailyStats).where(eq(dailyStats.accountId, id));
+    
     const result = await db.delete(accounts).where(eq(accounts.id, id));
     return (result.rowCount ?? 0) > 0;
   }
@@ -986,14 +992,15 @@ export class DatabaseStorage implements IStorage {
 
   // Risk rules operations
   async getRiskRules(userId: string, accountId?: number): Promise<RiskRule[]> {
-    let query = db.select().from(riskRules)
-      .where(eq(riskRules.userId, userId));
-    
     if (accountId) {
-      query = query.where(and(eq(riskRules.userId, userId), eq(riskRules.accountId, accountId)));
+      return await db.select().from(riskRules)
+        .where(and(eq(riskRules.userId, userId), eq(riskRules.accountId, accountId)))
+        .orderBy(desc(riskRules.createdAt));
     }
     
-    return query.orderBy(desc(riskRules.createdAt));
+    return await db.select().from(riskRules)
+      .where(eq(riskRules.userId, userId))
+      .orderBy(desc(riskRules.createdAt));
   }
 
   async createRiskRule(riskRule: InsertRiskRule): Promise<RiskRule> {
@@ -1023,14 +1030,15 @@ export class DatabaseStorage implements IStorage {
 
   // Risk alerts operations
   async getRiskAlerts(userId: string, accountId?: number): Promise<RiskAlert[]> {
-    let query = db.select().from(riskAlerts)
-      .where(eq(riskAlerts.userId, userId));
-    
     if (accountId) {
-      query = query.where(and(eq(riskAlerts.userId, userId), eq(riskAlerts.accountId, accountId)));
+      return await db.select().from(riskAlerts)
+        .where(and(eq(riskAlerts.userId, userId), eq(riskAlerts.accountId, accountId)))
+        .orderBy(desc(riskAlerts.triggeredAt));
     }
     
-    return query.orderBy(desc(riskAlerts.triggeredAt));
+    return await db.select().from(riskAlerts)
+      .where(eq(riskAlerts.userId, userId))
+      .orderBy(desc(riskAlerts.triggeredAt));
   }
 
   async resolveRiskAlert(id: number, userId: string, notes?: string): Promise<RiskAlert | undefined> {

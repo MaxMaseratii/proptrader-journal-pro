@@ -328,7 +328,7 @@ const Spending = () => {
             <div className="text-2xl font-bold text-yellow-400 widget-value">
               {accounts.length}
             </div>
-            <p className="text-xs text-gray-400">
+            <p className="text-xs widget-text opacity-70">
               {accounts.filter(a => a.status === 'failed').length} failed, {accounts.filter(a => a.status === 'active' || a.status === 'funded').length} active
             </p>
           </CardContent>
@@ -343,7 +343,7 @@ const Spending = () => {
             <div className="text-2xl font-bold text-orange-400 widget-value">
               {formatCurrency(accounts.reduce((sum, acc) => sum + (acc.activationCost || 0), 0))}
             </div>
-            <p className="text-xs text-gray-400">Total activation fees</p>
+            <p className="text-xs widget-text opacity-70">Total activation fees</p>
           </CardContent>
         </Card>
 

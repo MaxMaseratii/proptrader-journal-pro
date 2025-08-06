@@ -260,15 +260,15 @@ export default function Performance() {
           <div className="space-y-6">
             {/* Key Performance Metrics */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              <Card className="bg-dark-card border-dark-border">
+              <Card className="widget-bg border-prop-gold/20">
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-gray-400 text-sm mb-1">Total P&L</p>
+                      <p className="widget-text opacity-70 text-sm mb-1">Total P&L</p>
                       <p className={`text-2xl font-bold ${metrics.totalPnL >= 0 ? 'text-success-green' : 'text-error-red'}`}>
                         {formatCurrency(metrics.totalPnL)}
                       </p>
-                      <p className="text-xs text-gray-400 mt-1">{metrics.totalTrades} trades</p>
+                      <p className="text-xs widget-text opacity-70 mt-1">{metrics.totalTrades} trades</p>
                     </div>
                     <div className={`bg-opacity-20 p-3 rounded-lg ${metrics.totalPnL >= 0 ? 'bg-success-green' : 'bg-error-red'}`}>
                       {metrics.totalPnL >= 0 ? (
@@ -281,13 +281,13 @@ export default function Performance() {
                 </CardContent>
               </Card>
 
-              <Card className="bg-dark-card border-dark-border">
+              <Card className="widget-bg border-prop-gold/20">
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-gray-400 text-sm mb-1">Win Rate</p>
+                      <p className="widget-text opacity-70 text-sm mb-1">Win Rate</p>
                       <p className="text-2xl font-bold text-primary">{metrics.winRate.toFixed(1)}%</p>
-                      <p className="text-xs text-gray-400 mt-1">Success rate</p>
+                      <p className="text-xs widget-text opacity-70 mt-1">Success rate</p>
                     </div>
                     <div className="bg-primary bg-opacity-20 p-3 rounded-lg">
                       <Target className="text-primary h-6 w-6" />
@@ -296,13 +296,13 @@ export default function Performance() {
                 </CardContent>
               </Card>
 
-              <Card className="bg-dark-card border-dark-border">
+              <Card className="widget-bg border-prop-gold/20">
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-gray-400 text-sm mb-1">Profit Factor</p>
+                      <p className="widget-text opacity-70 text-sm mb-1">Profit Factor</p>
                       <p className="text-2xl font-bold text-warning-orange">{metrics.profitFactor.toFixed(2)}</p>
-                      <p className="text-xs text-gray-400 mt-1">Profit vs Loss ratio</p>
+                      <p className="text-xs widget-text opacity-70 mt-1">Profit vs Loss ratio</p>
                     </div>
                     <div className="bg-warning-orange bg-opacity-20 p-3 rounded-lg">
                       <BarChart3 className="text-warning-orange h-6 w-6" />
@@ -311,13 +311,13 @@ export default function Performance() {
                 </CardContent>
               </Card>
 
-              <Card className="bg-dark-card border-dark-border">
+              <Card className="widget-bg border-prop-gold/20">
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-gray-400 text-sm mb-1">Sharpe Ratio</p>
+                      <p className="widget-text opacity-70 text-sm mb-1">Sharpe Ratio</p>
                       <p className="text-2xl font-bold text-accent-orange">{metrics.sharpeRatio.toFixed(2)}</p>
-                      <p className="text-xs text-gray-400 mt-1">Risk-adjusted return</p>
+                      <p className="text-xs widget-text opacity-70 mt-1">Risk-adjusted return</p>
                     </div>
                     <div className="bg-accent-orange bg-opacity-20 p-3 rounded-lg">
                       <Activity className="text-accent-orange h-6 w-6" />
@@ -329,10 +329,10 @@ export default function Performance() {
 
             {/* Charts */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <Card className="bg-dark-card border-dark-border">
+              <Card className="widget-bg border-prop-gold/20">
                 <CardHeader>
-                  <CardTitle>Equity Curve</CardTitle>
-                  <p className="text-gray-400 text-sm">Account balance over time</p>
+                  <CardTitle className="widget-header">Equity Curve</CardTitle>
+                  <p className="widget-text opacity-70 text-sm">Account balance over time</p>
                 </CardHeader>
                 <CardContent>
                   <div className="h-64">
@@ -341,10 +341,10 @@ export default function Performance() {
                 </CardContent>
               </Card>
 
-              <Card className="bg-dark-card border-dark-border">
+              <Card className="widget-bg border-prop-gold/20">
                 <CardHeader>
-                  <CardTitle>Monthly Performance</CardTitle>
-                  <p className="text-gray-400 text-sm">Monthly profit and loss breakdown</p>
+                  <CardTitle className="widget-header">Monthly Performance</CardTitle>
+                  <p className="widget-text opacity-70 text-sm">Monthly profit and loss breakdown</p>
                 </CardHeader>
                 <CardContent>
                   <div className="h-64">
@@ -356,65 +356,65 @@ export default function Performance() {
 
             {/* Detailed Statistics */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <Card className="bg-dark-card border-dark-border">
+              <Card className="widget-bg border-prop-gold/20">
                 <CardHeader>
-                  <CardTitle>Trading Statistics</CardTitle>
-                  <p className="text-gray-400 text-sm">Detailed performance breakdown</p>
+                  <CardTitle className="widget-header">Trading Statistics</CardTitle>
+                  <p className="widget-text opacity-70 text-sm">Detailed performance breakdown</p>
                 </CardHeader>
                 <CardContent>
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <p className="text-sm font-medium text-gray-300">Average Win</p>
+                      <p className="text-sm font-medium widget-text">Average Win</p>
                       <p className="text-lg font-bold text-success-green">{formatCurrency(metrics.averageWin)}</p>
                     </div>
                     <div className="space-y-2">
-                      <p className="text-sm font-medium text-gray-300">Average Loss</p>
+                      <p className="text-sm font-medium widget-text">Average Loss</p>
                       <p className="text-lg font-bold text-error-red">{formatCurrency(-metrics.averageLoss)}</p>
                     </div>
                     <div className="space-y-2">
-                      <p className="text-sm font-medium text-gray-300">Best Day</p>
+                      <p className="text-sm font-medium widget-text">Best Day</p>
                       <p className="text-lg font-bold text-success-green">{formatCurrency(metrics.bestDay)}</p>
                     </div>
                     <div className="space-y-2">
-                      <p className="text-sm font-medium text-gray-300">Worst Day</p>
+                      <p className="text-sm font-medium widget-text">Worst Day</p>
                       <p className="text-lg font-bold text-error-red">{formatCurrency(metrics.worstDay)}</p>
                     </div>
                     <div className="space-y-2">
-                      <p className="text-sm font-medium text-gray-300">Trading Days</p>
+                      <p className="text-sm font-medium widget-text">Trading Days</p>
                       <p className="text-lg font-bold">{metrics.tradingDays}</p>
                     </div>
                     <div className="space-y-2">
-                      <p className="text-sm font-medium text-gray-300">Total Trades</p>
+                      <p className="text-sm font-medium widget-text">Total Trades</p>
                       <p className="text-lg font-bold">{metrics.totalTrades}</p>
                     </div>
                   </div>
                 </CardContent>
               </Card>
 
-              <Card className="bg-dark-card border-dark-border">
+              <Card className="widget-bg border-prop-gold/20">
                 <CardHeader>
-                  <CardTitle>Streak Analysis</CardTitle>
-                  <p className="text-gray-400 text-sm">Consecutive wins and losses</p>
+                  <CardTitle className="widget-header">Streak Analysis</CardTitle>
+                  <p className="widget-text opacity-70 text-sm">Consecutive wins and losses</p>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-6">
                     <div>
                       <div className="flex justify-between items-center mb-2">
-                        <span className="text-sm text-gray-300">Max Consecutive Wins</span>
+                        <span className="text-sm widget-text">Max Consecutive Wins</span>
                         <Badge className="bg-success-green text-white">{metrics.maxConsecutiveWins}</Badge>
                       </div>
                       <Progress value={(metrics.maxConsecutiveWins / Math.max(metrics.maxConsecutiveWins, metrics.maxConsecutiveLosses, 1)) * 100} className="h-2" />
                     </div>
                     <div>
                       <div className="flex justify-between items-center mb-2">
-                        <span className="text-sm text-gray-300">Max Consecutive Losses</span>
+                        <span className="text-sm widget-text">Max Consecutive Losses</span>
                         <Badge className="bg-error-red text-white">{metrics.maxConsecutiveLosses}</Badge>
                       </div>
                       <Progress value={(metrics.maxConsecutiveLosses / Math.max(metrics.maxConsecutiveWins, metrics.maxConsecutiveLosses, 1)) * 100} className="h-2" />
                     </div>
-                    <div className="pt-4 border-t border-dark-border">
+                    <div className="pt-4 border-t border-prop-gold/20">
                       <div className="flex justify-between text-sm">
-                        <span className="text-gray-400">Win/Loss Ratio</span>
+                        <span className="widget-text opacity-70">Win/Loss Ratio</span>
                         <span className="font-medium">
                           {metrics.averageLoss > 0 ? (metrics.averageWin / metrics.averageLoss).toFixed(2) : "N/A"}
                         </span>

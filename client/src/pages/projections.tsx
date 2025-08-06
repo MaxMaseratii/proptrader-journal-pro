@@ -539,7 +539,7 @@ export default function Projections() {
                 <CardContent className="space-y-6">
                   {/* Mode Selection */}
                   <div className="space-y-2">
-                    <Label className="text-white">Projection Mode</Label>
+                    <Label className="widget-text">Projection Mode</Label>
                     <Tabs value={settings.mode} onValueChange={(value) => updateSetting('mode', value)}>
                       <TabsList className="grid w-full grid-cols-2">
                         <TabsTrigger value="simulation">Simulation</TabsTrigger>
@@ -552,12 +552,12 @@ export default function Projections() {
                   {settings.mode === 'account' && (
                     <div className="space-y-4">
                       <div className="space-y-2">
-                        <Label className="text-white">Select Account</Label>
+                        <Label className="widget-text">Select Account</Label>
                         <Select 
                           value={settings.selectedAccountId?.toString() || ""} 
                           onValueChange={(value) => updateSetting('selectedAccountId', value ? parseInt(value) : null)}
                         >
-                          <SelectTrigger className="bg-gray-700 border-gray-600 text-white">
+                          <SelectTrigger className="widget-bg widget-text border-prop-gold/20">
                             <SelectValue placeholder="Choose an account..." />
                           </SelectTrigger>
                           <SelectContent>
@@ -571,16 +571,16 @@ export default function Projections() {
                       </div>
                       
                       <div className="space-y-2">
-                        <Label className="text-white">Number of Copied Accounts</Label>
+                        <Label className="widget-text">Number of Copied Accounts</Label>
                         <Input
                           type="number"
                           min="1"
                           max="10"
                           value={settings.copiedAccounts}
                           onChange={(e) => updateSetting('copiedAccounts', Number(e.target.value))}
-                          className="bg-gray-700 border-gray-600 text-white"
+                          className="widget-bg widget-text border-prop-gold/20"
                         />
-                        <p className="text-xs text-gray-400">
+                        <p className="text-xs widget-text opacity-70">
                           Multiple accounts reach targets faster (e.g., 2 accounts = half the time)
                         </p>
                       </div>
@@ -592,10 +592,10 @@ export default function Projections() {
                             <div className="w-full p-4 bg-prop-gold/20 border border-prop-gold rounded-lg text-center">
                               <Bookmark className="mx-auto h-8 w-8 text-prop-gold mb-2" />
                               <p className="text-prop-gold font-medium">Plan Active</p>
-                              <p className="text-xs text-gray-400 mt-1">
+                              <p className="text-xs widget-text opacity-70 mt-1">
                                 Target: {formatCurrency(activeProjection?.targetProfit)}
                               </p>
-                              <p className="text-xs text-gray-500 mt-1">
+                              <p className="text-xs widget-text opacity-50 mt-1">
                                 Cannot modify until target is reached or plan fails
                               </p>
                             </div>

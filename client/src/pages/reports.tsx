@@ -250,9 +250,9 @@ export default function Reports() {
             {quickStats && (
               <>
                 {/* Performance Chart */}
-                <Card className="bg-gray-800 border-gray-700">
+                <Card className="widget-bg border-prop-gold/20">
                   <CardHeader>
-                    <CardTitle>Monthly Performance Overview</CardTitle>
+                    <CardTitle className="widget-header">Monthly Performance Overview</CardTitle>
                   </CardHeader>
                   <CardContent>
                     <MonthlyPerformanceChart 
@@ -265,14 +265,14 @@ export default function Reports() {
                 </Card>
 
                 {/* Account Summary */}
-                <Card className="bg-gray-800 border-gray-700">
+                <Card className="widget-bg border-prop-gold/20">
                   <CardHeader>
-                    <CardTitle>Account Summary</CardTitle>
+                    <CardTitle className="widget-header">Account Summary</CardTitle>
                   </CardHeader>
                   <CardContent>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                       {accounts?.map((account) => (
-                        <div key={account.id} className="bg-gray-900 p-4 rounded-lg">
+                        <div key={account.id} className="widget-bg p-4 rounded-lg border border-prop-gold/10">
                           <div className="flex justify-between items-start mb-2">
                             <h4 className="font-medium truncate">{account.name}</h4>
                             <Badge 
@@ -284,15 +284,15 @@ export default function Reports() {
                           </div>
                           <div className="space-y-1 text-sm">
                             <div className="flex justify-between">
-                              <span className="text-gray-400">Type:</span>
-                              <span>{account.type}</span>
+                              <span className="widget-text opacity-70">Type:</span>
+                              <span className="widget-text">{account.type}</span>
                             </div>
                             <div className="flex justify-between">
-                              <span className="text-gray-400">Firm:</span>
-                              <span>{account.firm}</span>
+                              <span className="widget-text opacity-70">Firm:</span>
+                              <span className="widget-text">{account.firm}</span>
                             </div>
                             <div className="flex justify-between">
-                              <span className="text-gray-400">Balance:</span>
+                              <span className="widget-text opacity-70">Balance:</span>
                               <span className={account.currentBalance >= account.startingBalance ? 'text-green-400' : 'text-red-400'}>
                                 {formatCurrency(account.currentBalance)}
                               </span>
@@ -305,28 +305,28 @@ export default function Reports() {
                 </Card>
 
                 {/* Recent Activity */}
-                <Card className="bg-gray-800 border-gray-700">
+                <Card className="widget-bg border-prop-gold/20">
                   <CardHeader>
-                    <CardTitle>Recent Trading Activity</CardTitle>
+                    <CardTitle className="widget-header">Recent Trading Activity</CardTitle>
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-3">
                       {trades?.slice(-5).reverse().map((trade) => {
                         const account = accounts?.find(acc => acc.id === trade.accountId);
                         return (
-                          <div key={trade.id} className="flex justify-between items-center py-2 border-b border-gray-700 last:border-b-0">
+                          <div key={trade.id} className="flex justify-between items-center py-2 border-b border-prop-gold/10 last:border-b-0">
                             <div className="flex items-center gap-3">
                               <div className={`w-2 h-2 rounded-full ${trade.pnl >= 0 ? 'bg-green-400' : 'bg-red-400'}`} />
                               <div>
                                 <p className="font-medium">{trade.symbol}</p>
-                                <p className="text-sm text-gray-400">{account?.name}</p>
+                                <p className="text-sm widget-text opacity-70">{account?.name}</p>
                               </div>
                             </div>
                             <div className="text-right">
                               <p className={`font-medium ${trade.pnl >= 0 ? 'text-green-400' : 'text-red-400'}`}>
                                 {formatCurrency(trade.pnl)}
                               </p>
-                              <p className="text-sm text-gray-400">{formatDate(trade.date)}</p>
+                              <p className="text-sm widget-text opacity-70">{formatDate(trade.date)}</p>
                             </div>
                           </div>
                         );
@@ -340,7 +340,7 @@ export default function Reports() {
 
           <TabsContent value="templates" className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              <Card className="bg-gray-800 border-gray-700 hover:border-blue-600 transition-colors cursor-pointer">
+              <Card className="widget-bg border-prop-gold/20 hover:border-blue-600 transition-colors cursor-pointer">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <BarChart3 className="h-5 w-5 text-blue-400" />
@@ -374,7 +374,7 @@ export default function Reports() {
                 </CardContent>
               </Card>
 
-              <Card className="bg-gray-800 border-gray-700 hover:border-purple-600 transition-colors cursor-pointer">
+              <Card className="widget-bg border-prop-gold/20 hover:border-purple-600 transition-colors cursor-pointer">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <FileText className="h-5 w-5 text-purple-400" />
@@ -391,7 +391,7 @@ export default function Reports() {
                 </CardContent>
               </Card>
 
-              <Card className="bg-gray-800 border-gray-700 hover:border-orange-600 transition-colors cursor-pointer">
+              <Card className="widget-bg border-prop-gold/20 hover:border-orange-600 transition-colors cursor-pointer">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <DollarSign className="h-5 w-5 text-orange-400" />
@@ -408,7 +408,7 @@ export default function Reports() {
                 </CardContent>
               </Card>
 
-              <Card className="bg-gray-800 border-gray-700 hover:border-cyan-600 transition-colors cursor-pointer">
+              <Card className="widget-bg border-prop-gold/20 hover:border-cyan-600 transition-colors cursor-pointer">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <Activity className="h-5 w-5 text-cyan-400" />
