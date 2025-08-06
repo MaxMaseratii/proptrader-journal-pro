@@ -130,10 +130,10 @@ export const SimpleChart: React.FC<SimpleChartProps> = ({
 
   if (!trades || trades.length === 0) {
     return (
-      <div className="w-full bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 rounded-lg p-8 text-center border border-gray-700" style={{ height: `${height}px` }}>
-        <BarChart3 className="mx-auto h-12 w-12 text-gray-500 mb-4" />
-        <h3 className="text-lg font-medium text-gray-300 mb-2">No {symbol} trades</h3>
-        <p className="text-gray-500">Start trading {symbol} to see your price chart</p>
+      <div className="w-full widget-bg rounded-lg p-8 text-center border border-prop-gold/20" style={{ height: `${height}px` }}>
+        <BarChart3 className="mx-auto h-12 w-12 widget-text opacity-50 mb-4" />
+        <h3 className="text-lg font-medium widget-text mb-2">No {symbol} trades</h3>
+        <p className="widget-text opacity-70">Start trading {symbol} to see your price chart</p>
       </div>
     );
   }

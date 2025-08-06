@@ -112,20 +112,20 @@ export function DailyPlanningWidget({ trades = [], selectedAccount, dailyPlan, c
 
         {/* Today's Performance Summary */}
         <div className="grid grid-cols-2 gap-3">
-          <div className="text-center p-3 bg-gray-800/50 rounded-lg">
+          <div className="text-center p-3 widget-bg border border-prop-gold/10 rounded-lg">
             <div className={cn(
               "text-xl font-bold",
               todayPnL >= 0 ? "text-green-400" : "text-red-400"
             )}>
               {todayPnL >= 0 ? '+' : ''}${todayPnL.toFixed(2)}
             </div>
-            <div className="text-xs text-gray-400">Today's P&L</div>
-            <div className="text-xs text-gray-500">Target: ${dailyTarget}</div>
+            <div className="text-xs widget-text opacity-70">Today's P&L</div>
+            <div className="text-xs widget-text opacity-50">Target: ${dailyTarget}</div>
           </div>
-          <div className="text-center p-3 bg-gray-800/50 rounded-lg">
-            <div className="text-xl font-bold text-white">{todayTradesCount}</div>
-            <div className="text-xs text-gray-400">Trades Today</div>
-            <div className="text-xs text-gray-500">Max: {maxDailyTrades}</div>
+          <div className="text-center p-3 widget-bg border border-prop-gold/10 rounded-lg">
+            <div className="text-xl font-bold widget-text">{todayTradesCount}</div>
+            <div className="text-xs widget-text opacity-70">Trades Today</div>
+            <div className="text-xs widget-text opacity-50">Max: {maxDailyTrades}</div>
           </div>
         </div>
 
@@ -133,7 +133,7 @@ export function DailyPlanningWidget({ trades = [], selectedAccount, dailyPlan, c
         <div className="space-y-3">
           <div>
             <div className="flex justify-between text-sm mb-1">
-              <span className="text-gray-300">Profit Target</span>
+              <span className="widget-text">Profit Target</span>
               <span className="text-blue-400">{targetProgress.toFixed(1)}%</span>
             </div>
             <Progress value={targetProgress} className="h-2" />
@@ -141,7 +141,7 @@ export function DailyPlanningWidget({ trades = [], selectedAccount, dailyPlan, c
           
           <div>
             <div className="flex justify-between text-sm mb-1">
-              <span className="text-gray-300">Trades Used</span>
+              <span className="widget-text">Trades Used</span>
               <span className="text-orange-400">{tradesProgress.toFixed(1)}%</span>
             </div>
             <Progress value={tradesProgress} className="h-2" />
@@ -150,29 +150,29 @@ export function DailyPlanningWidget({ trades = [], selectedAccount, dailyPlan, c
 
         {/* Today's Stats */}
         <div className="grid grid-cols-3 gap-2 text-center">
-          <div className="p-2 bg-gray-800/30 rounded">
+          <div className="p-2 widget-bg border border-prop-gold/10 rounded">
             <div className="text-sm font-medium text-green-400">{todayWins}</div>
-            <div className="text-xs text-gray-400">Wins</div>
+            <div className="text-xs widget-text opacity-70">Wins</div>
           </div>
-          <div className="p-2 bg-gray-800/30 rounded">
+          <div className="p-2 widget-bg border border-prop-gold/10 rounded">
             <div className="text-sm font-medium text-red-400">{todayLosses}</div>
-            <div className="text-xs text-gray-400">Losses</div>
+            <div className="text-xs widget-text opacity-70">Losses</div>
           </div>
-          <div className="p-2 bg-gray-800/30 rounded">
+          <div className="p-2 widget-bg border border-prop-gold/10 rounded">
             <div className="text-sm font-medium text-blue-400">{todayWinRate.toFixed(1)}%</div>
-            <div className="text-xs text-gray-400">Win Rate</div>
+            <div className="text-xs widget-text opacity-70">Win Rate</div>
           </div>
         </div>
 
         {/* Quick Status */}
-        <div className="flex items-center justify-between p-2 bg-gray-800/30 rounded-lg">
+        <div className="flex items-center justify-between p-2 widget-bg border border-prop-gold/10 rounded-lg">
           <div className="flex items-center gap-2">
             {todayPnL >= dailyTarget ? (
               <CheckCircle className="w-4 h-4 text-green-400" />
             ) : (
               <AlertTriangle className="w-4 h-4 text-orange-400" />
             )}
-            <span className="text-sm text-gray-300">
+            <span className="text-sm widget-text">
               {todayPnL >= dailyTarget ? "Target Reached!" : "Working toward target"}
             </span>
           </div>

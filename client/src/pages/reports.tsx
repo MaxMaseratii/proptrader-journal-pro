@@ -159,24 +159,24 @@ export default function Reports() {
         {/* Quick Overview */}
         {quickStats && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-            <Card className="bg-gradient-to-br from-blue-900 to-blue-800 border-blue-700">
+            <Card className="widget-card border-blue-500/20">
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-blue-200 text-sm">Total Trades</p>
-                    <p className="text-2xl font-bold text-white">{quickStats.totalTrades}</p>
+                    <p className="widget-text opacity-70 text-sm">Total Trades</p>
+                    <p className="text-2xl font-bold widget-text">{quickStats.totalTrades}</p>
                   </div>
                   <Activity className="h-8 w-8 text-blue-400" />
                 </div>
               </CardContent>
             </Card>
 
-            <Card className="bg-gradient-to-br from-green-900 to-green-800 border-green-700">
+            <Card className="widget-card border-green-500/20">
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-green-200 text-sm">Total P&L</p>
-                    <p className="text-2xl font-bold text-white">
+                    <p className="widget-text opacity-70 text-sm">Total P&L</p>
+                    <p className="text-2xl font-bold widget-text">
                       {formatCurrency(quickStats.totalPnL)}
                     </p>
                   </div>
@@ -185,12 +185,12 @@ export default function Reports() {
               </CardContent>
             </Card>
 
-            <Card className="bg-gradient-to-br from-purple-900 to-purple-800 border-purple-700">
+            <Card className="widget-card border-purple-500/20">
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-purple-200 text-sm">Win Rate</p>
-                    <p className="text-2xl font-bold text-white">
+                    <p className="widget-text opacity-70 text-sm">Win Rate</p>
+                    <p className="text-2xl font-bold widget-text">
                       {formatPercentage(quickStats.winRate)}
                     </p>
                   </div>
@@ -199,24 +199,24 @@ export default function Reports() {
               </CardContent>
             </Card>
 
-            <Card className="bg-gradient-to-br from-orange-900 to-orange-800 border-orange-700">
+            <Card className="widget-card border-orange-500/20">
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-orange-200 text-sm">Accounts</p>
-                    <p className="text-2xl font-bold text-white">{quickStats.accountsTracked}</p>
+                    <p className="widget-text opacity-70 text-sm">Accounts</p>
+                    <p className="text-2xl font-bold widget-text">{quickStats.accountsTracked}</p>
                   </div>
                   <Users className="h-8 w-8 text-orange-400" />
                 </div>
               </CardContent>
             </Card>
 
-            <Card className="bg-gradient-to-br from-cyan-900 to-cyan-800 border-cyan-700">
+            <Card className="widget-card border-cyan-500/20">
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-cyan-200 text-sm">Journal Entries</p>
-                    <p className="text-2xl font-bold text-white">{quickStats.journalEntries}</p>
+                    <p className="widget-text opacity-70 text-sm">Journal Entries</p>
+                    <p className="text-2xl font-bold widget-text">{quickStats.journalEntries}</p>
                   </div>
                   <FileText className="h-8 w-8 text-cyan-400" />
                 </div>
@@ -227,7 +227,7 @@ export default function Reports() {
 
         {/* Main Tabs */}
         <Tabs value={selectedTab} onValueChange={setSelectedTab}>
-          <TabsList className="grid w-full grid-cols-3 bg-gray-800">
+          <TabsList className="grid w-full grid-cols-3 widget-bg">
             <TabsTrigger value="generator" className="flex items-center gap-2">
               <Settings className="h-4 w-4" />
               Report Generator

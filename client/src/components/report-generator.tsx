@@ -357,9 +357,9 @@ export default function ReportGenerator({ accounts }: ReportGeneratorProps) {
   ];
 
   return (
-    <Card className="bg-gray-800 border-gray-700">
+    <Card className="widget-bg border-prop-gold/20">
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">
+        <CardTitle className="widget-header flex items-center gap-2">
           <FileText className="h-5 w-5 text-blue-400" />
           Report Generator
         </CardTitle>
@@ -367,7 +367,7 @@ export default function ReportGenerator({ accounts }: ReportGeneratorProps) {
       <CardContent className="space-y-6">
         {/* Report Type Selection */}
         <div>
-          <Label className="text-gray-300 mb-3 block">Report Type</Label>
+          <Label className="widget-text mb-3 block">Report Type</Label>
           <div className="grid grid-cols-2 gap-3">
             {reportTypes.map((type) => (
               <Button
@@ -375,8 +375,8 @@ export default function ReportGenerator({ accounts }: ReportGeneratorProps) {
                 variant={config.reportType === type.value ? "default" : "outline"}
                 className={`justify-start h-auto p-3 ${
                   config.reportType === type.value 
-                    ? "bg-blue-600 hover:bg-blue-700" 
-                    : "bg-gray-700 border-gray-600 hover:bg-gray-600"
+                    ? "bg-blue-600 hover:bg-blue-700 text-white" 
+                    : "widget-bg border-prop-gold/20 hover:bg-muted widget-text"
                 }`}
                 onClick={() => setConfig(prev => ({ ...prev, reportType: type.value as any }))}
               >
@@ -391,7 +391,7 @@ export default function ReportGenerator({ accounts }: ReportGeneratorProps) {
 
         {/* Account Selection */}
         <div>
-          <Label className="text-gray-300 mb-2 block">Accounts to Include</Label>
+          <Label className="widget-text mb-2 block">Accounts to Include</Label>
           <div className="space-y-2 max-h-32 overflow-y-auto">
             <div className="flex items-center space-x-2">
               <Checkbox
@@ -438,7 +438,7 @@ export default function ReportGenerator({ accounts }: ReportGeneratorProps) {
         {/* Date Range */}
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <Label className="text-gray-300">From Date</Label>
+            <Label className="widget-text">From Date</Label>
             <Input
               type="date"
               value={config.dateRange.from}
@@ -446,11 +446,11 @@ export default function ReportGenerator({ accounts }: ReportGeneratorProps) {
                 ...prev, 
                 dateRange: { ...prev.dateRange, from: e.target.value }
               }))}
-              className="bg-gray-700 border-gray-600"
+              className="widget-input"
             />
           </div>
           <div>
-            <Label className="text-gray-300">To Date</Label>
+            <Label className="widget-text">To Date</Label>
             <Input
               type="date"
               value={config.dateRange.to}
@@ -458,14 +458,14 @@ export default function ReportGenerator({ accounts }: ReportGeneratorProps) {
                 ...prev, 
                 dateRange: { ...prev.dateRange, to: e.target.value }
               }))}
-              className="bg-gray-700 border-gray-600"
+              className="widget-input"
             />
           </div>
         </div>
 
         {/* Content Options */}
         <div>
-          <Label className="text-gray-300 mb-3 block">Include in Report</Label>
+          <Label className="widget-text mb-3 block">Include in Report</Label>
           <div className="space-y-3">
             <div className="flex items-center space-x-2">
               <Checkbox
@@ -522,21 +522,21 @@ export default function ReportGenerator({ accounts }: ReportGeneratorProps) {
         {config.reportType === 'custom' && (
           <div className="space-y-4">
             <div>
-              <Label className="text-gray-300">Custom Report Title</Label>
+              <Label className="widget-text">Custom Report Title</Label>
               <Input
                 value={config.customTitle}
                 onChange={(e) => setConfig(prev => ({ ...prev, customTitle: e.target.value }))}
                 placeholder="Enter custom report title..."
-                className="bg-gray-700 border-gray-600"
+                className="widget-input"
               />
             </div>
             <div>
-              <Label className="text-gray-300">Additional Notes</Label>
+              <Label className="widget-text">Additional Notes</Label>
               <Textarea
                 value={config.customNotes}
                 onChange={(e) => setConfig(prev => ({ ...prev, customNotes: e.target.value }))}
                 placeholder="Add any additional notes or context for this report..."
-                className="bg-gray-700 border-gray-600"
+                className="widget-input"
                 rows={3}
               />
             </div>
@@ -545,7 +545,7 @@ export default function ReportGenerator({ accounts }: ReportGeneratorProps) {
 
         {/* Format Selection */}
         <div>
-          <Label className="text-gray-300 mb-3 block">Export Format</Label>
+          <Label className="widget-text mb-3 block">Export Format</Label>
           <div className="grid grid-cols-2 gap-3">
             {formats.map((format) => (
               <Button
@@ -553,14 +553,14 @@ export default function ReportGenerator({ accounts }: ReportGeneratorProps) {
                 variant={config.format === format.value ? "default" : "outline"}
                 className={`justify-start h-auto p-3 ${
                   config.format === format.value 
-                    ? "bg-blue-600 hover:bg-blue-700" 
-                    : "bg-gray-700 border-gray-600 hover:bg-gray-600"
+                    ? "bg-blue-600 hover:bg-blue-700 text-white" 
+                    : "widget-bg border-prop-gold/20 hover:bg-muted widget-text"
                 }`}
                 onClick={() => setConfig(prev => ({ ...prev, format: format.value as any }))}
               >
                 <div className="text-left">
                   <div className="font-medium">{format.label}</div>
-                  <div className="text-xs text-gray-400">{format.description}</div>
+                  <div className="text-xs widget-text opacity-70">{format.description}</div>
                 </div>
               </Button>
             ))}
@@ -571,7 +571,7 @@ export default function ReportGenerator({ accounts }: ReportGeneratorProps) {
         <Button 
           onClick={generateReport}
           disabled={isGenerating}
-          className="w-full bg-blue-600 hover:bg-blue-700"
+          className="w-full bg-blue-600 hover:bg-blue-700 text-white"
         >
           {isGenerating ? (
             <>

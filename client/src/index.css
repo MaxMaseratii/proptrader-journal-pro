@@ -156,6 +156,15 @@ canvas {
   border-color: #e5e7eb !important;
 }
 
+/* CRITICAL FIX: Progress bar background in light mode */
+.light [data-radix-progress-root] {
+  background-color: #e5e7eb !important;
+}
+
+.light .bg-secondary {
+  background-color: #e5e7eb !important;
+}
+
 /* CRITICAL FIX: Force status badges to stay inside widgets */
 .widget-status-badge {
   position: relative !important;
