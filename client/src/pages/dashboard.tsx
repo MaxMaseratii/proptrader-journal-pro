@@ -12,6 +12,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { AccountCreationModal } from "@/components/AccountCreationModal";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { EquityChart, MonthlyPerformanceChart } from "@/components/chart-components";
 import { formatCurrency, formatPercentage, formatDate } from "@/lib/utils";
 import { calculateDisciplinedScore, getScoreColor, getGradeColor } from "@/lib/disciplined-score";
