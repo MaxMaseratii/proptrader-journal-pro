@@ -1309,19 +1309,18 @@ export default function AccountManagement({ accounts }: AccountManagementProps) 
                   <Trash2 className="h-4 w-4" />
                 </Button>
               </AlertDialogTrigger>
-              <AlertDialogContent className="bg-gray-900 border-gray-700">
+              <AlertDialogContent className="widget-card border-red-500/30">
                 <AlertDialogHeader>
-                  <AlertDialogTitle className="text-white flex items-center gap-2">
+                  <AlertDialogTitle className="widget-text flex items-center gap-2">
                     <Trash2 className="h-5 w-5 text-red-400" />
                     Delete Account
                   </AlertDialogTitle>
-                      <AlertDialogDescription className="text-gray-300">
-                        This will permanently delete the account and all associated trades, 
-                        journal entries, and statistics. This action cannot be undone.
+                      <AlertDialogDescription className="widget-text opacity-80">
+                        This will permanently delete the account and all associated data.
                       </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
-                      <AlertDialogCancel className="border-gray-600 text-gray-300 hover:bg-gray-700">
+                      <AlertDialogCancel className="widget-card border-prop-gold/30 widget-text hover:bg-prop-gold/10">
                         Cancel
                       </AlertDialogCancel>
                       <AlertDialogAction 

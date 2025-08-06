@@ -49,13 +49,13 @@ export function EquityChart({ data }: EquityChartProps) {
     const ctx = canvasRef.current.getContext('2d');
     if (!ctx) return;
 
-    // Theme-aware colors
+    // Theme-aware colors - CRITICAL FIX FOR LIGHT MODE TEXT
     const isLight = theme === 'light';
     const colors = {
       borderColor: isLight ? '#1976D2' : '#B78E35',
       backgroundColor: isLight ? 'rgba(25, 118, 210, 0.1)' : 'rgba(183, 142, 53, 0.1)',
       gridColor: isLight ? '#E0E0E0' : '#404040',
-      textColor: isLight ? '#666666' : '#B0B0B0',
+      textColor: isLight ? '#000000' : '#FFFFFF', // BLACK TEXT FOR LIGHT MODE
       tooltipBg: isLight ? '#FFFFFF' : '#2D2D2D',
       tooltipText: isLight ? '#000000' : '#FFFFFF',
       tooltipBorder: isLight ? '#E0E0E0' : '#404040'
@@ -154,7 +154,7 @@ export function MonthlyPerformanceChart({ data }: MonthlyPerformanceChartProps) 
       positiveColor: isLight ? '#28a745' : '#4ade80',
       negativeColor: isLight ? '#dc3545' : '#f87171',
       gridColor: isLight ? '#E0E0E0' : '#404040',
-      textColor: isLight ? '#666666' : '#B0B0B0',
+      textColor: isLight ? '#000000' : '#FFFFFF', // BLACK TEXT FOR LIGHT MODE
       tooltipBg: isLight ? '#FFFFFF' : '#2D2D2D',
       tooltipText: isLight ? '#000000' : '#FFFFFF',
       tooltipBorder: isLight ? '#E0E0E0' : '#404040'
