@@ -41,7 +41,7 @@ const accountFormSchema = z.object({
   maxDrawdown: z.number().min(0, 'Max drawdown must be positive'),
   minimumTradingDays: z.number().optional().nullable(),
   timeLimit: z.number().optional().nullable(),
-  consistencyRulePercent: z.number().optional().nullable(),
+
   hasDailyLossLimit: z.boolean().optional(),
   accountCost: z.number().optional().nullable(),
   paymentMethod: z.string().optional().nullable(),
@@ -115,7 +115,7 @@ export default function AccountManagement() {
       maxDrawdown: 0,
       minimumTradingDays: null,
       timeLimit: null,
-      consistencyRulePercent: null,
+
       hasDailyLossLimit: false,
       accountCost: null,
       paymentMethod: null,
@@ -148,6 +148,9 @@ export default function AccountManagement() {
       tertiaryAsset: null,
     },
   });
+
+  // Watch form values for real-time calculations
+  const watchedValues = form.watch();
 
   const createAccountMutation = useMutation({
     mutationFn: async (data: AccountFormData) => {
@@ -780,6 +783,22 @@ export default function AccountManagement() {
                                   />
                                 </FormControl>
                                 <FormMessage />
+                                {field.value && watchedValues.maxDrawdown && (
+                                  <div className="text-xs mt-1">
+                                    <span className={`${
+                                      (field.value / watchedValues.maxDrawdown) * 100 > 10 
+                                        ? 'text-red-400' 
+                                        : (field.value / watchedValues.maxDrawdown) * 100 > 5 
+                                        ? 'text-yellow-400' 
+                                        : 'text-green-400'
+                                    }`}>
+                                      {((field.value / watchedValues.maxDrawdown) * 100).toFixed(2)}% of max drawdown
+                                    </span>
+                                    {(field.value / watchedValues.maxDrawdown) * 100 > 10 && (
+                                      <span className="text-red-400 ml-2">⚠️ High risk per trade</span>
+                                    )}
+                                  </div>
+                                )}
                               </FormItem>
                             )}
                           />
@@ -804,6 +823,16 @@ export default function AccountManagement() {
                                   />
                                 </FormControl>
                                 <FormMessage />
+                                <div className="text-xs mt-1 text-gray-400">
+                                  Split your total risk across {field.value || 1} trade{(field.value || 1) > 1 ? 's' : ''}
+                                </div>
+                                {field.value && watchedValues.riskPerTrade && (
+                                  <div className="text-xs mt-1">
+                                    <span className="text-green-400">
+                                      Risk Per Individual Trade: ${(watchedValues.riskPerTrade / field.value).toFixed(2)}
+                                    </span>
+                                  </div>
+                                )}
                               </FormItem>
                             )}
                           />
@@ -827,6 +856,22 @@ export default function AccountManagement() {
                                   />
                                 </FormControl>
                                 <FormMessage />
+                                {field.value && watchedValues.maxDrawdown && (
+                                  <div className="text-xs mt-1">
+                                    <span className={`${
+                                      (field.value / watchedValues.maxDrawdown) * 100 > 50 
+                                        ? 'text-red-400' 
+                                        : (field.value / watchedValues.maxDrawdown) * 100 > 30 
+                                        ? 'text-yellow-400' 
+                                        : 'text-green-400'
+                                    }`}>
+                                      {((field.value / watchedValues.maxDrawdown) * 100).toFixed(2)}% of max drawdown
+                                    </span>
+                                    {(field.value / watchedValues.maxDrawdown) * 100 > 50 && (
+                                      <span className="text-red-400 ml-2">⚠️ Very high daily risk</span>
+                                    )}
+                                  </div>
+                                )}
                               </FormItem>
                             )}
                           />
@@ -869,6 +914,42 @@ export default function AccountManagement() {
                                   />
                                 </FormControl>
                                 <FormMessage />
+                                {field.value && watchedValues.riskPerTrade && (
+                                  <div className="text-xs mt-1">
+                                    <span className="text-gray-400">
+                                      ≈ {Math.floor(field.value / watchedValues.riskPerTrade)} trades max per day
+                                    </span>
+                                  </div>
+                                )}
+                              </FormItem>
+                            )}
+                          />
+                          
+                          <FormField
+                            control={form.control}
+                            name="riskRewardRatio"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel className="text-white">Risk:Reward Ratio (1:X)</FormLabel>
+                                <FormControl>
+                                  <Input 
+                                    {...field} 
+                                    type="number" 
+                                    step="0.1"
+                                    className="bg-gray-800 border-gray-600 text-white" 
+                                    placeholder="2.0"
+                                    value={field.value === null ? "" : field.value}
+                                    onChange={(e) => field.onChange(e.target.value === "" ? null : parseFloat(e.target.value))}
+                                  />
+                                </FormControl>
+                                <FormMessage />
+                                {field.value && watchedValues.riskPerTrade && (
+                                  <div className="text-xs mt-1">
+                                    <span className="text-green-400">
+                                      Target profit: ${(watchedValues.riskPerTrade * field.value).toFixed(0)} per trade
+                                    </span>
+                                  </div>
+                                )}
                               </FormItem>
                             )}
                           />
