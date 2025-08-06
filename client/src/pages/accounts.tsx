@@ -56,6 +56,13 @@ const accountFormSchema = z.object({
   maxTradesPerDay: z.number().optional().nullable(),
   riskRewardRatio: z.number().optional().nullable(),
   minimumPayoutAmount: z.number().optional().nullable(),
+  maxNetBalanceForPayout: z.number().optional().nullable(),
+  personalTradingTimeStart1: z.string().optional().nullable(),
+  personalTradingTimeEnd1: z.string().optional().nullable(),
+  personalTradingTimeZone1: z.string().optional().nullable(),
+  personalTradingTimeStart2: z.string().optional().nullable(),
+  personalTradingTimeEnd2: z.string().optional().nullable(),
+  personalTradingTimeZone2: z.string().optional().nullable(),
 });
 
 type AccountFormData = z.infer<typeof accountFormSchema>;
@@ -114,6 +121,13 @@ export default function AccountManagement() {
       maxTradesPerDay: null,
       riskRewardRatio: null,
       minimumPayoutAmount: null,
+      maxNetBalanceForPayout: null,
+      personalTradingTimeStart1: null,
+      personalTradingTimeEnd1: null,
+      personalTradingTimeZone1: null,
+      personalTradingTimeStart2: null,
+      personalTradingTimeEnd2: null,
+      personalTradingTimeZone2: null,
     },
   });
 
@@ -817,6 +831,217 @@ export default function AccountManagement() {
                               </FormItem>
                             )}
                           />
+                          <FormField
+                            control={form.control}
+                            name="maxNetBalanceForPayout"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel className="text-white">Max Net Balance for Payout ($)</FormLabel>
+                                <FormControl>
+                                  <Input 
+                                    {...field} 
+                                    type="number" 
+                                    className="bg-gray-800 border-gray-600 text-white" 
+                                    placeholder="5000"
+                                    value={field.value || ""}
+                                    onChange={(e) => field.onChange(parseFloat(e.target.value) || null)}
+                                  />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                        </div>
+
+                        {/* Personal Trading Time */}
+                        <div className="space-y-4">
+                          <h3 className="text-lg font-semibold text-yellow-400 border-b border-yellow-400/20 pb-2">
+                            Personal Trading Time
+                          </h3>
+                          
+                          {/* Time Slot 1 */}
+                          <div className="space-y-2">
+                            <h4 className="text-md font-medium text-blue-400">Time Slot 1 (Primary)</h4>
+                            <div className="grid grid-cols-3 gap-4">
+                              <FormField
+                                control={form.control}
+                                name="personalTradingTimeStart1"
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormLabel className="text-white">Personal Trading Time Start - Time1</FormLabel>
+                                    <Select onValueChange={field.onChange} value={field.value || ""}>
+                                      <FormControl>
+                                        <SelectTrigger className="bg-gray-800 border-gray-600 text-white">
+                                          <SelectValue placeholder="--:-- --" />
+                                        </SelectTrigger>
+                                      </FormControl>
+                                      <SelectContent className="bg-gray-800 border-gray-600 max-h-60">
+                                        {Array.from({ length: 48 }, (_, i) => {
+                                          const hour = Math.floor(i / 2);
+                                          const minute = i % 2 === 0 ? "00" : "30";
+                                          const time = `${hour.toString().padStart(2, '0')}:${minute}`;
+                                          return (
+                                            <SelectItem key={time} value={time}>
+                                              {time}
+                                            </SelectItem>
+                                          );
+                                        })}
+                                      </SelectContent>
+                                    </Select>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+                              <FormField
+                                control={form.control}
+                                name="personalTradingTimeEnd1"
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormLabel className="text-white">Personal Trading Time End - Time1</FormLabel>
+                                    <Select onValueChange={field.onChange} value={field.value || ""}>
+                                      <FormControl>
+                                        <SelectTrigger className="bg-gray-800 border-gray-600 text-white">
+                                          <SelectValue placeholder="--:-- --" />
+                                        </SelectTrigger>
+                                      </FormControl>
+                                      <SelectContent className="bg-gray-800 border-gray-600 max-h-60">
+                                        {Array.from({ length: 48 }, (_, i) => {
+                                          const hour = Math.floor(i / 2);
+                                          const minute = i % 2 === 0 ? "00" : "30";
+                                          const time = `${hour.toString().padStart(2, '0')}:${minute}`;
+                                          return (
+                                            <SelectItem key={time} value={time}>
+                                              {time}
+                                            </SelectItem>
+                                          );
+                                        })}
+                                      </SelectContent>
+                                    </Select>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+                              <FormField
+                                control={form.control}
+                                name="personalTradingTimeZone1"
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormLabel className="text-white">Timezone</FormLabel>
+                                    <Select onValueChange={field.onChange} value={field.value || ""}>
+                                      <FormControl>
+                                        <SelectTrigger className="bg-gray-800 border-gray-600 text-white">
+                                          <SelectValue placeholder="Select timezone" />
+                                        </SelectTrigger>
+                                      </FormControl>
+                                      <SelectContent className="bg-gray-800 border-gray-600">
+                                        <SelectItem value="EST">EST - Eastern Standard Time</SelectItem>
+                                        <SelectItem value="CST">CST - Central Standard Time</SelectItem>
+                                        <SelectItem value="MST">MST - Mountain Standard Time</SelectItem>
+                                        <SelectItem value="PST">PST - Pacific Standard Time</SelectItem>
+                                        <SelectItem value="GMT">GMT - Greenwich Mean Time</SelectItem>
+                                        <SelectItem value="CET">CET - Central European Time</SelectItem>
+                                        <SelectItem value="JST">JST - Japan Standard Time</SelectItem>
+                                        <SelectItem value="AEST">AEST - Australian Eastern Standard Time</SelectItem>
+                                      </SelectContent>
+                                    </Select>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+                            </div>
+                          </div>
+
+                          {/* Time Slot 2 */}
+                          <div className="space-y-2">
+                            <h4 className="text-md font-medium text-green-400">Time Slot 2 (Secondary)</h4>
+                            <div className="grid grid-cols-3 gap-4">
+                              <FormField
+                                control={form.control}
+                                name="personalTradingTimeStart2"
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormLabel className="text-white">Personal Trading Time Start - Time2</FormLabel>
+                                    <Select onValueChange={field.onChange} value={field.value || ""}>
+                                      <FormControl>
+                                        <SelectTrigger className="bg-gray-800 border-gray-600 text-white">
+                                          <SelectValue placeholder="--:-- --" />
+                                        </SelectTrigger>
+                                      </FormControl>
+                                      <SelectContent className="bg-gray-800 border-gray-600 max-h-60">
+                                        {Array.from({ length: 48 }, (_, i) => {
+                                          const hour = Math.floor(i / 2);
+                                          const minute = i % 2 === 0 ? "00" : "30";
+                                          const time = `${hour.toString().padStart(2, '0')}:${minute}`;
+                                          return (
+                                            <SelectItem key={time} value={time}>
+                                              {time}
+                                            </SelectItem>
+                                          );
+                                        })}
+                                      </SelectContent>
+                                    </Select>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+                              <FormField
+                                control={form.control}
+                                name="personalTradingTimeEnd2"
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormLabel className="text-white">Personal Trading Time End - Time2</FormLabel>
+                                    <Select onValueChange={field.onChange} value={field.value || ""}>
+                                      <FormControl>
+                                        <SelectTrigger className="bg-gray-800 border-gray-600 text-white">
+                                          <SelectValue placeholder="--:-- --" />
+                                        </SelectTrigger>
+                                      </FormControl>
+                                      <SelectContent className="bg-gray-800 border-gray-600 max-h-60">
+                                        {Array.from({ length: 48 }, (_, i) => {
+                                          const hour = Math.floor(i / 2);
+                                          const minute = i % 2 === 0 ? "00" : "30";
+                                          const time = `${hour.toString().padStart(2, '0')}:${minute}`;
+                                          return (
+                                            <SelectItem key={time} value={time}>
+                                              {time}
+                                            </SelectItem>
+                                          );
+                                        })}
+                                      </SelectContent>
+                                    </Select>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+                              <FormField
+                                control={form.control}
+                                name="personalTradingTimeZone2"
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormLabel className="text-white">Timezone</FormLabel>
+                                    <Select onValueChange={field.onChange} value={field.value || ""}>
+                                      <FormControl>
+                                        <SelectTrigger className="bg-gray-800 border-gray-600 text-white">
+                                          <SelectValue placeholder="Select timezone" />
+                                        </SelectTrigger>
+                                      </FormControl>
+                                      <SelectContent className="bg-gray-800 border-gray-600">
+                                        <SelectItem value="EST">EST - Eastern Standard Time</SelectItem>
+                                        <SelectItem value="CST">CST - Central Standard Time</SelectItem>
+                                        <SelectItem value="MST">MST - Mountain Standard Time</SelectItem>
+                                        <SelectItem value="PST">PST - Pacific Standard Time</SelectItem>
+                                        <SelectItem value="GMT">GMT - Greenwich Mean Time</SelectItem>
+                                        <SelectItem value="CET">CET - Central European Time</SelectItem>
+                                        <SelectItem value="JST">JST - Japan Standard Time</SelectItem>
+                                        <SelectItem value="AEST">AEST - Australian Eastern Standard Time</SelectItem>
+                                      </SelectContent>
+                                    </Select>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+                            </div>
+                          </div>
                         </div>
                       </TabsContent>
                     </Tabs>

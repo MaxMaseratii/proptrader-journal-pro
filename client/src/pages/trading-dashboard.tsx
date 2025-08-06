@@ -306,6 +306,10 @@ export default function CompleteTradingDashboard() {
     setIsCreateDialogOpen(false);
   };
 
+  const deleteStrategy = (strategyId) => {
+    setStrategies(prev => prev.filter(strategy => strategy.id !== strategyId));
+  };
+
   const getStrategyMetrics = (strategy) => {
     const winRate = strategy.performance.trades > 0 ? 
       (strategy.performance.wins / strategy.performance.trades * 100).toFixed(1) : 
