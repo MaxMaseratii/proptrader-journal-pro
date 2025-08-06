@@ -16,6 +16,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import type { Account, Trade } from '@shared/schema';
+import { insertAccountSchema, type InsertAccount } from '@shared/schema';
 import { useToast } from '@/hooks/use-toast';
 import { apiRequest } from '@/lib/queryClient';
 import { formatCurrency, formatPercentage } from '@/lib/utils';
@@ -30,58 +31,7 @@ import {
   EyeOff
 } from 'lucide-react';
 
-// Create a comprehensive schema for account forms matching the database schema
-const accountFormSchema = z.object({
-  name: z.string().min(1, 'Account name is required'),
-  type: z.string().min(1, 'Account type is required'),
-  firm: z.string().min(1, 'Firm name is required'),
-  status: z.string().optional(),
-  startingBalance: z.number().min(0, 'Starting balance must be positive'),
-  profitTarget: z.number().min(0, 'Profit target must be positive'),
-  maxDrawdown: z.number().min(0, 'Max drawdown must be positive'),
-  minimumTradingDays: z.number().optional().nullable(),
-  timeLimit: z.number().optional().nullable(),
 
-  hasDailyLossLimit: z.boolean().optional(),
-  accountCost: z.number().optional().nullable(),
-  paymentMethod: z.string().optional().nullable(),
-  resetCount: z.number().optional(),
-  totalResetsCost: z.number().optional(),
-  profitSplit: z.number().optional().nullable(),
-  activationPaid: z.boolean().optional(),
-  includesActivationFee: z.boolean().optional(),
-  riskPerTrade: z.number().optional().nullable(),
-  riskPerTradeDivider: z.number().optional().nullable(),
-  dailyLossLimit: z.number().optional().nullable(),
-  maxTradesPerDay: z.number().optional().nullable(),
-  riskRewardRatio: z.number().optional().nullable(),
-  minimumPayoutAmount: z.number().optional().nullable(),
-  maxNetBalanceForPayout: z.number().optional().nullable(),
-  personalTradingTimeStart1: z.string().optional().nullable(),
-  personalTradingTimeEnd1: z.string().optional().nullable(),
-  personalTradingTimeZone1: z.string().optional().nullable(),
-  personalTradingTimeStart2: z.string().optional().nullable(),
-  personalTradingTimeEnd2: z.string().optional().nullable(),
-  personalTradingTimeZone2: z.string().optional().nullable(),
-  personalTradingTimeStart3: z.string().optional().nullable(),
-  personalTradingTimeEnd3: z.string().optional().nullable(),
-  personalTradingTimeZone3: z.string().optional().nullable(),
-  activationCost: z.number().optional().nullable(),
-  purchaseMethod: z.string().optional().nullable(),
-  maxRiskPerDay: z.number().optional().nullable(),
-  primaryAsset: z.string().optional().nullable(),
-  secondaryAsset: z.string().optional().nullable(),
-  tertiaryAsset: z.string().optional().nullable(),
-  consistencyRulePercent: z.number().optional().nullable(),
-  dailyWorkingHours: z.number().optional().nullable(),
-  hourlyWages: z.number().optional().nullable(),
-  liveAccountAvailable: z.boolean().optional(),
-  allowChallengePayouts: z.boolean().optional(),
-  copyTradingAllowed: z.boolean().optional(),
-  newsTradingAllowed: z.boolean().optional(),
-});
-
-type AccountFormData = z.infer<typeof accountFormSchema>;
 
 interface AccountMetrics {
   totalPnL: number;
@@ -110,86 +60,67 @@ export default function AccountManagement() {
     queryKey: ['/api/trades'],
   });
 
-  const form = useForm<AccountFormData>({
-    resolver: zodResolver(accountFormSchema),
-    defaultValues: {
-      name: '',
-      type: 'challenge',
-      firm: '',
-      status: 'active',
-      startingBalance: 0,
-      profitTarget: 0,
-      maxDrawdown: 0,
-      minimumTradingDays: null,
-      timeLimit: null,
-
-      hasDailyLossLimit: false,
-      accountCost: null,
-      paymentMethod: null,
-      resetCount: 0,
-      totalResetsCost: 0,
-      profitSplit: null,
-      activationPaid: false,
-      includesActivationFee: false,
-      riskPerTrade: null,
-      riskPerTradeDivider: null,
-      dailyLossLimit: null,
-      maxTradesPerDay: null,
-      riskRewardRatio: null,
-      minimumPayoutAmount: null,
-      maxNetBalanceForPayout: null,
-      personalTradingTimeStart1: null,
-      personalTradingTimeEnd1: null,
-      personalTradingTimeZone1: null,
-      personalTradingTimeStart2: null,
-      personalTradingTimeEnd2: null,
-      personalTradingTimeZone2: null,
-      personalTradingTimeStart3: null,
-      personalTradingTimeEnd3: null,
-      personalTradingTimeZone3: null,
-      activationCost: null,
-      purchaseMethod: null,
-      maxRiskPerDay: null,
-      primaryAsset: null,
-      secondaryAsset: null,
-      tertiaryAsset: null,
-      consistencyRulePercent: null,
-      dailyWorkingHours: 8.0,
-      hourlyWages: 25.0,
-      liveAccountAvailable: false,
-      allowChallengePayouts: false,
-      copyTradingAllowed: true,
-      newsTradingAllowed: true,
-    },
-  });
-
-  // Watch form values for real-time calculations
-  const watchedValues = form.watch();
-
+  // Create account mutation
   const createAccountMutation = useMutation({
-    mutationFn: async (data: AccountFormData) => {
-      return apiRequest('/api/accounts', 'POST', data);
-    },
+    mutationFn: (data: InsertAccount) => apiRequest('/api/accounts', 'POST', data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/accounts'] });
       setIsCreateDialogOpen(false);
       form.reset();
       toast({
-        title: 'Account Created',
-        description: 'Your trading account has been created successfully.',
-      });
-    },
-    onError: (error: any) => {
-      toast({
-        title: 'Error',
-        description: error.message || 'Failed to create account.',
-        variant: 'destructive',
+        title: "Account Created",
+        description: "Your trading account has been created successfully."
       });
     },
   });
 
+  const form = useForm<InsertAccount>({
+    resolver: zodResolver(insertAccountSchema.extend({
+      primaryAsset: insertAccountSchema.shape.primaryAsset,
+      secondaryAsset: insertAccountSchema.shape.secondaryAsset,
+      tertiaryAsset: insertAccountSchema.shape.tertiaryAsset,
+    })),
+    defaultValues: {
+      name: "",
+      firm: "",
+      type: "challenge",
+      status: "active",
+      startingBalance: 0,
+      currentBalance: 0,
+      profitTarget: 0,
+      maxDrawdown: 0,
+      dailyLossLimit: 0,
+      accountCost: null,
+      monthlyFee: null,
+      profitSplit: null,
+      platformFee: null,
+      minimumPayoutAmount: null,
+      payoutFrequency: null,
+      daysRequiredForPayout: null,
+      consistencyRulePercent: null,
+      dailyWorkingHours: null,
+      hourlyWages: null,
+      liveAccountAvailable: false,
+      allowChallengePayouts: false,
+      copyTradingAllowed: false,
+      newsTradingAllowed: false,
+      riskPerTrade: null,
+      maxTradesPerDay: null,
+      maxRiskPerDay: null,
+      riskRewardRatio: null,
+      primaryAsset: null,
+      secondaryAsset: null,
+      tertiaryAsset: null,
+    },
+  });
+
+  // Watch form values for real-time calculations - EXACT COPY FROM DASHBOARD
+  const watchedValues = form.watch();
+
+
+
   const updateAccountMutation = useMutation({
-    mutationFn: async ({ id, data }: { id: number; data: Partial<AccountFormData> }) => {
+    mutationFn: async ({ id, data }: { id: number; data: Partial<InsertAccount> }) => {
       return apiRequest(`/api/accounts/${id}`, 'PATCH', data);
     },
     onSuccess: () => {
@@ -261,7 +192,7 @@ export default function AccountManagement() {
     };
   };
 
-  const handleCreateAccount = (data: AccountFormData) => {
+  const handleCreateAccount = (data: InsertAccount) => {
     createAccountMutation.mutate(data);
   };
 
@@ -279,7 +210,7 @@ export default function AccountManagement() {
     setIsEditDialogOpen(true);
   };
 
-  const handleUpdateAccount = (data: AccountFormData) => {
+  const handleUpdateAccount = (data: InsertAccount) => {
     if (!editingAccount) return;
     updateAccountMutation.mutate({ id: editingAccount.id, data });
   };
@@ -342,7 +273,7 @@ export default function AccountManagement() {
               </DialogHeader>
               <ScrollArea className="max-h-[80vh] px-6">
                 <Form {...form}>
-                  <form onSubmit={form.handleSubmit(handleCreateAccount)} className="space-y-6">
+                  <form onSubmit={form.handleSubmit((data) => createAccountMutation.mutate(data))} className="space-y-6">
                     <Tabs defaultValue="basic" className="w-full">
                       <TabsList className="grid w-full grid-cols-3 bg-gray-800">
                         <TabsTrigger value="basic">Basic Info</TabsTrigger>
@@ -553,8 +484,6 @@ export default function AccountManagement() {
                             )}
                           />
                         </div>
-
-
 
                         <div className="grid grid-cols-2 gap-4 mb-6">
                           <FormField
