@@ -72,8 +72,8 @@ function Router() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-900 flex items-center justify-center">
-        <div className="text-white text-xl">Loading...</div>
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-foreground text-xl">Loading...</div>
       </div>
     );
   }
@@ -87,12 +87,7 @@ function Router() {
             return null;
           }}
         </Route>
-        <Route path="/auth">
-          {() => {
-            window.location.href = '/auth.html';
-            return null;
-          }}
-        </Route>
+        <Route path="/auth" component={AuthPage} />
         <Route path="/signup" component={Signup} />
         <Route path="/welcome" component={Welcome} />
         <Route path="/privacy-policy" component={PrivacyPolicy} />
@@ -106,9 +101,9 @@ function Router() {
   }
 
   return (
-    <div className="flex h-screen bg-gray-900 text-white">
+    <div className="flex h-screen bg-background text-foreground">
       <Sidebar />
-      <main className="flex-1 overflow-y-auto bg-gray-900">
+      <main className="flex-1 overflow-y-auto bg-background">
         <Switch>
           <Route path="/" component={Dashboard} />
           <Route path="/dashboard-simple" component={DashboardShowcase} />

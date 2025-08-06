@@ -84,7 +84,7 @@ export default function Sidebar() {
 
   return (
     <aside className={cn(
-      "bg-gray-900 border-r border-prop-gold/20 flex-shrink-0 transition-all duration-300 ease-in-out relative",
+      "bg-background border-r border-prop-gold/20 flex-shrink-0 transition-all duration-300 ease-in-out relative",
       isCollapsed ? "w-16" : isPartiallyCollapsed ? "w-20" : "w-64"
     )}>
       <div className="p-6 border-b border-prop-gold/20">
@@ -97,8 +97,8 @@ export default function Sidebar() {
           </Link>
           {!isCollapsed && !isPartiallyCollapsed && (
             <div>
-              <h1 className="text-lg font-bold text-white">#1 PropFirm Trader's Journal</h1>
-              <p className="text-xs text-gray-400">PropTrader Journal</p>
+              <h1 className="text-lg font-bold text-foreground">#1 PropFirm Trader's Journal</h1>
+              <p className="text-xs text-muted-foreground">PropTrader Journal</p>
             </div>
           )}
         </div>
@@ -110,7 +110,7 @@ export default function Sidebar() {
         size="sm"
         onClick={handleToggleCollapse}
         className={cn(
-          "absolute top-4 -right-3 z-10 h-6 w-6 p-0 rounded-full bg-gray-800 border border-prop-gold/20 text-prop-gold hover:text-white hover:bg-prop-gold/20 hover:border-prop-gold/40 transition-all duration-200 shadow-md",
+          "absolute top-4 -right-3 z-10 h-6 w-6 p-0 rounded-full bg-card border border-prop-gold/20 text-prop-gold hover:text-foreground hover:bg-prop-gold/20 hover:border-prop-gold/40 transition-all duration-200 shadow-md",
           "flex items-center justify-center"
         )}
       >
@@ -132,18 +132,18 @@ export default function Sidebar() {
                 "flex items-center px-4 py-3 text-sm font-medium rounded-xl smooth-transition cursor-pointer group relative",
                 location === href 
                   ? "bg-prop-gradient-gold text-black font-bold" 
-                  : "text-gray-300 hover:bg-prop-card hover:text-prop-gold hover-scale",
+                  : "text-muted-foreground hover:bg-card hover:text-prop-gold hover-scale",
                 (isCollapsed || isPartiallyCollapsed) ? "justify-center" : ""
               )}>
                 <Icon className={cn(
                   "h-5 w-5 smooth-transition",
-                  location === href ? "text-black" : "text-gray-400 group-hover:text-prop-gold",
+                  location === href ? "text-black" : "text-muted-foreground group-hover:text-prop-gold",
                   !(isCollapsed || isPartiallyCollapsed) ? "mr-3" : ""
                 )} />
                 {!isCollapsed && !isPartiallyCollapsed && label}
                 {(isCollapsed || isPartiallyCollapsed) && (
                   <>
-                    <div className="absolute left-full ml-2 px-2 py-1 bg-gray-800 border border-prop-gold/20 rounded-md text-xs text-gray-300 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50 shadow-md">
+                    <div className="absolute left-full ml-2 px-2 py-1 bg-card border border-prop-gold/20 rounded-md text-xs text-foreground opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50 shadow-md">
                       {label}
                     </div>
                     {/* Show first letter of first menu item when collapsed */}
@@ -161,7 +161,7 @@ export default function Sidebar() {
         </ul>
         
         {/* Profile Section - Bottom with Separator */}
-        <div className="mt-auto border-t border-gray-700 pt-4">
+        <div className="mt-auto border-t border-border pt-4">
           <ul className="space-y-2 px-4">
             <li>
               <DropdownMenu>
@@ -170,17 +170,17 @@ export default function Sidebar() {
                     "w-full flex items-center px-4 py-3 text-sm font-medium rounded-xl smooth-transition cursor-pointer group relative",
                     location === "/profile" 
                       ? "bg-prop-gradient-gold text-black font-bold" 
-                      : "text-gray-300 hover:bg-prop-card hover:text-prop-gold hover-scale",
+                      : "text-muted-foreground hover:bg-card hover:text-prop-gold hover-scale",
                     (isCollapsed || isPartiallyCollapsed) ? "justify-center" : ""
                   )}>
                     <User className={cn(
                       "h-5 w-5 smooth-transition",
-                      location === "/profile" ? "text-black" : "text-gray-400 group-hover:text-prop-gold",
+                      location === "/profile" ? "text-black" : "text-muted-foreground group-hover:text-prop-gold",
                       !(isCollapsed || isPartiallyCollapsed) ? "mr-3" : ""
                     )} />
                     {!isCollapsed && !isPartiallyCollapsed && "Profile"}
                     {(isCollapsed || isPartiallyCollapsed) && (
-                      <div className="absolute left-full ml-2 px-2 py-1 bg-gray-800 border border-prop-gold/20 rounded-md text-xs text-gray-300 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50 shadow-md">
+                      <div className="absolute left-full ml-2 px-2 py-1 bg-card border border-prop-gold/20 rounded-md text-xs text-foreground opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50 shadow-md">
                         Profile
                       </div>
                     )}
@@ -188,7 +188,7 @@ export default function Sidebar() {
                 </DropdownMenuTrigger>
                 
                 <DropdownMenuContent 
-                  className="w-64 bg-gray-800 border-prop-gold/20 shadow-xl" 
+                  className="w-64 bg-card border-prop-gold/20 shadow-xl" 
                   align="start"
                   side="right"
                 >
@@ -196,7 +196,7 @@ export default function Sidebar() {
                   <DropdownMenuSeparator className="bg-prop-gold/20" />
                   
                   <DropdownMenuItem 
-                    className="text-gray-300 hover:bg-gray-700 cursor-pointer"
+                    className="text-foreground hover:bg-muted cursor-pointer"
                     onClick={() => window.location.href = '/profile'}
                   >
                     <User className="mr-2 h-4 w-4 text-blue-400" />
@@ -204,7 +204,7 @@ export default function Sidebar() {
                   </DropdownMenuItem>
                   
                   <DropdownMenuItem 
-                    className="text-gray-300 hover:bg-gray-700 cursor-pointer"
+                    className="text-foreground hover:bg-muted cursor-pointer"
                     onClick={() => window.location.href = '/billing'}
                   >
                     <Activity className="mr-2 h-4 w-4 text-green-400" />
@@ -212,7 +212,7 @@ export default function Sidebar() {
                   </DropdownMenuItem>
                   
                   <DropdownMenuItem 
-                    className="text-gray-300 hover:bg-gray-700 cursor-pointer"
+                    className="text-foreground hover:bg-muted cursor-pointer"
                     onClick={toggleTheme}
                   >
                     {theme === 'dark' ? (
@@ -226,7 +226,7 @@ export default function Sidebar() {
                   <DropdownMenuSeparator className="bg-prop-gold/20" />
                   
                   <DropdownMenuItem 
-                    className="text-gray-300 hover:bg-gray-700 cursor-pointer"
+                    className="text-foreground hover:bg-muted cursor-pointer"
                     onClick={() => window.location.href = '/knowledge-base'}
                   >
                     <BookOpen className="mr-2 h-4 w-4 text-blue-400" />
@@ -234,7 +234,7 @@ export default function Sidebar() {
                   </DropdownMenuItem>
                   
                   <DropdownMenuItem 
-                    className="text-gray-300 hover:bg-gray-700 cursor-pointer"
+                    className="text-foreground hover:bg-muted cursor-pointer"
                     onClick={() => window.location.href = '/support'}
                   >
                     <Shield className="mr-2 h-4 w-4 text-green-400" />
@@ -242,7 +242,7 @@ export default function Sidebar() {
                   </DropdownMenuItem>
                   
                   <DropdownMenuItem 
-                    className="text-gray-300 hover:bg-gray-700 cursor-pointer"
+                    className="text-foreground hover:bg-muted cursor-pointer"
                     onClick={() => window.location.href = '/terms'}
                   >
                     <FileText className="mr-2 h-4 w-4 text-yellow-400" />
@@ -250,7 +250,7 @@ export default function Sidebar() {
                   </DropdownMenuItem>
                   
                   <DropdownMenuItem 
-                    className="text-gray-300 hover:bg-gray-700 cursor-pointer"
+                    className="text-foreground hover:bg-muted cursor-pointer"
                     onClick={() => window.location.href = '/privacy'}
                   >
                     <Shield className="mr-2 h-4 w-4 text-purple-400" />

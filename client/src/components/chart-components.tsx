@@ -1,4 +1,5 @@
 import { useEffect, useRef } from "react";
+import { useTheme } from '@/contexts/ThemeContext';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -35,6 +36,7 @@ interface EquityChartProps {
 export function EquityChart({ data }: EquityChartProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const chartRef = useRef<ChartJS | null>(null);
+  const { theme } = useTheme();
 
   useEffect(() => {
     if (!canvasRef.current) return;
@@ -47,6 +49,18 @@ export function EquityChart({ data }: EquityChartProps) {
     const ctx = canvasRef.current.getContext('2d');
     if (!ctx) return;
 
+    // Theme-aware colors
+    const isLight = theme === 'light';
+    const colors = {
+      borderColor: isLight ? '#1976D2' : '#B78E35',
+      backgroundColor: isLight ? 'rgba(25, 118, 210, 0.1)' : 'rgba(183, 142, 53, 0.1)',
+      gridColor: isLight ? '#E0E0E0' : '#404040',
+      textColor: isLight ? '#666666' : '#B0B0B0',
+      tooltipBg: isLight ? '#FFFFFF' : '#2D2D2D',
+      tooltipText: isLight ? '#000000' : '#FFFFFF',
+      tooltipBorder: isLight ? '#E0E0E0' : '#404040'
+    };
+
     chartRef.current = new ChartJS(ctx, {
       type: 'line',
       data: {
@@ -54,8 +68,8 @@ export function EquityChart({ data }: EquityChartProps) {
         datasets: [{
           label: 'Account Balance',
           data: data.map(d => d.balance),
-          borderColor: '#1976D2',
-          backgroundColor: 'rgba(25, 118, 210, 0.1)',
+          borderColor: colors.borderColor,
+          backgroundColor: colors.backgroundColor,
           tension: 0.4,
           fill: true,
         }]
@@ -68,10 +82,10 @@ export function EquityChart({ data }: EquityChartProps) {
             display: false
           },
           tooltip: {
-            backgroundColor: '#2D2D2D',
-            titleColor: '#FFFFFF',
-            bodyColor: '#FFFFFF',
-            borderColor: '#404040',
+            backgroundColor: colors.tooltipBg,
+            titleColor: colors.tooltipText,
+            bodyColor: colors.tooltipText,
+            borderColor: colors.tooltipBorder,
             borderWidth: 1,
             callbacks: {
               label: function(context) {
@@ -83,18 +97,18 @@ export function EquityChart({ data }: EquityChartProps) {
         scales: {
           x: {
             grid: {
-              color: '#404040'
+              color: colors.gridColor
             },
             ticks: {
-              color: '#B0B0B0'
+              color: colors.textColor
             }
           },
           y: {
             grid: {
-              color: '#404040'
+              color: colors.gridColor
             },
             ticks: {
-              color: '#B0B0B0',
+              color: colors.textColor,
               callback: function(value) {
                 return '$' + (value as number).toLocaleString();
               }
@@ -109,7 +123,7 @@ export function EquityChart({ data }: EquityChartProps) {
         chartRef.current.destroy();
       }
     };
-  }, [data]);
+  }, [data, theme]);
 
   return <canvas ref={canvasRef} />;
 }
@@ -121,6 +135,7 @@ interface MonthlyPerformanceChartProps {
 export function MonthlyPerformanceChart({ data }: MonthlyPerformanceChartProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const chartRef = useRef<ChartJS | null>(null);
+  const { theme } = useTheme();
 
   useEffect(() => {
     if (!canvasRef.current) return;
@@ -133,6 +148,18 @@ export function MonthlyPerformanceChart({ data }: MonthlyPerformanceChartProps) 
     const ctx = canvasRef.current.getContext('2d');
     if (!ctx) return;
 
+    // Theme-aware colors
+    const isLight = theme === 'light';
+    const colors = {
+      positiveColor: isLight ? '#28a745' : '#4ade80',
+      negativeColor: isLight ? '#dc3545' : '#f87171',
+      gridColor: isLight ? '#E0E0E0' : '#404040',
+      textColor: isLight ? '#666666' : '#B0B0B0',
+      tooltipBg: isLight ? '#FFFFFF' : '#2D2D2D',
+      tooltipText: isLight ? '#000000' : '#FFFFFF',
+      tooltipBorder: isLight ? '#E0E0E0' : '#404040'
+    };
+
     chartRef.current = new ChartJS(ctx, {
       type: 'bar',
       data: {
@@ -140,7 +167,7 @@ export function MonthlyPerformanceChart({ data }: MonthlyPerformanceChartProps) 
         datasets: [{
           label: 'Monthly P&L',
           data: data.map(d => d.pnl),
-          backgroundColor: data.map(d => d.pnl >= 0 ? '#4CAF50' : '#F44336'),
+          backgroundColor: data.map(d => d.pnl >= 0 ? colors.positiveColor : colors.negativeColor),
           borderRadius: 4,
         }]
       },
@@ -152,10 +179,10 @@ export function MonthlyPerformanceChart({ data }: MonthlyPerformanceChartProps) 
             display: false
           },
           tooltip: {
-            backgroundColor: '#2D2D2D',
-            titleColor: '#FFFFFF',
-            bodyColor: '#FFFFFF',
-            borderColor: '#404040',
+            backgroundColor: colors.tooltipBg,
+            titleColor: colors.tooltipText,
+            bodyColor: colors.tooltipText,
+            borderColor: colors.tooltipBorder,
             borderWidth: 1,
             callbacks: {
               label: function(context) {
@@ -170,15 +197,15 @@ export function MonthlyPerformanceChart({ data }: MonthlyPerformanceChartProps) 
               display: false
             },
             ticks: {
-              color: '#B0B0B0'
+              color: colors.textColor
             }
           },
           y: {
             grid: {
-              color: '#404040'
+              color: colors.gridColor
             },
             ticks: {
-              color: '#B0B0B0',
+              color: colors.textColor,
               callback: function(value) {
                 return '$' + (value as number).toLocaleString();
               }
@@ -193,7 +220,7 @@ export function MonthlyPerformanceChart({ data }: MonthlyPerformanceChartProps) 
         chartRef.current.destroy();
       }
     };
-  }, [data]);
+  }, [data, theme]);
 
   return <canvas ref={canvasRef} />;
 }
