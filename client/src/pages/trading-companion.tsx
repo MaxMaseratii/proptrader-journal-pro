@@ -155,9 +155,9 @@ export default function TradingCompanion() {
 
       <div className="grid gap-6">
         {/* Quick Actions */}
-        <Card className="bg-prop-card border-prop-gold/20">
+        <Card className="widget-bg border-prop-gold/20">
           <CardHeader>
-            <CardTitle className="text-prop-gold flex items-center">
+            <CardTitle className="widget-header flex items-center">
               <Lightbulb className="h-5 w-5 mr-2" />
               Quick Actions
             </CardTitle>
@@ -183,9 +183,9 @@ export default function TradingCompanion() {
         </Card>
 
         {/* Chat Interface */}
-        <Card className="bg-prop-card border-prop-gold/20">
+        <Card className="widget-bg border-prop-gold/20">
           <CardHeader className="pb-4">
-            <CardTitle className="text-prop-gold flex items-center">
+            <CardTitle className="widget-header flex items-center">
               <MessageSquare className="h-5 w-5 mr-2" />
               Chat with Marthy
             </CardTitle>
@@ -203,7 +203,7 @@ export default function TradingCompanion() {
                       className={`max-w-[80%] rounded-lg p-3 ${
                         message.role === 'user'
                           ? 'bg-prop-gold text-black'
-                          : 'bg-dark-surface border border-prop-gold/20'
+                          : 'widget-bg border border-prop-gold/20 widget-text'
                       }`}
                     >
                       <div className="flex items-start space-x-2">
@@ -214,10 +214,10 @@ export default function TradingCompanion() {
                           <User className="h-4 w-4 text-black mt-1 flex-shrink-0" />
                         )}
                         <div className="flex-1">
-                          <p className={`text-sm ${message.role === 'user' ? 'text-black' : 'text-white'}`}>
+                          <p className={`text-sm ${message.role === 'user' ? 'text-black' : 'widget-text'}`}>
                             {message.content}
                           </p>
-                          <p className={`text-xs mt-1 ${message.role === 'user' ? 'text-black/60' : 'text-gray-400'}`}>
+                          <p className={`text-xs mt-1 ${message.role === 'user' ? 'text-black/60' : 'widget-text opacity-70'}`}>
                             {message.timestamp.toLocaleTimeString()}
                           </p>
                         </div>
@@ -228,7 +228,7 @@ export default function TradingCompanion() {
                 
                 {isTyping && (
                   <div className="flex justify-start">
-                    <div className="bg-dark-surface border border-prop-gold/20 rounded-lg p-3">
+                    <div className="widget-bg border border-prop-gold/20 rounded-lg p-3">
                       <div className="flex items-center space-x-2">
                         <Bot className="h-4 w-4 text-prop-gold" />
                         <div className="flex space-x-1">
@@ -253,7 +253,7 @@ export default function TradingCompanion() {
                 onChange={(e) => setInputMessage(e.target.value)}
                 onKeyPress={handleKeyPress}
                 placeholder="Ask Marthy about your trading performance, risk management, or get advice..."
-                className="flex-1 bg-dark-surface border-prop-gold/30 text-white placeholder:text-gray-400"
+                className="flex-1 widget-bg border-prop-gold/30 widget-text placeholder:text-gray-400"
                 disabled={chatMutation.isPending}
               />
               <Button
@@ -268,34 +268,34 @@ export default function TradingCompanion() {
         </Card>
 
         {/* Performance Insights */}
-        <Card className="bg-prop-card border-prop-gold/20">
+        <Card className="widget-bg border-prop-gold/20">
           <CardHeader>
-            <CardTitle className="text-prop-gold flex items-center">
+            <CardTitle className="widget-header flex items-center">
               <Brain className="h-5 w-5 mr-2" />
               Marthy's Quick Insights
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="grid md:grid-cols-3 gap-4">
-              <div className="text-center p-4 bg-dark-surface rounded-lg border border-prop-gold/20">
+              <div className="text-center p-4 widget-bg rounded-lg border border-prop-gold/20">
                 <TrendingUp className="h-8 w-8 text-success-green mx-auto mb-2" />
-                <p className="text-sm text-gray-400">Recent Streak</p>
-                <p className="text-lg font-bold text-white">
+                <p className="text-sm widget-text opacity-70">Recent Streak</p>
+                <p className="text-lg font-bold widget-text">
                   {trades.slice(-5).filter(t => t.pnl > 0).length}/5 Wins
                 </p>
               </div>
               
-              <div className="text-center p-4 bg-dark-surface rounded-lg border border-prop-gold/20">
+              <div className="text-center p-4 widget-bg rounded-lg border border-prop-gold/20">
                 <Target className="h-8 w-8 text-prop-gold mx-auto mb-2" />
-                <p className="text-sm text-gray-400">Win Rate</p>
-                <p className="text-lg font-bold text-white">
+                <p className="text-sm widget-text opacity-70">Win Rate</p>
+                <p className="text-lg font-bold widget-text">
                   {trades.length > 0 ? Math.round((trades.filter(t => t.pnl > 0).length / trades.length) * 100) : 0}%
                 </p>
               </div>
               
-              <div className="text-center p-4 bg-dark-surface rounded-lg border border-prop-gold/20">
+              <div className="text-center p-4 widget-bg rounded-lg border border-prop-gold/20">
                 <BarChart3 className="h-8 w-8 text-primary-purple mx-auto mb-2" />
-                <p className="text-sm text-gray-400">Recent P&L</p>
+                <p className="text-sm widget-text opacity-70">Recent P&L</p>
                 <p className={`text-lg font-bold ${trades.slice(-10).reduce((sum, t) => sum + t.pnl, 0) >= 0 ? 'text-success-green' : 'text-error-red'}`}>
                   {formatCurrency(trades.slice(-10).reduce((sum, t) => sum + t.pnl, 0))}
                 </p>

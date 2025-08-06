@@ -149,7 +149,7 @@ export default function AccountManagement({ accounts }: AccountManagementProps) 
 
   const deleteAccountMutation = useMutation({
     mutationFn: async (id: number) => {
-      return apiRequest("DELETE", `/api/accounts/${id}`, {});
+      return apiRequest(`/api/accounts/${id}`, "DELETE", {});
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/accounts'] });
