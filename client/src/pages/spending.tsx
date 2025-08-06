@@ -356,7 +356,7 @@ const Spending = () => {
             <div className="text-2xl font-bold text-red-400 widget-value">
               {formatCurrency(accounts.reduce((sum, acc) => sum + (acc.totalResetsCost || 0), 0))}
             </div>
-            <p className="text-xs text-gray-400">Total reset costs</p>
+            <p className="text-xs widget-text opacity-70">Total reset costs</p>
           </CardContent>
         </Card>
 
@@ -369,7 +369,7 @@ const Spending = () => {
             <div className="text-2xl font-bold text-green-400 widget-value">
               {formatCurrency(0)}
             </div>
-            <p className="text-xs text-gray-400">Total payouts received</p>
+            <p className="text-xs widget-text opacity-70">Total payouts received</p>
           </CardContent>
         </Card>
 
@@ -382,7 +382,7 @@ const Spending = () => {
             <div className={`text-2xl font-bold widget-value ${(0 - totalPropTradingCosts) >= 0 ? 'text-green-400' : 'text-red-400'}`}>
               {formatCurrency(0 - totalPropTradingCosts)}
             </div>
-            <p className="text-xs text-gray-400">Net profit/loss</p>
+            <p className="text-xs widget-text opacity-70">Net profit/loss</p>
           </CardContent>
         </Card>
       </div>
@@ -413,53 +413,53 @@ const Spending = () => {
               </DialogTrigger>
               <DialogContent className="max-w-2xl widget-card">
                 <DialogHeader>
-                  <DialogTitle className="text-white">
+                  <DialogTitle className="widget-text">
                     {!activeBudgetPlan ? "Create New Budget Plan" : "Update Budget Plan"}
                   </DialogTitle>
                 </DialogHeader>
                 <div className="space-y-4">
                   <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                     <div className="space-y-2">
-                      <Label className="text-white">Budget Period</Label>
+                      <Label className="widget-text">Budget Period</Label>
                       <Select value={budgetSetup.period} onValueChange={(value) => setBudgetSetup({...budgetSetup, period: value})}>
-                        <SelectTrigger className="bg-gray-800 border-yellow-400/20 text-white">
+                        <SelectTrigger className="widget-bg border-yellow-400/20 widget-text">
                           <SelectValue />
                         </SelectTrigger>
-                        <SelectContent className="bg-gray-800 border-yellow-400/20">
-                          <SelectItem value="weekly" className="text-white hover:bg-gray-700">Weekly</SelectItem>
-                          <SelectItem value="monthly" className="text-white hover:bg-gray-700">Monthly</SelectItem>
-                          <SelectItem value="yearly" className="text-white hover:bg-gray-700">Yearly</SelectItem>
+                        <SelectContent className="widget-bg border-yellow-400/20">
+                          <SelectItem value="weekly" className="widget-text hover:bg-prop-gold/20">Weekly</SelectItem>
+                          <SelectItem value="monthly" className="widget-text hover:bg-prop-gold/20">Monthly</SelectItem>
+                          <SelectItem value="yearly" className="widget-text hover:bg-prop-gold/20">Yearly</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
                     <div className="space-y-2">
-                      <Label className="text-white">Total Budget</Label>
+                      <Label className="widget-text">Total Budget</Label>
                       <Input
                         type="number"
                         placeholder="Total monthly budget"
                         value={budgetSetup.totalBudget}
                         onChange={(e) => setBudgetSetup({...budgetSetup, totalBudget: e.target.value})}
-                        className="bg-gray-800 border-yellow-400/20 text-white"
+                        className="widget-bg border-yellow-400/20 widget-text"
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label className="text-white">Trading Budget</Label>
+                      <Label className="widget-text">Trading Budget</Label>
                       <Input
                         type="number"
                         placeholder="Budget for trading"
                         value={budgetSetup.tradingBudget}
                         onChange={(e) => setBudgetSetup({...budgetSetup, tradingBudget: e.target.value})}
-                        className="bg-gray-800 border-yellow-400/20 text-white"
+                        className="widget-bg border-yellow-400/20 widget-text"
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label className="text-white">Personal Budget</Label>
+                      <Label className="widget-text">Personal Budget</Label>
                       <Input
                         type="number"
                         placeholder="Personal expenses budget"
                         value={budgetSetup.personalBudget}
                         onChange={(e) => setBudgetSetup({...budgetSetup, personalBudget: e.target.value})}
-                        className="bg-gray-800 border-yellow-400/20 text-white"
+                        className="widget-bg border-yellow-400/20 widget-text"
                       />
                     </div>
                   </div>
@@ -482,31 +482,31 @@ const Spending = () => {
                   Add Spending Entry
                 </Button>
               </DialogTrigger>
-              <DialogContent className="max-w-md bg-gray-900 border-gray-700">
+              <DialogContent className="max-w-md widget-bg border-prop-gold/20">
                 <DialogHeader>
-                  <DialogTitle className="text-white">Add New Expense</DialogTitle>
+                  <DialogTitle className="widget-text">Add New Expense</DialogTitle>
                 </DialogHeader>
                 <div className="space-y-4">
                   <div className="space-y-2">
-                    <Label htmlFor="amount" className="text-white">Amount</Label>
+                    <Label htmlFor="amount" className="widget-text">Amount</Label>
                     <Input
                       id="amount"
                       type="number"
                       placeholder="0.00"
                       value={newExpense.amount}
                       onChange={(e) => setNewExpense({...newExpense, amount: e.target.value})}
-                      className="bg-gray-800 border-yellow-400/20 text-white"
+                      className="widget-bg border-yellow-400/20 widget-text"
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="category" className="text-white">Category</Label>
+                    <Label htmlFor="category" className="widget-text">Category</Label>
                     <Select value={newExpense.category} onValueChange={(value) => setNewExpense({...newExpense, category: value})}>
-                      <SelectTrigger className="bg-gray-800 border-yellow-400/20 text-white">
+                      <SelectTrigger className="widget-bg border-yellow-400/20 widget-text">
                         <SelectValue placeholder="Select category" />
                       </SelectTrigger>
-                      <SelectContent className="bg-gray-800 border-yellow-400/20">
+                      <SelectContent className="widget-bg border-yellow-400/20">
                         {[...tradingCategories, ...personalCategories].map((category) => (
-                          <SelectItem key={category.id} value={category.name} className="text-white hover:bg-gray-700">
+                          <SelectItem key={category.id} value={category.name} className="widget-text hover:bg-prop-gold/20">
                             {category.name}
                           </SelectItem>
                         ))}
@@ -514,13 +514,13 @@ const Spending = () => {
                     </Select>
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="description" className="text-white">Description</Label>
+                    <Label htmlFor="description" className="widget-text">Description</Label>
                     <Textarea
                       id="description"
                       placeholder="What did you spend money on?"
                       value={newExpense.description}
                       onChange={(e) => setNewExpense({...newExpense, description: e.target.value})}
-                      className="bg-gray-800 border-yellow-400/20 text-white"
+                      className="widget-bg border-yellow-400/20 widget-text"
                     />
                   </div>
                   <Button 

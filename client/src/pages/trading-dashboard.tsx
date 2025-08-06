@@ -429,7 +429,7 @@ export default function CompleteTradingDashboard() {
         <CardContent className="space-y-8 p-6 flex-1 overflow-auto">
           {/* Mental State Assessment */}
           <div>
-            <h3 className="text-white font-semibold mb-4 text-lg">Mental State Assessment (Rate 1-5)</h3>
+            <h3 className="widget-text font-semibold mb-4 text-lg">Mental State Assessment (Rate 1-5)</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {[
                 { label: 'Emotional Clarity', key: 'emotionalClarity', desc: 'Calm vs. Anxious/Excited', icon: Heart, wisdom: 'Clarity breeds consistency' },
@@ -444,7 +444,7 @@ export default function CompleteTradingDashboard() {
                 <div key={key} className="space-y-3">
                   <div className="flex items-center gap-2">
                     <Icon className="w-5 h-5 text-amber-400" />
-                    <Label className="text-white font-medium">{label}</Label>
+                    <Label className="widget-text font-medium">{label}</Label>
                   </div>
                   <p className="text-blue-300 text-sm">{desc}</p>
                   <p className="text-purple-400 text-xs italic">{wisdom}</p>
@@ -474,7 +474,7 @@ export default function CompleteTradingDashboard() {
 
           {/* Overall Readiness Score */}
           <div className="text-center p-6 bg-gradient-to-br from-slate-900/50 to-slate-800/50 border border-blue-500/30 rounded-lg">
-            <h3 className="text-white font-semibold mb-2">Overall Readiness Score</h3>
+            <h3 className="widget-text font-semibold mb-2">Overall Readiness Score</h3>
             <div className="text-4xl font-bold mb-2">
               <span className={`${preSessionData.overallReadiness >= 32 ? 'text-green-400' : 
                                  preSessionData.overallReadiness >= 24 ? 'text-yellow-400' : 'text-red-400'}`}>
@@ -498,7 +498,7 @@ export default function CompleteTradingDashboard() {
 
           {/* Trader Identity Check */}
           <div>
-            <h3 className="text-white font-semibold mb-4 text-lg">I am trading today as a...</h3>
+            <h3 className="widget-text font-semibold mb-4 text-lg">I am trading today as a...</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {[
                 { id: 'disciplined_professional', label: 'Disciplined Professional', desc: 'Following rules, managing risk', icon: Shield },
@@ -517,7 +517,7 @@ export default function CompleteTradingDashboard() {
                 >
                   <CardContent className="p-4 text-center">
                     <Icon className="w-8 h-8 mx-auto mb-2 text-blue-400" />
-                    <h4 className="text-white font-medium">{label}</h4>
+                    <h4 className="widget-text font-medium">{label}</h4>
                     <p className="text-blue-300 text-sm mt-1">{desc}</p>
                   </CardContent>
                 </Card>
@@ -527,7 +527,7 @@ export default function CompleteTradingDashboard() {
 
           {/* Psychological Scan */}
           <div className="space-y-4">
-            <h3 className="text-white font-semibold text-lg">Quick Psychological Scan</h3>
+            <h3 className="widget-text font-semibold text-lg">Quick Psychological Scan</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <Label className="text-blue-300 mb-2 block">What's your biggest fear about today's trading?</Label>

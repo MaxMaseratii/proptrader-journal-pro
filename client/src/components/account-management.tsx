@@ -629,10 +629,10 @@ export default function AccountManagement({ accounts }: AccountManagementProps) 
                                   {/* Progress Bar */}
                                   <div className="mt-4">
                                     <div className="flex items-center justify-between mb-1">
-                                      <span className="text-xs text-gray-400">Plan Progress</span>
-                                      <span className="text-xs text-gray-400">{progressPercentage.toFixed(1)}%</span>
+                                      <span className="text-xs widget-text opacity-70">Plan Progress</span>
+                                      <span className="text-xs widget-text opacity-70">{progressPercentage.toFixed(1)}%</span>
                                     </div>
-                                    <div className="w-full bg-gray-700 rounded-full h-2">
+                                    <div className="w-full bg-prop-gold/20 rounded-full h-2">
                                       <div 
                                         className={`h-2 rounded-full transition-all duration-300 ${
                                           progressPercentage >= 100 ? 'bg-green-500' :
@@ -669,13 +669,13 @@ export default function AccountManagement({ accounts }: AccountManagementProps) 
                       <RotateCcw className="h-3 w-3" />
                     </Button>
                   </DialogTrigger>
-                  <DialogContent className="bg-gray-900 border-gray-700">
+                  <DialogContent className="widget-bg border-prop-gold/20">
                     <DialogHeader>
-                      <DialogTitle className="text-white flex items-center gap-2">
+                      <DialogTitle className="widget-text flex items-center gap-2">
                         <RotateCcw className="h-5 w-5 text-orange-400" />
                         Reset Account
                       </DialogTitle>
-                      <DialogDescription className="text-gray-300">
+                      <DialogDescription className="widget-text opacity-70">
                         This will restart your account balance and reset all P&L calculations.
                       </DialogDescription>
                     </DialogHeader>
@@ -687,16 +687,16 @@ export default function AccountManagement({ accounts }: AccountManagementProps) 
                         </p>
                       </div>
                       <div className="space-y-2">
-                        <Label className="text-gray-300">Reset Cost (optional)</Label>
+                        <Label className="widget-text">Reset Cost (optional)</Label>
                         <Input
                           type="number"
                           step="0.01"
                           value={resetCost}
                           onChange={(e) => setResetCost(parseFloat(e.target.value) || 0)}
-                          className="bg-gray-700 border-gray-600 text-white"
+                          className="widget-bg widget-text border-prop-gold/20"
                           placeholder="0.00"
                         />
-                        <p className="text-xs text-gray-400">
+                        <p className="text-xs widget-text opacity-70">
                           Enter the cost for resetting this account (if applicable)
                         </p>
                       </div>

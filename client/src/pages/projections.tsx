@@ -635,16 +635,16 @@ export default function Projections() {
                   {/* Copied Accounts for Simulation Mode */}
                   {settings.mode === 'simulation' && (
                     <div className="space-y-2">
-                      <Label className="text-white">Number of Copied Accounts</Label>
+                      <Label className="widget-text">Number of Copied Accounts</Label>
                       <Input
                         type="number"
                         min="1"
                         max="10"
                         value={settings.copiedAccounts || ""}
                         onChange={(e) => updateSetting('copiedAccounts', e.target.value === "" ? null : Number(e.target.value))}
-                        className="bg-gray-700 border-gray-600 text-white"
+                        className="widget-bg widget-text border-prop-gold/20"
                       />
-                      <p className="text-xs text-gray-400">
+                      <p className="text-xs widget-text opacity-70">
                         Multiple accounts reach targets faster (e.g., 2 accounts = half the time)
                       </p>
                     </div>
@@ -652,8 +652,8 @@ export default function Projections() {
 
                   {/* Capital Mode - Always use Max Drawdown */}
                   <div className="space-y-2">
-                    <div className="p-3 bg-gray-800/50 rounded-lg border border-gray-700">
-                      <p className="text-sm text-gray-400">
+                    <div className="p-3 widget-bg rounded-lg border border-prop-gold/20">
+                      <p className="text-sm widget-text opacity-70">
                         <strong className="text-orange-400">Max Drawdown</strong> is used for all calculations
                       </p>
                     </div>
@@ -662,24 +662,24 @@ export default function Projections() {
                   {/* Financial Settings */}
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label className="text-white">
+                      <Label className="widget-text">
                         Starting Capital (Display Only)
                       </Label>
                       <Input
                         type="number"
                         value={settings.startingCapital || ""}
                         onChange={(e) => updateSetting('startingCapital', e.target.value === "" ? null : Number(e.target.value))}
-                        className="bg-gray-700 border-gray-600 text-white"
+                        className="widget-bg widget-text border-prop-gold/20"
                         placeholder="0"
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label className="text-white">Risk Per Trade</Label>
+                      <Label className="widget-text">Risk Per Trade</Label>
                       <Input
                         type="number"
                         value={settings.riskPerTrade || ""}
                         onChange={(e) => updateSetting('riskPerTrade', e.target.value === "" ? null : Number(e.target.value))}
-                        className="bg-gray-700 border-gray-600 text-white"
+                        className="widget-bg widget-text border-prop-gold/20"
                         placeholder="0"
                       />
                     </div>
@@ -688,26 +688,26 @@ export default function Projections() {
                   {/* Risk Per Trade Divider */}
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label className="text-white">Risk Per Trade Divider</Label>
+                      <Label className="widget-text">Risk Per Trade Divider</Label>
                       <Input
                         type="number"
                         min="1"
                         max="10"
                         value={settings.riskDivider || ""}
                         onChange={(e) => updateSetting('riskDivider', e.target.value === "" ? null : Number(e.target.value))}
-                        className="bg-gray-700 border-gray-600 text-white"
+                        className="widget-bg widget-text border-prop-gold/20"
                         placeholder="1"
                       />
-                      <p className="text-xs text-gray-400">
+                      <p className="text-xs widget-text opacity-70">
                         Split your total risk across {settings.riskDivider || 1} trade{(settings.riskDivider || 1) > 1 ? 's' : ''}
                       </p>
                     </div>
                     <div className="space-y-2">
-                      <Label className="text-white">Risk Per Individual Trade</Label>
-                      <div className="bg-gray-800/50 border border-gray-600 rounded-md p-3 text-white">
+                      <Label className="widget-text">Risk Per Individual Trade</Label>
+                      <div className="widget-bg border border-prop-gold/20 rounded-md p-3 widget-text">
                         ${((settings.riskPerTrade || 0) / (settings.riskDivider || 1)).toFixed(2)}
                       </div>
-                      <p className="text-xs text-gray-400">
+                      <p className="text-xs widget-text opacity-70">
                         Calculated risk for each individual position
                       </p>
                     </div>
@@ -715,23 +715,23 @@ export default function Projections() {
 
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label className="text-white">Risk:Reward Ratio</Label>
+                      <Label className="widget-text">Risk:Reward Ratio</Label>
                       <Input
                         type="number"
                         step="0.1"
                         value={settings.riskRewardRatio || ""}
                         onChange={(e) => updateSetting('riskRewardRatio', e.target.value === "" ? null : Number(e.target.value))}
-                        className="bg-gray-700 border-gray-600 text-white"
+                        className="widget-bg widget-text border-prop-gold/20"
                         placeholder="0"
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label className="text-white">Profit Target</Label>
+                      <Label className="widget-text">Profit Target</Label>
                       <Input
                         type="number"
                         value={settings.profitTarget || ""}
                         onChange={(e) => updateSetting('profitTarget', e.target.value === "" ? null : Number(e.target.value))}
-                        className="bg-gray-700 border-gray-600 text-white"
+                        className="widget-bg widget-text border-prop-gold/20"
                         placeholder="0"
                       />
                     </div>
@@ -739,35 +739,35 @@ export default function Projections() {
 
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label className="text-white">Max Drawdown</Label>
+                      <Label className="widget-text">Max Drawdown</Label>
                       <Input
                         type="number"
                         value={settings.maxDrawdown || ""}
                         onChange={(e) => updateSetting('maxDrawdown', e.target.value === "" ? null : Number(e.target.value))}
-                        className="bg-gray-700 border-gray-600 text-white"
+                        className="widget-bg widget-text border-prop-gold/20"
                         placeholder="0"
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label className="text-white">Max Loss/Day</Label>
+                      <Label className="widget-text">Max Loss/Day</Label>
                       <Input
                         type="number"
                         value={settings.maxLossPerDay || ""}
                         onChange={(e) => updateSetting('maxLossPerDay', e.target.value === "" ? null : Number(e.target.value))}
-                        className="bg-gray-700 border-gray-600 text-white"
+                        className="widget-bg widget-text border-prop-gold/20"
                         placeholder="0"
                       />
                     </div>
                   </div>
 
                   {/* Advanced Risk Management */}
-                  <div className="space-y-4 pt-4 border-t border-gray-700">
-                    <h4 className="text-white font-medium">Advanced Settings</h4>
+                  <div className="space-y-4 pt-4 border-t border-prop-gold/20">
+                    <h4 className="widget-text font-medium">Advanced Settings</h4>
                     
                     {/* Animated Risk Cutting Slider */}
                     <div className="space-y-3">
                       <div className="flex items-center justify-between">
-                        <Label className="text-white font-medium">Risk Cutting % (on loss)</Label>
+                        <Label className="widget-text font-medium">Risk Cutting % (on loss)</Label>
                         <div className="flex items-center space-x-2">
                           <span className="text-2xl risk-slider-emoji">
                             {settings.riskCuttingPercent === 0 ? '😐' : 
@@ -788,14 +788,14 @@ export default function Projections() {
                           step={5}
                           className="w-full animated-slider"
                         />
-                        <div className="flex justify-between text-xs text-gray-400">
+                        <div className="flex justify-between text-xs widget-text opacity-70">
                           <span>No Cut (0%)</span>
                           <span>Conservative (25%)</span>
                           <span>Moderate (50%)</span>
                           <span>Aggressive (75%)</span>
                           <span>Extreme (100%)</span>
                         </div>
-                        <p className="text-xs text-gray-400 bg-gray-800/50 p-2 rounded">
+                        <p className="text-xs widget-text opacity-70 widget-bg p-2 rounded">
                           💡 Auto-reduce risk after losses - higher % = more conservative after bad trades
                         </p>
                       </div>
@@ -804,7 +804,7 @@ export default function Projections() {
                     {/* Animated Compounding Slider */}
                     <div className="space-y-3">
                       <div className="flex items-center justify-between">
-                        <Label className="text-white font-medium">Compounding % (on win)</Label>
+                        <Label className="widget-text font-medium">Compounding % (on win)</Label>
                         <div className="flex items-center space-x-2">
                           <span className="text-2xl compounding-slider-emoji">
                             {settings.compoundingPercent === 0 ? '🔒' : 
@@ -825,25 +825,25 @@ export default function Projections() {
                           step={5}
                           className="w-full animated-slider"
                         />
-                        <div className="flex justify-between text-xs text-gray-400">
+                        <div className="flex justify-between text-xs widget-text opacity-70">
                           <span>Fixed (0%)</span>
                           <span>Conservative (25%)</span>
                           <span>Moderate (50%)</span>
                           <span>Aggressive (75%)</span>
                           <span>Extreme (100%)</span>
                         </div>
-                        <p className="text-xs text-gray-400 bg-gray-800/50 p-2 rounded">
+                        <p className="text-xs widget-text opacity-70 widget-bg p-2 rounded">
                           💡 Increase risk after wins - higher % = more risk on winning streaks
                         </p>
                       </div>
                     </div>
 
                     {/* Live Effect Preview */}
-                    <div className="bg-gray-800/50 p-3 rounded-lg border border-gray-700">
-                      <h5 className="text-white font-medium mb-2">Live Effect Preview</h5>
+                    <div className="widget-bg p-3 rounded-lg border border-prop-gold/20">
+                      <h5 className="widget-text font-medium mb-2">Live Effect Preview</h5>
                       <div className="space-y-1 text-sm">
                         <div className="flex justify-between">
-                          <span className="text-gray-400">Current Risk:</span>
+                          <span className="widget-text opacity-70">Current Risk:</span>
                           <span className="text-blue-400">{formatCurrency(settings.riskPerTrade)}</span>
                         </div>
                         {settings.riskCuttingPercent > 0 && (
