@@ -260,8 +260,8 @@ export class DatabaseStorage implements IStorage {
   }
 
   // Account operations
-  async getAccounts(): Promise<Account[]> {
-    return await db.select().from(accounts).orderBy(desc(accounts.createdAt));
+  async getAccounts(userId: string): Promise<Account[]> {
+    return await db.select().from(accounts).where(eq(accounts.userId, userId)).orderBy(desc(accounts.createdAt));
   }
 
   async getAccount(id: number): Promise<Account | undefined> {

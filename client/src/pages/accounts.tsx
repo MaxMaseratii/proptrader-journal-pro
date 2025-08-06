@@ -73,6 +73,12 @@ const accountFormSchema = z.object({
   secondaryAsset: z.string().optional().nullable(),
   tertiaryAsset: z.string().optional().nullable(),
   consistencyRulePercent: z.number().optional().nullable(),
+  dailyWorkingHours: z.number().optional().nullable(),
+  hourlyWages: z.number().optional().nullable(),
+  liveAccountAvailable: z.boolean().optional(),
+  allowChallengePayouts: z.boolean().optional(),
+  copyTradingAllowed: z.boolean().optional(),
+  newsTradingAllowed: z.boolean().optional(),
 });
 
 type AccountFormData = z.infer<typeof accountFormSchema>;
@@ -148,6 +154,12 @@ export default function AccountManagement() {
       secondaryAsset: null,
       tertiaryAsset: null,
       consistencyRulePercent: null,
+      dailyWorkingHours: 8.0,
+      hourlyWages: 25.0,
+      liveAccountAvailable: false,
+      allowChallengePayouts: false,
+      copyTradingAllowed: true,
+      newsTradingAllowed: true,
     },
   });
 
@@ -537,6 +549,129 @@ export default function AccountManagement() {
                                   />
                                 </FormControl>
                                 <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-4">
+                          <FormField
+                            control={form.control}
+                            name="dailyWorkingHours"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel className="text-white">Daily Working Hours</FormLabel>
+                                <FormControl>
+                                  <Input 
+                                    {...field} 
+                                    type="number" 
+                                    step="0.1"
+                                    className="bg-gray-800 border-gray-600 text-white" 
+                                    placeholder="8.0"
+                                    value={field.value || ""}
+                                    onChange={(e) => field.onChange(parseFloat(e.target.value) || null)}
+                                  />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                          <FormField
+                            control={form.control}
+                            name="hourlyWages"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel className="text-white">Hourly Wages ($)</FormLabel>
+                                <FormControl>
+                                  <Input 
+                                    {...field} 
+                                    type="number" 
+                                    step="0.01"
+                                    className="bg-gray-800 border-gray-600 text-white" 
+                                    placeholder="25.00"
+                                    value={field.value || ""}
+                                    onChange={(e) => field.onChange(parseFloat(e.target.value) || null)}
+                                  />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                        </div>
+
+                        <div className="flex items-center space-x-8">
+                          <FormField
+                            control={form.control}
+                            name="liveAccountAvailable"
+                            render={({ field }) => (
+                              <FormItem className="flex flex-row items-center space-x-3 space-y-0">
+                                <FormControl>
+                                  <Checkbox
+                                    checked={field.value}
+                                    onCheckedChange={field.onChange}
+                                    className="border-gray-600 data-[state=checked]:bg-blue-600"
+                                  />
+                                </FormControl>
+                                <div className="space-y-1 leading-none">
+                                  <FormLabel className="text-white">Live Trading Account Available</FormLabel>
+                                </div>
+                              </FormItem>
+                            )}
+                          />
+                          <FormField
+                            control={form.control}
+                            name="allowChallengePayouts"
+                            render={({ field }) => (
+                              <FormItem className="flex flex-row items-center space-x-3 space-y-0">
+                                <FormControl>
+                                  <Checkbox
+                                    checked={field.value}
+                                    onCheckedChange={field.onChange}
+                                    className="border-gray-600 data-[state=checked]:bg-blue-600"
+                                  />
+                                </FormControl>
+                                <div className="space-y-1 leading-none">
+                                  <FormLabel className="text-white">Challenge Payouts Available</FormLabel>
+                                </div>
+                              </FormItem>
+                            )}
+                          />
+                        </div>
+
+                        <div className="flex items-center space-x-8">
+                          <FormField
+                            control={form.control}
+                            name="copyTradingAllowed"
+                            render={({ field }) => (
+                              <FormItem className="flex flex-row items-center space-x-3 space-y-0">
+                                <FormControl>
+                                  <Checkbox
+                                    checked={field.value}
+                                    onCheckedChange={field.onChange}
+                                    className="border-gray-600 data-[state=checked]:bg-blue-600"
+                                  />
+                                </FormControl>
+                                <div className="space-y-1 leading-none">
+                                  <FormLabel className="text-white">Copy Trading Allowed</FormLabel>
+                                </div>
+                              </FormItem>
+                            )}
+                          />
+                          <FormField
+                            control={form.control}
+                            name="newsTradingAllowed"
+                            render={({ field }) => (
+                              <FormItem className="flex flex-row items-center space-x-3 space-y-0">
+                                <FormControl>
+                                  <Checkbox
+                                    checked={field.value}
+                                    onCheckedChange={field.onChange}
+                                    className="border-gray-600 data-[state=checked]:bg-blue-600"
+                                  />
+                                </FormControl>
+                                <div className="space-y-1 leading-none">
+                                  <FormLabel className="text-white">News Trading Allowed</FormLabel>
+                                </div>
                               </FormItem>
                             )}
                           />
