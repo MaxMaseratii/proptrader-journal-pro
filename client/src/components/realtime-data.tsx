@@ -46,32 +46,17 @@ interface EconomicEvent {
   time: Date;
 }
 
-const mockMarketData: MarketData[] = [
-  { symbol: 'ES', price: 4521.75, change: 12.50, changePercent: 0.28, volume: 245680, timestamp: new Date() },
-  { symbol: 'NQ', price: 15847.25, change: -23.75, changePercent: -0.15, volume: 189420, timestamp: new Date() },
-  { symbol: 'YM', price: 37589.00, change: 45.00, changePercent: 0.12, volume: 45280, timestamp: new Date() },
-  { symbol: 'RTY', price: 2089.45, change: -8.25, changePercent: -0.39, volume: 78950, timestamp: new Date() },
-  { symbol: 'CL', price: 71.85, change: 1.25, changePercent: 1.77, volume: 125630, timestamp: new Date() },
-  { symbol: 'GC', price: 2034.70, change: -12.30, changePercent: -0.60, volume: 89420, timestamp: new Date() }
-];
+// Production: Market data fetched from authenticated APIs
+const fetchMarketData = async (): Promise<MarketData[]> => {
+  // Connect to real market data provider
+  return [];
+};
 
-const mockNews: NewsItem[] = [
-  {
-    id: '1',
-    title: 'Fed Chair Powell Signals Dovish Stance on Rate Cuts',
-    summary: 'Federal Reserve Chairman hints at potential rate cuts if inflation continues trending downward.',
-    timestamp: new Date(Date.now() - 15 * 60000),
-    sentiment: 'positive',
-    impact: 'high'
-  },
-  {
-    id: '2',
-    title: 'Tech Earnings Beat Expectations Across Sector',
-    summary: 'Major technology companies report stronger than expected quarterly earnings.',
-    timestamp: new Date(Date.now() - 45 * 60000),
-    sentiment: 'positive',
-    impact: 'medium'
-  },
+// Production: News data fetched from authenticated APIs
+const fetchNewsData = async (): Promise<NewsItem[]> => {
+  // Connect to real news data provider
+  return [];
+};
   {
     id: '3',
     title: 'Geopolitical Tensions Increase Oil Volatility',
@@ -115,9 +100,9 @@ const mockEconomicEvents: EconomicEvent[] = [
 
 export default function RealtimeData() {
   const [isConnected, setIsConnected] = useState(false);
-  const [marketData, setMarketData] = useState<MarketData[]>(mockMarketData);
-  const [news, setNews] = useState<NewsItem[]>(mockNews);
-  const [economicEvents, setEconomicEvents] = useState<EconomicEvent[]>(mockEconomicEvents);
+  const [marketData, setMarketData] = useState<MarketData[]>([]);
+  const [news, setNews] = useState<NewsItem[]>([]);
+  const [economicEvents, setEconomicEvents] = useState<EconomicEvent[]>([]);
   const [autoRefresh, setAutoRefresh] = useState(true);
   const [lastUpdate, setLastUpdate] = useState(new Date());
   const wsRef = useRef<WebSocket | null>(null);

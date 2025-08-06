@@ -72,6 +72,7 @@ const accountFormSchema = z.object({
   primaryAsset: z.string().optional().nullable(),
   secondaryAsset: z.string().optional().nullable(),
   tertiaryAsset: z.string().optional().nullable(),
+  consistencyRulePercent: z.number().optional().nullable(),
 });
 
 type AccountFormData = z.infer<typeof accountFormSchema>;
@@ -146,6 +147,7 @@ export default function AccountManagement() {
       primaryAsset: null,
       secondaryAsset: null,
       tertiaryAsset: null,
+      consistencyRulePercent: null,
     },
   });
 
