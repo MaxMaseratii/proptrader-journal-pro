@@ -1179,7 +1179,10 @@ export default function Projections() {
 
         {/* Account Creation Dialog */}
         <Dialog open={isAccountDialogOpen} onOpenChange={setIsAccountDialogOpen}>
-          <DialogContent className="max-w-4xl max-h-[90vh] bg-gray-900 border-gray-700">
+          <DialogContent 
+            className="max-w-4xl max-h-[90vh] !bg-gray-900 border-gray-700 text-white" 
+            style={{ backgroundColor: 'rgb(17, 24, 39)', color: 'white', borderColor: 'rgb(55, 65, 81)' }}
+          >
             <DialogHeader>
               <DialogTitle className="text-white text-xl">Create New Trading Account</DialogTitle>
               <DialogDescription className="text-gray-400">
@@ -1188,7 +1191,7 @@ export default function Projections() {
             </DialogHeader>
             <ScrollArea className="max-h-[80vh] px-6">
               <Form {...accountForm}>
-                <form onSubmit={accountForm.handleSubmit((data) => createAccountMutation.mutate(data))} className="space-y-6">
+                <form onSubmit={accountForm.handleSubmit((data) => createAccountMutation.mutate(data))} className="space-y-6 bg-gray-900 p-4 rounded-lg">
                   <Tabs defaultValue="basic" className="w-full">
                     <TabsList className="grid w-full grid-cols-3 bg-gray-800">
                       <TabsTrigger value="basic">Basic Info</TabsTrigger>

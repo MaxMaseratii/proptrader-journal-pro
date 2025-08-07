@@ -71,6 +71,19 @@
   }
 }
 
+/* Dialog dark mode fix */
+.dark [data-radix-dialog-content] {
+  background: rgb(17 24 39) !important; /* gray-900 */
+  color: white !important;
+  border-color: rgb(55 65 81) !important; /* gray-700 */
+}
+
+[data-radix-dialog-content] {
+  background: rgb(17 24 39) !important; /* gray-900 */
+  color: white !important;
+  border-color: rgb(55 65 81) !important; /* gray-700 */
+}
+
 /* Widget theme classes - CRITICAL THEME FIX */
 .widget-bg {
   background-color: hsl(var(--widget-bg)) !important;
