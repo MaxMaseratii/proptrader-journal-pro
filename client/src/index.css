@@ -73,7 +73,7 @@
   }
 }
 
-/* Dialog opacity fix - white stays solid, black becomes solid too */
+/* Dialog opacity fix - override bg-background class */
 .dialog-solid {
   background-color: #ffffff !important;
   opacity: 1 !important;
@@ -85,15 +85,33 @@
   opacity: 1 !important;
 }
 
-/* Force dialog to be solid in both modes */
-[data-radix-dialog-content] {
+/* Force dialog to be solid - higher specificity to override bg-background */
+[data-radix-dialog-content].dialog-solid {
   background-color: #ffffff !important;
   opacity: 1 !important;
 }
 
-.dark [data-radix-dialog-content] {
+.dark [data-radix-dialog-content].dialog-solid {
   background-color: #000000 !important;
   opacity: 1 !important;
+}
+
+/* Override the bg-background class specifically */
+.bg-background.dialog-solid {
+  background-color: #ffffff !important;
+}
+
+.dark .bg-background.dialog-solid {
+  background-color: #000000 !important;
+}
+
+/* Ultimate fallback - target any element with dialog-solid class */
+*[class*="dialog-solid"] {
+  background-color: #ffffff !important;
+}
+
+.dark *[class*="dialog-solid"] {
+  background-color: #000000 !important;
 }
 
 /* Override any dialog overlay transparency */
