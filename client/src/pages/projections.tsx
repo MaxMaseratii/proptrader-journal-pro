@@ -106,6 +106,10 @@ export default function Projections() {
     queryKey: ["/api/trades"],
   });
 
+  const { data: user } = useQuery<{ id: string; email: string }>({
+    queryKey: ["/api/user"],
+  });
+
   const createAccountMutation = useMutation({
     mutationFn: async (data: InsertAccount) => {
       // Add userId from current user
@@ -144,7 +148,7 @@ export default function Projections() {
       dailyLossLimit: null,
       dailyLossLimitType: "soft",
       drawdownType: "trailing",
-      maxDrawdownType: "eod",
+
       
       // Account Rules
       minimumTradingDays: null,
@@ -1396,7 +1400,7 @@ export default function Projections() {
                         />
                       </div>
 
-                      <div className="grid grid-cols-2 gap-4">
+                      <div className="grid grid-cols-1 gap-4">
                         <FormField
                           control={accountForm.control}
                           name="drawdownType"
@@ -1415,27 +1419,6 @@ export default function Projections() {
                                   <SelectItem value="unrealized">Unrealized</SelectItem>
                                   <SelectItem value="balance_based">Balance Based</SelectItem>
                                   <SelectItem value="static">Static</SelectItem>
-                                </SelectContent>
-                              </Select>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                        <FormField
-                          control={accountForm.control}
-                          name="maxDrawdownType"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel className="text-white">Max Drawdown Type</FormLabel>
-                              <Select onValueChange={field.onChange} value={field.value || ""}>
-                                <FormControl>
-                                  <SelectTrigger className="bg-gray-800 border-gray-600 text-white">
-                                    <SelectValue placeholder="Select max drawdown type" />
-                                  </SelectTrigger>
-                                </FormControl>
-                                <SelectContent className="bg-gray-800 border-gray-600">
-                                  <SelectItem value="eod">End of Day (EOD)</SelectItem>
-                                  <SelectItem value="unrealized_profit">Unrealized Profit</SelectItem>
                                 </SelectContent>
                               </Select>
                               <FormMessage />
@@ -1608,7 +1591,7 @@ export default function Projections() {
                             <FormItem className="flex flex-row items-center space-x-3 space-y-0">
                               <FormControl>
                                 <Checkbox
-                                  checked={field.value}
+                                  checked={field.value || false}
                                   onCheckedChange={field.onChange}
                                   className="border-gray-600 data-[state=checked]:bg-blue-600"
                                 />
@@ -1626,7 +1609,7 @@ export default function Projections() {
                             <FormItem className="flex flex-row items-center space-x-3 space-y-0">
                               <FormControl>
                                 <Checkbox
-                                  checked={field.value}
+                                  checked={field.value || false}
                                   onCheckedChange={field.onChange}
                                   className="border-gray-600 data-[state=checked]:bg-blue-600"
                                 />
@@ -1900,26 +1883,6 @@ export default function Projections() {
                                   type="number" 
                                   className="bg-gray-800 border-gray-600 text-white" 
                                   placeholder="10"
-                                  value={field.value === null || field.value === undefined ? "" : field.value}
-                                  onChange={(e) => field.onChange(e.target.value === "" ? null : parseInt(e.target.value))}
-                                />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                        <FormField
-                          control={accountForm.control}
-                          name="takeProfitPoints"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel className="text-white">Default Take Profit (Points/Pips)</FormLabel>
-                              <FormControl>
-                                <Input 
-                                  {...field} 
-                                  type="number" 
-                                  className="bg-gray-800 border-gray-600 text-white" 
-                                  placeholder="20"
                                   value={field.value === null || field.value === undefined ? "" : field.value}
                                   onChange={(e) => field.onChange(e.target.value === "" ? null : parseInt(e.target.value))}
                                 />
@@ -2386,7 +2349,7 @@ export default function Projections() {
                                 <FormItem className="flex flex-row items-center space-x-3 space-y-0">
                                   <FormControl>
                                     <Checkbox
-                                      checked={field.value}
+                                      checked={field.value || false}
                                       onCheckedChange={field.onChange}
                                       className="border-gray-600 data-[state=checked]:bg-blue-600"
                                     />
@@ -2399,24 +2362,6 @@ export default function Projections() {
                             />
                           </div>
                           <div className="flex items-center space-x-3">
-                            <FormField
-                              control={accountForm.control}
-                              name="enhancedPayoutsAvailable"
-                              render={({ field }) => (
-                                <FormItem className="flex flex-row items-center space-x-3 space-y-0">
-                                  <FormControl>
-                                    <Checkbox
-                                      checked={field.value}
-                                      onCheckedChange={field.onChange}
-                                      className="border-gray-600 data-[state=checked]:bg-blue-600"
-                                    />
-                                  </FormControl>
-                                  <div className="space-y-1 leading-none">
-                                    <FormLabel className="text-white">Challenge Payouts Available</FormLabel>
-                                  </div>
-                                </FormItem>
-                              )}
-                            />
                           </div>
                         </div>
                         
@@ -2429,7 +2374,7 @@ export default function Projections() {
                                 <FormItem className="flex flex-row items-center space-x-3 space-y-0">
                                   <FormControl>
                                     <Checkbox
-                                      checked={field.value}
+                                      checked={field.value || false}
                                       onCheckedChange={field.onChange}
                                       className="border-gray-600 data-[state=checked]:bg-blue-600"
                                     />
@@ -2449,7 +2394,7 @@ export default function Projections() {
                                 <FormItem className="flex flex-row items-center space-x-3 space-y-0">
                                   <FormControl>
                                     <Checkbox
-                                      checked={field.value}
+                                      checked={field.value || false}
                                       onCheckedChange={field.onChange}
                                       className="border-gray-600 data-[state=checked]:bg-blue-600"
                                     />
