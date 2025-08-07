@@ -114,6 +114,24 @@
   background-color: #000000 !important;
 }
 
+/* Force override bg-background on dialogs - this is the key fix */
+[data-radix-dialog-content].bg-background {
+  background: #ffffff !important;
+}
+
+.dark [data-radix-dialog-content].bg-background {
+  background: #000000 !important;
+}
+
+/* Additional override for any dialog with multiple classes */
+[data-radix-dialog-content][class*="bg-background"] {
+  background: #ffffff !important;
+}
+
+.dark [data-radix-dialog-content][class*="bg-background"] {
+  background: #000000 !important;
+}
+
 /* Override any dialog overlay transparency */
 [data-radix-dialog-overlay] {
   background-color: rgba(0, 0, 0, 0.8) !important;
