@@ -1179,10 +1179,7 @@ export default function Projections() {
 
         {/* Account Creation Dialog */}
         <Dialog open={isAccountDialogOpen} onOpenChange={setIsAccountDialogOpen}>
-          <DialogContent 
-            className="max-w-4xl max-h-[90vh] !bg-gray-900 border-gray-700 text-white" 
-            style={{ backgroundColor: 'rgb(17, 24, 39)', color: 'white', borderColor: 'rgb(55, 65, 81)' }}
-          >
+          <DialogContent className="max-w-4xl max-h-[90vh] bg-gray-900 border-gray-700">
             <DialogHeader>
               <DialogTitle className="text-white text-xl">Create New Trading Account</DialogTitle>
               <DialogDescription className="text-gray-400">

@@ -71,34 +71,6 @@
   }
 }
 
-/* Dialog dark mode fix - Target all possible Radix dialog selectors */
-[data-state="open"][data-radix-dialog-content],
-[data-radix-dialog-content],
-.dark [data-state="open"][data-radix-dialog-content],
-.dark [data-radix-dialog-content] {
-  background: rgb(17, 24, 39) !important; /* gray-900 */
-  background-color: rgb(17, 24, 39) !important;
-  color: white !important;
-  border-color: rgb(55, 65, 81) !important; /* gray-700 */
-}
-
-/* Override CSS custom properties */
-:root {
-  --radix-dialog-content-background: rgb(17, 24, 39) !important;
-}
-
-.dark {
-  --radix-dialog-content-background: rgb(17, 24, 39) !important;
-  --background: 222.2 84% 4.9% !important;
-  --card: 222.2 84% 4.9% !important;
-}
-
-/* Force dialog background for all states */
-[role="dialog"] {
-  background-color: rgb(17, 24, 39) !important;
-  color: white !important;
-}
-
 /* Widget theme classes - CRITICAL THEME FIX */
 .widget-bg {
   background-color: hsl(var(--widget-bg)) !important;
