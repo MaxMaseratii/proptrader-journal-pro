@@ -73,24 +73,27 @@
   }
 }
 
-/* Dialog opacity fix */
+/* Dialog opacity fix - inverted behavior */
 .dialog-solid {
   background-color: #ffffff !important;
-  opacity: 1 !important;
+  opacity: 0 !important;
   backdrop-filter: none !important;
 }
 
 .dark .dialog-solid {
   background-color: #000000 !important;
+  opacity: 1 !important;
 }
 
-/* Force dialog to be solid in dark mode */
+/* Force dialog to be solid with inverted opacity */
 [data-radix-dialog-content] {
   background-color: #ffffff !important;
+  opacity: 0 !important;
 }
 
 .dark [data-radix-dialog-content] {
   background-color: #000000 !important;
+  opacity: 1 !important;
 }
 
 /* Widget theme classes - CRITICAL THEME FIX */
