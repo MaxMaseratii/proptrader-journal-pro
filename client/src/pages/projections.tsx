@@ -1191,7 +1191,7 @@ export default function Projections() {
             </DialogHeader>
             <ScrollArea className="max-h-[80vh] px-6">
               <Form {...accountForm}>
-                <form onSubmit={accountForm.handleSubmit((data) => createAccountMutation.mutate(data))} className="space-y-6 bg-gray-900 p-4 rounded-lg">
+                <form onSubmit={accountForm.handleSubmit((data) => createAccountMutation.mutate(data))} className="space-y-6">
                   <Tabs defaultValue="basic" className="w-full">
                     <TabsList className="grid w-full grid-cols-3 bg-gray-800">
                       <TabsTrigger value="basic">Basic Info</TabsTrigger>
