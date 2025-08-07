@@ -108,7 +108,9 @@ export default function Projections() {
 
   const createAccountMutation = useMutation({
     mutationFn: async (data: InsertAccount) => {
-      return apiRequest("/api/accounts", "POST", data);
+      // Add userId from current user
+      const dataWithUserId = { ...data, userId: user?.id };
+      return apiRequest("/api/accounts", "POST", dataWithUserId);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/accounts'] });
@@ -141,6 +143,8 @@ export default function Projections() {
       hasDailyLossLimit: false,
       dailyLossLimit: null,
       dailyLossLimitType: "soft",
+      drawdownType: "trailing",
+      maxDrawdownType: "eod",
       
       // Account Rules
       minimumTradingDays: null,
@@ -185,7 +189,7 @@ export default function Projections() {
       primaryAsset: "ES" as AssetSymbol,
       secondaryAsset: "",
       tertiaryAsset: "",
-      takeProfitPoints: 20,
+
       tradingSessionStart: "",
       tradingSessionEnd: "",
       timezone: "",
@@ -203,10 +207,8 @@ export default function Projections() {
       preferredAssets: null,
       
       // Enhanced and Live Account Settings
-      enhancedPayoutsAvailable: false,
       liveAccountAvailable: false,
       transitionTrigger: null,
-      allowChallengePayouts: false,
       
       // Live account transition settings
       liveAccountTransitionEnabled: false,
@@ -1394,6 +1396,54 @@ export default function Projections() {
                         />
                       </div>
 
+                      <div className="grid grid-cols-2 gap-4">
+                        <FormField
+                          control={accountForm.control}
+                          name="drawdownType"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="text-white">Drawdown Type</FormLabel>
+                              <Select onValueChange={field.onChange} value={field.value || ""}>
+                                <FormControl>
+                                  <SelectTrigger className="bg-gray-800 border-gray-600 text-white">
+                                    <SelectValue placeholder="Select drawdown type" />
+                                  </SelectTrigger>
+                                </FormControl>
+                                <SelectContent className="bg-gray-800 border-gray-600">
+                                  <SelectItem value="trailing">Trailing</SelectItem>
+                                  <SelectItem value="daily">Daily</SelectItem>
+                                  <SelectItem value="unrealized">Unrealized</SelectItem>
+                                  <SelectItem value="balance_based">Balance Based</SelectItem>
+                                  <SelectItem value="static">Static</SelectItem>
+                                </SelectContent>
+                              </Select>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={accountForm.control}
+                          name="maxDrawdownType"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="text-white">Max Drawdown Type</FormLabel>
+                              <Select onValueChange={field.onChange} value={field.value || ""}>
+                                <FormControl>
+                                  <SelectTrigger className="bg-gray-800 border-gray-600 text-white">
+                                    <SelectValue placeholder="Select max drawdown type" />
+                                  </SelectTrigger>
+                                </FormControl>
+                                <SelectContent className="bg-gray-800 border-gray-600">
+                                  <SelectItem value="eod">End of Day (EOD)</SelectItem>
+                                  <SelectItem value="unrealized_profit">Unrealized Profit</SelectItem>
+                                </SelectContent>
+                              </Select>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+
                       <div className="flex items-center space-x-2">
                         <FormField
                           control={accountForm.control}
@@ -1402,7 +1452,7 @@ export default function Projections() {
                             <FormItem className="flex flex-row items-center space-x-3 space-y-0">
                               <FormControl>
                                 <Checkbox
-                                  checked={field.value}
+                                  checked={field.value || false}
                                   onCheckedChange={field.onChange}
                                   className="border-gray-600 data-[state=checked]:bg-blue-600"
                                 />
