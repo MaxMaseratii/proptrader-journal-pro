@@ -73,27 +73,27 @@
   }
 }
 
-/* Dialog opacity fix - inverted behavior */
+/* Dialog opacity fix - white stays solid, black inverted */
 .dialog-solid {
   background-color: #ffffff !important;
-  opacity: 0 !important;
+  opacity: 1 !important;
   backdrop-filter: none !important;
 }
 
 .dark .dialog-solid {
   background-color: #000000 !important;
-  opacity: 1 !important;
+  opacity: 0 !important;
 }
 
-/* Force dialog to be solid with inverted opacity */
+/* Force dialog to be solid with white solid, black inverted */
 [data-radix-dialog-content] {
   background-color: #ffffff !important;
-  opacity: 0 !important;
+  opacity: 1 !important;
 }
 
 .dark [data-radix-dialog-content] {
   background-color: #000000 !important;
-  opacity: 1 !important;
+  opacity: 0 !important;
 }
 
 /* Widget theme classes - CRITICAL THEME FIX */
