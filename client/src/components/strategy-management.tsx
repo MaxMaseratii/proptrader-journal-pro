@@ -145,7 +145,7 @@ const StrategyManagement: React.FC<StrategyManagementProps> = ({ editStrategyId,
               Create Strategy
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-4xl bg-gray-800 border-gray-700">
+          <DialogContent className="max-w-4xl bg-gray-800 border-gray-700 z-[10000]">
             <DialogHeader>
               <DialogTitle className="text-yellow-400">Create New Trading Strategy</DialogTitle>
               <DialogDescription className="text-gray-400">
@@ -297,7 +297,7 @@ const StrategyManagement: React.FC<StrategyManagementProps> = ({ editStrategyId,
 
       {/* Edit Strategy Dialog */}
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-        <DialogContent className="max-w-4xl bg-gray-800 border-gray-700">
+        <DialogContent className="max-w-4xl bg-gray-800 border-gray-700 z-[10000]">
           <DialogHeader>
             <DialogTitle className="text-yellow-400">Edit Trading Strategy</DialogTitle>
             <DialogDescription className="text-gray-400">

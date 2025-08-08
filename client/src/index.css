@@ -269,6 +269,32 @@
   border: 1px solid hsl(var(--border)) !important;
 }
 
+/* MODAL Z-INDEX FIXES - ENSURE MODALS ARE ABOVE NAVIGATION */
+[data-radix-dialog-overlay] {
+  z-index: 9999 !important;
+}
+
+[data-radix-dialog-content] {
+  z-index: 10000 !important;
+}
+
+[data-radix-alert-dialog-overlay] {
+  z-index: 9999 !important;
+}
+
+[data-radix-alert-dialog-content] {
+  z-index: 10000 !important;
+}
+
+/* Ensure all dialog components are above navigation */
+.dialog-overlay {
+  z-index: 9999 !important;
+}
+
+.dialog-content {
+  z-index: 10000 !important;
+}
+
 /* END OF DROPDOWN FIXES */
 
 /* All possible dropdown/select content containers */

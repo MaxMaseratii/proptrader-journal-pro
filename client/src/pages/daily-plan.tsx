@@ -28,6 +28,7 @@ import {
   AlertTriangle,
   CheckCircle,
   Edit,
+  Trash2,
   Save,
   Play,
   PlayCircle,
@@ -253,6 +254,47 @@ const DailyPlanPage = () => {
   const stopTradingSession = () => {
     setIsTrading(false);
     setSessionStartTime(null);
+    
+    // Auto-save current session as historical plan
+    if (selectedAccount && selectedStrategy) {
+      const sessionHours = sessionStartTime ? (Date.now() - sessionStartTime) / (1000 * 60 * 60) : 0;
+      
+      const historicalPlanData = {
+        date: selectedDate,
+        accountId: selectedAccount,
+        strategyId: selectedStrategy,
+        targetProfit: 500, // Default values - could be from current session data
+        riskAmount: 100,
+        maxTrades: 3,
+        riskRewardRatio: 2,
+        tradeTime: "09:30-16:00",
+        notes: "Completed trading session",
+        actualPnL: 0, // Would be calculated from actual trades
+        tradesExecuted: 0,
+        wins: 0,
+        losses: 0,
+        actualRR: 0,
+        hoursWorked: sessionHours,
+        riskUsed: 0,
+        biggestWin: 0,
+        biggestLoss: 0,
+        isPlanSaved: true,
+        additionalNotes: 'Session completed automatically',
+        // Journal fields
+        whatWentWrong: '',
+        whatWentRight: '',
+        lessonsLearned: '',
+        improvementPlan: '',
+        emotionalState: 'neutral',
+        marketConditions: '',
+        tomorrowPlan: '',
+        tradeSetupLinks: JSON.stringify([]),
+      };
+      
+      // Save the historical plan
+      createDailyPlan.mutate(historicalPlanData);
+      console.log('Auto-saved session as historical plan');
+    }
   };
 
   // Save journal entry function - connects to specific daily plan
@@ -638,7 +680,7 @@ const DailyPlanPage = () => {
                           </div>
                         </div>
 
-                        {/* Compact Metrics & Details Button */}
+                        {/* Compact Metrics & Management Buttons */}
                         <div className="flex items-center gap-2">
                           <div className="text-xs text-green-400 font-medium">
                             {strategy.expectedWinRate}% WR
@@ -646,17 +688,51 @@ const DailyPlanPage = () => {
                           <div className="text-xs text-blue-400 font-medium">
                             1:{strategy.riskRewardRatio}
                           </div>
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            className="h-7 px-2 text-xs border-yellow-400/30 text-yellow-400 hover:bg-yellow-400/10 hover:border-yellow-400/50"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setSelectedStrategyForDetails(strategy);
-                            }}
-                          >
-                            Details
-                          </Button>
+                          <div className="flex gap-1">
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              className="h-7 px-2 text-xs border-yellow-400/30 text-yellow-400 hover:bg-yellow-400/10 hover:border-yellow-400/50"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setSelectedStrategyForDetails(strategy);
+                              }}
+                            >
+                              Details
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              className="h-7 px-1 text-gray-400 hover:text-yellow-400 hover:bg-gray-700"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                // Navigate to strategy management to edit
+                                window.location.href = `/strategy-management?edit=${strategy.id}`;
+                              }}
+                              title="Modify strategy"
+                            >
+                              <Edit className="w-3 h-3" />
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              className="h-7 px-1 text-gray-400 hover:text-red-400 hover:bg-gray-700"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                if (window.confirm(`Are you sure you want to delete the strategy "${strategy.name}"? This cannot be undone.`)) {
+                                  // Call delete API directly
+                                  fetch(`/api/strategies/${strategy.id}`, { method: 'DELETE' })
+                                    .then(() => {
+                                      queryClient.invalidateQueries({ queryKey: ['/api/strategies'] });
+                                    })
+                                    .catch(console.error);
+                                }
+                              }}
+                              title="Delete strategy"
+                            >
+                              <Trash2 className="w-3 h-3" />
+                            </Button>
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -884,7 +960,7 @@ const DailyPlanPage = () => {
 
       {/* Create Strategy Dialog */}
       <Dialog open={isCreateStrategyDialogOpen} onOpenChange={setIsCreateStrategyDialogOpen}>
-        <DialogContent className="max-w-3xl bg-gradient-to-br from-gray-900 via-gray-800 to-black border border-yellow-400/20 overflow-hidden">
+        <DialogContent className="max-w-3xl bg-gradient-to-br from-gray-900 via-gray-800 to-black border border-yellow-400/20 overflow-hidden z-[10000]">
           <DialogHeader>
             <DialogTitle className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-yellow-600">Create New Trading Strategy</DialogTitle>
           </DialogHeader>
@@ -901,7 +977,7 @@ const DailyPlanPage = () => {
 
       {/* Journal Entry Dialog */}
       <Dialog open={isJournalDialogOpen} onOpenChange={setIsJournalDialogOpen}>
-        <DialogContent className="max-w-6xl bg-gradient-to-br from-gray-900 via-gray-800 to-black border border-yellow-400/20">
+        <DialogContent className="max-w-6xl bg-gradient-to-br from-gray-900 via-gray-800 to-black border border-yellow-400/20 z-[10000]">
           <DialogHeader className="mb-6">
             <DialogTitle className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-yellow-600 text-2xl">
               Daily Trading Journal Entry
