@@ -4,7 +4,6 @@ import { z } from "zod";
 
 export const accounts = pgTable("accounts", {
   id: serial("id").primaryKey(),
-  userId: text("user_id").notNull(),
   name: text("name").notNull(),
   type: text("type").notNull(), // 'challenge', 'funded', 'live'
   firm: text("firm").notNull(),

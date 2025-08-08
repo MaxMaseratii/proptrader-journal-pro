@@ -10,9 +10,6 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Switch } from '@/components/ui/switch';
 import { Slider } from '@/components/ui/slider';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { Checkbox } from '@/components/ui/checkbox';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import type { Account, Trade } from '@shared/schema';
@@ -30,49 +27,15 @@ import {
   EyeOff
 } from 'lucide-react';
 
-// Create a comprehensive schema for account forms matching the database schema
+// Create a simplified schema for account forms
 const accountFormSchema = z.object({
   name: z.string().min(1, 'Account name is required'),
   type: z.string().min(1, 'Account type is required'),
   firm: z.string().min(1, 'Firm name is required'),
-  status: z.string().optional(),
   startingBalance: z.number().min(0, 'Starting balance must be positive'),
   profitTarget: z.number().min(0, 'Profit target must be positive'),
   maxDrawdown: z.number().min(0, 'Max drawdown must be positive'),
-  minimumTradingDays: z.number().optional().nullable(),
-  timeLimit: z.number().optional().nullable(),
-
-  hasDailyLossLimit: z.boolean().optional(),
-  accountCost: z.number().optional().nullable(),
-  paymentMethod: z.string().optional().nullable(),
-  resetCount: z.number().optional(),
-  totalResetsCost: z.number().optional(),
-  profitSplit: z.number().optional().nullable(),
-  activationPaid: z.boolean().optional(),
-  includesActivationFee: z.boolean().optional(),
-  riskPerTrade: z.number().optional().nullable(),
-  riskPerTradeDivider: z.number().optional().nullable(),
-  dailyLossLimit: z.number().optional().nullable(),
-  maxTradesPerDay: z.number().optional().nullable(),
-  riskRewardRatio: z.number().optional().nullable(),
-  minimumPayoutAmount: z.number().optional().nullable(),
-  maxNetBalanceForPayout: z.number().optional().nullable(),
-  personalTradingTimeStart1: z.string().optional().nullable(),
-  personalTradingTimeEnd1: z.string().optional().nullable(),
-  personalTradingTimeZone1: z.string().optional().nullable(),
-  personalTradingTimeStart2: z.string().optional().nullable(),
-  personalTradingTimeEnd2: z.string().optional().nullable(),
-  personalTradingTimeZone2: z.string().optional().nullable(),
-  personalTradingTimeStart3: z.string().optional().nullable(),
-  personalTradingTimeEnd3: z.string().optional().nullable(),
-  personalTradingTimeZone3: z.string().optional().nullable(),
-  activationCost: z.number().optional().nullable(),
-  purchaseMethod: z.string().optional().nullable(),
-  maxRiskPerDay: z.number().optional().nullable(),
-  primaryAsset: z.string().optional().nullable(),
-  secondaryAsset: z.string().optional().nullable(),
-  tertiaryAsset: z.string().optional().nullable(),
-  consistencyRulePercent: z.number().optional().nullable(),
+  riskPerTrade: z.number().min(0.1).max(10, 'Risk per trade must be between 0.1% and 10%').optional(),
 });
 
 type AccountFormData = z.infer<typeof accountFormSchema>;
@@ -108,51 +71,14 @@ export default function AccountManagement() {
     resolver: zodResolver(accountFormSchema),
     defaultValues: {
       name: '',
-      type: 'challenge',
+      type: 'demo',
       firm: '',
-      status: 'active',
       startingBalance: 0,
       profitTarget: 0,
       maxDrawdown: 0,
-      minimumTradingDays: null,
-      timeLimit: null,
-
-      hasDailyLossLimit: false,
-      accountCost: null,
-      paymentMethod: null,
-      resetCount: 0,
-      totalResetsCost: 0,
-      profitSplit: null,
-      activationPaid: false,
-      includesActivationFee: false,
-      riskPerTrade: null,
-      riskPerTradeDivider: null,
-      dailyLossLimit: null,
-      maxTradesPerDay: null,
-      riskRewardRatio: null,
-      minimumPayoutAmount: null,
-      maxNetBalanceForPayout: null,
-      personalTradingTimeStart1: null,
-      personalTradingTimeEnd1: null,
-      personalTradingTimeZone1: null,
-      personalTradingTimeStart2: null,
-      personalTradingTimeEnd2: null,
-      personalTradingTimeZone2: null,
-      personalTradingTimeStart3: null,
-      personalTradingTimeEnd3: null,
-      personalTradingTimeZone3: null,
-      activationCost: null,
-      purchaseMethod: null,
-      maxRiskPerDay: null,
-      primaryAsset: null,
-      secondaryAsset: null,
-      tertiaryAsset: null,
-      consistencyRulePercent: null,
+      riskPerTrade: 2,
     },
   });
-
-  // Watch form values for real-time calculations
-  const watchedValues = form.watch();
 
   const createAccountMutation = useMutation({
     mutationFn: async (data: AccountFormData) => {
@@ -321,1078 +247,188 @@ export default function AccountManagement() {
                 Add Account
               </Button>
             </DialogTrigger>
-            <DialogContent className="max-w-4xl max-h-[90vh] bg-gray-900 border-gray-700">
+            <DialogContent className="max-w-2xl bg-gradient-to-br from-gray-900 via-gray-800 to-black border border-yellow-400/20">
               <DialogHeader>
-                <DialogTitle className="text-white text-xl">Create New Trading Account</DialogTitle>
+                <DialogTitle className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-yellow-600">
+                  Create New Trading Account
+                </DialogTitle>
                 <DialogDescription className="text-gray-400">
-                  Set up a new trading account with proper risk management and financial tracking.
+                  Add a new trading account to track your performance and manage risk.
                 </DialogDescription>
               </DialogHeader>
-              <ScrollArea className="max-h-[80vh] px-6">
-                <Form {...form}>
-                  <form onSubmit={form.handleSubmit(handleCreateAccount)} className="space-y-6">
-                    <Tabs defaultValue="basic" className="w-full">
-                      <TabsList className="grid w-full grid-cols-3 bg-gray-800">
-                        <TabsTrigger value="basic">Basic Info</TabsTrigger>
-                        <TabsTrigger value="financial">Financial</TabsTrigger>
-                        <TabsTrigger value="rules">Rules & Risk</TabsTrigger>
-                      </TabsList>
-
-                      <TabsContent value="basic" className="space-y-4">
-                        <div className="grid grid-cols-2 gap-4">
-                          <FormField
-                            control={form.control}
-                            name="name"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel className="text-white">Account Name</FormLabel>
-                                <FormControl>
-                                  <Input {...field} className="bg-gray-800 border-gray-600 text-white" placeholder="My Trading Account" />
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-                          <FormField
-                            control={form.control}
-                            name="firm"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel className="text-white">Prop Firm</FormLabel>
-                                <FormControl>
-                                  <Input {...field} className="bg-gray-800 border-gray-600 text-white" placeholder="FTMO, TopstepTrader, etc." />
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-                        </div>
-
-                        <div className="grid grid-cols-3 gap-4">
-                          <FormField
-                            control={form.control}
-                            name="type"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel className="text-white">Account Type</FormLabel>
-                                <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                  <FormControl>
-                                    <SelectTrigger className="bg-gray-800 border-gray-600 text-white">
-                                      <SelectValue placeholder="Select type" />
-                                    </SelectTrigger>
-                                  </FormControl>
-                                  <SelectContent className="bg-gray-800 border-gray-600">
-                                    <SelectItem value="challenge">Challenge</SelectItem>
-                                    <SelectItem value="funded">Funded</SelectItem>
-                                    <SelectItem value="live">Live</SelectItem>
-                                  </SelectContent>
-                                </Select>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-                          <FormField
-                            control={form.control}
-                            name="status"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel className="text-white">Status</FormLabel>
-                                <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                  <FormControl>
-                                    <SelectTrigger className="bg-gray-800 border-gray-600 text-white">
-                                      <SelectValue placeholder="Select status" />
-                                    </SelectTrigger>
-                                  </FormControl>
-                                  <SelectContent className="bg-gray-800 border-gray-600">
-                                    <SelectItem value="active">Active</SelectItem>
-                                    <SelectItem value="passed">Passed</SelectItem>
-                                    <SelectItem value="failed">Failed</SelectItem>
-                                    <SelectItem value="withdrawn">Withdrawn</SelectItem>
-                                  </SelectContent>
-                                </Select>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-                          <FormField
-                            control={form.control}
-                            name="startingBalance"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel className="text-white">Starting Balance</FormLabel>
-                                <FormControl>
-                                  <Input 
-                                    {...field} 
-                                    type="number" 
-                                    className="bg-gray-800 border-gray-600 text-white" 
-                                    placeholder="100000"
-                                    value={field.value === 0 ? "" : field.value}
-                                    onChange={(e) => field.onChange(e.target.value === "" ? 0 : parseFloat(e.target.value))}
-                                  />
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-                        </div>
-
-                        <div className="grid grid-cols-2 gap-4">
-                          <FormField
-                            control={form.control}
-                            name="profitTarget"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel className="text-white">Profit Target</FormLabel>
-                                <FormControl>
-                                  <Input 
-                                    {...field} 
-                                    type="number" 
-                                    className="bg-gray-800 border-gray-600 text-white" 
-                                    placeholder="10000"
-                                    value={field.value === 0 ? "" : field.value}
-                                    onChange={(e) => field.onChange(e.target.value === "" ? 0 : parseFloat(e.target.value))}
-                                  />
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-                          <FormField
-                            control={form.control}
-                            name="maxDrawdown"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel className="text-white">Max Drawdown</FormLabel>
-                                <FormControl>
-                                  <Input 
-                                    {...field} 
-                                    type="number" 
-                                    className="bg-gray-800 border-gray-600 text-white" 
-                                    placeholder="5000"
-                                    value={field.value === 0 ? "" : field.value}
-                                    onChange={(e) => field.onChange(e.target.value === "" ? 0 : parseFloat(e.target.value))}
-                                  />
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-                        </div>
-
-                        <div className="grid grid-cols-3 gap-4">
-                          <FormField
-                            control={form.control}
-                            name="minimumTradingDays"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel className="text-white">Minimum Trading Days</FormLabel>
-                                <FormControl>
-                                  <Input 
-                                    {...field} 
-                                    type="number" 
-                                    className="bg-gray-800 border-gray-600 text-white" 
-                                    placeholder="5"
-                                    value={field.value || ""}
-                                    onChange={(e) => field.onChange(parseFloat(e.target.value) || null)}
-                                  />
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-                          <FormField
-                            control={form.control}
-                            name="timeLimit"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel className="text-white">Time Limit (days)</FormLabel>
-                                <FormControl>
-                                  <Input 
-                                    {...field} 
-                                    type="number" 
-                                    className="bg-gray-800 border-gray-600 text-white" 
-                                    placeholder="30"
-                                    value={field.value || ""}
-                                    onChange={(e) => field.onChange(parseFloat(e.target.value) || null)}
-                                  />
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-                          <FormField
-                            control={form.control}
-                            name="consistencyRulePercent"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel className="text-white">Consistency Rule (%)</FormLabel>
-                                <FormControl>
-                                  <Input 
-                                    {...field} 
-                                    type="number" 
-                                    className="bg-gray-800 border-gray-600 text-white" 
-                                    placeholder="50"
-                                    value={field.value || ""}
-                                    onChange={(e) => field.onChange(parseFloat(e.target.value) || null)}
-                                  />
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-                        </div>
-
-                        <div className="flex items-center space-x-2">
-                          <FormField
-                            control={form.control}
-                            name="hasDailyLossLimit"
-                            render={({ field }) => (
-                              <FormItem className="flex flex-row items-center space-x-3 space-y-0">
-                                <FormControl>
-                                  <Checkbox
-                                    checked={field.value}
-                                    onCheckedChange={field.onChange}
-                                    className="border-gray-600 data-[state=checked]:bg-blue-600"
-                                  />
-                                </FormControl>
-                                <div className="space-y-1 leading-none">
-                                  <FormLabel className="text-white">Has Daily Loss Limit</FormLabel>
-                                </div>
-                              </FormItem>
-                            )}
-                          />
-                        </div>
-                      </TabsContent>
-
-                      <TabsContent value="financial" className="space-y-4">
-                        <div className="grid grid-cols-2 gap-4">
-                          <FormField
-                            control={form.control}
-                            name="accountCost"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel className="text-white">Account Cost</FormLabel>
-                                <FormControl>
-                                  <Input 
-                                    {...field} 
-                                    type="number" 
-                                    className="bg-gray-800 border-gray-600 text-white" 
-                                    placeholder="649"
-                                    value={field.value || ""}
-                                    onChange={(e) => field.onChange(parseFloat(e.target.value) || null)}
-                                  />
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-                          <FormField
-                            control={form.control}
-                            name="paymentMethod"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel className="text-white">Payment Method</FormLabel>
-                                <Select onValueChange={field.onChange} value={field.value || ""}>
-                                  <FormControl>
-                                    <SelectTrigger className="bg-gray-800 border-gray-600 text-white">
-                                      <SelectValue placeholder="Select payment method" />
-                                    </SelectTrigger>
-                                  </FormControl>
-                                  <SelectContent className="bg-gray-800 border-gray-600">
-                                    <SelectItem value="credit_card">Credit Card</SelectItem>
-                                    <SelectItem value="paypal">PayPal</SelectItem>
-                                    <SelectItem value="crypto">Cryptocurrency</SelectItem>
-                                    <SelectItem value="bank_transfer">Bank Transfer</SelectItem>
-                                    <SelectItem value="other">Other</SelectItem>
-                                  </SelectContent>
-                                </Select>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-                        </div>
-
-                        <div className="grid grid-cols-2 gap-4">
-                          <FormField
-                            control={form.control}
-                            name="resetCount"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel className="text-white">Reset Count</FormLabel>
-                                <FormControl>
-                                  <Input 
-                                    {...field} 
-                                    type="number" 
-                                    className="bg-gray-800 border-gray-600 text-white" 
-                                    placeholder="0"
-                                    value={field.value || ""}
-                                    onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
-                                  />
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-                          <FormField
-                            control={form.control}
-                            name="totalResetsCost"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel className="text-white">Total Resets Cost</FormLabel>
-                                <FormControl>
-                                  <Input 
-                                    {...field} 
-                                    type="number" 
-                                    className="bg-gray-800 border-gray-600 text-white" 
-                                    placeholder="0"
-                                    value={field.value || ""}
-                                    onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
-                                  />
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-                        </div>
-
-                        <div className="grid grid-cols-2 gap-4">
-                          <FormField
-                            control={form.control}
-                            name="profitSplit"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel className="text-white">Profit Split (%)</FormLabel>
-                                <FormControl>
-                                  <Input 
-                                    {...field} 
-                                    type="number" 
-                                    className="bg-gray-800 border-gray-600 text-white" 
-                                    placeholder="80"
-                                    value={field.value || ""}
-                                    onChange={(e) => field.onChange(parseFloat(e.target.value) || null)}
-                                  />
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-                          <FormField
-                            control={form.control}
-                            name="activationCost"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel className="text-white">Activation Cost</FormLabel>
-                                <FormControl>
-                                  <Input 
-                                    {...field} 
-                                    type="number" 
-                                    className="bg-gray-800 border-gray-600 text-white" 
-                                    placeholder="200"
-                                    value={field.value || ""}
-                                    onChange={(e) => field.onChange(parseFloat(e.target.value) || null)}
-                                  />
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-                        </div>
-
-                        <div className="grid grid-cols-1 gap-4">
-                          <FormField
-                            control={form.control}
-                            name="purchaseMethod"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel className="text-white">Purchase Method</FormLabel>
-                                <Select onValueChange={field.onChange} value={field.value || ""}>
-                                  <FormControl>
-                                    <SelectTrigger className="bg-gray-800 border-gray-600 text-white">
-                                      <SelectValue placeholder="Select payment method" />
-                                    </SelectTrigger>
-                                  </FormControl>
-                                  <SelectContent className="bg-gray-800 border-gray-600">
-                                    <SelectItem value="credit_card">Credit Card</SelectItem>
-                                    <SelectItem value="paypal">PayPal</SelectItem>
-                                    <SelectItem value="crypto">Cryptocurrency</SelectItem>
-                                    <SelectItem value="bank_transfer">Bank Transfer</SelectItem>
-                                    <SelectItem value="other">Other</SelectItem>
-                                  </SelectContent>
-                                </Select>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-                        </div>
-
-                        <div className="flex items-center space-x-2">
-                          <FormField
-                            control={form.control}
-                            name="activationPaid"
-                            render={({ field }) => (
-                              <FormItem className="flex flex-row items-center space-x-3 space-y-0">
-                                <FormControl>
-                                  <Checkbox
-                                    checked={field.value}
-                                    onCheckedChange={field.onChange}
-                                    className="border-gray-600 data-[state=checked]:bg-blue-600"
-                                  />
-                                </FormControl>
-                                <div className="space-y-1 leading-none">
-                                  <FormLabel className="text-white">Activation Fee Paid</FormLabel>
-                                </div>
-                              </FormItem>
-                            )}
-                          />
-                          <FormField
-                            control={form.control}
-                            name="includesActivationFee"
-                            render={({ field }) => (
-                              <FormItem className="flex flex-row items-center space-x-3 space-y-0">
-                                <FormControl>
-                                  <Checkbox
-                                    checked={field.value}
-                                    onCheckedChange={field.onChange}
-                                    className="border-gray-600 data-[state=checked]:bg-blue-600"
-                                  />
-                                </FormControl>
-                                <div className="space-y-1 leading-none">
-                                  <FormLabel className="text-white">Includes Activation Fee</FormLabel>
-                                </div>
-                              </FormItem>
-                            )}
-                          />
-                        </div>
-                      </TabsContent>
-
-                      <TabsContent value="rules" className="space-y-4">
-                        {/* Risk Per Trade with Real-time Feedback */}
-                        <div className="grid grid-cols-2 gap-4">
-                          <FormField
-                            control={form.control}
-                            name="riskPerTrade"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel className="text-white">Risk Per Trade ($)</FormLabel>
-                                <FormControl>
-                                  <Input 
-                                    {...field} 
-                                    type="number" 
-                                    className="bg-gray-800 border-gray-600 text-white" 
-                                    placeholder="500"
-                                    value={field.value === null ? "" : field.value}
-                                    onChange={(e) => field.onChange(e.target.value === "" ? null : parseFloat(e.target.value))}
-                                  />
-                                </FormControl>
-                                <FormMessage />
-                                {field.value && watchedValues.maxDrawdown && (
-                                  <div className="text-xs mt-1">
-                                    <span className={`${
-                                      (field.value / watchedValues.maxDrawdown) * 100 > 10 
-                                        ? 'text-red-400' 
-                                        : (field.value / watchedValues.maxDrawdown) * 100 > 5 
-                                        ? 'text-yellow-400' 
-                                        : 'text-green-400'
-                                    }`}>
-                                      {((field.value / watchedValues.maxDrawdown) * 100).toFixed(2)}% of max drawdown
-                                    </span>
-                                    {(field.value / watchedValues.maxDrawdown) * 100 > 10 && (
-                                      <span className="text-red-400 ml-2">⚠️ High risk per trade</span>
-                                    )}
-                                  </div>
-                                )}
-                              </FormItem>
-                            )}
-                          />
-                          
-                          {/* Risk Per Trade Divider */}
-                          <FormField
-                            control={form.control}
-                            name="riskPerTradeDivider"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel className="text-white">Risk Per Trade Divider</FormLabel>
-                                <FormControl>
-                                  <Input 
-                                    {...field} 
-                                    type="number" 
-                                    min="1"
-                                    max="10"
-                                    className="bg-gray-800 border-gray-600 text-white" 
-                                    placeholder="1"
-                                    value={field.value === null ? "" : field.value}
-                                    onChange={(e) => field.onChange(e.target.value === "" ? null : parseInt(e.target.value))}
-                                  />
-                                </FormControl>
-                                <FormMessage />
-                                <div className="text-xs mt-1 text-gray-400">
-                                  Split your total risk across {field.value || 1} trade{(field.value || 1) > 1 ? 's' : ''}
-                                </div>
-                                {field.value && watchedValues.riskPerTrade && (
-                                  <div className="text-xs mt-1">
-                                    <span className="text-green-400">
-                                      Risk Per Individual Trade: ${(watchedValues.riskPerTrade / field.value).toFixed(2)}
-                                    </span>
-                                  </div>
-                                )}
-                              </FormItem>
-                            )}
-                          />
-                        </div>
-
-                        <div className="grid grid-cols-3 gap-4">
-                          <FormField
-                            control={form.control}
-                            name="dailyLossLimit"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel className="text-white">Daily Loss Limit ($)</FormLabel>
-                                <FormControl>
-                                  <Input 
-                                    {...field} 
-                                    type="number" 
-                                    className="bg-gray-800 border-gray-600 text-white" 
-                                    placeholder="2000"
-                                    value={field.value === null ? "" : field.value}
-                                    onChange={(e) => field.onChange(e.target.value === "" ? null : parseFloat(e.target.value))}
-                                  />
-                                </FormControl>
-                                <FormMessage />
-                                {field.value && watchedValues.maxDrawdown && (
-                                  <div className="text-xs mt-1">
-                                    <span className={`${
-                                      (field.value / watchedValues.maxDrawdown) * 100 > 50 
-                                        ? 'text-red-400' 
-                                        : (field.value / watchedValues.maxDrawdown) * 100 > 30 
-                                        ? 'text-yellow-400' 
-                                        : 'text-green-400'
-                                    }`}>
-                                      {((field.value / watchedValues.maxDrawdown) * 100).toFixed(2)}% of max drawdown
-                                    </span>
-                                    {(field.value / watchedValues.maxDrawdown) * 100 > 50 && (
-                                      <span className="text-red-400 ml-2">⚠️ Very high daily risk</span>
-                                    )}
-                                  </div>
-                                )}
-                              </FormItem>
-                            )}
-                          />
-                          
-                          <FormField
-                            control={form.control}
-                            name="maxTradesPerDay"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel className="text-white">Max Trades Per Day</FormLabel>
-                                <FormControl>
-                                  <Input 
-                                    {...field} 
-                                    type="number" 
-                                    className="bg-gray-800 border-gray-600 text-white" 
-                                    placeholder="5"
-                                    value={field.value === null ? "" : field.value}
-                                    onChange={(e) => field.onChange(e.target.value === "" ? null : parseInt(e.target.value))}
-                                  />
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-                          
-                          <FormField
-                            control={form.control}
-                            name="maxRiskPerDay"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel className="text-white">Max Risk Per Day ($)</FormLabel>
-                                <FormControl>
-                                  <Input 
-                                    {...field} 
-                                    type="number" 
-                                    className="bg-gray-800 border-gray-600 text-white" 
-                                    placeholder="3000"
-                                    value={field.value === null ? "" : field.value}
-                                    onChange={(e) => field.onChange(e.target.value === "" ? null : parseFloat(e.target.value))}
-                                  />
-                                </FormControl>
-                                <FormMessage />
-                                {field.value && watchedValues.riskPerTrade && (
-                                  <div className="text-xs mt-1">
-                                    <span className="text-gray-400">
-                                      ≈ {Math.floor(field.value / watchedValues.riskPerTrade)} trades max per day
-                                    </span>
-                                  </div>
-                                )}
-                              </FormItem>
-                            )}
-                          />
-                          
-                          <FormField
-                            control={form.control}
-                            name="riskRewardRatio"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel className="text-white">Risk:Reward Ratio (1:X)</FormLabel>
-                                <FormControl>
-                                  <Input 
-                                    {...field} 
-                                    type="number" 
-                                    step="0.1"
-                                    className="bg-gray-800 border-gray-600 text-white" 
-                                    placeholder="2.0"
-                                    value={field.value === null ? "" : field.value}
-                                    onChange={(e) => field.onChange(e.target.value === "" ? null : parseFloat(e.target.value))}
-                                  />
-                                </FormControl>
-                                <FormMessage />
-                                {field.value && watchedValues.riskPerTrade && (
-                                  <div className="text-xs mt-1">
-                                    <span className="text-green-400">
-                                      Target profit: ${(watchedValues.riskPerTrade * field.value).toFixed(0)} per trade
-                                    </span>
-                                  </div>
-                                )}
-                              </FormItem>
-                            )}
-                          />
-                        </div>
-
-                        <div className="grid grid-cols-1 gap-4">
-                          <FormField
-                            control={form.control}
-                            name="riskRewardRatio"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel className="text-white">Risk:Reward Ratio (1:X)</FormLabel>
-                                <FormControl>
-                                  <Input 
-                                    {...field} 
-                                    type="number" 
-                                    step="0.1"
-                                    className="bg-gray-800 border-gray-600 text-white" 
-                                    placeholder="2.0"
-                                    value={field.value === null ? "" : field.value}
-                                    onChange={(e) => field.onChange(e.target.value === "" ? null : parseFloat(e.target.value))}
-                                  />
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-                        </div>
-
-                        {/* Asset Selection */}
-                        <div className="space-y-4">
-                          <h3 className="text-lg font-semibold text-yellow-400 border-b border-yellow-400/20 pb-2">
-                            Trading Assets
-                          </h3>
-                          <div className="grid grid-cols-3 gap-4">
-                            <FormField
-                              control={form.control}
-                              name="primaryAsset"
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel className="text-white">Primary Asset</FormLabel>
-                                  <FormControl>
-                                    <Input 
-                                      {...field} 
-                                      className="bg-gray-800 border-gray-600 text-white" 
-                                      placeholder="e.g. ES, NQ, EURUSD, BTCUSD"
-                                      value={field.value || ""}
-                                    />
-                                  </FormControl>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
+              
+              <Form {...form}>
+                <form onSubmit={form.handleSubmit(handleCreateAccount)} className="space-y-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <FormField
+                      control={form.control}
+                      name="name"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-white">Account Name</FormLabel>
+                          <FormControl>
+                            <Input 
+                              placeholder="e.g., Main Trading Account" 
+                              className="bg-white border-gray-300 text-black"
+                              {...field} 
                             />
-                            <FormField
-                              control={form.control}
-                              name="secondaryAsset"
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel className="text-white">Secondary Asset</FormLabel>
-                                  <FormControl>
-                                    <Input 
-                                      {...field} 
-                                      className="bg-gray-800 border-gray-600 text-white" 
-                                      placeholder="e.g. CL, GC, GBPUSD"
-                                      value={field.value || ""}
-                                    />
-                                  </FormControl>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
-                            <FormField
-                              control={form.control}
-                              name="tertiaryAsset"
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel className="text-white">Tertiary Asset</FormLabel>
-                                  <FormControl>
-                                    <Input 
-                                      {...field} 
-                                      className="bg-gray-800 border-gray-600 text-white" 
-                                      placeholder="e.g. YM, RTY, USDJPY"
-                                      value={field.value || ""}
-                                    />
-                                  </FormControl>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
-                          </div>
-                        </div>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    
+                    <FormField
+                      control={form.control}
+                      name="type"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-white">Account Type</FormLabel>
+                          <Select onValueChange={field.onChange} defaultValue={field.value}>
+                            <FormControl>
+                              <SelectTrigger className="bg-white border-gray-300 text-black">
+                                <SelectValue placeholder="Select type" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              <SelectItem value="demo">Demo</SelectItem>
+                              <SelectItem value="live">Live</SelectItem>
+                              <SelectItem value="paper">Paper Trading</SelectItem>
+                              <SelectItem value="challenge">Challenge</SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
 
-                        <div className="grid grid-cols-2 gap-4">
-                          <FormField
-                            control={form.control}
-                            name="minimumPayoutAmount"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel className="text-white">Minimum Payout Amount ($)</FormLabel>
-                                <FormControl>
-                                  <Input 
-                                    {...field} 
-                                    type="number" 
-                                    className="bg-gray-800 border-gray-600 text-white" 
-                                    placeholder="100"
-                                    value={field.value || ""}
-                                    onChange={(e) => field.onChange(parseFloat(e.target.value) || null)}
-                                  />
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
+                  <FormField
+                    control={form.control}
+                    name="firm"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-white">Prop Firm / Broker</FormLabel>
+                        <FormControl>
+                          <Input 
+                            placeholder="e.g., FTMO, TopstepTrader, Interactive Brokers" 
+                            className="bg-white border-gray-300 text-black"
+                            {...field} 
                           />
-                          <FormField
-                            control={form.control}
-                            name="maxNetBalanceForPayout"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel className="text-white">Max Net Balance for Payout ($)</FormLabel>
-                                <FormControl>
-                                  <Input 
-                                    {...field} 
-                                    type="number" 
-                                    className="bg-gray-800 border-gray-600 text-white" 
-                                    placeholder="5000"
-                                    value={field.value || ""}
-                                    onChange={(e) => field.onChange(parseFloat(e.target.value) || null)}
-                                  />
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-                        </div>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
 
-                        {/* Personal Trading Time */}
-                        <div className="space-y-4">
-                          <h3 className="text-lg font-semibold text-yellow-400 border-b border-yellow-400/20 pb-2">
-                            Personal Trading Time
-                          </h3>
-                          
-                          {/* Time Slot 1 */}
+                  <div className="grid grid-cols-3 gap-4">
+                    <FormField
+                      control={form.control}
+                      name="startingBalance"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-white">Starting Balance</FormLabel>
+                          <FormControl>
+                            <Input 
+                              type="number" 
+                              placeholder="10000" 
+                              className="bg-white border-gray-300 text-black"
+                              {...field}
+                              onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    
+                    <FormField
+                      control={form.control}
+                      name="profitTarget"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-white">Profit Target</FormLabel>
+                          <FormControl>
+                            <Input 
+                              type="number" 
+                              placeholder="1000" 
+                              className="bg-white border-gray-300 text-black"
+                              {...field}
+                              onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    
+                    <FormField
+                      control={form.control}
+                      name="maxDrawdown"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-white">Max Drawdown</FormLabel>
+                          <FormControl>
+                            <Input 
+                              type="number" 
+                              placeholder="500" 
+                              className="bg-white border-gray-300 text-black"
+                              {...field}
+                              onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                  <FormField
+                    control={form.control}
+                    name="riskPerTrade"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-white">Risk Per Trade (%)</FormLabel>
+                        <FormControl>
                           <div className="space-y-2">
-                            <h4 className="text-md font-medium text-blue-400">Time Slot 1 (Primary)</h4>
-                            <div className="grid grid-cols-3 gap-4">
-                              <FormField
-                                control={form.control}
-                                name="personalTradingTimeStart1"
-                                render={({ field }) => (
-                                  <FormItem>
-                                    <FormLabel className="text-white">Personal Trading Time Start - Time1</FormLabel>
-                                    <Select onValueChange={field.onChange} value={field.value || ""}>
-                                      <FormControl>
-                                        <SelectTrigger className="bg-gray-800 border-gray-600 text-white">
-                                          <SelectValue placeholder="--:-- --" />
-                                        </SelectTrigger>
-                                      </FormControl>
-                                      <SelectContent className="bg-gray-800 border-gray-600 max-h-60">
-                                        {Array.from({ length: 48 }, (_, i) => {
-                                          const hour = Math.floor(i / 2);
-                                          const minute = i % 2 === 0 ? "00" : "30";
-                                          const time = `${hour.toString().padStart(2, '0')}:${minute}`;
-                                          return (
-                                            <SelectItem key={time} value={time}>
-                                              {time}
-                                            </SelectItem>
-                                          );
-                                        })}
-                                      </SelectContent>
-                                    </Select>
-                                    <FormMessage />
-                                  </FormItem>
-                                )}
-                              />
-                              <FormField
-                                control={form.control}
-                                name="personalTradingTimeEnd1"
-                                render={({ field }) => (
-                                  <FormItem>
-                                    <FormLabel className="text-white">Personal Trading Time End - Time1</FormLabel>
-                                    <Select onValueChange={field.onChange} value={field.value || ""}>
-                                      <FormControl>
-                                        <SelectTrigger className="bg-gray-800 border-gray-600 text-white">
-                                          <SelectValue placeholder="--:-- --" />
-                                        </SelectTrigger>
-                                      </FormControl>
-                                      <SelectContent className="bg-gray-800 border-gray-600 max-h-60">
-                                        {Array.from({ length: 48 }, (_, i) => {
-                                          const hour = Math.floor(i / 2);
-                                          const minute = i % 2 === 0 ? "00" : "30";
-                                          const time = `${hour.toString().padStart(2, '0')}:${minute}`;
-                                          return (
-                                            <SelectItem key={time} value={time}>
-                                              {time}
-                                            </SelectItem>
-                                          );
-                                        })}
-                                      </SelectContent>
-                                    </Select>
-                                    <FormMessage />
-                                  </FormItem>
-                                )}
-                              />
-                              <FormField
-                                control={form.control}
-                                name="personalTradingTimeZone1"
-                                render={({ field }) => (
-                                  <FormItem>
-                                    <FormLabel className="text-white">Timezone</FormLabel>
-                                    <Select onValueChange={field.onChange} value={field.value || ""}>
-                                      <FormControl>
-                                        <SelectTrigger className="bg-gray-800 border-gray-600 text-white">
-                                          <SelectValue placeholder="Select timezone" />
-                                        </SelectTrigger>
-                                      </FormControl>
-                                      <SelectContent className="bg-gray-800 border-gray-600">
-                                        <SelectItem value="EST">EST - Eastern Standard Time</SelectItem>
-                                        <SelectItem value="CST">CST - Central Standard Time</SelectItem>
-                                        <SelectItem value="MST">MST - Mountain Standard Time</SelectItem>
-                                        <SelectItem value="PST">PST - Pacific Standard Time</SelectItem>
-                                        <SelectItem value="GMT">GMT - Greenwich Mean Time</SelectItem>
-                                        <SelectItem value="CET">CET - Central European Time</SelectItem>
-                                        <SelectItem value="JST">JST - Japan Standard Time</SelectItem>
-                                        <SelectItem value="AEST">AEST - Australian Eastern Standard Time</SelectItem>
-                                      </SelectContent>
-                                    </Select>
-                                    <FormMessage />
-                                  </FormItem>
-                                )}
-                              />
+                            <Slider
+                              value={[field.value || 2]}
+                              onValueChange={(value) => field.onChange(value[0])}
+                              max={10}
+                              min={0.1}
+                              step={0.1}
+                              className="w-full"
+                            />
+                            <div className="text-center text-sm text-gray-400">
+                              {field.value || 2}% per trade
                             </div>
                           </div>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
 
-                          {/* Time Slot 2 */}
-                          <div className="space-y-2">
-                            <h4 className="text-md font-medium text-green-400">Time Slot 2 (Secondary)</h4>
-                            <div className="grid grid-cols-3 gap-4">
-                              <FormField
-                                control={form.control}
-                                name="personalTradingTimeStart2"
-                                render={({ field }) => (
-                                  <FormItem>
-                                    <FormLabel className="text-white">Personal Trading Time Start - Time2</FormLabel>
-                                    <Select onValueChange={field.onChange} value={field.value || ""}>
-                                      <FormControl>
-                                        <SelectTrigger className="bg-gray-800 border-gray-600 text-white">
-                                          <SelectValue placeholder="--:-- --" />
-                                        </SelectTrigger>
-                                      </FormControl>
-                                      <SelectContent className="bg-gray-800 border-gray-600 max-h-60">
-                                        {Array.from({ length: 48 }, (_, i) => {
-                                          const hour = Math.floor(i / 2);
-                                          const minute = i % 2 === 0 ? "00" : "30";
-                                          const time = `${hour.toString().padStart(2, '0')}:${minute}`;
-                                          return (
-                                            <SelectItem key={time} value={time}>
-                                              {time}
-                                            </SelectItem>
-                                          );
-                                        })}
-                                      </SelectContent>
-                                    </Select>
-                                    <FormMessage />
-                                  </FormItem>
-                                )}
-                              />
-                              <FormField
-                                control={form.control}
-                                name="personalTradingTimeEnd2"
-                                render={({ field }) => (
-                                  <FormItem>
-                                    <FormLabel className="text-white">Personal Trading Time End - Time2</FormLabel>
-                                    <Select onValueChange={field.onChange} value={field.value || ""}>
-                                      <FormControl>
-                                        <SelectTrigger className="bg-gray-800 border-gray-600 text-white">
-                                          <SelectValue placeholder="--:-- --" />
-                                        </SelectTrigger>
-                                      </FormControl>
-                                      <SelectContent className="bg-gray-800 border-gray-600 max-h-60">
-                                        {Array.from({ length: 48 }, (_, i) => {
-                                          const hour = Math.floor(i / 2);
-                                          const minute = i % 2 === 0 ? "00" : "30";
-                                          const time = `${hour.toString().padStart(2, '0')}:${minute}`;
-                                          return (
-                                            <SelectItem key={time} value={time}>
-                                              {time}
-                                            </SelectItem>
-                                          );
-                                        })}
-                                      </SelectContent>
-                                    </Select>
-                                    <FormMessage />
-                                  </FormItem>
-                                )}
-                              />
-                              <FormField
-                                control={form.control}
-                                name="personalTradingTimeZone2"
-                                render={({ field }) => (
-                                  <FormItem>
-                                    <FormLabel className="text-white">Timezone</FormLabel>
-                                    <Select onValueChange={field.onChange} value={field.value || ""}>
-                                      <FormControl>
-                                        <SelectTrigger className="bg-gray-800 border-gray-600 text-white">
-                                          <SelectValue placeholder="Select timezone" />
-                                        </SelectTrigger>
-                                      </FormControl>
-                                      <SelectContent className="bg-gray-800 border-gray-600">
-                                        <SelectItem value="EST">EST - Eastern Standard Time</SelectItem>
-                                        <SelectItem value="CST">CST - Central Standard Time</SelectItem>
-                                        <SelectItem value="MST">MST - Mountain Standard Time</SelectItem>
-                                        <SelectItem value="PST">PST - Pacific Standard Time</SelectItem>
-                                        <SelectItem value="GMT">GMT - Greenwich Mean Time</SelectItem>
-                                        <SelectItem value="CET">CET - Central European Time</SelectItem>
-                                        <SelectItem value="JST">JST - Japan Standard Time</SelectItem>
-                                        <SelectItem value="AEST">AEST - Australian Eastern Standard Time</SelectItem>
-                                      </SelectContent>
-                                    </Select>
-                                    <FormMessage />
-                                  </FormItem>
-                                )}
-                              />
-                            </div>
-                          </div>
-
-                          {/* Time Slot 3 */}
-                          <div className="space-y-2">
-                            <h4 className="text-md font-medium text-purple-400">Time Slot 3 (Optional)</h4>
-                            <div className="grid grid-cols-3 gap-4">
-                              <FormField
-                                control={form.control}
-                                name="personalTradingTimeStart3"
-                                render={({ field }) => (
-                                  <FormItem>
-                                    <FormLabel className="text-white">Personal Trading Time Start - Time3</FormLabel>
-                                    <Select onValueChange={field.onChange} value={field.value || ""}>
-                                      <FormControl>
-                                        <SelectTrigger className="bg-gray-800 border-gray-600 text-white">
-                                          <SelectValue placeholder="--:-- --" />
-                                        </SelectTrigger>
-                                      </FormControl>
-                                      <SelectContent className="bg-gray-800 border-gray-600 max-h-60">
-                                        {Array.from({ length: 48 }, (_, i) => {
-                                          const hour = Math.floor(i / 2);
-                                          const minute = i % 2 === 0 ? "00" : "30";
-                                          const time = `${hour.toString().padStart(2, '0')}:${minute}`;
-                                          return (
-                                            <SelectItem key={time} value={time}>
-                                              {time}
-                                            </SelectItem>
-                                          );
-                                        })}
-                                      </SelectContent>
-                                    </Select>
-                                    <FormMessage />
-                                  </FormItem>
-                                )}
-                              />
-                              <FormField
-                                control={form.control}
-                                name="personalTradingTimeEnd3"
-                                render={({ field }) => (
-                                  <FormItem>
-                                    <FormLabel className="text-white">Personal Trading Time End - Time3</FormLabel>
-                                    <Select onValueChange={field.onChange} value={field.value || ""}>
-                                      <FormControl>
-                                        <SelectTrigger className="bg-gray-800 border-gray-600 text-white">
-                                          <SelectValue placeholder="--:-- --" />
-                                        </SelectTrigger>
-                                      </FormControl>
-                                      <SelectContent className="bg-gray-800 border-gray-600 max-h-60">
-                                        {Array.from({ length: 48 }, (_, i) => {
-                                          const hour = Math.floor(i / 2);
-                                          const minute = i % 2 === 0 ? "00" : "30";
-                                          const time = `${hour.toString().padStart(2, '0')}:${minute}`;
-                                          return (
-                                            <SelectItem key={time} value={time}>
-                                              {time}
-                                            </SelectItem>
-                                          );
-                                        })}
-                                      </SelectContent>
-                                    </Select>
-                                    <FormMessage />
-                                  </FormItem>
-                                )}
-                              />
-                              <FormField
-                                control={form.control}
-                                name="personalTradingTimeZone3"
-                                render={({ field }) => (
-                                  <FormItem>
-                                    <FormLabel className="text-white">Timezone</FormLabel>
-                                    <Select onValueChange={field.onChange} value={field.value || ""}>
-                                      <FormControl>
-                                        <SelectTrigger className="bg-gray-800 border-gray-600 text-white">
-                                          <SelectValue placeholder="Select timezone" />
-                                        </SelectTrigger>
-                                      </FormControl>
-                                      <SelectContent className="bg-gray-800 border-gray-600">
-                                        <SelectItem value="EST">EST - Eastern Standard Time</SelectItem>
-                                        <SelectItem value="CST">CST - Central Standard Time</SelectItem>
-                                        <SelectItem value="MST">MST - Mountain Standard Time</SelectItem>
-                                        <SelectItem value="PST">PST - Pacific Standard Time</SelectItem>
-                                        <SelectItem value="GMT">GMT - Greenwich Mean Time</SelectItem>
-                                        <SelectItem value="CET">CET - Central European Time</SelectItem>
-                                        <SelectItem value="JST">JST - Japan Standard Time</SelectItem>
-                                        <SelectItem value="AEST">AEST - Australian Eastern Standard Time</SelectItem>
-                                      </SelectContent>
-                                    </Select>
-                                    <FormMessage />
-                                  </FormItem>
-                                )}
-                              />
-                            </div>
-                          </div>
-                        </div>
-                      </TabsContent>
-                    </Tabs>
-
-                    <div className="flex justify-end space-x-3 pt-4 border-t border-gray-700">
-                      <Button
-                        type="button"
-                        variant="outline"
-                        onClick={() => setIsCreateDialogOpen(false)}
-                        className="bg-gray-800 border-gray-600 text-white hover:bg-gray-700"
-                      >
-                        Cancel
-                      </Button>
-                      <Button
-                        type="submit"
-                        disabled={createAccountMutation.isPending}
-                        className="bg-blue-600 hover:bg-blue-700 text-white"
-                      >
-                        {createAccountMutation.isPending ? "Creating..." : "Create Account"}
-                      </Button>
+                  <div className="flex justify-end space-x-3 pt-4">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => setIsCreateDialogOpen(false)}
+                      className="border-gray-600 text-gray-300 hover:bg-gray-700"
+                    >
+                      Cancel
+                    </Button>
+                    <Button
+                      type="submit"
+                      disabled={createAccountMutation.isPending}
+                      className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700"
+                    >
+                      {createAccountMutation.isPending ? 'Creating...' : 'Create Account'}
+                    </Button>
                   </div>
                 </form>
               </Form>
-            </ScrollArea>
-          </DialogContent>
+            </DialogContent>
           </Dialog>
         </div>
 

@@ -9,8 +9,6 @@ import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from '@/components/ui/dialog';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { apiRequest } from '@/lib/queryClient';
 import StrategyManagement from '@/components/strategy-management';
 import { 
@@ -41,8 +39,6 @@ import {
   Settings,
   ExternalLink,
   FileText,
-  MoreVertical,
-  Trash2,
 
 } from 'lucide-react';
 import type { Account, TradingStrategy, DailyPlan, Trade, JournalEntry } from '@shared/schema';
@@ -65,8 +61,6 @@ const DailyPlanPage = () => {
   const [isJournalDialogOpen, setIsJournalDialogOpen] = useState(false);
   const [selectedPlanForStats, setSelectedPlanForStats] = useState<any>(null);
   const [selectedStrategyForDetails, setSelectedStrategyForDetails] = useState<any>(null);
-  const [strategyToDelete, setStrategyToDelete] = useState<TradingStrategy | null>(null);
-  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   
   // Form data for new plan
   const [newPlanData, setNewPlanData] = useState({
@@ -175,18 +169,6 @@ const DailyPlanPage = () => {
     onError: (error) => {
       console.error('Failed to save journal entry:', error);
     },
-  });
-
-  // Delete strategy mutation
-  const deleteStrategyMutation = useMutation({
-    mutationFn: (id: number) => apiRequest(`/api/strategies/${id}`, {
-      method: 'DELETE',
-    }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/strategies'] });
-      setIsDeleteDialogOpen(false);
-      setStrategyToDelete(null);
-    }
   });
 
   // Check if journal entry already exists for current plan/day
@@ -647,7 +629,7 @@ const DailyPlanPage = () => {
                           </div>
                         </div>
 
-                        {/* Compact Metrics & Action Buttons */}
+                        {/* Compact Metrics & Details Button */}
                         <div className="flex items-center gap-2">
                           <div className="text-xs text-green-400 font-medium">
                             {strategy.expectedWinRate}% WR
@@ -666,44 +648,6 @@ const DailyPlanPage = () => {
                           >
                             Details
                           </Button>
-                          
-                          {/* 3-dots menu */}
-                          <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                              <Button
-                                size="sm"
-                                variant="ghost"
-                                className="h-7 w-7 p-0 text-gray-400 hover:text-white hover:bg-gray-700"
-                                onClick={(e) => e.stopPropagation()}
-                              >
-                                <MoreVertical className="h-4 w-4" />
-                              </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end" className="w-40 bg-gray-800 border-gray-600">
-                              <DropdownMenuItem 
-                                className="text-gray-300 hover:bg-gray-700 hover:text-white cursor-pointer"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  setEditingStrategyId(strategy.id);
-                                  setIsCreateStrategyDialogOpen(true);
-                                }}
-                              >
-                                <Edit className="mr-2 h-4 w-4" />
-                                Modify
-                              </DropdownMenuItem>
-                              <DropdownMenuItem 
-                                className="text-red-400 hover:bg-red-900/20 hover:text-red-300 cursor-pointer"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  setStrategyToDelete(strategy);
-                                  setIsDeleteDialogOpen(true);
-                                }}
-                              >
-                                <Trash2 className="mr-2 h-4 w-4" />
-                                Delete
-                              </DropdownMenuItem>
-                            </DropdownMenuContent>
-                          </DropdownMenu>
                         </div>
                       </div>
                     </div>
@@ -1305,33 +1249,6 @@ const DailyPlanPage = () => {
           </div>
         </DialogContent>
       </Dialog>
-
-      {/* Delete Strategy Confirmation Dialog */}
-      <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
-        <AlertDialogContent className="bg-gray-900 border-gray-700">
-          <AlertDialogHeader>
-            <AlertDialogTitle className="text-white">Delete Strategy</AlertDialogTitle>
-            <AlertDialogDescription className="text-gray-300">
-              Are you sure you want to delete the strategy "{strategyToDelete?.name}"? This action cannot be undone.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel className="bg-gray-700 text-white border-gray-600 hover:bg-gray-600">
-              Cancel
-            </AlertDialogCancel>
-            <AlertDialogAction
-              onClick={() => {
-                if (strategyToDelete) {
-                  deleteStrategyMutation.mutate(strategyToDelete.id);
-                }
-              }}
-              className="bg-red-600 hover:bg-red-700 text-white"
-            >
-              Delete Strategy
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
     </div>
   );
 };
