@@ -110,8 +110,8 @@ export default function Sidebar() {
           </Link>
           {!isCollapsed && !isPartiallyCollapsed && (
             <div>
-              <h1 className="text-lg font-bold text-foreground">#1 PropFirm Trader's Journal</h1>
-              <p className="text-xs text-muted-foreground">PropTrader Journal</p>
+              <h1 className="text-lg font-bold bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 bg-clip-text text-transparent">#1 PropFirm Trader's Journal</h1>
+              <p className="text-xs text-prop-gold font-medium">PropTrader Journal</p>
             </div>
           )}
         </div>

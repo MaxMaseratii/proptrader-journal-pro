@@ -476,7 +476,7 @@ export default function Welcome() {
       <section className="relative overflow-hidden bg-gradient-to-br from-yellow-50 via-white to-blue-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-16">
           <div className="text-center">
-            <Badge className="mb-4 bg-yellow-100 text-yellow-800 hover:bg-yellow-200">
+            <Badge className="mb-4 bg-gradient-to-r from-yellow-100 to-amber-100 text-yellow-800 hover:bg-yellow-200 border border-yellow-300 shadow-sm">
               🚀 Trusted by 10,000+ Prop Traders
             </Badge>
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 dark:text-white mb-6">
@@ -496,7 +496,7 @@ export default function Welcome() {
               <Button
                 size="lg"
                 onClick={() => setLocation('/signup')}
-                className="bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-white px-8 py-3 text-lg"
+                className="bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-black font-semibold px-8 py-3 text-lg shadow-lg"
               >
                 Start Free Trial
                 <ArrowRight className="ml-2 h-5 w-5" />
@@ -505,7 +505,7 @@ export default function Welcome() {
                 size="lg"
                 variant="outline"
                 onClick={() => setLocation('/auth')}
-                className="px-8 py-3 text-lg"
+                className="px-8 py-3 text-lg border-yellow-400 text-yellow-600 hover:bg-yellow-50 hover:text-yellow-700 hover:border-yellow-500"
               >
                 Log In
               </Button>
@@ -820,7 +820,7 @@ export default function Welcome() {
               </p>
               <Button 
                 onClick={() => setLocation('/signup')}
-                className="bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-white px-8"
+                className="bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-black font-semibold px-8 shadow-lg"
               >
                 Start Your Free Trial
               </Button>
