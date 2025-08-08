@@ -94,11 +94,11 @@ interface ShareStatsProps {
 
 const ShareStats: React.FC<ShareStatsProps> = ({ totalPnL, winRate, totalTrades, bestTrade, accountName }) => {
   const shareText = `🚀 My Trading Stats on PropTrader Journal:
-💰 Total P&L: ${formatCurrency(totalPnL)}
-📊 Win Rate: ${winRate.toFixed(1)}%
-📈 Best Trade: ${formatCurrency(bestTrade)}
-🎯 Total Trades: ${totalTrades}
-📱 Account: ${accountName}
+💰 Total P&L: ${formatCurrency(totalPnL || 0)}
+📊 Win Rate: ${(winRate || 0).toFixed(1)}%
+📈 Best Trade: ${formatCurrency(bestTrade || 0)}
+🎯 Total Trades: ${totalTrades || 0}
+📱 Account: ${accountName || 'My Trading Account'}
 
 #PropTrading #TradingJournal #PropTraderJournal`;
 
@@ -1397,20 +1397,18 @@ export default function Dashboard() {
               </Link>
               
               {/* Social Media Share Button */}
-              {combinedAnalytics && (
-                <ShareStats 
-                  totalPnL={combinedAnalytics.totalPnl || 0}
-                  winRate={combinedAnalytics.winRate || 0}
-                  totalTrades={combinedAnalytics.totalTrades || 0}
-                  bestTrade={combinedAnalytics.bestTrade || 0}
-                  accountName={selectedAccountIds.length === 1 
-                    ? accounts?.find(acc => acc.id === selectedAccountIds[0])?.name || 'Selected Account'
-                    : selectedAccountIds.length > 1 
-                      ? `${selectedAccountIds.length} Accounts` 
-                      : 'All Accounts'
-                  }
-                />
-              )}
+              <ShareStats 
+                totalPnL={combinedAnalytics?.totalPnl || 0}
+                winRate={combinedAnalytics?.winRate || 0}
+                totalTrades={combinedAnalytics?.totalTrades || 0}
+                bestTrade={combinedAnalytics?.bestTrade || 0}
+                accountName={selectedAccountIds.length === 1 
+                  ? accounts?.find(acc => acc.id === selectedAccountIds[0])?.name || 'Selected Account'
+                  : selectedAccountIds.length > 1 
+                    ? `${selectedAccountIds.length} Accounts` 
+                    : 'All Accounts'
+                }
+              />
             </div>
             <NotificationDropdown />
           </div>
