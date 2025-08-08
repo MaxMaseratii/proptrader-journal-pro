@@ -62,7 +62,6 @@ const DailyPlanPage = () => {
   const [isJournalDialogOpen, setIsJournalDialogOpen] = useState(false);
   const [selectedPlanForStats, setSelectedPlanForStats] = useState<any>(null);
   const [selectedStrategyForDetails, setSelectedStrategyForDetails] = useState<any>(null);
-  const [editingPlanId, setEditingPlanId] = useState<number | null>(null);
   
   // Form data for new plan
   const [newPlanData, setNewPlanData] = useState({
@@ -150,19 +149,6 @@ const DailyPlanPage = () => {
     mutationFn: ({ id, data }: { id: number; data: any }) => apiRequest(`/api/daily-plans/${id}`, 'PUT', data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/daily-plans'] });
-      setIsCreatePlanDialogOpen(false);
-      setEditingPlanId(null);
-      resetPlanForm();
-    },
-  });
-
-  const deleteDailyPlan = useMutation({
-    mutationFn: (id: number) => apiRequest(`/api/daily-plans/${id}`, 'DELETE'),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/daily-plans'] });
-    },
-    onError: (error) => {
-      console.error('Failed to delete daily plan:', error);
     },
   });
 
@@ -351,7 +337,7 @@ const DailyPlanPage = () => {
   };
 
   const createNewPlan = () => {
-    console.log(editingPlanId ? 'Updating plan...' : 'Creating new plan...');
+    console.log('Creating new plan...');
     console.log('Selected Account:', selectedAccount);
     console.log('Selected Strategy:', selectedStrategy);
     
@@ -389,13 +375,7 @@ const DailyPlanPage = () => {
     };
 
     console.log('Plan payload:', planPayload);
-    if (editingPlanId) {
-      // Update existing plan
-      updatePlanMutation.mutate({ id: editingPlanId, data: planPayload });
-    } else {
-      // Create new plan
-      createDailyPlan.mutate(planPayload);
-    }
+    createDailyPlan.mutate(planPayload);
   };
 
   // Get historical plans with comprehensive data including linked journal entries
@@ -802,58 +782,9 @@ const DailyPlanPage = () => {
                         </div>
                       </div>
 
-                      {/* Plan Footer with Modify/Delete Buttons */}
-                      <div className="mt-2 pt-2 border-t border-gray-600/30 flex items-center justify-between">
-                        <div className="text-xs text-yellow-400 hover:text-yellow-300 transition-colors">
-                          Click to view detailed stats →
-                        </div>
-                        <div className="flex gap-1">
-                          <Button
-                            size="sm"
-                            variant="ghost"
-                            className="h-6 px-2 text-xs text-gray-400 hover:text-yellow-400 hover:bg-gray-700"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              // Set the plan data for editing
-                              setNewPlanData({
-                                riskAmount: plan.riskAmount,
-                                targetProfit: plan.targetProfit,
-                                maxTrades: plan.maxTrades,
-                                plannedTrades: plan.plannedTrades,
-                                riskRewardRatio: plan.riskRewardRatio,
-                                maxRiskPercentage: plan.maxRiskPercentage,
-                                plannedHours: plan.plannedHours,
-                                hourlyWage: plan.hourlyWage,
-                                marketConditions: plan.marketConditions || '',
-                                keyLevels: plan.keyLevels || '',
-                                tradingGoals: plan.tradingGoals || '',
-                                potentialSetups: plan.potentialSetups || '',
-                                riskManagementNotes: plan.riskManagementNotes || ''
-                              });
-                              setSelectedAccount(plan.accountId);
-                              setSelectedStrategy(plan.strategyId);
-                              setEditingPlanId(plan.id);
-                              setIsCreatePlanDialogOpen(true);
-                            }}
-                            title="Modify plan"
-                          >
-                            <Edit className="w-3 h-3" />
-                          </Button>
-                          <Button
-                            size="sm"
-                            variant="ghost"
-                            className="h-6 px-2 text-xs text-gray-400 hover:text-red-400 hover:bg-gray-700"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              if (window.confirm(`Are you sure you want to delete this daily plan? This cannot be undone.`)) {
-                                deleteDailyPlan.mutate(plan.id);
-                              }
-                            }}
-                            title="Delete plan"
-                          >
-                            <Trash2 className="w-3 h-3" />
-                          </Button>
-                        </div>
+                      {/* Plan Footer */}
+                      <div className="mt-2 pt-2 border-t border-gray-600/30 text-xs text-yellow-400 hover:text-yellow-300 transition-colors">
+                        Click to view detailed stats →
                       </div>
                     </div>
                   ))}
@@ -1055,9 +986,7 @@ const DailyPlanPage = () => {
       <Dialog open={isCreatePlanDialogOpen} onOpenChange={setIsCreatePlanDialogOpen}>
         <DialogContent className="max-w-4xl widget-card">
           <DialogHeader>
-            <DialogTitle className="widget-header">
-              {editingPlanId ? 'Modify Daily Trading Plan' : 'Create Daily Trading Plan'}
-            </DialogTitle>
+            <DialogTitle className="widget-header">Create Daily Trading Plan</DialogTitle>
           </DialogHeader>
           <div className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -1160,10 +1089,7 @@ const DailyPlanPage = () => {
           <div className="flex justify-end gap-3 pt-4 border-t border-gray-600">
             <Button
               variant="outline"
-              onClick={() => {
-                setIsCreatePlanDialogOpen(false);
-                resetPlanForm();
-              }}
+              onClick={() => setIsCreatePlanDialogOpen(false)}
               className="border-gray-600 text-gray-300"
             >
               Cancel
@@ -1171,12 +1097,10 @@ const DailyPlanPage = () => {
             <Button
               type="button"
               onClick={() => createNewPlan()}
-              disabled={!selectedAccount || !selectedStrategy || createDailyPlan.isPending || updatePlanMutation.isPending}
+              disabled={!selectedAccount || !selectedStrategy || createDailyPlan.isPending}
               className="bg-gradient-to-r from-yellow-400 to-yellow-600 text-black hover:from-yellow-500 hover:to-yellow-700"
             >
-              {createDailyPlan.isPending || updatePlanMutation.isPending ? 
-                (editingPlanId ? 'Updating...' : 'Creating...') : 
-                (editingPlanId ? 'Update Plan' : 'Create Plan')}
+              {createDailyPlan.isPending ? 'Creating...' : 'Create Plan'}
             </Button>
           </div>
         </DialogContent>

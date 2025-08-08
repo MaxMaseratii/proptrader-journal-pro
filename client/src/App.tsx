@@ -45,7 +45,7 @@ import RiskManagement from "@/pages/risk-management";
 import AccountManager from "@/pages/account-manager";
 import TradingJournalPage from "@/pages/trading-journal-page";
 import AnalyticsReports from "@/pages/analytics-reports";
-import InTheZone from "@/components/in-the-zone";
+import MentalFitness from "@/pages/mental-fitness";
 import NewsCalendar from "@/pages/news-calendar";
 import StrategyBuilder from "@/pages/strategy-builder";
 import Product from "@/pages/product";
@@ -108,7 +108,6 @@ function Router() {
           <Route path="/" component={Dashboard} />
           <Route path="/dashboard-simple" component={DashboardShowcase} />
           <Route path="/daily-plan" component={DailyPlan} />
-          <Route path="/in-the-zone" component={InTheZone} />
           <Route path="/trading-companion" component={TradingCompanion} />
           <Route path="/trading-dashboard" component={TradingDashboard} />
           <Route path="/projections" component={Projections} />
@@ -144,6 +143,7 @@ function Router() {
           <Route path="/account-manager" component={AccountManager} />
           <Route path="/trading-journal-page" component={TradingJournalPage} />
           <Route path="/analytics-reports" component={AnalyticsReports} />
+          <Route path="/mental-fitness" component={MentalFitness} />
           <Route path="/news-calendar" component={NewsCalendar} />
           <Route path="/strategy-builder" component={StrategyBuilder} />
           <Route path="/product" component={Product} />
