@@ -138,12 +138,12 @@ canvas {
 }
 
 /* CRITICAL: Override ALL hardcoded dark backgrounds in light mode */
-/* EXCEPTION: Do NOT override modal/dialog overlays and backgrounds */
-.light .bg-gray-800:not([data-radix-dialog-overlay]):not([data-radix-alert-dialog-overlay]):not([data-state]):not([role="dialog"]):not(.drawer-overlay),
-.light .bg-gray-900:not([data-radix-dialog-overlay]):not([data-radix-alert-dialog-overlay]):not([data-state]):not([role="dialog"]):not(.drawer-overlay),
-.light .bg-black:not([data-radix-dialog-overlay]):not([data-radix-alert-dialog-overlay]):not([data-state]):not([role="dialog"]):not(.drawer-overlay):not([class*="bg-black/"]),
-.light [class*="bg-gray-8"]:not([data-radix-dialog-overlay]):not([data-radix-alert-dialog-overlay]):not([data-state]):not([role="dialog"]):not(.drawer-overlay),
-.light [class*="bg-gray-9"]:not([data-radix-dialog-overlay]):not([data-radix-alert-dialog-overlay]):not([data-state]):not([role="dialog"]):not(.drawer-overlay) {
+/* EXCEPTION: Do NOT override modal/dialog overlays and dropdown menus */
+.light .bg-gray-800:not([data-radix-dialog-overlay]):not([data-radix-alert-dialog-overlay]):not([data-state]):not([role="dialog"]):not(.drawer-overlay):not([data-radix-dropdown-menu-content]),
+.light .bg-gray-900:not([data-radix-dialog-overlay]):not([data-radix-alert-dialog-overlay]):not([data-state]):not([role="dialog"]):not(.drawer-overlay):not([data-radix-dropdown-menu-content]),
+.light .bg-black:not([data-radix-dialog-overlay]):not([data-radix-alert-dialog-overlay]):not([data-state]):not([role="dialog"]):not(.drawer-overlay):not([class*="bg-black/"]):not([data-radix-dropdown-menu-content]),
+.light [class*="bg-gray-8"]:not([data-radix-dialog-overlay]):not([data-radix-alert-dialog-overlay]):not([data-state]):not([role="dialog"]):not(.drawer-overlay):not([data-radix-dropdown-menu-content]),
+.light [class*="bg-gray-9"]:not([data-radix-dialog-overlay]):not([data-radix-alert-dialog-overlay]):not([data-state]):not([role="dialog"]):not(.drawer-overlay):not([data-radix-dropdown-menu-content]) {
   background-color: white !important;
   color: black !important;
 }
@@ -185,9 +185,29 @@ canvas {
   background-color: rgba(0, 0, 0, 0.9) !important;
 }
 
-/* Prevent the profile dropdown from being affected by our light mode overrides */
-.dark [data-radix-dropdown-menu-content] {
-  background-color: hsl(var(--popover)) !important;
+/* CRITICAL: Force dropdown menu to have solid dark background */
+[data-radix-dropdown-menu-content] {
+  background-color: #1f2937 !important;
+  border: 1px solid #374151 !important;
+  color: white !important;
+  opacity: 1 !important;
+  backdrop-filter: none !important;
+}
+
+/* CRITICAL: Force dropdown menu items styling */
+[data-radix-dropdown-menu-item] {
+  color: white !important;
+  background-color: transparent !important;
+}
+
+[data-radix-dropdown-menu-item]:hover {
+  background-color: #374151 !important;
+}
+
+/* Nuclear option - force all dropdown styling */
+.w-64.bg-gray-800 {
+  background-color: #1f2937 !important;
+  opacity: 1 !important;
 }
 
 /* Fix dropdown content styling - but NOT for dark modal overlays */
