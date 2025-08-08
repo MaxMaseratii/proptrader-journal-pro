@@ -281,7 +281,7 @@ export default function DisciplineAnalyzer() {
         <Alert className="bg-gray-800 border-gray-700">
           <AlertTriangle className="h-4 w-4" />
           <AlertDescription>
-            No trades found for the selected account. Add trades through the Trades Log to perform discipline analysis.
+            No trades found for the selected account. Import your trading data first to perform discipline analysis.
           </AlertDescription>
         </Alert>
       ) : disciplineData ? (

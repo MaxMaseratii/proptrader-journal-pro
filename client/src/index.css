@@ -35,7 +35,6 @@
     --widget-text: 222.2 84% 4.9%;
     --widget-card: 0 0% 100%;
     --widget-border: 214.3 31.8% 91.4%;
-    --dialog-bg: #ffffff;
   }
 
   .dark {
@@ -69,76 +68,7 @@
     --widget-text: 210 40% 98%;
     --widget-card: 217.2 32.6% 17.5%;
     --widget-border: 217.2 32.6% 25%;
-    --dialog-bg: #000000;
   }
-}
-
-/* Dialog opacity fix - override bg-background class */
-.dialog-solid {
-  background-color: #ffffff !important;
-  opacity: 1 !important;
-  backdrop-filter: none !important;
-}
-
-.dark .dialog-solid {
-  background-color: #000000 !important;
-  opacity: 1 !important;
-}
-
-/* Force dialog to be solid - higher specificity to override bg-background */
-[data-radix-dialog-content].dialog-solid {
-  background-color: #ffffff !important;
-  opacity: 1 !important;
-}
-
-.dark [data-radix-dialog-content].dialog-solid {
-  background-color: #000000 !important;
-  opacity: 1 !important;
-}
-
-/* Override the bg-background class specifically */
-.bg-background.dialog-solid {
-  background-color: #ffffff !important;
-}
-
-.dark .bg-background.dialog-solid {
-  background-color: #000000 !important;
-}
-
-/* Ultimate fallback - target any element with dialog-solid class */
-*[class*="dialog-solid"] {
-  background-color: #ffffff !important;
-}
-
-.dark *[class*="dialog-solid"] {
-  background-color: #000000 !important;
-}
-
-/* Force override bg-background on dialogs - this is the key fix */
-[data-radix-dialog-content].bg-background {
-  background: #ffffff !important;
-}
-
-.dark [data-radix-dialog-content].bg-background {
-  background: #000000 !important;
-}
-
-/* Additional override for any dialog with multiple classes */
-[data-radix-dialog-content][class*="bg-background"] {
-  background: #ffffff !important;
-}
-
-.dark [data-radix-dialog-content][class*="bg-background"] {
-  background: #000000 !important;
-}
-
-/* Override any dialog overlay transparency */
-[data-radix-dialog-overlay] {
-  background-color: rgba(0, 0, 0, 0.8) !important;
-}
-
-.dark [data-radix-dialog-overlay] {
-  background-color: rgba(0, 0, 0, 0.9) !important;
 }
 
 /* Widget theme classes - CRITICAL THEME FIX */

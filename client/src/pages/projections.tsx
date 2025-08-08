@@ -106,15 +106,9 @@ export default function Projections() {
     queryKey: ["/api/trades"],
   });
 
-  const { data: user } = useQuery<{ id: string; email: string }>({
-    queryKey: ["/api/user"],
-  });
-
   const createAccountMutation = useMutation({
     mutationFn: async (data: InsertAccount) => {
-      // Add userId from current user
-      const dataWithUserId = { ...data, userId: user?.id };
-      return apiRequest("/api/accounts", "POST", dataWithUserId);
+      return apiRequest("/api/accounts", "POST", data);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/accounts'] });
@@ -147,8 +141,6 @@ export default function Projections() {
       hasDailyLossLimit: false,
       dailyLossLimit: null,
       dailyLossLimitType: "soft",
-      drawdownType: "trailing",
-
       
       // Account Rules
       minimumTradingDays: null,
@@ -193,7 +185,7 @@ export default function Projections() {
       primaryAsset: "ES" as AssetSymbol,
       secondaryAsset: "",
       tertiaryAsset: "",
-
+      takeProfitPoints: 20,
       tradingSessionStart: "",
       tradingSessionEnd: "",
       timezone: "",
@@ -211,8 +203,10 @@ export default function Projections() {
       preferredAssets: null,
       
       // Enhanced and Live Account Settings
+      enhancedPayoutsAvailable: false,
       liveAccountAvailable: false,
       transitionTrigger: null,
+      allowChallengePayouts: false,
       
       // Live account transition settings
       liveAccountTransitionEnabled: false,
@@ -502,7 +496,7 @@ export default function Projections() {
       {/* Enhanced PropFirms Accounts Section */}
       <div className="space-y-6">
         <div className="flex items-center justify-between">
-          <h2 className="text-2xl font-semibold text-gray-900 dark:text-white flex items-center gap-2">
+          <h2 className="text-2xl font-semibold text-white flex items-center gap-2">
             <Shield className="w-6 h-6 text-yellow-500" />
             Trading Accounts
           </h2>
@@ -510,7 +504,7 @@ export default function Projections() {
             variant="ghost"
             size="sm"
             onClick={() => setIsAccountsMinimized(!isAccountsMinimized)}
-            className="text-gray-400 hover:text-gray-900 dark:text-white"
+            className="text-gray-400 hover:text-white"
           >
             {isAccountsMinimized ? <ChevronDown className="h-4 w-4" /> : <ChevronUp className="h-4 w-4" />}
           </Button>
@@ -527,7 +521,7 @@ export default function Projections() {
 
       {/* Enhanced Risk Management & Projection Section */}
       <div className="space-y-6">
-        <h2 className="text-2xl font-semibold text-gray-900 dark:text-white flex items-center gap-2">
+        <h2 className="text-2xl font-semibold text-white flex items-center gap-2">
           <Calculator className="w-6 h-6 text-yellow-500" />
           Target Projection Calculator
         </h2>
@@ -882,7 +876,7 @@ export default function Projections() {
                 <Card className="bg-blue-600 border-blue-500/20">
                   <CardContent className="p-4">
                     <div className="text-center">
-                      <div className="text-2xl font-bold text-gray-900 dark:text-white">
+                      <div className="text-2xl font-bold text-white">
                         {daysToTarget}
                       </div>
                       <div className="text-sm text-blue-100">Days to Target</div>
@@ -902,7 +896,7 @@ export default function Projections() {
                 <Card className="bg-green-600 border-green-500/20">
                   <CardContent className="p-4">
                     <div className="text-center">
-                      <div className="text-2xl font-bold text-gray-900 dark:text-white">
+                      <div className="text-2xl font-bold text-white">
                         {progressPercentage.toFixed(1)}%
                       </div>
                       <div className="text-sm text-green-100">Progress</div>
@@ -912,7 +906,7 @@ export default function Projections() {
                 <Card className="bg-lime-600 border-lime-500/20">
                   <CardContent className="p-4">
                     <div className="text-center">
-                      <div className="text-2xl font-bold text-gray-900 dark:text-white">
+                      <div className="text-2xl font-bold text-white">
                         {selectedAccountData ? selectedAccountData.trades.filter((trade, index, self) => 
                           self.findIndex(t => t.date === trade.date) === index
                         ).length : 0}
@@ -927,7 +921,7 @@ export default function Projections() {
               {settings.mode === 'account' && selectedAccountData && (
                 <Card className="bg-dark-card border-dark-border">
                   <CardHeader>
-                    <CardTitle className="text-gray-900 dark:text-white">Selected Account Summary</CardTitle>
+                    <CardTitle className="text-white">Selected Account Summary</CardTitle>
                   </CardHeader>
                   <CardContent>
                     <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
@@ -967,7 +961,7 @@ export default function Projections() {
                   <div className="flex items-center gap-3 mb-4">
                     <BarChart3 className="w-6 h-6 text-yellow-500" />
                     <div>
-                      <CardTitle className="text-gray-900 dark:text-white text-xl">Daily Trading Projection</CardTitle>
+                      <CardTitle className="text-white text-xl">Daily Trading Projection</CardTitle>
                       <p className="text-gray-400 text-sm mt-1">
                         Day-by-day breakdown of your path to ${formatCurrency(settings.profitTarget)} target
                       </p>
@@ -982,7 +976,7 @@ export default function Projections() {
                         <Shield className="w-4 h-4 text-blue-400" />
                         <span className="text-blue-400 font-medium text-sm">RISK PER TRADE</span>
                       </div>
-                      <div className="text-2xl font-bold text-gray-900 dark:text-white">{formatCurrency(settings.riskPerTrade)}</div>
+                      <div className="text-2xl font-bold text-white">{formatCurrency(settings.riskPerTrade)}</div>
                       <div className="text-xs text-gray-400">Amount you risk per trade</div>
                     </div>
                     
@@ -992,7 +986,7 @@ export default function Projections() {
                         <Target className="w-4 h-4 text-green-400" />
                         <span className="text-green-400 font-medium text-sm">DAILY PROFIT TARGET</span>
                       </div>
-                      <div className="text-2xl font-bold text-gray-900 dark:text-white">{formatCurrency(settings.riskPerTrade * settings.riskRewardRatio)}</div>
+                      <div className="text-2xl font-bold text-white">{formatCurrency(settings.riskPerTrade * settings.riskRewardRatio)}</div>
                       <div className="text-xs text-gray-400">Single account only</div>
                     </div>
                     
@@ -1002,7 +996,7 @@ export default function Projections() {
                         <TrendingUp className="w-4 h-4 text-purple-400" />
                         <span className="text-purple-400 font-medium text-sm">ESTIMATED TIMELINE</span>
                       </div>
-                      <div className="text-2xl font-bold text-gray-900 dark:text-white">{projectionData.length} days</div>
+                      <div className="text-2xl font-bold text-white">{projectionData.length} days</div>
                       <div className="text-xs text-gray-400">To reach your target goal</div>
                     </div>
                   </div>
@@ -1011,7 +1005,7 @@ export default function Projections() {
                 <CardContent>
                   {/* How This Works Section */}
                   <div className="bg-gray-800/50 rounded-lg p-4 mb-6">
-                    <h4 className="text-gray-900 dark:text-white font-semibold mb-2 flex items-center gap-2">
+                    <h4 className="text-white font-semibold mb-2 flex items-center gap-2">
                       <Calculator className="w-4 h-4" />
                       How This Works
                     </h4>
@@ -1122,7 +1116,7 @@ export default function Projections() {
                                   <div className="flex items-center gap-3">
                                     <div className="flex items-center justify-center w-8 h-8 rounded-full bg-blue-500/20 text-blue-400 text-sm font-semibold">{day.dayNumber}</div>
                                     <div>
-                                      <div className="text-gray-900 dark:text-white font-medium">{dayDate}</div>
+                                      <div className="text-white font-medium">{dayDate}</div>
                                       <div className="text-xs text-gray-400">Day {day.dayNumber}</div>
                                     </div>
                                   </div>
@@ -1179,13 +1173,10 @@ export default function Projections() {
 
         {/* Account Creation Dialog */}
         <Dialog open={isAccountDialogOpen} onOpenChange={setIsAccountDialogOpen}>
-          <DialogContent 
-            className="max-w-4xl max-h-[90vh] dialog-solid border-gray-300 dark:border-gray-700"
-            style={{ backgroundColor: '#000000' }}
-          >
+          <DialogContent className="max-w-4xl max-h-[90vh] bg-gray-900 border-gray-700">
             <DialogHeader>
-              <DialogTitle className="text-gray-900 dark:text-gray-900 dark:text-white text-xl">Create New Trading Account</DialogTitle>
-              <DialogDescription className="text-gray-600 dark:text-gray-400">
+              <DialogTitle className="text-white text-xl">Create New Trading Account</DialogTitle>
+              <DialogDescription className="text-gray-400">
                 Set up a new trading account with proper risk management and financial tracking.
               </DialogDescription>
             </DialogHeader>
@@ -1193,7 +1184,7 @@ export default function Projections() {
               <Form {...accountForm}>
                 <form onSubmit={accountForm.handleSubmit((data) => createAccountMutation.mutate(data))} className="space-y-6">
                   <Tabs defaultValue="basic" className="w-full">
-                    <TabsList className="grid w-full grid-cols-3 bg-gray-100 dark:bg-gray-800">
+                    <TabsList className="grid w-full grid-cols-3 bg-gray-800">
                       <TabsTrigger value="basic">Basic Info</TabsTrigger>
                       <TabsTrigger value="financial">Financial</TabsTrigger>
                       <TabsTrigger value="rules">Rules & Risk</TabsTrigger>
@@ -1206,9 +1197,9 @@ export default function Projections() {
                           name="name"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel className="text-gray-900 dark:text-gray-900 dark:text-white">Account Name</FormLabel>
+                              <FormLabel className="text-white">Account Name</FormLabel>
                               <FormControl>
-                                <Input {...field} className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-900 dark:text-white" placeholder="My Trading Account" />
+                                <Input {...field} className="bg-gray-800 border-gray-600 text-white" placeholder="My Trading Account" />
                               </FormControl>
                               <FormMessage />
                             </FormItem>
@@ -1219,9 +1210,9 @@ export default function Projections() {
                           name="firm"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel className="text-gray-900 dark:text-gray-900 dark:text-white">Prop Firm</FormLabel>
+                              <FormLabel className="text-white">Prop Firm</FormLabel>
                               <FormControl>
-                                <Input {...field} className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-900 dark:text-white" placeholder="FTMO, TopstepTrader, etc." />
+                                <Input {...field} className="bg-gray-800 border-gray-600 text-white" placeholder="FTMO, TopstepTrader, etc." />
                               </FormControl>
                               <FormMessage />
                             </FormItem>
@@ -1235,14 +1226,14 @@ export default function Projections() {
                           name="type"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel className="text-gray-900 dark:text-gray-900 dark:text-white">Account Type</FormLabel>
+                              <FormLabel className="text-white">Account Type</FormLabel>
                               <Select onValueChange={field.onChange} defaultValue={field.value}>
                                 <FormControl>
-                                  <SelectTrigger className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-900 dark:text-white">
+                                  <SelectTrigger className="bg-gray-800 border-gray-600 text-white">
                                     <SelectValue placeholder="Select type" />
                                   </SelectTrigger>
                                 </FormControl>
-                                <SelectContent className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600">
+                                <SelectContent className="bg-gray-800 border-gray-600">
                                   <SelectItem value="challenge">Challenge</SelectItem>
                                   <SelectItem value="funded">Funded</SelectItem>
                                   <SelectItem value="live">Live</SelectItem>
@@ -1257,14 +1248,14 @@ export default function Projections() {
                           name="status"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel className="text-gray-900 dark:text-gray-900 dark:text-white">Status</FormLabel>
+                              <FormLabel className="text-white">Status</FormLabel>
                               <Select onValueChange={field.onChange} defaultValue={field.value}>
                                 <FormControl>
-                                  <SelectTrigger className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-900 dark:text-white">
+                                  <SelectTrigger className="bg-gray-800 border-gray-600 text-white">
                                     <SelectValue placeholder="Select status" />
                                   </SelectTrigger>
                                 </FormControl>
-                                <SelectContent className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600">
+                                <SelectContent className="bg-gray-800 border-gray-600">
                                   <SelectItem value="active">Active</SelectItem>
                                   <SelectItem value="passed">Passed</SelectItem>
                                   <SelectItem value="failed">Failed</SelectItem>
@@ -1280,12 +1271,12 @@ export default function Projections() {
                           name="startingBalance"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel className="text-gray-900 dark:text-gray-900 dark:text-white">Starting Balance</FormLabel>
+                              <FormLabel className="text-white">Starting Balance</FormLabel>
                               <FormControl>
                                 <Input 
                                   {...field} 
                                   type="number" 
-                                  className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-900 dark:text-white" 
+                                  className="bg-gray-800 border-gray-600 text-white" 
                                   placeholder="100000"
                                   value={field.value === 0 ? "" : field.value}
                                   onChange={(e) => field.onChange(e.target.value === "" ? 0 : parseFloat(e.target.value))}
@@ -1303,12 +1294,12 @@ export default function Projections() {
                           name="profitTarget"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel className="text-gray-900 dark:text-gray-900 dark:text-white">Profit Target</FormLabel>
+                              <FormLabel className="text-white">Profit Target</FormLabel>
                               <FormControl>
                                 <Input 
                                   {...field} 
                                   type="number" 
-                                  className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-900 dark:text-white" 
+                                  className="bg-gray-800 border-gray-600 text-white" 
                                   placeholder="10000"
                                   value={field.value === 0 ? "" : field.value}
                                   onChange={(e) => field.onChange(e.target.value === "" ? 0 : parseFloat(e.target.value))}
@@ -1323,12 +1314,12 @@ export default function Projections() {
                           name="maxDrawdown"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel className="text-gray-900 dark:text-gray-900 dark:text-white">Max Drawdown</FormLabel>
+                              <FormLabel className="text-white">Max Drawdown</FormLabel>
                               <FormControl>
                                 <Input 
                                   {...field} 
                                   type="number" 
-                                  className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-900 dark:text-white" 
+                                  className="bg-gray-800 border-gray-600 text-white" 
                                   placeholder="5000"
                                   value={field.value === 0 ? "" : field.value}
                                   onChange={(e) => field.onChange(e.target.value === "" ? 0 : parseFloat(e.target.value))}
@@ -1346,12 +1337,12 @@ export default function Projections() {
                           name="minimumTradingDays"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel className="text-gray-900 dark:text-gray-900 dark:text-white">Minimum Trading Days</FormLabel>
+                              <FormLabel className="text-white">Minimum Trading Days</FormLabel>
                               <FormControl>
                                 <Input 
                                   {...field} 
                                   type="number" 
-                                  className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-900 dark:text-white" 
+                                  className="bg-gray-800 border-gray-600 text-white" 
                                   placeholder="5"
                                   value={field.value || ""}
                                   onChange={(e) => field.onChange(parseFloat(e.target.value) || null)}
@@ -1366,12 +1357,12 @@ export default function Projections() {
                           name="timeLimit"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel className="text-gray-900 dark:text-gray-900 dark:text-white">Time Limit (days)</FormLabel>
+                              <FormLabel className="text-white">Time Limit (days)</FormLabel>
                               <FormControl>
                                 <Input 
                                   {...field} 
                                   type="number" 
-                                  className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-900 dark:text-white" 
+                                  className="bg-gray-800 border-gray-600 text-white" 
                                   placeholder="30"
                                   value={field.value || ""}
                                   onChange={(e) => field.onChange(parseFloat(e.target.value) || null)}
@@ -1386,44 +1377,17 @@ export default function Projections() {
                           name="consistencyRulePercent"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel className="text-gray-900 dark:text-gray-900 dark:text-white">Consistency Rule (%)</FormLabel>
+                              <FormLabel className="text-white">Consistency Rule (%)</FormLabel>
                               <FormControl>
                                 <Input 
                                   {...field} 
                                   type="number" 
-                                  className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-900 dark:text-white" 
+                                  className="bg-gray-800 border-gray-600 text-white" 
                                   placeholder="50"
                                   value={field.value || ""}
                                   onChange={(e) => field.onChange(parseFloat(e.target.value) || null)}
                                 />
                               </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                      </div>
-
-                      <div className="grid grid-cols-1 gap-4">
-                        <FormField
-                          control={accountForm.control}
-                          name="drawdownType"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel className="text-gray-900 dark:text-gray-900 dark:text-white">Drawdown Type</FormLabel>
-                              <Select onValueChange={field.onChange} value={field.value || ""}>
-                                <FormControl>
-                                  <SelectTrigger className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-900 dark:text-white">
-                                    <SelectValue placeholder="Select drawdown type" />
-                                  </SelectTrigger>
-                                </FormControl>
-                                <SelectContent className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600">
-                                  <SelectItem value="trailing">Trailing</SelectItem>
-                                  <SelectItem value="daily">Daily</SelectItem>
-                                  <SelectItem value="unrealized">Unrealized</SelectItem>
-                                  <SelectItem value="balance_based">Balance Based</SelectItem>
-                                  <SelectItem value="static">Static</SelectItem>
-                                </SelectContent>
-                              </Select>
                               <FormMessage />
                             </FormItem>
                           )}
@@ -1438,13 +1402,13 @@ export default function Projections() {
                             <FormItem className="flex flex-row items-center space-x-3 space-y-0">
                               <FormControl>
                                 <Checkbox
-                                  checked={field.value || false}
+                                  checked={field.value}
                                   onCheckedChange={field.onChange}
-                                  className="border-gray-300 dark:border-gray-600 data-[state=checked]:bg-blue-600 data-[state=checked]:dark:bg-blue-600"
+                                  className="border-gray-600 data-[state=checked]:bg-blue-600"
                                 />
                               </FormControl>
                               <div className="space-y-1 leading-none">
-                                <FormLabel className="text-gray-900 dark:text-gray-900 dark:text-white">Has Daily Loss Limit</FormLabel>
+                                <FormLabel className="text-white">Has Daily Loss Limit</FormLabel>
                               </div>
                             </FormItem>
                           )}
@@ -1459,12 +1423,12 @@ export default function Projections() {
                           name="accountCost"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel className="text-gray-900 dark:text-gray-900 dark:text-white">Account Cost</FormLabel>
+                              <FormLabel className="text-white">Account Cost</FormLabel>
                               <FormControl>
                                 <Input 
                                   {...field} 
                                   type="number" 
-                                  className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-900 dark:text-white" 
+                                  className="bg-gray-800 border-gray-600 text-white" 
                                   placeholder="599"
                                   value={field.value || ""}
                                   onChange={(e) => field.onChange(parseFloat(e.target.value) || null)}
@@ -1479,12 +1443,12 @@ export default function Projections() {
                           name="activationCost"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel className="text-gray-900 dark:text-gray-900 dark:text-white">Activation Cost</FormLabel>
+                              <FormLabel className="text-white">Activation Cost</FormLabel>
                               <FormControl>
                                 <Input 
                                   {...field} 
                                   type="number" 
-                                  className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-900 dark:text-white" 
+                                  className="bg-gray-800 border-gray-600 text-white" 
                                   placeholder="200"
                                   value={field.value || ""}
                                   onChange={(e) => field.onChange(parseFloat(e.target.value) || null)}
@@ -1502,14 +1466,14 @@ export default function Projections() {
                           name="purchaseMethod"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel className="text-gray-900 dark:text-gray-900 dark:text-white">Purchase Method</FormLabel>
+                              <FormLabel className="text-white">Purchase Method</FormLabel>
                               <Select onValueChange={field.onChange} value={field.value || ""}>
                                 <FormControl>
-                                  <SelectTrigger className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-900 dark:text-white">
+                                  <SelectTrigger className="bg-gray-800 border-gray-600 text-white">
                                     <SelectValue placeholder="Select payment method" />
                                   </SelectTrigger>
                                 </FormControl>
-                                <SelectContent className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600">
+                                <SelectContent className="bg-gray-800 border-gray-600">
                                   <SelectItem value="credit_card">Credit Card</SelectItem>
                                   <SelectItem value="paypal">PayPal</SelectItem>
                                   <SelectItem value="crypto">Cryptocurrency</SelectItem>
@@ -1526,12 +1490,12 @@ export default function Projections() {
                           name="resetCount"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel className="text-gray-900 dark:text-gray-900 dark:text-white">Reset Count</FormLabel>
+                              <FormLabel className="text-white">Reset Count</FormLabel>
                               <FormControl>
                                 <Input 
                                   {...field} 
                                   type="number" 
-                                  className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-900 dark:text-white" 
+                                  className="bg-gray-800 border-gray-600 text-white" 
                                   placeholder="0"
                                   value={field.value || ""}
                                   onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
@@ -1549,12 +1513,12 @@ export default function Projections() {
                           name="totalResetsCost"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel className="text-gray-900 dark:text-gray-900 dark:text-white">Total Resets Cost</FormLabel>
+                              <FormLabel className="text-white">Total Resets Cost</FormLabel>
                               <FormControl>
                                 <Input 
                                   {...field} 
                                   type="number" 
-                                  className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-900 dark:text-white" 
+                                  className="bg-gray-800 border-gray-600 text-white" 
                                   placeholder="0"
                                   value={field.value || ""}
                                   onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
@@ -1569,12 +1533,12 @@ export default function Projections() {
                           name="profitSplit"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel className="text-gray-900 dark:text-gray-900 dark:text-white">Profit Split (%)</FormLabel>
+                              <FormLabel className="text-white">Profit Split (%)</FormLabel>
                               <FormControl>
                                 <Input 
                                   {...field} 
                                   type="number" 
-                                  className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-900 dark:text-white" 
+                                  className="bg-gray-800 border-gray-600 text-white" 
                                   placeholder="80"
                                   value={field.value || ""}
                                   onChange={(e) => field.onChange(parseFloat(e.target.value) || null)}
@@ -1594,13 +1558,13 @@ export default function Projections() {
                             <FormItem className="flex flex-row items-center space-x-3 space-y-0">
                               <FormControl>
                                 <Checkbox
-                                  checked={field.value || false}
+                                  checked={field.value}
                                   onCheckedChange={field.onChange}
-                                  className="border-gray-300 dark:border-gray-600 data-[state=checked]:bg-blue-600 data-[state=checked]:dark:bg-blue-600"
+                                  className="border-gray-600 data-[state=checked]:bg-blue-600"
                                 />
                               </FormControl>
                               <div className="space-y-1 leading-none">
-                                <FormLabel className="text-gray-900 dark:text-gray-900 dark:text-white">Activation Fee Paid</FormLabel>
+                                <FormLabel className="text-white">Activation Fee Paid</FormLabel>
                               </div>
                             </FormItem>
                           )}
@@ -1612,13 +1576,13 @@ export default function Projections() {
                             <FormItem className="flex flex-row items-center space-x-3 space-y-0">
                               <FormControl>
                                 <Checkbox
-                                  checked={field.value || false}
+                                  checked={field.value}
                                   onCheckedChange={field.onChange}
-                                  className="border-gray-300 dark:border-gray-600 data-[state=checked]:bg-blue-600 data-[state=checked]:dark:bg-blue-600"
+                                  className="border-gray-600 data-[state=checked]:bg-blue-600"
                                 />
                               </FormControl>
                               <div className="space-y-1 leading-none">
-                                <FormLabel className="text-gray-900 dark:text-gray-900 dark:text-white">Includes Activation Fee</FormLabel>
+                                <FormLabel className="text-white">Includes Activation Fee</FormLabel>
                               </div>
                             </FormItem>
                           )}
@@ -1634,12 +1598,12 @@ export default function Projections() {
                           name="riskPerTrade"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel className="text-gray-900 dark:text-gray-900 dark:text-white">Risk Per Trade ($)</FormLabel>
+                              <FormLabel className="text-white">Risk Per Trade ($)</FormLabel>
                               <FormControl>
                                 <Input 
                                   {...field} 
                                   type="number" 
-                                  className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-900 dark:text-white" 
+                                  className="bg-gray-800 border-gray-600 text-white" 
                                   placeholder="500"
                                   value={field.value === null ? "" : field.value}
                                   onChange={(e) => field.onChange(e.target.value === "" ? null : parseFloat(e.target.value))}
@@ -1672,14 +1636,14 @@ export default function Projections() {
                           name="riskPerTradeDivider"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel className="text-gray-900 dark:text-gray-900 dark:text-white">Risk Per Trade Divider</FormLabel>
+                              <FormLabel className="text-white">Risk Per Trade Divider</FormLabel>
                               <FormControl>
                                 <Input 
                                   {...field} 
                                   type="number" 
                                   min="1"
                                   max="10"
-                                  className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-900 dark:text-white" 
+                                  className="bg-gray-800 border-gray-600 text-white" 
                                   placeholder="1"
                                   value={field.value === null ? "" : field.value}
                                   onChange={(e) => field.onChange(e.target.value === "" ? null : parseInt(e.target.value))}
@@ -1705,12 +1669,12 @@ export default function Projections() {
                           name="dailyLossLimit"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel className="text-gray-900 dark:text-gray-900 dark:text-white">Daily Loss Limit ($)</FormLabel>
+                              <FormLabel className="text-white">Daily Loss Limit ($)</FormLabel>
                               <FormControl>
                                 <Input 
                                   {...field} 
                                   type="number" 
-                                  className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-900 dark:text-white" 
+                                  className="bg-gray-800 border-gray-600 text-white" 
                                   placeholder="2000"
                                   value={field.value === null ? "" : field.value}
                                   onChange={(e) => field.onChange(e.target.value === "" ? null : parseFloat(e.target.value))}
@@ -1744,12 +1708,12 @@ export default function Projections() {
                           name="maxTradesPerDay"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel className="text-gray-900 dark:text-gray-900 dark:text-white">Max Trades Per Day</FormLabel>
+                              <FormLabel className="text-white">Max Trades Per Day</FormLabel>
                               <FormControl>
                                 <Input 
                                   {...field} 
                                   type="number" 
-                                  className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-900 dark:text-white" 
+                                  className="bg-gray-800 border-gray-600 text-white" 
                                   placeholder="5"
                                   value={field.value === null ? "" : field.value}
                                   onChange={(e) => field.onChange(e.target.value === "" ? null : parseInt(e.target.value))}
@@ -1764,12 +1728,12 @@ export default function Projections() {
                           name="maxRiskPerDay"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel className="text-gray-900 dark:text-gray-900 dark:text-white">Max Risk Per Day ($)</FormLabel>
+                              <FormLabel className="text-white">Max Risk Per Day ($)</FormLabel>
                               <FormControl>
                                 <Input 
                                   {...field} 
                                   type="number" 
-                                  className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-900 dark:text-white" 
+                                  className="bg-gray-800 border-gray-600 text-white" 
                                   placeholder="3000"
                                   value={field.value === null ? "" : field.value}
                                   onChange={(e) => field.onChange(e.target.value === "" ? null : parseFloat(e.target.value))}
@@ -1791,13 +1755,13 @@ export default function Projections() {
                           name="riskRewardRatio"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel className="text-gray-900 dark:text-gray-900 dark:text-white">Risk:Reward Ratio (1:X)</FormLabel>
+                              <FormLabel className="text-white">Risk:Reward Ratio (1:X)</FormLabel>
                               <FormControl>
                                 <Input 
                                   {...field} 
                                   type="number" 
                                   step="0.1"
-                                  className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-900 dark:text-white" 
+                                  className="bg-gray-800 border-gray-600 text-white" 
                                   placeholder="2.0"
                                   value={field.value === null ? "" : field.value}
                                   onChange={(e) => field.onChange(e.target.value === "" ? null : parseFloat(e.target.value))}
@@ -1822,11 +1786,11 @@ export default function Projections() {
                           name="primaryAsset"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel className="text-gray-900 dark:text-gray-900 dark:text-white">Primary Asset</FormLabel>
+                              <FormLabel className="text-white">Primary Asset</FormLabel>
                               <FormControl>
                                 <Input 
                                   {...field} 
-                                  className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-900 dark:text-white" 
+                                  className="bg-gray-800 border-gray-600 text-white" 
                                   placeholder="e.g. ES, NQ, EURUSD, BTCUSD"
                                   value={field.value || ""}
                                 />
@@ -1840,11 +1804,11 @@ export default function Projections() {
                           name="secondaryAsset"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel className="text-gray-900 dark:text-gray-900 dark:text-white">Secondary Asset</FormLabel>
+                              <FormLabel className="text-white">Secondary Asset</FormLabel>
                               <FormControl>
                                 <Input 
                                   {...field} 
-                                  className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-900 dark:text-white" 
+                                  className="bg-gray-800 border-gray-600 text-white" 
                                   placeholder="e.g. CL, GC, GBPUSD"
                                   value={field.value || ""}
                                 />
@@ -1858,11 +1822,11 @@ export default function Projections() {
                           name="tertiaryAsset"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel className="text-gray-900 dark:text-gray-900 dark:text-white">Tertiary Asset</FormLabel>
+                              <FormLabel className="text-white">Tertiary Asset</FormLabel>
                               <FormControl>
                                 <Input 
                                   {...field} 
-                                  className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-900 dark:text-white" 
+                                  className="bg-gray-800 border-gray-600 text-white" 
                                   placeholder="e.g. RTY, YM, USDJPY"
                                   value={field.value || ""}
                                 />
@@ -1879,13 +1843,33 @@ export default function Projections() {
                           name="stopLossPoints"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel className="text-gray-900 dark:text-gray-900 dark:text-white">Default Stop Loss (Points/Pips)</FormLabel>
+                              <FormLabel className="text-white">Default Stop Loss (Points/Pips)</FormLabel>
                               <FormControl>
                                 <Input 
                                   {...field} 
                                   type="number" 
-                                  className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-900 dark:text-white" 
+                                  className="bg-gray-800 border-gray-600 text-white" 
                                   placeholder="10"
+                                  value={field.value === null || field.value === undefined ? "" : field.value}
+                                  onChange={(e) => field.onChange(e.target.value === "" ? null : parseInt(e.target.value))}
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={accountForm.control}
+                          name="takeProfitPoints"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="text-white">Default Take Profit (Points/Pips)</FormLabel>
+                              <FormControl>
+                                <Input 
+                                  {...field} 
+                                  type="number" 
+                                  className="bg-gray-800 border-gray-600 text-white" 
+                                  placeholder="20"
                                   value={field.value === null || field.value === undefined ? "" : field.value}
                                   onChange={(e) => field.onChange(e.target.value === "" ? null : parseInt(e.target.value))}
                                 />
@@ -1902,12 +1886,12 @@ export default function Projections() {
                           name="daysRequiredForPayout"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel className="text-gray-900 dark:text-gray-900 dark:text-white">Days Required for Payout</FormLabel>
+                              <FormLabel className="text-white">Days Required for Payout</FormLabel>
                               <FormControl>
                                 <Input 
                                   {...field} 
                                   type="number" 
-                                  className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-900 dark:text-white" 
+                                  className="bg-gray-800 border-gray-600 text-white" 
                                   placeholder="5"
                                   value={field.value || ""}
                                   onChange={(e) => field.onChange(parseInt(e.target.value) || null)}
@@ -1922,12 +1906,12 @@ export default function Projections() {
                           name="winningDayMinimum"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel className="text-gray-900 dark:text-gray-900 dark:text-white">Daily Profit Target ($)</FormLabel>
+                              <FormLabel className="text-white">Daily Profit Target ($)</FormLabel>
                               <FormControl>
                                 <Input 
                                   {...field} 
                                   type="number" 
-                                  className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-900 dark:text-white" 
+                                  className="bg-gray-800 border-gray-600 text-white" 
                                   placeholder="200"
                                   value={field.value === null ? "" : field.value}
                                   onChange={(e) => field.onChange(e.target.value === "" ? null : parseFloat(e.target.value))}
@@ -1945,12 +1929,12 @@ export default function Projections() {
                           name="minimumPayoutAmount"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel className="text-gray-900 dark:text-gray-900 dark:text-white">Minimum Payout Amount ($)</FormLabel>
+                              <FormLabel className="text-white">Minimum Payout Amount ($)</FormLabel>
                               <FormControl>
                                 <Input 
                                   {...field} 
                                   type="number" 
-                                  className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-900 dark:text-white" 
+                                  className="bg-gray-800 border-gray-600 text-white" 
                                   placeholder="100"
                                   value={field.value || ""}
                                   onChange={(e) => field.onChange(parseFloat(e.target.value) || null)}
@@ -1965,12 +1949,12 @@ export default function Projections() {
                           name="maxNetBalanceForPayout"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel className="text-gray-900 dark:text-gray-900 dark:text-white">Max Net Balance for Payout ($)</FormLabel>
+                              <FormLabel className="text-white">Max Net Balance for Payout ($)</FormLabel>
                               <FormControl>
                                 <Input 
                                   {...field} 
                                   type="number" 
-                                  className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-900 dark:text-white" 
+                                  className="bg-gray-800 border-gray-600 text-white" 
                                   placeholder="5000"
                                   value={field.value || ""}
                                   onChange={(e) => field.onChange(parseFloat(e.target.value) || null)}
@@ -1997,10 +1981,10 @@ export default function Projections() {
                               name="personalTradingTimeStart1"
                               render={({ field }) => (
                                 <FormItem>
-                                  <FormLabel className="text-gray-900 dark:text-gray-900 dark:text-white">Personal Trading Time Start - Time1</FormLabel>
+                                  <FormLabel className="text-white">Personal Trading Time Start - Time1</FormLabel>
                                   <Select onValueChange={field.onChange} value={field.value || ""}>
                                     <FormControl>
-                                      <SelectTrigger className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-900 dark:text-white">
+                                      <SelectTrigger className="bg-gray-800 border-gray-600 text-white">
                                         <SelectValue placeholder="--:-- --" />
                                       </SelectTrigger>
                                     </FormControl>
@@ -2026,10 +2010,10 @@ export default function Projections() {
                               name="personalTradingTimeEnd1"
                               render={({ field }) => (
                                 <FormItem>
-                                  <FormLabel className="text-gray-900 dark:text-gray-900 dark:text-white">Personal Trading Time End - Time1</FormLabel>
+                                  <FormLabel className="text-white">Personal Trading Time End - Time1</FormLabel>
                                   <Select onValueChange={field.onChange} value={field.value || ""}>
                                     <FormControl>
-                                      <SelectTrigger className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-900 dark:text-white">
+                                      <SelectTrigger className="bg-gray-800 border-gray-600 text-white">
                                         <SelectValue placeholder="--:-- --" />
                                       </SelectTrigger>
                                     </FormControl>
@@ -2055,14 +2039,14 @@ export default function Projections() {
                               name="personalTradingTimeZone1"
                               render={({ field }) => (
                                 <FormItem>
-                                  <FormLabel className="text-gray-900 dark:text-gray-900 dark:text-white">Timezone</FormLabel>
+                                  <FormLabel className="text-white">Timezone</FormLabel>
                                   <Select onValueChange={field.onChange} value={field.value || ""}>
                                     <FormControl>
-                                      <SelectTrigger className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-900 dark:text-white">
+                                      <SelectTrigger className="bg-gray-800 border-gray-600 text-white">
                                         <SelectValue placeholder="Select timezone" />
                                       </SelectTrigger>
                                     </FormControl>
-                                    <SelectContent className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600">
+                                    <SelectContent className="bg-gray-800 border-gray-600">
                                       <SelectItem value="EST">EST - Eastern Standard Time</SelectItem>
                                       <SelectItem value="CST">CST - Central Standard Time</SelectItem>
                                       <SelectItem value="MST">MST - Mountain Standard Time</SelectItem>
@@ -2089,10 +2073,10 @@ export default function Projections() {
                               name="personalTradingTimeStart2"
                               render={({ field }) => (
                                 <FormItem>
-                                  <FormLabel className="text-gray-900 dark:text-gray-900 dark:text-white">Personal Trading Time Start - Time2</FormLabel>
+                                  <FormLabel className="text-white">Personal Trading Time Start - Time2</FormLabel>
                                   <Select onValueChange={field.onChange} value={field.value || ""}>
                                     <FormControl>
-                                      <SelectTrigger className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-900 dark:text-white">
+                                      <SelectTrigger className="bg-gray-800 border-gray-600 text-white">
                                         <SelectValue placeholder="--:-- --" />
                                       </SelectTrigger>
                                     </FormControl>
@@ -2118,10 +2102,10 @@ export default function Projections() {
                               name="personalTradingTimeEnd2"
                               render={({ field }) => (
                                 <FormItem>
-                                  <FormLabel className="text-gray-900 dark:text-gray-900 dark:text-white">Personal Trading Time End - Time2</FormLabel>
+                                  <FormLabel className="text-white">Personal Trading Time End - Time2</FormLabel>
                                   <Select onValueChange={field.onChange} value={field.value || ""}>
                                     <FormControl>
-                                      <SelectTrigger className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-900 dark:text-white">
+                                      <SelectTrigger className="bg-gray-800 border-gray-600 text-white">
                                         <SelectValue placeholder="--:-- --" />
                                       </SelectTrigger>
                                     </FormControl>
@@ -2147,14 +2131,14 @@ export default function Projections() {
                               name="personalTradingTimeZone2"
                               render={({ field }) => (
                                 <FormItem>
-                                  <FormLabel className="text-gray-900 dark:text-gray-900 dark:text-white">Timezone</FormLabel>
+                                  <FormLabel className="text-white">Timezone</FormLabel>
                                   <Select onValueChange={field.onChange} value={field.value || ""}>
                                     <FormControl>
-                                      <SelectTrigger className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-900 dark:text-white">
+                                      <SelectTrigger className="bg-gray-800 border-gray-600 text-white">
                                         <SelectValue placeholder="Select timezone" />
                                       </SelectTrigger>
                                     </FormControl>
-                                    <SelectContent className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600">
+                                    <SelectContent className="bg-gray-800 border-gray-600">
                                       <SelectItem value="EST">EST - Eastern Standard Time</SelectItem>
                                       <SelectItem value="CST">CST - Central Standard Time</SelectItem>
                                       <SelectItem value="MST">MST - Mountain Standard Time</SelectItem>
@@ -2181,10 +2165,10 @@ export default function Projections() {
                               name="personalTradingTimeStart3"
                               render={({ field }) => (
                                 <FormItem>
-                                  <FormLabel className="text-gray-900 dark:text-gray-900 dark:text-white">Personal Trading Time Start - Time3</FormLabel>
+                                  <FormLabel className="text-white">Personal Trading Time Start - Time3</FormLabel>
                                   <Select onValueChange={field.onChange} value={field.value || ""}>
                                     <FormControl>
-                                      <SelectTrigger className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-900 dark:text-white">
+                                      <SelectTrigger className="bg-gray-800 border-gray-600 text-white">
                                         <SelectValue placeholder="--:-- --" />
                                       </SelectTrigger>
                                     </FormControl>
@@ -2210,10 +2194,10 @@ export default function Projections() {
                               name="personalTradingTimeEnd3"
                               render={({ field }) => (
                                 <FormItem>
-                                  <FormLabel className="text-gray-900 dark:text-gray-900 dark:text-white">Personal Trading Time End - Time3</FormLabel>
+                                  <FormLabel className="text-white">Personal Trading Time End - Time3</FormLabel>
                                   <Select onValueChange={field.onChange} value={field.value || ""}>
                                     <FormControl>
-                                      <SelectTrigger className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-900 dark:text-white">
+                                      <SelectTrigger className="bg-gray-800 border-gray-600 text-white">
                                         <SelectValue placeholder="--:-- --" />
                                       </SelectTrigger>
                                     </FormControl>
@@ -2239,14 +2223,14 @@ export default function Projections() {
                               name="personalTradingTimeZone3"
                               render={({ field }) => (
                                 <FormItem>
-                                  <FormLabel className="text-gray-900 dark:text-gray-900 dark:text-white">Timezone</FormLabel>
+                                  <FormLabel className="text-white">Timezone</FormLabel>
                                   <Select onValueChange={field.onChange} value={field.value || ""}>
                                     <FormControl>
-                                      <SelectTrigger className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-900 dark:text-white">
+                                      <SelectTrigger className="bg-gray-800 border-gray-600 text-white">
                                         <SelectValue placeholder="Select timezone" />
                                       </SelectTrigger>
                                     </FormControl>
-                                    <SelectContent className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600">
+                                    <SelectContent className="bg-gray-800 border-gray-600">
                                       <SelectItem value="EST">EST - Eastern Standard Time</SelectItem>
                                       <SelectItem value="CST">CST - Central Standard Time</SelectItem>
                                       <SelectItem value="MST">MST - Mountain Standard Time</SelectItem>
@@ -2270,13 +2254,13 @@ export default function Projections() {
                           name="dailyWorkingHours"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel className="text-gray-900 dark:text-gray-900 dark:text-white">Daily Working Hours</FormLabel>
+                              <FormLabel className="text-white">Daily Working Hours</FormLabel>
                               <FormControl>
                                 <Input 
                                   {...field} 
                                   type="number" 
                                   step="0.5"
-                                  className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-900 dark:text-white" 
+                                  className="bg-gray-800 border-gray-600 text-white" 
                                   placeholder="8.0"
                                   value={field.value === null ? "" : field.value}
                                   onChange={(e) => field.onChange(e.target.value === "" ? null : parseFloat(e.target.value))}
@@ -2291,13 +2275,13 @@ export default function Projections() {
                           name="hourlyWages"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel className="text-gray-900 dark:text-gray-900 dark:text-white">Hourly Wages ($)</FormLabel>
+                              <FormLabel className="text-white">Hourly Wages ($)</FormLabel>
                               <FormControl>
                                 <Input 
                                   {...field} 
                                   type="number" 
                                   step="0.01"
-                                  className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-900 dark:text-white" 
+                                  className="bg-gray-800 border-gray-600 text-white" 
                                   placeholder="25.00"
                                   value={field.value === null ? "" : field.value}
                                   onChange={(e) => field.onChange(e.target.value === "" ? null : parseFloat(e.target.value))}
@@ -2313,7 +2297,7 @@ export default function Projections() {
                         {accountFormValues.tradingSessionStart && accountFormValues.tradingSessionEnd && (
                           <div className="bg-gray-800/50 rounded-lg p-4 border border-yellow-400/20">
                             <div className="flex items-center justify-between">
-                              <span className="text-gray-900 dark:text-white font-medium">Daily Trading Duration:</span>
+                              <span className="text-white font-medium">Daily Trading Duration:</span>
                               <span className="text-yellow-400 font-bold text-lg">
                                 {(() => {
                                   const start = accountFormValues.tradingSessionStart;
@@ -2352,19 +2336,37 @@ export default function Projections() {
                                 <FormItem className="flex flex-row items-center space-x-3 space-y-0">
                                   <FormControl>
                                     <Checkbox
-                                      checked={field.value || false}
+                                      checked={field.value}
                                       onCheckedChange={field.onChange}
-                                      className="border-gray-300 dark:border-gray-600 data-[state=checked]:bg-blue-600 data-[state=checked]:dark:bg-blue-600"
+                                      className="border-gray-600 data-[state=checked]:bg-blue-600"
                                     />
                                   </FormControl>
                                   <div className="space-y-1 leading-none">
-                                    <FormLabel className="text-gray-900 dark:text-gray-900 dark:text-white">Live Trading Account Available</FormLabel>
+                                    <FormLabel className="text-white">Live Trading Account Available</FormLabel>
                                   </div>
                                 </FormItem>
                               )}
                             />
                           </div>
                           <div className="flex items-center space-x-3">
+                            <FormField
+                              control={accountForm.control}
+                              name="enhancedPayoutsAvailable"
+                              render={({ field }) => (
+                                <FormItem className="flex flex-row items-center space-x-3 space-y-0">
+                                  <FormControl>
+                                    <Checkbox
+                                      checked={field.value}
+                                      onCheckedChange={field.onChange}
+                                      className="border-gray-600 data-[state=checked]:bg-blue-600"
+                                    />
+                                  </FormControl>
+                                  <div className="space-y-1 leading-none">
+                                    <FormLabel className="text-white">Challenge Payouts Available</FormLabel>
+                                  </div>
+                                </FormItem>
+                              )}
+                            />
                           </div>
                         </div>
                         
@@ -2377,13 +2379,13 @@ export default function Projections() {
                                 <FormItem className="flex flex-row items-center space-x-3 space-y-0">
                                   <FormControl>
                                     <Checkbox
-                                      checked={field.value || false}
+                                      checked={field.value}
                                       onCheckedChange={field.onChange}
-                                      className="border-gray-300 dark:border-gray-600 data-[state=checked]:bg-blue-600 data-[state=checked]:dark:bg-blue-600"
+                                      className="border-gray-600 data-[state=checked]:bg-blue-600"
                                     />
                                   </FormControl>
                                   <div className="space-y-1 leading-none">
-                                    <FormLabel className="text-gray-900 dark:text-gray-900 dark:text-white">Copy Trading Allowed</FormLabel>
+                                    <FormLabel className="text-white">Copy Trading Allowed</FormLabel>
                                   </div>
                                 </FormItem>
                               )}
@@ -2397,13 +2399,13 @@ export default function Projections() {
                                 <FormItem className="flex flex-row items-center space-x-3 space-y-0">
                                   <FormControl>
                                     <Checkbox
-                                      checked={field.value || false}
+                                      checked={field.value}
                                       onCheckedChange={field.onChange}
-                                      className="border-gray-300 dark:border-gray-600 data-[state=checked]:bg-blue-600 data-[state=checked]:dark:bg-blue-600"
+                                      className="border-gray-600 data-[state=checked]:bg-blue-600"
                                     />
                                   </FormControl>
                                   <div className="space-y-1 leading-none">
-                                    <FormLabel className="text-gray-900 dark:text-gray-900 dark:text-white">News Trading Allowed</FormLabel>
+                                    <FormLabel className="text-white">News Trading Allowed</FormLabel>
                                   </div>
                                 </FormItem>
                               )}
@@ -2458,14 +2460,14 @@ export default function Projections() {
                       type="button"
                       variant="outline"
                       onClick={() => setIsAccountDialogOpen(false)}
-                      className="bg-gray-800 border-gray-600 text-gray-900 dark:text-white hover:bg-gray-700"
+                      className="bg-gray-800 border-gray-600 text-white hover:bg-gray-700"
                     >
                       Cancel
                     </Button>
                     <Button
                       type="submit"
                       disabled={createAccountMutation.isPending}
-                      className="bg-blue-600 hover:bg-blue-700 text-gray-900 dark:text-white"
+                      className="bg-blue-600 hover:bg-blue-700 text-white"
                     >
                       {createAccountMutation.isPending ? "Creating..." : "Create Account"}
                     </Button>

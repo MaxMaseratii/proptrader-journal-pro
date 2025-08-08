@@ -52,7 +52,7 @@ export const accounts = pgTable("accounts", {
   csvAccountId: text("csv_account_id"), // Associated CSV account ID for import validation
   
   // Drawdown Rules
-  drawdownType: text("drawdown_type"), // 'daily', 'unrealized', 'trailing', 'balance_based', 'static'
+  drawdownType: text("drawdown_type"), // 'daily', 'unrealized', 'trailing', 'balance_based'
   maxTotalLoss: real("max_total_loss"),
   trailingThreshold: real("trailing_threshold"),
   

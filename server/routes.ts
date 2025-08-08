@@ -64,11 +64,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Account routes
   app.get("/api/accounts", requireAuth, async (req: any, res) => {
     try {
-      const userId = req.user.id;
-      const accounts = await storage.getAccounts(userId);
+      const accounts = await storage.getAccounts();
       res.json(accounts);
     } catch (error) {
-      console.error("Error fetching accounts:", error);
       res.status(500).json({ message: "Failed to fetch accounts" });
     }
   });
