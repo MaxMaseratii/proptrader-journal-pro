@@ -28,7 +28,8 @@ import {
   Activity,
   FileText,
   Sun,
-  Moon
+  Moon,
+  Zap
 } from "lucide-react";
 import { useTheme } from "@/contexts/ThemeContext";
 import { Button } from "@/components/ui/button";
@@ -46,7 +47,8 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
 const navItems = [
   { href: "/", label: "Dashboard", icon: BarChart3, section: "main" },
-  { href: "/trading-dashboard", label: "Mental Check & Daily Plan", icon: Brain, section: "main" },
+  { href: "/daily-plan", label: "Daily Plan Builder", icon: Brain, section: "main" },
+  { href: "/in-the-zone", label: "In the Zone", icon: Zap, section: "main" },
   { href: "/projections", label: "Challenge Target Planner", icon: TrendingUp, section: "main" },
   { href: "/trading-companion", label: "Trading Companion", icon: Bot, section: "main" },
   { href: "/accounts", label: "Accounts", icon: Target, section: "main" },

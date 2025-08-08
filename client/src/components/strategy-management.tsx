@@ -175,33 +175,9 @@ const StrategyManagement: React.FC<StrategyManagementProps> = ({ editStrategyId,
               <CardHeader className="pb-3">
                 <div className="flex items-center justify-between">
                   <CardTitle className="text-white text-lg">{strategy.name}</CardTitle>
-                  <div className="flex items-center gap-2">
-                    <Badge variant={strategy.isActive ? "default" : "secondary"} className="text-xs">
-                      {strategy.isActive ? "Active" : "Inactive"}
-                    </Badge>
-                    <div className="flex gap-1">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => openEditDialog(strategy)}
-                        className="h-8 px-3 text-yellow-400 hover:text-yellow-300 hover:bg-yellow-400/10 border border-yellow-400/30 hover:border-yellow-400/50"
-                        title="Modify strategy"
-                      >
-                        <Edit className="w-4 h-4 mr-1" />
-                        Edit
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => confirmDelete(strategy)}
-                        className="h-8 px-3 text-red-400 hover:text-red-300 hover:bg-red-400/10 border border-red-400/30 hover:border-red-400/50"
-                        title="Delete strategy"
-                      >
-                        <Trash2 className="w-4 h-4 mr-1" />
-                        Delete
-                      </Button>
-                    </div>
-                  </div>
+                  <Badge variant={strategy.isActive ? "default" : "secondary"} className="text-xs">
+                    {strategy.isActive ? "Active" : "Inactive"}
+                  </Badge>
                 </div>
                 {strategy.description && (
                   <p className="text-sm text-gray-400">{strategy.description}</p>
@@ -298,6 +274,30 @@ const StrategyManagement: React.FC<StrategyManagementProps> = ({ editStrategyId,
                   >
                     <Play className="w-4 h-4 mr-2" />
                     Use
+                  </Button>
+                </div>
+
+                {/* Edit and Delete Buttons - RIGHT UNDER Use and View Details */}
+                <div className="pt-2 flex gap-2">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => openEditDialog(strategy)}
+                    className="flex-1 h-9 text-yellow-400 hover:text-yellow-300 hover:bg-yellow-400/10 border border-yellow-400/30 hover:border-yellow-400/50"
+                    title="Modify strategy"
+                  >
+                    <Edit className="w-4 h-4 mr-1" />
+                    Edit
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => confirmDelete(strategy)}
+                    className="flex-1 h-9 text-red-400 hover:text-red-300 hover:bg-red-400/10 border border-red-400/30 hover:border-red-400/50"
+                    title="Delete strategy"
+                  >
+                    <Trash2 className="w-4 h-4 mr-1" />
+                    Delete
                   </Button>
                 </div>
               </CardContent>
