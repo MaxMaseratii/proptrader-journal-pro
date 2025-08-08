@@ -247,7 +247,7 @@ export default function AccountManagement() {
                 Add Account
               </Button>
             </DialogTrigger>
-            <DialogContent className="max-w-md w-[90vw] h-auto max-h-[90vh] bg-gradient-to-br from-gray-900 via-gray-800 to-black border border-yellow-400/20 overflow-y-auto fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
+            <DialogContent className="max-w-lg w-[95vw] max-h-[80vh] bg-gradient-to-br from-gray-900 via-gray-800 to-black border border-yellow-400/20 overflow-hidden m-auto">
               <DialogHeader>
                 <DialogTitle className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-yellow-600">
                   Create New Trading Account

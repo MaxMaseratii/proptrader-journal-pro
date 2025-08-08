@@ -138,7 +138,7 @@ export default function Sidebar() {
           <div className="nav-section">
             {!isCollapsed && !isPartiallyCollapsed && (
               <h3 className="text-xs font-medium text-prop-gold uppercase tracking-wider px-6 mb-3">
-                CORE TRADING & PERFORMANCE
+                PERFORMANCE
               </h3>
             )}
             <ul className="space-y-2 px-4">
@@ -180,7 +180,7 @@ export default function Sidebar() {
           <div className="nav-section">
             {!isCollapsed && !isPartiallyCollapsed && (
               <h3 className="text-xs font-medium text-prop-gold uppercase tracking-wider px-6 mb-3">
-                MENTAL PREPARATION
+                PRE-SESSION PLANNING
               </h3>
             )}
             <ul className="space-y-2 px-4">
@@ -214,7 +214,7 @@ export default function Sidebar() {
           <div className="nav-section">
             {!isCollapsed && !isPartiallyCollapsed && (
               <h3 className="text-xs font-medium text-prop-gold uppercase tracking-wider px-6 mb-3">
-                TRADING EXECUTION & RECORDS
+                ACCOUNTS & RECORDS
               </h3>
             )}
             <ul className="space-y-2 px-4">
@@ -280,8 +280,9 @@ export default function Sidebar() {
         </div>
         
         {/* Profile Section - Bottom with Separator */}
-        <div className="mt-auto border-t border-border pt-4">
-          <ul className="space-y-2 px-4">
+        <div className="mt-auto pt-4">
+          <div className="border-t border-prop-gold/20 pt-4">
+            <ul className="space-y-2 px-4">
             <li>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
@@ -397,7 +398,8 @@ export default function Sidebar() {
                 </DropdownMenuContent>
               </DropdownMenu>
             </li>
-          </ul>
+            </ul>
+          </div>
         </div>
       </nav>
     </aside>
