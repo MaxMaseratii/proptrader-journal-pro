@@ -162,11 +162,14 @@
   border: 1px solid hsl(var(--border)) !important;
 }
 
-/* ADDITIONAL DROPDOWN/SELECT FIXES FOR ALL COMPONENTS */
+/* COMPREHENSIVE UI ELEMENT OVERRIDES FOR PERFECT VISIBILITY */
+
+/* All possible dropdown/select content containers */
 [data-radix-select-content],
-[data-radix-dropdown-menu-content],
+[data-radix-dropdown-menu-content], 
 [data-radix-popover-content],
-[data-radix-combobox-content] {
+[data-radix-combobox-content],
+[data-radix-select-viewport] {
   background-color: hsl(var(--popover)) !important;
   color: hsl(var(--popover-foreground)) !important;
   border: 1px solid hsl(var(--border)) !important;
@@ -174,17 +177,163 @@
   z-index: 50 !important;
 }
 
-/* Fix all input/button elements for light/dark mode compatibility */
-.light input, .light select, .light textarea, .light button[role="combobox"] {
+/* Force override for all Select components across the entire app */
+.light [data-radix-select-content],
+.light [data-radix-select-viewport],
+.light [data-radix-dropdown-menu-content],
+.light [data-radix-popover-content] {
+  background-color: white !important;
+  color: black !important;
+  border: 1px solid #e5e7eb !important;
+}
+
+.dark [data-radix-select-content],
+.dark [data-radix-select-viewport],
+.dark [data-radix-dropdown-menu-content],
+.dark [data-radix-popover-content] {
+  background-color: hsl(217.2 32.6% 17.5%) !important;
+  color: hsl(210 40% 98%) !important;
+  border: 1px solid hsl(217.2 32.6% 17.5%) !important;
+}
+
+/* COMPREHENSIVE DROPDOWN FIX FOR ALL PAGES - LIGHT & DARK MODE */
+
+/* Fix ALL Select triggers (dropdown buttons) */
+[data-radix-select-trigger],
+button[role="combobox"],
+.select-trigger {
+  background-color: hsl(var(--background)) !important;
+  color: hsl(var(--foreground)) !important;
+  border: 1px solid hsl(var(--border)) !important;
+}
+
+/* Fix ALL Select content (dropdown menus) */
+[data-radix-select-content],
+[data-radix-select-viewport],
+.select-content,
+[role="listbox"] {
+  background-color: hsl(var(--popover)) !important;
+  color: hsl(var(--popover-foreground)) !important;
+  border: 1px solid hsl(var(--border)) !important;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
+}
+
+/* Fix ALL Select items */
+[data-radix-select-item],
+.select-item,
+[role="option"] {
+  background-color: transparent !important;
+  color: hsl(var(--popover-foreground)) !important;
+}
+
+[data-radix-select-item]:hover,
+[data-radix-select-item][data-highlighted],
+.select-item:hover,
+[role="option"]:hover {
+  background-color: hsl(var(--accent)) !important;
+  color: hsl(var(--accent-foreground)) !important;
+}
+
+/* SPECIFIC LIGHT MODE OVERRIDES */
+.light [data-radix-select-trigger],
+.light button[role="combobox"],
+.light .select-trigger {
   background-color: white !important;
   color: black !important;
   border-color: #d1d5db !important;
 }
 
-.dark input, .dark select, .dark textarea, .dark button[role="combobox"] {
+.light [data-radix-select-content],
+.light [data-radix-select-viewport],
+.light .select-content,
+.light [role="listbox"] {
+  background-color: white !important;
+  color: black !important;
+  border-color: #d1d5db !important;
+}
+
+.light [data-radix-select-item],
+.light .select-item,
+.light [role="option"] {
+  color: black !important;
+}
+
+.light [data-radix-select-item]:hover,
+.light [data-radix-select-item][data-highlighted],
+.light .select-item:hover,
+.light [role="option"]:hover {
+  background-color: #f3f4f6 !important;
+  color: black !important;
+}
+
+/* SPECIFIC DARK MODE OVERRIDES */
+.dark [data-radix-select-trigger],
+.dark button[role="combobox"],
+.dark .select-trigger {
   background-color: hsl(217.2 32.6% 17.5%) !important;
   color: hsl(210 40% 98%) !important;
   border-color: hsl(217.2 32.6% 17.5%) !important;
+}
+
+.dark [data-radix-select-content],
+.dark [data-radix-select-viewport], 
+.dark .select-content,
+.dark [role="listbox"] {
+  background-color: hsl(217.2 32.6% 17.5%) !important;
+  color: hsl(210 40% 98%) !important;
+  border-color: hsl(217.2 32.6% 17.5%) !important;
+}
+
+.dark [data-radix-select-item],
+.dark .select-item,
+.dark [role="option"] {
+  color: hsl(210 40% 98%) !important;
+}
+
+.dark [data-radix-select-item]:hover,
+.dark [data-radix-select-item][data-highlighted],
+.dark .select-item:hover,
+.dark [role="option"]:hover {
+  background-color: hsl(217.2 32.6% 25%) !important;
+  color: hsl(210 40% 98%) !important;
+}
+
+/* Fix all input/button elements for light/dark mode compatibility */
+.light input, .light select, .light textarea {
+  background-color: white !important;
+  color: black !important;
+  border-color: #d1d5db !important;
+}
+
+.dark input, .dark select, .dark textarea {
+  background-color: hsl(217.2 32.6% 17.5%) !important;
+  color: hsl(210 40% 98%) !important;
+  border-color: hsl(217.2 32.6% 17.5%) !important;
+}
+
+/* NUCLEAR OPTION: Force all select/dropdown elements system-wide */
+* [data-radix-select-content] {
+  background: white !important;
+  color: black !important;
+}
+
+.dark * [data-radix-select-content] {
+  background: #1f2937 !important;
+  color: white !important;
+}
+
+* [data-radix-select-trigger],
+* button[role="combobox"] {
+  background: white !important;
+  color: black !important;
+  border: 1px solid #d1d5db !important;
+}
+
+.dark * [data-radix-select-trigger],
+.dark * button[role="combobox"] {
+  background: #1f2937 !important;
+  color: white !important;
+  border: 1px solid #374151 !important;
 }
 
 /* Fix equity curve and chart containers */
