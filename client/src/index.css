@@ -276,6 +276,22 @@ input, textarea, select {
   border-color: #4b5563 !important;
 }
 
+/* EXTRA TARGETING: Ensure all select elements are visible */
+[data-radix-select-trigger] {
+  color: inherit !important;
+}
+
+[data-radix-select-value] {
+  color: inherit !important;
+}
+
+/* Light mode specific overrides for select elements */
+.light [data-radix-select-trigger],
+.light [data-radix-select-value],
+.light [data-radix-select-placeholder] {
+  color: black !important;
+}
+
 /* Specific targeting for Tailwind classes commonly used in forms */
 .dark .bg-gray-700 {
   background-color: #374151 !important;
@@ -346,6 +362,22 @@ input, textarea, select {
 .light [data-radix-select-item]:hover {
   background-color: #f3f4f6 !important;
   color: black !important;
+}
+
+/* CRITICAL: Select trigger (the clickable field) in light mode */
+.light [data-radix-select-trigger] {
+  background-color: white !important;
+  color: black !important;
+  border-color: #e5e7eb !important;
+}
+
+.light [data-radix-select-value] {
+  color: black !important;
+}
+
+/* CRITICAL: Select trigger placeholder in light mode */
+.light [data-radix-select-placeholder] {
+  color: #6b7280 !important;
 }
 
 /* CRITICAL FIX: Progress bar background in light mode */
