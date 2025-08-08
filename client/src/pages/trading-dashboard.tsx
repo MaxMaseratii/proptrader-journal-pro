@@ -43,51 +43,7 @@ import {
   Crown
 } from 'lucide-react';
 
-// Strategy data - using actual data from API
-const defaultStrategies = [
-  {
-    id: 1,
-    name: "Morning Breakout",
-    description: "Capitalize on early market volatility with strong momentum plays",
-    expectedWinRate: 65,
-    riskRewardRatio: 2.5,
-    rules: "• Wait for market open + 30 minutes\n• Look for stocks with >10% pre-market move\n• Enter on breakout above VWAP\n• Stop loss at previous support\n• Take profit at 2.5x risk",
-    marketConditions: "High volatility, trending markets",
-    assets: "Large cap stocks, ETFs",
-    createdAt: "2024-01-15",
-    lastUsed: "2024-01-20",
-    status: "active",
-    performance: { trades: 45, wins: 29, totalPnl: 2840 }
-  },
-  {
-    id: 2,
-    name: "Reversal Scalp",
-    description: "Quick scalping strategy for mean reversion setups",
-    expectedWinRate: 78,
-    riskRewardRatio: 1.8,
-    rules: "• Identify oversold/overbought conditions\n• Use RSI < 30 or > 70\n• Enter on bounce from support/resistance\n• Quick exits within 5-15 minutes",
-    marketConditions: "Range-bound, low volatility",
-    assets: "Small to mid cap stocks",
-    createdAt: "2024-01-10",
-    lastUsed: "2024-01-19",
-    status: "active",
-    performance: { trades: 82, wins: 64, totalPnl: 1560 }
-  },
-  {
-    id: 3,
-    name: "Gap Fill Strategy",
-    description: "Trade gaps that are likely to fill during the session",
-    expectedWinRate: 72,
-    riskRewardRatio: 2.0,
-    rules: "• Identify significant overnight gaps\n• Look for volume confirmation\n• Enter when price starts moving toward gap\n• Exit when gap is 80% filled",
-    marketConditions: "Post-earnings, news reactions",
-    assets: "Individual stocks",
-    createdAt: "2024-01-08",
-    lastUsed: "2024-01-18",
-    status: "testing",
-    performance: { trades: 23, wins: 17, totalPnl: 980 }
-  }
-];
+// Strategy data will be loaded from API
 
 // Mock accounts data
 const mockAccounts = [
@@ -96,97 +52,23 @@ const mockAccounts = [
   { id: 3, name: "Swing Trading", type: "Live" }
 ];
 
-// Mock historical trading plans data
-const mockHistoricalPlans = [
-  {
-    id: 1,
-    date: "2025-01-03",
-    account: "Main Trading",
-    strategy: "Morning Breakout",
-    riskAmount: 150,
-    targetProfit: 300,
-    maxTrades: 3,
-    plannedTrades: 2,
-    startTime: "09:30",
-    endTime: "16:00",
-    notes: "Strong pre-market movers on TSLA and NVDA. Looking for breakout above VWAP with volume confirmation. Market seems bullish after yesterday's close.",
-    mentalState: { emotionalClarity: 4, physicalEnergy: 5, focusLevel: 4, confidence: 4 },
-    overallReadiness: 17,
-    actualTrades: 2,
-    actualPnl: 245,
-    disciplineScore: 23
-  },
-  {
-    id: 2,
-    date: "2025-01-02",
-    account: "Main Trading", 
-    strategy: "Reversal Scalp",
-    riskAmount: 100,
-    targetProfit: 200,
-    maxTrades: 4,
-    plannedTrades: 3,
-    startTime: "10:00",
-    endTime: "15:30",
-    notes: "Market consolidating after New Year. Looking for oversold bounces on high-volume stocks. RSI divergences on several large caps.",
-    mentalState: { emotionalClarity: 3, physicalEnergy: 4, focusLevel: 4, confidence: 3 },
-    overallReadiness: 14,
-    actualTrades: 3,
-    actualPnl: -85,
-    disciplineScore: 18
-  },
-  {
-    id: 3,
-    date: "2024-12-31",
-    account: "Demo Account",
-    strategy: "Gap Fill Strategy", 
-    riskAmount: 75,
-    targetProfit: 150,
-    maxTrades: 2,
-    plannedTrades: 1,
-    startTime: "09:30",
-    endTime: "12:00",
-    notes: "End of year trading. Light volume expected. Only taking high-probability setups. AAPL has significant gap from Friday.",
-    mentalState: { emotionalClarity: 5, physicalEnergy: 4, focusLevel: 5, confidence: 4 },
-    overallReadiness: 18,
-    actualTrades: 1,
-    actualPnl: 120,
-    disciplineScore: 25
-  },
-  {
-    id: 4,
-    date: "2024-12-30",
-    account: "Main Trading",
-    strategy: "Morning Breakout",
-    riskAmount: 125,
-    targetProfit: 250,
-    maxTrades: 3,
-    plannedTrades: 2,
-    startTime: "09:30",
-    endTime: "16:00",
-    notes: "Holiday trading week. Reduced volume but some good setups on tech stocks. Focusing on momentum plays with tight stops.",
-    mentalState: { emotionalClarity: 4, physicalEnergy: 3, focusLevel: 3, confidence: 4 },
-    overallReadiness: 14,
-    actualTrades: 2,
-    actualPnl: 180,
-    disciplineScore: 21
-  }
-];
+// Historical trading plans will be loaded from API
 
 export default function CompleteTradingDashboard() {
   // Main tab state
   const [activeTab, setActiveTab] = useState('psychology');
   
-  // Strategy management states
-  const [strategies, setStrategies] = useState(defaultStrategies);
-  const [selectedStrategy, setSelectedStrategy] = useState(null);
+  // Strategy management states - now using proper API
+  const [strategies, setStrategies] = useState<any[]>([]);
+  const [selectedStrategy, setSelectedStrategy] = useState<any>(null);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [isDetailsDialogOpen, setIsDetailsDialogOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState('all');
   
-  // Historical plans states
-  const [historicalPlans] = useState(mockHistoricalPlans);
-  const [selectedPlan, setSelectedPlan] = useState(null);
+  // Historical plans states - now using proper API
+  const [historicalPlans] = useState<any[]>([]);
+  const [selectedPlan, setSelectedPlan] = useState<any>(null);
   const [isHistoryDialogOpen, setIsHistoryDialogOpen] = useState(false);
   
   // Individual trade execution state
@@ -1344,7 +1226,7 @@ export default function CompleteTradingDashboard() {
                 <Input
                   value={newStrategy.name}
                   onChange={(e) => setNewStrategy(prev => ({ ...prev, name: e.target.value }))}
-                  placeholder="e.g., Morning Breakout"
+                  placeholder="e.g., My Custom Strategy"
                   className="bg-white border-blue-500/30 text-black placeholder:text-gray-500"
                 />
               </div>

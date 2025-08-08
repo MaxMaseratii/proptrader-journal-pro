@@ -327,7 +327,7 @@ export default function StrategyManagement() {
                           <FormLabel className="text-white">Strategy Name</FormLabel>
                           <FormControl>
                             <Input 
-                              placeholder="e.g., Morning Breakout Strategy" 
+                              placeholder="e.g., My Custom Strategy" 
                               className="bg-white border-gray-300 text-black"
                               {...field} 
                             />
@@ -726,7 +726,7 @@ export default function StrategyManagement() {
                         <FormLabel className="text-white">Strategy Name</FormLabel>
                         <FormControl>
                           <Input 
-                            placeholder="e.g., Morning Breakout Strategy" 
+                            placeholder="e.g., My Custom Strategy" 
                             className="bg-white border-gray-300 text-black"
                             {...field} 
                           />
