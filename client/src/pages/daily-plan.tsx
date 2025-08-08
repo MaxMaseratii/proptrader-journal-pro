@@ -1139,7 +1139,7 @@ const DailyPlanPage = () => {
 
       {/* Enhanced Strategy Details Modal */}
       <Dialog open={!!selectedStrategyForDetails} onOpenChange={() => setSelectedStrategyForDetails(null)}>
-        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto bg-gradient-to-br from-gray-900 via-gray-800 to-black border border-yellow-400/30">
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto bg-gradient-to-br from-gray-900 via-gray-800 to-black border border-yellow-400/30 z-[10000]">
           <DialogHeader className="pb-6">
             <div className="flex items-center justify-between">
               <DialogTitle className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600">
