@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
-import { RotateCcw, LogOut, Trash2, AlertTriangle, DollarSign, CheckCircle, ArrowRight, Bookmark, Edit } from "lucide-react";
+import { RotateCcw, LogOut, Trash2, AlertTriangle, DollarSign, CheckCircle, ArrowRight, Bookmark, Edit, Plus } from "lucide-react";
 import { formatCurrency } from "@/lib/utils";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
@@ -32,6 +32,7 @@ interface AccountManagementProps {
 }
 
 export default function AccountManagement({ accounts }: AccountManagementProps) {
+  const [isCreateAccountDialogOpen, setIsCreateAccountDialogOpen] = useState(false);
   // Get trades data to calculate P&L
   const { data: trades = [] } = useQuery<Trade[]>({
     queryKey: ['/api/trades'],
@@ -472,7 +473,14 @@ export default function AccountManagement({ accounts }: AccountManagementProps) 
   if (!accounts || accounts.length === 0) {
     return (
       <div className="text-center py-8">
-        <p className="text-gray-400">No accounts created yet. Create your first account to get started.</p>
+        <p className="text-gray-400 mb-4">No accounts created yet. Create your first account to get started.</p>
+        <Button 
+          onClick={() => setIsCreateAccountDialogOpen(true)}
+          className="bg-gradient-to-r from-yellow-400 to-yellow-600 text-black font-semibold hover:from-yellow-500 hover:to-yellow-700"
+        >
+          <Plus className="w-4 h-4 mr-2" />
+          Create First Account
+        </Button>
       </div>
     );
   }
@@ -1375,6 +1383,31 @@ export default function AccountManagement({ accounts }: AccountManagementProps) 
           </CardContent>
         </Card>
       ))}
+      
+      {/* Account Creation Dialog - Copy exact form from projections.tsx */}
+      <Dialog open={isCreateAccountDialogOpen} onOpenChange={setIsCreateAccountDialogOpen}>
+        <DialogContent className="max-w-4xl max-h-[90vh] bg-gray-900 border-gray-700">
+          <DialogHeader>
+            <DialogTitle className="text-white text-xl">Create New Trading Account</DialogTitle>
+            <DialogDescription className="text-gray-400">
+              Set up a new trading account with proper risk management and financial tracking.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 p-6">
+            <div className="text-center">
+              <p className="text-gray-400">
+                Account creation form will be implemented here to match the Account Management & Projections page.
+              </p>
+              <Button 
+                onClick={() => setIsCreateAccountDialogOpen(false)}
+                className="mt-4 bg-gray-600 hover:bg-gray-700 text-white"
+              >
+                Close for Now
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

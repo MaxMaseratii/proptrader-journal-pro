@@ -45,18 +45,18 @@ const StrategyManagement: React.FC<StrategyManagementProps> = ({ editStrategyId,
 
   // Data queries
   const { data: strategies, isLoading } = useQuery<TradingStrategy[]>({
-    queryKey: ['/api/strategies'],
+    queryKey: ['/api/trading-strategies'],
   });
 
   // Mutations
   const deleteStrategyMutation = useMutation({
     mutationFn: (id: number) => {
       console.log('🗑️ Deleting strategy with ID:', id);
-      return apiRequest(`/api/strategies/${id}`, 'DELETE');
+      return apiRequest(`/api/trading-strategies/${id}`, 'DELETE');
     },
     onSuccess: (data) => {
       console.log('✅ Strategy deleted successfully:', data);
-      queryClient.invalidateQueries({ queryKey: ['/api/strategies'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/trading-strategies'] });
       setDeleteDialogOpen(false);
       setStrategyToDelete(null);
     },
