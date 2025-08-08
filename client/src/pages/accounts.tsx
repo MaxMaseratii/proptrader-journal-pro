@@ -69,6 +69,7 @@ export default function AccountManagement() {
 
   const form = useForm<AccountFormData>({
     resolver: zodResolver(accountFormSchema),
+    mode: 'onChange',
     defaultValues: {
       name: '',
       type: 'demo',
@@ -247,7 +248,8 @@ export default function AccountManagement() {
                 Add Account
               </Button>
             </DialogTrigger>
-            <DialogContent className="max-w-lg w-[95vw] max-h-[80vh] bg-gradient-to-br from-gray-900 via-gray-800 to-black border border-yellow-400/20 overflow-hidden m-auto">
+            <DialogContent className="max-w-lg w-[95vw] max-h-[85vh] bg-gradient-to-br from-gray-900 via-gray-800 to-black border border-yellow-400/20 overflow-hidden m-auto p-6"
+              onInteractOutside={(e) => e.preventDefault()}>
               <DialogHeader>
                 <DialogTitle className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-yellow-600">
                   Create New Trading Account

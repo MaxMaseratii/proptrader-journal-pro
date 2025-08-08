@@ -1741,6 +1741,68 @@ Provide helpful, personalized advice based on this data. Keep responses concise 
   });
 
   // Trading Strategy routes
+  // Trading strategies routes - primary endpoints
+  app.get("/api/trading-strategies", requireAuth, async (req: any, res) => {
+    try {
+      const userId = req.user.id;
+      const strategies = await storage.getTradingStrategies(userId);
+      res.json(strategies);
+    } catch (error) {
+      console.error("Error fetching trading strategies:", error);
+      res.status(500).json({ message: "Failed to fetch trading strategies" });
+    }
+  });
+
+  app.post("/api/trading-strategies", requireAuth, async (req: any, res) => {
+    try {
+      const userId = req.user.id;
+      const strategyData = { ...req.body, userId };
+      console.log('Creating trading strategy:', strategyData);
+      
+      const strategy = await storage.createTradingStrategy(strategyData);
+      console.log('Trading strategy created successfully:', strategy);
+      res.status(201).json(strategy);
+    } catch (error) {
+      console.error("Error creating trading strategy:", error);
+      res.status(500).json({ message: "Failed to create trading strategy" });
+    }
+  });
+
+  app.put("/api/trading-strategies/:id", requireAuth, async (req, res) => {
+    try {
+      const strategyId = parseInt(req.params.id);
+      const strategy = await storage.updateTradingStrategy(strategyId, req.body);
+      if (!strategy) {
+        return res.status(404).json({ message: "Strategy not found" });
+      }
+      res.json(strategy);
+    } catch (error) {
+      console.error("Error updating strategy:", error);
+      res.status(500).json({ message: "Failed to update strategy" });
+    }
+  });
+
+  app.delete("/api/trading-strategies/:id", requireAuth, async (req, res) => {
+    try {
+      const strategyId = parseInt(req.params.id);
+      const success = await storage.deleteTradingStrategy(strategyId);
+      if (!success) {
+        return res.status(404).json({ message: "Strategy not found" });
+      }
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error deleting strategy:", error);
+      if (error instanceof Error && error.message.includes("being used in daily plans")) {
+        return res.status(400).json({ 
+          message: error.message,
+          canDelete: false 
+        });
+      }
+      res.status(500).json({ message: "Failed to delete strategy" });
+    }
+  });
+
+  // Legacy endpoints for backwards compatibility
   app.get("/api/strategies", requireAuth, async (req: any, res) => {
     try {
       const userId = req.user.id;

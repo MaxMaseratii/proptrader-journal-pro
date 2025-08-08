@@ -55,10 +55,10 @@ const StrategyForm: React.FC<StrategyFormProps> = ({ onClose, editStrategy }) =>
   });
 
   const createMutation = useMutation({
-    mutationFn: (data: any) => apiRequest('/api/strategies', 'POST', data),
+    mutationFn: (data: any) => apiRequest('/api/trading-strategies', 'POST', data),
     onSuccess: (response) => {
       console.log('Strategy created successfully:', response);
-      queryClient.invalidateQueries({ queryKey: ['/api/strategies'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/trading-strategies'] });
       onClose?.();
       resetForm();
     },
@@ -68,9 +68,9 @@ const StrategyForm: React.FC<StrategyFormProps> = ({ onClose, editStrategy }) =>
   });
 
   const updateMutation = useMutation({
-    mutationFn: ({ id, data }: { id: number; data: any }) => apiRequest(`/api/strategies/${id}`, 'PUT', data),
+    mutationFn: ({ id, data }: { id: number; data: any }) => apiRequest(`/api/trading-strategies/${id}`, 'PUT', data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/strategies'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/trading-strategies'] });
       onClose?.();
       resetForm();
     },
