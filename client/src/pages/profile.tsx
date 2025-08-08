@@ -1,5 +1,4 @@
-import { useState, useCallback, useMemo, lazy, Suspense } from "react";
-import { useProfileQuery } from "@/hooks/useOptimizedQuery";
+import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -25,20 +24,7 @@ import {
 } from "lucide-react";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 
-// Lazy load heavy components for better performance
-const NotificationSettings = lazy(() => import("@/components/notification-settings"));
-
-// Performance optimized skeleton loader
-const ProfileSkeleton = () => (
-  <div className="animate-pulse">
-    <div className="h-8 bg-gray-300 rounded w-3/4 mb-4"></div>
-    <div className="h-4 bg-gray-300 rounded w-1/2 mb-8"></div>
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-      <div className="h-48 bg-gray-300 rounded"></div>
-      <div className="h-48 bg-gray-300 rounded"></div>
-    </div>
-  </div>
-);
+import NotificationSettings from "@/components/notification-settings";
 
 export default function Profile() {
   const [isEditing, setIsEditing] = useState(false);
@@ -51,35 +37,10 @@ export default function Profile() {
     bio: "",
   });
 
-  // Use optimized query hook
-  const { data: userProfile, isLoading } = useProfileQuery();
-
-  // Memoized handlers for better performance
-  const handleSave = useCallback(() => {
+  const handleSave = () => {
     // Save profile logic would go here
     setIsEditing(false);
-  }, []);
-
-  const handleEditToggle = useCallback(() => {
-    setIsEditing(prev => !prev);
-  }, []);
-
-  // Memoized profile sections for performance
-  const profileSections = useMemo(() => ({
-    personal: { name: profile.name, email: profile.email, phone: profile.phone },
-    location: { location: profile.location, timezone: profile.timezone },
-    bio: profile.bio
-  }), [profile]);
-
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-dark-bg text-white p-6">
-        <div className="max-w-4xl mx-auto">
-          <ProfileSkeleton />
-        </div>
-      </div>
-    );
-  }
+  };
 
   return (
     <div className="min-h-screen bg-dark-bg text-white p-6">

@@ -1,87 +1,72 @@
 import { Switch, Route } from "wouter";
-import { Suspense, lazy } from "react";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 
-// Critical pages - load immediately
+import Dashboard from "@/pages/dashboard";
+import DashboardShowcase from "@/pages/dashboard-showcase";
+import Projections from "@/pages/projections";
+
+import Journal from "@/pages/journal";
+
+import Performance from "@/pages/performance";
+import Payouts from "@/pages/payouts";
+import Reports from "@/pages/reports";
+import Analytics from "@/pages/analytics";
+import Trades from "@/pages/trades";
+import Profile from "@/pages/profile";
+import Billing from "@/pages/billing";
 import Welcome from "@/pages/welcome";
 import AuthPage from "@/pages/auth-page";
+import CsvImport from "@/pages/csv-import";
+import Spending from "@/pages/spending";
+import Achievements from "@/pages/achievements";
+import AdvancedDashboard from "@/pages/advanced-dashboard";
+import TradingCompanion from "@/pages/trading-companion";
+import DailyPlan from "@/pages/daily-plan";
 import Signup from "@/pages/signup";
+import PrivacyPolicy from "@/pages/privacy-policy";
+import TermsOfService from "@/pages/terms-of-service";
+import Support from "@/pages/support";
+
+import DisciplineAnalysis from "@/pages/discipline-analysis";
+import DisciplinaryAssistant from "@/pages/disciplinary-assistant";
+import Charts from "@/pages/charts";
+import FullChart from "@/pages/full-chart";
+import TradingDashboard from "@/pages/trading-dashboard";
+import Notifications from "@/pages/notifications";
+import Watchlists from "@/pages/watchlists";
+import PositionSizing from "@/pages/position-sizing";
+import Accounts from "@/pages/accounts";
+import RiskManagement from "@/pages/risk-management";
+
+import AccountManager from "@/pages/account-manager";
+import TradingJournalPage from "@/pages/trading-journal-page";
+import AnalyticsReports from "@/pages/analytics-reports";
+import MentalFitness from "@/pages/mental-fitness";
+import NewsCalendar from "@/pages/news-calendar";
+import StrategyBuilder from "@/pages/strategy-builder";
+import Product from "@/pages/product";
+import Security from "@/pages/security";
+import Integrations from "@/pages/integrations";
+import API from "@/pages/api";
+import Changelog from "@/pages/changelog";
+import Documentation from "@/pages/documentation";
+import Tutorials from "@/pages/tutorials";
+import Blog from "@/pages/blog";
+import Contact from "@/pages/contact";
+import About from "@/pages/about";
+import KnowledgeBase from "@/pages/knowledge-base";
+import KnowledgeBaseArticle from "@/pages/knowledge-base-article";
+import Terms from "@/pages/terms";
+import Privacy from "@/pages/privacy";
+import Pricing from "@/pages/pricing";
 import Sidebar from "@/components/sidebar";
+import FlowStateTraining from "@/components/FlowStateTraining";
 import NotFound from "@/pages/not-found";
 import { useAuth } from "@/hooks/useAuth";
-
-// Initialize basic performance monitoring
-if (typeof window !== 'undefined') {
-  console.log('🚀 PropTrader Journal - Performance Optimized Build Loaded');
-}
-
-// Lazy load non-critical pages for better performance
-const Dashboard = lazy(() => import("@/pages/dashboard"));
-const DashboardShowcase = lazy(() => import("@/pages/dashboard-showcase"));
-const Projections = lazy(() => import("@/pages/projections"));
-const Journal = lazy(() => import("@/pages/journal"));
-const Performance = lazy(() => import("@/pages/performance"));
-const Payouts = lazy(() => import("@/pages/payouts"));
-const Reports = lazy(() => import("@/pages/reports"));
-const Analytics = lazy(() => import("@/pages/analytics"));
-const Trades = lazy(() => import("@/pages/trades"));
-const Profile = lazy(() => import("@/pages/profile"));
-const Billing = lazy(() => import("@/pages/billing"));
-const CsvImport = lazy(() => import("@/pages/csv-import"));
-const Spending = lazy(() => import("@/pages/spending"));
-const Achievements = lazy(() => import("@/pages/achievements"));
-const AdvancedDashboard = lazy(() => import("@/pages/advanced-dashboard"));
-const TradingCompanion = lazy(() => import("@/pages/trading-companion"));
-const DailyPlan = lazy(() => import("@/pages/daily-plan"));
-const PrivacyPolicy = lazy(() => import("@/pages/privacy-policy"));
-const TermsOfService = lazy(() => import("@/pages/terms-of-service"));
-const Support = lazy(() => import("@/pages/support"));
-const DisciplineAnalysis = lazy(() => import("@/pages/discipline-analysis"));
-const DisciplinaryAssistant = lazy(() => import("@/pages/disciplinary-assistant"));
-const Charts = lazy(() => import("@/pages/charts"));
-const FullChart = lazy(() => import("@/pages/full-chart"));
-const TradingDashboard = lazy(() => import("@/pages/trading-dashboard"));
-const Notifications = lazy(() => import("@/pages/notifications"));
-const Watchlists = lazy(() => import("@/pages/watchlists"));
-const PositionSizing = lazy(() => import("@/pages/position-sizing"));
-const Accounts = lazy(() => import("@/pages/accounts"));
-const RiskManagement = lazy(() => import("@/pages/risk-management"));
-const AccountManager = lazy(() => import("@/pages/account-manager"));
-const TradingJournalPage = lazy(() => import("@/pages/trading-journal-page"));
-const AnalyticsReports = lazy(() => import("@/pages/analytics-reports"));
-const MentalFitness = lazy(() => import("@/pages/mental-fitness"));
-const NewsCalendar = lazy(() => import("@/pages/news-calendar"));
-const StrategyBuilder = lazy(() => import("@/pages/strategy-builder"));
-const Product = lazy(() => import("@/pages/product"));
-const Security = lazy(() => import("@/pages/security"));
-const Integrations = lazy(() => import("@/pages/integrations"));
-const API = lazy(() => import("@/pages/api"));
-const Changelog = lazy(() => import("@/pages/changelog"));
-const Documentation = lazy(() => import("@/pages/documentation"));
-const Tutorials = lazy(() => import("@/pages/tutorials"));
-const Blog = lazy(() => import("@/pages/blog"));
-const Contact = lazy(() => import("@/pages/contact"));
-const About = lazy(() => import("@/pages/about"));
-const KnowledgeBase = lazy(() => import("@/pages/knowledge-base"));
-const KnowledgeBaseArticle = lazy(() => import("@/pages/knowledge-base-article"));
-const Terms = lazy(() => import("@/pages/terms"));
-const Privacy = lazy(() => import("@/pages/privacy"));
-const Pricing = lazy(() => import("@/pages/pricing"));
-const FlowStateTraining = lazy(() => import("@/components/FlowStateTraining"));
-
-// Performance optimized loading component
-const LoadingFallback = () => (
-  <div className="min-h-screen bg-background flex items-center justify-center">
-    <div className="flex flex-col items-center space-y-4">
-      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-yellow-500"></div>
-      <div className="text-foreground text-lg">Loading...</div>
-    </div>
-  </div>
-);
 
 function Router() {
   const { isAuthenticated, isLoading } = useAuth();
@@ -120,8 +105,7 @@ function Router() {
     <div className="flex h-screen bg-background text-foreground">
       <Sidebar />
       <main className="flex-1 overflow-y-auto bg-background">
-        <Suspense fallback={<LoadingFallback />}>
-          <Switch>
+        <Switch>
             <Route path="/" component={Dashboard} />
             <Route path="/flow-state-training" component={FlowStateTraining} />
             <Route path="/dashboard-simple" component={DashboardShowcase} />
@@ -184,7 +168,6 @@ function Router() {
             <Route path="/signup" component={Signup} />
             <Route component={NotFound} />
           </Switch>
-        </Suspense>
       </main>
     </div>
   );

@@ -10,11 +10,11 @@ export function useOptimizedQuery<T>(
   const optimizedQueryFn = useCallback(queryFn, []);
   
   const optimizedOptions = useMemo(() => ({
-    staleTime: 5 * 60 * 1000, // 5 minutes
-    cacheTime: 15 * 60 * 1000, // 15 minutes
+    staleTime: 1 * 60 * 1000, // 1 minute - faster refresh
+    cacheTime: 3 * 60 * 1000, // 3 minutes cache
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
-    retry: 2,
+    retry: 1, // Single retry for speed
     ...options
   }), [options]);
 
@@ -35,8 +35,8 @@ export function useBillingQuery() {
       return response.json();
     },
     {
-      staleTime: 10 * 60 * 1000, // 10 minutes - billing data changes less frequently
-      cacheTime: 20 * 60 * 1000, // 20 minutes
+      staleTime: 30 * 1000, // 30 seconds - faster billing refresh
+      cacheTime: 2 * 60 * 1000, // 2 minutes
     }
   );
 }
@@ -51,8 +51,8 @@ export function useProfileQuery() {
       return response.json();
     },
     {
-      staleTime: 3 * 60 * 1000, // 3 minutes - profile data can change more frequently
-      cacheTime: 10 * 60 * 1000, // 10 minutes
+      staleTime: 30 * 1000, // 30 seconds - faster profile refresh
+      cacheTime: 2 * 60 * 1000, // 2 minutes
     }
   );
 }
