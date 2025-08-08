@@ -22,6 +22,8 @@ import {
   Shield,
   AlertTriangle,
   CheckCircle,
+  Eye,
+  Play
 
 } from 'lucide-react';
 import type { TradingStrategy } from '@shared/schema';
@@ -182,19 +184,21 @@ const StrategyManagement: React.FC<StrategyManagementProps> = ({ editStrategyId,
                         variant="ghost"
                         size="sm"
                         onClick={() => openEditDialog(strategy)}
-                        className="h-7 px-2 text-gray-400 hover:text-yellow-400 hover:bg-gray-700"
+                        className="h-8 px-3 text-yellow-400 hover:text-yellow-300 hover:bg-yellow-400/10 border border-yellow-400/30 hover:border-yellow-400/50"
                         title="Modify strategy"
                       >
-                        <Edit className="w-3 h-3" />
+                        <Edit className="w-4 h-4 mr-1" />
+                        Edit
                       </Button>
                       <Button
                         variant="ghost"
                         size="sm"
                         onClick={() => confirmDelete(strategy)}
-                        className="h-7 px-2 text-gray-400 hover:text-red-400 hover:bg-gray-700"
+                        className="h-8 px-3 text-red-400 hover:text-red-300 hover:bg-red-400/10 border border-red-400/30 hover:border-red-400/50"
                         title="Delete strategy"
                       >
-                        <Trash2 className="w-3 h-3" />
+                        <Trash2 className="w-4 h-4 mr-1" />
+                        Delete
                       </Button>
                     </div>
                   </div>
@@ -263,6 +267,39 @@ const StrategyManagement: React.FC<StrategyManagementProps> = ({ editStrategyId,
                     </div>
                   </div>
                 )}
+
+                {/* Action Buttons */}
+                <div className="pt-4 border-t border-gray-600 flex gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="flex-1 h-9 text-gray-300 border-gray-600 hover:border-gray-500 hover:bg-gray-700"
+                    onClick={() => {
+                      // Set strategy details for modal view
+                      if (onStrategyUpdated) {
+                        // If this component is being used in selection mode, pass the strategy
+                        onStrategyUpdated();
+                      } else {
+                        // Open details modal (you'll need to add this state)
+                        console.log('View strategy details:', strategy);
+                      }
+                    }}
+                  >
+                    <Eye className="w-4 h-4 mr-2" />
+                    View Details
+                  </Button>
+                  <Button
+                    size="sm"
+                    className="flex-1 h-9 bg-green-600 hover:bg-green-700 text-white"
+                    onClick={() => {
+                      // Handle strategy usage
+                      console.log('Use strategy:', strategy);
+                    }}
+                  >
+                    <Play className="w-4 h-4 mr-2" />
+                    Use
+                  </Button>
+                </div>
               </CardContent>
             </Card>
           );
