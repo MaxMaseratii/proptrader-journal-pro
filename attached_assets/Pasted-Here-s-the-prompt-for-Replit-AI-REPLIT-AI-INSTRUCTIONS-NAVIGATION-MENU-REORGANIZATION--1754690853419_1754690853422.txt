@@ -1,0 +1,84 @@
+Here's the prompt for Replit AI:
+
+---
+
+**REPLIT AI INSTRUCTIONS - NAVIGATION MENU REORGANIZATION**
+
+Please reorganize the navigation menu according to this new structure. Remove the "NAVIGATION" text at the top and replace it with organized sections:
+
+## STEP 1: UPDATE NAVIGATION STRUCTURE
+Replace the current navigation menu with these organized sections:
+
+### **CORE TRADING & PERFORMANCE**
+- Dashboard
+- Challenge Target Planner  
+- Charts & Analytics
+- Achievements
+
+### **MENTAL PREPARATION**
+- Flow State Training
+- Mental Check & Daily Plan
+- Discipline & Psychology Tracker
+
+### **TRADING EXECUTION & RECORDS**
+- Accounts
+- Trades Log
+- Trading Journal
+- Trading Companion
+
+### **FINANCIAL MANAGEMENT**
+- Prop Firm Spending
+- Payout Records
+- Reports
+
+## STEP 2: VISUAL IMPLEMENTATION
+1. **Remove** the "NAVIGATION" text from the top
+2. **Add section headers** for each group (styled as headings)
+3. **Add visual spacing** between each section
+4. **Keep all existing icons** and functionality
+5. **Maintain the same styling** for individual menu items
+
+## STEP 3: CSS STYLING SUGGESTIONS
+```css
+.nav-section-header {
+  font-weight: bold;
+  font-size: 0.75rem;
+  color: #9CA3AF;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-top: 1.5rem;
+  margin-bottom: 0.5rem;
+  padding-left: 1rem;
+}
+
+.nav-section {
+  margin-bottom: 1rem;
+}
+```
+
+## STEP 4: HTML STRUCTURE EXAMPLE
+```html
+<nav>
+  <div class="nav-section">
+    <h3 class="nav-section-header">CORE TRADING & PERFORMANCE</h3>
+    <!-- Dashboard, Challenge Target Planner, Charts & Analytics, Achievements -->
+  </div>
+  
+  <div class="nav-section">
+    <h3 class="nav-section-header">MENTAL PREPARATION</h3>
+    <!-- Flow State Training, Mental Check & Daily Plan, Discipline & Psychology Tracker -->
+  </div>
+  
+  <div class="nav-section">
+    <h3 class="nav-section-header">TRADING EXECUTION & RECORDS</h3>
+    <!-- Accounts, Trades Log, Trading Journal, Trading Companion -->
+  </div>
+  
+  <div class="nav-section">
+    <h3 class="nav-section-header">FINANCIAL MANAGEMENT</h3>
+    <!-- Prop Firm Spending, Payout Records, Reports -->
+  </div>
+</nav>
+```
+
+**IMPORTANT:** Keep all existing functionality, routes, and icons. Only change the organization and add section headers. Do not modify any component logic or navigation behavior.

@@ -46,20 +46,28 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
 
 const navItems = [
-  { href: "/flow-state-training", label: "Flow State Training", icon: Waves, section: "main" },
-  { href: "/", label: "Dashboard", icon: BarChart3, section: "main" },
-  { href: "/trading-dashboard", label: "Mental Check & Daily Plan", icon: Brain, section: "main" },
-  { href: "/projections", label: "Challenge Target Planner", icon: TrendingUp, section: "main" },
-  { href: "/trading-companion", label: "Trading Companion", icon: Bot, section: "main" },
-  { href: "/accounts", label: "Accounts", icon: Target, section: "main" },
-  { href: "/trades", label: "Trades Log", icon: FileText, section: "main" },
-  { href: "/journal", label: "Trading Journal", icon: Book, section: "main" },
-  { href: "/charts", label: "Charts & Analytics", icon: ChartLine, section: "main" },
-  { href: "/disciplinary-assistant", label: "Discipline & Psychology Tracker", icon: Settings, section: "main" },
-  { href: "/spending", label: "Prop Firm Spending", icon: Wallet, section: "main" },
-  { href: "/payouts", label: "Payout Records", icon: DollarSign, section: "main" },
-  { href: "/reports", label: "Reports", icon: Calendar, section: "main" },
-  { href: "/achievements", label: "Achievement", icon: Trophy, section: "main" },
+  // CORE TRADING & PERFORMANCE
+  { href: "/", label: "Dashboard", icon: BarChart3, section: "core" },
+  { href: "/projections", label: "Challenge Target Planner", icon: TrendingUp, section: "core" },
+  { href: "/charts", label: "Charts & Analytics", icon: ChartLine, section: "core" },
+  { href: "/achievements", label: "Achievements", icon: Trophy, section: "core" },
+  
+  // MENTAL PREPARATION
+  { href: "/flow-state-training", label: "Flow State Training", icon: Waves, section: "mental" },
+  { href: "/trading-dashboard", label: "Mental Check & Daily Plan", icon: Brain, section: "mental" },
+  { href: "/disciplinary-assistant", label: "Discipline & Psychology Tracker", icon: Settings, section: "mental" },
+  
+  // TRADING EXECUTION & RECORDS
+  { href: "/accounts", label: "Accounts", icon: Target, section: "trading" },
+  { href: "/trades", label: "Trades Log", icon: FileText, section: "trading" },
+  { href: "/journal", label: "Trading Journal", icon: Book, section: "trading" },
+  { href: "/trading-companion", label: "Trading Companion", icon: Bot, section: "trading" },
+  
+  // FINANCIAL MANAGEMENT
+  { href: "/spending", label: "Prop Firm Spending", icon: Wallet, section: "financial" },
+  { href: "/payouts", label: "Payout Records", icon: DollarSign, section: "financial" },
+  { href: "/reports", label: "Reports", icon: Calendar, section: "financial" },
+  
   { href: "/profile", label: "Profile", icon: User, section: "profile" },
 ];
 
@@ -70,7 +78,10 @@ export default function Sidebar() {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isPartiallyCollapsed, setIsPartiallyCollapsed] = useState(false);
 
-  const mainItems = navItems.filter(item => item.section === "main");
+  const coreItems = navItems.filter(item => item.section === "core");
+  const mentalItems = navItems.filter(item => item.section === "mental");
+  const tradingItems = navItems.filter(item => item.section === "trading");
+  const financialItems = navItems.filter(item => item.section === "financial");
   const profileItems = navItems.filter(item => item.section === "profile");
 
   const handleToggleCollapse = () => {
@@ -122,45 +133,151 @@ export default function Sidebar() {
       </Button>
       
       <nav className="mt-6 flex-1 overflow-y-auto pb-4">
-        {!isCollapsed && !isPartiallyCollapsed && (
-          <div className="px-6 mb-4">
-            <h3 className="text-xs font-medium text-prop-gold uppercase tracking-wider">Navigation</h3>
+        <div className="space-y-6">
+          {/* CORE TRADING & PERFORMANCE Section */}
+          <div className="nav-section">
+            {!isCollapsed && !isPartiallyCollapsed && (
+              <h3 className="text-xs font-medium text-prop-gold uppercase tracking-wider px-6 mb-3">
+                CORE TRADING & PERFORMANCE
+              </h3>
+            )}
+            <ul className="space-y-2 px-4">
+              {coreItems.map(({ href, label, icon: Icon }, index) => (
+                <li key={href}>
+                  <Link href={href} className={cn(
+                    "flex items-center px-4 py-3 text-sm font-medium rounded-xl smooth-transition cursor-pointer group relative",
+                    location === href 
+                      ? "bg-prop-gradient-gold text-black font-bold" 
+                      : "text-muted-foreground hover:bg-card hover:text-prop-gold hover-scale",
+                    (isCollapsed || isPartiallyCollapsed) ? "justify-center" : ""
+                  )}>
+                    <Icon className={cn(
+                      "h-5 w-5 smooth-transition",
+                      location === href ? "text-black" : "text-muted-foreground group-hover:text-prop-gold",
+                      !(isCollapsed || isPartiallyCollapsed) ? "mr-3" : ""
+                    )} />
+                    {!isCollapsed && !isPartiallyCollapsed && label}
+                    {(isCollapsed || isPartiallyCollapsed) && (
+                      <>
+                        <div className="absolute left-full ml-2 px-2 py-1 bg-card border border-prop-gold/20 rounded-md text-xs text-foreground opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50 shadow-md">
+                          {label}
+                        </div>
+                        {/* Show first letter of first menu item when collapsed */}
+                        {index === 0 && (
+                          <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-prop-gold rounded-full flex items-center justify-center text-xs font-bold text-black">
+                            {label.charAt(0)}
+                          </div>
+                        )}
+                      </>
+                    )}
+                  </Link>
+                </li>
+              ))}
+            </ul>
           </div>
-        )}
-        <ul className="space-y-2 px-4">
-          {mainItems.map(({ href, label, icon: Icon }, index) => (
-            <li key={href}>
-              <Link href={href} className={cn(
-                "flex items-center px-4 py-3 text-sm font-medium rounded-xl smooth-transition cursor-pointer group relative",
-                location === href 
-                  ? "bg-prop-gradient-gold text-black font-bold" 
-                  : "text-muted-foreground hover:bg-card hover:text-prop-gold hover-scale",
-                (isCollapsed || isPartiallyCollapsed) ? "justify-center" : ""
-              )}>
-                <Icon className={cn(
-                  "h-5 w-5 smooth-transition",
-                  location === href ? "text-black" : "text-muted-foreground group-hover:text-prop-gold",
-                  !(isCollapsed || isPartiallyCollapsed) ? "mr-3" : ""
-                )} />
-                {!isCollapsed && !isPartiallyCollapsed && label}
-                {(isCollapsed || isPartiallyCollapsed) && (
-                  <>
-                    <div className="absolute left-full ml-2 px-2 py-1 bg-card border border-prop-gold/20 rounded-md text-xs text-foreground opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50 shadow-md">
-                      {label}
-                    </div>
-                    {/* Show first letter of first menu item when collapsed */}
-                    {index === 0 && (
-                      <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-prop-gold rounded-full flex items-center justify-center text-xs font-bold text-black">
-                        {label.charAt(0)}
+
+          {/* MENTAL PREPARATION Section */}
+          <div className="nav-section">
+            {!isCollapsed && !isPartiallyCollapsed && (
+              <h3 className="text-xs font-medium text-prop-gold uppercase tracking-wider px-6 mb-3">
+                MENTAL PREPARATION
+              </h3>
+            )}
+            <ul className="space-y-2 px-4">
+              {mentalItems.map(({ href, label, icon: Icon }) => (
+                <li key={href}>
+                  <Link href={href} className={cn(
+                    "flex items-center px-4 py-3 text-sm font-medium rounded-xl smooth-transition cursor-pointer group relative",
+                    location === href 
+                      ? "bg-prop-gradient-gold text-black font-bold" 
+                      : "text-muted-foreground hover:bg-card hover:text-prop-gold hover-scale",
+                    (isCollapsed || isPartiallyCollapsed) ? "justify-center" : ""
+                  )}>
+                    <Icon className={cn(
+                      "h-5 w-5 smooth-transition",
+                      location === href ? "text-black" : "text-muted-foreground group-hover:text-prop-gold",
+                      !(isCollapsed || isPartiallyCollapsed) ? "mr-3" : ""
+                    )} />
+                    {!isCollapsed && !isPartiallyCollapsed && label}
+                    {(isCollapsed || isPartiallyCollapsed) && (
+                      <div className="absolute left-full ml-2 px-2 py-1 bg-card border border-prop-gold/20 rounded-md text-xs text-foreground opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50 shadow-md">
+                        {label}
                       </div>
                     )}
-                  </>
-                )}
-              </Link>
-            </li>
-          ))}
-          
-        </ul>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* TRADING EXECUTION & RECORDS Section */}
+          <div className="nav-section">
+            {!isCollapsed && !isPartiallyCollapsed && (
+              <h3 className="text-xs font-medium text-prop-gold uppercase tracking-wider px-6 mb-3">
+                TRADING EXECUTION & RECORDS
+              </h3>
+            )}
+            <ul className="space-y-2 px-4">
+              {tradingItems.map(({ href, label, icon: Icon }) => (
+                <li key={href}>
+                  <Link href={href} className={cn(
+                    "flex items-center px-4 py-3 text-sm font-medium rounded-xl smooth-transition cursor-pointer group relative",
+                    location === href 
+                      ? "bg-prop-gradient-gold text-black font-bold" 
+                      : "text-muted-foreground hover:bg-card hover:text-prop-gold hover-scale",
+                    (isCollapsed || isPartiallyCollapsed) ? "justify-center" : ""
+                  )}>
+                    <Icon className={cn(
+                      "h-5 w-5 smooth-transition",
+                      location === href ? "text-black" : "text-muted-foreground group-hover:text-prop-gold",
+                      !(isCollapsed || isPartiallyCollapsed) ? "mr-3" : ""
+                    )} />
+                    {!isCollapsed && !isPartiallyCollapsed && label}
+                    {(isCollapsed || isPartiallyCollapsed) && (
+                      <div className="absolute left-full ml-2 px-2 py-1 bg-card border border-prop-gold/20 rounded-md text-xs text-foreground opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50 shadow-md">
+                        {label}
+                      </div>
+                    )}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* FINANCIAL MANAGEMENT Section */}
+          <div className="nav-section">
+            {!isCollapsed && !isPartiallyCollapsed && (
+              <h3 className="text-xs font-medium text-prop-gold uppercase tracking-wider px-6 mb-3">
+                FINANCIAL MANAGEMENT
+              </h3>
+            )}
+            <ul className="space-y-2 px-4">
+              {financialItems.map(({ href, label, icon: Icon }) => (
+                <li key={href}>
+                  <Link href={href} className={cn(
+                    "flex items-center px-4 py-3 text-sm font-medium rounded-xl smooth-transition cursor-pointer group relative",
+                    location === href 
+                      ? "bg-prop-gradient-gold text-black font-bold" 
+                      : "text-muted-foreground hover:bg-card hover:text-prop-gold hover-scale",
+                    (isCollapsed || isPartiallyCollapsed) ? "justify-center" : ""
+                  )}>
+                    <Icon className={cn(
+                      "h-5 w-5 smooth-transition",
+                      location === href ? "text-black" : "text-muted-foreground group-hover:text-prop-gold",
+                      !(isCollapsed || isPartiallyCollapsed) ? "mr-3" : ""
+                    )} />
+                    {!isCollapsed && !isPartiallyCollapsed && label}
+                    {(isCollapsed || isPartiallyCollapsed) && (
+                      <div className="absolute left-full ml-2 px-2 py-1 bg-card border border-prop-gold/20 rounded-md text-xs text-foreground opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50 shadow-md">
+                        {label}
+                      </div>
+                    )}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
         
         {/* Profile Section - Bottom with Separator */}
         <div className="mt-auto border-t border-border pt-4">
