@@ -85,36 +85,17 @@
   border-color: hsl(var(--widget-border)) !important;
 }
 
-/* Force all dropdowns and selects to follow theme */
+/* Force all dropdowns and selects to follow theme - EXCLUDING DROPDOWN MENUS */
 [data-radix-collection-item],
-[data-radix-popper-content-wrapper],
+[data-radix-popper-content-wrapper]:not([data-radix-dropdown-menu-content]),
 [role="listbox"],
 [role="option"],
-.bg-gray-800,
-.bg-gray-900,
-[data-state="open"] {
+.bg-gray-800:not([data-radix-dropdown-menu-content]),
+.bg-gray-900:not([data-radix-dropdown-menu-content]),
+[data-state="open"]:not([data-radix-dropdown-menu-content]) {
   background-color: hsl(var(--widget-bg)) !important;
   color: hsl(var(--widget-text)) !important;
   border-color: hsl(var(--widget-border)) !important;
-}
-
-/* Dropdown menu fixes */
-[data-radix-dropdown-menu-content] {
-  z-index: 9999 !important;
-  background-color: #1f2937 !important;
-  border-color: #4b5563 !important;
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3) !important;
-}
-
-[data-radix-dropdown-menu-item] {
-  background-color: transparent !important;
-  color: #d1d5db !important;
-}
-
-[data-radix-dropdown-menu-item]:hover,
-[data-radix-dropdown-menu-item][data-highlighted] {
-  background-color: #374151 !important;
-  outline: none !important;
 }
 
 /* Fix equity curve and chart containers */
