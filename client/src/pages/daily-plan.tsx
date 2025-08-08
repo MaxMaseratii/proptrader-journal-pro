@@ -100,6 +100,7 @@ const DailyPlanPage = () => {
   // Auto-select first account when accounts load (so historical plans show immediately)
   useEffect(() => {
     if (accounts && accounts.length > 0 && !selectedAccount) {
+      console.log('🎯 Auto-selecting first account:', accounts[0].id, accounts[0].name);
       setSelectedAccount(accounts[0].id);
     }
   }, [accounts, selectedAccount]);
@@ -337,11 +338,19 @@ const DailyPlanPage = () => {
 
   // Get historical plans with comprehensive data including linked journal entries
   const historicalPlans = useMemo(() => {
+    console.log('📊 Building historical plans with:', { 
+      dailyPlans: dailyPlans?.length, 
+      selectedAccount, 
+      plansForAccount: dailyPlans?.filter(p => p.accountId === selectedAccount).length 
+    });
+    
     if (!dailyPlans || !selectedAccount) return [];
     
     const accountPlans = dailyPlans
       .filter(plan => plan.accountId === selectedAccount)
       .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()); // Oldest first for proper day numbering
+      
+    console.log('📈 Found account plans:', accountPlans.length, 'for account:', selectedAccount);
     
     return accountPlans.map((plan, index) => {
       // Get strategy for this plan

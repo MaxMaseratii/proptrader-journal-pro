@@ -48,16 +48,25 @@ const StrategyManagement: React.FC<StrategyManagementProps> = ({ editStrategyId,
 
   // Mutations
   const deleteStrategyMutation = useMutation({
-    mutationFn: (id: number) => apiRequest(`/api/strategies/${id}`, 'DELETE'),
-    onSuccess: () => {
-      console.log('Strategy deleted successfully');
+    mutationFn: (id: number) => {
+      console.log('🗑️ Deleting strategy with ID:', id);
+      return apiRequest(`/api/strategies/${id}`, 'DELETE');
+    },
+    onSuccess: (data) => {
+      console.log('✅ Strategy deleted successfully:', data);
       queryClient.invalidateQueries({ queryKey: ['/api/strategies'] });
+      setDeleteDialogOpen(false);
+      setStrategyToDelete(null);
     },
     onError: (error: any) => {
-      console.error('Failed to delete strategy:', error);
-      // Check for our custom error message from the backend
-      const errorMessage = error?.message || error?.response?.data?.message || '';
-      // We'll handle errors with the toast system instead of alerts for better UX
+      console.error('❌ Failed to delete strategy:', error);
+      const errorMessage = error?.response?.data?.message || error?.message || 'Unknown error occurred';
+      console.log('Error details:', { error, errorMessage });
+      
+      // Show error to user 
+      alert(`Cannot delete strategy: ${errorMessage}`);
+      setDeleteDialogOpen(false);
+      setStrategyToDelete(null);
     },
   });
 

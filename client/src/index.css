@@ -85,45 +85,152 @@
   border-color: hsl(var(--widget-border)) !important;
 }
 
-/* FIXED DROPDOWN STYLES - LIGHT/DARK MODE COMPATIBLE */
-[data-radix-dropdown-menu-content] {
-  background-color: hsl(var(--popover)) !important;
-  color: hsl(var(--popover-foreground)) !important;
-  border: 1px solid hsl(var(--border)) !important;
+/* COMPREHENSIVE DROPDOWN FIXES - ALL RADIX UI COMPONENTS */
+
+/* 1. Dropdown Menu Components */
+[data-radix-dropdown-menu-content],
+.dropdown-menu-content {
+  background-color: white !important;
+  color: black !important;
+  border: 1px solid #d1d5db !important;
   border-radius: 6px !important;
   box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05) !important;
-  z-index: 50 !important;
+  z-index: 9999 !important;
   min-width: 8rem !important;
   padding: 4px !important;
 }
 
-[data-radix-dropdown-menu-item] {
+.dark [data-radix-dropdown-menu-content],
+.dark .dropdown-menu-content {
+  background-color: #111827 !important;
+  color: white !important;
+  border-color: #374151 !important;
+}
+
+[data-radix-dropdown-menu-item],
+.dropdown-menu-item {
   display: flex !important;
   cursor: pointer !important;
-  select-user: none !important;
+  user-select: none !important;
   align-items: center !important;
   border-radius: 4px !important;
   padding: 8px 12px !important;
   font-size: 14px !important;
   outline: none !important;
-  color: hsl(var(--popover-foreground)) !important;
+  color: black !important;
   background-color: transparent !important;
 }
 
-[data-radix-dropdown-menu-item]:hover,
-[data-radix-dropdown-menu-item][data-highlighted] {
-  background-color: hsl(var(--accent)) !important;
-  color: hsl(var(--accent-foreground)) !important;
+.dark [data-radix-dropdown-menu-item],
+.dark .dropdown-menu-item {
+  color: white !important;
 }
 
-/* Force all OTHER dropdowns and selects to follow theme */
-[data-radix-collection-item]:not([data-radix-dropdown-menu-item]),
-[data-radix-popper-content-wrapper]:not([data-radix-dropdown-menu-content]),
+[data-radix-dropdown-menu-item]:hover,
+[data-radix-dropdown-menu-item][data-highlighted],
+.dropdown-menu-item:hover {
+  background-color: #f3f4f6 !important;
+  color: black !important;
+}
+
+.dark [data-radix-dropdown-menu-item]:hover,
+.dark [data-radix-dropdown-menu-item][data-highlighted],
+.dark .dropdown-menu-item:hover {
+  background-color: #374151 !important;
+  color: white !important;
+}
+
+/* 2. Select Components */
+[data-radix-select-content],
+.select-content {
+  background-color: white !important;
+  color: black !important;
+  border: 1px solid #d1d5db !important;
+  border-radius: 6px !important;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05) !important;
+  z-index: 9999 !important;
+  min-width: 8rem !important;
+  padding: 4px !important;
+}
+
+.dark [data-radix-select-content],
+.dark .select-content {
+  background-color: #111827 !important;
+  color: white !important;
+  border-color: #374151 !important;
+}
+
+[data-radix-select-item],
+.select-item {
+  display: flex !important;
+  cursor: pointer !important;
+  user-select: none !important;
+  align-items: center !important;
+  border-radius: 4px !important;
+  padding: 8px 12px !important;
+  font-size: 14px !important;
+  outline: none !important;
+  color: black !important;
+  background-color: transparent !important;
+}
+
+.dark [data-radix-select-item],
+.dark .select-item {
+  color: white !important;
+}
+
+[data-radix-select-item]:hover,
+[data-radix-select-item][data-highlighted],
+.select-item:hover {
+  background-color: #f3f4f6 !important;
+  color: black !important;
+}
+
+.dark [data-radix-select-item]:hover,
+.dark [data-radix-select-item][data-highlighted],
+.dark .select-item:hover {
+  background-color: #374151 !important;
+  color: white !important;
+}
+
+/* 3. Popover Components */
+[data-radix-popover-content],
+.popover-content {
+  background-color: white !important;
+  color: black !important;
+  border: 1px solid #d1d5db !important;
+  border-radius: 6px !important;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05) !important;
+  z-index: 9999 !important;
+  padding: 8px !important;
+}
+
+.dark [data-radix-popover-content],
+.dark .popover-content {
+  background-color: #111827 !important;
+  color: white !important;
+  border-color: #374151 !important;
+}
+
+/* 4. Generic fallbacks for any missed components */
 [role="listbox"],
-[role="option"] {
-  background-color: hsl(var(--popover)) !important;
-  color: hsl(var(--popover-foreground)) !important;
-  border-color: hsl(var(--border)) !important;
+[role="option"],
+[data-radix-collection-item],
+[data-radix-popper-content-wrapper] {
+  background-color: white !important;
+  color: black !important;
+  border: 1px solid #d1d5db !important;
+  border-radius: 6px !important;
+  z-index: 9999 !important;
+}
+
+.dark [role="listbox"],
+.dark [role="option"],
+.dark [data-radix-collection-item],
+.dark [data-radix-popper-content-wrapper] {
+  background-color: #111827 !important;
+  color: white !important;
+  border-color: #374151 !important;
 }
 
 /* COMPREHENSIVE MODAL DIALOG FIXES */
@@ -162,7 +269,7 @@
   border: 1px solid hsl(var(--border)) !important;
 }
 
-/* COMPREHENSIVE UI ELEMENT OVERRIDES FOR PERFECT VISIBILITY */
+/* END OF DROPDOWN FIXES */
 
 /* All possible dropdown/select content containers */
 [data-radix-select-content],
