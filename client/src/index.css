@@ -210,6 +210,53 @@ canvas {
   opacity: 1 !important;
 }
 
+/* CRITICAL: Dark theme select dropdowns (for account form modals) */
+.dark [data-radix-select-content] {
+  background-color: #1f2937 !important;
+  color: white !important;
+  border-color: #374151 !important;
+}
+
+.dark [data-radix-select-item] {
+  background-color: transparent !important;
+  color: white !important;
+}
+
+.dark [data-radix-select-item]:hover {
+  background-color: #374151 !important;
+  color: white !important;
+}
+
+/* CRITICAL: Dark theme form inputs */
+.dark input[type="text"],
+.dark input[type="email"],
+.dark input[type="password"],
+.dark input[type="number"],
+.dark textarea,
+.dark select {
+  background-color: #374151 !important;
+  color: white !important;
+  border-color: #4b5563 !important;
+}
+
+/* EXTRA: Ensure all form controls have proper contrast */
+input, textarea, select {
+  color: inherit !important;
+}
+
+/* Force proper styling for all input classes */
+.light .bg-white,
+.light .bg-gray-50,
+.light .bg-gray-100 {
+  color: black !important;
+}
+
+.dark .bg-gray-700,
+.dark .bg-gray-800,
+.dark .bg-gray-900 {
+  color: white !important;
+}
+
 /* Fix dropdown content styling - but NOT for dark modal overlays */
 .light [data-radix-popper-content-wrapper] > div:not([data-state]),
 .light [role="listbox"]:not([data-state]),
@@ -224,6 +271,34 @@ canvas {
   background-color: white !important;
   color: black !important;
   border-color: #e5e7eb !important;
+}
+
+/* CRITICAL: Form fields with white backgrounds must have black text */
+.light input[type="text"],
+.light input[type="email"],
+.light input[type="password"],
+.light input[type="number"],
+.light textarea,
+.light select {
+  color: black !important;
+  background-color: white !important;
+}
+
+/* CRITICAL: Select dropdowns in light mode */
+.light [data-radix-select-content] {
+  background-color: white !important;
+  color: black !important;
+  border-color: #e5e7eb !important;
+}
+
+.light [data-radix-select-item] {
+  background-color: white !important;
+  color: black !important;
+}
+
+.light [data-radix-select-item]:hover {
+  background-color: #f3f4f6 !important;
+  color: black !important;
 }
 
 /* CRITICAL FIX: Progress bar background in light mode */
