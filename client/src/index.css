@@ -148,6 +148,16 @@ canvas {
   color: black !important;
 }
 
+/* FORCE text color inheritance for children of white backgrounds */
+.light .bg-white *,
+.light .bg-gray-50 *,
+.light .bg-gray-100 *,
+.light [class*="bg-white"] *,
+.light [class*="bg-gray-50"] *,
+.light [class*="bg-gray-100"] * {
+  color: black !important;
+}
+
 /* CRITICAL: Ensure ALL modal overlays have dark backgrounds */
 [data-radix-dialog-overlay],
 [data-radix-alert-dialog-overlay],
@@ -289,6 +299,48 @@ input, textarea, select {
 .light [data-radix-select-trigger],
 .light [data-radix-select-value],
 .light [data-radix-select-placeholder] {
+  color: black !important;
+}
+
+/* UNIVERSAL RULE: ALL white backgrounds must have black text in light mode */
+.light * {
+  color: black !important;
+}
+
+.light [class*="bg-white"],
+.light [class*="bg-gray-50"],
+.light [class*="bg-gray-100"],
+.light .bg-white,
+.light .bg-gray-50,
+.light .bg-gray-100 {
+  color: black !important;
+}
+
+/* NUCLEAR OPTION: Force ALL form elements to have proper contrast */
+.light input,
+.light textarea,
+.light select,
+.light button,
+.light [role="button"],
+.light [role="combobox"],
+.light [role="listbox"],
+.light [role="option"],
+.light [data-radix-select-trigger],
+.light [data-radix-select-content],
+.light [data-radix-select-item],
+.light [data-radix-select-value],
+.light [data-radix-dropdown-menu-content],
+.light [data-radix-dropdown-menu-item] {
+  color: black !important;
+}
+
+/* Specific targeting for common white background elements */
+.light div[style*="background-color: white"],
+.light div[style*="background-color: #fff"],
+.light div[style*="background-color: #ffffff"],
+.light span[style*="background-color: white"],
+.light span[style*="background-color: #fff"],
+.light span[style*="background-color: #ffffff"] {
   color: black !important;
 }
 
