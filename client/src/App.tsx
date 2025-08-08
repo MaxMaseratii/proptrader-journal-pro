@@ -108,7 +108,7 @@ function Router() {
           <Route path="/" component={Dashboard} />
           <Route path="/dashboard-simple" component={DashboardShowcase} />
           <Route path="/daily-plan" component={DailyPlan} />
-          <Route path="/in-the-zone" component={MentalFitness} />
+          <Route path="/mental-fitness" component={MentalFitness} />
           <Route path="/trading-companion" component={TradingCompanion} />
           <Route path="/trading-dashboard" component={TradingDashboard} />
           <Route path="/projections" component={Projections} />

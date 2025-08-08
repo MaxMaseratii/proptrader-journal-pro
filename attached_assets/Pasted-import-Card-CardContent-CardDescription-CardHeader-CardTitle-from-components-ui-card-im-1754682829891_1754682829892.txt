@@ -133,7 +133,7 @@ export default function MentalFitness() {
     return Math.min(100, Math.max(0, baseScore));
   };
 
-  const formatTime = (seconds: number) => {
+  const formatTime = (seconds) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
     return `${mins}:${secs.toString().padStart(2, '0')}`;
@@ -280,7 +280,7 @@ export default function MentalFitness() {
                     <label className="text-sm font-medium">{feeling}</label>
                     <select 
                       className="w-full p-2 border rounded-md"
-                      value={(postRitualFeelings as any)[feeling] || ''}
+                      value={postRitualFeelings[feeling] || ''}
                       onChange={(e) => setPostRitualFeelings({...postRitualFeelings, [feeling]: e.target.value})}
                     >
                       <option value="">Select...</option>
@@ -427,14 +427,22 @@ export default function MentalFitness() {
             </CardContent>
           </Card>
 
-          {/* Return to Assessment Button */}
-          <div className="text-center">
+          <div className="flex justify-center space-x-4">
             <Button 
-              onClick={() => setCurrentView('assessment')}
+              onClick={() => {
+                setCurrentView('assessment');
+                setRitualCompleted(false);
+                setCurrentRitualStep(0);
+                setPostRitualFeelings({});
+              }}
               variant="outline"
             >
               <RotateCcw className="h-4 w-4 mr-2" />
-              Return to Assessment
+              Start Over
+            </Button>
+            <Button className="bg-green-600 hover:bg-green-700">
+              <CheckCircle className="h-4 w-4 mr-2" />
+              Begin Trading Session
             </Button>
           </div>
         </div>
@@ -442,10 +450,10 @@ export default function MentalFitness() {
     );
   }
 
-  // Default assessment view
+  // Main Assessment View
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-6">
-      <div className="max-w-6xl mx-auto">
+      <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center space-x-3 mb-4">
@@ -454,12 +462,12 @@ export default function MentalFitness() {
             </div>
             <div>
               <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Flow State Training Center</h1>
-              <p className="text-gray-600 dark:text-gray-400">Assess and optimize your psychological readiness for trading</p>
+              <p className="text-gray-600 dark:text-gray-400">Master your psychology for optimal trading performance</p>
             </div>
           </div>
         </div>
 
-        {/* Current Flow State Assessment */}
+        {/* Current Flow Assessment */}
         <Card className="mb-8">
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
