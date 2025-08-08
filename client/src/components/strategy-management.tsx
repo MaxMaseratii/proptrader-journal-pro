@@ -168,27 +168,39 @@ const StrategyManagement: React.FC<StrategyManagementProps> = ({ editStrategyId,
                     <Badge variant={strategy.isActive ? "default" : "secondary"} className="text-xs">
                       {strategy.isActive ? "Active" : "Inactive"}
                     </Badge>
-                    <DropdownMenu>
+                    <DropdownMenu modal={false}>
                       <DropdownMenuTrigger asChild>
                         <Button
                           variant="ghost"
                           size="sm"
-                          className="h-8 w-8 p-0 text-gray-400 hover:text-yellow-400"
+                          className="h-8 w-8 p-0 text-gray-400 hover:text-yellow-400 hover:bg-gray-700"
+                          aria-label="Strategy options"
                         >
                           <MoreVertical className="w-4 h-4" />
                         </Button>
                       </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end" className="bg-gray-800 border-gray-700">
+                      <DropdownMenuContent 
+                        align="end" 
+                        sideOffset={4}
+                        className="min-w-[120px] bg-gray-800 border-gray-600 text-white shadow-lg"
+                        style={{ zIndex: 9999 }}
+                      >
                         <DropdownMenuItem 
-                          onClick={() => openEditDialog(strategy)}
-                          className="text-gray-300 hover:text-yellow-400 hover:bg-gray-700"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            openEditDialog(strategy);
+                          }}
+                          className="text-gray-200 hover:text-yellow-400 hover:bg-gray-700 cursor-pointer focus:bg-gray-700 focus:text-yellow-400"
                         >
                           <Edit className="w-4 h-4 mr-2" />
                           Modify
                         </DropdownMenuItem>
                         <DropdownMenuItem 
-                          onClick={() => confirmDelete(strategy)}
-                          className="text-gray-300 hover:text-red-400 hover:bg-gray-700"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            confirmDelete(strategy);
+                          }}
+                          className="text-gray-200 hover:text-red-400 hover:bg-gray-700 cursor-pointer focus:bg-gray-700 focus:text-red-400"
                         >
                           <Trash2 className="w-4 h-4 mr-2" />
                           Delete
