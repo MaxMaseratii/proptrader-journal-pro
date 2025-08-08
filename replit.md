@@ -17,6 +17,7 @@ Preferred communication style: Simple, everyday language.
 - **Charts**: Chart.js
 
 ### Recent Critical Fixes (August 2025)
+- **Gold Accent Theme Restored (Aug 8, 2025)**: Restored complete gold accent branding throughout application. Logo now features gold tone background with "PropTrader" in gold gradient and "Journal" in black text. Enhanced welcome page, sidebar, and footer with consistent gold styling including buttons, badges, and CTA sections.
 - **Hardcoded Account Data Eliminated (Aug 8, 2025)**: Completely removed hardcoded account entries "Main Trading (Live)", "Demo Account (Demo)", "Swing Trading (Live)" from trading-dashboard.tsx and replaced with dynamic API-driven account loading. All account dropdowns now use real accounts from account creation system.
 - **Strategy Deletion API Fixed**: Corrected endpoint path from `/api/strategies/` to `/api/trading-strategies/` with confirmed 200 success responses.
 - **Account Creation Dialog Integration**: Added account creation dialog to Account Management component with proper state management and user flow.

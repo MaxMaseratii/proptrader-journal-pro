@@ -80,12 +80,12 @@ function WelcomeHeader() {
           {/* Logo */}
           <div className="flex items-center">
             <Link href="/" className="flex items-center space-x-2">
-              <div className="flex items-center space-x-1">
+              <div className="flex items-center space-x-1 px-3 py-2 rounded-lg bg-gradient-to-r from-yellow-100/50 to-amber-100/30">
                 <Crown className="h-8 w-8 text-yellow-500" />
-                <span className="text-xl font-bold bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 bg-clip-text text-transparent">
+                <span className="text-xl font-bold bg-gradient-to-r from-yellow-500 via-yellow-600 to-yellow-700 bg-clip-text text-transparent">
                   PropTrader
                 </span>
-                <span className="text-xl font-bold text-gray-900 dark:text-white">Journal</span>
+                <span className="text-xl font-bold text-black dark:text-black">Journal</span>
               </div>
             </Link>
           </div>
@@ -241,7 +241,7 @@ function WelcomeFooter() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
           {/* Company Info */}
           <div>
-            <div className="flex items-center space-x-2 mb-4">
+            <div className="flex items-center space-x-2 mb-4 px-3 py-2 rounded-lg bg-gradient-to-r from-yellow-100/10 to-amber-100/10">
               <Crown className="h-8 w-8 text-yellow-500" />
               <span className="text-xl font-bold bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 bg-clip-text text-transparent">
                 PropTrader

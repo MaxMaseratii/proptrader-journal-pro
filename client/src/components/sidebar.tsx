@@ -104,14 +104,14 @@ export default function Sidebar() {
         <div className="flex items-center space-x-3">
           <Link 
             href="/welcome"
-            className="bg-prop-gradient-rainbow p-3 rounded-xl hover-glow smooth-transition cursor-pointer block"
+            className="bg-gradient-to-r from-yellow-400/80 to-amber-500/60 p-3 rounded-xl hover-glow smooth-transition cursor-pointer block"
           >
-            <BookOpen className="h-6 w-6 text-white" />
+            <BookOpen className="h-6 w-6 text-black" />
           </Link>
           {!isCollapsed && !isPartiallyCollapsed && (
-            <div>
-              <h1 className="text-lg font-bold bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 bg-clip-text text-transparent">#1 PropFirm Trader's Journal</h1>
-              <p className="text-xs text-prop-gold font-medium">PropTrader Journal</p>
+            <div className="px-2 py-1 rounded-lg bg-gradient-to-r from-yellow-100/10 to-amber-100/10">
+              <h1 className="text-lg font-bold bg-gradient-to-r from-yellow-500 via-yellow-600 to-yellow-700 bg-clip-text text-transparent">#1 PropFirm Trader's Journal</h1>
+              <p className="text-xs font-medium"><span className="bg-gradient-to-r from-yellow-500 to-yellow-600 bg-clip-text text-transparent">PropTrader</span> <span className="text-foreground">Journal</span></p>
             </div>
           )}
         </div>
