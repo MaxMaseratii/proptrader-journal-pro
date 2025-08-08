@@ -77,9 +77,121 @@ import {
   Eye,
   EyeOff,
   ChevronDown,
-  ChevronUp
+  ChevronUp,
+  Share2,
+  ExternalLink
 } from "lucide-react";
 import type { Account, Trade } from "@shared/schema";
+
+// Social Media Share Component
+interface ShareStatsProps {
+  totalPnL: number;
+  winRate: number;
+  totalTrades: number;
+  bestTrade: number;
+  accountName: string;
+}
+
+const ShareStats: React.FC<ShareStatsProps> = ({ totalPnL, winRate, totalTrades, bestTrade, accountName }) => {
+  const shareText = `🚀 My Trading Stats on PropTrader Journal:
+💰 Total P&L: ${formatCurrency(totalPnL)}
+📊 Win Rate: ${winRate.toFixed(1)}%
+📈 Best Trade: ${formatCurrency(bestTrade)}
+🎯 Total Trades: ${totalTrades}
+📱 Account: ${accountName}
+
+#PropTrading #TradingJournal #PropTraderJournal`;
+
+  const shareUrl = encodeURIComponent(window.location.origin);
+  const encodedText = encodeURIComponent(shareText);
+
+  const socialPlatforms = [
+    {
+      name: 'Facebook',
+      url: `https://www.facebook.com/sharer/sharer.php?u=${shareUrl}&quote=${encodedText}`,
+      color: 'bg-blue-600 hover:bg-blue-700',
+      icon: '📘'
+    },
+    {
+      name: 'X (Twitter)',
+      url: `https://twitter.com/intent/tweet?text=${encodedText}&url=${shareUrl}`,
+      color: 'bg-gray-800 hover:bg-gray-900',
+      icon: '🐦'
+    },
+    {
+      name: 'Instagram',
+      url: `https://www.instagram.com/`,
+      color: 'bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600',
+      icon: '📷',
+      note: 'Copy stats and share on your story!'
+    },
+    {
+      name: 'TikTok',
+      url: `https://www.tiktok.com/`,
+      color: 'bg-black hover:bg-gray-900',
+      icon: '🎵',
+      note: 'Create a video with your stats!'
+    },
+    {
+      name: 'YouTube',
+      url: `https://www.youtube.com/`,
+      color: 'bg-red-600 hover:bg-red-700',
+      icon: '📹',
+      note: 'Share in your trading videos!'
+    }
+  ];
+
+  const handleShare = (platform: typeof socialPlatforms[0]) => {
+    if (platform.note) {
+      navigator.clipboard.writeText(shareText);
+      window.open(platform.url, '_blank');
+    } else {
+      window.open(platform.url, '_blank');
+    }
+  };
+
+  return (
+    <div className="flex items-center space-x-2">
+      <div className="relative group">
+        <Button 
+          variant="outline" 
+          size="sm" 
+          className="bg-gradient-to-r from-yellow-400/20 to-amber-500/20 border-yellow-400/40 hover:border-yellow-400/60 text-yellow-400 hover:text-yellow-300"
+        >
+          <Share2 className="h-4 w-4 mr-2" />
+          Share Stats
+        </Button>
+        
+        <div className="absolute top-full right-0 mt-2 w-80 bg-gray-900 border border-gray-700 rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+          <div className="p-4">
+            <h3 className="text-white font-semibold mb-3">Share Your Trading Stats</h3>
+            <div className="space-y-2">
+              {socialPlatforms.map((platform) => (
+                <button
+                  key={platform.name}
+                  onClick={() => handleShare(platform)}
+                  className={`w-full flex items-center space-x-3 p-2 rounded-lg text-white transition-all ${platform.color}`}
+                >
+                  <span className="text-lg">{platform.icon}</span>
+                  <div className="flex-1 text-left">
+                    <div className="font-medium">{platform.name}</div>
+                    {platform.note && (
+                      <div className="text-xs opacity-80">{platform.note}</div>
+                    )}
+                  </div>
+                  <ExternalLink className="h-4 w-4" />
+                </button>
+              ))}
+            </div>
+            <div className="mt-3 p-2 bg-gray-800 rounded text-xs text-gray-400">
+              💡 Stats will be copied to clipboard for Instagram, TikTok, and YouTube
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 // Calendar View Components
 interface CalendarViewProps {
@@ -1283,6 +1395,22 @@ export default function Dashboard() {
                   Journal
                 </Button>
               </Link>
+              
+              {/* Social Media Share Button */}
+              {combinedAnalytics && (
+                <ShareStats 
+                  totalPnL={combinedAnalytics.totalPnl || 0}
+                  winRate={combinedAnalytics.winRate || 0}
+                  totalTrades={combinedAnalytics.totalTrades || 0}
+                  bestTrade={combinedAnalytics.bestTrade || 0}
+                  accountName={selectedAccountIds.length === 1 
+                    ? accounts?.find(acc => acc.id === selectedAccountIds[0])?.name || 'Selected Account'
+                    : selectedAccountIds.length > 1 
+                      ? `${selectedAccountIds.length} Accounts` 
+                      : 'All Accounts'
+                  }
+                />
+              )}
             </div>
             <NotificationDropdown />
           </div>
