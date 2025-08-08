@@ -247,7 +247,7 @@ export default function AccountManagement() {
                 Add Account
               </Button>
             </DialogTrigger>
-            <DialogContent className="max-w-2xl bg-gradient-to-br from-gray-900 via-gray-800 to-black border border-yellow-400/20">
+            <DialogContent className="max-w-2xl w-[95vw] max-h-[85vh] bg-gradient-to-br from-gray-900 via-gray-800 to-black border border-yellow-400/20 overflow-hidden">
               <DialogHeader>
                 <DialogTitle className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-yellow-600">
                   Create New Trading Account
@@ -257,9 +257,10 @@ export default function AccountManagement() {
                 </DialogDescription>
               </DialogHeader>
               
-              <Form {...form}>
-                <form onSubmit={form.handleSubmit(handleCreateAccount)} className="space-y-4">
-                  <div className="grid grid-cols-2 gap-4">
+              <div className="max-h-[70vh] overflow-y-auto pr-2">
+                <Form {...form}>
+                  <form onSubmit={form.handleSubmit(handleCreateAccount)} className="space-y-4">
+                    <div className="grid grid-cols-2 gap-4">
                     <FormField
                       control={form.control}
                       name="name"
@@ -426,8 +427,9 @@ export default function AccountManagement() {
                       {createAccountMutation.isPending ? 'Creating...' : 'Create Account'}
                     </Button>
                   </div>
-                </form>
-              </Form>
+                  </form>
+                </Form>
+              </div>
             </DialogContent>
           </Dialog>
         </div>

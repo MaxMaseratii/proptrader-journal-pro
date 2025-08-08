@@ -3226,7 +3226,7 @@ export default function Dashboard() {
 
       {/* Account Creation Modal - EXACT COPY FROM PROJECTIONS PAGE */}
       <Dialog open={showAccountModal} onOpenChange={setShowAccountModal}>
-        <DialogContent className="max-w-4xl max-h-[90vh] bg-gray-900 border-gray-700">
+        <DialogContent className="max-w-2xl w-[95vw] max-h-[85vh] bg-gray-900 border-gray-700 overflow-hidden">
           <DialogHeader>
             <DialogTitle className="text-white text-xl">Create New Trading Account</DialogTitle>
             <DialogDescription className="text-gray-400">
