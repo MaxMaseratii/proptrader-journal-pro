@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '@/components/ui/dialog';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+
 import { apiRequest } from '@/lib/queryClient';
 import StrategyForm from './strategy-form';
 import { 
@@ -22,7 +22,7 @@ import {
   Shield,
   AlertTriangle,
   CheckCircle,
-  MoreVertical
+
 } from 'lucide-react';
 import type { TradingStrategy } from '@shared/schema';
 
@@ -168,69 +168,26 @@ const StrategyManagement: React.FC<StrategyManagementProps> = ({ editStrategyId,
                     <Badge variant={strategy.isActive ? "default" : "secondary"} className="text-xs">
                       {strategy.isActive ? "Active" : "Inactive"}
                     </Badge>
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="h-8 w-8 p-0 text-gray-400 hover:text-yellow-400 hover:bg-gray-700"
-                          aria-label="Strategy options"
-                        >
-                          <MoreVertical className="w-4 h-4" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent 
-                        align="end" 
-                        sideOffset={8}
-                        className=""
-                        style={{
-                          backgroundColor: '#1f2937',
-                          border: '1px solid #4b5563',
-                          borderRadius: '6px',
-                          minWidth: '140px',
-                          zIndex: 9999
-                        }}
+                    <div className="flex gap-1">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => openEditDialog(strategy)}
+                        className="h-7 px-2 text-gray-400 hover:text-yellow-400 hover:bg-gray-700"
+                        title="Modify strategy"
                       >
-                        <DropdownMenuItem 
-                          onClick={() => openEditDialog(strategy)}
-                          style={{
-                            color: '#e5e7eb',
-                            padding: '8px 12px',
-                            cursor: 'pointer'
-                          }}
-                          onMouseEnter={(e) => {
-                            e.currentTarget.style.backgroundColor = '#374151';
-                            e.currentTarget.style.color = '#fbbf24';
-                          }}
-                          onMouseLeave={(e) => {
-                            e.currentTarget.style.backgroundColor = 'transparent';
-                            e.currentTarget.style.color = '#e5e7eb';
-                          }}
-                        >
-                          <Edit className="w-4 h-4 mr-2" />
-                          Modify
-                        </DropdownMenuItem>
-                        <DropdownMenuItem 
-                          onClick={() => confirmDelete(strategy)}
-                          style={{
-                            color: '#e5e7eb',
-                            padding: '8px 12px',
-                            cursor: 'pointer'
-                          }}
-                          onMouseEnter={(e) => {
-                            e.currentTarget.style.backgroundColor = '#374151';
-                            e.currentTarget.style.color = '#ef4444';
-                          }}
-                          onMouseLeave={(e) => {
-                            e.currentTarget.style.backgroundColor = 'transparent';
-                            e.currentTarget.style.color = '#e5e7eb';
-                          }}
-                        >
-                          <Trash2 className="w-4 h-4 mr-2" />
-                          Delete
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
+                        <Edit className="w-3 h-3" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => confirmDelete(strategy)}
+                        className="h-7 px-2 text-gray-400 hover:text-red-400 hover:bg-gray-700"
+                        title="Delete strategy"
+                      >
+                        <Trash2 className="w-3 h-3" />
+                      </Button>
+                    </div>
                   </div>
                 </div>
                 {strategy.description && (
