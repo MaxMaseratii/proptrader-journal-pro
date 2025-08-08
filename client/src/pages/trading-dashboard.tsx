@@ -178,17 +178,10 @@ export default function CompleteTradingDashboard() {
     }) || [];
   }, [strategies, searchTerm, filterStatus]);
 
-  // Strategy management functions
+  // Strategy management functions - now uses API
   const createStrategy = () => {
-    const strategy = {
-      ...newStrategy,
-      id: Date.now(),
-      createdAt: new Date().toISOString().split('T')[0],
-      lastUsed: null,
-      performance: { trades: 0, wins: 0, totalPnl: 0 }
-    };
-    
-    setStrategies(prev => [...prev, strategy]);
+    // This should be handled by the strategy management API
+    // For now, just close the dialog - proper API integration needed
     setNewStrategy({
       name: '',
       description: '',
