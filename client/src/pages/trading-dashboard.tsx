@@ -1,4 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import type { Account, TradingStrategy } from '@shared/schema';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -45,21 +47,19 @@ import {
 
 // Strategy data will be loaded from API
 
-// Mock accounts data
-const mockAccounts = [
-  { id: 1, name: "Main Trading", type: "Live" },
-  { id: 2, name: "Demo Account", type: "Demo" },
-  { id: 3, name: "Swing Trading", type: "Live" }
-];
+// Accounts data will be loaded from API - removed hardcoded mock data
 
 // Historical trading plans will be loaded from API
 
 export default function CompleteTradingDashboard() {
+  // Load accounts from API
+  const { data: accounts } = useQuery<Account[]>({ queryKey: ['/api/accounts'] });
+  const { data: strategies } = useQuery<TradingStrategy[]>({ queryKey: ['/api/trading-strategies'] });
+  
   // Main tab state
   const [activeTab, setActiveTab] = useState('psychology');
   
   // Strategy management states - now using proper API
-  const [strategies, setStrategies] = useState<any[]>([]);
   const [selectedStrategy, setSelectedStrategy] = useState<any>(null);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [isDetailsDialogOpen, setIsDetailsDialogOpen] = useState(false);
@@ -81,8 +81,22 @@ export default function CompleteTradingDashboard() {
   const [emergencyProtocol, setEmergencyProtocol] = useState(false);
   const [emergencyStep, setEmergencyStep] = useState(1);
   const [selectedDate] = useState(new Date().toISOString().split('T')[0]);
-  const [selectedAccount, setSelectedAccount] = useState(1);
-  const [selectedStrategyId, setSelectedStrategyId] = useState(1);
+  const [selectedAccount, setSelectedAccount] = useState<number | null>(null);
+  const [selectedStrategyId, setSelectedStrategyId] = useState<number | null>(null);
+  
+  // Auto-select first account when loaded
+  useEffect(() => {
+    if (accounts && accounts.length > 0 && !selectedAccount) {
+      setSelectedAccount(accounts[0].id);
+    }
+  }, [accounts, selectedAccount]);
+  
+  // Auto-select first strategy when loaded
+  useEffect(() => {
+    if (strategies && strategies.length > 0 && !selectedStrategyId) {
+      setSelectedStrategyId(strategies[0].id);
+    }
+  }, [strategies, selectedStrategyId]);
 
   // New strategy form state
   const [newStrategy, setNewStrategy] = useState({
@@ -156,12 +170,12 @@ export default function CompleteTradingDashboard() {
 
   // Filtered strategies
   const filteredStrategies = useMemo(() => {
-    return strategies.filter(strategy => {
+    return strategies?.filter(strategy => {
       const matchesSearch = strategy.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                            strategy.description.toLowerCase().includes(searchTerm.toLowerCase());
       const matchesFilter = filterStatus === 'all' || strategy.status === filterStatus;
       return matchesSearch && matchesFilter;
-    });
+    }) || [];
   }, [strategies, searchTerm, filterStatus]);
 
   // Strategy management functions
@@ -483,12 +497,12 @@ export default function CompleteTradingDashboard() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <Label className="text-green-300 mb-2 block">Trading Account</Label>
-              <Select value={selectedAccount.toString()} onValueChange={(value) => setSelectedAccount(parseInt(value))}>
+              <Select value={selectedAccount?.toString() || ""} onValueChange={(value) => setSelectedAccount(parseInt(value))}>
                 <SelectTrigger className="bg-white border-green-500/30 text-black">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  {mockAccounts.map(account => (
+                  {accounts?.map(account => (
                     <SelectItem key={account.id} value={account.id.toString()}>
                       {account.name} ({account.type})
                     </SelectItem>
@@ -498,12 +512,12 @@ export default function CompleteTradingDashboard() {
             </div>
             <div>
               <Label className="text-green-300 mb-2 block">Primary Strategy</Label>
-              <Select value={selectedStrategyId.toString()} onValueChange={(value) => setSelectedStrategyId(parseInt(value))}>
+              <Select value={selectedStrategyId?.toString() || ""} onValueChange={(value) => setSelectedStrategyId(parseInt(value))}>
                 <SelectTrigger className="bg-white border-green-500/30 text-black">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  {strategies.map(strategy => (
+                  {strategies?.map(strategy => (
                     <SelectItem key={strategy.id} value={strategy.id.toString()}>
                       {strategy.name}
                     </SelectItem>
