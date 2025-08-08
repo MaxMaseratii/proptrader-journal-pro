@@ -188,7 +188,7 @@ export default function Sidebar() {
                 </DropdownMenuTrigger>
                 
                 <DropdownMenuContent 
-                  className="w-64 bg-card border-prop-gold/20 shadow-xl" 
+                  className="w-64 bg-background border-prop-gold/20 shadow-xl z-50" 
                   align="start"
                   side="right"
                 >

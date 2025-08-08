@@ -148,15 +148,24 @@ canvas {
   color: black !important;
 }
 
-/* CRITICAL: Ensure modal overlays ALWAYS have proper dark backgrounds */
+/* CRITICAL: Ensure ALL modal overlays have dark backgrounds */
 [data-radix-dialog-overlay],
 [data-radix-alert-dialog-overlay],
-.drawer-overlay,
-[class*="bg-black/"] {
-  background-color: rgba(0, 0, 0, 0.8) !important;
+[data-state="open"][class*="bg-black"],
+[class*="bg-black/80"],
+.drawer-overlay {
+  background-color: rgba(0, 0, 0, 0.9) !important;
 }
 
-/* CRITICAL: Ensure dialog content is properly styled for both themes */
+/* CRITICAL: Dropdown menu content should have solid background */
+[data-radix-dropdown-menu-content] {
+  background-color: hsl(var(--popover)) !important;
+  border-color: hsl(var(--border)) !important;
+  color: hsl(var(--popover-foreground)) !important;
+  box-shadow: 0 10px 38px -10px rgba(22, 23, 24, 0.35), 0 10px 20px -15px rgba(22, 23, 24, 0.2) !important;
+}
+
+/* CRITICAL: Dialog content proper styling */
 [data-radix-dialog-content],
 [data-radix-alert-dialog-content],
 [role="dialog"] {
@@ -165,10 +174,33 @@ canvas {
   border-color: hsl(var(--border)) !important;
 }
 
-/* Fix dropdown content styling */
-.light [data-radix-popper-content-wrapper] > div,
-.light [role="listbox"],
-.light [data-radix-collection-item] {
+/* EXTRA PROTECTION: All modal-related backgrounds */
+.fixed.inset-0.z-50[class*="bg-black"],
+.fixed.inset-0[class*="bg-black"] {
+  background-color: rgba(0, 0, 0, 0.9) !important;
+}
+
+/* NUCLEAR OPTION: Force all bg-black/80 classes to be properly dark */
+[class*="bg-black/80"] {
+  background-color: rgba(0, 0, 0, 0.9) !important;
+}
+
+/* Prevent the profile dropdown from being affected by our light mode overrides */
+.dark [data-radix-dropdown-menu-content] {
+  background-color: hsl(var(--popover)) !important;
+}
+
+/* Fix dropdown content styling - but NOT for dark modal overlays */
+.light [data-radix-popper-content-wrapper] > div:not([data-state]),
+.light [role="listbox"]:not([data-state]),
+.light [data-radix-collection-item]:not([data-state]) {
+  background-color: white !important;
+  color: black !important;
+  border-color: #e5e7eb !important;
+}
+
+/* Specific fix for profile dropdown in light mode */
+.light [data-radix-dropdown-menu-content] {
   background-color: white !important;
   color: black !important;
   border-color: #e5e7eb !important;
