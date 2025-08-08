@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '@/components/ui/dialog';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { apiRequest } from '@/lib/queryClient';
 import StrategyForm from './strategy-form';
 import { 
@@ -20,7 +21,8 @@ import {
   Brain,
   Shield,
   AlertTriangle,
-  CheckCircle
+  CheckCircle,
+  MoreVertical
 } from 'lucide-react';
 import type { TradingStrategy } from '@shared/schema';
 
@@ -166,24 +168,33 @@ const StrategyManagement: React.FC<StrategyManagementProps> = ({ editStrategyId,
                     <Badge variant={strategy.isActive ? "default" : "secondary"} className="text-xs">
                       {strategy.isActive ? "Active" : "Inactive"}
                     </Badge>
-                    <div className="flex items-center gap-1">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => openEditDialog(strategy)}
-                        className="h-8 w-8 p-0 text-gray-400 hover:text-yellow-400"
-                      >
-                        <Edit className="w-4 h-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => confirmDelete(strategy)}
-                        className="h-8 w-8 p-0 text-gray-400 hover:text-red-400"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </Button>
-                    </div>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="h-8 w-8 p-0 text-gray-400 hover:text-yellow-400"
+                        >
+                          <MoreVertical className="w-4 h-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end" className="bg-gray-800 border-gray-700">
+                        <DropdownMenuItem 
+                          onClick={() => openEditDialog(strategy)}
+                          className="text-gray-300 hover:text-yellow-400 hover:bg-gray-700"
+                        >
+                          <Edit className="w-4 h-4 mr-2" />
+                          Modify
+                        </DropdownMenuItem>
+                        <DropdownMenuItem 
+                          onClick={() => confirmDelete(strategy)}
+                          className="text-gray-300 hover:text-red-400 hover:bg-gray-700"
+                        >
+                          <Trash2 className="w-4 h-4 mr-2" />
+                          Delete
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
                   </div>
                 </div>
                 {strategy.description && (

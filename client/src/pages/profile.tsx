@@ -23,6 +23,7 @@ import {
   Save,
   X
 } from "lucide-react";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 
 export default function Profile() {
   const [isEditing, setIsEditing] = useState(false);
@@ -259,7 +260,11 @@ export default function Profile() {
                     <h4 className="font-medium">Email Notifications</h4>
                     <p className="text-sm text-gray-400">Receive updates about your trading activity</p>
                   </div>
-                  <Button variant="outline" size="sm">
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => window.location.href = '/profile?tab=notifications'}
+                  >
                     <Bell className="h-4 w-4 mr-2" />
                     Manage
                   </Button>
@@ -270,7 +275,27 @@ export default function Profile() {
                     <h4 className="font-medium">Data Export</h4>
                     <p className="text-sm text-gray-400">Export your trading data and reports</p>
                   </div>
-                  <Button variant="outline" size="sm">
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={async () => {
+                      try {
+                        const response = await fetch('/api/export/all-data');
+                        const blob = await response.blob();
+                        const url = window.URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = `trading-data-export-${new Date().toISOString().split('T')[0]}.json`;
+                        document.body.appendChild(a);
+                        a.click();
+                        a.remove();
+                        window.URL.revokeObjectURL(url);
+                      } catch (error) {
+                        console.error('Export failed:', error);
+                        alert('Export failed. Please try again.');
+                      }
+                    }}
+                  >
                     Export Data
                   </Button>
                 </div>
@@ -280,9 +305,39 @@ export default function Profile() {
                     <h4 className="font-medium">Account Deletion</h4>
                     <p className="text-sm text-gray-400">Permanently delete your account and data</p>
                   </div>
-                  <Button variant="destructive" size="sm">
-                    Delete Account
-                  </Button>
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button variant="destructive" size="sm">
+                        Delete Account
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent className="bg-gray-800 border-gray-700">
+                      <AlertDialogHeader>
+                        <AlertDialogTitle className="text-white">Are you absolutely sure?</AlertDialogTitle>
+                        <AlertDialogDescription className="text-gray-300">
+                          This action cannot be undone. This will permanently delete your account
+                          and remove all your data from our servers.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel className="bg-gray-700 text-white border-gray-600">Cancel</AlertDialogCancel>
+                        <AlertDialogAction 
+                          className="bg-red-600 hover:bg-red-700"
+                          onClick={async () => {
+                            try {
+                              await fetch('/api/auth/delete-account', { method: 'DELETE' });
+                              window.location.href = '/welcome';
+                            } catch (error) {
+                              console.error('Account deletion failed:', error);
+                              alert('Account deletion failed. Please contact support.');
+                            }
+                          }}
+                        >
+                          Delete Account
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
                 </div>
               </CardContent>
             </Card>

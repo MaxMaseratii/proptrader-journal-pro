@@ -3400,6 +3400,7 @@ export default function Dashboard() {
                               <SelectContent className="bg-gray-800 border-gray-600">
                                 <SelectItem value="eod">EOD (End of Day)</SelectItem>
                                 <SelectItem value="unrealized_profit">Unrealized Profit Drawdown</SelectItem>
+                                <SelectItem value="static">Static</SelectItem>
                               </SelectContent>
                             </Select>
                             <FormMessage />
