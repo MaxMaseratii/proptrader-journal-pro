@@ -182,18 +182,49 @@ const StrategyManagement: React.FC<StrategyManagementProps> = ({ editStrategyId,
                       <DropdownMenuContent 
                         align="end" 
                         sideOffset={8}
-                        className="bg-gray-800 border-gray-600 text-white min-w-[140px]"
+                        className=""
+                        style={{
+                          backgroundColor: '#1f2937',
+                          border: '1px solid #4b5563',
+                          borderRadius: '6px',
+                          minWidth: '140px',
+                          zIndex: 9999
+                        }}
                       >
                         <DropdownMenuItem 
                           onClick={() => openEditDialog(strategy)}
-                          className="text-white hover:text-yellow-400 hover:bg-gray-700 cursor-pointer"
+                          style={{
+                            color: '#e5e7eb',
+                            padding: '8px 12px',
+                            cursor: 'pointer'
+                          }}
+                          onMouseEnter={(e) => {
+                            e.currentTarget.style.backgroundColor = '#374151';
+                            e.currentTarget.style.color = '#fbbf24';
+                          }}
+                          onMouseLeave={(e) => {
+                            e.currentTarget.style.backgroundColor = 'transparent';
+                            e.currentTarget.style.color = '#e5e7eb';
+                          }}
                         >
                           <Edit className="w-4 h-4 mr-2" />
                           Modify
                         </DropdownMenuItem>
                         <DropdownMenuItem 
                           onClick={() => confirmDelete(strategy)}
-                          className="text-white hover:text-red-400 hover:bg-gray-700 cursor-pointer"
+                          style={{
+                            color: '#e5e7eb',
+                            padding: '8px 12px',
+                            cursor: 'pointer'
+                          }}
+                          onMouseEnter={(e) => {
+                            e.currentTarget.style.backgroundColor = '#374151';
+                            e.currentTarget.style.color = '#ef4444';
+                          }}
+                          onMouseLeave={(e) => {
+                            e.currentTarget.style.backgroundColor = 'transparent';
+                            e.currentTarget.style.color = '#e5e7eb';
+                          }}
                         >
                           <Trash2 className="w-4 h-4 mr-2" />
                           Delete

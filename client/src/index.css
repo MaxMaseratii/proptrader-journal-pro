@@ -85,14 +85,41 @@
   border-color: hsl(var(--widget-border)) !important;
 }
 
-/* Force all dropdowns and selects to follow theme - EXCLUDING DROPDOWN MENUS */
-[data-radix-collection-item],
+/* Strategy dropdown menu - ensure visibility */
+[data-radix-dropdown-menu-content] {
+  background-color: #1f2937 !important;
+  border: 1px solid #4b5563 !important;
+  border-radius: 6px !important;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05) !important;
+  z-index: 50 !important;
+  min-width: 8rem !important;
+  padding: 4px !important;
+}
+
+[data-radix-dropdown-menu-item] {
+  display: flex !important;
+  cursor: pointer !important;
+  select-user: none !important;
+  align-items: center !important;
+  border-radius: 4px !important;
+  padding: 8px 12px !important;
+  font-size: 14px !important;
+  outline: none !important;
+  color: #e5e7eb !important;
+  background-color: transparent !important;
+}
+
+[data-radix-dropdown-menu-item]:hover,
+[data-radix-dropdown-menu-item][data-highlighted] {
+  background-color: #374151 !important;
+  color: #fbbf24 !important;
+}
+
+/* Force all OTHER dropdowns and selects to follow theme */
+[data-radix-collection-item]:not([data-radix-dropdown-menu-item]),
 [data-radix-popper-content-wrapper]:not([data-radix-dropdown-menu-content]),
 [role="listbox"],
-[role="option"],
-.bg-gray-800:not([data-radix-dropdown-menu-content]),
-.bg-gray-900:not([data-radix-dropdown-menu-content]),
-[data-state="open"]:not([data-radix-dropdown-menu-content]) {
+[role="option"] {
   background-color: hsl(var(--widget-bg)) !important;
   color: hsl(var(--widget-text)) !important;
   border-color: hsl(var(--widget-border)) !important;
