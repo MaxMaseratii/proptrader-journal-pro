@@ -64,6 +64,7 @@ import Terms from "@/pages/terms";
 import Privacy from "@/pages/privacy";
 import Pricing from "@/pages/pricing";
 import Sidebar from "@/components/sidebar";
+import FlowStateTraining from "@/components/FlowStateTraining";
 import NotFound from "@/pages/not-found";
 import { useAuth } from "@/hooks/useAuth";
 
@@ -106,6 +107,7 @@ function Router() {
       <main className="flex-1 overflow-y-auto bg-background">
         <Switch>
           <Route path="/" component={Dashboard} />
+          <Route path="/flow-state-training" component={FlowStateTraining} />
           <Route path="/dashboard-simple" component={DashboardShowcase} />
           <Route path="/daily-plan" component={DailyPlan} />
           <Route path="/trading-companion" component={TradingCompanion} />

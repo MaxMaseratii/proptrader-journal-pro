@@ -28,7 +28,8 @@ import {
   Activity,
   FileText,
   Sun,
-  Moon
+  Moon,
+  Waves
 } from "lucide-react";
 import { useTheme } from "@/contexts/ThemeContext";
 import { Button } from "@/components/ui/button";
@@ -45,6 +46,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
 
 const navItems = [
+  { href: "/flow-state-training", label: "Flow State Training", icon: Waves, section: "main" },
   { href: "/", label: "Dashboard", icon: BarChart3, section: "main" },
   { href: "/trading-dashboard", label: "Mental Check & Daily Plan", icon: Brain, section: "main" },
   { href: "/projections", label: "Challenge Target Planner", icon: TrendingUp, section: "main" },
