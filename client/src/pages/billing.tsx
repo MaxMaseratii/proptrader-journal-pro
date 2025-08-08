@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback, useMemo, lazy, Suspense } from 'react';
+import { useBillingQuery } from "@/hooks/useOptimizedQuery";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -13,8 +14,36 @@ import {
   AlertCircle
 } from "lucide-react";
 
+// Note: Stripe components would be lazy loaded when needed
+// const StripeComponents = lazy(() => import("@/components/stripe-components"));
+
+// Performance optimized billing skeleton
+const BillingSkeleton = () => (
+  <div className="animate-pulse space-y-6">
+    <div className="h-8 bg-gray-300 rounded w-1/3"></div>
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      {[1, 2, 3].map(i => (
+        <div key={i} className="h-64 bg-gray-300 rounded"></div>
+      ))}
+    </div>
+    <div className="h-48 bg-gray-300 rounded"></div>
+  </div>
+);
+
 export default function Billing() {
   const [currentPlan, setCurrentPlan] = useState("Pro");
+
+  // Use optimized billing query hook
+  const { data: billingData, isLoading } = useBillingQuery();
+
+  // Memoized plan change handler
+  const handlePlanChange = useCallback((planName: string) => {
+    setCurrentPlan(planName);
+    // Add API call to change plan
+  }, []);
+
+  // Memoized plans data for performance
+  const memoizedPlans = useMemo(() => plans, []);
 
   const plans = [
     {

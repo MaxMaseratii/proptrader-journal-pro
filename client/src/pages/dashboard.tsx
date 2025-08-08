@@ -39,6 +39,7 @@ import { SimpleChart } from "@/components/tradingview/SimpleChart";
 import NotificationDropdown from "@/components/notification-dropdown";
 import UnrealizedProfitWidgets from "@/components/unrealized-profit-widgets";
 import TargetProgressWidget from "@/components/target-progress-widget";
+import { SocialShareButtons } from "@/components/optimized/SocialShareButtons";
 
 import { 
   Wallet, 
