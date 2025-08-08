@@ -138,13 +138,31 @@ canvas {
 }
 
 /* CRITICAL: Override ALL hardcoded dark backgrounds in light mode */
-.light .bg-gray-800,
-.light .bg-gray-900,
-.light .bg-black,
-.light [class*="bg-gray-8"],
-.light [class*="bg-gray-9"] {
+/* EXCEPTION: Do NOT override modal/dialog overlays and backgrounds */
+.light .bg-gray-800:not([data-radix-dialog-overlay]):not([data-radix-alert-dialog-overlay]):not([data-state]):not([role="dialog"]):not(.drawer-overlay),
+.light .bg-gray-900:not([data-radix-dialog-overlay]):not([data-radix-alert-dialog-overlay]):not([data-state]):not([role="dialog"]):not(.drawer-overlay),
+.light .bg-black:not([data-radix-dialog-overlay]):not([data-radix-alert-dialog-overlay]):not([data-state]):not([role="dialog"]):not(.drawer-overlay):not([class*="bg-black/"]),
+.light [class*="bg-gray-8"]:not([data-radix-dialog-overlay]):not([data-radix-alert-dialog-overlay]):not([data-state]):not([role="dialog"]):not(.drawer-overlay),
+.light [class*="bg-gray-9"]:not([data-radix-dialog-overlay]):not([data-radix-alert-dialog-overlay]):not([data-state]):not([role="dialog"]):not(.drawer-overlay) {
   background-color: white !important;
   color: black !important;
+}
+
+/* CRITICAL: Ensure modal overlays ALWAYS have proper dark backgrounds */
+[data-radix-dialog-overlay],
+[data-radix-alert-dialog-overlay],
+.drawer-overlay,
+[class*="bg-black/"] {
+  background-color: rgba(0, 0, 0, 0.8) !important;
+}
+
+/* CRITICAL: Ensure dialog content is properly styled for both themes */
+[data-radix-dialog-content],
+[data-radix-alert-dialog-content],
+[role="dialog"] {
+  background-color: hsl(var(--background)) !important;
+  color: hsl(var(--foreground)) !important;
+  border-color: hsl(var(--border)) !important;
 }
 
 /* Fix dropdown content styling */
