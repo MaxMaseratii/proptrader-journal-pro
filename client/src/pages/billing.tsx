@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -62,31 +62,11 @@ export default function Billing() {
     }
   ];
 
+  // Simplified billing history for faster loading
   const billingHistory = [
-    {
-      id: 1,
-      date: "2025-08-01",
-      amount: "$29.00",
-      plan: "Pro Plan",
-      status: "Paid",
-      invoice: "INV-2025-001"
-    },
-    {
-      id: 2,
-      date: "2025-07-01",
-      amount: "$29.00",
-      plan: "Pro Plan",
-      status: "Paid",
-      invoice: "INV-2025-002"
-    },
-    {
-      id: 3,
-      date: "2025-06-01",
-      amount: "$29.00",
-      plan: "Pro Plan",
-      status: "Paid",
-      invoice: "INV-2025-003"
-    }
+    { id: 1, date: "2025-08-01", amount: "$29.00", plan: "Pro Plan", status: "Paid" },
+    { id: 2, date: "2025-07-01", amount: "$29.00", plan: "Pro Plan", status: "Paid" },
+    { id: 3, date: "2025-06-01", amount: "$29.00", plan: "Pro Plan", status: "Paid" }
   ];
 
   return (

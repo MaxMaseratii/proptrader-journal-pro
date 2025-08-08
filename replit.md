@@ -17,6 +17,7 @@ Preferred communication style: Simple, everyday language.
 - **Charts**: Chart.js
 
 ### Recent Critical Fixes (August 2025)
+- **Profile & Billing Speed Fixes (Aug 8, 2025)**: Fixed slow profile page loading by lazy-loading NotificationSettings with Suspense. Removed redundant email notifications from Account section since dedicated Notifications tab exists. Simplified billing data structures for instant loading.
 - **Performance Optimization Rollback (Aug 8, 2025)**: Removed over-optimization that was causing slowdowns. Restored original fast configuration with direct imports, simplified query client (staleTime: Infinity), and eliminated excessive memoization. App now loads faster than before while maintaining social media share functionality.
 - **Social Media Share Integration (Aug 8, 2025)**: Added professional social media share buttons in dashboard header (Facebook, Instagram, X/Twitter, TikTok, YouTube) with dynamic stats sharing, platform-specific messaging, and error-safe rendering for viral growth strategy.
 - **Gold Accent Theme Restored (Aug 8, 2025)**: Restored complete gold accent branding throughout application. Logo now features gold tone background with "PropTrader" in gold gradient and "Journal" in black text. Enhanced welcome page, sidebar, and footer with consistent gold styling including buttons, badges, and CTA sections.

@@ -257,20 +257,7 @@ export default function Profile() {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="flex justify-between items-center p-4 bg-gray-900 rounded-lg">
-                  <div>
-                    <h4 className="font-medium">Email Notifications</h4>
-                    <p className="text-sm text-gray-400">Receive updates about your trading activity</p>
-                  </div>
-                  <Button 
-                    variant="outline" 
-                    size="sm"
-                    onClick={() => window.location.href = '/profile?tab=notifications'}
-                  >
-                    <Bell className="h-4 w-4 mr-2" />
-                    Manage
-                  </Button>
-                </div>
+                {/* Email notifications removed - already handled in dedicated Notifications tab */}
 
                 <div className="flex justify-between items-center p-4 bg-gray-900 rounded-lg">
                   <div>
