@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, lazy, Suspense } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -24,7 +24,8 @@ import {
 } from "lucide-react";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 
-import NotificationSettings from "@/components/notification-settings";
+// Lazy load notification settings to improve profile page speed
+const NotificationSettings = lazy(() => import("@/components/notification-settings"));
 
 export default function Profile() {
   const [isEditing, setIsEditing] = useState(false);
@@ -345,7 +346,17 @@ export default function Profile() {
           </TabsContent>
 
           <TabsContent value="notifications" className="space-y-6">
-            <NotificationSettings />
+            <Suspense fallback={
+              <Card className="bg-gray-800 border-gray-700">
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-center py-8">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+                  </div>
+                </CardContent>
+              </Card>
+            }>
+              <NotificationSettings />
+            </Suspense>
           </TabsContent>
 
 
