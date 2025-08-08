@@ -215,16 +215,24 @@ canvas {
   background-color: #1f2937 !important;
   color: white !important;
   border-color: #374151 !important;
+  opacity: 1 !important;
 }
 
 .dark [data-radix-select-item] {
-  background-color: transparent !important;
+  background-color: #1f2937 !important;
   color: white !important;
 }
 
 .dark [data-radix-select-item]:hover {
   background-color: #374151 !important;
   color: white !important;
+}
+
+/* CRITICAL: Dark theme select trigger */
+.dark [data-radix-select-trigger] {
+  background-color: #374151 !important;
+  color: white !important;
+  border-color: #4b5563 !important;
 }
 
 /* CRITICAL: Dark theme form inputs */
@@ -257,6 +265,26 @@ input, textarea, select {
   color: white !important;
 }
 
+/* NUCLEAR OPTION: Force all form field backgrounds to be solid in dark mode */
+.dark input,
+.dark textarea,
+.dark select,
+.dark [data-radix-select-trigger],
+.dark [data-radix-select-content] {
+  background-color: #374151 !important;
+  color: white !important;
+  border-color: #4b5563 !important;
+}
+
+/* Specific targeting for Tailwind classes commonly used in forms */
+.dark .bg-gray-700 {
+  background-color: #374151 !important;
+}
+
+.dark .bg-gray-800 {
+  background-color: #1f2937 !important;
+}
+
 /* Fix dropdown content styling - but NOT for dark modal overlays */
 .light [data-radix-popper-content-wrapper] > div:not([data-state]),
 .light [role="listbox"]:not([data-state]),
@@ -282,6 +310,25 @@ input, textarea, select {
 .light select {
   color: black !important;
   background-color: white !important;
+}
+
+/* CRITICAL: Selected text in light mode form fields */
+.light input[type="text"]::selection,
+.light input[type="email"]::selection,
+.light input[type="password"]::selection,
+.light input[type="number"]::selection,
+.light textarea::selection {
+  background-color: #3b82f6 !important;
+  color: white !important;
+}
+
+/* CRITICAL: Placeholder text visibility in light mode */
+.light input[type="text"]::placeholder,
+.light input[type="email"]::placeholder,
+.light input[type="password"]::placeholder,
+.light input[type="number"]::placeholder,
+.light textarea::placeholder {
+  color: #6b7280 !important;
 }
 
 /* CRITICAL: Select dropdowns in light mode */
