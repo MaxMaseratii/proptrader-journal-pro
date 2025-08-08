@@ -532,6 +532,154 @@ const DailyPlanPage = () => {
       {/* Main Content */}
       <div className="max-w-7xl mx-auto p-6 space-y-8">
         
+        {/* Pre-Session Mental Fitness Check */}
+        <Card className="bg-gradient-to-br from-gray-900 via-gray-800 to-black border border-yellow-400/30">
+          <CardHeader className="pb-4">
+            <CardTitle className="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 flex items-center gap-2">
+              <Brain className="w-6 h-6 text-yellow-400" />
+              Pre-Session Mental Check & Daily Plan
+            </CardTitle>
+            
+            {/* Account Selection for Mental Check */}
+            <div className="mt-4">
+              <Label className="text-sm text-gray-300 mb-2 block">Select Trading Account</Label>
+              <Select 
+                value={selectedAccount?.toString() || ""} 
+                onValueChange={(value) => setSelectedAccount(Number(value))}
+              >
+                <SelectTrigger className="bg-gray-800 border-gray-600 text-white">
+                  <SelectValue placeholder="Choose your trading account" />
+                </SelectTrigger>
+                <SelectContent className="bg-gray-800 border-gray-600">
+                  {accounts?.map((account) => (
+                    <SelectItem key={account.id} value={account.id.toString()} className="text-white hover:bg-gray-700">
+                      {account.name} ({account.type})
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </CardHeader>
+          
+          <CardContent className="space-y-6">
+            {selectedAccount ? (
+              <>
+                {/* Mental State Assessment Sliders */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-4">
+                    <div>
+                      <Label className="text-sm text-gray-300 mb-2 block">Market Regime Awareness (1-10)</Label>
+                      <div className="flex items-center gap-4">
+                        <input
+                          type="range"
+                          min="1"
+                          max="10"
+                          defaultValue="7"
+                          className="flex-1 h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer"
+                        />
+                        <span className="text-yellow-400 font-bold min-w-[30px]">7</span>
+                      </div>
+                      <div className="text-xs text-gray-400 mt-1">How well do you understand current market conditions?</div>
+                    </div>
+                    
+                    <div>
+                      <Label className="text-sm text-gray-300 mb-2 block">Risk Respect Level (1-10)</Label>
+                      <div className="flex items-center gap-4">
+                        <input
+                          type="range"
+                          min="1"
+                          max="10"
+                          defaultValue="8"
+                          className="flex-1 h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer"
+                        />
+                        <span className="text-yellow-400 font-bold min-w-[30px]">8</span>
+                      </div>
+                      <div className="text-xs text-gray-400 mt-1">Will you strictly follow your risk management rules?</div>
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-4">
+                    <div>
+                      <Label className="text-sm text-gray-300 mb-2 block">Humility Check (1-10)</Label>
+                      <div className="flex items-center gap-4">
+                        <input
+                          type="range"
+                          min="1"
+                          max="10"
+                          defaultValue="6"
+                          className="flex-1 h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer"
+                        />
+                        <span className="text-yellow-400 font-bold min-w-[30px]">6</span>
+                      </div>
+                      <div className="text-xs text-gray-400 mt-1">Are you emotionally balanced and humble?</div>
+                    </div>
+                    
+                    <div>
+                      <Label className="text-sm text-gray-300 mb-2 block">Professional Trader Mindset (1-10)</Label>
+                      <div className="flex items-center gap-4">
+                        <input
+                          type="range"
+                          min="1"
+                          max="10"
+                          defaultValue="8"
+                          className="flex-1 h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer"
+                        />
+                        <span className="text-yellow-400 font-bold min-w-[30px]">8</span>
+                      </div>
+                      <div className="text-xs text-gray-400 mt-1">Are you approaching trading as a professional business?</div>
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Mental Fitness Score */}
+                <div className="bg-gray-800/50 rounded-lg p-4 border border-gray-600">
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="text-gray-300 font-medium">Mental Fitness Score</span>
+                    <span className="text-2xl font-bold text-green-400">29/40</span>
+                  </div>
+                  <Progress value={72.5} className="h-3 mb-2" />
+                  <div className="text-sm text-gray-400">
+                    <span className="text-green-400 font-medium">Good readiness</span> - You're mentally prepared for trading today. Remember to stay disciplined.
+                  </div>
+                </div>
+                
+                {/* Quick Action Buttons */}
+                <div className="flex flex-wrap gap-3 pt-4 border-t border-gray-600">
+                  <Button 
+                    onClick={() => setIsCreatePlanDialogOpen(true)}
+                    className="bg-gradient-to-r from-yellow-400 to-yellow-600 text-black hover:from-yellow-500 hover:to-yellow-700 shadow-lg"
+                  >
+                    <Plus className="w-4 h-4 mr-2" />
+                    Create Daily Plan
+                  </Button>
+                  
+                  <Button 
+                    onClick={() => setIsCreateStrategyDialogOpen(true)}
+                    className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white shadow-lg"
+                  >
+                    <Plus className="w-4 h-4 mr-2" />
+                    Create Strategy
+                  </Button>
+                  
+                  <Button 
+                    onClick={() => setIsJournalDialogOpen(true)}
+                    className="bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white shadow-lg"
+                  >
+                    <BookOpen className="h-4 w-4 mr-2" />
+                    Journal Entry
+                  </Button>
+                </div>
+              </>
+            ) : (
+              <div className="text-center py-8">
+                <Brain className="w-16 h-16 text-gray-500 mx-auto mb-4" />
+                <h3 className="text-lg font-medium text-white mb-2">Select Trading Account</h3>
+                <p className="text-gray-400">Choose your trading account above to begin your mental fitness check and daily planning.</p>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+        
         {/* Today's Plan vs Actual Performance - Only show if plan exists */}
         {currentPlan && (
           <Card className="widget-card">
