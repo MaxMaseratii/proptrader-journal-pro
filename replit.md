@@ -17,6 +17,7 @@ Preferred communication style: Simple, everyday language.
 - **Charts**: Chart.js
 
 ### Recent Critical Fixes (August 2025)
+- **Account Form Modal Fields Fixed (Aug 9, 2025)**: Fixed AccountFormModal to properly place all requested fields in the Rules & Risk tab instead of Basic Info tab. Added Time Slot 2 & 3 (Start Time, End Time, Timezone), Daily Working Hours (8.0), Hourly Wages ($25.00), Live Trading Account Available checkbox, and Challenge Payouts Available checkbox to the correct Rules & Risk section.
 - **ALL POPUP MODALS DELETED (Aug 9, 2025)**: Per user's explicit request, completely removed ALL popup modal forms from menu page, Accounts, challenge target planner, and dashboard. AccountFormModal component is now ONLY a button with no popup functionality. All account creation buttons are simple buttons only - no modal dialogs or popup forms anywhere in the application.
 - **Profile & Billing Speed Fixes (Aug 8, 2025)**: Fixed slow profile page loading by lazy-loading NotificationSettings with Suspense. Removed redundant email notifications from Account section since dedicated Notifications tab exists. Simplified billing data structures for instant loading.
 - **Performance Optimization Rollback (Aug 8, 2025)**: Removed over-optimization that was causing slowdowns. Restored original fast configuration with direct imports, simplified query client (staleTime: Infinity), and eliminated excessive memoization. App now loads faster than before while maintaining social media share functionality.

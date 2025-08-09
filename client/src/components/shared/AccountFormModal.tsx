@@ -434,6 +434,46 @@ export default function AccountFormModal({ isOpen, onClose }: AccountFormModalPr
                   </div>
                 </div>
 
+
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label className="text-white">Drawdown Type</Label>
+                    <Select onValueChange={(value) => updateField('drawdownType', value)} value={formData.drawdownType}>
+                      <SelectTrigger className="bg-gray-800 border-gray-600 text-white">
+                        <SelectValue placeholder="Trailing" />
+                      </SelectTrigger>
+                      <SelectContent className="bg-gray-800 border-gray-600">
+                        <SelectItem value="trailing">Trailing</SelectItem>
+                        <SelectItem value="static">Static</SelectItem>
+                        <SelectItem value="balance_based">Balance Based</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-white">Max Drawdown Type</Label>
+                    <Select onValueChange={(value) => updateField('maxDrawdownType', value)} value={formData.maxDrawdownType}>
+                      <SelectTrigger className="bg-gray-800 border-gray-600 text-white">
+                        <SelectValue placeholder="End of Day (EOD)" />
+                      </SelectTrigger>
+                      <SelectContent className="bg-gray-800 border-gray-600">
+                        <SelectItem value="eod">End of Day (EOD)</SelectItem>
+                        <SelectItem value="realtime">Real-time</SelectItem>
+                        <SelectItem value="session_close">Session Close</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    checked={formData.hasDailyLossLimit}
+                    onCheckedChange={(checked) => updateField('hasDailyLossLimit', checked)}
+                    className="border-gray-600 data-[state=checked]:bg-blue-600"
+                  />
+                  <Label className="text-white">Has Daily Loss Limit</Label>
+                </div>
+
                 {/* Additional Trading Time Slots */}
                 <div className="space-y-4">
                   <h4 className="text-lg font-semibold text-white">Additional Trading Time Slots</h4>
@@ -575,44 +615,6 @@ export default function AccountFormModal({ isOpen, onClose }: AccountFormModalPr
                       <Label htmlFor="enhancedPayoutsAvailable" className="text-white">Challenge Payouts Available</Label>
                     </div>
                   </div>
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label className="text-white">Drawdown Type</Label>
-                    <Select onValueChange={(value) => updateField('drawdownType', value)} value={formData.drawdownType}>
-                      <SelectTrigger className="bg-gray-800 border-gray-600 text-white">
-                        <SelectValue placeholder="Trailing" />
-                      </SelectTrigger>
-                      <SelectContent className="bg-gray-800 border-gray-600">
-                        <SelectItem value="trailing">Trailing</SelectItem>
-                        <SelectItem value="static">Static</SelectItem>
-                        <SelectItem value="balance_based">Balance Based</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div className="space-y-2">
-                    <Label className="text-white">Max Drawdown Type</Label>
-                    <Select onValueChange={(value) => updateField('maxDrawdownType', value)} value={formData.maxDrawdownType}>
-                      <SelectTrigger className="bg-gray-800 border-gray-600 text-white">
-                        <SelectValue placeholder="End of Day (EOD)" />
-                      </SelectTrigger>
-                      <SelectContent className="bg-gray-800 border-gray-600">
-                        <SelectItem value="eod">End of Day (EOD)</SelectItem>
-                        <SelectItem value="realtime">Real-time</SelectItem>
-                        <SelectItem value="session_close">Session Close</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-
-                <div className="flex items-center space-x-2">
-                  <Checkbox
-                    checked={formData.hasDailyLossLimit}
-                    onCheckedChange={(checked) => updateField('hasDailyLossLimit', checked)}
-                    className="border-gray-600 data-[state=checked]:bg-blue-600"
-                  />
-                  <Label className="text-white">Has Daily Loss Limit</Label>
                 </div>
               </TabsContent>
 
