@@ -74,15 +74,15 @@ function WelcomeHeader() {
   ];
 
   return (
-    <header className="bg-white dark:bg-gray-900 shadow-sm border-b">
+    <header className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 shadow-lg">
       <nav className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8" aria-label="Top">
         <div className="flex w-full items-center justify-between py-4">
           {/* Logo */}
           <div className="flex items-center">
             <Link href="/" className="flex items-center space-x-2">
               <div className="flex items-center space-x-1">
-                <Crown className="h-8 w-8 text-yellow-500" />
-                <span className="text-xl font-bold text-gray-900 dark:text-white">PropTrader Journal</span>
+                <Crown className="h-8 w-8 text-yellow-300 animate-pulse" />
+                <span className="text-xl font-bold text-white drop-shadow-sm">PropTrader Journal</span>
               </div>
             </Link>
           </div>
@@ -93,17 +93,17 @@ function WelcomeHeader() {
               <div key={item.name} className="relative group">
                 {item.dropdown ? (
                   <div className="relative">
-                    <button className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white px-3 py-2 text-sm font-medium flex items-center space-x-1">
+                    <button className="text-white/90 hover:text-white px-3 py-2 text-sm font-medium flex items-center space-x-1 transition-colors duration-200">
                       <span>{item.name}</span>
                       <ChevronDown className="h-4 w-4" />
                     </button>
-                    <div className="absolute top-full left-0 mt-1 w-56 bg-white dark:bg-gray-800 rounded-lg shadow-lg border opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                    <div className="absolute top-full left-0 mt-1 w-56 bg-white rounded-xl shadow-xl border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 backdrop-blur-sm">
                       <div className="py-2">
                         {item.dropdown.map((subItem) => (
                           <Link
                             key={subItem.name}
                             href={subItem.href}
-                            className="flex items-center space-x-3 px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
+                            className="flex items-center space-x-3 px-4 py-2 text-sm text-gray-700 hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 rounded-lg mx-2 transition-all duration-200"
                             onClick={(e) => {
                               e.preventDefault();
                               setLocation(subItem.href);
@@ -119,7 +119,7 @@ function WelcomeHeader() {
                 ) : (
                   <a
                     href={item.href}
-                    className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white px-3 py-2 text-sm font-medium"
+                    className="text-white/90 hover:text-white px-3 py-2 text-sm font-medium transition-colors duration-200"
                   >
                     {item.name}
                   </a>
@@ -133,13 +133,13 @@ function WelcomeHeader() {
             <Button 
               variant="outline" 
               onClick={() => setLocation('/auth')}
-              className="text-sm"
+              className="text-sm bg-white/10 border-white/30 text-white hover:bg-white/20 backdrop-blur-sm"
             >
               Log In
             </Button>
             <Button 
               onClick={() => setLocation('/signup')}
-              className="bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-white text-sm"
+              className="bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600 text-white text-sm font-semibold shadow-lg transform hover:scale-105 transition-all duration-200"
             >
               Get Started
               <ArrowRight className="ml-2 h-4 w-4" />
@@ -150,7 +150,7 @@ function WelcomeHeader() {
           <div className="lg:hidden">
             <button
               type="button"
-              className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white"
+              className="text-white/90 hover:text-white"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             >
               {mobileMenuOpen ? (
@@ -164,13 +164,13 @@ function WelcomeHeader() {
 
         {/* Mobile menu */}
         {mobileMenuOpen && (
-          <div className="lg:hidden border-t">
+          <div className="lg:hidden border-t border-white/20 bg-white/10 backdrop-blur-md">
             <div className="px-2 pt-2 pb-3 space-y-1">
               {navigation.map((item) => (
                 <div key={item.name}>
                   <a
                     href={item.href}
-                    className="block px-3 py-2 text-base font-medium text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white"
+                    className="block px-3 py-2 text-base font-medium text-white/90 hover:text-white transition-colors duration-200"
                   >
                     {item.name}
                   </a>
@@ -180,7 +180,7 @@ function WelcomeHeader() {
                         <Link
                           key={subItem.name}
                           href={subItem.href}
-                          className="block px-3 py-2 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
+                          className="block px-3 py-2 text-sm text-white/70 hover:text-white/90 transition-colors duration-200"
                           onClick={(e) => {
                             e.preventDefault();
                             setLocation(subItem.href);
@@ -197,13 +197,13 @@ function WelcomeHeader() {
                 <Button 
                   variant="outline" 
                   onClick={() => setLocation('/auth')}
-                  className="w-full"
+                  className="w-full bg-white/10 border-white/30 text-white hover:bg-white/20"
                 >
                   Log In
                 </Button>
                 <Button 
                   onClick={() => setLocation('/signup')}
-                  className="w-full bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-white"
+                  className="w-full bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600 text-white font-semibold shadow-lg"
                 >
                   Get Started
                 </Button>
@@ -467,39 +467,48 @@ export default function Welcome() {
       <WelcomeHeader />
 
       {/* Hero Section */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-yellow-50 via-white to-blue-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-16">
+      <section className="relative overflow-hidden bg-gradient-to-br from-blue-50 via-purple-50 via-pink-50 to-orange-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
+        {/* Animated background elements */}
+        <div className="absolute inset-0 overflow-hidden">
+          <div className="absolute -top-40 -right-32 w-80 h-80 bg-gradient-to-br from-blue-400/20 to-purple-400/20 rounded-full blur-3xl animate-pulse"></div>
+          <div className="absolute -bottom-40 -left-32 w-80 h-80 bg-gradient-to-br from-pink-400/20 to-orange-400/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
+          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gradient-to-br from-yellow-400/10 to-green-400/10 rounded-full blur-3xl animate-pulse delay-500"></div>
+        </div>
+        
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-16">
           <div className="text-center">
-            <Badge className="mb-4 bg-gradient-to-r from-yellow-100 to-amber-100 text-yellow-800 hover:bg-yellow-200 border border-yellow-300 shadow-sm">
-              🚀 Trusted by 10,000+ Prop Traders
+            <Badge className="mb-4 bg-gradient-to-r from-blue-500 to-purple-600 text-white hover:from-blue-600 hover:to-purple-700 border-0 shadow-lg animate-bounce">
+              ⚡ Trusted by 10,000+ Prop Traders Worldwide
             </Badge>
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 dark:text-white mb-6">
-              The <span className="bg-gradient-to-r from-yellow-500 via-yellow-600 to-yellow-700 bg-clip-text text-transparent">#1 Journal</span>{" "}
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 dark:text-white mb-6 leading-tight">
+              The <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent font-extrabold">#1 Journal</span>{" "}
               Exclusively for{" "}
-              <span className="bg-gradient-to-r from-yellow-500 via-yellow-600 to-yellow-700 bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-orange-500 via-red-500 to-pink-500 bg-clip-text text-transparent font-extrabold">
                 Prop Firm
               </span>
               <br />
-              Traders Success
+              <span className="bg-gradient-to-r from-green-500 via-blue-500 to-purple-500 bg-clip-text text-transparent font-extrabold">Traders Success</span>
             </h1>
-            <p className="text-xl text-gray-600 dark:text-gray-300 mb-8 max-w-3xl mx-auto">
-              The only trading journal fully focused on prop firm traders success. Master high discipline, daily planning, 
-              pre-session mental fitness checks, target projections, and prop firm spending tracking to scale your funded accounts.
+            <p className="text-xl text-gray-600 dark:text-gray-300 mb-8 max-w-3xl mx-auto leading-relaxed">
+              🎯 Master prop firm trading with the only journal built exclusively for funded traders. Featuring AI coaching, 
+              <span className="text-blue-600 font-semibold">mental fitness checks</span>, 
+              <span className="text-purple-600 font-semibold">daily planning</span>, and 
+              <span className="text-pink-600 font-semibold">target projections</span> to scale your accounts.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button
                 size="lg"
                 onClick={() => setLocation('/signup')}
-                className="bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-black font-semibold px-8 py-3 text-lg shadow-lg"
+                className="bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 hover:from-blue-600 hover:via-purple-600 hover:to-pink-600 text-white font-bold px-8 py-4 text-lg shadow-xl transform hover:scale-105 transition-all duration-300 animate-pulse"
               >
-                Start Free Trial
+                🚀 Start Free Trial
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
               <Button
                 size="lg"
                 variant="outline"
                 onClick={() => setLocation('/auth')}
-                className="px-8 py-3 text-lg border-yellow-400 text-yellow-600 hover:bg-yellow-50 hover:text-yellow-700 hover:border-yellow-500"
+                className="px-8 py-4 text-lg border-2 border-purple-400 text-purple-600 hover:bg-purple-50 hover:text-purple-700 hover:border-purple-500 transform hover:scale-105 transition-all duration-300"
               >
                 Log In
               </Button>
@@ -509,29 +518,38 @@ export default function Welcome() {
       </section>
 
       {/* Features Section */}
-      <section id="features" className="py-20 bg-gray-50 dark:bg-gray-800">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section id="features" className="py-20 bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50 dark:bg-gray-800 relative overflow-hidden">
+        {/* Background decoration */}
+        <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
+        <div className="absolute top-0 left-1/4 w-96 h-96 bg-gradient-to-br from-blue-400/10 to-purple-400/10 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-gradient-to-br from-pink-400/10 to-orange-400/10 rounded-full blur-3xl"></div>
+        
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
+            <Badge className="mb-4 bg-gradient-to-r from-green-500 to-emerald-600 text-white border-0 shadow-lg">
+              🎯 8 Unique Capabilities
+            </Badge>
             <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-4">
-              Everything You Need to Succeed
+              Everything You Need to <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">Succeed</span>
             </h2>
             <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
-              Comprehensive tools designed specifically for prop traders to manage risk, track performance, and scale funded accounts.
+              🚀 Comprehensive tools designed specifically for prop traders to manage risk, track performance, and scale funded accounts.
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {features.map((feature, index) => (
-              <Card key={index} className="relative overflow-hidden hover:shadow-lg transition-shadow duration-300">
-                <div className={`absolute inset-0 bg-gradient-to-br ${feature.gradient} opacity-50`} />
+              <Card key={index} className="relative overflow-hidden hover:shadow-2xl transition-all duration-500 transform hover:scale-105 border-0 bg-white/80 backdrop-blur-sm">
+                <div className={`absolute inset-0 bg-gradient-to-br ${feature.gradient} opacity-30`} />
+                <div className="absolute inset-0 bg-gradient-to-t from-white/50 to-transparent" />
                 <CardHeader className="relative">
-                  <div className={`w-12 h-12 rounded-lg bg-white dark:bg-gray-800 flex items-center justify-center mb-4`}>
-                    <feature.icon className={`h-6 w-6 ${feature.color}`} />
+                  <div className={`w-14 h-14 rounded-xl bg-gradient-to-br from-white to-gray-100 flex items-center justify-center mb-4 shadow-lg border-2 border-white/50`}>
+                    <feature.icon className={`h-7 w-7 ${feature.color} drop-shadow-sm`} />
                   </div>
-                  <CardTitle className="text-lg">{feature.title}</CardTitle>
+                  <CardTitle className="text-lg font-bold text-gray-900">{feature.title}</CardTitle>
                 </CardHeader>
                 <CardContent className="relative">
-                  <p className="text-gray-600 dark:text-gray-300 text-sm">
+                  <p className="text-gray-700 text-sm leading-relaxed">
                     {feature.description}
                   </p>
                 </CardContent>
@@ -542,14 +560,21 @@ export default function Welcome() {
       </section>
 
       {/* Pricing Section */}
-      <section id="pricing" className="py-20 bg-white dark:bg-gray-900">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section id="pricing" className="py-20 bg-gradient-to-br from-indigo-50 via-white to-cyan-50 dark:bg-gray-900 relative overflow-hidden">
+        {/* Background elements */}
+        <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-indigo-400/10 to-blue-400/10 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-0 left-0 w-96 h-96 bg-gradient-to-br from-cyan-400/10 to-teal-400/10 rounded-full blur-3xl"></div>
+        
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
+            <Badge className="mb-4 bg-gradient-to-r from-indigo-500 to-purple-600 text-white border-0 shadow-lg">
+              💎 Special Launch Pricing
+            </Badge>
             <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-4">
-              Simple, Transparent Pricing
+              Simple, <span className="bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">Transparent</span> Pricing
             </h2>
             <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
-              Choose the plan that fits your trading needs. All plans include a 14-day free trial.
+              🎯 Choose the plan that fits your trading needs. All plans include a 14-day free trial.
             </p>
           </div>
 
@@ -557,15 +582,15 @@ export default function Welcome() {
             {pricingPlans.map((plan, index) => (
               <Card
                 key={index}
-                className={`relative overflow-hidden ${
+                className={`relative overflow-hidden transform transition-all duration-500 hover:scale-105 ${
                   plan.popular
-                    ? 'border-yellow-500 shadow-lg scale-105'
-                    : 'border-gray-200 dark:border-gray-700'
+                    ? 'border-0 shadow-2xl scale-105 bg-gradient-to-br from-yellow-50 to-orange-50'
+                    : 'border-gray-200 dark:border-gray-700 hover:shadow-xl bg-white/80 backdrop-blur-sm'
                 }`}
               >
                 {plan.popular && (
-                  <div className="absolute top-0 left-0 right-0 bg-gradient-to-r from-yellow-500 to-yellow-600 text-white text-center py-2 text-sm font-medium">
-                    Most Popular
+                  <div className="absolute top-0 left-0 right-0 bg-gradient-to-r from-yellow-400 via-orange-500 to-red-500 text-white text-center py-3 text-sm font-bold shadow-lg">
+                    ⭐ MOST POPULAR ⭐
                   </div>
                 )}
                 <CardHeader className={plan.popular ? 'pt-12' : ''}>
@@ -602,13 +627,13 @@ export default function Welcome() {
                   <div className="space-y-3">
                     <Button
                       onClick={() => setLocation('/signup')}
-                      className={`w-full ${
+                      className={`w-full font-bold py-3 transform hover:scale-105 transition-all duration-300 ${
                         plan.popular
-                          ? 'bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-white'
-                          : 'bg-gray-900 dark:bg-white text-white dark:text-gray-900 hover:bg-gray-800 dark:hover:bg-gray-100'
+                          ? 'bg-gradient-to-r from-orange-500 via-red-500 to-pink-500 hover:from-orange-600 hover:via-red-600 hover:to-pink-600 text-white shadow-xl animate-pulse'
+                          : 'bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white shadow-lg'
                       }`}
                     >
-                      Start Free Trial
+                      🚀 Start Free Trial
                     </Button>
                     <Button 
                       variant="outline" 
@@ -632,20 +657,27 @@ export default function Welcome() {
       </section>
 
       {/* Testimonials Section */}
-      <section className="py-20 bg-gray-50 dark:bg-gray-800">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="py-20 bg-gradient-to-br from-emerald-50 via-teal-50 to-cyan-50 dark:bg-gray-800 relative overflow-hidden">
+        {/* Background decoration */}
+        <div className="absolute top-1/4 left-0 w-72 h-72 bg-gradient-to-br from-emerald-400/10 to-teal-400/10 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-1/4 right-0 w-72 h-72 bg-gradient-to-br from-cyan-400/10 to-blue-400/10 rounded-full blur-3xl"></div>
+        
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
+            <Badge className="mb-4 bg-gradient-to-r from-emerald-500 to-teal-600 text-white border-0 shadow-lg">
+              ⭐ 5-Star Reviews
+            </Badge>
             <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-4">
-              Trusted by Successful Traders
+              Trusted by <span className="bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">Successful</span> Traders
             </h2>
             <p className="text-xl text-gray-600 dark:text-gray-300">
-              See what funded traders are saying about PropTraderJournal
+              💬 See what funded traders are saying about PropTraderJournal
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {testimonials.map((testimonial, index) => (
-              <Card key={index} className="bg-white dark:bg-gray-900">
+              <Card key={index} className="bg-white/80 backdrop-blur-sm dark:bg-gray-900 hover:shadow-xl transition-all duration-500 transform hover:scale-105 border-0 shadow-lg">
                 <CardContent className="pt-6">
                   <div className="flex items-center mb-4">
                     {[...Array(testimonial.rating)].map((_, i) => (
