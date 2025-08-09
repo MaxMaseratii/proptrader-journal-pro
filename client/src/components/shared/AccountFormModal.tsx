@@ -293,7 +293,7 @@ export default function AccountFormModal({ isOpen, onClose }: AccountFormModalPr
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl max-h-[90vh] bg-gray-900 border-gray-700">
+      <DialogContent className="max-w-5xl max-h-[95vh] bg-gray-900 border-gray-700">
         <DialogHeader>
           <DialogTitle className="text-white text-xl">Create New Trading Account</DialogTitle>
           <DialogDescription className="text-gray-400">
@@ -301,7 +301,7 @@ export default function AccountFormModal({ isOpen, onClose }: AccountFormModalPr
           </DialogDescription>
         </DialogHeader>
         
-        <ScrollArea className="max-h-[70vh] px-6">
+        <ScrollArea className="max-h-[80vh] px-6">
           <div className="space-y-6">
             <Tabs defaultValue="basic" className="w-full">
               <TabsList className="grid w-full grid-cols-3 bg-gray-800">
