@@ -18,15 +18,55 @@ export default function Billing() {
 
   // Simplified plans for faster rendering
   const plans = [
-    { name: "Free", price: "$0", current: false },
-    { name: "Pro", price: "$29", current: true },
-    { name: "Elite", price: "$99", current: false }
+    { 
+      name: "Free", 
+      price: "$0", 
+      period: "month",
+      current: false, 
+      popular: false,
+      features: [
+        "Basic trading journal",
+        "Up to 3 accounts",
+        "Basic analytics",
+        "Email support"
+      ]
+    },
+    { 
+      name: "Pro", 
+      price: "$29", 
+      period: "month",
+      current: true, 
+      popular: true,
+      features: [
+        "Advanced trading journal",
+        "Unlimited accounts",
+        "Advanced analytics & reports",
+        "Risk management tools",
+        "CSV import/export",
+        "Priority support"
+      ]
+    },
+    { 
+      name: "Elite", 
+      price: "$99", 
+      period: "month",
+      current: false, 
+      popular: false,
+      features: [
+        "Everything in Pro",
+        "AI trading companion",
+        "Advanced psychology tracking",
+        "Custom strategies",
+        "White-label options",
+        "1-on-1 coaching session"
+      ]
+    }
   ];
 
   // Static billing data for instant loading
   const billingHistory = [
-    { id: 1, date: "Aug 1, 2025", amount: "$29", plan: "Pro", status: "Paid" },
-    { id: 2, date: "Jul 1, 2025", amount: "$29", plan: "Pro", status: "Paid" }
+    { id: 1, date: "Aug 1, 2025", amount: "$29", plan: "Pro", status: "Paid", invoice: "INV-2025-0801" },
+    { id: 2, date: "Jul 1, 2025", amount: "$29", plan: "Pro", status: "Paid", invoice: "INV-2025-0701" }
   ];
 
   return (
