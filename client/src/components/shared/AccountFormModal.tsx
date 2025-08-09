@@ -871,8 +871,8 @@ export default function AccountFormModal({ isOpen, onClose }: AccountFormModalPr
                     </div>
                     <div className="flex items-center space-x-2">
                       <Checkbox
-                        checked={formData.enhancedPayoutsAvailable || false}
-                        onCheckedChange={(checked) => updateField('enhancedPayoutsAvailable', checked)}
+                        checked={formData.challengePayoutsAvailable || false}
+                        onCheckedChange={(checked) => updateField('challengePayoutsAvailable', checked)}
                         className="border-gray-600 data-[state=checked]:bg-blue-600"
                       />
                       <Label className="text-white">Challenge Payouts Available</Label>
