@@ -74,6 +74,7 @@ export default function AccountManagement({ accounts }: AccountManagementProps) 
     maxRiskPerDay: null,
     secondaryAsset: '',
     tertiaryAsset: '',
+    stopLossPoints: null,
   });
   // Get trades data to calculate P&L
   const { data: trades = [] } = useQuery<Trade[]>({
@@ -1648,22 +1649,6 @@ export default function AccountManagement({ accounts }: AccountManagementProps) 
                   />
                 </div>
               </div>
-              
-              {/* Simulation vs Account Based buttons */}
-              <div className="flex gap-2 mt-4">
-                <Button 
-                  variant="outline" 
-                  className="bg-gray-700 border-gray-600 text-white hover:bg-gray-600"
-                >
-                  Simulation
-                </Button>
-                <Button 
-                  variant="outline" 
-                  className="bg-gray-700 border-gray-600 text-white hover:bg-gray-600"
-                >
-                  Account Based
-                </Button>
-              </div>
             </TabsContent>
 
             <TabsContent value="financial" className="space-y-4">
@@ -1759,22 +1744,6 @@ export default function AccountManagement({ accounts }: AccountManagementProps) 
                   />
                   <Label htmlFor="includes-activation" className="text-white">Includes Activation Fee</Label>
                 </div>
-              </div>
-              
-              {/* Simulation vs Account Based buttons */}
-              <div className="flex gap-2 mt-4">
-                <Button 
-                  variant="outline" 
-                  className="bg-gray-700 border-gray-600 text-white hover:bg-gray-600"
-                >
-                  Simulation
-                </Button>
-                <Button 
-                  variant="outline" 
-                  className="bg-gray-700 border-gray-600 text-white hover:bg-gray-600"
-                >
-                  Account Based
-                </Button>
               </div>
             </TabsContent>
             
@@ -1872,20 +1841,13 @@ export default function AccountManagement({ accounts }: AccountManagementProps) 
                 </div>
                 <div>
                   <Label className="text-white">Default Stop Loss (Points/Pips)</Label>
-                  <div className="flex gap-2">
-                    <Button 
-                      variant="outline" 
-                      className="bg-gray-700 border-gray-600 text-white hover:bg-gray-600"
-                    >
-                      Simulation
-                    </Button>
-                    <Button 
-                      variant="outline" 
-                      className="bg-gray-700 border-gray-600 text-white hover:bg-gray-600"
-                    >
-                      Account Based
-                    </Button>
-                  </div>
+                  <Input 
+                    type="number"
+                    value={accountForm.stopLossPoints || ''}
+                    onChange={(e) => setAccountForm({...accountForm, stopLossPoints: parseFloat(e.target.value) || null})}
+                    className="bg-gray-800 border-gray-600 text-white"
+                    placeholder="20"
+                  />
                 </div>
                 <div>
                   <Label className="text-white">Default Take Profit (Points/Pips)</Label>
