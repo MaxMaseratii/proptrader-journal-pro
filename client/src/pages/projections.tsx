@@ -13,7 +13,7 @@ import { useToast } from "@/hooks/use-toast";
 import { formatCurrency, formatDate } from "@/lib/utils";
 import type { Account, Trade } from "@shared/schema";
 import AccountManagement from "@/components/account-management";
-import { AccountFormModal, CreateFirstAccountButton } from "@/components/shared/AccountFormModal";
+import AccountFormModal from "@/components/shared/AccountFormModal";
 import { 
   Target, 
   TrendingUp, 
@@ -73,7 +73,7 @@ interface ProjectionDay {
 
 export default function Projections() {
   const { toast } = useToast();
-
+  const [isAccountModalOpen, setIsAccountModalOpen] = useState(false);
   const [isAccountsMinimized, setIsAccountsMinimized] = useState(false);
   const [isModifyingPlan, setIsModifyingPlan] = useState(false);
   const [modifyingProjectionId, setModifyingProjectionId] = useState<number | null>(null);
@@ -345,7 +345,13 @@ export default function Projections() {
         </div>
         
         <div className="flex gap-2">
-          <CreateFirstAccountButton />
+          <Button 
+            onClick={() => setIsAccountModalOpen(true)}
+            className="bg-gradient-to-r from-yellow-400 to-yellow-600 text-black font-semibold hover:from-yellow-500 hover:to-yellow-700"
+          >
+            <Plus className="w-4 h-4 mr-2" />
+            Create Account
+          </Button>
         </div>
       </div>
 
@@ -1027,8 +1033,11 @@ export default function Projections() {
           </div>
         </div>
 
-        {/* Account Creation - Now using unified component in sidebar */}
-        <AccountFormModal />
+        {/* Account Creation Modal */}
+        <AccountFormModal 
+          isOpen={isAccountModalOpen} 
+          onClose={() => setIsAccountModalOpen(false)} 
+        />
       </div>
     );
   }

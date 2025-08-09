@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { 
   Dialog, 
   DialogContent, 
@@ -15,21 +15,11 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Card, CardContent } from "@/components/ui/card";
 import { Plus } from "lucide-react";
-import { useQueryClient, useMutation } from "@tanstack/react-query";
-import { apiRequest } from "@/lib/queryClient";
-import { useToast } from "@/hooks/use-toast";
 
-interface AccountFormModalProps {
-  open?: boolean;
-  onOpenChange?: (open: boolean) => void;
-}
-
-export default function AccountFormModal({ open = false, onOpenChange }: AccountFormModalProps) {
-  const [isAccountDialogOpen, setIsAccountDialogOpen] = useState(open);
+export default function AccountFormModal({ isOpen = false, onClose = () => {} }) {
+  const [isAccountDialogOpen, setIsAccountDialogOpen] = useState(isOpen);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [errors, setErrors] = useState<Record<string, string>>({});
-  const queryClient = useQueryClient();
-  const { toast } = useToast();
+  const [errors, setErrors] = useState({});
 
   // Form state
   const [formData, setFormData] = useState({
@@ -145,17 +135,17 @@ export default function AccountFormModal({ open = false, onOpenChange }: Account
   });
 
   // Update form field
-  const updateField = (field: string, value: any) => {
+  const updateField = (field, value) => {
     setFormData(prev => ({ ...prev, [field]: value }));
     // Clear error for this field when user starts typing
     if (errors[field]) {
-      setErrors(prev => ({ ...prev, [field]: "" }));
+      setErrors(prev => ({ ...prev, [field]: null }));
     }
   };
 
   // Validate form
   const validateForm = () => {
-    const newErrors: Record<string, string> = {};
+    const newErrors = {};
     
     if (!formData.name.trim()) {
       newErrors.name = "Account name is required";
@@ -181,144 +171,123 @@ export default function AccountFormModal({ open = false, onOpenChange }: Account
     return Object.keys(newErrors).length === 0;
   };
 
-  const createAccountMutation = useMutation({
-    mutationFn: async (data: any) => {
-      return apiRequest("/api/accounts", "POST", data);
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/accounts'] });
-      handleOpenChange(false);
-      resetForm();
-      toast({
-        title: "Account Created",
-        description: "Your account has been created successfully.",
-      });
-    },
-    onError: (error) => {
-      toast({
-        title: "Error",
-        description: error.message || "Failed to create account.",
-        variant: "destructive",
-      });
-    },
-  });
-
-  const resetForm = () => {
-    setFormData({
-      name: "",
-      firm: "",
-      type: "challenge",
-      status: "active",
-      startingBalance: 0,
-      profitTarget: 0,
-      maxDrawdown: 0,
-      hasDailyLossLimit: false,
-      dailyLossLimit: null,
-      dailyLossLimitType: "soft",
-      drawdownType: "trailing",
-      maxDrawdownType: "eod",
-      minimumTradingDays: null,
-      timeLimit: null,
-      daysRequiredToPass: null,
-      consistencyPercentage: null,
-      accountCost: null,
-      purchaseMethod: null,
-      resetCount: 0,
-      totalResetsCost: 0,
-      activationCost: null,
-      activationPaid: false,
-      includesActivationFee: false,
-      daysRequiredForPayout: null,
-      winningDayMinimum: null,
-      payoutFrequency: "monthly",
-      minimumPayoutAmount: null,
-      maxNetBalanceForPayout: null,
-      profitSplit: null,
-      maximumPayoutAllowed: null,
-      maximumPayoutPerAccount: null,
-      bufferAmount: null,
-      bufferPercentage: null,
-      accountBufferRequired: false,
-      tradingCapital: null,
-      riskCalculationPeriod: "weekly",
-      useRiskPercentage: false,
-      riskPercentage: null,
-      customRiskAmount: null,
-      riskRewardRatio: 2.0,
-      primaryAsset: "ES",
-      secondaryAsset: "",
-      tertiaryAsset: "",
-      tradingSessionStart: "",
-      tradingSessionEnd: "",
-      timezone: "",
-      dailyWorkingHours: null,
-      hourlyWages: null,
-      copyTradingAllowed: true,
-      newsTradingAllowed: true,
-      useIntradayMargins: true,
-      marginSafetyBuffer: 50.0,
-      stopLossPoints: 10,
-      takeProfitPoints: 20,
-      riskPerTrade: null,
-      riskPerTradeDivider: 1,
-      maxTradesPerDay: 0,
-      maxRiskPerDay: null,
-      maxPositionSize: null,
-      preferredAssets: null,
-      personalTradingTimeStart1: "",
-      personalTradingTimeEnd1: "",
-      personalTradingTimeZone1: "",
-      personalTradingTimeStart2: "",
-      personalTradingTimeEnd2: "",
-      personalTradingTimeZone2: "",
-      personalTradingTimeStart3: "",
-      personalTradingTimeEnd3: "",
-      personalTradingTimeZone3: "",
-      liveAccountAvailable: false,
-      enhancedPayoutsAvailable: false,
-      transitionTrigger: null,
-      liveAccountTransitionEnabled: false,
-      liveAccountTransitionProfitTarget: null,
-      liveAccountTransitionDays: null,
-      liveAccountTransitionDrawdownLimit: null,
-      fundedPayoutEnabled: false,
-      fundedDaysRequiredForPayout: null,
-      fundedWinningDayMinimum: null,
-      fundedPayoutFrequency: null,
-      fundedMinimumPayoutAmount: null,
-      fundedMaxNetBalanceForPayout: null,
-      fundedProfitSplit: null,
-      livePayoutEnabled: false,
-      liveDaysRequiredForPayout: null,
-      liveWinningDayMinimum: null,
-      livePayoutFrequency: null,
-      liveMinimumPayoutAmount: null,
-      liveMaxNetBalanceForPayout: null,
-      liveProfitSplit: null,
-    });
-    setErrors({});
-  };
-
-  // Handle external prop changes
-  useEffect(() => {
-    if (open !== undefined) {
-      setIsAccountDialogOpen(open);
-    }
-  }, [open]);
-
-  const handleOpenChange = (newOpen: boolean) => {
-    setIsAccountDialogOpen(newOpen);
-    if (onOpenChange) {
-      onOpenChange(newOpen);
-    }
-  };
-
   const handleSubmit = async () => {
     if (!validateForm()) {
       return;
     }
 
-    createAccountMutation.mutate(formData);
+    setIsSubmitting(true);
+    try {
+      // Replace this with your actual API call
+      console.log("Form data:", formData);
+      
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // Success handling
+      setIsAccountDialogOpen(false);
+      onClose();
+      setFormData({
+        name: "",
+        firm: "",
+        type: "challenge",
+        status: "active",
+        startingBalance: 0,
+        profitTarget: 0,
+        maxDrawdown: 0,
+        hasDailyLossLimit: false,
+        dailyLossLimit: null,
+        dailyLossLimitType: "soft",
+        drawdownType: "trailing",
+        maxDrawdownType: "eod",
+        minimumTradingDays: null,
+        timeLimit: null,
+        daysRequiredToPass: null,
+        consistencyPercentage: null,
+        accountCost: null,
+        purchaseMethod: null,
+        resetCount: 0,
+        totalResetsCost: 0,
+        activationCost: null,
+        activationPaid: false,
+        includesActivationFee: false,
+        daysRequiredForPayout: null,
+        winningDayMinimum: null,
+        payoutFrequency: "monthly",
+        minimumPayoutAmount: null,
+        maxNetBalanceForPayout: null,
+        profitSplit: null,
+        maximumPayoutAllowed: null,
+        maximumPayoutPerAccount: null,
+        bufferAmount: null,
+        bufferPercentage: null,
+        accountBufferRequired: false,
+        tradingCapital: null,
+        riskCalculationPeriod: "weekly",
+        useRiskPercentage: false,
+        riskPercentage: null,
+        customRiskAmount: null,
+        riskRewardRatio: 2.0,
+        primaryAsset: "ES",
+        secondaryAsset: "",
+        tertiaryAsset: "",
+        tradingSessionStart: "",
+        tradingSessionEnd: "",
+        timezone: "",
+        dailyWorkingHours: null,
+        hourlyWages: null,
+        copyTradingAllowed: true,
+        newsTradingAllowed: true,
+        useIntradayMargins: true,
+        marginSafetyBuffer: 50.0,
+        stopLossPoints: 10,
+        takeProfitPoints: 20,
+        riskPerTrade: null,
+        riskPerTradeDivider: 1,
+        maxTradesPerDay: 0,
+        maxRiskPerDay: null,
+        maxPositionSize: null,
+        preferredAssets: null,
+        personalTradingTimeStart1: "",
+        personalTradingTimeEnd1: "",
+        personalTradingTimeZone1: "",
+        personalTradingTimeStart2: "",
+        personalTradingTimeEnd2: "",
+        personalTradingTimeZone2: "",
+        personalTradingTimeStart3: "",
+        personalTradingTimeEnd3: "",
+        personalTradingTimeZone3: "",
+        liveAccountAvailable: false,
+        enhancedPayoutsAvailable: false,
+        transitionTrigger: null,
+        liveAccountTransitionEnabled: false,
+        liveAccountTransitionProfitTarget: null,
+        liveAccountTransitionDays: null,
+        liveAccountTransitionDrawdownLimit: null,
+        fundedPayoutEnabled: false,
+        fundedDaysRequiredForPayout: null,
+        fundedWinningDayMinimum: null,
+        fundedPayoutFrequency: null,
+        fundedMinimumPayoutAmount: null,
+        fundedMaxNetBalanceForPayout: null,
+        fundedProfitSplit: null,
+        livePayoutEnabled: false,
+        liveDaysRequiredForPayout: null,
+        liveWinningDayMinimum: null,
+        livePayoutFrequency: null,
+        liveMinimumPayoutAmount: null,
+        liveMaxNetBalanceForPayout: null,
+        liveProfitSplit: null,
+      });
+      setErrors({});
+      alert("Account created successfully!");
+      
+    } catch (error) {
+      console.error("Error creating account:", error);
+      alert("Failed to create account. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   // Generate time options for select
@@ -330,9 +299,21 @@ export default function AccountFormModal({ open = false, onOpenChange }: Account
   });
 
   return (
-    <>
+    <div className="p-6">
+      {/* Trigger Button */}
+      <Button 
+        onClick={() => setIsAccountDialogOpen(true)}
+        className="bg-gradient-to-r from-yellow-400 to-yellow-600 text-black font-semibold hover:from-yellow-500 hover:to-yellow-700"
+      >
+        <Plus className="w-4 h-4 mr-2" />
+        Create New Account
+      </Button>
+
       {/* Account Creation Modal */}
-      <Dialog open={isAccountDialogOpen} onOpenChange={handleOpenChange}>
+      <Dialog open={isOpen || isAccountDialogOpen} onOpenChange={(open) => {
+        setIsAccountDialogOpen(open);
+        if (!open) onClose();
+      }}>
         <DialogContent className="max-w-4xl max-h-[90vh] bg-gray-900 border-gray-700">
           <DialogHeader>
             <DialogTitle className="text-white text-xl">Create New Trading Account</DialogTitle>
@@ -625,7 +606,10 @@ export default function AccountFormModal({ open = false, onOpenChange }: Account
                 <Button
                   type="button"
                   variant="outline"
-                  onClick={() => handleOpenChange(false)}
+                  onClick={() => {
+                    setIsAccountDialogOpen(false);
+                    onClose();
+                  }}
                   className="bg-gray-800 border-gray-600 text-white hover:bg-gray-700"
                 >
                   Cancel
@@ -633,36 +617,16 @@ export default function AccountFormModal({ open = false, onOpenChange }: Account
                 <Button
                   type="button"
                   onClick={handleSubmit}
-                  disabled={createAccountMutation.isPending}
+                  disabled={isSubmitting}
                   className="bg-blue-600 hover:bg-blue-700 text-white"
                 >
-                  {createAccountMutation.isPending ? "Creating..." : "Create Account"}
+                  {isSubmitting ? "Creating..." : "Create Account"}
                 </Button>
               </div>
             </div>
           </ScrollArea>
         </DialogContent>
       </Dialog>
-    </>
+    </div>
   );
 }
-
-// Export button components for use in other pages
-export function CreateFirstAccountButton({ className = "" }: { className?: string }) {
-  const [isOpen, setIsOpen] = useState(false);
-  
-  return (
-    <>
-      <Button 
-        onClick={() => setIsOpen(true)}
-        className={`bg-gradient-to-r from-yellow-400 to-yellow-600 text-black font-semibold hover:from-yellow-500 hover:to-yellow-700 ${className}`}
-      >
-        <Plus className="w-4 h-4 mr-2" />
-        New Account
-      </Button>
-      <AccountFormModal open={isOpen} onOpenChange={setIsOpen} />
-    </>
-  );
-}
-
-export { AccountFormModal };

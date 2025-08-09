@@ -33,7 +33,7 @@ import { SimpleChart } from "@/components/tradingview/SimpleChart";
 import NotificationDropdown from "@/components/notification-dropdown";
 import UnrealizedProfitWidgets from "@/components/unrealized-profit-widgets";
 import TargetProgressWidget from "@/components/target-progress-widget";
-import { CreateFirstAccountButton } from "@/components/shared/AccountFormModal";
+
 // Removed SocialShareButtons import to reduce bundle size - using inline ShareStats instead
 
 import { 
@@ -1310,7 +1310,12 @@ export default function Dashboard() {
                   Trade
                 </Button>
               </Link>
-              <CreateFirstAccountButton />
+              <Button 
+                className="bg-gradient-to-r from-yellow-400 to-yellow-600 text-black font-semibold hover:from-yellow-500 hover:to-yellow-700"
+              >
+                <Plus className="w-4 h-4 mr-2" />
+                Create Account
+              </Button>
               <Link href="/journal">
                 <Button 
                   size="sm" 
