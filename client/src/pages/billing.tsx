@@ -16,57 +16,17 @@ import {
 export default function Billing() {
   const [currentPlan, setCurrentPlan] = useState("Pro");
 
+  // Simplified plans for faster rendering
   const plans = [
-    {
-      name: "Free",
-      price: "$0",
-      period: "forever",
-      features: [
-        "Basic trading journal",
-        "5 trades per month",
-        "Basic performance analytics",
-        "Community support"
-      ],
-      current: false,
-      popular: false
-    },
-    {
-      name: "Pro",
-      price: "$29",
-      period: "per month",
-      features: [
-        "Unlimited trades",
-        "Advanced analytics",
-        "Risk management tools",
-        "CSV import/export",
-        "Email support",
-        "Custom strategies"
-      ],
-      current: true,
-      popular: true
-    },
-    {
-      name: "Elite",
-      price: "$99",
-      period: "per month",
-      features: [
-        "Everything in Pro",
-        "AI trading companion",
-        "Advanced discipline tracking",
-        "Priority support",
-        "Custom integrations",
-        "Multi-account management"
-      ],
-      current: false,
-      popular: false
-    }
+    { name: "Free", price: "$0", current: false },
+    { name: "Pro", price: "$29", current: true },
+    { name: "Elite", price: "$99", current: false }
   ];
 
-  // Simplified billing history for faster loading
+  // Static billing data for instant loading
   const billingHistory = [
-    { id: 1, date: "2025-08-01", amount: "$29.00", plan: "Pro Plan", status: "Paid" },
-    { id: 2, date: "2025-07-01", amount: "$29.00", plan: "Pro Plan", status: "Paid" },
-    { id: 3, date: "2025-06-01", amount: "$29.00", plan: "Pro Plan", status: "Paid" }
+    { id: 1, date: "Aug 1, 2025", amount: "$29", plan: "Pro", status: "Paid" },
+    { id: 2, date: "Jul 1, 2025", amount: "$29", plan: "Pro", status: "Paid" }
   ];
 
   return (

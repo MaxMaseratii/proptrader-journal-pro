@@ -24,8 +24,7 @@ import {
 } from "lucide-react";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 
-// Direct import for faster loading - no lazy loading overhead
-import NotificationSettings from "@/components/notification-settings";
+// Remove notification settings import to fix slow loading
 
 export default function Profile() {
   const [isEditing, setIsEditing] = useState(false);
@@ -333,7 +332,31 @@ export default function Profile() {
           </TabsContent>
 
           <TabsContent value="notifications" className="space-y-6">
-            <NotificationSettings />
+            <Card className="bg-gray-800 border-gray-700">
+              <CardHeader>
+                <CardTitle className="text-gradient-rainbow flex items-center gap-2">
+                  <Bell className="h-5 w-5" />
+                  Notification Settings
+                </CardTitle>
+                <p className="text-gray-400 text-sm">
+                  Manage your notification preferences and alerts.
+                </p>
+              </CardHeader>
+              <CardContent>
+                <div className="text-center py-8">
+                  <Button 
+                    onClick={() => window.location.href = '/notifications'}
+                    className="bg-blue-600 hover:bg-blue-700"
+                  >
+                    <Bell className="h-4 w-4 mr-2" />
+                    Open Notification Settings
+                  </Button>
+                  <p className="text-gray-400 text-sm mt-2">
+                    Click to manage your detailed notification preferences
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
           </TabsContent>
 
 
