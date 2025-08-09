@@ -510,8 +510,10 @@ export default function Welcome() {
               The elite trading journal for prop firm traders. Master discipline, maximize profits.
             </p>
             <div className="border-t border-gray-200 pt-8">
-              <p className="bg-gradient-to-r from-yellow-600 via-black to-yellow-600 bg-clip-text text-transparent font-bold text-lg">
-                © 2025 PropTraderJournal. All rights reserved.
+              <p className="font-bold text-lg">
+                <span className="bg-gradient-to-r from-yellow-500 via-amber-600 to-black bg-clip-text text-transparent">
+                  © 2025 PropTraderJournal. All rights reserved.
+                </span>
               </p>
             </div>
           </div>
