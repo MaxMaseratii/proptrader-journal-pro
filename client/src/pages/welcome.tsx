@@ -346,7 +346,7 @@ export default function Welcome() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {features.map((feature, index) => (
-              <Card key={index} className={`group hover:shadow-2xl transition-all duration-500 border-0 shadow-lg hover:scale-105 bg-gradient-to-br ${feature.bgGradient} hover:shadow-${feature.color.split('-')[1]}-500/25`}>
+              <Card key={index} className={`group hover:shadow-2xl transition-all duration-500 border-2 border-gray-200 ${index % 2 === 0 ? 'hover:border-yellow-400' : 'hover:border-teal-400'} shadow-lg hover:scale-105 bg-gradient-to-br ${feature.bgGradient} hover:shadow-teal-500/25`}>
                 <div className={`absolute inset-0 bg-gradient-to-br ${feature.gradient} opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-lg`} />
                 <CardHeader className="relative text-center">
                   <div className={`w-16 h-16 mx-auto bg-gradient-to-br ${feature.iconBg} rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300 shadow-lg`}>
@@ -495,22 +495,22 @@ export default function Welcome() {
       </section>
 
       {/* Footer */}
-      <footer className="bg-gradient-to-br from-black via-gray-900 to-black text-white py-12">
+      <footer className="bg-gradient-to-br from-gray-100 via-white to-gray-50 py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <div className="flex items-center justify-center space-x-3 mb-6">
               <div className="w-12 h-12 bg-gradient-to-br from-yellow-400 to-amber-500 rounded-xl flex items-center justify-center shadow-xl">
                 <Crown className="w-7 h-7 text-black" />
               </div>
-              <span className="text-2xl font-bold">
-                PropTrader<span className="text-teal-400">Journal</span>
+              <span className="text-2xl font-bold text-gray-900">
+                PropTrader<span className="text-gray-900">Journal</span>
               </span>
             </div>
-            <p className="text-gray-400 mb-8">
+            <p className="text-gray-600 mb-8">
               The elite trading journal for prop firm traders. Master discipline, maximize profits.
             </p>
-            <div className="border-t border-gradient-to-r from-transparent via-yellow-400/30 to-transparent pt-8">
-              <p className="bg-gradient-to-r from-yellow-400 via-amber-500 to-yellow-600 bg-clip-text text-transparent font-bold text-lg">
+            <div className="border-t border-gray-200 pt-8">
+              <p className="bg-gradient-to-r from-yellow-600 via-black to-yellow-600 bg-clip-text text-transparent font-bold text-lg">
                 © 2025 PropTraderJournal. All rights reserved.
               </p>
             </div>
