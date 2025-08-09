@@ -1,0 +1,77 @@
+Here's a comprehensive prompt for Replit AI to unify your account creation system:
+
+---
+
+**🎯 TASK: Unify Account Creation Modal Across Entire App**
+
+I need to **delete all existing account creation pop-up modals** throughout the app and replace them with a **single, unified account form modal component**.
+
+## 📍 **Locations to Update:**
+
+### **Dashboard** (2 instances):
+- "Add Account" button
+- "Create First Account" button
+
+### **Account Management & Projections** (2 instances):
+- "New Account" button (top right)
+- "Create First Account" button (in empty state)
+
+### **Account Management** (2 instances):
+- "Add Your First Account" button
+- Any other account creation buttons
+
+## 🔧 **Required Changes:**
+
+### 1. **Remove Duplicate Modal Code:**
+- Find and delete ALL existing account creation modal/dialog components
+- Remove any duplicate form logic for account creation
+- Clean up unused imports and dependencies
+
+### 2. **Create Centralized Component:**
+- Create a shared `AccountFormModal` component (use the one we just built)
+- Place it in a `/components/shared/` or `/components/modals/` folder
+- Make it reusable across the entire app
+
+### 3. **Update All Account Creation Buttons:**
+- Replace all account creation buttons to use the same modal
+- Ensure consistent button styling and text
+- All buttons should trigger the same `AccountFormModal`
+
+### 4. **Standardize Button Variations:**
+```jsx
+// Primary button (when no accounts exist)
+<Button>+ Create First Account</Button>
+
+// Secondary button (when accounts exist) 
+<Button>+ Add Account</Button>
+
+// Header button
+<Button>+ New Account</Button>
+```
+
+### 5. **Ensure Consistent Behavior:**
+- All buttons open the same modal
+- Same form validation across the app
+- Same success/error handling
+- Same API integration for account creation
+
+## 📋 **Verification Checklist:**
+- [ ] All duplicate modal code removed
+- [ ] Single `AccountFormModal` component created
+- [ ] All 6+ account creation buttons use the same modal
+- [ ] Consistent styling across all buttons
+- [ ] Same form fields and validation everywhere
+- [ ] No broken imports or unused code
+- [ ] App builds without errors
+
+## 🎨 **Design Consistency:**
+- Keep the golden/yellow button styling for account creation
+- Maintain the same modal size and styling
+- Ensure all buttons have the "+" icon
+- Use consistent text labels
+
+**Goal:** One unified account creation experience across the entire trading application, eliminating code duplication and ensuring consistency.
+
+---
+
+This prompt should help Replit AI systematically find and replace all the scattered account creation modals with your unified form component!
