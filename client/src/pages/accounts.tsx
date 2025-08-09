@@ -242,29 +242,80 @@ export default function AccountManagement() {
           </div>
         </div>
 
-        {accounts.length === 0 ? (
-          <div className="flex items-center justify-center min-h-[400px]">
-            <div className="text-center">
-              <Wallet className="mx-auto h-16 w-16 text-gray-500 mb-4" />
-              <h3 className="text-xl font-medium text-gray-300 mb-2">No Trading Accounts</h3>
-              <p className="text-gray-500 mb-4">Create your first trading account to start tracking performance</p>
-            </div>
-          </div>
-        ) : (
+        <div className="flex justify-end mb-6">
+          <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
+            <DialogTrigger asChild>
+              <Button className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700">
+                <Plus className="h-4 w-4 mr-2" />
+                Create Account
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-2xl bg-gradient-to-br from-gray-900 via-gray-800 to-black border border-yellow-400/20">
+              <DialogHeader>
+                <DialogTitle className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-yellow-600">
+                  Create New Trading Account
+                </DialogTitle>
+                <DialogDescription className="text-gray-400">
+                  Set up a new trading account with your risk parameters and goals.
+                </DialogDescription>
+              </DialogHeader>
               
               <div className="max-h-[60vh] overflow-y-auto pr-2">
                 <Form {...form}>
                   <form onSubmit={form.handleSubmit(handleCreateAccount)} className="space-y-4">
                     <div className="grid grid-cols-2 gap-4">
+                      <FormField
+                        control={form.control}
+                        name="name"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="text-white">Account Name</FormLabel>
+                            <FormControl>
+                              <Input 
+                                placeholder="e.g., Main Trading Account" 
+                                className="bg-white border-gray-300 text-black"
+                                {...field} 
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      
+                      <FormField
+                        control={form.control}
+                        name="type"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="text-white">Account Type</FormLabel>
+                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                              <FormControl>
+                                <SelectTrigger className="bg-white border-gray-300 text-black">
+                                  <SelectValue placeholder="Select type" />
+                                </SelectTrigger>
+                              </FormControl>
+                              <SelectContent>
+                                <SelectItem value="demo">Demo</SelectItem>
+                                <SelectItem value="live">Live</SelectItem>
+                                <SelectItem value="paper">Paper Trading</SelectItem>
+                                <SelectItem value="challenge">Challenge</SelectItem>
+                              </SelectContent>
+                            </Select>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+
                     <FormField
                       control={form.control}
-                      name="name"
+                      name="firm"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-white">Account Name</FormLabel>
+                          <FormLabel className="text-white">Prop Firm / Broker</FormLabel>
                           <FormControl>
                             <Input 
-                              placeholder="e.g., Main Trading Account" 
+                              placeholder="e.g., FTMO, TopstepTrader, Interactive Brokers" 
                               className="bg-white border-gray-300 text-black"
                               {...field} 
                             />
@@ -273,155 +324,112 @@ export default function AccountManagement() {
                         </FormItem>
                       )}
                     />
-                    
-                    <FormField
-                      control={form.control}
-                      name="type"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-white">Account Type</FormLabel>
-                          <Select onValueChange={field.onChange} defaultValue={field.value}>
+
+                    <div className="grid grid-cols-3 gap-4">
+                      <FormField
+                        control={form.control}
+                        name="startingBalance"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="text-white">Starting Balance</FormLabel>
                             <FormControl>
-                              <SelectTrigger className="bg-white border-gray-300 text-black">
-                                <SelectValue placeholder="Select type" />
-                              </SelectTrigger>
+                              <Input 
+                                type="number" 
+                                placeholder="10000" 
+                                className="bg-white border-gray-300 text-black"
+                                {...field}
+                                onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                              />
                             </FormControl>
-                            <SelectContent>
-                              <SelectItem value="demo">Demo</SelectItem>
-                              <SelectItem value="live">Live</SelectItem>
-                              <SelectItem value="paper">Paper Trading</SelectItem>
-                              <SelectItem value="challenge">Challenge</SelectItem>
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      
+                      <FormField
+                        control={form.control}
+                        name="profitTarget"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="text-white">Profit Target</FormLabel>
+                            <FormControl>
+                              <Input 
+                                type="number" 
+                                placeholder="1000" 
+                                className="bg-white border-gray-300 text-black"
+                                {...field}
+                                onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      
+                      <FormField
+                        control={form.control}
+                        name="maxDrawdown"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="text-white">Max Drawdown</FormLabel>
+                            <FormControl>
+                              <Input 
+                                type="number" 
+                                placeholder="500" 
+                                className="bg-white border-gray-300 text-black"
+                                {...field}
+                                onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
 
-                  <FormField
-                    control={form.control}
-                    name="firm"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-white">Prop Firm / Broker</FormLabel>
-                        <FormControl>
-                          <Input 
-                            placeholder="e.g., FTMO, TopstepTrader, Interactive Brokers" 
-                            className="bg-white border-gray-300 text-black"
-                            {...field} 
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <div className="grid grid-cols-3 gap-4">
                     <FormField
                       control={form.control}
-                      name="startingBalance"
+                      name="riskPerTrade"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-white">Starting Balance</FormLabel>
+                          <FormLabel className="text-white">Risk Per Trade (%)</FormLabel>
                           <FormControl>
-                            <Input 
-                              type="number" 
-                              placeholder="10000" 
-                              className="bg-white border-gray-300 text-black"
-                              {...field}
-                              onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    
-                    <FormField
-                      control={form.control}
-                      name="profitTarget"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-white">Profit Target</FormLabel>
-                          <FormControl>
-                            <Input 
-                              type="number" 
-                              placeholder="1000" 
-                              className="bg-white border-gray-300 text-black"
-                              {...field}
-                              onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    
-                    <FormField
-                      control={form.control}
-                      name="maxDrawdown"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-white">Max Drawdown</FormLabel>
-                          <FormControl>
-                            <Input 
-                              type="number" 
-                              placeholder="500" 
-                              className="bg-white border-gray-300 text-black"
-                              {...field}
-                              onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-
-                  <FormField
-                    control={form.control}
-                    name="riskPerTrade"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-white">Risk Per Trade (%)</FormLabel>
-                        <FormControl>
-                          <div className="space-y-2">
-                            <Slider
-                              value={[field.value || 2]}
-                              onValueChange={(value) => field.onChange(value[0])}
-                              max={10}
-                              min={0.1}
-                              step={0.1}
-                              className="w-full"
-                            />
-                            <div className="text-center text-sm text-gray-400">
-                              {field.value || 2}% per trade
+                            <div className="space-y-2">
+                              <Slider
+                                value={[field.value || 2]}
+                                onValueChange={(value) => field.onChange(value[0])}
+                                max={10}
+                                min={0.1}
+                                step={0.1}
+                                className="w-full"
+                              />
+                              <div className="text-center text-sm text-gray-400">
+                                {field.value || 2}% per trade
+                              </div>
                             </div>
-                          </div>
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
 
-                  <div className="flex justify-end space-x-3 pt-4">
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={() => setIsCreateDialogOpen(false)}
-                      className="border-gray-600 text-gray-300 hover:bg-gray-700"
-                    >
-                      Cancel
-                    </Button>
-                    <Button
-                      type="submit"
-                      disabled={createAccountMutation.isPending}
-                      className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700"
-                    >
-                      {createAccountMutation.isPending ? 'Creating...' : 'Create Account'}
-                    </Button>
-                  </div>
+                    <div className="flex justify-end space-x-3 pt-4">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={() => setIsCreateDialogOpen(false)}
+                        className="border-gray-600 text-gray-300 hover:bg-gray-700"
+                      >
+                        Cancel
+                      </Button>
+                      <Button
+                        type="submit"
+                        disabled={createAccountMutation.isPending}
+                        className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700"
+                      >
+                        {createAccountMutation.isPending ? 'Creating...' : 'Create Account'}
+                      </Button>
+                    </div>
                   </form>
                 </Form>
               </div>
@@ -435,7 +443,6 @@ export default function AccountManagement() {
               <Wallet className="mx-auto h-16 w-16 text-gray-500 mb-4" />
               <h3 className="text-xl font-medium text-gray-300 mb-2">No Trading Accounts</h3>
               <p className="text-gray-500 mb-4">Create your first trading account to start tracking performance</p>
-
             </div>
           </div>
         ) : (
