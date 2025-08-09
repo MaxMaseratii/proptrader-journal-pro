@@ -311,8 +311,8 @@ export default function Dashboard() {
       primaryAsset: "",
       secondaryAsset: "",
       tertiaryAsset: "",
-      stopLossPoints: null,
-      takeProfitPoints: null,
+      // stopLossPoints: null, // Field doesn't exist in schema
+      // takeProfitPoints: null, // Field doesn't exist in schema
       minimumTradingDays: null,
       timeLimit: null,
       consistencyRulePercent: null,
@@ -328,7 +328,7 @@ export default function Dashboard() {
       dailyWorkingHours: null,
       hourlyWages: null,
       useIntradayMargins: true,
-      enhancedPayoutsAvailable: false,
+      // enhancedPayoutsAvailable: false, // Field doesn't exist in schema
       copyTradingAllowed: true,
       newsTradingAllowed: true,
       accountCost: null,
@@ -344,8 +344,8 @@ export default function Dashboard() {
       profitSplit: null,
       minimumPayoutAmount: null,
       maxNetBalanceForPayout: null,
-      allowScalpingStrategy: false,
-      allowGridMartingale: false
+      // allowScalpingStrategy: false, // Field doesn't exist in schema
+      // allowGridMartingale: false // Field doesn't exist in schema
     },
   });
 
@@ -354,7 +354,7 @@ export default function Dashboard() {
 
   // Account creation mutation
   const createAccountMutation = useMutation({
-    mutationFn: (data: InsertAccount) => apiRequest('/api/accounts', 'POST', data),
+    mutationFn: (data: any) => apiRequest('/api/accounts', 'POST', data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/accounts'] });
       setShowAccountModal(false);
@@ -832,14 +832,16 @@ export default function Dashboard() {
     queryKey: ["/api/trades"],
   });
 
-  const { data: journalEntries } = useQuery({
+  const { data: journalData } = useQuery({
     queryKey: ["/api/journal"],
   });
+  
+  const journalEntries = journalData || [];
 
   // Debug journal entries
   useEffect(() => {
     if (journalEntries) {
-      console.log('📚 Journal entries loaded:', journalEntries.length, journalEntries);
+      console.log('📚 Journal entries loaded:', journalEntries?.length || 0, journalEntries);
     }
   }, [journalEntries]);
 
@@ -1182,7 +1184,7 @@ export default function Dashboard() {
       const daysRequired = account.daysRequiredForPayout || 0;
       const winningDayMinimum = account.winningDayMinimum || 0;
       const minimumPayoutAmount = account.minimumPayoutAmount || 0;
-      const maxPayoutPercentage = account.maximumPayoutPercentage ? (account.maximumPayoutPercentage / 100) : 1;
+      const maxPayoutPercentage = account.maximumPayoutAllowed ? (account.maximumPayoutAllowed / 100) : 1;
       const profitSplit = account.profitSplit ? (account.profitSplit / 100) : 1;
       const bufferPercentage = account.bufferPercentage ? (account.bufferPercentage / 100) : 0;
       
@@ -1743,7 +1745,7 @@ export default function Dashboard() {
               <div className="bg-black/30 rounded-lg p-4 border border-gray-700/50 relative">
                 {combinedAnalytics && combinedAnalytics.accounts.length > 0 && (
                   <div className="absolute top-3 right-3 text-xs text-purple-300">
-                    {selectedDayData?.totalDayTrades || 0}/{combinedAnalytics.accounts[0]?.maxDailyTrades || 0}
+                    {selectedDayData?.totalDayTrades || 0}/{combinedAnalytics.accounts[0]?.maxTradesPerDay || 0}
                   </div>
                 )}
                 <div className="text-3xl font-bold text-purple-400 mb-1">
@@ -1753,7 +1755,7 @@ export default function Dashboard() {
                   <div 
                     className="h-1 rounded-full bg-purple-400 transition-all duration-500"
                     style={{ 
-                      width: `${Math.min((selectedDayData?.totalDayTrades || 0) / ((combinedAnalytics?.accounts[0]?.maxDailyTrades || 1)) * 100, 100)}%` 
+                      width: `${Math.min((selectedDayData?.totalDayTrades || 0) / ((combinedAnalytics?.accounts[0]?.maxTradesPerDay || 1)) * 100, 100)}%` 
                     }}
                   />
                 </div>
@@ -1848,7 +1850,7 @@ export default function Dashboard() {
                 </div>
                 <div className="text-3xl font-bold text-orange-400 mb-1">
                   {combinedAnalytics && combinedAnalytics.accounts.length > 0 
-                    ? Math.min((selectedDayData?.totalDayTrades || 0) / (combinedAnalytics.accounts[0]?.maxDailyTrades || 1) * 100, 100).toFixed(0)
+                    ? Math.min((selectedDayData?.totalDayTrades || 0) / (combinedAnalytics.accounts[0]?.maxTradesPerDay || 1) * 100, 100).toFixed(0)
                     : '0'}%
                 </div>
                 <div className="text-sm text-gray-400 mb-1">Risk Utilization</div>
@@ -2088,11 +2090,11 @@ export default function Dashboard() {
                     AVG
                   </div>
                   <div className="text-xl font-bold text-blue-400 mb-1">
-                    ${combinedAnalytics?.avgWin?.toFixed(0) || '0'}/${Math.abs(combinedAnalytics?.avgLoss || 0).toFixed(0)}
+                    ${(combinedAnalytics?.totalWinnings / (combinedAnalytics?.totalWins || 1) || 0).toFixed(0)}/${Math.abs(combinedAnalytics?.totalLosses / (combinedAnalytics?.totalLosses > 0 ? (combinedAnalytics?.totalTrades || 1) - (combinedAnalytics?.totalWins || 0) : 1) || 0).toFixed(0)}
                   </div>
                   <div className="text-xs text-gray-400">Avg Win/Loss</div>
                   <div className="text-xs text-blue-300 mt-1">
-                    Ratio: {(combinedAnalytics?.avgLoss || 0) !== 0 ? Math.abs((combinedAnalytics?.avgWin || 0) / (combinedAnalytics?.avgLoss || 1)).toFixed(1) : '∞'}:1
+                    Ratio: {(combinedAnalytics?.totalLosses || 0) !== 0 ? Math.abs((combinedAnalytics?.totalWinnings || 0) / (combinedAnalytics?.totalLosses || 1)).toFixed(1) : '∞'}:1
                   </div>
                 </div>
               </div>
