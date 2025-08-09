@@ -9,13 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Progress } from "@/components/ui/progress";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from "@/components/ui/dialog";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { insertAccountSchema, type InsertAccount } from "@shared/schema";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { EquityChart, MonthlyPerformanceChart } from "@/components/chart-components";
@@ -39,6 +33,7 @@ import { SimpleChart } from "@/components/tradingview/SimpleChart";
 import NotificationDropdown from "@/components/notification-dropdown";
 import UnrealizedProfitWidgets from "@/components/unrealized-profit-widgets";
 import TargetProgressWidget from "@/components/target-progress-widget";
+
 // Removed SocialShareButtons import to reduce bundle size - using inline ShareStats instead
 
 import { 
@@ -291,77 +286,13 @@ export default function Dashboard() {
 
 
   // Account creation modal state
-  const [showAccountModal, setShowAccountModal] = useState(false);
+
 
   // Account creation form
-  const accountForm = useForm<InsertAccount>({
-    resolver: zodResolver(insertAccountSchema.extend({
-      primaryAsset: insertAccountSchema.shape.primaryAsset,
-      secondaryAsset: insertAccountSchema.shape.secondaryAsset,
-      tertiaryAsset: insertAccountSchema.shape.tertiaryAsset,
-    })),
-    defaultValues: {
-      name: "",
-      firm: "",
-      type: "challenge",
-      status: "active",
-      startingBalance: 100000,
-      profitTarget: 10000,
-      maxDrawdown: 5000,
-      primaryAsset: "",
-      secondaryAsset: "",
-      tertiaryAsset: "",
-      // stopLossPoints: null, // Field doesn't exist in schema
-      // takeProfitPoints: null, // Field doesn't exist in schema
-      minimumTradingDays: null,
-      timeLimit: null,
-      consistencyRulePercent: null,
-      hasDailyLossLimit: false,
-      dailyLossLimitAmount: null,
-      dailyLossLimitType: null,
-      maxDrawdownType: null,
-      riskRewardRatio: 2.0,
-      maxTradesPerDay: null,
-      tradingSessionStart: null,
-      tradingSessionEnd: null,
-      timezone: null,
-      dailyWorkingHours: null,
-      hourlyWages: null,
-      useIntradayMargins: true,
-      // enhancedPayoutsAvailable: false, // Field doesn't exist in schema
-      copyTradingAllowed: true,
-      newsTradingAllowed: true,
-      accountCost: null,
-      activationCost: null,
-      purchaseMethod: null,
-      resetCount: 0,
-      totalResetsCost: null,
-      activationPaid: false,
-      includesActivationFee: false,
-      daysRequiredForPayout: null,
-      winningDayMinimum: null,
-      payoutFrequency: null,
-      profitSplit: null,
-      minimumPayoutAmount: null,
-      maxNetBalanceForPayout: null,
-      // allowScalpingStrategy: false, // Field doesn't exist in schema
-      // allowGridMartingale: false // Field doesn't exist in schema
-    },
-  });
 
-  // Watch form values for conditional rendering
-  const accountFormValues = accountForm.watch();
 
-  // Account creation mutation
-  const createAccountMutation = useMutation({
-    mutationFn: (data: any) => apiRequest('/api/accounts', 'POST', data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/accounts'] });
-      setShowAccountModal(false);
-      accountForm.reset();
-      // Show success message or toast here if needed
-    },
-  });
+  // Account creation removed - using unified component
+
 
   // Check if a date has journal entries
   const hasJournalEntry = (date: Date) => {
@@ -832,16 +763,14 @@ export default function Dashboard() {
     queryKey: ["/api/trades"],
   });
 
-  const { data: journalData } = useQuery({
+  const { data: journalEntries } = useQuery({
     queryKey: ["/api/journal"],
   });
-  
-  const journalEntries = journalData || [];
 
   // Debug journal entries
   useEffect(() => {
     if (journalEntries) {
-      console.log('📚 Journal entries loaded:', journalEntries?.length || 0, journalEntries);
+      console.log('📚 Journal entries loaded:', journalEntries.length, journalEntries);
     }
   }, [journalEntries]);
 
@@ -1184,7 +1113,7 @@ export default function Dashboard() {
       const daysRequired = account.daysRequiredForPayout || 0;
       const winningDayMinimum = account.winningDayMinimum || 0;
       const minimumPayoutAmount = account.minimumPayoutAmount || 0;
-      const maxPayoutPercentage = account.maximumPayoutAllowed ? (account.maximumPayoutAllowed / 100) : 1;
+      const maxPayoutPercentage = account.maximumPayoutPercentage ? (account.maximumPayoutPercentage / 100) : 1;
       const profitSplit = account.profitSplit ? (account.profitSplit / 100) : 1;
       const bufferPercentage = account.bufferPercentage ? (account.bufferPercentage / 100) : 0;
       
@@ -1382,12 +1311,10 @@ export default function Dashboard() {
                 </Button>
               </Link>
               <Button 
-                size="sm" 
-                className="bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white shadow-md hover:shadow-lg transition-all duration-200"
-                onClick={() => setShowAccountModal(true)}
+                className="bg-gradient-to-r from-yellow-400 to-yellow-600 text-black font-semibold hover:from-yellow-500 hover:to-yellow-700"
               >
-                <Plus className="mr-1 h-3 w-3" />
-                Account
+                <Plus className="w-4 h-4 mr-2" />
+                Create Account
               </Button>
               <Link href="/journal">
                 <Button 
@@ -1745,7 +1672,7 @@ export default function Dashboard() {
               <div className="bg-black/30 rounded-lg p-4 border border-gray-700/50 relative">
                 {combinedAnalytics && combinedAnalytics.accounts.length > 0 && (
                   <div className="absolute top-3 right-3 text-xs text-purple-300">
-                    {selectedDayData?.totalDayTrades || 0}/{combinedAnalytics.accounts[0]?.maxTradesPerDay || 0}
+                    {selectedDayData?.totalDayTrades || 0}/{combinedAnalytics.accounts[0]?.maxDailyTrades || 0}
                   </div>
                 )}
                 <div className="text-3xl font-bold text-purple-400 mb-1">
@@ -1755,7 +1682,7 @@ export default function Dashboard() {
                   <div 
                     className="h-1 rounded-full bg-purple-400 transition-all duration-500"
                     style={{ 
-                      width: `${Math.min((selectedDayData?.totalDayTrades || 0) / ((combinedAnalytics?.accounts[0]?.maxTradesPerDay || 1)) * 100, 100)}%` 
+                      width: `${Math.min((selectedDayData?.totalDayTrades || 0) / ((combinedAnalytics?.accounts[0]?.maxDailyTrades || 1)) * 100, 100)}%` 
                     }}
                   />
                 </div>
@@ -1850,7 +1777,7 @@ export default function Dashboard() {
                 </div>
                 <div className="text-3xl font-bold text-orange-400 mb-1">
                   {combinedAnalytics && combinedAnalytics.accounts.length > 0 
-                    ? Math.min((selectedDayData?.totalDayTrades || 0) / (combinedAnalytics.accounts[0]?.maxTradesPerDay || 1) * 100, 100).toFixed(0)
+                    ? Math.min((selectedDayData?.totalDayTrades || 0) / (combinedAnalytics.accounts[0]?.maxDailyTrades || 1) * 100, 100).toFixed(0)
                     : '0'}%
                 </div>
                 <div className="text-sm text-gray-400 mb-1">Risk Utilization</div>
@@ -2090,11 +2017,11 @@ export default function Dashboard() {
                     AVG
                   </div>
                   <div className="text-xl font-bold text-blue-400 mb-1">
-                    ${(combinedAnalytics?.totalWinnings / (combinedAnalytics?.totalWins || 1) || 0).toFixed(0)}/${Math.abs(combinedAnalytics?.totalLosses / (combinedAnalytics?.totalLosses > 0 ? (combinedAnalytics?.totalTrades || 1) - (combinedAnalytics?.totalWins || 0) : 1) || 0).toFixed(0)}
+                    ${combinedAnalytics?.avgWin?.toFixed(0) || '0'}/${Math.abs(combinedAnalytics?.avgLoss || 0).toFixed(0)}
                   </div>
                   <div className="text-xs text-gray-400">Avg Win/Loss</div>
                   <div className="text-xs text-blue-300 mt-1">
-                    Ratio: {(combinedAnalytics?.totalLosses || 0) !== 0 ? Math.abs((combinedAnalytics?.totalWinnings || 0) / (combinedAnalytics?.totalLosses || 1)).toFixed(1) : '∞'}:1
+                    Ratio: {(combinedAnalytics?.avgLoss || 0) !== 0 ? Math.abs((combinedAnalytics?.avgWin || 0) / (combinedAnalytics?.avgLoss || 1)).toFixed(1) : '∞'}:1
                   </div>
                 </div>
               </div>
@@ -3349,776 +3276,6 @@ export default function Dashboard() {
               </Button>
             </div>
           </div>
-        </DialogContent>
-      </Dialog>
-
-
-      {/* Comprehensive Account Creation Modal - 3 Tab Design */}
-      <Dialog open={showAccountModal} onOpenChange={setShowAccountModal}>
-        <DialogContent className="max-w-4xl w-[95vw] max-h-[90vh] bg-gray-900 border-gray-700 overflow-hidden">
-          <DialogHeader>
-            <DialogTitle className="text-white text-xl">Create New Trading Account</DialogTitle>
-            <DialogDescription className="text-gray-400">
-              Complete account setup with comprehensive trading rules, financial tracking, and risk management settings.
-            </DialogDescription>
-          </DialogHeader>
-          <ScrollArea className="max-h-[75vh] px-6">
-            <Form {...accountForm}>
-              <form onSubmit={accountForm.handleSubmit((data) => createAccountMutation.mutate(data))} className="space-y-6">
-                <Tabs defaultValue="basic" className="w-full">
-                  <TabsList className="grid w-full grid-cols-3 bg-gray-800">
-                    <TabsTrigger value="basic" className="text-white">Basic Info</TabsTrigger>
-                    <TabsTrigger value="financial" className="text-white">Financial</TabsTrigger>
-                    <TabsTrigger value="rules" className="text-white">Rules & Risk</TabsTrigger>
-                  </TabsList>
-
-                  {/* Basic Info Tab */}
-                  <TabsContent value="basic" className="space-y-6">
-                    <div className="grid grid-cols-2 gap-4">
-                      <FormField
-                        control={accountForm.control}
-                        name="name"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className="text-white">Account Name</FormLabel>
-                            <FormControl>
-                              <Input {...field} className="bg-gray-800 border-gray-600 text-white" placeholder="My Trading Account" />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={accountForm.control}
-                        name="firm"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className="text-white">Prop Firm</FormLabel>
-                            <FormControl>
-                              <Input {...field} className="bg-gray-800 border-gray-600 text-white" placeholder="FTMO, TopstepTrader, etc." />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-4">
-                      <FormField
-                        control={accountForm.control}
-                        name="type"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className="text-white">Account Type</FormLabel>
-                            <Select onValueChange={field.onChange} defaultValue={field.value}>
-                              <FormControl>
-                                <SelectTrigger className="bg-gray-800 border-gray-600 text-white">
-                                  <SelectValue placeholder="Select type" />
-                                </SelectTrigger>
-                              </FormControl>
-                              <SelectContent className="bg-gray-800 border-gray-600">
-                                <SelectItem value="challenge">Challenge</SelectItem>
-                                <SelectItem value="funded">Funded</SelectItem>
-                                <SelectItem value="live">Live</SelectItem>
-                                <SelectItem value="demo">Demo</SelectItem>
-                              </SelectContent>
-                            </Select>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={accountForm.control}
-                        name="status"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className="text-white">Account Status</FormLabel>
-                            <Select onValueChange={field.onChange} defaultValue={field.value}>
-                              <FormControl>
-                                <SelectTrigger className="bg-gray-800 border-gray-600 text-white">
-                                  <SelectValue placeholder="Select status" />
-                                </SelectTrigger>
-                              </FormControl>
-                              <SelectContent className="bg-gray-800 border-gray-600">
-                                <SelectItem value="active">Active</SelectItem>
-                                <SelectItem value="inactive">Inactive</SelectItem>
-                                <SelectItem value="pending">Pending</SelectItem>
-                              </SelectContent>
-                            </Select>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-
-                    <div className="grid grid-cols-3 gap-4">
-                      <FormField
-                        control={accountForm.control}
-                        name="startingBalance"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className="text-white">Starting Balance ($)</FormLabel>
-                            <FormControl>
-                              <Input {...field} type="number" step="0.01" className="bg-gray-800 border-gray-600 text-white" placeholder="25000" />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={accountForm.control}
-                        name="profitTarget"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className="text-white">Profit Target ($)</FormLabel>
-                            <FormControl>
-                              <Input {...field} type="number" step="0.01" className="bg-gray-800 border-gray-600 text-white" placeholder="2500" />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={accountForm.control}
-                        name="maxDrawdown"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className="text-white">Max Drawdown ($)</FormLabel>
-                            <FormControl>
-                              <Input {...field} type="number" step="0.01" className="bg-gray-800 border-gray-600 text-white" placeholder="2500" />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-
-                    <div className="grid grid-cols-3 gap-4">
-                      <FormField
-                        control={accountForm.control}
-                        name="minimumTradingDays"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className="text-white">Minimum Trading Days</FormLabel>
-                            <FormControl>
-                              <Input {...field} type="number" className="bg-gray-800 border-gray-600 text-white" placeholder="5" />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={accountForm.control}
-                        name="timeLimit"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className="text-white">Time Limit (days)</FormLabel>
-                            <FormControl>
-                              <Input {...field} type="number" className="bg-gray-800 border-gray-600 text-white" placeholder="30" />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={accountForm.control}
-                        name="consistencyRule"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className="text-white">Consistency Rule (%)</FormLabel>
-                            <FormControl>
-                              <Input {...field} type="number" step="0.01" className="bg-gray-800 border-gray-600 text-white" placeholder="50" />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-4">
-                      <FormField
-                        control={accountForm.control}
-                        name="drawdownType"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className="text-white">Drawdown Type</FormLabel>
-                            <Select onValueChange={field.onChange} defaultValue={field.value || 'trailing'}>
-                              <FormControl>
-                                <SelectTrigger className="bg-gray-800 border-gray-600 text-white">
-                                  <SelectValue placeholder="Select drawdown type" />
-                                </SelectTrigger>
-                              </FormControl>
-                              <SelectContent className="bg-gray-800 border-gray-600">
-                                <SelectItem value="trailing">Trailing</SelectItem>
-                                <SelectItem value="static">Static</SelectItem>
-                                <SelectItem value="balance_based">Balance Based</SelectItem>
-                              </SelectContent>
-                            </Select>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={accountForm.control}
-                        name="maxDrawdownType"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className="text-white">Max Drawdown Type</FormLabel>
-                            <Select onValueChange={field.onChange} defaultValue={field.value || 'EOD'}>
-                              <FormControl>
-                                <SelectTrigger className="bg-gray-800 border-gray-600 text-white">
-                                  <SelectValue placeholder="Select monitoring type" />
-                                </SelectTrigger>
-                              </FormControl>
-                              <SelectContent className="bg-gray-800 border-gray-600">
-                                <SelectItem value="EOD">End of Day (EOD)</SelectItem>
-                                <SelectItem value="real-time">Real-time</SelectItem>
-                                <SelectItem value="session_close">Session Close</SelectItem>
-                              </SelectContent>
-                            </Select>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-
-                    <FormField
-                      control={accountForm.control}
-                      name="hasDailyLossLimit"
-                      render={({ field }) => (
-                        <FormItem className="flex flex-row items-center space-x-3 space-y-0">
-                          <FormControl>
-                            <input
-                              type="checkbox"
-                              checked={field.value}
-                              onChange={field.onChange}
-                              className="w-4 h-4 text-blue-600 bg-gray-800 border-gray-600 rounded focus:ring-blue-500"
-                            />
-                          </FormControl>
-                          <FormLabel className="text-white">Has Daily Loss Limit</FormLabel>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </TabsContent>
-
-                  {/* Financial Tab */}
-                  <TabsContent value="financial" className="space-y-6">
-                    <div className="grid grid-cols-2 gap-4">
-                      <FormField
-                        control={accountForm.control}
-                        name="accountCost"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className="text-white">Account Cost ($)</FormLabel>
-                            <FormControl>
-                              <Input {...field} type="number" step="0.01" className="bg-gray-800 border-gray-600 text-white" placeholder="499" />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={accountForm.control}
-                        name="activationCost"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className="text-white">Activation Cost ($)</FormLabel>
-                            <FormControl>
-                              <Input {...field} type="number" step="0.01" className="bg-gray-800 border-gray-600 text-white" placeholder="175" />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-
-                    <FormField
-                      control={accountForm.control}
-                      name="purchaseMethod"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-white">Purchase Method</FormLabel>
-                          <Select onValueChange={field.onChange} defaultValue={field.value}>
-                            <FormControl>
-                              <SelectTrigger className="bg-gray-800 border-gray-600 text-white">
-                                <SelectValue placeholder="Select purchase method" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent className="bg-gray-800 border-gray-600">
-                              <SelectItem value="credit_card">Credit Card</SelectItem>
-                              <SelectItem value="paypal">PayPal</SelectItem>
-                              <SelectItem value="bank_transfer">Bank Transfer</SelectItem>
-                              <SelectItem value="crypto">Cryptocurrency</SelectItem>
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <div className="grid grid-cols-3 gap-4">
-                      <FormField
-                        control={accountForm.control}
-                        name="resetCount"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className="text-white">Reset Count</FormLabel>
-                            <FormControl>
-                              <Input {...field} type="number" className="bg-gray-800 border-gray-600 text-white" placeholder="0" />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={accountForm.control}
-                        name="totalResetsCost"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className="text-white">Total Resets Cost ($)</FormLabel>
-                            <FormControl>
-                              <Input {...field} type="number" step="0.01" className="bg-gray-800 border-gray-600 text-white" placeholder="0" />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={accountForm.control}
-                        name="profitSplit"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className="text-white">Profit Split (%)</FormLabel>
-                            <FormControl>
-                              <Input {...field} type="number" step="0.01" className="bg-gray-800 border-gray-600 text-white" placeholder="80" />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-4">
-                      <FormField
-                        control={accountForm.control}
-                        name="activationFeePaid"
-                        render={({ field }) => (
-                          <FormItem className="flex flex-row items-center space-x-3 space-y-0">
-                            <FormControl>
-                              <input
-                                type="checkbox"
-                                checked={field.value}
-                                onChange={field.onChange}
-                                className="w-4 h-4 text-blue-600 bg-gray-800 border-gray-600 rounded focus:ring-blue-500"
-                              />
-                            </FormControl>
-                            <FormLabel className="text-white">Activation Fee Paid</FormLabel>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={accountForm.control}
-                        name="includesActivationFee"
-                        render={({ field }) => (
-                          <FormItem className="flex flex-row items-center space-x-3 space-y-0">
-                            <FormControl>
-                              <input
-                                type="checkbox"
-                                checked={field.value}
-                                onChange={field.onChange}
-                                className="w-4 h-4 text-blue-600 bg-gray-800 border-gray-600 rounded focus:ring-blue-500"
-                              />
-                            </FormControl>
-                            <FormLabel className="text-white">Includes Activation Fee</FormLabel>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-                  </TabsContent>
-
-                  {/* Rules & Risk Tab */}
-                  <TabsContent value="rules" className="space-y-6">
-                    <div className="grid grid-cols-2 gap-4">
-                      <FormField
-                        control={accountForm.control}
-                        name="riskPerTrade"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className="text-white">Risk Per Trade ($)</FormLabel>
-                            <FormControl>
-                              <Input {...field} type="number" step="0.01" className="bg-gray-800 border-gray-600 text-white" placeholder="500" />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={accountForm.control}
-                        name="riskPerTradeDivider"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className="text-white">Risk Per Trade Divider</FormLabel>
-                            <FormControl>
-                              <Input {...field} type="number" step="0.01" className="bg-gray-800 border-gray-600 text-white" placeholder="5" />
-                            </FormControl>
-                            <FormMessage />
-                            <p className="text-xs text-gray-500">Helper: Max Drawdown ÷ Divider = Risk Per Trade</p>
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-
-                    <div className="grid grid-cols-3 gap-4">
-                      <FormField
-                        control={accountForm.control}
-                        name="dailyLossLimit"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className="text-white">Daily Loss Limit ($)</FormLabel>
-                            <FormControl>
-                              <Input {...field} type="number" step="0.01" className="bg-gray-800 border-gray-600 text-white" placeholder="1250" />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={accountForm.control}
-                        name="riskRewardRatio"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className="text-white">Risk:Reward Ratio (1:X)</FormLabel>
-                            <FormControl>
-                              <Input {...field} type="number" step="0.01" className="bg-gray-800 border-gray-600 text-white" placeholder="2" />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={accountForm.control}
-                        name="maxTradesPerDay"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className="text-white">Max Trades Per Day</FormLabel>
-                            <FormControl>
-                              <Input {...field} type="number" className="bg-gray-800 border-gray-600 text-white" placeholder="10" />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-4">
-                      <FormField
-                        control={accountForm.control}
-                        name="maxRiskPerDay"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className="text-white">Max Risk Per Day ($)</FormLabel>
-                            <FormControl>
-                              <Input {...field} type="number" step="0.01" className="bg-gray-800 border-gray-600 text-white" placeholder="2500" />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={accountForm.control}
-                        name="stopLoss"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className="text-white">Stop Loss (Points/Pips)</FormLabel>
-                            <FormControl>
-                              <Input {...field} type="number" step="0.01" className="bg-gray-800 border-gray-600 text-white" placeholder="20" />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-
-                    <div className="grid grid-cols-3 gap-4">
-                      <FormField
-                        control={accountForm.control}
-                        name="primaryAsset"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className="text-white">Primary Asset</FormLabel>
-                            <FormControl>
-                              <Input {...field} className="bg-gray-800 border-gray-600 text-white" placeholder="ES (S&P 500)" />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={accountForm.control}
-                        name="secondaryAsset"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className="text-white">Secondary Asset</FormLabel>
-                            <FormControl>
-                              <Input {...field} className="bg-gray-800 border-gray-600 text-white" placeholder="NQ (NASDAQ)" />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={accountForm.control}
-                        name="tertiaryAsset"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className="text-white">Tertiary Asset</FormLabel>
-                            <FormControl>
-                              <Input {...field} className="bg-gray-800 border-gray-600 text-white" placeholder="CL (Oil)" />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-
-                    {/* Personal Trading Time Section */}
-                    <div className="space-y-4 border-t border-gray-600 pt-6">
-                      <h4 className="text-white font-semibold mb-4">Personal Trading Time</h4>
-                      
-                      {/* Time Slot 1 */}
-                      <div className="space-y-2">
-                        <h5 className="text-gray-300 text-sm">Time Slot 1 (Primary)</h5>
-                        <div className="grid grid-cols-3 gap-4">
-                          <FormField
-                            control={accountForm.control}
-                            name="timeSlot1Start"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel className="text-white">Start Time</FormLabel>
-                                <FormControl>
-                                  <Input {...field} type="time" className="bg-gray-800 border-gray-600 text-white" />
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-                          <FormField
-                            control={accountForm.control}
-                            name="timeSlot1End"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel className="text-white">End Time</FormLabel>
-                                <FormControl>
-                                  <Input {...field} type="time" className="bg-gray-800 border-gray-600 text-white" />
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-                          <FormField
-                            control={accountForm.control}
-                            name="timeSlot1Timezone"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel className="text-white">Timezone</FormLabel>
-                                <FormControl>
-                                  <Input {...field} className="bg-gray-800 border-gray-600 text-white" placeholder="EST" />
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-                        </div>
-                      </div>
-
-                      {/* Time Slot 2 */}
-                      <div className="space-y-2">
-                        <h5 className="text-gray-300 text-sm">Time Slot 2 (Secondary)</h5>
-                        <div className="grid grid-cols-3 gap-4">
-                          <FormField
-                            control={accountForm.control}
-                            name="timeSlot2Start"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel className="text-white">Start Time</FormLabel>
-                                <FormControl>
-                                  <Input {...field} type="time" className="bg-gray-800 border-gray-600 text-white" />
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-                          <FormField
-                            control={accountForm.control}
-                            name="timeSlot2End"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel className="text-white">End Time</FormLabel>
-                                <FormControl>
-                                  <Input {...field} type="time" className="bg-gray-800 border-gray-600 text-white" />
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-                          <FormField
-                            control={accountForm.control}
-                            name="timeSlot2Timezone"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel className="text-white">Timezone</FormLabel>
-                                <FormControl>
-                                  <Input {...field} className="bg-gray-800 border-gray-600 text-white" placeholder="EST" />
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-                        </div>
-                      </div>
-
-                      {/* Time Slot 3 */}
-                      <div className="space-y-2">
-                        <h5 className="text-gray-300 text-sm">Time Slot 3 (Tertiary)</h5>
-                        <div className="grid grid-cols-3 gap-4">
-                          <FormField
-                            control={accountForm.control}
-                            name="timeSlot3Start"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel className="text-white">Start Time</FormLabel>
-                                <FormControl>
-                                  <Input {...field} type="time" className="bg-gray-800 border-gray-600 text-white" />
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-                          <FormField
-                            control={accountForm.control}
-                            name="timeSlot3End"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel className="text-white">End Time</FormLabel>
-                                <FormControl>
-                                  <Input {...field} type="time" className="bg-gray-800 border-gray-600 text-white" />
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-                          <FormField
-                            control={accountForm.control}
-                            name="timeSlot3Timezone"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel className="text-white">Timezone</FormLabel>
-                                <FormControl>
-                                  <Input {...field} className="bg-gray-800 border-gray-600 text-white" placeholder="EST" />
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Bottom Fields */}
-                    <div className="grid grid-cols-2 gap-4 border-t border-gray-600 pt-4">
-                      <FormField
-                        control={accountForm.control}
-                        name="dailyWorkingHours"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className="text-white">Daily Working Hours</FormLabel>
-                            <FormControl>
-                              <Input {...field} type="number" step="0.1" className="bg-gray-800 border-gray-600 text-white" placeholder="8.0" />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={accountForm.control}
-                        name="hourlyWages"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className="text-white">Hourly Wages ($)</FormLabel>
-                            <FormControl>
-                              <Input {...field} type="number" step="0.01" className="bg-gray-800 border-gray-600 text-white" placeholder="25.00" />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-4">
-                      <FormField
-                        control={accountForm.control}
-                        name="useIntradayMargins"
-                        render={({ field }) => (
-                          <FormItem className="flex flex-row items-center space-x-3 space-y-0">
-                            <FormControl>
-                              <input
-                                type="checkbox"
-                                checked={field.value}
-                                onChange={field.onChange}
-                                className="w-4 h-4 text-blue-600 bg-gray-800 border-gray-600 rounded focus:ring-blue-500"
-                              />
-                            </FormControl>
-                            <FormLabel className="text-white">Live Trading Account Available</FormLabel>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={accountForm.control}
-                        name="enhancedPayoutsAvailable"
-                        render={({ field }) => (
-                          <FormItem className="flex flex-row items-center space-x-3 space-y-0">
-                            <FormControl>
-                              <input
-                                type="checkbox"
-                                checked={field.value}
-                                onChange={field.onChange}
-                                className="w-4 h-4 text-blue-600 bg-gray-800 border-gray-600 rounded focus:ring-blue-500"
-                              />
-                            </FormControl>
-                            <FormLabel className="text-white">Challenge Payouts Available</FormLabel>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-                  </TabsContent>
-                </Tabs>
-
-                {/* Form Actions */}
-                <div className="flex justify-end space-x-4 pt-6 border-t border-gray-600">
-                  <Button 
-                    type="button" 
-                    variant="outline" 
-                    onClick={() => setShowAccountModal(false)}
-                    className="border-gray-600 text-gray-300 hover:bg-gray-700"
-                  >
-                    Cancel
-                  </Button>
-                  <Button 
-                    type="submit" 
-                    disabled={createAccountMutation.isPending}
-                    className="bg-gradient-to-r from-yellow-500 to-amber-600 hover:from-yellow-600 hover:to-amber-700 text-black font-semibold"
-                  >
-                    {createAccountMutation.isPending ? "Creating Account..." : "Create Account"}
-                  </Button>
-                </div>
-              </form>
-            </Form>
-          </ScrollArea>
         </DialogContent>
       </Dialog>
     </>
