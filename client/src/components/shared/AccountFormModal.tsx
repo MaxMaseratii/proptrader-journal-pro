@@ -400,6 +400,77 @@ export default function AccountFormModal({ isOpen, onClose }: AccountFormModalPr
                     {errors.maxDrawdown && <p className="text-red-400 text-sm">{errors.maxDrawdown}</p>}
                   </div>
                 </div>
+
+                <div className="grid grid-cols-3 gap-4">
+                  <div className="space-y-2">
+                    <Label className="text-white">Minimum Trading Days</Label>
+                    <Input 
+                      type="number" 
+                      value={formData.minimumTradingDays || ""}
+                      onChange={(e) => updateField('minimumTradingDays', parseFloat(e.target.value) || null)}
+                      className="bg-gray-800 border-gray-600 text-white" 
+                      placeholder="5"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-white">Time Limit (days)</Label>
+                    <Input 
+                      type="number" 
+                      value={formData.timeLimit || ""}
+                      onChange={(e) => updateField('timeLimit', parseFloat(e.target.value) || null)}
+                      className="bg-gray-800 border-gray-600 text-white" 
+                      placeholder="30"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-white">Consistency Rule (%)</Label>
+                    <Input 
+                      type="number" 
+                      value={formData.consistencyPercentage || ""}
+                      onChange={(e) => updateField('consistencyPercentage', parseFloat(e.target.value) || null)}
+                      className="bg-gray-800 border-gray-600 text-white" 
+                      placeholder="50"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label className="text-white">Drawdown Type</Label>
+                    <Select onValueChange={(value) => updateField('drawdownType', value)} value={formData.drawdownType}>
+                      <SelectTrigger className="bg-gray-800 border-gray-600 text-white">
+                        <SelectValue placeholder="Trailing" />
+                      </SelectTrigger>
+                      <SelectContent className="bg-gray-800 border-gray-600">
+                        <SelectItem value="trailing">Trailing</SelectItem>
+                        <SelectItem value="static">Static</SelectItem>
+                        <SelectItem value="balance_based">Balance Based</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-white">Max Drawdown Type</Label>
+                    <Select onValueChange={(value) => updateField('maxDrawdownType', value)} value={formData.maxDrawdownType}>
+                      <SelectTrigger className="bg-gray-800 border-gray-600 text-white">
+                        <SelectValue placeholder="End of Day (EOD)" />
+                      </SelectTrigger>
+                      <SelectContent className="bg-gray-800 border-gray-600">
+                        <SelectItem value="eod">End of Day (EOD)</SelectItem>
+                        <SelectItem value="realtime">Real-time</SelectItem>
+                        <SelectItem value="session_close">Session Close</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    checked={formData.hasDailyLossLimit}
+                    onCheckedChange={(checked) => updateField('hasDailyLossLimit', checked)}
+                    className="border-gray-600 data-[state=checked]:bg-blue-600"
+                  />
+                  <Label className="text-white">Has Daily Loss Limit</Label>
+                </div>
               </TabsContent>
 
               {/* Financial Tab */}
