@@ -387,19 +387,20 @@ export default function AccountManagement() {
                 Create Account
               </Button>
             </DialogTrigger>
-            <DialogContent className="max-w-5xl w-full max-h-[95vh] bg-gradient-to-br from-gray-900 via-gray-800 to-black border border-yellow-400/20 flex flex-col">
-              <DialogHeader className="flex-shrink-0 pb-4 border-b border-gray-700">
-                <DialogTitle className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-yellow-600">
-                  Create New Trading Account
-                </DialogTitle>
-                <DialogDescription className="text-gray-400">
-                  Set up a comprehensive trading account with your financial goals, risk parameters, and trading preferences.
-                </DialogDescription>
-              </DialogHeader>
-              
-              <div className="flex-1 overflow-y-auto p-1">
-                <Form {...form}>
-                  <form id="create-account-form" onSubmit={form.handleSubmit(handleCreateAccount)} className="space-y-6">
+            <DialogContent className="sm:max-w-4xl max-h-[90vh] overflow-hidden bg-gradient-to-br from-gray-900 via-gray-800 to-black border border-yellow-400/20">
+              <div className="flex flex-col h-full max-h-[85vh]">
+                <DialogHeader className="flex-shrink-0 pb-4 border-b border-gray-700">
+                  <DialogTitle className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-yellow-600">
+                    Create New Trading Account
+                  </DialogTitle>
+                  <DialogDescription className="text-gray-400">
+                    Set up a comprehensive trading account with your financial goals, risk parameters, and trading preferences.
+                  </DialogDescription>
+                </DialogHeader>
+                
+                <div className="flex-1 overflow-y-auto py-4">
+                  <Form {...form}>
+                    <form id="create-account-form" onSubmit={form.handleSubmit(handleCreateAccount)} className="space-y-6">
                     <Tabs defaultValue="basic" className="w-full">
                       <TabsList className="grid w-full grid-cols-3 bg-gray-800/50">
                         <TabsTrigger value="basic" className="data-[state=active]:bg-yellow-500 data-[state=active]:text-black">
@@ -1356,6 +1357,7 @@ export default function AccountManagement() {
                 >
                   {createAccountMutation.isPending ? 'Creating...' : 'Create Account'}
                 </Button>
+              </div>
               </div>
             </DialogContent>
           </Dialog>
