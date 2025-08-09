@@ -87,63 +87,79 @@ function PropTraderHeader() {
 export default function Welcome() {
   const [, setLocation] = useLocation();
 
-  // Original brand features with prop firm focus
+  // Enhanced features with powerful descriptions and brand colors
   const features = [
     {
       icon: Brain,
-      title: "Mental Fitness Check",
-      description: "Pre-session psychology assessment with 4 professional trading metrics and 40-point scoring system.",
-      color: "text-teal-600",
-      gradient: "from-teal-500/20 to-cyan-500/20"
+      title: "Pre-Session Mental Fitness",
+      description: "85% readiness score with Focus Level, Emotional Control, and Confidence metrics. Never trade unprepared again.",
+      color: "text-yellow-500",
+      gradient: "from-yellow-400/30 to-amber-500/30",
+      bgGradient: "from-yellow-50 to-amber-50",
+      iconBg: "from-yellow-400 to-amber-500"
     },
     {
       icon: Calendar,
-      title: "Daily Trading Plan",
-      description: "Comprehensive planning system with strategy creation, real-time tracking, and performance analysis.",
-      color: "text-green-600", 
-      gradient: "from-green-500/20 to-emerald-500/20"
+      title: "Daily Trading Blueprint",
+      description: "Live session tracking with strategy execution, real-time progress monitoring, and profit target management.",
+      color: "text-teal-600", 
+      gradient: "from-teal-400/30 to-cyan-500/30",
+      bgGradient: "from-teal-50 to-cyan-50",
+      iconBg: "from-teal-500 to-cyan-600"
     },
     {
       icon: Target,
-      title: "Target Projections",
-      description: "Advanced profit target calculator based on R:R ratios with account simulation and locked projections.",
-      color: "text-yellow-600",
-      gradient: "from-yellow-500/20 to-amber-500/20"
+      title: "Profit Target Calculator",
+      description: "Account-based simulations with R:R optimization, compounding effects, and locked projection system for consistent results.",
+      color: "text-green-600",
+      gradient: "from-green-400/30 to-emerald-500/30",
+      bgGradient: "from-green-50 to-emerald-50",
+      iconBg: "from-green-500 to-emerald-600"
     },
     {
       icon: DollarSign,
-      title: "Prop Spending & Payout",
-      description: "Complete expense tracking with category budgeting, receipt uploads, and payout eligibility monitoring.",
-      color: "text-teal-600",
-      gradient: "from-teal-500/20 to-cyan-500/20"
+      title: "Prop Firm Spending Hub",
+      description: "Complete payout eligibility tracking, expense categorization, receipt management, and funding cost analysis.",
+      color: "text-yellow-500",
+      gradient: "from-yellow-400/30 to-amber-500/30",
+      bgGradient: "from-yellow-50 to-amber-50",
+      iconBg: "from-yellow-400 to-amber-500"
     },
     {
-      icon: BookOpen,
-      title: "Risk-Integrated Journal",
-      description: "AI-powered trading journal with Marthy assistant, discipline analysis, and behavioral pattern detection.",
-      color: "text-green-600",
-      gradient: "from-green-500/20 to-emerald-500/20"
+      icon: MessageSquare,
+      title: "AI Trading Coach (Marthy)",
+      description: "24/7 intelligent assistant with behavioral analysis, risk management coaching, and personalized trading insights.",
+      color: "text-teal-600",
+      gradient: "from-teal-400/30 to-cyan-500/30",
+      bgGradient: "from-teal-50 to-cyan-50",
+      iconBg: "from-teal-500 to-cyan-600"
     },
     {
       icon: BarChart3,
-      title: "Performance vs Plan",
-      description: "Real-time comparison of actual performance against daily plans with detailed variance analysis.",
-      color: "text-yellow-600",
-      gradient: "from-yellow-500/20 to-amber-500/20"
+      title: "Performance Analytics",
+      description: "Advanced analytics comparing actual vs planned performance with discipline scoring and improvement recommendations.",
+      color: "text-green-600",
+      gradient: "from-green-400/30 to-emerald-500/30",
+      bgGradient: "from-green-50 to-emerald-50",
+      iconBg: "from-green-500 to-emerald-600"
     },
     {
       icon: Bell,
-      title: "Prop Trader News",
-      description: "Curated economic calendar and news feed specifically focused on prop trading opportunities.",
-      color: "text-teal-600",
-      gradient: "from-teal-500/20 to-cyan-500/20"
+      title: "Economic Calendar Pro",
+      description: "High-impact news alerts, prop trading opportunities, and market event scheduling tailored for funded traders.",
+      color: "text-yellow-500",
+      gradient: "from-yellow-400/30 to-amber-500/30",
+      bgGradient: "from-yellow-50 to-amber-50",
+      iconBg: "from-yellow-400 to-amber-500"
     },
     {
       icon: Settings,
-      title: "Strategy Builder",
-      description: "Create, test, and share trading strategies with community collaboration and performance tracking.",
-      color: "text-green-600",
-      gradient: "from-green-500/20 to-emerald-500/20"
+      title: "Strategy Builder & Share",
+      description: "Create custom trading strategies, backtest performance, share with community, and track rule adherence.",
+      color: "text-teal-600",
+      gradient: "from-teal-400/30 to-cyan-500/30",
+      bgGradient: "from-teal-50 to-cyan-50",
+      iconBg: "from-teal-500 to-cyan-600"
     }
   ];
 
@@ -330,18 +346,19 @@ export default function Welcome() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {features.map((feature, index) => (
-              <Card key={index} className="group hover:shadow-2xl transition-all duration-500 border-0 bg-white shadow-lg hover:scale-105">
+              <Card key={index} className={`group hover:shadow-2xl transition-all duration-500 border-0 shadow-lg hover:scale-105 bg-gradient-to-br ${feature.bgGradient} hover:shadow-${feature.color.split('-')[1]}-500/25`}>
                 <div className={`absolute inset-0 bg-gradient-to-br ${feature.gradient} opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-lg`} />
                 <CardHeader className="relative text-center">
-                  <div className="w-16 h-16 mx-auto bg-gradient-to-br from-gray-100 to-gray-200 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
-                    <feature.icon className={`h-8 w-8 ${feature.color}`} />
+                  <div className={`w-16 h-16 mx-auto bg-gradient-to-br ${feature.iconBg} rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300 shadow-lg`}>
+                    <feature.icon className="h-8 w-8 text-white drop-shadow-sm" />
                   </div>
-                  <CardTitle className="text-lg font-bold text-gray-900">{feature.title}</CardTitle>
+                  <CardTitle className="text-lg font-bold text-gray-900 group-hover:text-gray-800">{feature.title}</CardTitle>
                 </CardHeader>
                 <CardContent className="relative">
-                  <p className="text-gray-600 text-sm text-center leading-relaxed">
+                  <p className="text-gray-700 text-sm text-center leading-relaxed font-medium group-hover:text-gray-800">
                     {feature.description}
                   </p>
+                  <div className={`mt-4 w-full h-1 bg-gradient-to-r ${feature.iconBg} rounded-full opacity-60 group-hover:opacity-100 transition-opacity duration-300`}></div>
                 </CardContent>
               </Card>
             ))}
@@ -349,19 +366,26 @@ export default function Welcome() {
         </div>
       </section>
 
-      {/* Pricing Section - Original Card Design */}
-      <section id="pricing" className="py-20 bg-gradient-to-br from-black to-gray-900">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      {/* Pricing Section - Enhanced Design */}
+      <section id="pricing" className="py-20 bg-gradient-to-br from-black via-gray-900 to-teal-900 relative overflow-hidden">
+        {/* Animated background elements */}
+        <div className="absolute inset-0">
+          <div className="absolute top-10 left-10 w-40 h-40 bg-gradient-to-br from-yellow-400/10 to-amber-500/10 rounded-full blur-3xl animate-pulse"></div>
+          <div className="absolute bottom-10 right-10 w-32 h-32 bg-gradient-to-br from-teal-400/10 to-cyan-500/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
+          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-48 h-48 bg-gradient-to-br from-green-400/10 to-emerald-500/10 rounded-full blur-3xl animate-pulse delay-500"></div>
+        </div>
+        
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <Badge className="mb-4 bg-gradient-to-r from-green-500 to-emerald-600 text-white font-bold">
-              <DollarSign className="w-4 h-4 mr-2" />
-              Launch Special - 40% Off
+            <Badge className="mb-4 bg-gradient-to-r from-green-500 to-emerald-600 text-white font-bold py-2 px-6 text-lg shadow-xl">
+              <DollarSign className="w-5 h-5 mr-2" />
+              🎯 Launch Special - 40% Off Limited Time
             </Badge>
             <h2 className="text-4xl sm:text-5xl font-bold text-white mb-6">
               Transparent <span className="bg-gradient-to-r from-yellow-400 to-amber-500 bg-clip-text text-transparent">Pricing</span>
             </h2>
             <p className="text-xl text-gray-300 max-w-3xl mx-auto">
-              All plans include 14-day free trial. Cancel anytime. Built for prop traders by prop traders.
+              💪 All plans include 14-day free trial. Cancel anytime. Built for prop traders by prop traders.
             </p>
           </div>
 
@@ -369,10 +393,10 @@ export default function Welcome() {
             {pricingPlans.map((plan, index) => (
               <Card
                 key={index}
-                className={`relative overflow-hidden ${
+                className={`relative overflow-hidden transform transition-all duration-500 hover:scale-105 ${
                   plan.popular
-                    ? 'border-4 border-yellow-400 shadow-2xl scale-105 bg-gradient-to-br from-gray-900 to-black'
-                    : 'border border-gray-700 bg-gray-900'
+                    ? 'border-0 shadow-2xl scale-105 bg-gradient-to-br from-yellow-400/20 via-amber-500/20 to-orange-500/20 backdrop-blur-sm border-4 border-yellow-400/50'
+                    : 'border border-gray-600 hover:shadow-xl bg-gray-800/80 backdrop-blur-sm hover:border-teal-400/50'
                 }`}
               >
                 {plan.popular && (
@@ -471,11 +495,11 @@ export default function Welcome() {
       </section>
 
       {/* Footer */}
-      <footer className="bg-black text-white py-12">
+      <footer className="bg-gradient-to-br from-black via-gray-900 to-black text-white py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <div className="flex items-center justify-center space-x-3 mb-6">
-              <div className="w-12 h-12 bg-gradient-to-br from-yellow-400 to-amber-500 rounded-xl flex items-center justify-center">
+              <div className="w-12 h-12 bg-gradient-to-br from-yellow-400 to-amber-500 rounded-xl flex items-center justify-center shadow-xl">
                 <Crown className="w-7 h-7 text-black" />
               </div>
               <span className="text-2xl font-bold">
@@ -485,8 +509,8 @@ export default function Welcome() {
             <p className="text-gray-400 mb-8">
               The elite trading journal for prop firm traders. Master discipline, maximize profits.
             </p>
-            <div className="border-t border-gray-800 pt-8">
-              <p className="text-gray-500">
+            <div className="border-t border-gradient-to-r from-transparent via-yellow-400/30 to-transparent pt-8">
+              <p className="bg-gradient-to-r from-yellow-400 via-amber-500 to-yellow-600 bg-clip-text text-transparent font-bold text-lg">
                 © 2025 PropTraderJournal. All rights reserved.
               </p>
             </div>
