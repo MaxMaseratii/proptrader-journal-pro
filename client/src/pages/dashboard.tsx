@@ -2690,13 +2690,7 @@ export default function Dashboard() {
               </h2>
               <p className="text-sm text-gray-400">Account status, discipline scores, and portfolio overview</p>
             </div>
-            <Button 
-              className="bg-gradient-to-r from-amber-500 to-amber-600 text-black font-semibold hover:from-amber-400 hover:to-amber-500 flex items-center gap-2"
-              onClick={() => setShowAccountModal(true)}
-            >
-              <Plus className="w-4 h-4" />
-              Add Account
-            </Button>
+
           </div>
           
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
