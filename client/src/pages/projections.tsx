@@ -13,7 +13,7 @@ import { useToast } from "@/hooks/use-toast";
 import { formatCurrency, formatDate } from "@/lib/utils";
 import type { Account, Trade } from "@shared/schema";
 import AccountManagement from "@/components/account-management";
-import AccountFormModal from "@/components/shared/AccountFormModal";
+
 import { 
   Target, 
   TrendingUp, 
@@ -344,9 +344,7 @@ export default function Projections() {
           <p className="text-gray-400">Manage your trading accounts and project future performance</p>
         </div>
         
-        <div className="flex gap-2">
-          <AccountFormModal />
-        </div>
+
       </div>
 
       {/* Enhanced PropFirms Accounts Section */}
@@ -1027,8 +1025,7 @@ export default function Projections() {
           </div>
         </div>
 
-        {/* Just the button - no modal */}
-        <AccountFormModal />
+
       </div>
     );
   }
