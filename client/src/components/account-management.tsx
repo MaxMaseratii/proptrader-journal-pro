@@ -13,7 +13,6 @@ import { formatCurrency } from "@/lib/utils";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import type { Account, Trade } from "@shared/schema";
-import AccountFormModal from "@/components/shared/AccountFormModal";
 
 // Function to trigger congratulations banner
 const triggerCongratulationsBanner = (accountName: string, type: 'funded' | 'live') => {
@@ -1385,11 +1384,30 @@ export default function AccountManagement({ accounts }: AccountManagementProps) 
         </Card>
       ))}
       
-      {/* Account Form Modal */}
-      <AccountFormModal 
-        isOpen={isCreateAccountDialogOpen}
-        onClose={() => setIsCreateAccountDialogOpen(false)}
-      />
+      {/* Account Creation Dialog - Copy exact form from projections.tsx */}
+      <Dialog open={isCreateAccountDialogOpen} onOpenChange={setIsCreateAccountDialogOpen}>
+        <DialogContent className="max-w-4xl max-h-[90vh] bg-gray-900 border-gray-700">
+          <DialogHeader>
+            <DialogTitle className="text-white text-xl">Create New Trading Account</DialogTitle>
+            <DialogDescription className="text-gray-400">
+              Set up a new trading account with proper risk management and financial tracking.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 p-6">
+            <div className="text-center">
+              <p className="text-gray-400">
+                Account creation form will be implemented here to match the Account Management & Projections page.
+              </p>
+              <Button 
+                onClick={() => setIsCreateAccountDialogOpen(false)}
+                className="mt-4 bg-gray-600 hover:bg-gray-700 text-white"
+              >
+                Close for Now
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

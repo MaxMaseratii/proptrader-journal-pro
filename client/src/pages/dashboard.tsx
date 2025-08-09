@@ -33,7 +33,6 @@ import { SimpleChart } from "@/components/tradingview/SimpleChart";
 import NotificationDropdown from "@/components/notification-dropdown";
 import UnrealizedProfitWidgets from "@/components/unrealized-profit-widgets";
 import TargetProgressWidget from "@/components/target-progress-widget";
-import AccountFormModal from "@/components/shared/AccountFormModal";
 
 // Removed SocialShareButtons import to reduce bundle size - using inline ShareStats instead
 
@@ -270,9 +269,6 @@ export default function Dashboard() {
     start.setDate(today.getDate() - daysToSubtract);
     return start;
   });
-
-  // Add account modal state
-  const [isAccountModalOpen, setIsAccountModalOpen] = useState(false);
 
   // FIXED: Add missing clearDaySelection function
   const clearDaySelection = () => {
@@ -2696,7 +2692,7 @@ export default function Dashboard() {
             </div>
             <Button 
               className="bg-gradient-to-r from-amber-500 to-amber-600 text-black font-semibold hover:from-amber-400 hover:to-amber-500 flex items-center gap-2"
-              onClick={() => setIsAccountModalOpen(true)}
+              onClick={() => setShowAccountModal(true)}
             >
               <Plus className="w-4 h-4" />
               Add Account
@@ -3282,12 +3278,6 @@ export default function Dashboard() {
           </div>
         </DialogContent>
       </Dialog>
-
-      {/* Account Form Modal */}
-      <AccountFormModal 
-        isOpen={isAccountModalOpen}
-        onClose={() => setIsAccountModalOpen(false)}
-      />
     </>
   );
 }

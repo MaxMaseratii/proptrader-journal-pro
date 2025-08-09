@@ -73,7 +73,7 @@ interface ProjectionDay {
 
 export default function Projections() {
   const { toast } = useToast();
-  const [isAccountModalOpen, setIsAccountModalOpen] = useState(false);
+
   const [isAccountsMinimized, setIsAccountsMinimized] = useState(false);
   const [isModifyingPlan, setIsModifyingPlan] = useState(false);
   const [modifyingProjectionId, setModifyingProjectionId] = useState<number | null>(null);
@@ -345,13 +345,7 @@ export default function Projections() {
         </div>
         
         <div className="flex gap-2">
-          <Button 
-            onClick={() => setIsAccountModalOpen(true)}
-            className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white"
-          >
-            <Plus className="h-4 w-4 mr-2" />
-            Add Account
-          </Button>
+          <AccountFormModal />
         </div>
       </div>
 
@@ -1033,11 +1027,8 @@ export default function Projections() {
           </div>
         </div>
 
-        {/* Account Form Modal */}
-        <AccountFormModal 
-          isOpen={isAccountModalOpen}
-          onClose={() => setIsAccountModalOpen(false)}
-        />
+        {/* Just the button - no modal */}
+        <AccountFormModal />
       </div>
     );
   }
