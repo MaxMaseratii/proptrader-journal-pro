@@ -387,8 +387,8 @@ export default function AccountManagement() {
                 Create Account
               </Button>
             </DialogTrigger>
-            <DialogContent className="max-w-4xl max-h-[90vh] bg-gradient-to-br from-gray-900 via-gray-800 to-black border border-yellow-400/20 overflow-hidden">
-              <DialogHeader>
+            <DialogContent className="max-w-5xl w-full max-h-[95vh] bg-gradient-to-br from-gray-900 via-gray-800 to-black border border-yellow-400/20 flex flex-col">
+              <DialogHeader className="flex-shrink-0 pb-4 border-b border-gray-700">
                 <DialogTitle className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-yellow-600">
                   Create New Trading Account
                 </DialogTitle>
@@ -397,9 +397,9 @@ export default function AccountManagement() {
                 </DialogDescription>
               </DialogHeader>
               
-              <div className="h-[70vh] overflow-y-auto pr-2">
+              <div className="flex-1 overflow-y-auto p-1">
                 <Form {...form}>
-                  <form onSubmit={form.handleSubmit(handleCreateAccount)} className="space-y-6">
+                  <form id="create-account-form" onSubmit={form.handleSubmit(handleCreateAccount)} className="space-y-6">
                     <Tabs defaultValue="basic" className="w-full">
                       <TabsList className="grid w-full grid-cols-3 bg-gray-800/50">
                         <TabsTrigger value="basic" className="data-[state=active]:bg-yellow-500 data-[state=active]:text-black">
@@ -1334,26 +1334,28 @@ export default function AccountManagement() {
                       </TabsContent>
                     </Tabs>
 
-                    {/* Form Actions */}
-                    <div className="flex justify-end space-x-3 pt-6 border-t border-gray-700">
-                      <Button
-                        type="button"
-                        variant="outline"
-                        onClick={() => setIsCreateDialogOpen(false)}
-                        className="border-gray-600 text-gray-300 hover:bg-gray-700"
-                      >
-                        Cancel
-                      </Button>
-                      <Button
-                        type="submit"
-                        disabled={createAccountMutation.isPending}
-                        className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700"
-                      >
-                        {createAccountMutation.isPending ? 'Creating...' : 'Create Account'}
-                      </Button>
-                    </div>
                   </form>
                 </Form>
+              </div>
+              
+              {/* Form Actions - Fixed at bottom */}
+              <div className="flex-shrink-0 flex justify-end space-x-3 pt-4 border-t border-gray-700 bg-gradient-to-br from-gray-900 via-gray-800 to-black">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setIsCreateDialogOpen(false)}
+                  className="border-gray-600 text-gray-300 hover:bg-gray-700"
+                >
+                  Cancel
+                </Button>
+                <Button
+                  type="submit"
+                  form="create-account-form"
+                  disabled={createAccountMutation.isPending}
+                  className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700"
+                >
+                  {createAccountMutation.isPending ? 'Creating...' : 'Create Account'}
+                </Button>
               </div>
             </DialogContent>
           </Dialog>
