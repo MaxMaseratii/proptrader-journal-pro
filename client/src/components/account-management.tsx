@@ -63,6 +63,17 @@ export default function AccountManagement({ accounts }: AccountManagementProps) 
     copiedAccountNumber: 0,
     targetAmount: 10000,
     maxLoss: 2000,
+    riskDivider: 1,
+    timeLimit: null,
+    takeProfitPoints: null,
+    dailyProfitTarget: null,
+    activationPaid: false,
+    includesActivationFee: false,
+    totalResetsCost: 0,
+    daysRequiredForPayout: null,
+    maxRiskPerDay: null,
+    secondaryAsset: '',
+    tertiaryAsset: '',
   });
   // Get trades data to calculate P&L
   const { data: trades = [] } = useQuery<Trade[]>({
@@ -1516,20 +1527,19 @@ export default function AccountManagement({ accounts }: AccountManagementProps) 
       <Dialog open={isCreateAccountDialogOpen} onOpenChange={setIsCreateAccountDialogOpen}>
         <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto bg-gray-900 border-gray-700">
           <DialogHeader>
-            <DialogTitle className="text-white">Create Trading Account</DialogTitle>
+            <DialogTitle className="text-white">Create New Trading Account</DialogTitle>
+            <p className="text-gray-400">Set up a new trading account with proper risk management and financial tracking.</p>
           </DialogHeader>
           
-          {/* Account Creation Form - 4 Tabs */}
-          <Tabs defaultValue="info" className="w-full">
-            <TabsList className="grid w-full grid-cols-4 bg-gray-800">
-              <TabsTrigger value="info" className="text-white">Account Info</TabsTrigger>
+          {/* Account Creation Form - 3 Tabs */}
+          <Tabs defaultValue="basic" className="w-full">
+            <TabsList className="grid w-full grid-cols-3 bg-gray-800">
+              <TabsTrigger value="basic" className="text-white">Basic Info</TabsTrigger>
               <TabsTrigger value="financial" className="text-white">Financial</TabsTrigger>
-              <TabsTrigger value="payout" className="text-white">Payout Rules</TabsTrigger>
-              <TabsTrigger value="risk" className="text-white">Risk Settings</TabsTrigger>
+              <TabsTrigger value="rules" className="text-white">Rules & Risk</TabsTrigger>
             </TabsList>
             
-            <TabsContent value="info" className="space-y-4">
-              
+            <TabsContent value="basic" className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <Label className="text-white">Account Name</Label>
@@ -1537,7 +1547,16 @@ export default function AccountManagement({ accounts }: AccountManagementProps) 
                     value={accountForm.name}
                     onChange={(e) => setAccountForm({...accountForm, name: e.target.value})}
                     className="bg-gray-800 border-gray-600 text-white"
-                    placeholder="e.g., FTMO Challenge $100K"
+                    placeholder="My Trading Account"
+                  />
+                </div>
+                <div>
+                  <Label className="text-white">Prop Firm</Label>
+                  <Input 
+                    value={accountForm.firm}
+                    onChange={(e) => setAccountForm({...accountForm, firm: e.target.value})}
+                    className="bg-gray-800 border-gray-600 text-white"
+                    placeholder="FTMO, TopstepTrader, etc."
                   />
                 </div>
                 <div>
@@ -1555,7 +1574,7 @@ export default function AccountManagement({ accounts }: AccountManagementProps) 
                   </Select>
                 </div>
                 <div>
-                  <Label className="text-white">Account Status</Label>
+                  <Label className="text-white">Status</Label>
                   <Select value={accountForm.status} onValueChange={(value: any) => setAccountForm({...accountForm, status: value})}>
                     <SelectTrigger className="bg-gray-800 border-gray-600 text-white">
                       <SelectValue />
@@ -1569,30 +1588,33 @@ export default function AccountManagement({ accounts }: AccountManagementProps) 
                   </Select>
                 </div>
                 <div>
-                  <Label className="text-white">Prop Firm</Label>
-                  <Input 
-                    value={accountForm.firm}
-                    onChange={(e) => setAccountForm({...accountForm, firm: e.target.value})}
-                    className="bg-gray-800 border-gray-600 text-white"
-                    placeholder="Enter prop firm name"
-                  />
-                </div>
-                <div>
-                  <Label className="text-white">Account Size ($)</Label>
+                  <Label className="text-white">Starting Balance</Label>
                   <Input 
                     type="number"
                     value={accountForm.size}
                     onChange={(e) => setAccountForm({...accountForm, size: parseInt(e.target.value)})}
                     className="bg-gray-800 border-gray-600 text-white"
+                    placeholder="100000"
                   />
                 </div>
                 <div>
-                  <Label className="text-white">Daily Loss Limit ($)</Label>
+                  <Label className="text-white">Profit Target</Label>
                   <Input 
                     type="number"
-                    value={accountForm.dailyLossLimit}
-                    onChange={(e) => setAccountForm({...accountForm, dailyLossLimit: parseFloat(e.target.value)})}
+                    value={accountForm.profitTarget}
+                    onChange={(e) => setAccountForm({...accountForm, profitTarget: parseFloat(e.target.value)})}
                     className="bg-gray-800 border-gray-600 text-white"
+                    placeholder="10000"
+                  />
+                </div>
+                <div>
+                  <Label className="text-white">Max Drawdown</Label>
+                  <Input 
+                    type="number"
+                    value={accountForm.maxDrawdown}
+                    onChange={(e) => setAccountForm({...accountForm, maxDrawdown: parseFloat(e.target.value)})}
+                    className="bg-gray-800 border-gray-600 text-white"
+                    placeholder="5000"
                   />
                 </div>
                 <div>
@@ -1602,6 +1624,17 @@ export default function AccountManagement({ accounts }: AccountManagementProps) 
                     value={accountForm.minimumDays}
                     onChange={(e) => setAccountForm({...accountForm, minimumDays: parseInt(e.target.value)})}
                     className="bg-gray-800 border-gray-600 text-white"
+                    placeholder="5"
+                  />
+                </div>
+                <div>
+                  <Label className="text-white">Time Limit (days)</Label>
+                  <Input 
+                    type="number"
+                    value={accountForm.timeLimit || ''}
+                    onChange={(e) => setAccountForm({...accountForm, timeLimit: parseInt(e.target.value) || null})}
+                    className="bg-gray-800 border-gray-600 text-white"
+                    placeholder="30"
                   />
                 </div>
                 <div>
@@ -1611,107 +1644,297 @@ export default function AccountManagement({ accounts }: AccountManagementProps) 
                     value={accountForm.consistencyRule}
                     onChange={(e) => setAccountForm({...accountForm, consistencyRule: parseFloat(e.target.value)})}
                     className="bg-gray-800 border-gray-600 text-white"
-                    placeholder="Max daily profit %"
+                    placeholder="50"
                   />
                 </div>
+              </div>
+              
+              {/* Simulation vs Account Based buttons */}
+              <div className="flex gap-2 mt-4">
+                <Button 
+                  variant="outline" 
+                  className="bg-gray-700 border-gray-600 text-white hover:bg-gray-600"
+                >
+                  Simulation
+                </Button>
+                <Button 
+                  variant="outline" 
+                  className="bg-gray-700 border-gray-600 text-white hover:bg-gray-600"
+                >
+                  Account Based
+                </Button>
               </div>
             </TabsContent>
 
             <TabsContent value="financial" className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label className="text-white">Account Cost ($)</Label>
+                  <Label className="text-white">Account Cost</Label>
                   <Input 
                     type="number"
-                    value={accountForm.accountCost}
-                    onChange={(e) => setAccountForm({...accountForm, accountCost: parseFloat(e.target.value)})}
+                    value={accountForm.accountCost || ''}
+                    onChange={(e) => setAccountForm({...accountForm, accountCost: parseFloat(e.target.value) || null})}
                     className="bg-gray-800 border-gray-600 text-white"
+                    placeholder="599"
                   />
                 </div>
                 <div>
-                  <Label className="text-white">Trading Capital ($)</Label>
+                  <Label className="text-white">Activation Cost</Label>
                   <Input 
                     type="number"
-                    value={accountForm.tradingCapital}
-                    onChange={(e) => setAccountForm({...accountForm, tradingCapital: parseFloat(e.target.value)})}
+                    value={accountForm.activationCost || ''}
+                    onChange={(e) => setAccountForm({...accountForm, activationCost: parseFloat(e.target.value) || null})}
                     className="bg-gray-800 border-gray-600 text-white"
+                    placeholder="200"
                   />
                 </div>
-              </div>
-            </TabsContent>
-
-            <TabsContent value="payout" className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label className="text-white">Payout Frequency</Label>
-                  <Select value={accountForm.payoutFrequency} onValueChange={(value) => setAccountForm({...accountForm, payoutFrequency: value})}>
+                  <Label className="text-white">Purchase Method</Label>
+                  <Select value={accountForm.purchaseMethod || ''} onValueChange={(value) => setAccountForm({...accountForm, purchaseMethod: value || null})}>
                     <SelectTrigger className="bg-gray-800 border-gray-600 text-white">
-                      <SelectValue />
+                      <SelectValue placeholder="Select payment method" />
                     </SelectTrigger>
                     <SelectContent className="bg-gray-800 border-gray-600">
-                      <SelectItem value="weekly" className="text-white">Weekly</SelectItem>
-                      <SelectItem value="monthly" className="text-white">Monthly</SelectItem>
+                      <SelectItem value="credit_card" className="text-white">Credit Card</SelectItem>
+                      <SelectItem value="debit_card" className="text-white">Debit Card</SelectItem>
+                      <SelectItem value="paypal" className="text-white">PayPal</SelectItem>
+                      <SelectItem value="crypto" className="text-white">Cryptocurrency</SelectItem>
+                      <SelectItem value="bank_transfer" className="text-white">Bank Transfer</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
                 <div>
-                  <Label className="text-white">Minimum Payout Amount ($)</Label>
+                  <Label className="text-white">Reset Count</Label>
                   <Input 
                     type="number"
-                    value={accountForm.minimumPayoutAmount}
-                    onChange={(e) => setAccountForm({...accountForm, minimumPayoutAmount: parseFloat(e.target.value)})}
+                    value={accountForm.resetCount}
+                    onChange={(e) => setAccountForm({...accountForm, resetCount: parseInt(e.target.value) || 0})}
                     className="bg-gray-800 border-gray-600 text-white"
+                    placeholder="0"
+                  />
+                </div>
+                <div>
+                  <Label className="text-white">Total Resets Cost</Label>
+                  <Input 
+                    type="number"
+                    value={accountForm.totalResetsCost}
+                    onChange={(e) => setAccountForm({...accountForm, totalResetsCost: parseFloat(e.target.value) || 0})}
+                    className="bg-gray-800 border-gray-600 text-white"
+                    placeholder="0"
                   />
                 </div>
                 <div>
                   <Label className="text-white">Profit Split (%)</Label>
                   <Input 
                     type="number"
-                    value={accountForm.profitSplit}
-                    onChange={(e) => setAccountForm({...accountForm, profitSplit: parseFloat(e.target.value)})}
+                    value={accountForm.profitSplit || ''}
+                    onChange={(e) => setAccountForm({...accountForm, profitSplit: parseFloat(e.target.value) || null})}
                     className="bg-gray-800 border-gray-600 text-white"
+                    placeholder="80"
                   />
                 </div>
               </div>
+              
+              {/* Activation Fee Radio Buttons */}
+              <div className="flex gap-4 mt-4">
+                <div className="flex items-center space-x-2">
+                  <input 
+                    type="radio" 
+                    id="activation-paid" 
+                    name="activation" 
+                    checked={accountForm.activationPaid}
+                    onChange={() => setAccountForm({...accountForm, activationPaid: true, includesActivationFee: false})}
+                    className="text-blue-600"
+                  />
+                  <Label htmlFor="activation-paid" className="text-white">Activation Fee Paid</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <input 
+                    type="radio" 
+                    id="includes-activation" 
+                    name="activation" 
+                    checked={accountForm.includesActivationFee}
+                    onChange={() => setAccountForm({...accountForm, includesActivationFee: true, activationPaid: false})}
+                    className="text-blue-600"
+                  />
+                  <Label htmlFor="includes-activation" className="text-white">Includes Activation Fee</Label>
+                </div>
+              </div>
+              
+              {/* Simulation vs Account Based buttons */}
+              <div className="flex gap-2 mt-4">
+                <Button 
+                  variant="outline" 
+                  className="bg-gray-700 border-gray-600 text-white hover:bg-gray-600"
+                >
+                  Simulation
+                </Button>
+                <Button 
+                  variant="outline" 
+                  className="bg-gray-700 border-gray-600 text-white hover:bg-gray-600"
+                >
+                  Account Based
+                </Button>
+              </div>
             </TabsContent>
-
-            <TabsContent value="risk" className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
+            
+            <TabsContent value="rules" className="space-y-4">
+              <div className="grid grid-cols-3 gap-4">
                 <div>
                   <Label className="text-white">Risk Per Trade ($)</Label>
                   <Input 
                     type="number"
-                    value={accountForm.riskPerTrade}
-                    onChange={(e) => setAccountForm({...accountForm, riskPerTrade: parseFloat(e.target.value)})}
+                    value={accountForm.riskPerTrade || ''}
+                    onChange={(e) => setAccountForm({...accountForm, riskPerTrade: parseFloat(e.target.value) || null})}
                     className="bg-gray-800 border-gray-600 text-white"
+                    placeholder="500"
                   />
                 </div>
                 <div>
-                  <Label className="text-white">Risk Reward Ratio</Label>
+                  <Label className="text-white">Risk Per Trade Divider</Label>
+                  <Input 
+                    type="number"
+                    value={accountForm.riskDivider || 1}
+                    onChange={(e) => setAccountForm({...accountForm, riskDivider: parseInt(e.target.value) || 1})}
+                    className="bg-gray-800 border-gray-600 text-white"
+                    placeholder="1"
+                  />
+                  <p className="text-xs text-gray-400 mt-1">Split your total risk across 1 trade</p>
+                </div>
+                <div></div>
+                <div>
+                  <Label className="text-white">Daily Loss Limit ($)</Label>
+                  <Input 
+                    type="number"
+                    value={accountForm.dailyLossLimit || ''}
+                    onChange={(e) => setAccountForm({...accountForm, dailyLossLimit: parseFloat(e.target.value) || null})}
+                    className="bg-gray-800 border-gray-600 text-white"
+                    placeholder="2000"
+                  />
+                </div>
+                <div>
+                  <Label className="text-white">Max Trades Per Day</Label>
+                  <Input 
+                    type="number"
+                    value={accountForm.maxTradesPerDay}
+                    onChange={(e) => setAccountForm({...accountForm, maxTradesPerDay: parseInt(e.target.value) || 0})}
+                    className="bg-gray-800 border-gray-600 text-white"
+                    placeholder="0"
+                  />
+                </div>
+                <div>
+                  <Label className="text-white">Max Risk Per Day ($)</Label>
+                  <Input 
+                    type="number"
+                    value={accountForm.maxRiskPerDay || ''}
+                    onChange={(e) => setAccountForm({...accountForm, maxRiskPerDay: parseFloat(e.target.value) || null})}
+                    className="bg-gray-800 border-gray-600 text-white"
+                    placeholder="3000"
+                  />
+                </div>
+                <div>
+                  <Label className="text-white">Risk:Reward Ratio (1:X)</Label>
                   <Input 
                     type="number"
                     step="0.1"
                     value={accountForm.riskRewardRatio}
-                    onChange={(e) => setAccountForm({...accountForm, riskRewardRatio: parseFloat(e.target.value)})}
+                    onChange={(e) => setAccountForm({...accountForm, riskRewardRatio: parseFloat(e.target.value) || 2.0})}
                     className="bg-gray-800 border-gray-600 text-white"
+                    placeholder="2"
                   />
                 </div>
                 <div>
-                  <Label className="text-white">Profit Target ($)</Label>
+                  <Label className="text-white">Primary Asset</Label>
                   <Input 
-                    type="number"
-                    value={accountForm.profitTarget}
-                    onChange={(e) => setAccountForm({...accountForm, profitTarget: parseFloat(e.target.value)})}
+                    value={accountForm.primaryAsset}
+                    onChange={(e) => setAccountForm({...accountForm, primaryAsset: e.target.value as any})}
                     className="bg-gray-800 border-gray-600 text-white"
+                    placeholder="ES"
                   />
                 </div>
                 <div>
-                  <Label className="text-white">Max Drawdown ($)</Label>
+                  <Label className="text-white">Secondary Asset</Label>
+                  <Input 
+                    value={accountForm.secondaryAsset}
+                    onChange={(e) => setAccountForm({...accountForm, secondaryAsset: e.target.value})}
+                    className="bg-gray-800 border-gray-600 text-white"
+                    placeholder="e.g. CL, GC, GBPUSD"
+                  />
+                </div>
+                <div>
+                  <Label className="text-white">Tertiary Asset</Label>
+                  <Input 
+                    value={accountForm.tertiaryAsset}
+                    onChange={(e) => setAccountForm({...accountForm, tertiaryAsset: e.target.value})}
+                    className="bg-gray-800 border-gray-600 text-white"
+                    placeholder="e.g. RTY, YM, USDJPY"
+                  />
+                </div>
+                <div>
+                  <Label className="text-white">Default Stop Loss (Points/Pips)</Label>
+                  <div className="flex gap-2">
+                    <Button 
+                      variant="outline" 
+                      className="bg-gray-700 border-gray-600 text-white hover:bg-gray-600"
+                    >
+                      Simulation
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      className="bg-gray-700 border-gray-600 text-white hover:bg-gray-600"
+                    >
+                      Account Based
+                    </Button>
+                  </div>
+                </div>
+                <div>
+                  <Label className="text-white">Default Take Profit (Points/Pips)</Label>
                   <Input 
                     type="number"
-                    value={accountForm.maxDrawdown}
-                    onChange={(e) => setAccountForm({...accountForm, maxDrawdown: parseFloat(e.target.value)})}
+                    value={accountForm.takeProfitPoints || ''}
+                    onChange={(e) => setAccountForm({...accountForm, takeProfitPoints: parseFloat(e.target.value) || null})}
                     className="bg-gray-800 border-gray-600 text-white"
+                    placeholder="20"
+                  />
+                </div>
+                <div>
+                  <Label className="text-white">Days Required for Payout</Label>
+                  <Input 
+                    type="number"
+                    value={accountForm.daysRequiredForPayout || ''}
+                    onChange={(e) => setAccountForm({...accountForm, daysRequiredForPayout: parseInt(e.target.value) || null})}
+                    className="bg-gray-800 border-gray-600 text-white"
+                    placeholder="5"
+                  />
+                </div>
+                <div>
+                  <Label className="text-white">Daily Profit Target ($)</Label>
+                  <Input 
+                    type="number"
+                    value={accountForm.dailyProfitTarget || ''}
+                    onChange={(e) => setAccountForm({...accountForm, dailyProfitTarget: parseFloat(e.target.value) || null})}
+                    className="bg-gray-800 border-gray-600 text-white"
+                    placeholder="200"
+                  />
+                </div>
+                <div>
+                  <Label className="text-white">Minimum Payout Amount ($)</Label>
+                  <Input 
+                    type="number"
+                    value={accountForm.minimumPayoutAmount || ''}
+                    onChange={(e) => setAccountForm({...accountForm, minimumPayoutAmount: parseFloat(e.target.value) || null})}
+                    className="bg-gray-800 border-gray-600 text-white"
+                    placeholder="1000"
+                  />
+                </div>
+                <div>
+                  <Label className="text-white">Max Net Balance for Payout ($)</Label>
+                  <Input 
+                    type="number"
+                    value={accountForm.maxNetBalanceForPayout || ''}
+                    onChange={(e) => setAccountForm({...accountForm, maxNetBalanceForPayout: parseFloat(e.target.value) || null})}
+                    className="bg-gray-800 border-gray-600 text-white"
+                    placeholder="150000"
                   />
                 </div>
               </div>
