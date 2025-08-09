@@ -32,7 +32,7 @@ interface AccountManagementProps {
 }
 
 export default function AccountManagement({ accounts }: AccountManagementProps) {
-  const [isCreateAccountDialogOpen, setIsCreateAccountDialogOpen] = useState(false);
+
   // Get trades data to calculate P&L
   const { data: trades = [] } = useQuery<Trade[]>({
     queryKey: ['/api/trades'],
@@ -1376,31 +1376,7 @@ export default function AccountManagement({ accounts }: AccountManagementProps) 
           </CardContent>
         </Card>
       ))}
-      
-      {/* Account Creation Dialog - Copy exact form from projections.tsx */}
-      <Dialog open={isCreateAccountDialogOpen} onOpenChange={setIsCreateAccountDialogOpen}>
-        <DialogContent className="max-w-4xl max-h-[90vh] bg-gray-900 border-gray-700">
-          <DialogHeader>
-            <DialogTitle className="text-white text-xl">Create New Trading Account</DialogTitle>
-            <DialogDescription className="text-gray-400">
-              Set up a new trading account with proper risk management and financial tracking.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4 p-6">
-            <div className="text-center">
-              <p className="text-gray-400">
-                Account creation form will be implemented here to match the Account Management & Projections page.
-              </p>
-              <Button 
-                onClick={() => setIsCreateAccountDialogOpen(false)}
-                className="mt-4 bg-gray-600 hover:bg-gray-700 text-white"
-              >
-                Close for Now
-              </Button>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
+
     </div>
   );
 }

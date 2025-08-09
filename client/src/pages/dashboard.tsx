@@ -2685,14 +2685,7 @@ export default function Dashboard() {
               </h2>
               <p className="text-sm text-gray-400">Account status, discipline scores, and portfolio overview</p>
             </div>
-            {(!accounts || accounts.length === 0) && (
-              <Button 
-                className="bg-gradient-to-r from-emerald-500 to-emerald-600 text-white font-semibold hover:from-emerald-400 hover:to-emerald-500 flex items-center gap-2"
-              >
-                <Plus className="w-4 h-4" />
-                Create First Account
-              </Button>
-            )}
+
           </div>
           
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
