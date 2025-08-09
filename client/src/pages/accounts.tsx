@@ -26,7 +26,8 @@ import {
   Wallet, 
   CheckCircle,
   Eye,
-  EyeOff
+  EyeOff,
+  X
 } from 'lucide-react';
 
 // Comprehensive schema for account creation form
@@ -380,23 +381,26 @@ export default function AccountManagement() {
             </h1>
             <p className="text-gray-400 mt-2">Manage your trading accounts and monitor performance</p>
           </div>
-          <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
-            <DialogTrigger asChild>
-              <Button className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700">
-                <Plus className="h-4 w-4 mr-2" />
-                Create Account
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="sm:max-w-4xl max-h-[90vh] overflow-hidden bg-gradient-to-br from-gray-900 via-gray-800 to-black border border-yellow-400/20">
-              <div className="flex flex-col h-full max-h-[85vh]">
-                <DialogHeader className="flex-shrink-0 pb-4 border-b border-gray-700">
-                  <DialogTitle className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-yellow-600">
+          <Button 
+            className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700"
+            onClick={() => setIsCreateDialogOpen(true)}
+          >
+            <Plus className="h-4 w-4 mr-2" />
+            Create Account
+          </Button>
+        </div>
+        
+        <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
+          <DialogContent className="max-w-4xl max-h-[90vh] bg-gradient-to-br from-gray-900 via-gray-800 to-black border border-yellow-400/20 overflow-hidden static">
+            <div className="flex flex-col h-full max-h-[85vh]">
+                <div className="flex-shrink-0 pb-4 border-b border-gray-700">
+                  <h2 className="text-lg font-semibold text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-yellow-600">
                     Create New Trading Account
-                  </DialogTitle>
-                  <DialogDescription className="text-gray-400">
+                  </h2>
+                  <p className="text-gray-400 text-sm mt-2">
                     Set up a comprehensive trading account with your financial goals, risk parameters, and trading preferences.
-                  </DialogDescription>
-                </DialogHeader>
+                  </p>
+                </div>
                 
                 <div className="flex-1 overflow-y-auto py-4">
                   <Form {...form}>
@@ -1358,10 +1362,9 @@ export default function AccountManagement() {
                   {createAccountMutation.isPending ? 'Creating...' : 'Create Account'}
                 </Button>
               </div>
-              </div>
-            </DialogContent>
-          </Dialog>
-        </div>
+            </div>
+          </DialogContent>
+        </Dialog>
 
         {accounts.length === 0 ? (
           <div className="flex items-center justify-center min-h-[400px]">
@@ -1483,8 +1486,7 @@ export default function AccountManagement() {
             })}
           </div>
         )}
-
-        {/* Edit Account Dialog */}
+        
         <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
           <DialogContent className="max-w-2xl bg-gradient-to-br from-gray-900 via-gray-800 to-black border border-yellow-400/20">
             <DialogHeader>
