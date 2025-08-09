@@ -426,51 +426,387 @@ export default function AccountFormModal({ isOpen, onClose }: AccountFormModalPr
                     />
                   </div>
                 </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label className="text-white">Purchase Method</Label>
+                    <Select onValueChange={(value) => updateField('purchaseMethod', value)} value={formData.purchaseMethod || ""}>
+                      <SelectTrigger className="bg-gray-800 border-gray-600 text-white">
+                        <SelectValue placeholder="Select payment method" />
+                      </SelectTrigger>
+                      <SelectContent className="bg-gray-800 border-gray-600">
+                        <SelectItem value="credit_card">Credit Card</SelectItem>
+                        <SelectItem value="paypal">PayPal</SelectItem>
+                        <SelectItem value="bank_transfer">Bank Transfer</SelectItem>
+                        <SelectItem value="crypto">Cryptocurrency</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-white">Reset Count</Label>
+                    <Input 
+                      type="number" 
+                      value={formData.resetCount || ""}
+                      onChange={(e) => updateField('resetCount', parseFloat(e.target.value) || 0)}
+                      className="bg-gray-800 border-gray-600 text-white" 
+                      placeholder="0"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label className="text-white">Total Resets Cost</Label>
+                    <Input 
+                      type="number" 
+                      value={formData.totalResetsCost || ""}
+                      onChange={(e) => updateField('totalResetsCost', parseFloat(e.target.value) || 0)}
+                      className="bg-gray-800 border-gray-600 text-white" 
+                      placeholder="0"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-white">Profit Split (%)</Label>
+                    <Input 
+                      type="number" 
+                      value={formData.profitSplit || ""}
+                      onChange={(e) => updateField('profitSplit', parseFloat(e.target.value) || null)}
+                      className="bg-gray-800 border-gray-600 text-white" 
+                      placeholder="80"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="flex items-center space-x-2">
+                    <Checkbox
+                      checked={formData.activationPaid || false}
+                      onCheckedChange={(checked) => updateField('activationPaid', checked)}
+                      className="border-gray-600 data-[state=checked]:bg-blue-600"
+                    />
+                    <Label className="text-white">Activation Fee Paid</Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Checkbox
+                      checked={formData.includesActivationFee || false}
+                      onCheckedChange={(checked) => updateField('includesActivationFee', checked)}
+                      className="border-gray-600 data-[state=checked]:bg-blue-600"
+                    />
+                    <Label className="text-white">Includes Activation Fee</Label>
+                  </div>
+                </div>
               </TabsContent>
 
               {/* Rules & Risk Tab */}
-              <TabsContent value="rules" className="space-y-4">
-                <div className="grid grid-cols-3 gap-4">
+              <TabsContent value="rules" className="space-y-6">
+                <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label className="text-white">Minimum Trading Days</Label>
-                    <Input 
-                      type="number" 
-                      value={formData.minimumTradingDays || ""}
-                      onChange={(e) => updateField('minimumTradingDays', parseFloat(e.target.value) || null)}
-                      className="bg-gray-800 border-gray-600 text-white" 
-                      placeholder="5"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label className="text-white">Time Limit (days)</Label>
-                    <Input 
-                      type="number" 
-                      value={formData.timeLimit || ""}
-                      onChange={(e) => updateField('timeLimit', parseFloat(e.target.value) || null)}
-                      className="bg-gray-800 border-gray-600 text-white" 
-                      placeholder="30"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label className="text-white">Risk Per Trade (%)</Label>
+                    <Label className="text-white">Risk Per Trade ($)</Label>
                     <Input 
                       type="number" 
                       value={formData.riskPerTrade || ""}
                       onChange={(e) => updateField('riskPerTrade', parseFloat(e.target.value) || null)}
                       className="bg-gray-800 border-gray-600 text-white" 
-                      placeholder="1.0"
-                      step="0.1"
+                      placeholder="500"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-white">Risk Per Trade Divider</Label>
+                    <Input 
+                      type="number" 
+                      value={formData.riskPerTradeDivider || ""}
+                      onChange={(e) => updateField('riskPerTradeDivider', parseFloat(e.target.value) || 1)}
+                      className="bg-gray-800 border-gray-600 text-white" 
+                      placeholder="1"
+                    />
+                    <p className="text-xs text-gray-400">Split your total risk across # trades</p>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label className="text-white">Daily Loss Limit ($)</Label>
+                    <Input 
+                      type="number" 
+                      value={formData.dailyLossLimit || ""}
+                      onChange={(e) => updateField('dailyLossLimit', parseFloat(e.target.value) || null)}
+                      className="bg-gray-800 border-gray-600 text-white" 
+                      placeholder="2000"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-white">Risk:Reward Ratio (1:X)</Label>
+                    <Input 
+                      type="number" 
+                      value={formData.riskRewardRatio || ""}
+                      onChange={(e) => updateField('riskRewardRatio', parseFloat(e.target.value) || 2)}
+                      className="bg-gray-800 border-gray-600 text-white" 
+                      placeholder="2"
                     />
                   </div>
                 </div>
 
-                <div className="flex items-center space-x-2">
-                  <Checkbox
-                    checked={formData.hasDailyLossLimit}
-                    onCheckedChange={(checked) => updateField('hasDailyLossLimit', checked)}
-                    className="border-gray-600 data-[state=checked]:bg-blue-600"
-                  />
-                  <Label className="text-white">Has Daily Loss Limit</Label>
+                <div className="grid grid-cols-3 gap-4">
+                  <div className="space-y-2">
+                    <Label className="text-white">Max Trades Per Day</Label>
+                    <Input 
+                      type="number" 
+                      value={formData.maxTradesPerDay || ""}
+                      onChange={(e) => updateField('maxTradesPerDay', parseFloat(e.target.value) || 0)}
+                      className="bg-gray-800 border-gray-600 text-white" 
+                      placeholder="0"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-white">Max Risk Per Day ($)</Label>
+                    <Input 
+                      type="number" 
+                      value={formData.maxRiskPerDay || ""}
+                      onChange={(e) => updateField('maxRiskPerDay', parseFloat(e.target.value) || null)}
+                      className="bg-gray-800 border-gray-600 text-white" 
+                      placeholder="3000"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-white">Stop Loss (Points/Pips)</Label>
+                    <Input 
+                      type="number" 
+                      value={formData.stopLossPoints || ""}
+                      onChange={(e) => updateField('stopLossPoints', parseFloat(e.target.value) || 10)}
+                      className="bg-gray-800 border-gray-600 text-white" 
+                      placeholder="10"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-3 gap-4">
+                  <div className="space-y-2">
+                    <Label className="text-white">Primary Asset</Label>
+                    <Input 
+                      value={formData.primaryAsset || ""}
+                      onChange={(e) => updateField('primaryAsset', e.target.value)}
+                      className="bg-gray-800 border-gray-600 text-white" 
+                      placeholder="ES"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-white">Secondary Asset</Label>
+                    <Input 
+                      value={formData.secondaryAsset || ""}
+                      onChange={(e) => updateField('secondaryAsset', e.target.value)}
+                      className="bg-gray-800 border-gray-600 text-white" 
+                      placeholder="e.g. CL, GC, GB"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-white">Tertiary Asset</Label>
+                    <Input 
+                      value={formData.tertiaryAsset || ""}
+                      onChange={(e) => updateField('tertiaryAsset', e.target.value)}
+                      className="bg-gray-800 border-gray-600 text-white" 
+                      placeholder="e.g. RTY, YM, USD"
+                    />
+                  </div>
+                </div>
+
+                {/* Personal Trading Time Section */}
+                <div className="space-y-4">
+                  <h3 className="text-lg font-semibold text-yellow-400">Personal Trading Time</h3>
+                  
+                  {/* Time Slot 1 */}
+                  <div className="space-y-3">
+                    <h4 className="text-sm font-medium text-blue-400">Time Slot 1 (Primary)</h4>
+                    <div className="grid grid-cols-3 gap-4">
+                      <div className="space-y-2">
+                        <Label className="text-white">Start Time</Label>
+                        <Select onValueChange={(value) => updateField('personalTradingTimeStart1', value)} value={formData.personalTradingTimeStart1}>
+                          <SelectTrigger className="bg-gray-800 border-gray-600 text-white">
+                            <SelectValue placeholder="--:--" />
+                          </SelectTrigger>
+                          <SelectContent className="bg-gray-800 border-gray-600">
+                            <SelectItem value="06:30">06:30</SelectItem>
+                            <SelectItem value="07:00">07:00</SelectItem>
+                            <SelectItem value="08:00">08:00</SelectItem>
+                            <SelectItem value="09:00">09:00</SelectItem>
+                            <SelectItem value="09:30">09:30</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="space-y-2">
+                        <Label className="text-white">End Time</Label>
+                        <Select onValueChange={(value) => updateField('personalTradingTimeEnd1', value)} value={formData.personalTradingTimeEnd1}>
+                          <SelectTrigger className="bg-gray-800 border-gray-600 text-white">
+                            <SelectValue placeholder="--:--" />
+                          </SelectTrigger>
+                          <SelectContent className="bg-gray-800 border-gray-600">
+                            <SelectItem value="11:00">11:00</SelectItem>
+                            <SelectItem value="12:00">12:00</SelectItem>
+                            <SelectItem value="13:00">13:00</SelectItem>
+                            <SelectItem value="16:00">16:00</SelectItem>
+                            <SelectItem value="17:00">17:00</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="space-y-2">
+                        <Label className="text-white">Timezone</Label>
+                        <Select onValueChange={(value) => updateField('personalTradingTimeZone1', value)} value={formData.personalTradingTimeZone1}>
+                          <SelectTrigger className="bg-gray-800 border-gray-600 text-white">
+                            <SelectValue placeholder="Select timezone" />
+                          </SelectTrigger>
+                          <SelectContent className="bg-gray-800 border-gray-600">
+                            <SelectItem value="EST">EST</SelectItem>
+                            <SelectItem value="CST">CST</SelectItem>
+                            <SelectItem value="PST">PST</SelectItem>
+                            <SelectItem value="GMT">GMT</SelectItem>
+                            <SelectItem value="CET">CET</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Time Slot 2 */}
+                  <div className="space-y-3">
+                    <h4 className="text-sm font-medium text-green-400">Time Slot 2 (Secondary)</h4>
+                    <div className="grid grid-cols-3 gap-4">
+                      <div className="space-y-2">
+                        <Label className="text-white">Start Time</Label>
+                        <Select onValueChange={(value) => updateField('personalTradingTimeStart2', value)} value={formData.personalTradingTimeStart2}>
+                          <SelectTrigger className="bg-gray-800 border-gray-600 text-white">
+                            <SelectValue placeholder="--:--" />
+                          </SelectTrigger>
+                          <SelectContent className="bg-gray-800 border-gray-600">
+                            <SelectItem value="13:30">13:30</SelectItem>
+                            <SelectItem value="14:00">14:00</SelectItem>
+                            <SelectItem value="15:00">15:00</SelectItem>
+                            <SelectItem value="15:30">15:30</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="space-y-2">
+                        <Label className="text-white">End Time</Label>
+                        <Select onValueChange={(value) => updateField('personalTradingTimeEnd2', value)} value={formData.personalTradingTimeEnd2}>
+                          <SelectTrigger className="bg-gray-800 border-gray-600 text-white">
+                            <SelectValue placeholder="--:--" />
+                          </SelectTrigger>
+                          <SelectContent className="bg-gray-800 border-gray-600">
+                            <SelectItem value="16:00">16:00</SelectItem>
+                            <SelectItem value="17:00">17:00</SelectItem>
+                            <SelectItem value="18:00">18:00</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="space-y-2">
+                        <Label className="text-white">Timezone</Label>
+                        <Select onValueChange={(value) => updateField('personalTradingTimeZone2', value)} value={formData.personalTradingTimeZone2}>
+                          <SelectTrigger className="bg-gray-800 border-gray-600 text-white">
+                            <SelectValue placeholder="Select timezone" />
+                          </SelectTrigger>
+                          <SelectContent className="bg-gray-800 border-gray-600">
+                            <SelectItem value="EST">EST</SelectItem>
+                            <SelectItem value="CST">CST</SelectItem>
+                            <SelectItem value="PST">PST</SelectItem>
+                            <SelectItem value="GMT">GMT</SelectItem>
+                            <SelectItem value="CET">CET</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Time Slot 3 */}
+                  <div className="space-y-3">
+                    <h4 className="text-sm font-medium text-purple-400">Time Slot 3 (Tertiary)</h4>
+                    <div className="grid grid-cols-3 gap-4">
+                      <div className="space-y-2">
+                        <Label className="text-white">Start Time</Label>
+                        <Select onValueChange={(value) => updateField('personalTradingTimeStart3', value)} value={formData.personalTradingTimeStart3}>
+                          <SelectTrigger className="bg-gray-800 border-gray-600 text-white">
+                            <SelectValue placeholder="--:--" />
+                          </SelectTrigger>
+                          <SelectContent className="bg-gray-800 border-gray-600">
+                            <SelectItem value="19:00">19:00</SelectItem>
+                            <SelectItem value="20:00">20:00</SelectItem>
+                            <SelectItem value="21:00">21:00</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="space-y-2">
+                        <Label className="text-white">End Time</Label>
+                        <Select onValueChange={(value) => updateField('personalTradingTimeEnd3', value)} value={formData.personalTradingTimeEnd3}>
+                          <SelectTrigger className="bg-gray-800 border-gray-600 text-white">
+                            <SelectValue placeholder="--:--" />
+                          </SelectTrigger>
+                          <SelectContent className="bg-gray-800 border-gray-600">
+                            <SelectItem value="22:00">22:00</SelectItem>
+                            <SelectItem value="23:00">23:00</SelectItem>
+                            <SelectItem value="24:00">24:00</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="space-y-2">
+                        <Label className="text-white">Timezone</Label>
+                        <Select onValueChange={(value) => updateField('personalTradingTimeZone3', value)} value={formData.personalTradingTimeZone3}>
+                          <SelectTrigger className="bg-gray-800 border-gray-600 text-white">
+                            <SelectValue placeholder="Select timezone" />
+                          </SelectTrigger>
+                          <SelectContent className="bg-gray-800 border-gray-600">
+                            <SelectItem value="EST">EST</SelectItem>
+                            <SelectItem value="CST">CST</SelectItem>
+                            <SelectItem value="PST">PST</SelectItem>
+                            <SelectItem value="GMT">GMT</SelectItem>
+                            <SelectItem value="CET">CET</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Additional Trading Settings */}
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label className="text-white">Daily Working Hours</Label>
+                      <Input 
+                        type="number" 
+                        value={formData.dailyWorkingHours || ""}
+                        onChange={(e) => updateField('dailyWorkingHours', parseFloat(e.target.value) || null)}
+                        className="bg-gray-800 border-gray-600 text-white" 
+                        placeholder="8.0"
+                        step="0.5"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="text-white">Hourly Wages ($)</Label>
+                      <Input 
+                        type="number" 
+                        value={formData.hourlyWages || ""}
+                        onChange={(e) => updateField('hourlyWages', parseFloat(e.target.value) || null)}
+                        className="bg-gray-800 border-gray-600 text-white" 
+                        placeholder="25.00"
+                        step="0.01"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Trading Permissions */}
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="flex items-center space-x-2">
+                      <Checkbox
+                        checked={formData.liveAccountAvailable || false}
+                        onCheckedChange={(checked) => updateField('liveAccountAvailable', checked)}
+                        className="border-gray-600 data-[state=checked]:bg-blue-600"
+                      />
+                      <Label className="text-white">Live Trading Account Available</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <Checkbox
+                        checked={formData.enhancedPayoutsAvailable || false}
+                        onCheckedChange={(checked) => updateField('enhancedPayoutsAvailable', checked)}
+                        className="border-gray-600 data-[state=checked]:bg-blue-600"
+                      />
+                      <Label className="text-white">Challenge Payouts Available</Label>
+                    </div>
+                  </div>
                 </div>
               </TabsContent>
             </Tabs>
