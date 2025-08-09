@@ -689,11 +689,11 @@ export default function AccountFormModal({ isOpen, onClose }: AccountFormModalPr
 
                 {/* Personal Trading Time Section */}
                 <div className="space-y-4">
-                  <h3 className="text-lg font-semibold text-yellow-400">Personal Trading Time</h3>
+                  <h3 className="text-lg font-semibold bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 bg-clip-text text-transparent">Personal Trading Time</h3>
                   
                   {/* Time Slot 1 */}
                   <div className="space-y-3">
-                    <h4 className="text-sm font-medium text-blue-400">Time Slot 1 (Primary)</h4>
+                    <h4 className="text-sm font-semibold text-blue-400 bg-blue-900/20 px-3 py-1 rounded-md border border-blue-500/30">Time Slot 1 (Primary)</h4>
                     <div className="grid grid-cols-3 gap-4">
                       <div className="space-y-2">
                         <Label className="text-white">Start Time</Label>
@@ -745,7 +745,7 @@ export default function AccountFormModal({ isOpen, onClose }: AccountFormModalPr
 
                   {/* Time Slot 2 */}
                   <div className="space-y-3">
-                    <h4 className="text-sm font-medium text-green-400">Time Slot 2 (Secondary)</h4>
+                    <h4 className="text-sm font-semibold text-green-400 bg-green-900/20 px-3 py-1 rounded-md border border-green-500/30">Time Slot 2 (Secondary)</h4>
                     <div className="grid grid-cols-3 gap-4">
                       <div className="space-y-2">
                         <Label className="text-white">Start Time</Label>
@@ -794,7 +794,7 @@ export default function AccountFormModal({ isOpen, onClose }: AccountFormModalPr
 
                   {/* Time Slot 3 */}
                   <div className="space-y-3">
-                    <h4 className="text-sm font-medium text-purple-400">Time Slot 3 (Tertiary)</h4>
+                    <h4 className="text-sm font-semibold text-purple-400 bg-purple-900/20 px-3 py-1 rounded-md border border-purple-500/30">Time Slot 3 (Tertiary)</h4>
                     <div className="grid grid-cols-3 gap-4">
                       <div className="space-y-2">
                         <Label className="text-white">Start Time</Label>
