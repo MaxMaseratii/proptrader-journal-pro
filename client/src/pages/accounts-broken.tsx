@@ -241,16 +241,14 @@ export default function AccountManagement() {
             <p className="text-gray-400 mt-2">Manage your trading accounts and monitor performance</p>
           </div>
         </div>
-
-        {accounts.length === 0 ? (
-          <div className="flex items-center justify-center min-h-[400px]">
-            <div className="text-center">
-              <Wallet className="mx-auto h-16 w-16 text-gray-500 mb-4" />
-              <h3 className="text-xl font-medium text-gray-300 mb-2">No Trading Accounts</h3>
-              <p className="text-gray-500 mb-4">Create your first trading account to start tracking performance</p>
-            </div>
-          </div>
-        ) : (
+              <DialogHeader>
+                <DialogTitle className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-yellow-600">
+                  Create New Trading Account
+                </DialogTitle>
+                <DialogDescription className="text-gray-400">
+                  Add a new trading account to track your performance and manage risk.
+                </DialogDescription>
+              </DialogHeader>
               
               <div className="max-h-[60vh] overflow-y-auto pr-2">
                 <Form {...form}>
