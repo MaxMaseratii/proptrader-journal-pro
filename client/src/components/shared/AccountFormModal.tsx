@@ -301,7 +301,7 @@ export default function AccountFormModal({ isOpen, onClose }: AccountFormModalPr
           </DialogDescription>
         </DialogHeader>
         
-        <ScrollArea className="max-h-[80vh] px-6">
+        <ScrollArea className="max-h-[70vh] px-6">
           <div className="space-y-6">
             <Tabs defaultValue="basic" className="w-full">
               <TabsList className="grid w-full grid-cols-3 bg-gray-800">
@@ -688,8 +688,8 @@ export default function AccountFormModal({ isOpen, onClose }: AccountFormModalPr
                 </div>
 
                 {/* Personal Trading Time Section */}
-                <div className="space-y-4">
-                  <h3 className="text-lg font-semibold bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 bg-clip-text text-transparent">Personal Trading Time</h3>
+                <div className="space-y-4 mt-6">
+                  <h3 className="text-lg font-semibold bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 bg-clip-text text-transparent border-b border-yellow-400/30 pb-2">Personal Trading Time</h3>
                   
                   {/* Time Slot 1 */}
                   <div className="space-y-3">
