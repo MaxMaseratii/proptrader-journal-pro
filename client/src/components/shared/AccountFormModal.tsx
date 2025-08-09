@@ -615,6 +615,7 @@ export default function AccountFormModal({ isOpen, onClose }: AccountFormModalPr
                     <Label className="text-white">Risk:Reward Ratio (1:X)</Label>
                     <Input 
                       type="number" 
+                      step="0.1"
                       value={formData.riskRewardRatio || ""}
                       onChange={(e) => updateField('riskRewardRatio', parseFloat(e.target.value) || 2)}
                       className="bg-gray-800 border-gray-600 text-white" 
@@ -871,17 +872,17 @@ export default function AccountFormModal({ isOpen, onClose }: AccountFormModalPr
                       <Checkbox
                         checked={formData.liveAccountAvailable || false}
                         onCheckedChange={(checked) => updateField('liveAccountAvailable', checked)}
-                        className="border-gray-600 data-[state=checked]:bg-blue-600"
+                        className="border-gray-600 data-[state=checked]:bg-green-600"
                       />
-                      <Label className="text-white">Live Trading Account Available</Label>
+                      <Label className="text-white">✓ Live Trading Account Available</Label>
                     </div>
                     <div className="flex items-center space-x-2">
                       <Checkbox
                         checked={formData.enhancedPayoutsAvailable || false}
                         onCheckedChange={(checked) => updateField('enhancedPayoutsAvailable', checked)}
-                        className="border-gray-600 data-[state=checked]:bg-blue-600"
+                        className="border-gray-600 data-[state=checked]:bg-green-600"
                       />
-                      <Label className="text-white">Challenge Payouts Available</Label>
+                      <Label className="text-white">✓ Challenge Payouts Available</Label>
                     </div>
                   </div>
                 </div>
