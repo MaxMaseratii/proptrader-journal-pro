@@ -7,8 +7,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
-import { RotateCcw, LogOut, Trash2, AlertTriangle, DollarSign, CheckCircle, ArrowRight, Bookmark, Edit, Plus } from "lucide-react";
+import { RotateCcw, LogOut, Trash2, AlertTriangle, DollarSign, CheckCircle, ArrowRight, Bookmark, Edit, Plus, BarChart3, Shield, Target } from "lucide-react";
 import { formatCurrency } from "@/lib/utils";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
@@ -34,56 +35,34 @@ interface AccountManagementProps {
 export default function AccountManagement({ accounts }: AccountManagementProps) {
   const [isCreateAccountDialogOpen, setIsCreateAccountDialogOpen] = useState(false);
   
-  // New Account Creation Form State
-  const [newAccountData, setNewAccountData] = useState({
-    // Basic Info
+  // Original Complete Account Creation Form State from projections.tsx
+  const [accountForm, setAccountForm] = useState({
     name: '',
+    type: 'challenge' as 'challenge' | 'funded' | 'live' | 'simulation',
+    status: 'active' as 'active' | 'passed' | 'failed' | 'withdrawn',
     firm: '',
-    type: 'challenge',
-    accountSize: 25000,
+    size: 100000,
+    profitTarget: 10000,
+    maxDrawdown: 10000,
+    dailyLossLimit: 5000,
+    riskPerTrade: 1000,
+    riskRewardRatio: 2.0,
     accountCost: 0,
-    phases: 1,
-    
-    // Targets & Time
-    phase1Target: 8,
-    phase2Target: 5,
-    minimumTradingDays: 5,
-    timeLimit: 30,
-    
-    // Drawdown Rules
-    drawdownType: 'daily_drawdown',
-    dailyLossLimit: 5,
-    maxTotalLoss: 10,
-    trailingThreshold: 0,
-    
-    // Key Restrictions
-    consistencyRule: true,
-    consistencyPercent: 50,
-    copyTrading: false,
-    newsTrading: true,
-    
-    // Financial Tracking
-    startingBalance: 25000,
-    currentBalance: 25000,
-    profitTarget: 2000,
-    maxDrawdown: 2500,
-    
-    // Payout Settings (for funded accounts)
-    daysRequiredForPayout: 5,
-    winningDayMinimum: 200,
-    minimumPayoutAmount: 100,
-    payoutFrequency: 'weekly',
-    maximumPayoutAmount: 5000,
-    maximumPayoutPerAccount: 10000,
-    maxNetBalanceForPayout: 2000,
+    purchaseMethod: '',
+    resetCount: 0,
+    activationCost: 0,
+    payoutFrequency: 'monthly',
+    minimumPayoutAmount: 1000,
     profitSplit: 80,
-    
-    // Risk Management
-    riskMethod: 'percentage_balance',
-    riskAmount: 2,
-    maxDailyRisk: 5,
-    stopLossRequired: true,
-    maxRiskRewardRatio: 1
+    consistencyRule: 10,
+    minimumDays: 5,
+    tradingCapital: 100000,
+    primaryAsset: 'forex',
+    preferredAssets: [] as string[],
+    maxTradesPerDay: 10,
+    copiedAccountNumber: 0,
+    targetAmount: 10000,
+    maxLoss: 2000,
   });
   // Get trades data to calculate P&L
   const { data: trades = [] } = useQuery<Trade[]>({
@@ -132,43 +111,33 @@ export default function AccountManagement({ accounts }: AccountManagementProps) 
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/accounts'] });
       setIsCreateAccountDialogOpen(false);
-      setNewAccountData({
-        // Reset form
+      setAccountForm({
         name: '',
-        firm: '',
         type: 'challenge',
-        accountSize: 25000,
+        status: 'active',
+        firm: '',
+        size: 100000,
+        profitTarget: 10000,
+        maxDrawdown: 10000,
+        dailyLossLimit: 5000,
+        riskPerTrade: 1000,
+        riskRewardRatio: 2.0,
         accountCost: 0,
-        phases: 1,
-        phase1Target: 8,
-        phase2Target: 5,
-        minimumTradingDays: 5,
-        timeLimit: 30,
-        drawdownType: 'daily_drawdown',
-        dailyLossLimit: 5,
-        maxTotalLoss: 10,
-        trailingThreshold: 0,
-        consistencyRule: true,
-        consistencyPercent: 50,
-        copyTrading: false,
-        newsTrading: true,
-        startingBalance: 25000,
-        currentBalance: 25000,
-        profitTarget: 2000,
-        maxDrawdown: 2500,
-        daysRequiredForPayout: 5,
-        winningDayMinimum: 200,
-        minimumPayoutAmount: 100,
-        payoutFrequency: 'weekly',
-        maximumPayoutAmount: 5000,
-        maximumPayoutPerAccount: 10000,
-        maxNetBalanceForPayout: 2000,
+        purchaseMethod: '',
+        resetCount: 0,
+        activationCost: 0,
+        payoutFrequency: 'monthly',
+        minimumPayoutAmount: 1000,
         profitSplit: 80,
-        riskMethod: 'percentage_balance',
-        riskAmount: 2,
-        maxDailyRisk: 5,
-        stopLossRequired: true,
-        maxRiskRewardRatio: 1
+        consistencyRule: 10,
+        minimumDays: 5,
+        tradingCapital: 100000,
+        primaryAsset: 'forex',
+        preferredAssets: [],
+        maxTradesPerDay: 10,
+        copiedAccountNumber: 0,
+        targetAmount: 10000,
+        maxLoss: 2000,
       });
       toast({
         title: "Account Created Successfully",
@@ -183,6 +152,42 @@ export default function AccountManagement({ accounts }: AccountManagementProps) 
       });
     }
   });
+
+  // Account creation handler
+  const handleCreateAccount = () => {
+    const newAccount = {
+      id: Date.now().toString(),
+      name: accountForm.name,
+      firm: accountForm.firm,
+      type: accountForm.type,
+      status: accountForm.status,
+      accountSize: accountForm.size,
+      profitTarget: accountForm.profitTarget,
+      maxDrawdown: accountForm.maxDrawdown,
+      dailyLossLimit: accountForm.dailyLossLimit,
+      riskPerTrade: accountForm.riskPerTrade,
+      riskRewardRatio: accountForm.riskRewardRatio,
+      accountCost: accountForm.accountCost,
+      purchaseMethod: accountForm.purchaseMethod,
+      resetCount: accountForm.resetCount,
+      activationCost: accountForm.activationCost,
+      payoutFrequency: accountForm.payoutFrequency,
+      minimumPayoutAmount: accountForm.minimumPayoutAmount,
+      profitSplit: accountForm.profitSplit,
+      consistencyRule: accountForm.consistencyRule,
+      minimumDays: accountForm.minimumDays,
+      tradingCapital: accountForm.tradingCapital,
+      primaryAsset: accountForm.primaryAsset,
+      preferredAssets: accountForm.preferredAssets,
+      maxTradesPerDay: accountForm.maxTradesPerDay,
+      copiedAccountNumber: accountForm.copiedAccountNumber,
+      targetAmount: accountForm.targetAmount,
+      maxLoss: accountForm.maxLoss,
+      createdAt: new Date().toISOString(),
+      isActive: true
+    };
+    createAccountMutation.mutate(newAccount);
+  };
 
   // Handle plan modification
   const handleModifyPlan = (projection: any) => {
@@ -1509,260 +1514,209 @@ export default function AccountManagement({ accounts }: AccountManagementProps) 
 
       {/* Comprehensive Create Account Dialog */}
       <Dialog open={isCreateAccountDialogOpen} onOpenChange={setIsCreateAccountDialogOpen}>
-        <DialogContent className="bg-gray-900 border-gray-700 max-w-4xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto bg-gray-900 border-gray-700">
           <DialogHeader>
-            <DialogTitle className="text-white flex items-center gap-2">
-              <Plus className="h-5 w-5 text-yellow-400" />
-              Create New Trading Account
-            </DialogTitle>
-            <DialogDescription className="text-gray-300">
-              Configure your prop firm account with complete settings for challenges, funded accounts, and live trading.
-            </DialogDescription>
+            <DialogTitle className="text-white">Create Trading Account</DialogTitle>
           </DialogHeader>
           
-          <div className="space-y-6">
-            {/* Section 1: Account Info & Rules */}
-            <div className="bg-gray-800 p-4 rounded-lg space-y-4">
-              <h3 className="text-lg font-semibold text-yellow-400 flex items-center gap-2">
-                <DollarSign className="h-5 w-5" />
-                Account Info & Rules
-              </h3>
+          {/* Account Creation Form - 4 Tabs */}
+          <Tabs defaultValue="info" className="w-full">
+            <TabsList className="grid w-full grid-cols-4 bg-gray-800">
+              <TabsTrigger value="info" className="text-white">Account Info</TabsTrigger>
+              <TabsTrigger value="financial" className="text-white">Financial</TabsTrigger>
+              <TabsTrigger value="payout" className="text-white">Payout Rules</TabsTrigger>
+              <TabsTrigger value="risk" className="text-white">Risk Settings</TabsTrigger>
+            </TabsList>
+            
+            <TabsContent value="info" className="space-y-4">
               
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label className="text-gray-300">Account Name</Label>
-                  <Input
-                    value={newAccountData.name}
-                    onChange={(e) => setNewAccountData({...newAccountData, name: e.target.value})}
-                    className="bg-gray-700 border-gray-600 text-white"
-                    placeholder="My Trading Account"
+                  <Label className="text-white">Account Name</Label>
+                  <Input 
+                    value={accountForm.name}
+                    onChange={(e) => setAccountForm({...accountForm, name: e.target.value})}
+                    className="bg-gray-800 border-gray-600 text-white"
+                    placeholder="e.g., FTMO Challenge $100K"
                   />
                 </div>
                 <div>
-                  <Label className="text-gray-300">Prop Firm</Label>
-                  <Input
-                    value={newAccountData.firm}
-                    onChange={(e) => setNewAccountData({...newAccountData, firm: e.target.value})}
-                    className="bg-gray-700 border-gray-600 text-white"
-                    placeholder="TopstepTrader, FTMO, etc."
-                  />
-                </div>
-                <div>
-                  <Label className="text-gray-300">Account Type</Label>
-                  <Select value={newAccountData.type} onValueChange={(value) => setNewAccountData({...newAccountData, type: value})}>
-                    <SelectTrigger className="bg-gray-700 border-gray-600 text-white">
+                  <Label className="text-white">Account Type</Label>
+                  <Select value={accountForm.type} onValueChange={(value: any) => setAccountForm({...accountForm, type: value})}>
+                    <SelectTrigger className="bg-gray-800 border-gray-600 text-white">
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent className="bg-gray-700 border-gray-600">
-                      <SelectItem value="challenge">Challenge</SelectItem>
-                      <SelectItem value="funded">Funded Account</SelectItem>
-                      <SelectItem value="live">Live Account</SelectItem>
+                    <SelectContent className="bg-gray-800 border-gray-600">
+                      <SelectItem value="challenge" className="text-white">Challenge</SelectItem>
+                      <SelectItem value="funded" className="text-white">Funded</SelectItem>
+                      <SelectItem value="live" className="text-white">Live</SelectItem>
+                      <SelectItem value="simulation" className="text-white">Simulation</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
                 <div>
-                  <Label className="text-gray-300">Account Size ($)</Label>
-                  <Select value={newAccountData.accountSize.toString()} onValueChange={(value) => setNewAccountData({...newAccountData, accountSize: parseInt(value)})}>
-                    <SelectTrigger className="bg-gray-700 border-gray-600 text-white">
+                  <Label className="text-white">Account Status</Label>
+                  <Select value={accountForm.status} onValueChange={(value: any) => setAccountForm({...accountForm, status: value})}>
+                    <SelectTrigger className="bg-gray-800 border-gray-600 text-white">
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent className="bg-gray-700 border-gray-600">
-                      <SelectItem value="10000">$10,000</SelectItem>
-                      <SelectItem value="25000">$25,000</SelectItem>
-                      <SelectItem value="50000">$50,000</SelectItem>
-                      <SelectItem value="100000">$100,000</SelectItem>
-                      <SelectItem value="150000">$150,000</SelectItem>
-                      <SelectItem value="200000">$200,000</SelectItem>
+                    <SelectContent className="bg-gray-800 border-gray-600">
+                      <SelectItem value="active" className="text-white">Active</SelectItem>
+                      <SelectItem value="passed" className="text-white">Passed</SelectItem>
+                      <SelectItem value="failed" className="text-white">Failed</SelectItem>
+                      <SelectItem value="withdrawn" className="text-white">Withdrawn</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
                 <div>
-                  <Label className="text-gray-300">Account Cost ($)</Label>
-                  <Input
-                    type="number"
-                    value={newAccountData.accountCost}
-                    onChange={(e) => setNewAccountData({...newAccountData, accountCost: parseFloat(e.target.value) || 0})}
-                    className="bg-gray-700 border-gray-600 text-white"
-                    placeholder="0"
+                  <Label className="text-white">Prop Firm</Label>
+                  <Input 
+                    value={accountForm.firm}
+                    onChange={(e) => setAccountForm({...accountForm, firm: e.target.value})}
+                    className="bg-gray-800 border-gray-600 text-white"
+                    placeholder="Enter prop firm name"
                   />
                 </div>
                 <div>
-                  <Label className="text-gray-300">Number of Phases</Label>
-                  <Select value={newAccountData.phases.toString()} onValueChange={(value) => setNewAccountData({...newAccountData, phases: parseInt(value)})}>
-                    <SelectTrigger className="bg-gray-700 border-gray-600 text-white">
+                  <Label className="text-white">Account Size ($)</Label>
+                  <Input 
+                    type="number"
+                    value={accountForm.size}
+                    onChange={(e) => setAccountForm({...accountForm, size: parseInt(e.target.value)})}
+                    className="bg-gray-800 border-gray-600 text-white"
+                  />
+                </div>
+                <div>
+                  <Label className="text-white">Daily Loss Limit ($)</Label>
+                  <Input 
+                    type="number"
+                    value={accountForm.dailyLossLimit}
+                    onChange={(e) => setAccountForm({...accountForm, dailyLossLimit: parseFloat(e.target.value)})}
+                    className="bg-gray-800 border-gray-600 text-white"
+                  />
+                </div>
+                <div>
+                  <Label className="text-white">Minimum Trading Days</Label>
+                  <Input 
+                    type="number"
+                    value={accountForm.minimumDays}
+                    onChange={(e) => setAccountForm({...accountForm, minimumDays: parseInt(e.target.value)})}
+                    className="bg-gray-800 border-gray-600 text-white"
+                  />
+                </div>
+                <div>
+                  <Label className="text-white">Consistency Rule (%)</Label>
+                  <Input 
+                    type="number"
+                    value={accountForm.consistencyRule}
+                    onChange={(e) => setAccountForm({...accountForm, consistencyRule: parseFloat(e.target.value)})}
+                    className="bg-gray-800 border-gray-600 text-white"
+                    placeholder="Max daily profit %"
+                  />
+                </div>
+              </div>
+            </TabsContent>
+
+            <TabsContent value="financial" className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label className="text-white">Account Cost ($)</Label>
+                  <Input 
+                    type="number"
+                    value={accountForm.accountCost}
+                    onChange={(e) => setAccountForm({...accountForm, accountCost: parseFloat(e.target.value)})}
+                    className="bg-gray-800 border-gray-600 text-white"
+                  />
+                </div>
+                <div>
+                  <Label className="text-white">Trading Capital ($)</Label>
+                  <Input 
+                    type="number"
+                    value={accountForm.tradingCapital}
+                    onChange={(e) => setAccountForm({...accountForm, tradingCapital: parseFloat(e.target.value)})}
+                    className="bg-gray-800 border-gray-600 text-white"
+                  />
+                </div>
+              </div>
+            </TabsContent>
+
+            <TabsContent value="payout" className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label className="text-white">Payout Frequency</Label>
+                  <Select value={accountForm.payoutFrequency} onValueChange={(value) => setAccountForm({...accountForm, payoutFrequency: value})}>
+                    <SelectTrigger className="bg-gray-800 border-gray-600 text-white">
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent className="bg-gray-700 border-gray-600">
-                      <SelectItem value="1">1 Phase</SelectItem>
-                      <SelectItem value="2">2 Phases</SelectItem>
+                    <SelectContent className="bg-gray-800 border-gray-600">
+                      <SelectItem value="weekly" className="text-white">Weekly</SelectItem>
+                      <SelectItem value="monthly" className="text-white">Monthly</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
+                <div>
+                  <Label className="text-white">Minimum Payout Amount ($)</Label>
+                  <Input 
+                    type="number"
+                    value={accountForm.minimumPayoutAmount}
+                    onChange={(e) => setAccountForm({...accountForm, minimumPayoutAmount: parseFloat(e.target.value)})}
+                    className="bg-gray-800 border-gray-600 text-white"
+                  />
+                </div>
+                <div>
+                  <Label className="text-white">Profit Split (%)</Label>
+                  <Input 
+                    type="number"
+                    value={accountForm.profitSplit}
+                    onChange={(e) => setAccountForm({...accountForm, profitSplit: parseFloat(e.target.value)})}
+                    className="bg-gray-800 border-gray-600 text-white"
+                  />
+                </div>
               </div>
-            </div>
+            </TabsContent>
 
-            {/* Section 2: Financial Tracking */}
-            <div className="bg-gray-800 p-4 rounded-lg space-y-4">
-              <h3 className="text-lg font-semibold text-green-400 flex items-center gap-2">
-                <BarChart3 className="h-5 w-5" />
-                Financial Tracking
-              </h3>
-              
+            <TabsContent value="risk" className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label className="text-gray-300">Starting Balance ($)</Label>
-                  <Input
+                  <Label className="text-white">Risk Per Trade ($)</Label>
+                  <Input 
                     type="number"
-                    value={newAccountData.startingBalance}
-                    onChange={(e) => setNewAccountData({...newAccountData, startingBalance: parseFloat(e.target.value) || 25000})}
-                    className="bg-gray-700 border-gray-600 text-white"
-                    placeholder="25000"
+                    value={accountForm.riskPerTrade}
+                    onChange={(e) => setAccountForm({...accountForm, riskPerTrade: parseFloat(e.target.value)})}
+                    className="bg-gray-800 border-gray-600 text-white"
                   />
                 </div>
                 <div>
-                  <Label className="text-gray-300">Profit Target ($)</Label>
-                  <Input
+                  <Label className="text-white">Risk Reward Ratio</Label>
+                  <Input 
                     type="number"
-                    value={newAccountData.profitTarget}
-                    onChange={(e) => setNewAccountData({...newAccountData, profitTarget: parseFloat(e.target.value) || 2000})}
-                    className="bg-gray-700 border-gray-600 text-white"
-                    placeholder="2000"
+                    step="0.1"
+                    value={accountForm.riskRewardRatio}
+                    onChange={(e) => setAccountForm({...accountForm, riskRewardRatio: parseFloat(e.target.value)})}
+                    className="bg-gray-800 border-gray-600 text-white"
                   />
                 </div>
                 <div>
-                  <Label className="text-gray-300">Max Drawdown ($)</Label>
-                  <Input
+                  <Label className="text-white">Profit Target ($)</Label>
+                  <Input 
                     type="number"
-                    value={newAccountData.maxDrawdown}
-                    onChange={(e) => setNewAccountData({...newAccountData, maxDrawdown: parseFloat(e.target.value) || 2500})}
-                    className="bg-gray-700 border-gray-600 text-white"
-                    placeholder="2500"
+                    value={accountForm.profitTarget}
+                    onChange={(e) => setAccountForm({...accountForm, profitTarget: parseFloat(e.target.value)})}
+                    className="bg-gray-800 border-gray-600 text-white"
                   />
                 </div>
                 <div>
-                  <Label className="text-gray-300">Daily Loss Limit (%)</Label>
-                  <Input
+                  <Label className="text-white">Max Drawdown ($)</Label>
+                  <Input 
                     type="number"
-                    value={newAccountData.dailyLossLimit}
-                    onChange={(e) => setNewAccountData({...newAccountData, dailyLossLimit: parseFloat(e.target.value) || 5})}
-                    className="bg-gray-700 border-gray-600 text-white"
-                    placeholder="5"
+                    value={accountForm.maxDrawdown}
+                    onChange={(e) => setAccountForm({...accountForm, maxDrawdown: parseFloat(e.target.value)})}
+                    className="bg-gray-800 border-gray-600 text-white"
                   />
                 </div>
               </div>
-            </div>
-
-            {/* Section 3: Payout Rules */}
-            {(newAccountData.type === 'funded' || newAccountData.type === 'live') && (
-              <div className="bg-gray-800 p-4 rounded-lg space-y-4">
-                <h3 className="text-lg font-semibold text-blue-400 flex items-center gap-2">
-                  <Target className="h-5 w-5" />
-                  Payout Rules
-                </h3>
-                
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <Label className="text-gray-300">Days Required for Payout</Label>
-                    <Input
-                      type="number"
-                      value={newAccountData.daysRequiredForPayout}
-                      onChange={(e) => setNewAccountData({...newAccountData, daysRequiredForPayout: parseInt(e.target.value) || 5})}
-                      className="bg-gray-700 border-gray-600 text-white"
-                      placeholder="5"
-                    />
-                  </div>
-                  <div>
-                    <Label className="text-gray-300">Profit Split (%)</Label>
-                    <Input
-                      type="number"
-                      value={newAccountData.profitSplit}
-                      onChange={(e) => setNewAccountData({...newAccountData, profitSplit: parseInt(e.target.value) || 80})}
-                      className="bg-gray-700 border-gray-600 text-white"
-                      placeholder="80"
-                    />
-                  </div>
-                  <div>
-                    <Label className="text-gray-300">Minimum Payout ($)</Label>
-                    <Input
-                      type="number"
-                      value={newAccountData.minimumPayoutAmount}
-                      onChange={(e) => setNewAccountData({...newAccountData, minimumPayoutAmount: parseInt(e.target.value) || 100})}
-                      className="bg-gray-700 border-gray-600 text-white"
-                      placeholder="100"
-                    />
-                  </div>
-                  <div>
-                    <Label className="text-gray-300">Payout Frequency</Label>
-                    <Select value={newAccountData.payoutFrequency} onValueChange={(value) => setNewAccountData({...newAccountData, payoutFrequency: value})}>
-                      <SelectTrigger className="bg-gray-700 border-gray-600 text-white">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent className="bg-gray-700 border-gray-600">
-                        <SelectItem value="weekly">Weekly</SelectItem>
-                        <SelectItem value="bi-weekly">Bi-weekly</SelectItem>
-                        <SelectItem value="monthly">Monthly</SelectItem>
-                        <SelectItem value="on-demand">On-demand</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Section 4: Risk Settings */}
-            <div className="bg-gray-800 p-4 rounded-lg space-y-4">
-              <h3 className="text-lg font-semibold text-red-400 flex items-center gap-2">
-                <Shield className="h-5 w-5" />
-                Risk Settings
-              </h3>
-              
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label className="text-gray-300">Risk Per Trade (%)</Label>
-                  <Input
-                    type="number"
-                    value={newAccountData.riskAmount}
-                    onChange={(e) => setNewAccountData({...newAccountData, riskAmount: parseFloat(e.target.value) || 2})}
-                    className="bg-gray-700 border-gray-600 text-white"
-                    placeholder="2"
-                  />
-                </div>
-                <div>
-                  <Label className="text-gray-300">Max Daily Risk (%)</Label>
-                  <Input
-                    type="number"
-                    value={newAccountData.maxDailyRisk}
-                    onChange={(e) => setNewAccountData({...newAccountData, maxDailyRisk: parseFloat(e.target.value) || 5})}
-                    className="bg-gray-700 border-gray-600 text-white"
-                    placeholder="5"
-                  />
-                </div>
-              </div>
-              
-              <div className="flex items-center space-x-4">
-                <div className="flex items-center space-x-2">
-                  <input
-                    type="checkbox"
-                    id="stopLossRequired"
-                    checked={newAccountData.stopLossRequired}
-                    onChange={(e) => setNewAccountData({...newAccountData, stopLossRequired: e.target.checked})}
-                    className="rounded bg-gray-700 border-gray-600"
-                  />
-                  <Label htmlFor="stopLossRequired" className="text-gray-300">Stop Loss Required</Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <input
-                    type="checkbox"
-                    id="consistencyRule"
-                    checked={newAccountData.consistencyRule}
-                    onChange={(e) => setNewAccountData({...newAccountData, consistencyRule: e.target.checked})}
-                    className="rounded bg-gray-700 border-gray-600"
-                  />
-                  <Label htmlFor="consistencyRule" className="text-gray-300">Consistency Rule</Label>
-                </div>
-              </div>
-            </div>
-          </div>
+            </TabsContent>
+          </Tabs>
           
           <div className="flex justify-end gap-3 mt-6">
             <Button 
@@ -1773,9 +1727,9 @@ export default function AccountManagement({ accounts }: AccountManagementProps) 
               Cancel
             </Button>
             <Button 
-              onClick={() => createAccountMutation.mutate(newAccountData)}
-              disabled={createAccountMutation.isPending || !newAccountData.name || !newAccountData.firm}
-              className="bg-gradient-to-r from-yellow-400 to-yellow-600 text-black font-semibold hover:from-yellow-500 hover:to-yellow-700"
+              onClick={handleCreateAccount}
+              disabled={createAccountMutation.isPending}
+              className="bg-yellow-500 hover:bg-yellow-600 text-black"
             >
               {createAccountMutation.isPending ? "Creating..." : "Create Account"}
             </Button>
