@@ -16,6 +16,8 @@ export default function NotificationSettings() {
 
   const { data: settings, isLoading } = useQuery<UserNotificationSettings>({
     queryKey: ["/api/notification-settings"],
+    staleTime: Infinity, // Cache forever for speed
+    refetchOnWindowFocus: false,
   });
 
   const updateSettingsMutation = useMutation({
