@@ -45,7 +45,8 @@ import {
   Copy,
   Trash2,
   Star,
-  Crown
+  Crown,
+  Edit
 } from 'lucide-react';
 
 // Strategy data will be loaded from API
