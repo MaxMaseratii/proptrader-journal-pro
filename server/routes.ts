@@ -156,13 +156,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.patch("/api/accounts/:id", requireAuth, async (req, res) => {
     try {
       const id = parseInt(req.params.id);
+      console.log("Account update request body:", JSON.stringify(req.body, null, 2));
       const validatedData = insertAccountSchema.partial().parse(req.body);
       const account = await storage.updateAccount(id, validatedData);
       res.json(account);
     } catch (error) {
       if (error instanceof z.ZodError) {
+        console.error("Account validation errors:", error.errors);
         return res.status(400).json({ message: "Invalid account data", errors: error.errors });
       }
+      console.error("Account update error:", error);
       res.status(500).json({ message: "Failed to update account" });
     }
   });
