@@ -842,14 +842,14 @@ export default function AccountsPage() {
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <p className="text-gray-400 text-sm">Starting Balance</p>
-                    <p className="text-white font-semibold">${account.startingBalance.toLocaleString()}</p>
+                    <p className="text-white font-semibold">${(account.startingBalance || 0).toLocaleString()}</p>
                   </div>
                   <div>
                     <p className="text-gray-400 text-sm">Current Balance</p>
                     <div className="flex items-center gap-2">
                       {showBalance[account.id] ? (
                         <>
-                          <p className="text-white font-semibold">${account.currentBalance.toLocaleString()}</p>
+                          <p className="text-white font-semibold">${(account.currentBalance || 0).toLocaleString()}</p>
                           <button
                             onClick={() => toggleBalanceVisibility(account.id)}
                             className="text-gray-400 hover:text-white"
