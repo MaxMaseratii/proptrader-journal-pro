@@ -11,6 +11,7 @@ import { Slider } from '@/components/ui/slider';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Progress } from '@/components/ui/progress';
 import { 
   Brain, 
   Heart, 
@@ -305,175 +306,357 @@ export default function CompleteTradingDashboard() {
     );
   };
 
-  const renderPreSessionCheck = () => (
-    <div className="h-full space-y-4">
-      <Card className="bg-gradient-to-br from-blue-950 via-indigo-950 to-purple-950 border-2 border-blue-500/30 shadow-2xl h-full flex flex-col">
-        <CardHeader className="bg-gradient-to-r from-blue-900/50 to-purple-900/50">
-          <CardTitle className="text-gradient-rainbow flex items-center gap-2 text-xl">
-            <Brain className="h-6 w-6 text-yellow-400" />
-            Daily Pre-Session Mental Check
-          </CardTitle>
-          <p className="text-blue-200">Complete assessment before trading (2 minutes)</p>
-        </CardHeader>
-        <CardContent className="space-y-8 p-6 flex-1 overflow-auto">
-          {/* Mental State Assessment */}
-          <div>
-            <h3 className="widget-text font-semibold mb-4 text-lg">Mental State Assessment (Rate 1-5)</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {[
-                { label: 'Emotional Clarity', key: 'emotionalClarity', desc: 'Calm vs. Anxious/Excited', icon: Heart, wisdom: 'Clarity breeds consistency' },
-                { label: 'Physical Energy', key: 'physicalEnergy', desc: 'Alert vs. Tired/Wired', icon: Zap, wisdom: 'Energy fuels execution' },
-                { label: 'Focus Level', key: 'focusLevel', desc: 'Sharp vs. Scattered', icon: Target, wisdom: 'Focus determines outcome' },
-                { label: 'Confidence', key: 'confidence', desc: 'Assured vs. Uncertain', icon: Shield, wisdom: 'Confidence enables action' },
-                { label: 'Market Regime Awareness', key: 'marketRegimeAwareness', desc: 'Do you understand current conditions?', icon: TrendingUp, wisdom: 'Know the market you\'re trading' },
-                { label: 'Risk Respect Level', key: 'riskRespectLevel', desc: 'Will you honor your stops?', icon: Shield, wisdom: 'Risk management is everything' },
-                { label: 'Humility Check', key: 'humilityCheck', desc: 'Ready to be wrong?', icon: Heart, wisdom: 'Market will humble everyone' },
-                { label: 'Professional Trader Mindset', key: 'wizardMindset', desc: 'Thinking like the masters?', icon: Crown, wisdom: 'Discipline over discretion' }
-              ].map(({ label, key, desc, icon: Icon, wisdom }) => (
-                <div key={key} className="space-y-3">
-                  <div className="flex items-center gap-2">
-                    <Icon className="w-5 h-5 text-amber-400" />
-                    <Label className="widget-text font-medium">{label}</Label>
+  const renderPreSessionCheck = () => {
+    // Enhanced state management for better psychology tracking
+    const [sliderValues, setSliderValues] = useState({
+      emotional: 4,
+      physical: 5,
+      focus: 4,
+      confidence: 4,
+      market: 4,
+      risk: 5,
+      humility: 4,
+      professional: 4
+    });
+
+    const totalScore = Object.values(sliderValues).reduce((sum, val) => sum + val, 0);
+    const maxScore = 40;
+    const percentage = (totalScore / maxScore) * 100;
+
+    const getScoreLabel = (score) => {
+      if (score >= 35) return { label: "Excellent", color: "text-emerald-400" };
+      if (score >= 30) return { label: "Good", color: "text-blue-400" };
+      if (score >= 25) return { label: "Fair", color: "text-yellow-400" };
+      return { label: "Needs Improvement", color: "text-red-400" };
+    };
+
+    const scoreInfo = getScoreLabel(totalScore);
+
+    return (
+      <div className="h-full space-y-4">
+        <Card className="bg-gradient-to-br from-blue-950 via-indigo-950 to-purple-950 border-2 border-blue-500/30 shadow-2xl h-full flex flex-col">
+          <CardHeader className="bg-gradient-to-r from-blue-900/50 to-purple-900/50">
+            <CardTitle className="text-gradient-rainbow flex items-center gap-2 text-xl">
+              <Brain className="h-6 w-6 text-yellow-400" />
+              Pre-Session Mental Check & Loss-Cutting Mindset
+            </CardTitle>
+            <p className="text-blue-200">Complete assessment before trading (2 minutes)</p>
+          </CardHeader>
+          <CardContent className="space-y-6 p-6 flex-1 overflow-auto">
+            {/* Loss-Cutting Psychology Education */}
+            <div className="bg-gradient-to-r from-red-900/20 via-pink-900/20 to-orange-900/20 p-6 rounded-2xl border border-red-500/30 shadow-lg">
+              <div className="flex items-center gap-3 mb-4">
+                <AlertTriangle className="w-6 h-6 text-red-400" />
+                <h4 className="text-white font-bold text-lg">The Mental Battle: Why We Hold Losing Trades</h4>
+              </div>
+              <div className="space-y-4 text-gray-300">
+                <p className="leading-relaxed">
+                  <strong className="text-red-400">Every trader faces this moment:</strong> Your trade is moving against you. Your stop-loss level 
+                  is getting closer. Logic says "exit now," but your emotions scream "just wait a little longer!"
+                </p>
+                <p className="leading-relaxed text-sm">
+                  Three powerful forces work against you: <span className="text-orange-400 font-medium">Pride</span> (admitting you're wrong hurts), 
+                  <span className="text-blue-400 font-medium"> Hope</span> (maybe it will reverse), and <span className="text-purple-400 font-medium">Fear</span> (what if you exit and it immediately recovers?). 
+                  These emotions are natural, but they destroy accounts.
+                </p>
+                <div className="bg-slate-800/70 p-4 rounded-xl border border-orange-500/30 shadow-sm">
+                  <p className="text-orange-300 font-medium mb-2">💡 The Reality:</p>
+                  <p className="text-sm text-gray-300">Professional traders cut losses fast because they understand: Small losses are the cost of doing business. 
+                  Big losses are account killers. Every dollar you save by cutting losses early is capital preserved for your next winning trade.</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Simple Loss-Cutting System */}
+            <div className="bg-gradient-to-r from-emerald-900/20 via-teal-900/20 to-cyan-900/20 p-6 rounded-2xl border border-emerald-500/30 shadow-lg">
+              <div className="flex items-center gap-3 mb-4">
+                <Shield className="w-6 h-6 text-emerald-400" />
+                <h4 className="text-white font-bold text-lg">Simple 4-Step Loss Control System</h4>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-3">
+                  <div className="flex items-start gap-3 p-4 bg-slate-800/60 rounded-xl border border-emerald-500/20 shadow-sm hover:shadow-md transition-all">
+                    <div className="w-8 h-8 bg-gradient-to-r from-emerald-500 to-teal-500 text-white rounded-full flex items-center justify-center font-bold text-sm">1</div>
+                    <div>
+                      <p className="text-emerald-300 font-semibold text-sm">Plan Your Exit Before You Enter</p>
+                      <p className="text-gray-400 text-xs mt-1">Decide your maximum loss before clicking buy. Write it down: "I will exit if price hits $_____"</p>
+                    </div>
                   </div>
-                  <p className="text-blue-300 text-sm">{desc}</p>
-                  <p className="text-purple-400 text-xs italic">{wisdom}</p>
-                  <div className="flex items-center gap-4">
-                    <span className="text-red-400 text-sm w-8">1</span>
-                    <Slider
-                      value={[preSessionData[key]]}
-                      onValueChange={(value) => setPreSessionData(prev => ({
-                        ...prev,
-                        [key]: value[0],
-                        overallReadiness: prev.emotionalClarity + prev.physicalEnergy + prev.focusLevel + prev.confidence + prev.marketRegimeAwareness + prev.riskRespectLevel + prev.humilityCheck + prev.wizardMindset
-                      }))}
-                      max={5}
-                      min={1}
-                      step={1}
-                      className="flex-1"
-                    />
-                    <span className="text-green-400 text-sm w-8">5</span>
-                    <Badge className="bg-blue-900/30 text-blue-300 border-blue-400/30 min-w-8">
-                      {preSessionData[key]}
-                    </Badge>
+                  <div className="flex items-start gap-3 p-4 bg-slate-800/60 rounded-xl border border-sky-500/20 shadow-sm hover:shadow-md transition-all">
+                    <div className="w-8 h-8 bg-gradient-to-r from-sky-500 to-blue-500 text-white rounded-full flex items-center justify-center font-bold text-sm">2</div>
+                    <div>
+                      <p className="text-sky-300 font-semibold text-sm">Set Your Risk Limit</p>
+                      <p className="text-gray-400 text-xs mt-1">Never risk more than 1-2% of your account on any single trade. This keeps you in the game long-term.</p>
+                    </div>
                   </div>
                 </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Overall Readiness Score */}
-          <div className="text-center p-6 bg-gradient-to-br from-slate-900/50 to-slate-800/50 border border-blue-500/30 rounded-lg">
-            <h3 className="widget-text font-semibold mb-2">Overall Readiness Score</h3>
-            <div className="text-4xl font-bold mb-2">
-              <span className={`${preSessionData.overallReadiness >= 32 ? 'text-green-400' : 
-                                 preSessionData.overallReadiness >= 24 ? 'text-yellow-400' : 'text-red-400'}`}>
-                {preSessionData.overallReadiness}/40
-              </span>
-            </div>
-            <Badge className={`text-lg px-4 py-2 ${
-              preSessionData.overallReadiness >= 32 ? 'bg-green-900/30 text-green-400 border-green-400/30' :
-              preSessionData.overallReadiness >= 24 ? 'bg-yellow-900/30 text-yellow-400 border-yellow-400/30' :
-              'bg-red-900/30 text-red-400 border-red-400/30'
-            }`}>
-              {preSessionData.overallReadiness >= 32 ? 'GO' : 
-               preSessionData.overallReadiness >= 24 ? 'REDUCED' : 'NO-GO'}
-            </Badge>
-            <p className="text-blue-300 text-sm mt-2">
-              {preSessionData.overallReadiness >= 32 ? 'Full trading capacity' :
-               preSessionData.overallReadiness >= 24 ? 'Reduce position size by 50%' :
-               'Take the day off or paper trade only'}
-            </p>
-          </div>
-
-          {/* Trader Identity Check */}
-          <div>
-            <h3 className="widget-text font-semibold mb-4 text-lg">I am trading today as a...</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {[
-                { id: 'disciplined_professional', label: 'Disciplined Professional', desc: 'Following rules, managing risk', icon: Shield },
-                { id: 'gamblermentality', label: 'Thrill Seeker', desc: 'Seeking excitement and big wins', icon: TrendingUp },
-                { id: 'revenge_trader', label: 'Revenge Trader', desc: 'Trying to win back losses', icon: TrendingDown },
-                { id: 'fearful_trader', label: 'Fearful Trader', desc: 'Hesitant and overthinking', icon: AlertTriangle }
-              ].map(({ id, label, desc, icon: Icon }) => (
-                <Card
-                  key={id}
-                  className={`cursor-pointer transition-all border-2 ${
-                    preSessionData.traderIdentity === id
-                      ? 'border-blue-500/50 bg-blue-950/50'
-                      : 'border-gray-600/30 bg-gray-900/30 hover:border-blue-400/30'
-                  }`}
-                  onClick={() => setPreSessionData(prev => ({ ...prev, traderIdentity: id }))}
-                >
-                  <CardContent className="p-4 text-center">
-                    <Icon className="w-8 h-8 mx-auto mb-2 text-blue-400" />
-                    <h4 className="widget-text font-medium">{label}</h4>
-                    <p className="text-blue-300 text-sm mt-1">{desc}</p>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </div>
-
-          {/* Psychological Scan */}
-          <div className="space-y-4">
-            <h3 className="widget-text font-semibold text-lg">Quick Psychological Scan</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <Label className="text-blue-300 mb-2 block">What's your biggest fear about today's trading?</Label>
-                <Textarea
-                  value={preSessionData.biggestFear}
-                  onChange={(e) => setPreSessionData(prev => ({ ...prev, biggestFear: e.target.value }))}
-                  placeholder="e.g., Losing money, missing opportunities..."
-                  className="bg-white border-blue-500/30 text-black placeholder:text-gray-500"
-                />
+                <div className="space-y-3">
+                  <div className="flex items-start gap-3 p-4 bg-slate-800/60 rounded-xl border border-violet-500/20 shadow-sm hover:shadow-md transition-all">
+                    <div className="w-8 h-8 bg-gradient-to-r from-violet-500 to-purple-500 text-white rounded-full flex items-center justify-center font-bold text-sm">3</div>
+                    <div>
+                      <p className="text-violet-300 font-semibold text-sm">Execute Without Emotion</p>
+                      <p className="text-gray-400 text-xs mt-1">When your stop is hit, exit immediately. No second-guessing, no "one more minute." Trust your plan.</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3 p-4 bg-slate-800/60 rounded-xl border border-orange-500/20 shadow-sm hover:shadow-md transition-all">
+                    <div className="w-8 h-8 bg-gradient-to-r from-orange-500 to-pink-500 text-white rounded-full flex items-center justify-center font-bold text-sm">4</div>
+                    <div>
+                      <p className="text-orange-300 font-semibold text-sm">Reset and Look Forward</p>
+                      <p className="text-gray-400 text-xs mt-1">Losses are feedback, not failures. Learn what you can, then focus on finding your next high-probability setup.</p>
+                    </div>
+                  </div>
+                </div>
               </div>
-              <div>
-                <Label className="text-blue-300 mb-2 block">What's your strongest desire for today?</Label>
-                <Textarea
-                  value={preSessionData.strongestDesire}
-                  onChange={(e) => setPreSessionData(prev => ({ ...prev, strongestDesire: e.target.value }))}
-                  placeholder="e.g., Making consistent profits, following my plan..."
-                  className="bg-white border-blue-500/30 text-black placeholder:text-gray-500"
-                />
+              <div className="mt-4 bg-slate-800/70 p-4 rounded-xl border border-teal-500/30 shadow-sm">
+                <p className="text-gray-300 text-sm">
+                  <span className="text-emerald-400 font-semibold">Pro Tip:</span> Practice this system in a demo account until it becomes automatic. 
+                  The traders who master loss control are the ones who survive and thrive in all market conditions.
+                </p>
               </div>
             </div>
-          </div>
 
-          {/* Edge vs Outcome */}
-          <div>
-            <h3 className="text-white font-semibold mb-4 text-lg">Focus Selection</h3>
-            <div className="flex gap-4">
+            {/* Enhanced Mental State Assessment */}
+            <div className="bg-gradient-to-r from-indigo-900/20 via-purple-900/20 to-pink-900/20 p-6 rounded-2xl border border-indigo-500/30 shadow-lg">
+              <div className="flex items-center gap-3 mb-6">
+                <Activity className="w-6 h-6 text-indigo-400" />
+                <h4 className="text-white font-bold text-lg">Mental State Assessment (Rate 1-5)</h4>
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Left Column */}
+                <div className="space-y-6">
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-2">
+                      <div className="w-4 h-4 bg-gradient-to-r from-orange-400 to-pink-400 rounded-full shadow-sm"></div>
+                      <Label className="text-white font-semibold">Emotional Clarity</Label>
+                    </div>
+                    <p className="text-xs text-gray-400 italic">Calm vs. Anxious/Excited • Clarity breeds consistency</p>
+                    <div className="flex items-center gap-4">
+                      <span className="text-xs text-gray-500 min-w-[60px]">Anxious</span>
+                      <Slider
+                        value={[sliderValues.emotional]}
+                        onValueChange={(value) => setSliderValues(prev => ({ ...prev, emotional: value[0] }))}
+                        max={5}
+                        min={1}
+                        step={1}
+                        className="flex-1"
+                      />
+                      <span className="text-xs text-gray-500 min-w-[40px]">Calm</span>
+                      <span className="text-orange-400 font-bold min-w-[20px] text-lg">{sliderValues.emotional}</span>
+                    </div>
+                  </div>
+
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-2">
+                      <div className="w-4 h-4 bg-gradient-to-r from-emerald-400 to-teal-400 rounded-full shadow-sm"></div>
+                      <Label className="text-white font-semibold">Focus Level</Label>
+                    </div>
+                    <p className="text-xs text-gray-400 italic">Sharp vs. Scattered • Focus determines outcome</p>
+                    <div className="flex items-center gap-4">
+                      <span className="text-xs text-gray-500 min-w-[60px]">Scattered</span>
+                      <Slider
+                        value={[sliderValues.focus]}
+                        onValueChange={(value) => setSliderValues(prev => ({ ...prev, focus: value[0] }))}
+                        max={5}
+                        min={1}
+                        step={1}
+                        className="flex-1"
+                      />
+                      <span className="text-xs text-gray-500 min-w-[40px]">Sharp</span>
+                      <span className="text-emerald-400 font-bold min-w-[20px] text-lg">{sliderValues.focus}</span>
+                    </div>
+                  </div>
+
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-2">
+                      <div className="w-4 h-4 bg-gradient-to-r from-blue-400 to-cyan-400 rounded-full shadow-sm"></div>
+                      <Label className="text-white font-semibold">Market Regime Awareness</Label>
+                    </div>
+                    <p className="text-xs text-gray-400 italic">Do you understand current conditions? • Know the market you're trading</p>
+                    <div className="flex items-center gap-4">
+                      <span className="text-xs text-gray-500 min-w-[60px]">Confused</span>
+                      <Slider
+                        value={[sliderValues.market]}
+                        onValueChange={(value) => setSliderValues(prev => ({ ...prev, market: value[0] }))}
+                        max={5}
+                        min={1}
+                        step={1}
+                        className="flex-1"
+                      />
+                      <span className="text-xs text-gray-500 min-w-[40px]">Clear</span>
+                      <span className="text-blue-400 font-bold min-w-[20px] text-lg">{sliderValues.market}</span>
+                    </div>
+                  </div>
+
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-2">
+                      <div className="w-4 h-4 bg-gradient-to-r from-purple-400 to-pink-400 rounded-full shadow-sm"></div>
+                      <Label className="text-white font-semibold">Humility Check</Label>
+                    </div>
+                    <p className="text-xs text-gray-400 italic">Ready to be wrong? • Market will humble everyone</p>
+                    <div className="flex items-center gap-4">
+                      <span className="text-xs text-gray-500 min-w-[60px]">Arrogant</span>
+                      <Slider
+                        value={[sliderValues.humility]}
+                        onValueChange={(value) => setSliderValues(prev => ({ ...prev, humility: value[0] }))}
+                        max={5}
+                        min={1}
+                        step={1}
+                        className="flex-1"
+                      />
+                      <span className="text-xs text-gray-500 min-w-[40px]">Humble</span>
+                      <span className="text-purple-400 font-bold min-w-[20px] text-lg">{sliderValues.humility}</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Right Column */}
+                <div className="space-y-6">
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-2">
+                      <div className="w-4 h-4 bg-gradient-to-r from-green-400 to-emerald-400 rounded-full shadow-sm"></div>
+                      <Label className="text-white font-semibold">Physical Energy</Label>
+                    </div>
+                    <p className="text-xs text-gray-400 italic">Alert vs. Tired/Wired • Energy fuels execution</p>
+                    <div className="flex items-center gap-4">
+                      <span className="text-xs text-gray-500 min-w-[60px]">Tired</span>
+                      <Slider
+                        value={[sliderValues.physical]}
+                        onValueChange={(value) => setSliderValues(prev => ({ ...prev, physical: value[0] }))}
+                        max={5}
+                        min={1}
+                        step={1}
+                        className="flex-1"
+                      />
+                      <span className="text-xs text-gray-500 min-w-[40px]">Alert</span>
+                      <span className="text-green-400 font-bold min-w-[20px] text-lg">{sliderValues.physical}</span>
+                    </div>
+                  </div>
+
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-2">
+                      <div className="w-4 h-4 bg-gradient-to-r from-sky-400 to-blue-400 rounded-full shadow-sm"></div>
+                      <Label className="text-white font-semibold">Confidence</Label>
+                    </div>
+                    <p className="text-xs text-gray-400 italic">Assured vs. Uncertain • Confidence enables action</p>
+                    <div className="flex items-center gap-4">
+                      <span className="text-xs text-gray-500 min-w-[60px]">Uncertain</span>
+                      <Slider
+                        value={[sliderValues.confidence]}
+                        onValueChange={(value) => setSliderValues(prev => ({ ...prev, confidence: value[0] }))}
+                        max={5}
+                        min={1}
+                        step={1}
+                        className="flex-1"
+                      />
+                      <span className="text-xs text-gray-500 min-w-[40px]">Assured</span>
+                      <span className="text-sky-400 font-bold min-w-[20px] text-lg">{sliderValues.confidence}</span>
+                    </div>
+                  </div>
+
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-2">
+                      <div className="w-4 h-4 bg-gradient-to-r from-pink-400 to-rose-400 rounded-full shadow-sm"></div>
+                      <Label className="text-white font-semibold">Risk Respect Level</Label>
+                    </div>
+                    <p className="text-xs text-gray-400 italic">Will you honor your stops? • Risk management is everything</p>
+                    <div className="flex items-center gap-4">
+                      <span className="text-xs text-gray-500 min-w-[60px]">Reckless</span>
+                      <Slider
+                        value={[sliderValues.risk]}
+                        onValueChange={(value) => setSliderValues(prev => ({ ...prev, risk: value[0] }))}
+                        max={5}
+                        min={1}
+                        step={1}
+                        className="flex-1"
+                      />
+                      <span className="text-xs text-gray-500 min-w-[40px]">Disciplined</span>
+                      <span className="text-pink-400 font-bold min-w-[20px] text-lg">{sliderValues.risk}</span>
+                    </div>
+                  </div>
+
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-2">
+                      <div className="w-4 h-4 bg-gradient-to-r from-amber-400 to-orange-400 rounded-full shadow-sm"></div>
+                      <Label className="text-white font-semibold">Professional Trader Mindset</Label>
+                    </div>
+                    <p className="text-xs text-gray-400 italic">Thinking like the masters? • Discipline over discretion</p>
+                    <div className="flex items-center gap-4">
+                      <span className="text-xs text-gray-500 min-w-[60px]">Amateur</span>
+                      <Slider
+                        value={[sliderValues.professional]}
+                        onValueChange={(value) => setSliderValues(prev => ({ ...prev, professional: value[0] }))}
+                        max={5}
+                        min={1}
+                        step={1}
+                        className="flex-1"
+                      />
+                      <span className="text-xs text-gray-500 min-w-[40px]">Pro</span>
+                      <span className="text-amber-400 font-bold min-w-[20px] text-lg">{sliderValues.professional}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            {/* Enhanced Mental Fitness Score */}
+            <div className="bg-gradient-to-r from-violet-900/30 to-indigo-900/30 rounded-2xl p-6 border border-violet-500/30 shadow-lg">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-3">
+                  <Award className="w-6 h-6 text-indigo-400" />
+                  <span className="text-white font-bold text-lg">Mental Fitness Score</span>
+                </div>
+                <div className="text-right">
+                  <div className={`text-3xl font-bold ${scoreInfo.color}`}>{totalScore}/{maxScore}</div>
+                  <div className={`text-sm font-medium ${scoreInfo.color}`}>{scoreInfo.label}</div>
+                </div>
+              </div>
+              <Progress 
+                value={percentage} 
+                className="h-4 mb-4"
+              />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2">
+                    <CheckCircle className="w-4 h-4 text-emerald-400" />
+                    <span className="text-sm text-emerald-400 font-semibold">
+                      {percentage >= 75 ? "High readiness level" : 
+                       percentage >= 60 ? "Good readiness level" : 
+                       "Needs improvement"}
+                    </span>
+                  </div>
+                  <div className="text-sm text-gray-300 leading-relaxed">
+                    {percentage >= 75 
+                      ? "You're mentally prepared for trading today. Your loss-cutting discipline and risk respect are excellent."
+                      : percentage >= 60 
+                      ? "Good mental state with room for improvement. Focus on your weaker areas before trading."
+                      : "Consider improving your mental state before trading. Practice the loss-cutting drills and work on focus areas."}
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <div className="text-sm text-white font-semibold">Focus Areas:</div>
+                  <div className="text-sm text-indigo-300 leading-relaxed">
+                    • Maintain emotional clarity throughout session<br/>
+                    • Trust your pre-defined stop losses<br/>
+                    • Stay humble and adaptable to market changes
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex justify-center">
               <Button
-                onClick={() => setPreSessionData(prev => ({ ...prev, tradingEdgeOrOutcome: 'edge' }))}
-                className={`flex-1 ${preSessionData.tradingEdgeOrOutcome === 'edge' 
-                  ? 'bg-green-600 hover:bg-green-700' 
-                  : 'bg-gray-700 hover:bg-gray-600'}`}
+                onClick={() => setCurrentStep('daily-plan')}
+                className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-8 py-3 text-lg"
               >
-                Focus on EDGE (Process)
-              </Button>
-              <Button
-                onClick={() => setPreSessionData(prev => ({ ...prev, tradingEdgeOrOutcome: 'outcome' }))}
-                className={`flex-1 ${preSessionData.tradingEdgeOrOutcome === 'outcome' 
-                  ? 'bg-red-600 hover:bg-red-700' 
-                  : 'bg-gray-700 hover:bg-gray-600'}`}
-              >
-                Focus on OUTCOME (Money)
+                Continue to Daily Plan
               </Button>
             </div>
-          </div>
-
-          <div className="flex justify-center">
-            <Button
-              onClick={() => setCurrentStep('daily-plan')}
-              className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-8 py-3 text-lg"
-            >
-              Continue to Daily Plan
-            </Button>
-          </div>
         </CardContent>
       </Card>
     </div>
-  );
+    );
+  };
 
   const renderDailyPlan = () => (
     <div className="h-full space-y-4">

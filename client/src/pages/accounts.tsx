@@ -37,34 +37,34 @@ const accountFormSchema = z.object({
   firm: z.string().min(1, 'Prop firm is required'),
   type: z.enum(['challenge', 'funded', 'live', 'demo']),
   status: z.enum(['active', 'inactive', 'pending']),
-  startingBalance: z.number().min(0, 'Starting balance must be positive').optional(),
-  profitTarget: z.number().min(0, 'Profit target must be positive').optional(),
-  maxDrawdown: z.number().min(0, 'Max drawdown must be positive').optional(),
-  minimumTradingDays: z.number().min(1, 'Minimum trading days required').optional(),
-  timeLimit: z.number().min(1, 'Time limit required').optional(),
-  consistencyRule: z.number().min(0).max(100, 'Must be between 0-100%').optional(),
+  startingBalance: z.coerce.number().min(0, 'Starting balance must be positive').optional(),
+  profitTarget: z.coerce.number().min(0, 'Profit target must be positive').optional(),
+  maxDrawdown: z.coerce.number().min(0, 'Max drawdown must be positive').optional(),
+  minimumTradingDays: z.coerce.number().min(1, 'Minimum trading days required').optional(),
+  timeLimit: z.coerce.number().min(1, 'Time limit required').optional(),
+  consistencyRule: z.coerce.number().min(0).max(100, 'Must be between 0-100%').optional(),
   drawdownType: z.enum(['trailing', 'static', 'balance_based']),
   maxDrawdownType: z.enum(['EOD', 'real-time', 'session_close']),
   hasDailyLossLimit: z.boolean(),
   
   // Financial Tab
-  accountCost: z.number().min(0, 'Account cost must be positive').optional(),
-  activationCost: z.number().min(0, 'Activation cost must be positive').optional(),
+  accountCost: z.coerce.number().min(0, 'Account cost must be positive').optional(),
+  activationCost: z.coerce.number().min(0, 'Activation cost must be positive').optional(),
   purchaseMethod: z.enum(['credit card', 'PayPal', 'bank transfer', 'crypto']),
-  resetCount: z.number().min(0, 'Reset count must be positive').optional(),
-  totalResetsCost: z.number().min(0, 'Total resets cost must be positive').optional(),
-  profitSplit: z.number().min(0).max(100, 'Must be between 0-100%').optional(),
+  resetCount: z.coerce.number().min(0, 'Reset count must be positive').optional(),
+  totalResetsCost: z.coerce.number().min(0, 'Total resets cost must be positive').optional(),
+  profitSplit: z.coerce.number().min(0).max(100, 'Must be between 0-100%').optional(),
   activationFeePaid: z.boolean(),
   includesActivationFee: z.boolean(),
   
   // Rules & Risk Tab
-  riskPerTrade: z.number().min(0, 'Risk per trade must be positive').optional(),
-  riskPerTradeDivider: z.number().min(1, 'Divider must be at least 1').optional(),
-  dailyLossLimit: z.number().min(0, 'Daily loss limit must be positive').optional(),
-  riskRewardRatio: z.number().min(0.1, 'Risk reward ratio must be positive').optional(),
-  maxTradesPerDay: z.number().min(1, 'Must allow at least 1 trade per day').optional(),
-  maxRiskPerDay: z.number().min(0, 'Max risk per day must be positive').optional(),
-  stopLoss: z.number().min(0, 'Stop loss must be positive').optional(),
+  riskPerTrade: z.coerce.number().min(0, 'Risk per trade must be positive').optional(),
+  riskPerTradeDivider: z.coerce.number().min(1, 'Divider must be at least 1').optional(),
+  dailyLossLimit: z.coerce.number().min(0, 'Daily loss limit must be positive').optional(),
+  riskRewardRatio: z.coerce.number().min(0.1, 'Risk reward ratio must be positive').optional(),
+  maxTradesPerDay: z.coerce.number().min(1, 'Must allow at least 1 trade per day').optional(),
+  maxRiskPerDay: z.coerce.number().min(0, 'Max risk per day must be positive').optional(),
+  stopLoss: z.coerce.number().min(0, 'Stop loss must be positive').optional(),
   primaryAsset: z.string().min(1, 'Primary asset is required'),
   secondaryAsset: z.string().optional(),
   tertiaryAsset: z.string().optional(),
@@ -81,8 +81,8 @@ const accountFormSchema = z.object({
   timeSlot3Timezone: z.string().optional(),
   
   // Bottom fields
-  dailyWorkingHours: z.number().min(0).max(24, 'Must be between 0-24 hours').optional(),
-  hourlyWages: z.number().min(0, 'Hourly wages must be positive').optional(),
+  dailyWorkingHours: z.coerce.number().min(0).max(24, 'Must be between 0-24 hours').optional(),
+  hourlyWages: z.coerce.number().min(0, 'Hourly wages must be positive').optional(),
   liveTradingAccountAvailable: z.boolean(),
   challengePayoutsAvailable: z.boolean(),
 });
@@ -596,7 +596,7 @@ export default function AccountsPage() {
                                     placeholder="" 
                                     className="bg-gray-800 border-gray-600 text-white"
                                     {...field}
-                                    onChange={(e) => field.onChange(e.target.value === "" ? "" : parseFloat(e.target.value))}
+                                    onChange={field.onChange}
                                   />
                                 </FormControl>
                                 <FormMessage />
@@ -616,7 +616,7 @@ export default function AccountsPage() {
                                     placeholder="" 
                                     className="bg-gray-800 border-gray-600 text-white"
                                     {...field}
-                                    onChange={(e) => field.onChange(e.target.value === "" ? "" : parseFloat(e.target.value))}
+                                    onChange={field.onChange}
                                   />
                                 </FormControl>
                                 <FormMessage />
@@ -636,7 +636,7 @@ export default function AccountsPage() {
                                     placeholder="" 
                                     className="bg-gray-800 border-gray-600 text-white"
                                     {...field}
-                                    onChange={(e) => field.onChange(e.target.value === "" ? "" : parseFloat(e.target.value))}
+                                    onChange={field.onChange}
                                   />
                                 </FormControl>
                                 <FormMessage />
@@ -698,7 +698,7 @@ export default function AccountsPage() {
                                     placeholder="" 
                                     className="bg-gray-800 border-gray-600 text-white"
                                     {...field}
-                                    onChange={(e) => field.onChange(e.target.value === "" ? "" : parseFloat(e.target.value))}
+                                    onChange={field.onChange}
                                   />
                                 </FormControl>
                                 <FormMessage />
@@ -790,7 +790,7 @@ export default function AccountsPage() {
                                     placeholder="" 
                                     className="bg-gray-800 border-gray-600 text-white"
                                     {...field}
-                                    onChange={(e) => field.onChange(e.target.value === "" ? "" : parseFloat(e.target.value))}
+                                    onChange={field.onChange}
                                   />
                                 </FormControl>
                                 <FormMessage />
@@ -810,7 +810,7 @@ export default function AccountsPage() {
                                     placeholder="" 
                                     className="bg-gray-800 border-gray-600 text-white"
                                     {...field}
-                                    onChange={(e) => field.onChange(e.target.value === "" ? "" : parseFloat(e.target.value))}
+                                    onChange={field.onChange}
                                   />
                                 </FormControl>
                                 <FormMessage />
@@ -876,7 +876,7 @@ export default function AccountsPage() {
                                     placeholder="" 
                                     className="bg-gray-800 border-gray-600 text-white"
                                     {...field}
-                                    onChange={(e) => field.onChange(e.target.value === "" ? "" : parseFloat(e.target.value))}
+                                    onChange={field.onChange}
                                   />
                                 </FormControl>
                                 <FormMessage />
@@ -896,7 +896,7 @@ export default function AccountsPage() {
                                     placeholder="" 
                                     className="bg-gray-800 border-gray-600 text-white"
                                     {...field}
-                                    onChange={(e) => field.onChange(e.target.value === "" ? "" : parseFloat(e.target.value))}
+                                    onChange={field.onChange}
                                   />
                                 </FormControl>
                                 <FormMessage />
@@ -961,7 +961,7 @@ export default function AccountsPage() {
                                     placeholder="" 
                                     className="bg-gray-800 border-gray-600 text-white"
                                     {...field}
-                                    onChange={(e) => field.onChange(e.target.value === "" ? "" : parseFloat(e.target.value))}
+                                    onChange={field.onChange}
                                   />
                                 </FormControl>
                                 <FormMessage />
@@ -981,7 +981,7 @@ export default function AccountsPage() {
                                     placeholder="" 
                                     className="bg-gray-800 border-gray-600 text-white"
                                     {...field}
-                                    onChange={(e) => field.onChange(e.target.value === "" ? "" : parseFloat(e.target.value))}
+                                    onChange={field.onChange}
                                   />
                                 </FormControl>
                                 <div className="text-xs text-gray-400 mt-1">Helper: Used to calculate position size</div>
@@ -1004,7 +1004,7 @@ export default function AccountsPage() {
                                     placeholder="" 
                                     className="bg-gray-800 border-gray-600 text-white"
                                     {...field}
-                                    onChange={(e) => field.onChange(e.target.value === "" ? "" : parseFloat(e.target.value))}
+                                    onChange={field.onChange}
                                   />
                                 </FormControl>
                                 <FormMessage />
@@ -1024,7 +1024,7 @@ export default function AccountsPage() {
                                     placeholder="" 
                                     className="bg-gray-800 border-gray-600 text-white"
                                     {...field}
-                                    onChange={(e) => field.onChange(e.target.value === "" ? "" : parseFloat(e.target.value))}
+                                    onChange={field.onChange}
                                   />
                                 </FormControl>
                                 <FormMessage />
@@ -1066,7 +1066,7 @@ export default function AccountsPage() {
                                     placeholder="" 
                                     className="bg-gray-800 border-gray-600 text-white"
                                     {...field}
-                                    onChange={(e) => field.onChange(e.target.value === "" ? "" : parseFloat(e.target.value))}
+                                    onChange={field.onChange}
                                   />
                                 </FormControl>
                                 <FormMessage />
@@ -1086,7 +1086,7 @@ export default function AccountsPage() {
                                     placeholder="" 
                                     className="bg-gray-800 border-gray-600 text-white"
                                     {...field}
-                                    onChange={(e) => field.onChange(e.target.value === "" ? "" : parseFloat(e.target.value))}
+                                    onChange={field.onChange}
                                   />
                                 </FormControl>
                                 <FormMessage />
@@ -1342,7 +1342,7 @@ export default function AccountsPage() {
                                       placeholder="" 
                                       className="bg-gray-800 border-gray-600 text-white"
                                       {...field}
-                                      onChange={(e) => field.onChange(e.target.value === "" ? "" : parseFloat(e.target.value))}
+                                      onChange={field.onChange}
                                     />
                                   </FormControl>
                                   <FormMessage />
@@ -1363,7 +1363,7 @@ export default function AccountsPage() {
                                       placeholder="" 
                                       className="bg-gray-800 border-gray-600 text-white"
                                       {...field}
-                                      onChange={(e) => field.onChange(e.target.value === "" ? "" : parseFloat(e.target.value))}
+                                      onChange={field.onChange}
                                     />
                                   </FormControl>
                                   <FormMessage />
@@ -1651,7 +1651,7 @@ export default function AccountsPage() {
                             placeholder="" 
                             className="bg-white border-gray-300 text-black"
                             {...field}
-                            onChange={(e) => field.onChange(e.target.value === "" ? "" : parseFloat(e.target.value))}
+                            onChange={field.onChange}
                           />
                         </FormControl>
                         <FormMessage />
@@ -1671,7 +1671,7 @@ export default function AccountsPage() {
                             placeholder="" 
                             className="bg-white border-gray-300 text-black"
                             {...field}
-                            onChange={(e) => field.onChange(e.target.value === "" ? "" : parseFloat(e.target.value))}
+                            onChange={field.onChange}
                           />
                         </FormControl>
                         <FormMessage />
@@ -1691,7 +1691,7 @@ export default function AccountsPage() {
                             placeholder="" 
                             className="bg-white border-gray-300 text-black"
                             {...field}
-                            onChange={(e) => field.onChange(e.target.value === "" ? "" : parseFloat(e.target.value))}
+                            onChange={field.onChange}
                           />
                         </FormControl>
                         <FormMessage />
