@@ -619,7 +619,7 @@ export default function AccountsPage() {
                                     placeholder="10000" 
                                     className="bg-gray-800 border-gray-600 text-white"
                                     {...field}
-                                    onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                                    onChange={(e) => field.onChange(e.target.value === "" ? "" : parseFloat(e.target.value))}
                                   />
                                 </FormControl>
                                 <FormMessage />
@@ -639,7 +639,7 @@ export default function AccountsPage() {
                                     placeholder="1000" 
                                     className="bg-gray-800 border-gray-600 text-white"
                                     {...field}
-                                    onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                                    onChange={(e) => field.onChange(e.target.value === "" ? "" : parseFloat(e.target.value))}
                                   />
                                 </FormControl>
                                 <FormMessage />
@@ -659,7 +659,7 @@ export default function AccountsPage() {
                                     placeholder="500" 
                                     className="bg-gray-800 border-gray-600 text-white"
                                     {...field}
-                                    onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                                    onChange={(e) => field.onChange(e.target.value === "" ? "" : parseFloat(e.target.value))}
                                   />
                                 </FormControl>
                                 <FormMessage />
@@ -681,7 +681,7 @@ export default function AccountsPage() {
                                     placeholder="5" 
                                     className="bg-gray-800 border-gray-600 text-white"
                                     {...field}
-                                    onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
+                                    onChange={(e) => field.onChange(e.target.value === "" ? "" : parseInt(e.target.value))}
                                   />
                                 </FormControl>
                                 <FormMessage />
@@ -701,7 +701,7 @@ export default function AccountsPage() {
                                     placeholder="30" 
                                     className="bg-gray-800 border-gray-600 text-white"
                                     {...field}
-                                    onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
+                                    onChange={(e) => field.onChange(e.target.value === "" ? "" : parseInt(e.target.value))}
                                   />
                                 </FormControl>
                                 <FormMessage />
@@ -721,7 +721,7 @@ export default function AccountsPage() {
                                     placeholder="10" 
                                     className="bg-gray-800 border-gray-600 text-white"
                                     {...field}
-                                    onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                                    onChange={(e) => field.onChange(e.target.value === "" ? "" : parseFloat(e.target.value))}
                                   />
                                 </FormControl>
                                 <FormMessage />
@@ -813,7 +813,7 @@ export default function AccountsPage() {
                                     placeholder="150" 
                                     className="bg-gray-800 border-gray-600 text-white"
                                     {...field}
-                                    onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                                    onChange={(e) => field.onChange(e.target.value === "" ? "" : parseFloat(e.target.value))}
                                   />
                                 </FormControl>
                                 <FormMessage />
@@ -833,7 +833,7 @@ export default function AccountsPage() {
                                     placeholder="99" 
                                     className="bg-gray-800 border-gray-600 text-white"
                                     {...field}
-                                    onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                                    onChange={(e) => field.onChange(e.target.value === "" ? "" : parseFloat(e.target.value))}
                                   />
                                 </FormControl>
                                 <FormMessage />
@@ -879,7 +879,7 @@ export default function AccountsPage() {
                                     placeholder="0" 
                                     className="bg-gray-800 border-gray-600 text-white"
                                     {...field}
-                                    onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
+                                    onChange={(e) => field.onChange(e.target.value === "" ? "" : parseInt(e.target.value))}
                                   />
                                 </FormControl>
                                 <FormMessage />
@@ -899,7 +899,7 @@ export default function AccountsPage() {
                                     placeholder="0" 
                                     className="bg-gray-800 border-gray-600 text-white"
                                     {...field}
-                                    onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                                    onChange={(e) => field.onChange(e.target.value === "" ? "" : parseFloat(e.target.value))}
                                   />
                                 </FormControl>
                                 <FormMessage />
@@ -919,7 +919,7 @@ export default function AccountsPage() {
                                     placeholder="80" 
                                     className="bg-gray-800 border-gray-600 text-white"
                                     {...field}
-                                    onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                                    onChange={(e) => field.onChange(e.target.value === "" ? "" : parseFloat(e.target.value))}
                                   />
                                 </FormControl>
                                 <FormMessage />
@@ -984,7 +984,7 @@ export default function AccountsPage() {
                                     placeholder="100" 
                                     className="bg-gray-800 border-gray-600 text-white"
                                     {...field}
-                                    onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                                    onChange={(e) => field.onChange(e.target.value === "" ? "" : parseFloat(e.target.value))}
                                   />
                                 </FormControl>
                                 <FormMessage />
@@ -1004,7 +1004,7 @@ export default function AccountsPage() {
                                     placeholder="10" 
                                     className="bg-gray-800 border-gray-600 text-white"
                                     {...field}
-                                    onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                                    onChange={(e) => field.onChange(e.target.value === "" ? "" : parseFloat(e.target.value))}
                                   />
                                 </FormControl>
                                 <div className="text-xs text-gray-400 mt-1">Helper: Used to calculate position size</div>
@@ -1027,7 +1027,7 @@ export default function AccountsPage() {
                                     placeholder="500" 
                                     className="bg-gray-800 border-gray-600 text-white"
                                     {...field}
-                                    onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                                    onChange={(e) => field.onChange(e.target.value === "" ? "" : parseFloat(e.target.value))}
                                   />
                                 </FormControl>
                                 <FormMessage />
@@ -1047,7 +1047,7 @@ export default function AccountsPage() {
                                     placeholder="2" 
                                     className="bg-gray-800 border-gray-600 text-white"
                                     {...field}
-                                    onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                                    onChange={(e) => field.onChange(e.target.value === "" ? "" : parseFloat(e.target.value))}
                                   />
                                 </FormControl>
                                 <FormMessage />
@@ -1067,7 +1067,7 @@ export default function AccountsPage() {
                                     placeholder="10" 
                                     className="bg-gray-800 border-gray-600 text-white"
                                     {...field}
-                                    onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
+                                    onChange={(e) => field.onChange(e.target.value === "" ? "" : parseInt(e.target.value))}
                                   />
                                 </FormControl>
                                 <FormMessage />
@@ -1089,7 +1089,7 @@ export default function AccountsPage() {
                                     placeholder="500" 
                                     className="bg-gray-800 border-gray-600 text-white"
                                     {...field}
-                                    onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                                    onChange={(e) => field.onChange(e.target.value === "" ? "" : parseFloat(e.target.value))}
                                   />
                                 </FormControl>
                                 <FormMessage />
@@ -1109,7 +1109,7 @@ export default function AccountsPage() {
                                     placeholder="20" 
                                     className="bg-gray-800 border-gray-600 text-white"
                                     {...field}
-                                    onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                                    onChange={(e) => field.onChange(e.target.value === "" ? "" : parseFloat(e.target.value))}
                                   />
                                 </FormControl>
                                 <FormMessage />
@@ -1365,7 +1365,7 @@ export default function AccountsPage() {
                                       placeholder="8.0" 
                                       className="bg-gray-800 border-gray-600 text-white"
                                       {...field}
-                                      onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                                      onChange={(e) => field.onChange(e.target.value === "" ? "" : parseFloat(e.target.value))}
                                     />
                                   </FormControl>
                                   <FormMessage />
@@ -1386,7 +1386,7 @@ export default function AccountsPage() {
                                       placeholder="25.00" 
                                       className="bg-gray-800 border-gray-600 text-white"
                                       {...field}
-                                      onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                                      onChange={(e) => field.onChange(e.target.value === "" ? "" : parseFloat(e.target.value))}
                                     />
                                   </FormControl>
                                   <FormMessage />
@@ -1674,7 +1674,7 @@ export default function AccountsPage() {
                             placeholder="10000" 
                             className="bg-white border-gray-300 text-black"
                             {...field}
-                            onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                            onChange={(e) => field.onChange(e.target.value === "" ? "" : parseFloat(e.target.value))}
                           />
                         </FormControl>
                         <FormMessage />
@@ -1694,7 +1694,7 @@ export default function AccountsPage() {
                             placeholder="1000" 
                             className="bg-white border-gray-300 text-black"
                             {...field}
-                            onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                            onChange={(e) => field.onChange(e.target.value === "" ? "" : parseFloat(e.target.value))}
                           />
                         </FormControl>
                         <FormMessage />
@@ -1714,7 +1714,7 @@ export default function AccountsPage() {
                             placeholder="500" 
                             className="bg-white border-gray-300 text-black"
                             {...field}
-                            onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                            onChange={(e) => field.onChange(e.target.value === "" ? "" : parseFloat(e.target.value))}
                           />
                         </FormControl>
                         <FormMessage />
