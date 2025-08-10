@@ -17,7 +17,7 @@ Preferred communication style: Simple, everyday language.
 - **Charts**: Chart.js
 
 ### Recent Critical Fixes (August 2025)
-- **Logo Updated to PropFirm Trader's Journal (Aug 11, 2025)**: Updated application logo across welcome page and sidebar to match new "#1 PropFirm Trader's Journal" branding with gradient green BookOpen icon. Maintains consistent branding throughout the application.
+- **Custom Trading Logo Design (Aug 11, 2025)**: Created professional custom logo for "PropFirmPro Trader's Journal" featuring a custom SVG trading chart pattern with data points, emerald-to-teal gradient background, yellow accent dot, and refined typography. Logo displays across welcome page header and sidebar with consistent branding.
 - **Starter & Professional Plans Implemented (Aug 11, 2025)**: Implemented new pricing structure with Starter ($9/month, 1 account, 30-day retention) and Professional ($14.99/month, 5 accounts, 90-day retention) plans. Created comprehensive subscription access controls in shared/subscriptionPlans.ts with feature gates and usage limits.
 - **3-Day Free Trial Period (Aug 11, 2025)**: Updated all trial references from 14-day to 3-day across welcome, signup, and pricing pages. All "Start Your Free Trial" buttons properly navigate to signup page for user registration.
 - **Profitability Logic Fixed for Prop Trading (Aug 10, 2025)**: Corrected fundamental profitability calculation logic to align with real prop trading rules. Previously counted any positive P&L day as "profitable", now correctly recognizes that in prop trading, profitability only occurs when there's actual payout eligibility. This prevents misleading profitable day counts and aligns with industry standards where profit is only "realized" through payouts.

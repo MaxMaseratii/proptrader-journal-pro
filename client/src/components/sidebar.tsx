@@ -104,14 +104,24 @@ export default function Sidebar() {
         <div className="flex items-center space-x-3">
           <Link 
             href="/welcome"
-            className="bg-prop-gradient-rainbow p-3 rounded-xl hover-glow smooth-transition cursor-pointer block"
+            className="relative w-10 h-10 bg-gradient-to-br from-emerald-500 via-green-500 to-teal-600 rounded-xl flex items-center justify-center shadow-lg border border-white/10 hover-glow smooth-transition cursor-pointer block"
           >
-            <BookOpen className="h-6 w-6 text-white" />
+            <div className="absolute inset-0 flex items-center justify-center">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" className="text-white">
+                <path d="M3 12h3l3-6 3 12 3-9 3 6h3" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+                <circle cx="7" cy="6" r="1.5" fill="currentColor"/>
+                <circle cx="13" cy="15" r="1.5" fill="currentColor"/>
+                <circle cx="19" cy="12" r="1.5" fill="currentColor"/>
+              </svg>
+            </div>
+            <div className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-yellow-400 rounded-full border border-white shadow-sm"></div>
           </Link>
           {!isCollapsed && !isPartiallyCollapsed && (
             <div>
-              <h1 className="text-lg font-bold text-foreground">#1 PropFirm Trader's Journal</h1>
-              <p className="text-xs text-muted-foreground">PropTrader Journal</p>
+              <h1 className="text-lg font-black text-foreground">
+                PropFirm<span className="text-emerald-500">Pro</span>
+              </h1>
+              <p className="text-xs text-muted-foreground font-semibold tracking-wide">TRADER'S JOURNAL</p>
             </div>
           )}
         </div>

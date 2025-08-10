@@ -21,15 +21,27 @@ function PropTraderHeader() {
           {/* PropFirm Trader's Journal Logo */}
           <div className="flex-shrink-0">
             <Link href="/" className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-green-400 to-teal-600 rounded-lg flex items-center justify-center shadow-lg">
-                <BookOpen className="w-6 h-6 text-white" />
+              <div className="relative w-12 h-12 bg-gradient-to-br from-emerald-500 via-green-500 to-teal-600 rounded-xl flex items-center justify-center shadow-xl border-2 border-white/20">
+                {/* Trading Chart Pattern */}
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="w-8 h-8 flex items-center justify-center">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" className="text-white">
+                      <path d="M3 12h3l3-6 3 12 3-9 3 6h3" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+                      <circle cx="7" cy="6" r="1.5" fill="currentColor"/>
+                      <circle cx="13" cy="15" r="1.5" fill="currentColor"/>
+                      <circle cx="19" cy="12" r="1.5" fill="currentColor"/>
+                    </svg>
+                  </div>
+                </div>
+                {/* Top corner accent */}
+                <div className="absolute -top-1 -right-1 w-3 h-3 bg-yellow-400 rounded-full border border-white shadow-sm"></div>
               </div>
               <div className="flex flex-col">
-                <span className="text-lg font-bold text-black leading-tight">
-                  #1 PropFirm
+                <span className="text-xl font-black text-black leading-tight tracking-tight">
+                  PropFirm<span className="text-emerald-600">Pro</span>
                 </span>
-                <span className="text-lg font-bold text-black leading-tight">
-                  Trader's Journal
+                <span className="text-sm font-semibold text-gray-700 leading-tight tracking-wide">
+                  TRADER'S JOURNAL
                 </span>
               </div>
             </Link>
