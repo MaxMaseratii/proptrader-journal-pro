@@ -12,6 +12,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Progress } from '@/components/ui/progress';
+import { Checkbox } from '@/components/ui/checkbox';
 import { 
   Brain, 
   Heart, 
@@ -644,10 +645,89 @@ export default function CompleteTradingDashboard() {
               </div>
             </div>
 
+            {/* Pre-Trading Ritual Checklist */}
+            <div className="bg-gradient-to-r from-amber-900/20 via-yellow-900/20 to-orange-900/20 p-6 rounded-2xl border border-amber-500/30 shadow-lg">
+              <div className="flex items-center gap-3 mb-6">
+                <CheckCircle className="w-6 h-6 text-amber-400" />
+                <h4 className="text-white font-bold text-lg">Pre-Trading Ritual (Check All That Apply)</h4>
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-3">
+                  <div className="flex items-center gap-3 p-3 bg-slate-800/60 rounded-xl border border-amber-500/20 hover:border-amber-500/40 transition-colors">
+                    <Checkbox className="border-amber-500 data-[state=checked]:bg-amber-500" />
+                    <span className="text-amber-200 text-sm">Reviewed trading plan and strategy</span>
+                  </div>
+                  <div className="flex items-center gap-3 p-3 bg-slate-800/60 rounded-xl border border-amber-500/20 hover:border-amber-500/40 transition-colors">
+                    <Checkbox className="border-amber-500 data-[state=checked]:bg-amber-500" />
+                    <span className="text-amber-200 text-sm">Set maximum daily loss limit</span>
+                  </div>
+                  <div className="flex items-center gap-3 p-3 bg-slate-800/60 rounded-xl border border-amber-500/20 hover:border-amber-500/40 transition-colors">
+                    <Checkbox className="border-amber-500 data-[state=checked]:bg-amber-500" />
+                    <span className="text-amber-200 text-sm">Cleared mind through meditation/breathing</span>
+                  </div>
+                  <div className="flex items-center gap-3 p-3 bg-slate-800/60 rounded-xl border border-amber-500/20 hover:border-amber-500/40 transition-colors">
+                    <Checkbox className="border-amber-500 data-[state=checked]:bg-amber-500" />
+                    <span className="text-amber-200 text-sm">Eliminated all distractions</span>
+                  </div>
+                </div>
+                <div className="space-y-3">
+                  <div className="flex items-center gap-3 p-3 bg-slate-800/60 rounded-xl border border-amber-500/20 hover:border-amber-500/40 transition-colors">
+                    <Checkbox className="border-amber-500 data-[state=checked]:bg-amber-500" />
+                    <span className="text-amber-200 text-sm">Checked market conditions and news</span>
+                  </div>
+                  <div className="flex items-center gap-3 p-3 bg-slate-800/60 rounded-xl border border-amber-500/20 hover:border-amber-500/40 transition-colors">
+                    <Checkbox className="border-amber-500 data-[state=checked]:bg-amber-500" />
+                    <span className="text-amber-200 text-sm">Validated trading platform connectivity</span>
+                  </div>
+                  <div className="flex items-center gap-3 p-3 bg-slate-800/60 rounded-xl border border-amber-500/20 hover:border-amber-500/40 transition-colors">
+                    <Checkbox className="border-amber-500 data-[state=checked]:bg-amber-500" />
+                    <span className="text-amber-200 text-sm">Prepared exit strategies for all setups</span>
+                  </div>
+                  <div className="flex items-center gap-3 p-3 bg-slate-800/60 rounded-xl border border-amber-500/20 hover:border-amber-500/40 transition-colors">
+                    <Checkbox className="border-amber-500 data-[state=checked]:bg-amber-500" />
+                    <span className="text-amber-200 text-sm">Committed to following the rules</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Trading Affirmations */}
+            <div className="bg-gradient-to-r from-amber-900/20 via-yellow-900/20 to-orange-900/20 p-6 rounded-2xl border border-amber-500/30 shadow-lg">
+              <div className="flex items-center gap-3 mb-4">
+                <Award className="w-6 h-6 text-amber-400" />
+                <h4 className="text-white font-bold text-lg">Trading Affirmations & Mindset</h4>
+              </div>
+              
+              <div className="space-y-4">
+                <div className="bg-slate-800/70 p-4 rounded-xl border border-amber-500/30">
+                  <blockquote className="text-amber-300 font-medium text-center italic text-lg leading-relaxed">
+                    "I am disciplined, patient, and focused. I trust my plan, respect my risk limits, and cut losses without emotion. 
+                    Today, I trade with precision and protect my capital above all else."
+                  </blockquote>
+                </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
+                  <div className="p-3 bg-emerald-900/30 rounded-xl border border-emerald-500/30">
+                    <div className="text-emerald-400 font-bold text-lg">DISCIPLINE</div>
+                    <div className="text-emerald-300 text-sm">I follow my rules</div>
+                  </div>
+                  <div className="p-3 bg-blue-900/30 rounded-xl border border-blue-500/30">
+                    <div className="text-blue-400 font-bold text-lg">PATIENCE</div>
+                    <div className="text-blue-300 text-sm">I wait for my setups</div>
+                  </div>
+                  <div className="p-3 bg-amber-900/30 rounded-xl border border-amber-500/30">
+                    <div className="text-amber-400 font-bold text-lg">FOCUS</div>
+                    <div className="text-amber-300 text-sm">I stay present</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
             <div className="flex justify-center">
               <Button
                 onClick={() => setCurrentStep('daily-plan')}
-                className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-8 py-3 text-lg"
+                className="bg-gradient-to-r from-amber-600 to-yellow-600 hover:from-amber-700 hover:to-yellow-700 text-black font-bold px-8 py-3 text-lg shadow-lg"
               >
                 Continue to Daily Plan
               </Button>
