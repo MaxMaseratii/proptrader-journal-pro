@@ -724,6 +724,119 @@ export default function CompleteTradingDashboard() {
               </div>
             </div>
 
+            {/* Today's Trading Focus - What You're Trading Today */}
+            <div className="bg-gradient-to-r from-indigo-900/20 via-blue-900/20 to-purple-900/20 p-6 rounded-2xl border border-indigo-500/30 shadow-lg">
+              <div className="flex items-center gap-3 mb-6">
+                <Target className="w-6 h-6 text-indigo-400" />
+                <h4 className="text-white font-bold text-lg">Today's Trading Focus - What You're Trading</h4>
+              </div>
+              
+              <div className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-3">
+                    <Label className="text-indigo-300 font-semibold text-sm">Primary Market/Asset</Label>
+                    <Input
+                      placeholder="e.g., ES, NQ, EURUSD, BTCUSD"
+                      className="bg-white border-indigo-500/30 text-black placeholder:text-gray-500"
+                    />
+                    
+                    <Label className="text-indigo-300 font-semibold text-sm mt-4">Market Session</Label>
+                    <select className="w-full bg-white border border-indigo-500/30 text-black rounded-md px-3 py-2">
+                      <option value="pre-market">Pre-Market (4:00-9:30 AM EST)</option>
+                      <option value="market-hours">Market Hours (9:30 AM-4:00 PM EST)</option>
+                      <option value="after-hours">After Hours (4:00-8:00 PM EST)</option>
+                      <option value="overnight">Overnight Session</option>
+                    </select>
+                  </div>
+                  
+                  <div className="space-y-3">
+                    <Label className="text-indigo-300 font-semibold text-sm">Expected Market Conditions</Label>
+                    <select className="w-full bg-white border border-indigo-500/30 text-black rounded-md px-3 py-2">
+                      <option value="trending">Trending Market</option>
+                      <option value="ranging">Ranging/Sideways Market</option>
+                      <option value="volatile">High Volatility Expected</option>
+                      <option value="calm">Low Volatility/Calm</option>
+                      <option value="news-driven">News-Driven Day</option>
+                    </select>
+                    
+                    <Label className="text-indigo-300 font-semibold text-sm mt-4">Risk Per Trade Today</Label>
+                    <Input
+                      type="number"
+                      placeholder="e.g., 100"
+                      className="bg-white border-indigo-500/30 text-black placeholder:text-gray-500"
+                    />
+                  </div>
+                </div>
+                
+                <div>
+                  <Label className="text-indigo-300 font-semibold text-sm">Key Events/News Today</Label>
+                  <Textarea
+                    placeholder="e.g., FOMC announcement at 2:00 PM EST, earnings releases, economic data..."
+                    className="bg-white border-indigo-500/30 text-black placeholder:text-gray-500 mt-2"
+                    rows={2}
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Trading Identity & Goal Setting */}
+            <div className="bg-gradient-to-r from-amber-900/20 via-yellow-900/20 to-orange-900/20 p-6 rounded-2xl border border-amber-500/30 shadow-lg">
+              <div className="flex items-center gap-3 mb-6">
+                <Crown className="w-6 h-6 text-amber-400" />
+                <h4 className="text-white font-bold text-lg">Trading Identity & Today's Commitment</h4>
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-4">
+                  <div className="p-4 bg-slate-800/60 rounded-xl border border-amber-500/20">
+                    <Label className="text-amber-300 font-semibold text-sm mb-2 block">I am trading as a:</Label>
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-2">
+                        <Checkbox className="border-amber-500 data-[state=checked]:bg-amber-500" />
+                        <span className="text-amber-200 text-sm">Disciplined professional trader</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Checkbox className="border-amber-500 data-[state=checked]:bg-amber-500" />
+                        <span className="text-amber-200 text-sm">Patient opportunity hunter</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Checkbox className="border-amber-500 data-[state=checked]:bg-amber-500" />
+                        <span className="text-amber-200 text-sm">Risk management expert</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Checkbox className="border-amber-500 data-[state=checked]:bg-amber-500" />
+                        <span className="text-amber-200 text-sm">Emotionless execution machine</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="space-y-4">
+                  <div className="p-4 bg-slate-800/60 rounded-xl border border-amber-500/20">
+                    <Label className="text-amber-300 font-semibold text-sm mb-2 block">Today I commit to:</Label>
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-2">
+                        <Checkbox className="border-amber-500 data-[state=checked]:bg-amber-500" />
+                        <span className="text-amber-200 text-sm">Following my trading plan exactly</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Checkbox className="border-amber-500 data-[state=checked]:bg-amber-500" />
+                        <span className="text-amber-200 text-sm">Cutting losses at predetermined levels</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Checkbox className="border-amber-500 data-[state=checked]:bg-amber-500" />
+                        <span className="text-amber-200 text-sm">Taking profits without greed</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Checkbox className="border-amber-500 data-[state=checked]:bg-amber-500" />
+                        <span className="text-amber-200 text-sm">Staying calm under pressure</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
             <div className="flex justify-center">
               <Button
                 onClick={() => setCurrentStep('daily-plan')}
