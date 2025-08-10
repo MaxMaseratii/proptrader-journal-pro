@@ -198,19 +198,21 @@ export default function Welcome() {
     },
     {
       name: "Elite",
-      price: "$79",
+      price: "$24.99",
       period: "month", 
       originalPrice: "$99",
-      savings: "Save $480/year",
-      description: "For professional prop firms",
+      savings: "Save $900/year",
+      description: "For Professional Traders",
       features: [
-        "Everything in Professional",
-        "White-label Solution",
-        "Custom Integrations",
-        "Dedicated Account Manager",
-        "Advanced API Access",
-        "Custom Training Sessions",
-        "24/7 Priority Support"
+        "Unlimited Trading Accounts",
+        "Professional Dashboard (real-time updates)",
+        "Monte Carlo Simulations (probability modeling)",
+        "Institutional Charts & Analytics",
+        "AI-Powered Mental Check (personalized insights)",
+        "Professional Flow State Programs",
+        "Multi-Firm ROI Analysis",
+        "Tax-Ready Payout Reports",
+        "Professional Reporting Suite"
       ],
       popular: false
     }
@@ -290,7 +292,7 @@ export default function Welcome() {
                 className="bg-gradient-to-r from-yellow-400 to-amber-500 hover:from-yellow-500 hover:to-amber-600 text-black font-bold px-10 py-4 text-xl border-2 border-teal-400 shadow-2xl transform hover:scale-105 transition-all duration-300"
               >
                 <Award className="mr-3 h-6 w-6" />
-                Start 14-Day Free Trial
+                Start Your Free Trial
               </Button>
               <Button
                 size="lg"
@@ -385,7 +387,7 @@ export default function Welcome() {
               Transparent <span className="bg-gradient-to-r from-yellow-400 to-amber-500 bg-clip-text text-transparent">Pricing</span>
             </h2>
             <p className="text-xl text-gray-300 max-w-3xl mx-auto">
-              💪 All plans include 14-day free trial. Cancel anytime. Built for prop traders by prop traders.
+              💪 All plans include 3-day free trial. Cancel anytime. Built for prop traders by prop traders.
             </p>
           </div>
 

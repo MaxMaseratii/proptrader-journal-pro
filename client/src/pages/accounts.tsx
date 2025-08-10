@@ -29,6 +29,7 @@ import {
   EyeOff,
   X
 } from 'lucide-react';
+import { useLocation } from 'wouter';
 
 // Comprehensive schema for account creation form
 const accountFormSchema = z.object({
@@ -107,6 +108,7 @@ export default function AccountsPage() {
   const [showBalance, setShowBalance] = useState<Record<number, boolean>>({});
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const [, setLocation] = useLocation();
 
   const { data: accounts = [], isLoading } = useQuery<Account[]>({
     queryKey: ['/api/accounts'],
@@ -331,7 +333,13 @@ export default function AccountsPage() {
             <p className="text-gray-400 mt-2">Manage your trading accounts and monitor performance</p>
           </div>
           <div className="flex gap-3">
-            {/* Mock data button removed - all data should come from CSV imports */}
+            <Button 
+              className="bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-600 hover:to-teal-700"
+              onClick={() => setLocation('/trades')}
+            >
+              <Plus className="h-4 w-4 mr-2" />
+              Add Trade
+            </Button>
             <Button 
               className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700"
               onClick={() => setIsCreateDialogOpen(true)}

@@ -22,7 +22,7 @@ export default function Signup() {
   };
 
   const features = [
-    "14-day free trial",
+    "3-day free trial",
     "No credit card required",
     "Setup in under 5 minutes",
     "Cancel anytime"
@@ -78,7 +78,7 @@ export default function Signup() {
               <CardHeader>
                 <CardTitle>Create Your Account</CardTitle>
                 <CardDescription>
-                  Get started with your 14-day free trial
+                  Get started with your 3-day free trial
                 </CardDescription>
               </CardHeader>
               <CardContent>

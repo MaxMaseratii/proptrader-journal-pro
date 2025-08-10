@@ -84,7 +84,7 @@ export default function Pricing() {
           </h1>
           <p className="text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
             Start your prop trading journey with the plan that fits your needs. 
-            All plans include a 14-day free trial.
+            All plans include a 3-day free trial.
           </p>
         </div>
 
@@ -176,7 +176,7 @@ export default function Pricing() {
                   Is there a free trial?
                 </h3>
                 <p className="text-sm text-gray-600 dark:text-gray-400">
-                  All plans include a 14-day free trial with full access to features. No credit card required.
+                  All plans include a 3-day free trial with full access to features. No credit card required.
                 </p>
               </div>
               
