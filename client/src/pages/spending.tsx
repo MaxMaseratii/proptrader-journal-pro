@@ -344,18 +344,20 @@ const Spending = () => {
           </CardContent>
         </Card>
 
-        <Card className="widget-card">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium widget-header">Activation Cost</CardTitle>
-            <TrendingUp className="h-4 w-4 text-orange-400" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-orange-400 widget-value">
-              {formatCurrency(accounts.reduce((sum, acc) => sum + (acc.activationCost || 0), 0))}
-            </div>
-            <p className="text-xs widget-text opacity-70">Total activation fees</p>
-          </CardContent>
-        </Card>
+        {totalActivationCosts > 0 && (
+          <Card className="widget-card">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium widget-header">Activation Cost</CardTitle>
+              <TrendingUp className="h-4 w-4 text-orange-400" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-orange-400 widget-value">
+                {formatCurrency(totalActivationCosts)}
+              </div>
+              <p className="text-xs widget-text opacity-70">Total activation fees</p>
+            </CardContent>
+          </Card>
+        )}
 
         <Card className="widget-card">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -389,10 +391,21 @@ const Spending = () => {
             <TrendingUp className="h-4 w-4 text-blue-400" />
           </CardHeader>
           <CardContent>
-            <div className={`text-2xl font-bold widget-value ${actualProfitability >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-              {formatCurrency(actualProfitability)}
-            </div>
-            <p className="text-xs widget-text opacity-70">Payouts received - total costs</p>
+            {totalPayoutsReceived > 0 ? (
+              <>
+                <div className={`text-2xl font-bold widget-value ${actualProfitability >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                  {formatCurrency(actualProfitability)}
+                </div>
+                <p className="text-xs widget-text opacity-70">Payouts received - total costs</p>
+              </>
+            ) : (
+              <>
+                <div className="text-2xl font-bold widget-value text-gray-400">
+                  No payouts yet
+                </div>
+                <p className="text-xs widget-text opacity-70">Profitability calculated after payouts</p>
+              </>
+            )}
           </CardContent>
         </Card>
       </div>
