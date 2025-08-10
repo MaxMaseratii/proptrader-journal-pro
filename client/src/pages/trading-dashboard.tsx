@@ -1627,17 +1627,17 @@ export default function CompleteTradingDashboard() {
                   </div>
 
                   {/* Performance Summary */}
-                  {strategy.performance.trades > 0 && (
+                  {strategy.performance?.trades > 0 && (
                     <div className="p-3 bg-slate-800/50 border border-gray-600/30 rounded-lg">
                       <div className="text-gray-300 text-sm space-y-1">
                         <div className="flex justify-between">
                           <span>Total Trades:</span>
-                          <span className="text-white">{strategy.performance.trades}</span>
+                          <span className="text-white">{strategy.performance?.trades || 0}</span>
                         </div>
                         <div className="flex justify-between">
                           <span>Total P&L:</span>
-                          <span className={strategy.performance.totalPnl >= 0 ? 'text-green-400' : 'text-red-400'}>
-                            ${strategy.performance.totalPnl}
+                          <span className={(strategy.performance?.totalPnl || 0) >= 0 ? 'text-green-400' : 'text-red-400'}>
+                            ${strategy.performance?.totalPnl || 0}
                           </span>
                         </div>
                       </div>
