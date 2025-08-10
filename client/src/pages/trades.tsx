@@ -143,6 +143,17 @@ const UniversalCsvImport = ({ accounts }: { accounts: Account[] }) => {
   const detectCsvFormat = (headers: string[]): string => {
     console.log('🔍 Detecting format for headers:', headers);
     
+    // Standard Trading Platform Export (like your Excel file)
+    if (headers.includes('Account') && 
+        headers.includes('Date/Time') && 
+        headers.includes('Symbol') && 
+        headers.includes('Side') && 
+        headers.includes('Quantity') && 
+        headers.includes('Price') && 
+        (headers.includes('Gross P/L') || headers.includes('Net P/L'))) {
+      return 'standard-export';
+    }
+    
     // Position History CSV detection (most specific first)
     if (headers.includes('Position ID') && 
         headers.includes('Bought Timestamp') && 
@@ -370,6 +381,56 @@ const UniversalCsvImport = ({ accounts }: { accounts: Account[] }) => {
     console.log('🔍 PERFORMANCE: Mapped trade:', {
       fillTime: mappedTrade.fillTime,
       exitTime: mappedTrade.exitTime
+    });
+
+    return mappedTrade;
+  };
+
+  // Map Standard Export row to trade format (Excel/CSV from trading platforms)
+  const mapStandardExportRow = (row: any): any => {
+    console.log('🔍 STANDARD EXPORT: Mapping row:', row);
+    
+    const account = findAccountByName(row['Account'] || 'Default');
+    const price = parseFloat(row['Price'] || 0);
+    const quantity = parseFloat(row['Quantity'] || 1);
+    const grossPnL = parseFloat(row['Gross P/L'] || 0);
+    const netPnL = parseFloat(row['Net P/L'] || grossPnL);
+    const side = row['Side']?.toLowerCase() === 'sell' ? 'sell' : 'buy';
+    
+    // Parse date/time
+    const dateTime = row['Date/Time'];
+    const fillTime = dateTime ? new Date(dateTime) : new Date();
+    
+    // For standard exports, we typically don't have exit data, so we treat each row as a position
+    const mappedTrade = {
+      accountId: account.id,
+      symbol: convertContractToSymbol(row['Symbol'] || 'UNKNOWN'),
+      side: side,
+      quantity: Math.abs(quantity),
+      fillTime: fillTime.toISOString(),
+      exitTime: fillTime.toISOString(), // Same as fill time for individual positions
+      entryPrice: price,
+      exitPrice: price, // Same as entry for individual positions
+      pnl: netPnL,
+      status: 'closed',
+      date: fillTime.toISOString().split('T')[0],
+      orderId: row['Order ID'] || row['Trade ID'] || `STD-${Date.now()}`,
+      notes: `Standard Export Import - ${row['Description'] || 'Trade'}`,
+      // Standard exports typically don't have SL/TP data
+      initialStopLoss: null,
+      finalStopLoss: null,
+      initialTakeProfit: null,
+      finalTakeProfit: null,
+      tradeImage: null,
+      tradingViewLink: null
+    };
+
+    console.log('🔍 STANDARD EXPORT: Mapped trade:', {
+      symbol: mappedTrade.symbol,
+      side: mappedTrade.side,
+      quantity: mappedTrade.quantity,
+      price: mappedTrade.entryPrice,
+      pnl: mappedTrade.pnl
     });
 
     return mappedTrade;
@@ -849,6 +910,8 @@ const UniversalCsvImport = ({ accounts }: { accounts: Account[] }) => {
   // Main mapping function - routes to appropriate mapper
   const mapRowsToTrades = (rows: any[], format: string): any[] => {
     switch (format) {
+      case 'standard-export':
+        return rows.map(mapStandardExportRow);
       case 'position-history':
         return rows.map(mapPositionHistoryRow);
       case 'performance':
@@ -1015,6 +1078,12 @@ const UniversalCsvImport = ({ accounts }: { accounts: Account[] }) => {
   // Get format info
   const getFormatInfo = (format: string) => {
     const formatDetails = {
+      'standard-export': {
+        icon: '📊',
+        name: 'Standard Export',
+        description: 'Standard trading platform export with account, time, symbol, and P&L data',
+        features: ['✅ Excel & CSV Support', '✅ Account Info', '✅ Date/Time', '✅ Symbol & Side', '✅ Quantity & Price', '✅ P&L Data']
+      },
       'position-history': {
         icon: '🏛️',
         name: 'Position History',
@@ -1180,6 +1249,7 @@ const UniversalCsvImport = ({ accounts }: { accounts: Account[] }) => {
                 <p><strong>Detected columns:</strong> {csvHeaders.slice(0, 5).join(', ')}{csvHeaders.length > 5 ? '...' : ''}</p>
                 <p className="mt-2"><strong>Supported formats:</strong></p>
                 <ul className="ml-4 mt-1 space-y-1">
+                  <li>• <strong>Standard Export:</strong> Must have 'Account', 'Date/Time', 'Symbol', 'Side', 'Quantity', 'Price'</li>
                   <li>• <strong>Position History:</strong> Must have 'Position ID', 'Bought Timestamp', 'Sold Timestamp'</li>
                   <li>• <strong>Performance:</strong> Must have 'buyFillId', 'sellFillId', 'boughtTimestamp'</li>
                   <li>• <strong>Orders:</strong> Must have 'Order ID', 'Fill Time', 'B/S'</li>
