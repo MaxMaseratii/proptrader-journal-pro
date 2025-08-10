@@ -2,8 +2,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { CheckCircle, X } from "lucide-react";
+import { useLocation } from "wouter";
 
 export default function Pricing() {
+  const [, setLocation] = useLocation();
   const plans = [
     {
       name: "Starter",
@@ -120,6 +122,7 @@ export default function Pricing() {
               
               <CardContent>
                 <Button 
+                  onClick={() => setLocation('/signup')}
                   className={`w-full mb-6 ${
                     plan.popular 
                       ? 'bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-white' 

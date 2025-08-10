@@ -18,14 +18,14 @@ function PropTraderHeader() {
     <header className="bg-gradient-to-r from-yellow-400 via-amber-500 to-yellow-600 shadow-xl sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center py-4">
-          {/* Original Logo Design */}
+          {/* PropTraderJournal Logo */}
           <div className="flex-shrink-0">
             <Link href="/" className="flex items-center space-x-3">
-              <div className="w-12 h-12 bg-black rounded-xl flex items-center justify-center shadow-lg border-2 border-teal-400">
-                <Crown className="w-7 h-7 text-yellow-400" />
+              <div className="w-10 h-10 bg-black rounded-lg flex items-center justify-center shadow-lg">
+                <Crown className="w-6 h-6 text-yellow-400" />
               </div>
               <span className="text-2xl font-bold text-black">
-                PropTrader<span className="text-teal-700">Journal</span>
+                PropTrader<span className="text-gray-700">Journal</span>
               </span>
             </Link>
           </div>
