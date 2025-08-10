@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { apiRequest } from '@/lib/queryClient';
 import type { Account, TradingStrategy } from '@shared/schema';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -54,9 +55,12 @@ import {
 // Historical trading plans will be loaded from API
 
 export default function CompleteTradingDashboard() {
+  const queryClient = useQueryClient();
+  
   // Load accounts from API
   const { data: accounts } = useQuery<Account[]>({ queryKey: ['/api/accounts'] });
   const { data: strategies } = useQuery<TradingStrategy[]>({ queryKey: ['/api/trading-strategies'] });
+  const { data: dailyPlans } = useQuery<any[]>({ queryKey: ['/api/daily-plans'] });
   
   // Main tab state
   const [activeTab, setActiveTab] = useState('psychology');
@@ -69,7 +73,6 @@ export default function CompleteTradingDashboard() {
   const [filterStatus, setFilterStatus] = useState('all');
   
   // Historical plans states - now using proper API
-  const [historicalPlans] = useState<any[]>([]);
   const [selectedPlan, setSelectedPlan] = useState<any>(null);
   const [isHistoryDialogOpen, setIsHistoryDialogOpen] = useState(false);
   
@@ -193,20 +196,59 @@ export default function CompleteTradingDashboard() {
   }, [strategies, searchTerm, filterStatus]);
 
   // Strategy management functions - now uses API
+  const createStrategyMutation = useMutation({
+    mutationFn: async (strategyData: any) => {
+      return apiRequest('/api/trading-strategies', {
+        method: 'POST',
+        body: JSON.stringify(strategyData),
+        headers: { 'Content-Type': 'application/json' }
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/trading-strategies'] });
+      setNewStrategy({
+        name: '',
+        description: '',
+        expectedWinRate: 65,
+        riskRewardRatio: 2.0,
+        rules: '',
+        marketConditions: '',
+        assets: '',
+        status: 'active'
+      });
+      setIsCreateDialogOpen(false);
+    }
+  });
+
   const createStrategy = () => {
-    // This should be handled by the strategy management API
-    // For now, just close the dialog - proper API integration needed
-    setNewStrategy({
-      name: '',
-      description: '',
-      expectedWinRate: 65,
-      riskRewardRatio: 2.0,
-      rules: '',
-      marketConditions: '',
-      assets: '',
-      status: 'active'
-    });
-    setIsCreateDialogOpen(false);
+    createStrategyMutation.mutate(newStrategy);
+  };
+
+  // Daily plan saving mutation
+  const saveDailyPlanMutation = useMutation({
+    mutationFn: async (planData: any) => {
+      return apiRequest('/api/daily-plans', {
+        method: 'POST',
+        body: JSON.stringify(planData),
+        headers: { 'Content-Type': 'application/json' }
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/daily-plans'] });
+      // Move to next step after saving
+      setCurrentStep('real-time');
+    }
+  });
+
+  const saveDailyPlan = () => {
+    const planData = {
+      accountId: selectedAccount,
+      strategyId: selectedStrategyId,
+      date: selectedDate,
+      ...dailyPlanData,
+      ...preSessionData
+    };
+    saveDailyPlanMutation.mutate(planData);
   };
 
   const getStrategyMetrics = (strategy) => {
@@ -1039,10 +1081,11 @@ export default function CompleteTradingDashboard() {
               Back to Pre-Session
             </Button>
             <Button
-              onClick={() => setCurrentStep('real-time')}
+              onClick={saveDailyPlan}
+              disabled={saveDailyPlanMutation.isPending}
               className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white px-8"
             >
-              Start Trading Session
+              {saveDailyPlanMutation.isPending ? 'Saving...' : 'Save Plan & Start Trading'}
             </Button>
           </div>
         </CardContent>
@@ -1888,7 +1931,14 @@ export default function CompleteTradingDashboard() {
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          {historicalPlans.map(plan => (
+          {(!dailyPlans || dailyPlans.length === 0) ? (
+            <div className="text-center py-12">
+              <BookOpen className="w-16 h-16 text-purple-400 mx-auto mb-4 opacity-50" />
+              <h3 className="text-purple-300 font-medium text-lg mb-2">No Historical Plans Yet</h3>
+              <p className="text-gray-400">Complete your daily plans to build your trading history</p>
+            </div>
+          ) : (
+            dailyPlans.map(plan => (
             <Card key={plan.id} className="bg-gradient-to-br from-slate-900/50 to-slate-800/50 border border-purple-500/30 hover:border-purple-400/50 transition-all">
               <CardHeader>
                 <div className="flex justify-between items-start">
@@ -2003,7 +2053,7 @@ export default function CompleteTradingDashboard() {
                 </div>
               </CardContent>
             </Card>
-          ))}
+          )))}
         </CardContent>
       </Card>
     </div>
