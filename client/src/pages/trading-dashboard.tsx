@@ -2004,8 +2004,8 @@ export default function CompleteTradingDashboard() {
                         <span className="text-white">{plan.plannedTrades}</span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-gray-400">Session:</span>
-                        <span className="text-white">{plan.startTime} - {plan.endTime}</span>
+                        <span className="text-gray-400">Trading Time:</span>
+                        <span className="text-white">{plan.tradeTime || 'Not specified'}</span>
                       </div>
                     </div>
                   </div>
@@ -2015,20 +2015,20 @@ export default function CompleteTradingDashboard() {
                     <h4 className="text-purple-300 font-semibold">Mental State</h4>
                     <div className="space-y-2 text-sm">
                       <div className="flex justify-between">
-                        <span className="text-gray-400">Emotional Clarity:</span>
-                        <span className="text-white">{plan.mentalState.emotionalClarity}/5</span>
+                        <span className="text-gray-400">Emotional State:</span>
+                        <span className="text-white">{plan.emotionalState || 'Not recorded'}</span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-gray-400">Physical Energy:</span>
-                        <span className="text-white">{plan.mentalState.physicalEnergy}/5</span>
+                        <span className="text-gray-400">Market Conditions:</span>
+                        <span className="text-white">{plan.marketConditions || 'Not recorded'}</span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-gray-400">Focus Level:</span>
-                        <span className="text-white">{plan.mentalState.focusLevel}/5</span>
+                        <span className="text-gray-400">Risk Amount:</span>
+                        <span className="text-white">${plan.riskAmount}</span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-gray-400">Confidence:</span>
-                        <span className="text-white">{plan.mentalState.confidence}/5</span>
+                        <span className="text-gray-400">Target Profit:</span>
+                        <span className="text-white">${plan.targetProfit}</span>
                       </div>
                     </div>
                   </div>
@@ -2039,21 +2039,18 @@ export default function CompleteTradingDashboard() {
                     <div className="space-y-2 text-sm">
                       <div className="flex justify-between">
                         <span className="text-gray-400">Actual Trades:</span>
-                        <span className="text-white">{plan.actualTrades}</span>
+                        <span className="text-white">{plan.tradesExecuted || 0}</span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-gray-400">Actual P&L:</span>
-                        <span className={plan.actualPnl >= 0 ? 'text-green-400' : 'text-red-400'}>
-                          {plan.actualPnl >= 0 ? '+' : ''}${plan.actualPnl}
+                        <span className={(plan.actualPnL || 0) >= 0 ? 'text-green-400' : 'text-red-400'}>
+                          {(plan.actualPnL || 0) >= 0 ? '+' : ''}${plan.actualPnL || 0}
                         </span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-gray-400">Discipline Score:</span>
-                        <span className={`font-bold ${
-                          plan.disciplineScore >= 20 ? 'text-green-400' : 
-                          plan.disciplineScore >= 15 ? 'text-yellow-400' : 'text-red-400'
-                        }`}>
-                          {plan.disciplineScore}/25
+                        <span className="text-gray-400">Plan Status:</span>
+                        <span className="text-green-400">
+                          {plan.isPlanSaved ? 'Completed' : 'Draft'}
                         </span>
                       </div>
                     </div>
@@ -2063,7 +2060,7 @@ export default function CompleteTradingDashboard() {
                 {/* Journal Notes */}
                 <div className="mt-4 p-4 bg-slate-800/50 border border-gray-600/30 rounded-lg">
                   <h4 className="text-purple-300 font-semibold mb-2">Journal Notes</h4>
-                  <p className="text-gray-300 text-sm">{plan.notes}</p>
+                  <p className="text-gray-300 text-sm">{plan.additionalNotes || plan.lessonsLearned || 'No notes recorded yet'}</p>
                 </div>
               </CardContent>
             </Card>
