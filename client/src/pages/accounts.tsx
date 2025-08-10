@@ -381,13 +381,50 @@ export default function AccountManagement() {
             </h1>
             <p className="text-gray-400 mt-2">Manage your trading accounts and monitor performance</p>
           </div>
-          <Button 
-            className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700"
-            onClick={() => setIsCreateDialogOpen(true)}
-          >
-            <Plus className="h-4 w-4 mr-2" />
-            Create Account
-          </Button>
+          <div className="flex gap-3">
+            <Button 
+              variant="outline"
+              className="border-yellow-400 text-yellow-400 hover:bg-yellow-400/10"
+              onClick={async () => {
+                try {
+                  const response = await fetch('/api/create-mock-data', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include'
+                  });
+                  const data = await response.json();
+                  
+                  if (response.ok) {
+                    toast({
+                      title: "Mock Data Created",
+                      description: `Created FTMO $100K account with 10 trades. Total P&L: $${data.summary.totalPnL}`,
+                      className: "bg-green-600 text-white border-green-500"
+                    });
+                    queryClient.invalidateQueries({ queryKey: ['/api/accounts'] });
+                    queryClient.invalidateQueries({ queryKey: ['/api/trades'] });
+                  } else {
+                    throw new Error(data.message || 'Failed to create mock data');
+                  }
+                } catch (error) {
+                  toast({
+                    title: "Error",
+                    description: error instanceof Error ? error.message : "Failed to create mock data",
+                    variant: "destructive"
+                  });
+                }
+              }}
+            >
+              <Plus className="h-4 w-4 mr-2" />
+              Create Mock Data
+            </Button>
+            <Button 
+              className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700"
+              onClick={() => setIsCreateDialogOpen(true)}
+            >
+              <Plus className="h-4 w-4 mr-2" />
+              Create Account
+            </Button>
+          </div>
         </div>
         
         <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
