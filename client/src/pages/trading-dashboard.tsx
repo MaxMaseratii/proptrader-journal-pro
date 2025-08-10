@@ -267,21 +267,43 @@ export default function CompleteTradingDashboard() {
     }
   };
 
+  // Delete confirmation state
+  const [deleteConfirmation, setDeleteConfirmation] = useState<{open: boolean, strategy: any} | null>(null);
+
   const deleteStrategy = async (id: number, name: string) => {
-    const confirmed = window.confirm(`⚠️ Delete Strategy: "${name}"?\n\nThis action cannot be undone and will permanently remove:\n• All strategy settings and rules\n• Historical performance data\n• Associated configurations\n\nClick OK to proceed or Cancel to keep the strategy.`);
-    
-    if (confirmed) {
-      deleteStrategyMutation.mutate(id, {
+    setDeleteConfirmation({ open: true, strategy: { id, name } });
+  };
+
+  const confirmDelete = () => {
+    if (deleteConfirmation?.strategy) {
+      deleteStrategyMutation.mutate(deleteConfirmation.strategy.id, {
         onError: (error: any) => {
+          setDeleteConfirmation(null);
           if (error?.response?.status === 400) {
-            alert(`❌ Cannot Delete Strategy\n\nThe strategy "${name}" is currently being used in daily trading plans.\n\nTo delete this strategy:\n1. First delete or modify the daily plans using this strategy\n2. Then try deleting the strategy again\n\nStrategy deletion has been cancelled.`);
+            setErrorDialog({
+              open: true,
+              title: "Cannot Delete Strategy",
+              message: `The strategy "${deleteConfirmation.strategy.name}" is currently being used in daily trading plans.\n\nTo delete this strategy:\n1. Navigate to the daily plans section\n2. Delete or modify plans using this strategy\n3. Return and try deleting the strategy again`,
+              type: "dependency"
+            });
           } else {
-            alert(`❌ Deletion Failed\n\nFailed to delete strategy "${name}". Please try again or contact support if the issue persists.`);
+            setErrorDialog({
+              open: true,
+              title: "Deletion Failed",
+              message: `Failed to delete strategy "${deleteConfirmation.strategy.name}". Please try again or contact support if the issue persists.`,
+              type: "error"
+            });
           }
+        },
+        onSuccess: () => {
+          setDeleteConfirmation(null);
         }
       });
     }
   };
+
+  // Error dialog state
+  const [errorDialog, setErrorDialog] = useState<{open: boolean, title: string, message: string, type: string} | null>(null);
 
   // Daily plan saving mutation
   const saveDailyPlanMutation = useMutation({
@@ -1684,7 +1706,11 @@ export default function CompleteTradingDashboard() {
                     <MoreVertical className="w-4 h-4" />
                   </Button>
                 </div>
-                <p className="text-gray-400 text-sm mt-2">{strategy.description}</p>
+                <p className="text-gray-400 text-sm mt-2 line-clamp-2 break-words overflow-hidden">
+                  {strategy.description?.length > 80 
+                    ? `${strategy.description.substring(0, 80)}...` 
+                    : strategy.description || 'No description available'}
+                </p>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
@@ -2337,6 +2363,96 @@ export default function CompleteTradingDashboard() {
           </TabsContent>
         </Tabs>
       </div>
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog open={deleteConfirmation?.open || false} onOpenChange={(open) => !open && setDeleteConfirmation(null)}>
+        <DialogContent className="max-w-md bg-gradient-to-br from-red-950 via-red-900 to-slate-900 border border-red-500/30">
+          <DialogHeader>
+            <DialogTitle className="text-red-400 text-xl flex items-center gap-2">
+              <AlertTriangle className="w-6 h-6" />
+              Delete Strategy
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 p-6">
+            <div className="text-center space-y-3">
+              <div className="w-16 h-16 mx-auto bg-red-500/20 rounded-full flex items-center justify-center">
+                <Trash2 className="w-8 h-8 text-red-400" />
+              </div>
+              <h3 className="text-lg font-semibold text-white">
+                Delete "{deleteConfirmation?.strategy?.name}"?
+              </h3>
+              <p className="text-gray-300 text-sm leading-relaxed">
+                This action cannot be undone. The strategy and all its configurations will be permanently removed.
+              </p>
+            </div>
+            
+            <div className="bg-red-950/50 border border-red-500/30 rounded-lg p-4">
+              <h4 className="text-red-300 font-medium mb-2">This will permanently delete:</h4>
+              <ul className="text-red-200 text-sm space-y-1">
+                <li>• Strategy settings and rules</li>
+                <li>• Performance metrics and history</li>
+                <li>• All associated configurations</li>
+              </ul>
+            </div>
+
+            <div className="flex gap-3 pt-4">
+              <Button
+                onClick={() => setDeleteConfirmation(null)}
+                variant="outline"
+                className="flex-1 border-gray-600 text-gray-300 hover:bg-gray-700"
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={confirmDelete}
+                className="flex-1 bg-red-600 hover:bg-red-700 text-white"
+                disabled={deleteStrategyMutation.isPending}
+              >
+                {deleteStrategyMutation.isPending ? 'Deleting...' : 'Delete Strategy'}
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Error Dialog */}
+      <Dialog open={errorDialog?.open || false} onOpenChange={(open) => !open && setErrorDialog(null)}>
+        <DialogContent className="max-w-md bg-gradient-to-br from-orange-950 via-red-900 to-slate-900 border border-orange-500/30">
+          <DialogHeader>
+            <DialogTitle className="text-orange-400 text-xl flex items-center gap-2">
+              <AlertTriangle className="w-6 h-6" />
+              {errorDialog?.title}
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 p-6">
+            <div className="text-center space-y-3">
+              <div className={`w-16 h-16 mx-auto rounded-full flex items-center justify-center ${
+                errorDialog?.type === 'dependency' 
+                  ? 'bg-orange-500/20' 
+                  : 'bg-red-500/20'
+              }`}>
+                {errorDialog?.type === 'dependency' ? (
+                  <Settings className="w-8 h-8 text-orange-400" />
+                ) : (
+                  <AlertTriangle className="w-8 h-8 text-red-400" />
+                )}
+              </div>
+              <p className="text-gray-300 text-sm leading-relaxed whitespace-pre-line">
+                {errorDialog?.message}
+              </p>
+            </div>
+
+            <div className="flex justify-center pt-4">
+              <Button
+                onClick={() => setErrorDialog(null)}
+                className="bg-blue-600 hover:bg-blue-700 text-white px-8"
+              >
+                Understood
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       <style>{`
         .text-gradient-rainbow {
