@@ -233,12 +233,31 @@ export default function CompleteTradingDashboard() {
   });
 
   const saveDailyPlan = () => {
+    // Map frontend data to database schema
     const planData = {
       accountId: selectedAccount,
       strategyId: selectedStrategyId,
       date: selectedDate,
-      ...dailyPlanData,
-      ...preSessionData
+      // Financial Planning
+      riskAmount: dailyPlanData.riskAmount,
+      targetProfit: dailyPlanData.targetProfit,
+      maxTrades: dailyPlanData.maxTrades,
+      plannedTrades: dailyPlanData.plannedTrades,
+      riskRewardRatio: dailyPlanData.targetProfit / dailyPlanData.riskAmount, // Calculate R:R ratio
+      maxRiskPercentage: dailyPlanData.maxRiskPercentage,
+      plannedHours: dailyPlanData.plannedHours,
+      hourlyWage: dailyPlanData.hourlyWage,
+      tradeTime: `${dailyPlanData.startTime}-${dailyPlanData.endTime}`,
+      // Journal notes
+      whatWentWrong: '',
+      whatWentRight: '',
+      lessonsLearned: '',
+      improvementPlan: '',
+      emotionalState: preSessionData.traderIdentity || 'disciplined_professional',
+      marketConditions: '',
+      tradeSetupLinks: JSON.stringify(dailyPlanData.tradeSetupLinks || []),
+      // Plan status
+      isPlanSaved: true
     };
     saveDailyPlanMutation.mutate(planData);
   };
