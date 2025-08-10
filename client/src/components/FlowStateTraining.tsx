@@ -158,7 +158,7 @@ export default function FlowStateTraining() {
     return (
       <div className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-black p-6">
         <div className="max-w-4xl mx-auto">
-          <Card className="mb-6 bg-gradient-to-br from-amber-950 via-yellow-950 to-black border-2 border-amber-500/30">
+          <Card className="mb-6 bg-gradient-to-br from-blue-950/80 via-teal-950/60 to-slate-950 border-2 border-teal-500/30">
             <CardHeader>
               <div className="flex items-center justify-between">
                 <CardTitle className="flex items-center space-x-2 text-gradient-rainbow">
@@ -171,30 +171,30 @@ export default function FlowStateTraining() {
               </div>
               <div className="w-full bg-gray-700 rounded-full h-2">
                 <div 
-                  className="bg-gradient-to-r from-amber-500 to-yellow-500 h-2 rounded-full transition-all duration-300"
+                  className="bg-gradient-to-r from-teal-500 to-cyan-400 h-2 rounded-full transition-all duration-300"
                   style={{ width: `${((currentRitualStep + 1) / ritualSteps.length) * 100}%` }}
                 ></div>
               </div>
             </CardHeader>
           </Card>
 
-          <Card className="bg-gradient-to-br from-amber-950/50 via-yellow-950/50 to-black border-2 border-amber-500/30">
+          <Card className="bg-gradient-to-br from-blue-950/50 via-teal-950/40 to-slate-950/80 border-2 border-teal-500/30">
             <CardHeader>
               <CardTitle className="flex items-center space-x-2 text-white">
-                <StepIcon className="h-6 w-6 text-amber-400" />
+                <StepIcon className="h-6 w-6 text-teal-400" />
                 <span>{currentStep.title}</span>
               </CardTitle>
-              <CardDescription className="text-amber-200">{currentStep.description}</CardDescription>
+              <CardDescription className="text-teal-200">{currentStep.description}</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                <div className="bg-amber-900/30 p-6 rounded-lg border border-amber-500/20">
-                  <h4 className="font-medium text-amber-300 mb-3">Instructions:</h4>
+                <div className="bg-teal-900/30 p-6 rounded-lg border border-teal-500/20">
+                  <h4 className="font-medium text-teal-300 mb-3">Instructions:</h4>
                   <ul className="space-y-2">
                     {currentStep.instructions.map((instruction, index) => (
                       <li key={index} className="flex items-start space-x-2">
-                        <CheckCircle className="h-4 w-4 text-amber-400 mt-0.5 flex-shrink-0" />
-                        <span className="text-amber-200">{instruction}</span>
+                        <CheckCircle className="h-4 w-4 text-teal-400 mt-0.5 flex-shrink-0" />
+                        <span className="text-teal-200">{instruction}</span>
                       </li>
                     ))}
                   </ul>
@@ -220,7 +220,7 @@ export default function FlowStateTraining() {
                   <Button 
                     variant="outline"
                     onClick={() => setRitualTimer(0)}
-                    className="border-amber-500/30 text-amber-300 hover:bg-amber-900/20"
+                    className="border-teal-500/30 text-teal-300 hover:bg-teal-900/20"
                   >
                     <RotateCcw className="h-4 w-4 mr-2" />
                     Reset
@@ -232,7 +232,7 @@ export default function FlowStateTraining() {
                     variant="outline"
                     onClick={() => setCurrentRitualStep(Math.max(0, currentRitualStep - 1))}
                     disabled={currentRitualStep === 0}
-                    className="border-amber-500/30 text-amber-300 hover:bg-amber-900/20 disabled:opacity-50"
+                    className="border-teal-500/30 text-teal-300 hover:bg-teal-900/20 disabled:opacity-50"
                   >
                     Previous Step
                   </Button>
@@ -271,8 +271,8 @@ export default function FlowStateTraining() {
           {/* Header */}
           <div className="mb-8">
             <div className="flex items-center space-x-3 mb-4">
-              <div className="p-2 bg-amber-900/30 rounded-lg border border-amber-500/30">
-                <Award className="h-6 w-6 text-amber-400" />
+              <div className="p-2 bg-teal-900/30 rounded-lg border border-teal-500/30">
+                <Award className="h-6 w-6 text-teal-400" />
               </div>
               <div>
                 <h1 className="text-2xl font-bold text-white">Flow State Assessment Results</h1>
@@ -282,18 +282,18 @@ export default function FlowStateTraining() {
           </div>
 
           {/* Post-Ritual Feelings Assessment */}
-          <Card className="mb-8 bg-gradient-to-br from-amber-950/50 via-blue-950/50 to-black border-2 border-amber-500/30">
+          <Card className="mb-8 bg-gradient-to-br from-teal-950/50 via-blue-950/50 to-black border-2 border-teal-500/30">
             <CardHeader>
               <CardTitle className="text-white">How do you feel after completing the ritual?</CardTitle>
-              <CardDescription className="text-amber-200">Rate your current state in each area</CardDescription>
+              <CardDescription className="text-teal-200">Rate your current state in each area</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 {['Focus', 'Calmness', 'Confidence', 'Clarity'].map((feeling) => (
                   <div key={feeling} className="space-y-2">
-                    <label className="text-sm font-medium text-amber-300">{feeling}</label>
+                    <label className="text-sm font-medium text-teal-300">{feeling}</label>
                     <select 
-                      className="w-full p-2 border border-amber-500/30 rounded-md bg-gray-800 text-white"
+                      className="w-full p-2 border border-teal-500/30 rounded-md bg-gray-800 text-white"
                       value={postRitualFeelings[feeling as keyof typeof postRitualFeelings] || ''}
                       onChange={(e) => setPostRitualFeelings({...postRitualFeelings, [feeling]: e.target.value})}
                     >
@@ -310,18 +310,18 @@ export default function FlowStateTraining() {
           </Card>
 
           {/* Performance Matrix */}
-          <Card className="mb-8 bg-gradient-to-br from-amber-950/50 via-blue-950/50 to-black border-2 border-amber-500/30">
+          <Card className="mb-8 bg-gradient-to-br from-teal-950/50 via-blue-950/50 to-black border-2 border-teal-500/30">
             <CardHeader>
               <CardTitle className="flex items-center space-x-2 text-white">
-                <BarChart3 className="h-5 w-5 text-amber-400" />
+                <BarChart3 className="h-5 w-5 text-teal-400" />
                 <span>Performance Matrix Position</span>
               </CardTitle>
-              <CardDescription className="text-amber-200">Adjust your current skill and challenge levels</CardDescription>
+              <CardDescription className="text-teal-200">Adjust your current skill and challenge levels</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                 <div className="space-y-2">
-                  <label className="text-sm font-medium text-amber-300">Your Skill Level: {skillLevel}/10</label>
+                  <label className="text-sm font-medium text-teal-300">Your Skill Level: {skillLevel}/10</label>
                   <input 
                     type="range" 
                     min="1" 
@@ -333,7 +333,7 @@ export default function FlowStateTraining() {
                   <p className="text-xs text-gray-400">1=Beginner, 5=Developing, 8=Competent, 10=Expert</p>
                 </div>
                 <div className="space-y-2">
-                  <label className="text-sm font-medium text-amber-300">Current Market Challenge: {challengeLevel}/10</label>
+                  <label className="text-sm font-medium text-teal-300">Current Market Challenge: {challengeLevel}/10</label>
                   <input 
                     type="range" 
                     min="1" 
@@ -347,9 +347,9 @@ export default function FlowStateTraining() {
               </div>
 
               <div className="grid grid-cols-2 gap-4">
-                <div className={`text-center p-4 rounded-lg ${zone.zone === 'Anxiety' ? 'bg-red-950/50 border-2 border-red-500' : 'bg-red-950/30 border border-red-500/30'}`}>
-                  <h4 className="font-medium text-red-300">Anxiety Zone</h4>
-                  <p className="text-sm text-red-400">High Challenge + Low Skill</p>
+                <div className={`text-center p-4 rounded-lg ${zone.zone === 'Anxiety' ? 'bg-teal-950/50 border-2 border-teal-500' : 'bg-teal-950/30 border border-teal-500/30'}`}>
+                  <h4 className="font-medium text-teal-300">Anxiety Zone</h4>
+                  <p className="text-sm text-teal-400">High Challenge + Low Skill</p>
                 </div>
                 <div className={`text-center p-4 rounded-lg ${zone.zone === 'Flow' ? 'bg-green-950/50 border-2 border-green-500' : 'bg-green-950/30 border border-green-500/30'}`}>
                   <h4 className="font-medium text-green-300">Flow Zone</h4>
@@ -366,7 +366,7 @@ export default function FlowStateTraining() {
               </div>
 
               <div className="mt-4 text-center">
-                <Badge className={`${zone.color === 'green' ? 'bg-green-900/50 text-green-300 border border-green-500/30' : zone.color === 'red' ? 'bg-red-900/50 text-red-300 border border-red-500/30' : zone.color === 'yellow' ? 'bg-yellow-900/50 text-yellow-300 border border-yellow-500/30' : 'bg-gray-800 text-gray-300 border border-gray-500/30'}`}>
+                <Badge className={`${zone.color === 'green' ? 'bg-green-900/50 text-green-300 border border-green-500/30' : zone.color === 'red' ? 'bg-teal-900/50 text-teal-300 border border-teal-500/30' : zone.color === 'yellow' ? 'bg-yellow-900/50 text-yellow-300 border border-yellow-500/30' : 'bg-gray-800 text-gray-300 border border-gray-500/30'}`}>
                   Current Zone: {zone.zone} - {zone.description}
                 </Badge>
               </div>
@@ -385,7 +385,7 @@ export default function FlowStateTraining() {
               <div className="text-center mb-6">
                 <div className="text-6xl font-bold text-green-400 mb-2">{flowScore}</div>
                 <div className="text-lg text-gray-400">Overall Flow State Score</div>
-                <Badge className={flowScore >= 80 ? 'bg-green-900/50 text-green-300 border border-green-500/30' : flowScore >= 60 ? 'bg-yellow-900/50 text-yellow-300 border border-yellow-500/30' : 'bg-red-900/50 text-red-300 border border-red-500/30'}>
+                <Badge className={flowScore >= 80 ? 'bg-green-900/50 text-green-300 border border-green-500/30' : flowScore >= 60 ? 'bg-yellow-900/50 text-yellow-300 border border-yellow-500/30' : 'bg-teal-900/50 text-teal-300 border border-teal-500/30'}>
                   {flowScore >= 80 ? 'Excellent - Ready to Trade' : flowScore >= 60 ? 'Good - Proceed with Caution' : 'Poor - Consider Paper Trading'}
                 </Badge>
               </div>
@@ -395,9 +395,9 @@ export default function FlowStateTraining() {
                   <div className="text-2xl font-bold text-blue-400">{flowPercentage}%</div>
                   <div className="text-sm text-blue-300">Base Flow Level</div>
                 </div>
-                <div className="text-center p-4 bg-amber-900/30 rounded-lg border border-amber-500/30">
-                  <div className="text-2xl font-bold text-amber-400">{zone.zone === 'Flow' ? '+15' : '0'}</div>
-                  <div className="text-sm text-amber-300">Zone Bonus</div>
+                <div className="text-center p-4 bg-teal-900/30 rounded-lg border border-teal-500/30">
+                  <div className="text-2xl font-bold text-teal-400">{zone.zone === 'Flow' ? '+15' : '0'}</div>
+                  <div className="text-sm text-teal-300">Zone Bonus</div>
                 </div>
                 <div className="text-center p-4 bg-green-900/30 rounded-lg border border-green-500/30">
                   <div className="text-2xl font-bold text-green-400">{ritualCompleted ? '+10' : '0'}</div>
@@ -416,7 +416,7 @@ export default function FlowStateTraining() {
                 setPostRitualFeelings({});
               }}
               variant="outline"
-              className="border-amber-500/30 text-amber-300 hover:bg-amber-900/20"
+              className="border-teal-500/30 text-teal-300 hover:bg-teal-900/20"
             >
               <RotateCcw className="h-4 w-4 mr-2" />
               Start Over
@@ -440,8 +440,8 @@ export default function FlowStateTraining() {
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center space-x-3 mb-4">
-            <div className="p-2 bg-amber-900/30 rounded-lg border border-amber-500/30">
-              <Brain className="h-6 w-6 text-amber-400" />
+            <div className="p-2 bg-teal-900/30 rounded-lg border border-teal-500/30">
+              <Brain className="h-6 w-6 text-teal-400" />
             </div>
             <div>
               <h1 className="text-2xl font-bold text-white">Flow State Training Center</h1>
@@ -451,18 +451,18 @@ export default function FlowStateTraining() {
         </div>
 
         {/* Current Flow Assessment */}
-        <Card className="mb-8 bg-gradient-to-br from-amber-950/50 via-blue-950/50 to-black border-2 border-amber-500/30">
+        <Card className="mb-8 bg-gradient-to-br from-teal-950/50 via-blue-950/50 to-black border-2 border-teal-500/30">
           <CardHeader>
             <CardTitle className="flex items-center space-x-2 text-white">
               <Waves className="h-5 w-5 text-blue-400" />
               <span>Current Flow State Assessment</span>
             </CardTitle>
-            <CardDescription className="text-amber-200">How connected to flow do you feel right now?</CardDescription>
+            <CardDescription className="text-teal-200">How connected to flow do you feel right now?</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-6">
               <div className="space-y-2">
-                <label className="text-sm font-medium text-amber-300">Flow State Percentage: {flowPercentage}%</label>
+                <label className="text-sm font-medium text-teal-300">Flow State Percentage: {flowPercentage}%</label>
                 <input 
                   type="range" 
                   min="0" 
@@ -479,7 +479,7 @@ export default function FlowStateTraining() {
               </div>
 
               <div className="text-center">
-                <Badge className={flowPercentage >= 70 ? 'bg-green-900/50 text-green-300 border border-green-500/30' : flowPercentage >= 40 ? 'bg-yellow-900/50 text-yellow-300 border border-yellow-500/30' : 'bg-red-900/50 text-red-300 border border-red-500/30'}>
+                <Badge className={flowPercentage >= 70 ? 'bg-green-900/50 text-green-300 border border-green-500/30' : flowPercentage >= 40 ? 'bg-yellow-900/50 text-yellow-300 border border-yellow-500/30' : 'bg-teal-900/50 text-teal-300 border border-teal-500/30'}>
                   {flowPercentage >= 70 ? 'Good Flow State' : flowPercentage >= 40 ? 'Moderate Flow' : 'Low Flow - Training Recommended'}
                 </Badge>
               </div>
@@ -488,10 +488,10 @@ export default function FlowStateTraining() {
         </Card>
 
         {/* Flow State Education */}
-        <Card className="mb-8 bg-gradient-to-br from-amber-950/50 via-blue-950/50 to-black border-2 border-amber-500/30">
+        <Card className="mb-8 bg-gradient-to-br from-teal-950/50 via-blue-950/50 to-black border-2 border-teal-500/30">
           <CardHeader>
             <CardTitle className="flex items-center space-x-2 text-white">
-              <Focus className="h-5 w-5 text-amber-400" />
+              <Focus className="h-5 w-5 text-teal-400" />
               <span>What is Flow State?</span>
             </CardTitle>
           </CardHeader>
@@ -530,13 +530,13 @@ export default function FlowStateTraining() {
         </Card>
 
         {/* Flow State Ritual */}
-        <Card className="bg-gradient-to-br from-amber-950/50 via-blue-950/50 to-black border-2 border-amber-500/30">
+        <Card className="bg-gradient-to-br from-teal-950/50 via-blue-950/50 to-black border-2 border-teal-500/30">
           <CardHeader>
             <CardTitle className="flex items-center space-x-2 text-white">
               <Timer className="h-5 w-5 text-orange-400" />
               <span>16-Minute Flow State Ritual</span>
             </CardTitle>
-            <CardDescription className="text-amber-200">
+            <CardDescription className="text-teal-200">
               A scientifically-designed routine to activate flow state before trading
             </CardDescription>
           </CardHeader>
@@ -547,7 +547,7 @@ export default function FlowStateTraining() {
                   const StepIcon = step.icon;
                   return (
                     <div key={index} className="text-center p-4 bg-gray-800/50 rounded-lg border border-gray-700">
-                      <StepIcon className="h-8 w-8 text-amber-400 mx-auto mb-2" />
+                      <StepIcon className="h-8 w-8 text-teal-400 mx-auto mb-2" />
                       <h4 className="font-medium text-sm text-white">{step.title}</h4>
                       <p className="text-xs text-gray-400 mt-1">
                         {Math.floor(step.duration / 60)} min
@@ -565,7 +565,7 @@ export default function FlowStateTraining() {
                 
                 <Button 
                   onClick={() => setCurrentView('ritual')}
-                  className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white"
+                  className="bg-gradient-to-r from-teal-500 to-cyan-600 hover:from-teal-600 hover:to-cyan-700 text-white"
                   size="lg"
                 >
                   <Play className="h-4 w-4 mr-2" />

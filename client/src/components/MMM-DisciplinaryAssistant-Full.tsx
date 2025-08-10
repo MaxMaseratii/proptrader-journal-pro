@@ -650,6 +650,9 @@ export default function MMMDisciplinaryAssistant({ trades, accounts, accountIdId
     }
   }, [accountId, trades]);
 
+  // Real data calculations for dynamic analysis
+  const totalPnL = trades.reduce((sum, t) => sum + (t.pnl || 0), 0);
+  
   const disciplineAreas: DisciplineArea[] = disciplineData ? [
     {
       name: "Risk Management",
@@ -1063,7 +1066,7 @@ export default function MMMDisciplinaryAssistant({ trades, accounts, accountIdId
         </CardHeader>
         <CardContent>
           <div className="flex items-center space-x-4">
-            <Select value={accountId} onValueChange={setSelectedAccount}>
+            <Select value={accountId} onValueChange={setAccountId}>
               <SelectTrigger className="w-64">
                 <SelectValue placeholder="Choose account..." />
               </SelectTrigger>

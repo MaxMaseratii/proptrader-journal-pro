@@ -19,8 +19,8 @@ export default function MentalFitness() {
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center space-x-3 mb-4">
-            <div className="p-2 bg-amber-100 dark:bg-amber-900/20 rounded-lg">
-              <Brain className="h-6 w-6 text-amber-600 dark:text-amber-400" />
+            <div className="p-2 bg-teal-100 dark:bg-teal-900/20 rounded-lg">
+              <Brain className="h-6 w-6 text-teal-600 dark:text-teal-400" />
             </div>
             <div>
               <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Pre-Session Mental Fitness Check</h1>
@@ -28,7 +28,7 @@ export default function MentalFitness() {
             </div>
           </div>
           
-          <Badge className="bg-amber-100 text-amber-700 dark:bg-amber-900/20 dark:text-amber-400">
+          <Badge className="bg-teal-100 text-teal-700 dark:bg-teal-900/20 dark:text-teal-400">
             <Brain className="h-3 w-3 mr-1" />
             Prop Trader Exclusive Feature
           </Badge>
@@ -60,7 +60,7 @@ export default function MentalFitness() {
                 <div className="text-sm text-gray-600 dark:text-gray-400">Emotional Control</div>
               </div>
               <div className="text-center">
-                <div className="text-2xl font-bold text-amber-600">88%</div>
+                <div className="text-2xl font-bold text-teal-600">88%</div>
                 <div className="text-sm text-gray-600 dark:text-gray-400">Confidence</div>
               </div>
             </div>
