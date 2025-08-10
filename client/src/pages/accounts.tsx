@@ -116,7 +116,7 @@ export default function AccountsPage() {
     queryKey: ['/api/trades'],
   });
 
-  // React Hook Form setup with proper default values for numbers as undefined/optional
+  // React Hook Form setup with NO default values for number fields
   const form = useForm<AccountFormData>({
     resolver: zodResolver(accountFormSchema),
     defaultValues: {
@@ -133,76 +133,22 @@ export default function AccountsPage() {
       primaryAsset: '',
       secondaryAsset: '',
       tertiaryAsset: '',
-      timeSlot1Start: '09:00',
-      timeSlot1End: '17:00',
-      timeSlot1Timezone: 'UTC',
+      timeSlot1Start: '',
+      timeSlot1End: '',
+      timeSlot1Timezone: '',
       timeSlot2Start: '',
       timeSlot2End: '',
-      timeSlot2Timezone: 'UTC',
+      timeSlot2Timezone: '',
       timeSlot3Start: '',
       timeSlot3End: '',
-      timeSlot3Timezone: 'UTC',
+      timeSlot3Timezone: '',
       liveTradingAccountAvailable: false,
       challengePayoutsAvailable: false,
+      // ALL NUMBER FIELDS LEFT UNDEFINED - NO DEFAULTS
     }
   });
 
-  // Simple state management to prevent flickering - NO react-hook-form
-  const [formData, setFormData] = useState({
-    // Basic Info Tab
-    name: '',
-    firm: '',
-    type: 'demo',
-    status: 'active',
-    startingBalance: "",
-    profitTarget: "",
-    maxDrawdown: "",
-    minimumTradingDays: "",
-    timeLimit: "",
-    consistencyRule: "",
-    drawdownType: 'trailing',
-    maxDrawdownType: 'EOD',
-    hasDailyLossLimit: false,
-    
-    // Financial Tab
-    accountCost: "",
-    activationCost: "",
-    purchaseMethod: 'credit card',
-    resetCount: "",
-    totalResetsCost: "",
-    profitSplit: "",
-    activationFeePaid: false,
-    includesActivationFee: false,
-    
-    // Rules & Risk Tab
-    riskPerTrade: "",
-    riskPerTradeDivider: "",
-    dailyLossLimit: "",
-    riskRewardRatio: "",
-    maxTradesPerDay: "",
-    maxRiskPerDay: "",
-    stopLoss: "",
-    primaryAsset: '',
-    secondaryAsset: '',
-    tertiaryAsset: '',
-    
-    // Personal Trading Time
-    timeSlot1Start: '09:00',
-    timeSlot1End: '17:00',
-    timeSlot1Timezone: 'UTC',
-    timeSlot2Start: '',
-    timeSlot2End: '',
-    timeSlot2Timezone: 'UTC',
-    timeSlot3Start: '',
-    timeSlot3End: '',
-    timeSlot3Timezone: 'UTC',
-    
-    // Bottom fields
-    dailyWorkingHours: "",
-    hourlyWages: "",
-    liveTradingAccountAvailable: false,
-    challengePayoutsAvailable: false
-  });
+  // Removed duplicate formData state - using ONLY React Hook Form now
 
   const createAccountMutation = useMutation({
     mutationFn: async (data: AccountFormData) => {
