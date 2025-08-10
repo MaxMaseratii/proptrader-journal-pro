@@ -69,6 +69,8 @@ export default function CompleteTradingDashboard() {
   const [selectedStrategy, setSelectedStrategy] = useState<any>(null);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [isDetailsDialogOpen, setIsDetailsDialogOpen] = useState(false);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [editingStrategy, setEditingStrategy] = useState<any>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState('all');
   
@@ -218,6 +220,40 @@ export default function CompleteTradingDashboard() {
 
   const createStrategy = () => {
     createStrategyMutation.mutate(newStrategy);
+  };
+
+  // Strategy update mutation
+  const updateStrategyMutation = useMutation({
+    mutationFn: async ({ id, data }: { id: number; data: any }) => {
+      return apiRequest(`/api/trading-strategies/${id}`, 'PUT', data);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/trading-strategies'] });
+      setIsEditDialogOpen(false);
+      setEditingStrategy(null);
+    }
+  });
+
+  // Strategy deletion mutation
+  const deleteStrategyMutation = useMutation({
+    mutationFn: async (id: number) => {
+      return apiRequest(`/api/trading-strategies/${id}`, 'DELETE');
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/trading-strategies'] });
+    }
+  });
+
+  const updateStrategy = () => {
+    if (editingStrategy) {
+      updateStrategyMutation.mutate({ id: editingStrategy.id, data: editingStrategy });
+    }
+  };
+
+  const deleteStrategy = async (id: number, name: string) => {
+    if (confirm(`Are you sure you want to delete "${name}"? This action cannot be undone.`)) {
+      deleteStrategyMutation.mutate(id);
+    }
   };
 
   // Daily plan saving mutation
@@ -1675,15 +1711,28 @@ export default function CompleteTradingDashboard() {
                       className="flex-1 border-blue-400/30 text-blue-300 hover:bg-blue-900/20"
                     >
                       <Eye className="w-4 h-4 mr-1" />
-                      View Details
+                      View
                     </Button>
                     <Button
-                      onClick={() => setSelectedStrategyId(strategy.id)}
-                      size="sm" 
-                      className="flex-1 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700"
+                      onClick={() => {
+                        setEditingStrategy({ ...strategy });
+                        setIsEditDialogOpen(true);
+                      }}
+                      variant="outline"
+                      size="sm"
+                      className="flex-1 border-yellow-400/30 text-yellow-300 hover:bg-yellow-900/20"
                     >
-                      <Play className="w-4 h-4 mr-1" />
-                      Use
+                      <Edit className="w-4 h-4 mr-1" />
+                      Modify
+                    </Button>
+                    <Button
+                      onClick={() => deleteStrategy(strategy.id, strategy.name)}
+                      variant="outline"
+                      size="sm"
+                      className="flex-1 border-red-400/30 text-red-300 hover:bg-red-900/20"
+                    >
+                      <Trash2 className="w-4 h-4 mr-1" />
+                      Delete
                     </Button>
                   </div>
                 </div>
@@ -1804,6 +1853,129 @@ export default function CompleteTradingDashboard() {
               </Button>
             </div>
           </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Edit Strategy Dialog */}
+      <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+        <DialogContent className="max-w-2xl bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 border border-blue-500/30">
+          <DialogHeader>
+            <DialogTitle className="text-gradient-rainbow text-xl">Edit Trading Strategy</DialogTitle>
+          </DialogHeader>
+          {editingStrategy && (
+            <div className="space-y-6 p-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <Label className="text-blue-300 mb-2 block">Strategy Name</Label>
+                  <Input
+                    value={editingStrategy.name}
+                    onChange={(e) => setEditingStrategy(prev => ({ ...prev, name: e.target.value }))}
+                    placeholder="e.g., My Custom Strategy"
+                    className="bg-white border-blue-500/30 text-black placeholder:text-gray-500"
+                  />
+                </div>
+                <div>
+                  <Label className="text-blue-300 mb-2 block">Expected Win Rate (%)</Label>
+                  <Input
+                    type="number"
+                    min="0"
+                    max="100"
+                    value={editingStrategy.expectedWinRate}
+                    onChange={(e) => setEditingStrategy(prev => ({ ...prev, expectedWinRate: parseFloat(e.target.value) }))}
+                    className="bg-white border-blue-500/30 text-black"
+                  />
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <Label className="text-blue-300 mb-2 block">Risk:Reward Ratio</Label>
+                  <Input
+                    type="number"
+                    step="0.1"
+                    min="0.1"
+                    value={editingStrategy.riskRewardRatio}
+                    onChange={(e) => setEditingStrategy(prev => ({ ...prev, riskRewardRatio: parseFloat(e.target.value) }))}
+                    className="bg-white border-blue-500/30 text-black"
+                  />
+                </div>
+                <div>
+                  <Label className="text-blue-300 mb-2 block">Status</Label>
+                  <Select 
+                    value={editingStrategy.status} 
+                    onValueChange={(value) => setEditingStrategy(prev => ({ ...prev, status: value }))}
+                  >
+                    <SelectTrigger className="bg-white border-blue-500/30 text-black">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="active">Active</SelectItem>
+                      <SelectItem value="inactive">Inactive</SelectItem>
+                      <SelectItem value="testing">Testing</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              <div>
+                <Label className="text-blue-300 mb-2 block">Description</Label>
+                <Textarea
+                  value={editingStrategy.description}
+                  onChange={(e) => setEditingStrategy(prev => ({ ...prev, description: e.target.value }))}
+                  placeholder="Describe your trading strategy"
+                  className="bg-white border-blue-500/30 text-black placeholder:text-gray-500 min-h-[100px]"
+                />
+              </div>
+
+              <div>
+                <Label className="text-blue-300 mb-2 block">Trading Rules</Label>
+                <Textarea
+                  value={editingStrategy.rules}
+                  onChange={(e) => setEditingStrategy(prev => ({ ...prev, rules: e.target.value }))}
+                  placeholder="• Entry rules&#10;• Exit rules&#10;• Risk management rules"
+                  className="bg-white border-blue-500/30 text-black placeholder:text-gray-500 min-h-[120px]"
+                />
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <Label className="text-blue-300 mb-2 block">Market Conditions</Label>
+                  <Input
+                    value={editingStrategy.marketConditions}
+                    onChange={(e) => setEditingStrategy(prev => ({ ...prev, marketConditions: e.target.value }))}
+                    placeholder="e.g., High volatility, trending markets"
+                    className="bg-white border-blue-500/30 text-black placeholder:text-gray-500"
+                  />
+                </div>
+                <div>
+                  <Label className="text-blue-300 mb-2 block">Target Assets</Label>
+                  <Input
+                    value={editingStrategy.assets}
+                    onChange={(e) => setEditingStrategy(prev => ({ ...prev, assets: e.target.value }))}
+                    placeholder="e.g., Large cap stocks, ETFs"
+                    className="bg-white border-blue-500/30 text-black placeholder:text-gray-500"
+                  />
+                </div>
+              </div>
+
+              <div className="flex justify-end gap-4">
+                <Button
+                  onClick={() => setIsEditDialogOpen(false)}
+                  variant="outline"
+                  className="border-gray-600 text-gray-300 hover:bg-gray-700"
+                >
+                  Cancel
+                </Button>
+                <Button
+                  onClick={updateStrategy}
+                  className="bg-gradient-to-r from-yellow-600 to-orange-600 hover:from-yellow-700 hover:to-orange-700"
+                  disabled={updateStrategyMutation.isPending}
+                >
+                  {updateStrategyMutation.isPending ? 'Updating...' : 'Update Strategy'}
+                </Button>
+              </div>
+            </div>
+          )}
         </DialogContent>
       </Dialog>
 
