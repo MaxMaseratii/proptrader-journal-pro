@@ -226,12 +226,28 @@ export default function CompleteTradingDashboard() {
   // Strategy update mutation
   const updateStrategyMutation = useMutation({
     mutationFn: async ({ id, data }: { id: number; data: any }) => {
-      return apiRequest(`/api/trading-strategies/${id}`, 'PUT', data);
+      // Map frontend data to backend expected format
+      const cleanData = {
+        name: data.name,
+        description: data.description,
+        rules: data.rules,
+        riskRewardRatio: data.riskRewardRatio,
+        expectedWinRate: data.expectedWinRate,
+        assets: data.assets,
+        marketConditions: data.marketConditions,
+        status: data.status
+      };
+      console.log('Updating strategy with data:', cleanData);
+      return apiRequest(`/api/trading-strategies/${id}`, 'PUT', cleanData);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/trading-strategies'] });
       setIsEditDialogOpen(false);
       setEditingStrategy(null);
+    },
+    onError: (error: any) => {
+      console.error('Update error:', error);
+      alert(`❌ Update Failed\n\nFailed to update strategy. Please check your inputs and try again.\n\nError: ${error?.message || 'Unknown error'}`);
     }
   });
 
@@ -252,8 +268,18 @@ export default function CompleteTradingDashboard() {
   };
 
   const deleteStrategy = async (id: number, name: string) => {
-    if (confirm(`Are you sure you want to delete "${name}"? This action cannot be undone.`)) {
-      deleteStrategyMutation.mutate(id);
+    const confirmed = window.confirm(`⚠️ Delete Strategy: "${name}"?\n\nThis action cannot be undone and will permanently remove:\n• All strategy settings and rules\n• Historical performance data\n• Associated configurations\n\nClick OK to proceed or Cancel to keep the strategy.`);
+    
+    if (confirmed) {
+      deleteStrategyMutation.mutate(id, {
+        onError: (error: any) => {
+          if (error?.response?.status === 400) {
+            alert(`❌ Cannot Delete Strategy\n\nThe strategy "${name}" is currently being used in daily trading plans.\n\nTo delete this strategy:\n1. First delete or modify the daily plans using this strategy\n2. Then try deleting the strategy again\n\nStrategy deletion has been cancelled.`);
+          } else {
+            alert(`❌ Deletion Failed\n\nFailed to delete strategy "${name}". Please try again or contact support if the issue persists.`);
+          }
+        }
+      });
     }
   };
 
