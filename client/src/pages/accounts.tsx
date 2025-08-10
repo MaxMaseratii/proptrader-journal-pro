@@ -37,34 +37,34 @@ const accountFormSchema = z.object({
   firm: z.string().min(1, 'Prop firm is required'),
   type: z.enum(['challenge', 'funded', 'live', 'demo']),
   status: z.enum(['active', 'inactive', 'pending']),
-  startingBalance: z.number().min(0, 'Starting balance must be positive'),
-  profitTarget: z.number().min(0, 'Profit target must be positive'),
-  maxDrawdown: z.number().min(0, 'Max drawdown must be positive'),
-  minimumTradingDays: z.number().min(1, 'Minimum trading days required'),
-  timeLimit: z.number().min(1, 'Time limit required'),
-  consistencyRule: z.number().min(0).max(100, 'Must be between 0-100%'),
+  startingBalance: z.number().min(0, 'Starting balance must be positive').optional(),
+  profitTarget: z.number().min(0, 'Profit target must be positive').optional(),
+  maxDrawdown: z.number().min(0, 'Max drawdown must be positive').optional(),
+  minimumTradingDays: z.number().min(1, 'Minimum trading days required').optional(),
+  timeLimit: z.number().min(1, 'Time limit required').optional(),
+  consistencyRule: z.number().min(0).max(100, 'Must be between 0-100%').optional(),
   drawdownType: z.enum(['trailing', 'static', 'balance_based']),
   maxDrawdownType: z.enum(['EOD', 'real-time', 'session_close']),
   hasDailyLossLimit: z.boolean(),
   
   // Financial Tab
-  accountCost: z.number().min(0, 'Account cost must be positive'),
-  activationCost: z.number().min(0, 'Activation cost must be positive'),
+  accountCost: z.number().min(0, 'Account cost must be positive').optional(),
+  activationCost: z.number().min(0, 'Activation cost must be positive').optional(),
   purchaseMethod: z.enum(['credit card', 'PayPal', 'bank transfer', 'crypto']),
-  resetCount: z.number().min(0, 'Reset count must be positive'),
-  totalResetsCost: z.number().min(0, 'Total resets cost must be positive'),
-  profitSplit: z.number().min(0).max(100, 'Must be between 0-100%'),
+  resetCount: z.number().min(0, 'Reset count must be positive').optional(),
+  totalResetsCost: z.number().min(0, 'Total resets cost must be positive').optional(),
+  profitSplit: z.number().min(0).max(100, 'Must be between 0-100%').optional(),
   activationFeePaid: z.boolean(),
   includesActivationFee: z.boolean(),
   
   // Rules & Risk Tab
-  riskPerTrade: z.number().min(0, 'Risk per trade must be positive'),
-  riskPerTradeDivider: z.number().min(1, 'Divider must be at least 1'),
-  dailyLossLimit: z.number().min(0, 'Daily loss limit must be positive'),
-  riskRewardRatio: z.number().min(0.1, 'Risk reward ratio must be positive'),
-  maxTradesPerDay: z.number().min(1, 'Must allow at least 1 trade per day'),
-  maxRiskPerDay: z.number().min(0, 'Max risk per day must be positive'),
-  stopLoss: z.number().min(0, 'Stop loss must be positive'),
+  riskPerTrade: z.number().min(0, 'Risk per trade must be positive').optional(),
+  riskPerTradeDivider: z.number().min(1, 'Divider must be at least 1').optional(),
+  dailyLossLimit: z.number().min(0, 'Daily loss limit must be positive').optional(),
+  riskRewardRatio: z.number().min(0.1, 'Risk reward ratio must be positive').optional(),
+  maxTradesPerDay: z.number().min(1, 'Must allow at least 1 trade per day').optional(),
+  maxRiskPerDay: z.number().min(0, 'Max risk per day must be positive').optional(),
+  stopLoss: z.number().min(0, 'Stop loss must be positive').optional(),
   primaryAsset: z.string().min(1, 'Primary asset is required'),
   secondaryAsset: z.string().optional(),
   tertiaryAsset: z.string().optional(),
@@ -81,8 +81,8 @@ const accountFormSchema = z.object({
   timeSlot3Timezone: z.string().optional(),
   
   // Bottom fields
-  dailyWorkingHours: z.number().min(0).max(24, 'Must be between 0-24 hours'),
-  hourlyWages: z.number().min(0, 'Hourly wages must be positive'),
+  dailyWorkingHours: z.number().min(0).max(24, 'Must be between 0-24 hours').optional(),
+  hourlyWages: z.number().min(0, 'Hourly wages must be positive').optional(),
   liveTradingAccountAvailable: z.boolean(),
   challengePayoutsAvailable: z.boolean(),
 });
@@ -114,6 +114,37 @@ export default function AccountsPage() {
 
   const { data: trades = [] } = useQuery<Trade[]>({
     queryKey: ['/api/trades'],
+  });
+
+  // React Hook Form setup with proper default values for numbers as undefined/optional
+  const form = useForm<AccountFormData>({
+    resolver: zodResolver(accountFormSchema),
+    defaultValues: {
+      name: '',
+      firm: '',
+      type: 'demo',
+      status: 'active',
+      drawdownType: 'trailing',
+      maxDrawdownType: 'EOD',
+      hasDailyLossLimit: false,
+      purchaseMethod: 'credit card',
+      activationFeePaid: false,
+      includesActivationFee: false,
+      primaryAsset: '',
+      secondaryAsset: '',
+      tertiaryAsset: '',
+      timeSlot1Start: '09:00',
+      timeSlot1End: '17:00',
+      timeSlot1Timezone: 'UTC',
+      timeSlot2Start: '',
+      timeSlot2End: '',
+      timeSlot2Timezone: 'UTC',
+      timeSlot3Start: '',
+      timeSlot3End: '',
+      timeSlot3Timezone: 'UTC',
+      liveTradingAccountAvailable: false,
+      challengePayoutsAvailable: false,
+    }
   });
 
   // Simple state management to prevent flickering - NO react-hook-form
@@ -276,10 +307,10 @@ export default function AccountsPage() {
     }));
   }, []);
 
-  // Memoized handlers to prevent unnecessary re-renders and flickering
-  const handleCreateAccount = useCallback(() => {
-    createAccountMutation.mutate(formData);
-  }, [createAccountMutation, formData]);
+  // Form submission handler
+  const handleCreateAccount = useCallback((data: AccountFormData) => {
+    createAccountMutation.mutate(data);
+  }, [createAccountMutation]);
 
   const handleEditAccount = useCallback((account: Account) => {
     setEditingAccount(account);
@@ -503,7 +534,7 @@ export default function AccountsPage() {
                 
                 <div className="flex-1 overflow-y-auto py-4">
                   <Form {...form}>
-                    <div className="space-y-6">
+                    <form id="create-account-form" onSubmit={form.handleSubmit(handleCreateAccount)} className="space-y-6">
                     <Tabs defaultValue="basic" className="w-full">
                       <TabsList className="grid w-full grid-cols-3 bg-gray-800/50">
                         <TabsTrigger value="basic" className="data-[state=active]:bg-yellow-500 data-[state=active]:text-black">
