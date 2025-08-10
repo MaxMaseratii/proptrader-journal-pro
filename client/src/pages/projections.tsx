@@ -103,11 +103,10 @@ export default function Projections() {
 
   const saveProjectionMutation = useMutation({
     mutationFn: async (projectionData: any) => {
-      if (isModifyingPlan && modifyingProjectionId) {
-        return await apiRequest(`/api/projections/${modifyingProjectionId}`, "PUT", projectionData);
-      } else {
-        return await apiRequest("/api/projections/save", "POST", projectionData);
-      }
+      const response = isModifyingPlan && modifyingProjectionId
+        ? await apiRequest(`/api/projections/${modifyingProjectionId}`, "PUT", projectionData)
+        : await apiRequest("/api/projections/save", "POST", projectionData);
+      return response.json();
     },
     onSuccess: () => {
       toast({
@@ -864,8 +863,8 @@ export default function Projections() {
                       How This Works
                     </h4>
                     <div className="text-sm text-gray-300 space-y-1">
-                      <p>• <span className="text-blue-400">Risk per trade:</span> ${formatCurrency(settings.riskPerTrade)} × <span className="text-purple-400">{settings.riskRewardRatio}:1 ratio</span> = ${formatCurrency(settings.riskPerTrade * settings.riskRewardRatio)} profit per winning trade</p>
-                      <p>• <span className="text-yellow-400">Target:</span> ${formatCurrency(settings.profitTarget)} ÷ ${formatCurrency(settings.riskPerTrade * settings.riskRewardRatio)} = {Math.ceil(settings.profitTarget / (settings.riskPerTrade * settings.riskRewardRatio))} trading days needed</p>
+                      <p>• <span className="text-blue-400">Risk per trade:</span> {formatCurrency(settings.riskPerTrade)} × <span className="text-amber-400">{settings.riskRewardRatio}:1 ratio</span> = {formatCurrency(settings.riskPerTrade * settings.riskRewardRatio)} profit per winning trade</p>
+                      <p>• <span className="text-yellow-400">Target:</span> {formatCurrency(settings.profitTarget)} ÷ {formatCurrency(settings.riskPerTrade * settings.riskRewardRatio)} = {Math.ceil(settings.profitTarget / (settings.riskPerTrade * settings.riskRewardRatio))} trading days needed</p>
                     </div>
                   </div>
 
@@ -978,19 +977,19 @@ export default function Projections() {
                                 
                                 {/* Column 2: Risk Amount */}
                                 <td className="p-4 text-center">
-                                  <div className="text-blue-400 font-bold text-lg">${formatCurrency(day.risk)}</div>
+                                  <div className="text-blue-400 font-bold text-lg">{formatCurrency(day.risk)}</div>
                                 </td>
                                 
                                 {/* Column 3: Expected Profit */}
                                 <td className="p-4 text-center">
-                                  <div className="text-green-400 font-bold text-lg">${formatCurrency(day.reward || 0)}</div>
+                                  <div className="text-green-400 font-bold text-lg">{formatCurrency(day.reward || 0)}</div>
                                 </td>
                                 
                                 {/* Column 4: Progress to Goal (VERY IMPORTANT - CUMULATIVE PROGRESS) */}
                                 <td className="p-4 text-center">
                                   <div className="space-y-2">
                                     <div className={`font-bold text-lg ${isTargetReached ? 'text-green-400' : 'text-yellow-400'}`}>
-                                      ${formatCurrency(day.targetExpectation || 0)}
+                                      {formatCurrency(day.targetExpectation || 0)}
                                     </div>
                                     <div className="w-full bg-gray-700 rounded-full h-2">
                                       <div 

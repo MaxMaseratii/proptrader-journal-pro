@@ -117,7 +117,7 @@ const ShareStats: React.FC<ShareStatsProps> = ({ totalPnL, winRate, totalTrades,
     {
       name: 'Instagram',
       url: `https://www.instagram.com/`,
-      color: 'bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600',
+      color: 'bg-gradient-to-r from-orange-500 to-pink-500 hover:from-orange-600 hover:to-pink-600',
       icon: '📷',
       note: 'Copy stats and share on your story!'
     },
@@ -154,33 +154,22 @@ const ShareStats: React.FC<ShareStatsProps> = ({ totalPnL, winRate, totalTrades,
           size="sm" 
           className="bg-gradient-to-r from-yellow-400/20 to-amber-500/20 border-yellow-400/40 hover:border-yellow-400/60 text-yellow-400 hover:text-yellow-300"
         >
-          <Share2 className="h-4 w-4 mr-2" />
-          Share Stats
+          <Share2 className="h-4 w-4" />
         </Button>
         
-        <div className="absolute top-full right-0 mt-2 w-80 bg-gray-900 border border-gray-700 rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
-          <div className="p-4">
-            <h3 className="text-white font-semibold mb-3">Share Your Trading Stats</h3>
-            <div className="space-y-2">
+        <div className="absolute top-full right-0 mt-2 bg-dark-card border border-dark-border rounded-md shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+          <div className="p-2">
+            <div className="flex gap-2">
               {socialPlatforms.map((platform) => (
                 <button
                   key={platform.name}
                   onClick={() => handleShare(platform)}
-                  className={`w-full flex items-center space-x-3 p-2 rounded-lg text-white transition-all ${platform.color}`}
+                  className={`flex items-center justify-center w-8 h-8 rounded text-white transition-colors ${platform.color}`}
+                  title={platform.name}
                 >
-                  <span className="text-lg">{platform.icon}</span>
-                  <div className="flex-1 text-left">
-                    <div className="font-medium">{platform.name}</div>
-                    {platform.note && (
-                      <div className="text-xs opacity-80">{platform.note}</div>
-                    )}
-                  </div>
-                  <ExternalLink className="h-4 w-4" />
+                  <span className="text-sm">{platform.icon}</span>
                 </button>
               ))}
-            </div>
-            <div className="mt-3 p-2 bg-gray-800 rounded text-xs text-gray-400">
-              💡 Stats will be copied to clipboard for Instagram, TikTok, and YouTube
             </div>
           </div>
         </div>
@@ -1301,6 +1290,16 @@ export default function Dashboard() {
             
             {/* Professional Action Buttons Group */}
             <div className="flex items-center gap-3">
+              <Link href="/accounts-new">
+                <Button 
+                  size="sm" 
+                  className="bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white shadow-md hover:shadow-lg transition-all duration-200"
+                >
+                  <Plus className="mr-1 h-3 w-3" />
+                  Account
+                </Button>
+              </Link>
+              
               <Link href="/trades?tab=add">
                 <Button 
                   size="sm" 
@@ -1666,16 +1665,16 @@ export default function Dashboard() {
               {/* Trades */}
               <div className="bg-black/30 rounded-lg p-4 border border-gray-700/50 relative">
                 {combinedAnalytics && combinedAnalytics.accounts.length > 0 && (
-                  <div className="absolute top-3 right-3 text-xs text-purple-300">
+                  <div className="absolute top-3 right-3 text-xs text-amber-300">
                     {selectedDayData?.totalDayTrades || 0}/{combinedAnalytics.accounts[0]?.maxDailyTrades || 0}
                   </div>
                 )}
-                <div className="text-3xl font-bold text-purple-400 mb-1">
+                <div className="text-3xl font-bold text-amber-400 mb-1">
                   {selectedDayData?.totalDayTrades || 0}
                 </div>
                 <div className="w-full bg-gray-700/50 rounded-full h-1 mb-2">
                   <div 
-                    className="h-1 rounded-full bg-purple-400 transition-all duration-500"
+                    className="h-1 rounded-full bg-amber-400 transition-all duration-500"
                     style={{ 
                       width: `${Math.min((selectedDayData?.totalDayTrades || 0) / ((combinedAnalytics?.accounts[0]?.maxDailyTrades || 1)) * 100, 100)}%` 
                     }}
@@ -1977,14 +1976,14 @@ export default function Dashboard() {
 
                 {/* Total Trades */}
                 <div className="bg-black/30 rounded-lg p-3 border border-gray-700/50 relative">
-                  <div className="absolute top-2 right-2 text-xs text-purple-300">
+                  <div className="absolute top-2 right-2 text-xs text-amber-300">
                     T
                   </div>
-                  <div className="text-xl font-bold text-purple-400 mb-1">
+                  <div className="text-xl font-bold text-amber-400 mb-1">
                     {combinedAnalytics?.totalTrades || 0}
                   </div>
                   <div className="text-xs text-gray-400">Total Trades</div>
-                  <div className="text-xs text-purple-300 mt-1">
+                  <div className="text-xs text-amber-300 mt-1">
                     W:{combinedAnalytics?.winningTrades || 0} L:{combinedAnalytics?.losingTrades || 0}
                   </div>
                 </div>
@@ -2090,7 +2089,7 @@ export default function Dashboard() {
             <div className="widget-card p-4 transition-all duration-200">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-sm font-medium text-gray-300">Total Trades</span>
-                <Activity className="w-4 h-4 text-purple-400" />
+                <Activity className="w-4 h-4 text-amber-400" />
               </div>
               <div className="text-2xl font-bold mb-1 text-white">
                 {combinedAnalytics?.totalTrades || 0}
@@ -2920,8 +2919,8 @@ export default function Dashboard() {
                 <span className="text-sm font-medium text-gray-300">Total Spent on Accounts</span>
                 <DollarSign className="w-4 h-4 text-amber-400" />
               </div>
-              <div className="text-2xl font-bold mb-1 text-red-400">
-                {formatCurrency(accounts?.reduce((sum, acc) => sum + (acc.accountCost || 0), 0) || 0)}
+              <div className={`text-2xl font-bold mb-1 ${getValueColor(-(accounts?.reduce((sum, acc) => sum + (acc.accountCost || 0), 0) || 0))}`}>
+                -{formatCurrency(accounts?.reduce((sum, acc) => sum + (acc.accountCost || 0), 0) || 0)}
               </div>
               <div className="text-xs text-gray-400">Challenge & setup costs</div>
             </div>
@@ -2931,8 +2930,8 @@ export default function Dashboard() {
                 <span className="text-sm font-medium text-gray-300">Reset Cost</span>
                 <RotateCcw className="w-4 h-4 text-orange-400" />
               </div>
-              <div className="text-2xl font-bold mb-1 text-orange-400">
-                {formatCurrency(accounts?.reduce((sum, acc) => sum + (acc.totalResetsCost || 0), 0) || 0)}
+              <div className={`text-2xl font-bold mb-1 ${getValueColor(-(accounts?.reduce((sum, acc) => sum + (acc.totalResetsCost || 0), 0) || 0))}`}>
+                -{formatCurrency(accounts?.reduce((sum, acc) => sum + (acc.totalResetsCost || 0), 0) || 0)}
               </div>
               <div className="text-xs text-gray-400">Failed account resets</div>
             </div>
@@ -2942,8 +2941,8 @@ export default function Dashboard() {
                 <span className="text-sm font-medium text-gray-300">Activation Costs</span>
                 <CheckCircle className="w-4 h-4 text-blue-400" />
               </div>
-              <div className="text-2xl font-bold mb-1 text-blue-400">
-                {formatCurrency(accounts?.reduce((sum, acc) => sum + (acc.activationCost || 0), 0) || 0)}
+              <div className={`text-2xl font-bold mb-1 ${getValueColor(-(accounts?.reduce((sum, acc) => sum + (acc.activationCost || 0), 0) || 0))}`}>
+                -{formatCurrency(accounts?.reduce((sum, acc) => sum + (acc.activationCost || 0), 0) || 0)}
               </div>
               <div className="text-xs text-gray-400">Account activation fees</div>
             </div>
@@ -2956,8 +2955,8 @@ export default function Dashboard() {
                 <span className="text-sm font-medium text-gray-300">Total Spent</span>
                 <CreditCard className="w-4 h-4 text-red-400" />
               </div>
-              <div className="text-2xl font-bold mb-1 text-red-400">
-                {formatCurrency((accounts?.reduce((sum, acc) => sum + (acc.accountCost || 0) + (acc.totalResetsCost || 0) + (acc.activationCost || 0), 0) || 0))}
+              <div className={`text-2xl font-bold mb-1 ${getValueColor(-((accounts?.reduce((sum, acc) => sum + (acc.accountCost || 0) + (acc.totalResetsCost || 0) + (acc.activationCost || 0), 0) || 0)))}`}>
+                -{formatCurrency((accounts?.reduce((sum, acc) => sum + (acc.accountCost || 0) + (acc.totalResetsCost || 0) + (acc.activationCost || 0), 0) || 0))}
               </div>
               <div className="text-xs text-gray-400">Total investment</div>
             </div>
@@ -2967,8 +2966,8 @@ export default function Dashboard() {
                 <span className="text-sm font-medium text-gray-300">Payouts</span>
                 <TrendingUp className="w-4 h-4 text-green-400" />
               </div>
-              <div className="text-2xl font-bold mb-1 text-green-400">
-                {formatCurrency(calculateTotalAvailablePayouts())}
+              <div className={`text-2xl font-bold mb-1 ${getValueColor(calculateTotalAvailablePayouts())}`}>
+                +{formatCurrency(calculateTotalAvailablePayouts())}
               </div>
               <div className="text-xs text-gray-400">Actual payouts received</div>
             </div>
@@ -3004,7 +3003,13 @@ export default function Dashboard() {
                 <span className="text-sm font-medium text-gray-300">Profit Factor</span>
                 <Target className="w-4 h-4 text-green-400" />
               </div>
-              <div className="text-2xl font-bold mb-1 text-green-400">
+              <div className={`text-2xl font-bold mb-1 ${(() => {
+                const filteredTrades = getFilteredTrades();
+                const totalWinnings = filteredTrades.filter(t => (t.pnl || 0) > 0).reduce((sum, t) => sum + (t.pnl || 0), 0);
+                const totalLosses = Math.abs(filteredTrades.filter(t => (t.pnl || 0) < 0).reduce((sum, t) => sum + (t.pnl || 0), 0));
+                const profitFactor = totalLosses > 0 ? (totalWinnings / totalLosses) : (totalWinnings > 0 ? 999 : 0);
+                return getValueColor(profitFactor - 1); // Profit factor > 1 is green, < 1 is red
+              })()}`}>
                 {(() => {
                   const filteredTrades = getFilteredTrades();
                   const totalWinnings = filteredTrades.filter(t => (t.pnl || 0) > 0).reduce((sum, t) => sum + (t.pnl || 0), 0);
@@ -3021,7 +3026,16 @@ export default function Dashboard() {
                 <span className="text-sm font-medium text-gray-300">Sharpe Ratio</span>
                 <TrendingUp className="w-4 h-4 text-blue-400" />
               </div>
-              <div className="text-2xl font-bold mb-1 text-blue-400">
+              <div className={`text-2xl font-bold mb-1 ${(() => {
+                const filteredTrades = getFilteredTrades();
+                if (filteredTrades.length === 0) return 'text-white';
+                const returns = filteredTrades.map(t => t.pnl || 0);
+                const avgReturn = returns.reduce((sum, r) => sum + r, 0) / returns.length;
+                const variance = returns.reduce((sum, r) => sum + Math.pow(r - avgReturn, 2), 0) / returns.length;
+                const stdDev = Math.sqrt(variance);
+                const sharpe = stdDev > 0 ? (avgReturn / stdDev) : 0;
+                return getValueColor(sharpe);
+              })()}`}>
                 {(() => {
                   const filteredTrades = getFilteredTrades();
                   if (filteredTrades.length === 0) return '0.00';
@@ -3114,9 +3128,9 @@ export default function Dashboard() {
             <div className="bg-gradient-to-br from-gray-900/40 via-gray-800/60 to-black/80 border border-gray-600/30 rounded-lg p-4 hover:border-amber-400/60 transition-all duration-200">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-sm font-medium text-gray-300">Avg R:R Ratio</span>
-                <Scale className="w-4 h-4 text-purple-400" />
+                <Scale className="w-4 h-4 text-amber-400" />
               </div>
-              <div className="text-2xl font-bold mb-1 text-purple-400">
+              <div className="text-2xl font-bold mb-1 text-amber-400">
                 {(() => {
                   const filteredTrades = getFilteredTrades();
                   const validRRTrades = filteredTrades.filter(t => t.riskRewardRatio && t.riskRewardRatio > 0);
@@ -3213,11 +3227,11 @@ export default function Dashboard() {
                 </div>
                 
                 <div className="space-y-3">
-                  <h3 className="text-purple-400 font-semibold flex items-center gap-2">
+                  <h3 className="text-amber-400 font-semibold flex items-center gap-2">
                     <Target className="w-4 h-4" />
                     Tomorrow's Plan
                   </h3>
-                  <div className="bg-purple-900/20 rounded-lg p-4 border border-purple-500/30">
+                  <div className="bg-amber-900/20 rounded-lg p-4 border border-amber-500/30">
                     <p className="text-gray-300 text-sm leading-relaxed">
                       {journalDialog.entry.tomorrowsPlan || 'Not specified'}
                     </p>
