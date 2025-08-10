@@ -245,14 +245,6 @@ export default function AccountsPage() {
     };
   };
 
-  // Memoized form input handler to prevent flickering
-  const handleInputChange = useCallback((field, value) => {
-    setFormData(prev => ({
-      ...prev,
-      [field]: value
-    }));
-  }, []);
-
   // Form submission handler
   const handleCreateAccount = useCallback((data: AccountFormData) => {
     createAccountMutation.mutate(data);
@@ -261,121 +253,39 @@ export default function AccountsPage() {
   const handleEditAccount = useCallback((account: Account) => {
     setEditingAccount(account);
     setIsEditDialogOpen(true);
-  }, []);
+    // Pre-populate form with existing account data
+    form.reset({
+      name: account.name,
+      firm: account.firm,
+      type: account.type as 'demo' | 'live' | 'challenge',
+      status: account.status,
+      startingBalance: account.startingBalance?.toString() || '',
+      profitTarget: account.profitTarget?.toString() || '',
+      maxDrawdown: account.maxDrawdown?.toString() || '',
+      primaryAsset: account.primaryTradingAsset || '',
+      secondaryAsset: account.secondaryTradingAsset || '',
+      tertiaryAsset: account.tertiaryTradingAsset || '',
+    });
+  }, [form]);
 
-  const handleUpdateAccount = useCallback(() => {
+  const handleUpdateAccount = useCallback((data: AccountFormData) => {
     if (editingAccount) {
-      updateAccountMutation.mutate({ id: editingAccount.id, data: formData });
+      updateAccountMutation.mutate({ id: editingAccount.id, data });
     }
-  }, [editingAccount, updateAccountMutation, formData]);
+  }, [editingAccount, updateAccountMutation]);
 
   // Stable dialog close handlers
   const handleCloseCreateDialog = useCallback(() => {
     setIsCreateDialogOpen(false);
-    setFormData({
-      name: '',
-      firm: '',
-      type: 'demo',
-      status: 'active',
-      startingBalance: "",
-      profitTarget: "",
-      maxDrawdown: "",
-      minimumTradingDays: "",
-      timeLimit: "",
-      consistencyRule: "",
-      drawdownType: 'trailing',
-      maxDrawdownType: 'EOD',
-      hasDailyLossLimit: false,
-      accountCost: "",
-      activationCost: "",
-      purchaseMethod: 'credit card',
-      resetCount: "",
-      totalResetsCost: "",
-      profitSplit: "",
-      activationFeePaid: false,
-      includesActivationFee: false,
-      riskPerTrade: "",
-      riskPerTradeDivider: "",
-      dailyLossLimit: "",
-      riskRewardRatio: "",
-      maxTradesPerDay: "",
-      maxRiskPerDay: "",
-      stopLoss: "",
-      primaryAsset: '',
-      secondaryAsset: '',
-      tertiaryAsset: '',
-      timeSlot1Start: '09:00',
-      timeSlot1End: '17:00',
-      timeSlot1Timezone: 'UTC',
-      timeSlot2Start: '',
-      timeSlot2End: '',
-      timeSlot2Timezone: 'UTC',
-      timeSlot3Start: '',
-      timeSlot3End: '',
-      timeSlot3Timezone: 'UTC',
-      dailyWorkingHours: "",
-      hourlyWages: "",
-      liveTradingAccountAvailable: false,
-      challengePayoutsAvailable: false
-    });
-  }, []);
+    form.reset();
+  }, [form]);
 
   const handleCloseEditDialog = useCallback(() => {
     setIsEditDialogOpen(false);
     setEditingAccount(null);
   }, []);
 
-  // Initialize edit form data when editing account changes (reduces flickering)
-  useEffect(() => {
-    if (editingAccount && isEditDialogOpen) {
-      setFormData({
-        name: editingAccount.name,
-        firm: editingAccount.firm || '',
-        type: editingAccount.type,
-        status: 'active',
-        startingBalance: editingAccount.startingBalance,
-        profitTarget: editingAccount.profitTarget || "",
-        maxDrawdown: editingAccount.maxDrawdown || "",
-        minimumTradingDays: "",
-        timeLimit: "",
-        consistencyRule: "",
-        drawdownType: 'trailing',
-        maxDrawdownType: 'EOD',
-        hasDailyLossLimit: false,
-        accountCost: "",
-        activationCost: "",
-        purchaseMethod: 'credit card',
-        resetCount: "",
-        totalResetsCost: "",
-        profitSplit: "",
-        activationFeePaid: false,
-        includesActivationFee: false,
-        riskPerTrade: editingAccount.riskPerTrade || "",
-        riskPerTradeDivider: "",
-        dailyLossLimit: "",
-        riskRewardRatio: "",
-        maxTradesPerDay: "",
-        maxRiskPerDay: "",
-        stopLoss: "",
-        primaryAsset: '',
-        secondaryAsset: '',
-        tertiaryAsset: '',
-        timeSlot1Start: '09:00',
-        timeSlot1End: '17:00',
-        timeSlot1Timezone: 'UTC',
-        timeSlot2Start: '',
-        timeSlot2End: '',
-        timeSlot2Timezone: 'UTC',
-        timeSlot3Start: '',
-        timeSlot3End: '',
-        timeSlot3Timezone: 'UTC',
-        dailyWorkingHours: "",
-        hourlyWages: "",
-        liveTradingAccountAvailable: false,
-        challengePayoutsAvailable: false
-      });
-    }
-  }, [editingAccount, isEditDialogOpen]);
+  // Form is already initialized in handleEditAccount - no duplicate effect needed
 
 
 
