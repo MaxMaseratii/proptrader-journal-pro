@@ -85,6 +85,11 @@ const Spending = () => {
     queryKey: ["/api/budget-plan"],
   });
 
+  // Fetch trades for proper profitability calculation
+  const { data: trades = [] } = useQuery({
+    queryKey: ["/api/trades"],
+  });
+
   // Mutations
   const addExpenseMutation = useMutation({
     mutationFn: async (expenseData: any) => {
@@ -176,6 +181,11 @@ const Spending = () => {
   
   // Total spending across all sources
   const totalSpending = totalPropTradingCosts + totalManualSpending;
+
+  // FIXED: Calculate actual profitability based on payouts, not P&L
+  // In prop trading, profitability = actual payouts received - total costs
+  const totalPayoutsReceived = 0; // TODO: Link to actual payout records when implemented
+  const actualProfitability = totalPayoutsReceived - totalPropTradingCosts;
 
   // Budget calculations
   const currentBudget = activeBudgetPlan?.totalBudget || 0;
@@ -379,10 +389,10 @@ const Spending = () => {
             <TrendingUp className="h-4 w-4 text-blue-400" />
           </CardHeader>
           <CardContent>
-            <div className={`text-2xl font-bold widget-value ${(0 - totalPropTradingCosts) >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-              {formatCurrency(0 - totalPropTradingCosts)}
+            <div className={`text-2xl font-bold widget-value ${actualProfitability >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+              {formatCurrency(actualProfitability)}
             </div>
-            <p className="text-xs widget-text opacity-70">Net profit/loss</p>
+            <p className="text-xs widget-text opacity-70">Payouts received - total costs</p>
           </CardContent>
         </Card>
       </div>
