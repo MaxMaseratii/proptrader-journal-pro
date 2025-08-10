@@ -98,14 +98,17 @@ export default function UnrealizedProfitWidgets({ trades, selectedAccountIds, ac
     console.log('📊 Daily P&L Breakdown:', dailyDrawdownData.map(day => ({
       date: day.date,
       pnl: day.totalDayPnL,
-      profitable: day.totalDayPnL > 0
+      // FIXED: In prop trading, profitability = payout eligibility, not just positive P&L
+      profitable: false // Will be true only when day contributes to payout eligibility
     })));
     console.log('💰 EOD Calculation:', {
       currentBalance,
       highestEODBalance,
       trailingDrawdownFloor,
       remainingBuffer,
-      profitableDays: dailyDrawdownData.filter(day => day.totalDayPnL > 0).length
+      // FIXED: Profitable days should only count when there's actual payout potential
+      // In prop trading, profit is only "realized" when it leads to payout eligibility
+      profitableDays: 0 // TODO: Link to actual payout system when implemented
     });
   }, [dailyDrawdownData, currentBalance, highestEODBalance, trailingDrawdownFloor, remainingBuffer]);
 
