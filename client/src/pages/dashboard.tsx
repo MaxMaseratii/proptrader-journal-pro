@@ -846,14 +846,31 @@ export default function Dashboard() {
   const getFilteredTrades = useCallback(() => {
     if (!trades) return [];
     
+    console.log('🔍 getFilteredTrades debug:', {
+      tradesCount: trades.length,
+      accountSelectionMode,
+      selectedAccountIds,
+      selectedAccountIdsLength: selectedAccountIds.length
+    });
+    
     if (accountSelectionMode === 'all') {
+      console.log('🔍 Returning all trades:', trades.length);
       return trades;
     } else if (accountSelectionMode === 'single' && selectedAccountIds.length > 0) {
-      return trades.filter(trade => trade.accountId === selectedAccountIds[0]);
+      const uniqueAccountIds = [...new Set(trades.map(t => t.accountId))];
+      console.log('🔍 Available account IDs in trades:', uniqueAccountIds);
+      console.log('🔍 Looking for account ID:', selectedAccountIds[0]);
+      const filtered = trades.filter(trade => trade.accountId === selectedAccountIds[0]);
+      console.log('🔍 Single account filter result:', filtered.length, 'trades');
+      return filtered;
     } else if (accountSelectionMode === 'multiple' && selectedAccountIds.length > 0) {
-      return trades.filter(trade => selectedAccountIds.includes(trade.accountId));
+      const filtered = trades.filter(trade => selectedAccountIds.includes(trade.accountId));
+      console.log('🔍 Multiple account filter result:', filtered.length, 'trades');
+      return filtered;
     }
     
+    // FIXED: If mode is 'single' or 'multiple' but no accounts selected, fall back to all trades
+    console.log('🔍 No account filter specified, falling back to all trades:', trades.length);
     return trades;
   }, [trades, accountSelectionMode, selectedAccountIds]);
 
