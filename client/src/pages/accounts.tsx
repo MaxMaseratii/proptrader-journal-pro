@@ -647,7 +647,7 @@ export default function AccountsPage() {
                                 <FormControl>
                                   <Input 
                                     type="number" 
-                                    placeholder="10000" 
+                                    placeholder="" 
                                     className="bg-gray-800 border-gray-600 text-white"
                                     {...field}
                                     onChange={(e) => field.onChange(e.target.value === "" ? "" : parseFloat(e.target.value))}
@@ -667,7 +667,7 @@ export default function AccountsPage() {
                                 <FormControl>
                                   <Input 
                                     type="number" 
-                                    placeholder="1000" 
+                                    placeholder="" 
                                     className="bg-gray-800 border-gray-600 text-white"
                                     {...field}
                                     onChange={(e) => field.onChange(e.target.value === "" ? "" : parseFloat(e.target.value))}
@@ -687,7 +687,7 @@ export default function AccountsPage() {
                                 <FormControl>
                                   <Input 
                                     type="number" 
-                                    placeholder="500" 
+                                    placeholder="" 
                                     className="bg-gray-800 border-gray-600 text-white"
                                     {...field}
                                     onChange={(e) => field.onChange(e.target.value === "" ? "" : parseFloat(e.target.value))}
@@ -709,7 +709,7 @@ export default function AccountsPage() {
                                 <FormControl>
                                   <Input 
                                     type="number" 
-                                    placeholder="5" 
+                                    placeholder="" 
                                     className="bg-gray-800 border-gray-600 text-white"
                                     {...field}
                                     onChange={(e) => field.onChange(e.target.value === "" ? "" : parseInt(e.target.value))}
@@ -729,7 +729,7 @@ export default function AccountsPage() {
                                 <FormControl>
                                   <Input 
                                     type="number" 
-                                    placeholder="30" 
+                                    placeholder="" 
                                     className="bg-gray-800 border-gray-600 text-white"
                                     {...field}
                                     onChange={(e) => field.onChange(e.target.value === "" ? "" : parseInt(e.target.value))}
@@ -749,7 +749,7 @@ export default function AccountsPage() {
                                 <FormControl>
                                   <Input 
                                     type="number" 
-                                    placeholder="10" 
+                                    placeholder="" 
                                     className="bg-gray-800 border-gray-600 text-white"
                                     {...field}
                                     onChange={(e) => field.onChange(e.target.value === "" ? "" : parseFloat(e.target.value))}
@@ -841,7 +841,7 @@ export default function AccountsPage() {
                                 <FormControl>
                                   <Input 
                                     type="number" 
-                                    placeholder="150" 
+                                    placeholder="" 
                                     className="bg-gray-800 border-gray-600 text-white"
                                     {...field}
                                     onChange={(e) => field.onChange(e.target.value === "" ? "" : parseFloat(e.target.value))}
@@ -861,7 +861,7 @@ export default function AccountsPage() {
                                 <FormControl>
                                   <Input 
                                     type="number" 
-                                    placeholder="99" 
+                                    placeholder="" 
                                     className="bg-gray-800 border-gray-600 text-white"
                                     {...field}
                                     onChange={(e) => field.onChange(e.target.value === "" ? "" : parseFloat(e.target.value))}
@@ -907,7 +907,7 @@ export default function AccountsPage() {
                                 <FormControl>
                                   <Input 
                                     type="number" 
-                                    placeholder="0" 
+                                    placeholder="" 
                                     className="bg-gray-800 border-gray-600 text-white"
                                     {...field}
                                     onChange={(e) => field.onChange(e.target.value === "" ? "" : parseInt(e.target.value))}
@@ -927,7 +927,7 @@ export default function AccountsPage() {
                                 <FormControl>
                                   <Input 
                                     type="number" 
-                                    placeholder="0" 
+                                    placeholder="" 
                                     className="bg-gray-800 border-gray-600 text-white"
                                     {...field}
                                     onChange={(e) => field.onChange(e.target.value === "" ? "" : parseFloat(e.target.value))}
@@ -947,7 +947,7 @@ export default function AccountsPage() {
                                 <FormControl>
                                   <Input 
                                     type="number" 
-                                    placeholder="80" 
+                                    placeholder="" 
                                     className="bg-gray-800 border-gray-600 text-white"
                                     {...field}
                                     onChange={(e) => field.onChange(e.target.value === "" ? "" : parseFloat(e.target.value))}
@@ -1012,7 +1012,7 @@ export default function AccountsPage() {
                                 <FormControl>
                                   <Input 
                                     type="number" 
-                                    placeholder="100" 
+                                    placeholder="" 
                                     className="bg-gray-800 border-gray-600 text-white"
                                     {...field}
                                     onChange={(e) => field.onChange(e.target.value === "" ? "" : parseFloat(e.target.value))}
@@ -1032,7 +1032,7 @@ export default function AccountsPage() {
                                 <FormControl>
                                   <Input 
                                     type="number" 
-                                    placeholder="10" 
+                                    placeholder="" 
                                     className="bg-gray-800 border-gray-600 text-white"
                                     {...field}
                                     onChange={(e) => field.onChange(e.target.value === "" ? "" : parseFloat(e.target.value))}
@@ -1055,7 +1055,7 @@ export default function AccountsPage() {
                                 <FormControl>
                                   <Input 
                                     type="number" 
-                                    placeholder="500" 
+                                    placeholder="" 
                                     className="bg-gray-800 border-gray-600 text-white"
                                     {...field}
                                     onChange={(e) => field.onChange(e.target.value === "" ? "" : parseFloat(e.target.value))}
@@ -1075,7 +1075,7 @@ export default function AccountsPage() {
                                 <FormControl>
                                   <Input 
                                     type="number" 
-                                    placeholder="2" 
+                                    placeholder="" 
                                     className="bg-gray-800 border-gray-600 text-white"
                                     {...field}
                                     onChange={(e) => field.onChange(e.target.value === "" ? "" : parseFloat(e.target.value))}
@@ -1095,7 +1095,7 @@ export default function AccountsPage() {
                                 <FormControl>
                                   <Input 
                                     type="number" 
-                                    placeholder="10" 
+                                    placeholder="" 
                                     className="bg-gray-800 border-gray-600 text-white"
                                     {...field}
                                     onChange={(e) => field.onChange(e.target.value === "" ? "" : parseInt(e.target.value))}
@@ -1117,7 +1117,7 @@ export default function AccountsPage() {
                                 <FormControl>
                                   <Input 
                                     type="number" 
-                                    placeholder="500" 
+                                    placeholder="" 
                                     className="bg-gray-800 border-gray-600 text-white"
                                     {...field}
                                     onChange={(e) => field.onChange(e.target.value === "" ? "" : parseFloat(e.target.value))}
@@ -1137,7 +1137,7 @@ export default function AccountsPage() {
                                 <FormControl>
                                   <Input 
                                     type="number" 
-                                    placeholder="20" 
+                                    placeholder="" 
                                     className="bg-gray-800 border-gray-600 text-white"
                                     {...field}
                                     onChange={(e) => field.onChange(e.target.value === "" ? "" : parseFloat(e.target.value))}
@@ -1393,7 +1393,7 @@ export default function AccountsPage() {
                                     <Input 
                                       type="number" 
                                       step="0.1"
-                                      placeholder="8.0" 
+                                      placeholder="" 
                                       className="bg-gray-800 border-gray-600 text-white"
                                       {...field}
                                       onChange={(e) => field.onChange(e.target.value === "" ? "" : parseFloat(e.target.value))}
@@ -1414,7 +1414,7 @@ export default function AccountsPage() {
                                     <Input 
                                       type="number" 
                                       step="0.01"
-                                      placeholder="25.00" 
+                                      placeholder="" 
                                       className="bg-gray-800 border-gray-600 text-white"
                                       {...field}
                                       onChange={(e) => field.onChange(e.target.value === "" ? "" : parseFloat(e.target.value))}
@@ -1702,7 +1702,7 @@ export default function AccountsPage() {
                         <FormControl>
                           <Input 
                             type="number" 
-                            placeholder="10000" 
+                            placeholder="" 
                             className="bg-white border-gray-300 text-black"
                             {...field}
                             onChange={(e) => field.onChange(e.target.value === "" ? "" : parseFloat(e.target.value))}
@@ -1722,7 +1722,7 @@ export default function AccountsPage() {
                         <FormControl>
                           <Input 
                             type="number" 
-                            placeholder="1000" 
+                            placeholder="" 
                             className="bg-white border-gray-300 text-black"
                             {...field}
                             onChange={(e) => field.onChange(e.target.value === "" ? "" : parseFloat(e.target.value))}
@@ -1742,7 +1742,7 @@ export default function AccountsPage() {
                         <FormControl>
                           <Input 
                             type="number" 
-                            placeholder="500" 
+                            placeholder="" 
                             className="bg-white border-gray-300 text-black"
                             {...field}
                             onChange={(e) => field.onChange(e.target.value === "" ? "" : parseFloat(e.target.value))}
