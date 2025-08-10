@@ -391,16 +391,16 @@ export default function AccountManagement() {
         </div>
         
         <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
-          <DialogContent className="max-w-4xl max-h-[90vh] bg-gradient-to-br from-gray-900 via-gray-800 to-black border border-yellow-400/20 overflow-hidden static">
-            <div className="flex flex-col h-full max-h-[85vh]">
-                <div className="flex-shrink-0 pb-4 border-b border-gray-700">
-                  <h2 className="text-lg font-semibold text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-yellow-600">
-                    Create New Trading Account
-                  </h2>
-                  <p className="text-gray-400 text-sm mt-2">
-                    Set up a comprehensive trading account with your financial goals, risk parameters, and trading preferences.
-                  </p>
-                </div>
+          <DialogContent className="max-w-4xl max-h-[90vh] bg-gradient-to-br from-gray-900 via-gray-800 to-black border border-yellow-400/20 overflow-hidden">
+            <DialogHeader>
+              <DialogTitle className="text-lg font-semibold text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-yellow-600">
+                Create New Trading Account
+              </DialogTitle>
+              <DialogDescription className="text-gray-400 text-sm">
+                Set up a comprehensive trading account with your financial goals, risk parameters, and trading preferences.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="flex flex-col h-full max-h-[75vh]">
                 
                 <div className="flex-1 overflow-y-auto py-4">
                   <Form {...form}>
