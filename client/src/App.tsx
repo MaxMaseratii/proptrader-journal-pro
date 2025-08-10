@@ -39,7 +39,7 @@ import TradingDashboard from "@/pages/trading-dashboard";
 import Notifications from "@/pages/notifications";
 import Watchlists from "@/pages/watchlists";
 import PositionSizing from "@/pages/position-sizing";
-import Accounts from "@/pages/accounts-new";
+import Accounts from "@/pages/accounts";
 import RiskManagement from "@/pages/risk-management";
 
 import AccountManager from "@/pages/account-manager";

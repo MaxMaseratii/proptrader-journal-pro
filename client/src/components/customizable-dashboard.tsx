@@ -22,12 +22,7 @@ interface CustomizableDashboardProps {
   trades: any[];
 }
 
-const defaultWidgets: WidgetConfig[] = [
-  { id: '1', type: 'account-overview', title: 'Account Overview', position: { x: 0, y: 0 }, size: { width: 300, height: 200 }, isExpanded: false },
-  { id: '2', type: 'recent-trades', title: 'Recent Trades', position: { x: 320, y: 0 }, size: { width: 300, height: 200 }, isExpanded: false },
-  { id: '3', type: 'performance-chart', title: 'Performance Chart', position: { x: 0, y: 220 }, size: { width: 620, height: 300 }, isExpanded: false },
-  { id: '4', type: 'risk-metrics', title: 'Risk Metrics', position: { x: 640, y: 0 }, size: { width: 300, height: 200 }, isExpanded: false },
-];
+// Note: Default widgets removed - should be user-customizable configurations
 
 const DashboardWidget: React.FC<{
   id: string;

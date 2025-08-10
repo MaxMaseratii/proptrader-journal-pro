@@ -1306,7 +1306,7 @@ export default function Dashboard() {
             
             {/* Professional Action Buttons Group */}
             <div className="flex items-center gap-3">
-              <Link href="/accounts-new">
+              <Link href="/accounts">
                 <Button 
                   size="sm" 
                   className="bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white shadow-md hover:shadow-lg transition-all duration-200"

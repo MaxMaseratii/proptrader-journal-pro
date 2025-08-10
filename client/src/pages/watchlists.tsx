@@ -80,19 +80,7 @@ const CategoryBadge = ({ category }: { category: string }) => {
   );
 };
 
-// Mock price data generator
-const generateMockPrice = (symbol: string) => {
-  const hash = symbol.split('').reduce((a, b) => a + b.charCodeAt(0), 0);
-  const basePrice = 100 + (hash % 900); // Price between 100-1000
-  const change = (Math.sin(hash) * 10).toFixed(2);
-  const changePercent = ((parseFloat(change) / basePrice) * 100).toFixed(2);
-  
-  return {
-    currentPrice: basePrice,
-    change: parseFloat(change),
-    changePercent: parseFloat(changePercent),
-  };
-};
+// Note: Mock price generation removed - should integrate with real market data feeds
 
 export default function WatchlistsPage() {
   const [selectedWatchlist, setSelectedWatchlist] = useState<number | null>(null);
@@ -504,7 +492,7 @@ export default function WatchlistsPage() {
                   ) : (
                     <div className="space-y-2">
                       {(symbols as WatchlistSymbol[]).map((symbol: WatchlistSymbol) => {
-                        const mockData = generateMockPrice(symbol.symbol);
+                        // Note: Mock data removed - integrate with real market feeds
                         return (
                           <div
                             key={symbol.id}
@@ -537,22 +525,12 @@ export default function WatchlistsPage() {
                             </div>
                             <div className="flex items-center space-x-4">
                               <div className="text-right">
-                                <p className="font-medium text-gray-900 dark:text-white">
-                                  ${mockData.currentPrice.toFixed(5)}
+                                <p className="font-medium text-gray-600 dark:text-gray-400">
+                                  Market Data Unavailable
                                 </p>
                                 <div className="flex items-center space-x-1">
-                                  {mockData.change >= 0 ? (
-                                    <TrendingUp className="h-3 w-3 text-green-500" />
-                                  ) : (
-                                    <TrendingDown className="h-3 w-3 text-red-500" />
-                                  )}
-                                  <span
-                                    className={`text-sm ${
-                                      mockData.change >= 0 ? 'text-green-600' : 'text-red-600'
-                                    }`}
-                                  >
-                                    {mockData.change >= 0 ? '+' : ''}
-                                    {mockData.changePercent}%
+                                  <span className="text-sm text-gray-500">
+                                    Connect feed for real-time prices
                                   </span>
                                 </div>
                               </div>
