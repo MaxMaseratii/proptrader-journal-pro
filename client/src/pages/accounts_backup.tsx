@@ -100,7 +100,7 @@ interface AccountMetrics {
   isActive: boolean;
 }
 
-export default function AccountsPage() {
+export default function AccountManagement() {
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [editingAccount, setEditingAccount] = useState<Account | null>(null);
@@ -355,9 +355,9 @@ export default function AccountsPage() {
       hourlyWages: 25.00,
       liveTradingAccountAvailable: false,
       challengePayoutsAvailable: false,
-      });
-    }
-  }, [editingAccount, isEditDialogOpen, form]);
+    });
+    setIsEditDialogOpen(true);
+  };
 
 
 
