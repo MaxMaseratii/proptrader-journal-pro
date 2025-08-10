@@ -231,10 +231,10 @@ export default function DisciplineAnalyzer() {
   return (
     <div className="space-y-6">
       {/* Account Selection */}
-      <Card className="bg-gradient-to-br from-white/90 via-blue-50/80 to-indigo-50/90 border border-indigo-200/60 backdrop-blur-lg shadow-xl rounded-2xl">
+      <Card className="bg-gray-800 border-gray-700">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-gray-800">
-            <Database className="h-5 w-5 text-sky-600" />
+          <CardTitle className="flex items-center gap-2">
+            <Database className="h-5 w-5 text-blue-400" />
             Account Selection
           </CardTitle>
         </CardHeader>
@@ -242,13 +242,13 @@ export default function DisciplineAnalyzer() {
           <div className="flex items-center gap-4">
             <div className="flex-1">
               <Select value={selectedAccount} onValueChange={setSelectedAccount}>
-                <SelectTrigger className="bg-gradient-to-r from-white/90 via-blue-50/80 to-indigo-50/90 border border-indigo-200/60 text-gray-800 shadow-sm">
+                <SelectTrigger className="bg-gray-700 border-gray-600 text-white">
                   <SelectValue placeholder="Select account to analyze" />
                 </SelectTrigger>
-                <SelectContent className="bg-white border border-indigo-200/60 shadow-lg">
-                  <SelectItem value="all" className="text-gray-800 hover:bg-indigo-50">All Accounts</SelectItem>
+                <SelectContent className="bg-gray-800 border-gray-700">
+                  <SelectItem value="all">All Accounts</SelectItem>
                   {accounts.map((account) => (
-                    <SelectItem key={account.id} value={account.id.toString()} className="text-gray-800 hover:bg-indigo-50">
+                    <SelectItem key={account.id} value={account.id.toString()}>
                       {account.name} ({account.type})
                     </SelectItem>
                   ))}
@@ -258,7 +258,7 @@ export default function DisciplineAnalyzer() {
             <Button 
               onClick={analyzeTrading} 
               disabled={isAnalyzing || filteredTrades.length === 0}
-              className="bg-gradient-to-r from-sky-500 to-indigo-600 hover:shadow-md transition-all text-white px-6 py-3 rounded-xl"
+              className="bg-blue-600 hover:bg-blue-700"
             >
               {isAnalyzing ? (
                 <>

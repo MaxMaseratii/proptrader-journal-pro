@@ -14,54 +14,54 @@ import {
 
 export default function MentalFitness() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-100 to-purple-50 p-6">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-6">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center space-x-3 mb-4">
-            <div className="p-2 bg-gradient-to-r from-violet-100 to-indigo-100 rounded-lg border border-violet-200/50 shadow-sm">
-              <Brain className="h-6 w-6 text-violet-600" />
+            <div className="p-2 bg-teal-100 dark:bg-teal-900/20 rounded-lg">
+              <Brain className="h-6 w-6 text-teal-600 dark:text-teal-400" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-gray-800">Pre-Session Mental Fitness Check</h1>
-              <p className="text-gray-700">Ensure optimal psychological readiness before trading</p>
+              <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Pre-Session Mental Fitness Check</h1>
+              <p className="text-gray-600 dark:text-gray-400">Ensure optimal psychological readiness before trading</p>
             </div>
           </div>
           
-          <Badge className="bg-gradient-to-r from-violet-100 to-indigo-100 text-violet-700 border border-violet-200/50 shadow-sm">
+          <Badge className="bg-teal-100 text-teal-700 dark:bg-teal-900/20 dark:text-teal-400">
             <Brain className="h-3 w-3 mr-1" />
             Prop Trader Exclusive Feature
           </Badge>
         </div>
 
         {/* Today's Check */}
-        <Card className="mb-8 bg-gradient-to-r from-emerald-50 via-teal-50 to-cyan-50 border border-emerald-200/50 shadow-lg rounded-2xl border-l-4 border-l-emerald-400">
+        <Card className="mb-8 border-l-4 border-l-green-500">
           <CardHeader>
             <div className="flex items-center justify-between">
-              <CardTitle className="flex items-center space-x-2 text-gray-800">
-                <CheckCircle className="h-5 w-5 text-emerald-500" />
+              <CardTitle className="flex items-center space-x-2">
+                <CheckCircle className="h-5 w-5 text-green-500" />
                 <span>Today's Mental Fitness Status</span>
               </CardTitle>
-              <Badge className="bg-gradient-to-r from-emerald-100 to-teal-100 text-emerald-700 border border-emerald-200/50 shadow-sm">Ready to Trade</Badge>
+              <Badge className="bg-green-100 text-green-700">Ready to Trade</Badge>
             </div>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
               <div className="text-center">
-                <div className="text-2xl font-bold text-emerald-600">85%</div>
-                <div className="text-sm text-gray-600">Overall Score</div>
+                <div className="text-2xl font-bold text-green-600">85%</div>
+                <div className="text-sm text-gray-600 dark:text-gray-400">Overall Score</div>
               </div>
               <div className="text-center">
-                <div className="text-2xl font-bold text-sky-600">92%</div>
-                <div className="text-sm text-gray-600">Focus Level</div>
+                <div className="text-2xl font-bold text-blue-600">92%</div>
+                <div className="text-sm text-gray-600 dark:text-gray-400">Focus Level</div>
               </div>
               <div className="text-center">
-                <div className="text-2xl font-bold text-amber-600">78%</div>
-                <div className="text-sm text-gray-600">Emotional Control</div>
+                <div className="text-2xl font-bold text-yellow-600">78%</div>
+                <div className="text-sm text-gray-600 dark:text-gray-400">Emotional Control</div>
               </div>
               <div className="text-center">
                 <div className="text-2xl font-bold text-teal-600">88%</div>
-                <div className="text-sm text-gray-600">Confidence</div>
+                <div className="text-sm text-gray-600 dark:text-gray-400">Confidence</div>
               </div>
             </div>
           </CardContent>
