@@ -18,30 +18,15 @@ function PropTraderHeader() {
     <header className="bg-gradient-to-r from-yellow-400 via-amber-500 to-yellow-600 shadow-xl sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center py-4">
-          {/* PropFirm Trader's Journal Logo */}
+          {/* PropTrader Journal Logo */}
           <div className="flex-shrink-0">
             <Link href="/" className="flex items-center space-x-3">
-              <div className="relative w-12 h-12 bg-gradient-to-br from-emerald-500 via-green-500 to-teal-600 rounded-xl flex items-center justify-center shadow-xl border-2 border-white/20">
-                {/* Trading Chart Pattern */}
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="w-8 h-8 flex items-center justify-center">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" className="text-white">
-                      <path d="M3 12h3l3-6 3 12 3-9 3 6h3" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
-                      <circle cx="7" cy="6" r="1.5" fill="currentColor"/>
-                      <circle cx="13" cy="15" r="1.5" fill="currentColor"/>
-                      <circle cx="19" cy="12" r="1.5" fill="currentColor"/>
-                    </svg>
-                  </div>
-                </div>
-                {/* Top corner accent */}
-                <div className="absolute -top-1 -right-1 w-3 h-3 bg-yellow-400 rounded-full border border-white shadow-sm"></div>
+              <div className="w-12 h-12 bg-black rounded-xl flex items-center justify-center shadow-xl border border-yellow-400/30">
+                <Crown className="w-7 h-7 text-yellow-400" />
               </div>
               <div className="flex flex-col">
-                <span className="text-xl font-black text-black leading-tight tracking-tight">
-                  PropFirm<span className="text-emerald-600">Pro</span>
-                </span>
-                <span className="text-sm font-semibold text-gray-700 leading-tight tracking-wide">
-                  TRADER'S JOURNAL
+                <span className="text-2xl font-bold text-black leading-tight tracking-tight">
+                  PropTrader<span className="text-teal-500">Journal</span>
                 </span>
               </div>
             </Link>
