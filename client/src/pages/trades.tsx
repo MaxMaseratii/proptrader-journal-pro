@@ -390,23 +390,39 @@ const UniversalCsvImport = ({ accounts }: { accounts: Account[] }) => {
   const mapStandardExportRow = (row: any): any => {
     console.log('🔍 STANDARD EXPORT: Processing row:', row);
     
-    // Check if this row has essential data
-    if (!row['Symbol'] || !row['Side'] || !row['Quantity'] || !row['Price']) {
+    // Check if this row has essential data - be more flexible with validation
+    const symbol = row['Symbol'];
+    const side = row['Side'];
+    const quantity = row['Quantity'];
+    const price = row['Price'];
+    
+    if (!symbol || !side || quantity === undefined || quantity === null || price === undefined || price === null) {
       console.log('🔍 STANDARD EXPORT: Skipping row - missing essential data:', {
-        symbol: row['Symbol'],
-        side: row['Side'],
-        quantity: row['Quantity'],
-        price: row['Price']
+        symbol: symbol,
+        side: side,
+        quantity: quantity,
+        price: price
+      });
+      return null;
+    }
+    
+    // Convert quantity and price to numbers
+    const numQuantity = Math.abs(parseFloat(quantity) || 0);
+    const numPrice = parseFloat(price) || 0;
+    
+    if (numQuantity === 0 || numPrice === 0) {
+      console.log('🔍 STANDARD EXPORT: Skipping row - zero quantity or price:', {
+        numQuantity,
+        numPrice
       });
       return null;
     }
     
     const account = findAccountByName(row['Account'] || 'Default');
-    const price = parseFloat(row['Price'] || 0);
-    const quantity = parseFloat(row['Quantity'] || 1);
     const grossPnL = parseFloat(row['Gross P/L'] || 0);
     const netPnL = parseFloat(row['Net P/L'] || grossPnL);
-    const side = row['Side']?.toLowerCase() === 'sell' ? 'sell' : 'buy';
+    const sideText = (side || '').toLowerCase();
+    const tradeSide = sideText.includes('sell') ? 'sell' : 'buy';
     
     // Parse date/time
     const dateTime = row['Date/Time'];
@@ -415,17 +431,17 @@ const UniversalCsvImport = ({ accounts }: { accounts: Account[] }) => {
     // For standard exports, we typically don't have exit data, so we treat each row as a position
     const mappedTrade = {
       accountId: account.id,
-      symbol: convertContractToSymbol(row['Symbol'] || 'UNKNOWN'),
-      side: side,
-      quantity: Math.abs(quantity),
+      symbol: convertContractToSymbol(symbol),
+      side: tradeSide,
+      quantity: numQuantity,
       fillTime: fillTime.toISOString(),
       exitTime: fillTime.toISOString(), // Same as fill time for individual positions
-      entryPrice: price,
-      exitPrice: price, // Same as entry for individual positions
+      entryPrice: numPrice,
+      exitPrice: numPrice, // Same as entry for individual positions
       pnl: netPnL,
       status: 'closed',
       date: fillTime.toISOString().split('T')[0],
-      orderId: row['Order ID'] || row['Trade ID'] || `STD-${Date.now()}`,
+      orderId: row['Order ID'] || row['Trade ID'] || `STD-${Date.now()}-${Math.random()}`,
       notes: `Standard Export Import - ${row['Description'] || 'Trade'}`,
       // Standard exports typically don't have SL/TP data
       initialStopLoss: null,
