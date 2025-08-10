@@ -105,34 +105,39 @@ const ShareStats: React.FC<ShareStatsProps> = ({ totalPnL, winRate, totalTrades,
     {
       name: 'Facebook',
       url: `https://www.facebook.com/sharer/sharer.php?u=${shareUrl}&quote=${encodedText}`,
-      color: 'bg-blue-600 hover:bg-blue-700',
-      icon: '📘'
+      gradient: 'bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700',
+      icon: 'f',
+      label: 'Share on Facebook'
     },
     {
       name: 'X (Twitter)',
       url: `https://twitter.com/intent/tweet?text=${encodedText}&url=${shareUrl}`,
-      color: 'bg-gray-800 hover:bg-gray-900',
-      icon: '🐦'
+      gradient: 'bg-gradient-to-r from-black to-gray-800 hover:from-gray-800 hover:to-gray-900',
+      icon: '𝕏',
+      label: 'Share on X'
     },
     {
       name: 'Instagram',
       url: `https://www.instagram.com/`,
-      color: 'bg-gradient-to-r from-orange-500 to-pink-500 hover:from-orange-600 hover:to-pink-600',
+      gradient: 'bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 hover:from-purple-600 hover:via-pink-600 hover:to-red-600',
       icon: '📷',
+      label: 'Instagram',
       note: 'Copy stats and share on your story!'
     },
     {
       name: 'TikTok',
       url: `https://www.tiktok.com/`,
-      color: 'bg-black hover:bg-gray-900',
-      icon: '🎵',
+      gradient: 'bg-gradient-to-r from-black via-gray-900 to-pink-600 hover:from-gray-800 hover:via-black hover:to-pink-700',
+      icon: '♪',
+      label: 'TikTok',
       note: 'Create a video with your stats!'
     },
     {
       name: 'YouTube',
       url: `https://www.youtube.com/`,
-      color: 'bg-red-600 hover:bg-red-700',
-      icon: '📹',
+      gradient: 'bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700',
+      icon: '▶',
+      label: 'YouTube',
       note: 'Share in your trading videos!'
     }
   ];
@@ -157,19 +162,30 @@ const ShareStats: React.FC<ShareStatsProps> = ({ totalPnL, winRate, totalTrades,
           <Share2 className="h-4 w-4" />
         </Button>
         
-        <div className="absolute top-full right-0 mt-2 bg-dark-card border border-dark-border rounded-md shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
-          <div className="p-2">
-            <div className="flex gap-2">
+        <div className="absolute top-full right-0 mt-2 bg-gray-900/95 backdrop-blur-sm border border-gray-700 rounded-2xl shadow-2xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50 min-w-[320px]">
+          <div className="p-4">
+            <div className="text-center mb-3">
+              <h4 className="text-white font-semibold text-sm">Share Your Trading Stats</h4>
+              <p className="text-gray-400 text-xs">Showcase your success on social media</p>
+            </div>
+            <div className="space-y-2">
               {socialPlatforms.map((platform) => (
                 <button
                   key={platform.name}
                   onClick={() => handleShare(platform)}
-                  className={`flex items-center justify-center w-8 h-8 rounded text-white transition-colors ${platform.color}`}
-                  title={platform.name}
+                  className={`flex items-center gap-3 w-full px-4 py-2 rounded-full text-white text-sm font-semibold transition-all duration-300 transform hover:-translate-y-0.5 hover:shadow-lg ${platform.gradient}`}
+                  title={platform.label}
                 >
-                  <span className="text-sm">{platform.icon}</span>
+                  <span className="text-base font-bold">{platform.icon}</span>
+                  <span>{platform.label}</span>
+                  {platform.note && (
+                    <span className="ml-auto text-xs opacity-75">📋</span>
+                  )}
                 </button>
               ))}
+            </div>
+            <div className="mt-3 pt-3 border-t border-gray-700">
+              <p className="text-gray-400 text-xs text-center">📋 = Copies stats to clipboard</p>
             </div>
           </div>
         </div>
