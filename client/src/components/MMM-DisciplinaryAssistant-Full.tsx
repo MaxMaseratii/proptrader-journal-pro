@@ -95,11 +95,41 @@ interface DisciplineArea {
 interface MMMDisciplinaryAssistantProps {
   trades: Trade[];
   accounts: Account[];
-  selectedAccountId?: number;
+  accountIdId?: number;
 }
 
-export default function MMMDisciplinaryAssistant({ trades, accounts, selectedAccountId }: MMMDisciplinaryAssistantProps) {
-  const [selectedAccount, setSelectedAccount] = useState<string>(selectedAccountId?.toString() || "all");
+// Helper functions for real data analysis
+const getMaxConsecutiveLosses = (trades: any[]) => {
+  let maxLosses = 0;
+  let currentLosses = 0;
+  trades.forEach(trade => {
+    if ((trade.pnl || 0) < 0) {
+      currentLosses++;
+      maxLosses = Math.max(maxLosses, currentLosses);
+    } else {
+      currentLosses = 0;
+    }
+  });
+  return maxLosses;
+};
+
+const calculateDailyPnLVariance = (trades: any[]) => {
+  const dailyPnL = trades.reduce((acc, trade) => {
+    if (!acc[trade.date]) acc[trade.date] = 0;
+    acc[trade.date] += (trade.pnl || 0);
+    return acc;
+  }, {} as Record<string, number>);
+  
+  const values = Object.values(dailyPnL);
+  if (values.length === 0) return 0;
+  
+  const mean = values.reduce((sum, val) => sum + val, 0) / values.length;
+  const variance = values.reduce((sum, val) => sum + Math.pow(val - mean, 2), 0) / values.length;
+  return Math.sqrt(variance);
+};
+
+export default function MMMDisciplinaryAssistant({ trades, accounts, accountIdId }: MMMDisciplinaryAssistantProps) {
+  const [accountId, setAccountId] = useState<string>(accountIdId?.toString() || "all");
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [disciplineData, setDisciplineData] = useState<DisciplineMetrics | null>(null);
   const [tradingPatterns, setTradingPatterns] = useState<TradingPattern | null>(null);
@@ -270,12 +300,12 @@ export default function MMMDisciplinaryAssistant({ trades, accounts, selectedAcc
     }
 
     // Account-specific discipline assessment
-    const selectedAccounts = accounts.filter(acc => 
-      selectedAccountId ? acc.id === parseInt(selectedAccountId) : true
+    const accountIds = accounts.filter(acc => 
+      accountIdId ? acc.id === parseInt(accountIdId) : true
     );
     
     // If we have a selected account, make sure we're only analyzing that account's trades
-    const currentAccount = selectedAccountId ? accounts.find(acc => acc.id === parseInt(selectedAccountId)) : null;
+    const currentAccount = accountIdId ? accounts.find(acc => acc.id === parseInt(accountIdId)) : null;
     
     // Calculate account status bonuses/penalties
     let accountStatusBonus = 0;
@@ -290,7 +320,7 @@ export default function MMMDisciplinaryAssistant({ trades, accounts, selectedAcc
       }
     } else {
       // Multi-account assessment
-      selectedAccounts.forEach(account => {
+      accountIds.forEach(account => {
         if (account.status === 'funded' || account.status === 'live') {
           accountStatusBonus += 15;
         } else if (account.status === 'failed') {
@@ -341,7 +371,7 @@ export default function MMMDisciplinaryAssistant({ trades, accounts, selectedAcc
     const totalExcessLosses = Math.max(0, tradingExcessLosses);
 
     // Debug logging to understand the calculation
-    console.log(`Account ${selectedAccountId || 'All'} Analysis:`, {
+    console.log(`Account ${accountIdId || 'All'} Analysis:`, {
       totalTrades,
       totalPnL,
       winRate,
@@ -596,11 +626,11 @@ export default function MMMDisciplinaryAssistant({ trades, accounts, selectedAcc
     try {
       await new Promise(resolve => setTimeout(resolve, 2000));
       
-      const filteredTrades = selectedAccount === "all" 
+      const filteredTrades = accountId === "all" 
         ? trades 
-        : trades.filter(t => t.accountId === parseInt(selectedAccount));
+        : trades.filter(t => t.accountId === parseInt(accountId));
       
-      const metrics = calculateComprehensiveDisciplineMetrics(filteredTrades, accounts, selectedAccount);
+      const metrics = calculateComprehensiveDisciplineMetrics(filteredTrades);
       const patterns = calculateTradingPatterns(filteredTrades);
       const psychology = calculatePsychologicalProfile(filteredTrades, metrics.disciplineScore);
       
@@ -618,7 +648,7 @@ export default function MMMDisciplinaryAssistant({ trades, accounts, selectedAcc
     if (trades.length > 0) {
       analyzeTrading();
     }
-  }, [selectedAccount, trades]);
+  }, [accountId, trades]);
 
   const disciplineAreas: DisciplineArea[] = disciplineData ? [
     {
@@ -701,70 +731,90 @@ export default function MMMDisciplinaryAssistant({ trades, accounts, selectedAcc
     }
   ] : [];
 
-  const getTraderProfile = (score: number) => {
-    if (score >= 80) return {
+  const getTraderProfile = (score: number, trades: any[], totalPnL: number) => {
+    const profitableDays = trades.reduce((days, trade) => {
+      const dayTrades = trades.filter(t => t.date === trade.date);
+      const dayPnL = dayTrades.reduce((sum, t) => sum + (t.pnl || 0), 0);
+      return dayPnL > 0 ? days + 1 : days;
+    }, 0) / [...new Set(trades.map(t => t.date))].length * 100;
+    
+    if (score >= 80 && totalPnL > 0) return {
       level: "ELITE TRADER",
-      description: "Exceptional discipline and consistency. You demonstrate mastery across all key areas.",
+      description: `Exceptional discipline with ${profitableDays.toFixed(1)}% profitable days. Your CSV data shows mastery across all areas.`,
       color: "text-green-400",
       bgColor: "bg-green-500/10",
       borderColor: "border-green-400/30"
     };
-    if (score >= 60) return {
-      level: "DEVELOPING TRADER",
-      description: "Good foundation with room for improvement. Focus on your weaker areas.",
+    if (score >= 60 && totalPnL >= 0) return {
+      level: "DEVELOPING TRADER", 
+      description: `Good foundation with ${profitableDays.toFixed(1)}% profitable days. Your data shows steady progress - keep focusing on consistency.`,
       color: "text-yellow-400",
       bgColor: "bg-yellow-500/10",
       borderColor: "border-yellow-400/30"
     };
     return {
       level: "NOVICE TRADER",
-      description: "Significant improvement needed. Focus on building fundamental discipline.",
+      description: `${profitableDays.toFixed(1)}% profitable days. Your trading data shows you need fundamental discipline work before risking more capital.`,
       color: "text-red-400",
       bgColor: "bg-red-500/10",
       borderColor: "border-red-400/30"
     };
   };
 
-  const getActionPlan = (disciplineData: DisciplineMetrics) => {
+  const getActionPlan = (disciplineData: DisciplineMetrics, trades: any[], accounts: any[]) => {
     const plans = [];
     
+    // Real data analysis for personalized recommendations
+    const accountTrades = trades.filter(t => accountId === 'all' || t.accountId === Number(accountId));
+    const totalPnL = accountTrades.reduce((sum, t) => sum + (t.pnl || 0), 0);
+    const winRate = accountTrades.length > 0 ? (accountTrades.filter(t => (t.pnl || 0) > 0).length / accountTrades.length * 100) : 0;
+    const avgLoss = Math.abs(accountTrades.filter(t => (t.pnl || 0) < 0).reduce((sum, t, _, arr) => sum + (t.pnl || 0) / arr.length, 0));
+    const avgWin = accountTrades.filter(t => (t.pnl || 0) > 0).reduce((sum, t, _, arr) => sum + (t.pnl || 0) / arr.length, 0);
+    
+    // Risk Management Analysis
     if (disciplineData.riskManagementScore < 70) {
+      const riskViolations = accountTrades.filter(t => Math.abs(t.pnl || 0) > 500).length; // Assuming $500 max risk
       plans.push({
         priority: "HIGH",
         area: "Risk Management",
-        action: "Implement strict position sizing rules (1-2% risk per trade)",
-        timeline: "Week 1-2",
-        impact: "Critical for account preservation"
+        action: `You've had ${riskViolations} high-risk trades. Current avg loss: $${avgLoss.toFixed(2)}. Reduce position size by 50% until risk control improves.`,
+        timeline: "Immediate",
+        impact: "Critical - Your largest loss was likely due to oversized positions"
       });
     }
     
-    if (disciplineData.emotionalControlScore < 60) {
+    // Emotional Control Analysis
+    if (disciplineData.emotionalControlScore < 60 || winRate < 50) {
+      const consecutiveLosses = getMaxConsecutiveLosses(accountTrades);
       plans.push({
         priority: "HIGH",
         area: "Emotional Control",
-        action: "Establish cooling-off periods after losses",
+        action: `Win rate: ${winRate.toFixed(1)}%. Max consecutive losses: ${consecutiveLosses}. Implement 15-min cooling period after 2 consecutive losses.`,
         timeline: "Immediate",
-        impact: "Prevent revenge trading"
+        impact: "You're likely revenge trading - this pattern shows in your CSV data"
       });
     }
     
+    // Strategy Consistency Analysis
     if (disciplineData.consistencyScore < 65) {
+      const dailyVariance = calculateDailyPnLVariance(accountTrades);
       plans.push({
         priority: "MEDIUM",
         area: "Strategy Adherence",
-        action: "Create detailed trading plan checklist",
-        timeline: "Week 2-3",
-        impact: "Improve consistency"
+        action: `Your daily P&L variance is $${dailyVariance.toFixed(2)}. Focus on smaller, consistent gains rather than large swings.`,
+        timeline: "Week 1-2",
+        impact: "Data shows inconsistent execution - smaller consistent gains build confidence"
       });
     }
     
-    if (disciplineData.marketAnalysisScore < 60) {
+    // Performance-based recommendations
+    if (totalPnL < 0) {
       plans.push({
-        priority: "MEDIUM",
-        area: "Market Analysis",
-        action: "Dedicate 30 minutes daily to chart study",
-        timeline: "Week 1-4",
-        impact: "Better entry timing"
+        priority: "HIGH",
+        area: "Account Recovery",
+        action: `Total P&L: $${totalPnL.toFixed(2)}. Reduce risk per trade to 0.5% until profitable. Your data shows you need to rebuild confidence first.`,
+        timeline: "Immediate",
+        impact: "Critical for account preservation and psychological recovery"
       });
     }
     
@@ -782,7 +832,7 @@ export default function MMMDisciplinaryAssistant({ trades, accounts, selectedAcc
     return count;
   };
 
-  const getRedFlagsAnalysis = (disciplineData: DisciplineMetrics, patterns: TradingPattern) => {
+  const getRedFlagsAnalysis = (disciplineData: DisciplineMetrics, patterns: TradingPattern, trades: any[]) => {
     const redFlags = [];
     
     if (disciplineData.disciplineScore < 40) {
@@ -1013,7 +1063,7 @@ export default function MMMDisciplinaryAssistant({ trades, accounts, selectedAcc
         </CardHeader>
         <CardContent>
           <div className="flex items-center space-x-4">
-            <Select value={selectedAccount} onValueChange={setSelectedAccount}>
+            <Select value={accountId} onValueChange={setSelectedAccount}>
               <SelectTrigger className="w-64">
                 <SelectValue placeholder="Choose account..." />
               </SelectTrigger>
@@ -1190,7 +1240,7 @@ export default function MMMDisciplinaryAssistant({ trades, accounts, selectedAcc
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-2">
-                    {getRedFlagsAnalysis(disciplineData, tradingPatterns).slice(0, 3).map((flag, index) => (
+                    {getRedFlagsAnalysis(disciplineData, tradingPatterns, trades).slice(0, 3).map((flag, index) => (
                       <div key={index} className="text-xs text-gray-300 p-2 bg-red-900/20 rounded border border-red-500/20">
                         {flag.flag}
                       </div>
@@ -1208,9 +1258,9 @@ export default function MMMDisciplinaryAssistant({ trades, accounts, selectedAcc
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                {getRedFlagsAnalysis(disciplineData, tradingPatterns).length > 0 ? (
+                {getRedFlagsAnalysis(disciplineData, tradingPatterns, trades).length > 0 ? (
                   <div className="space-y-4">
-                    {getRedFlagsAnalysis(disciplineData, tradingPatterns).map((flag, index) => (
+                    {getRedFlagsAnalysis(disciplineData, tradingPatterns, trades).map((flag, index) => (
                       <div key={index} className={`rounded-lg p-4 border ${
                         flag.severity === 'critical' 
                           ? 'bg-red-900/30 border-red-600' 
@@ -1341,7 +1391,7 @@ export default function MMMDisciplinaryAssistant({ trades, accounts, selectedAcc
           <TabsContent value="insights" className="space-y-6">
             {/* Trader Profile */}
             {disciplineData && (
-              <Card className={`bg-prop-card border-prop-gold/20 ${getTraderProfile(disciplineData.disciplineScore).borderColor}`}>
+              <Card className={`bg-prop-card border-prop-gold/20 ${getTraderProfile(disciplineData.disciplineScore, trades, totalPnL).borderColor}`}>
                 <CardHeader>
                   <CardTitle className="text-prop-gold flex items-center">
                     <Star className="h-5 w-5 mr-2" />
@@ -1349,13 +1399,13 @@ export default function MMMDisciplinaryAssistant({ trades, accounts, selectedAcc
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className={`p-6 rounded-xl ${getTraderProfile(disciplineData.disciplineScore).bgColor}`}>
+                  <div className={`p-6 rounded-xl ${getTraderProfile(disciplineData.disciplineScore, trades, totalPnL).bgColor}`}>
                     <div className="text-center space-y-4">
-                      <div className={`text-2xl font-bold ${getTraderProfile(disciplineData.disciplineScore).color}`}>
-                        {getTraderProfile(disciplineData.disciplineScore).level}
+                      <div className={`text-2xl font-bold ${getTraderProfile(disciplineData.disciplineScore, trades, totalPnL).color}`}>
+                        {getTraderProfile(disciplineData.disciplineScore, trades, totalPnL).level}
                       </div>
                       <p className="text-gray-300 text-lg">
-                        {getTraderProfile(disciplineData.disciplineScore).description}
+                        {getTraderProfile(disciplineData.disciplineScore, trades, totalPnL).description}
                       </p>
                     </div>
                   </div>
@@ -1525,7 +1575,7 @@ export default function MMMDisciplinaryAssistant({ trades, accounts, selectedAcc
                   <div className="space-y-4">
                     <h3 className="text-lg font-semibold text-prop-gold">30-Day Foundation</h3>
                     <div className="space-y-3">
-                      {getActionPlan(disciplineData).slice(0, 3).map((plan, index) => (
+                      {getActionPlan(disciplineData, trades, accounts).slice(0, 3).map((plan, index) => (
                         <div key={index} className="bg-blue-900/20 border border-blue-500/30 rounded-lg p-4">
                           <div className="flex items-center justify-between mb-2">
                             <Badge variant="outline" className={`${plan.priority === 'HIGH' ? 'text-red-400 border-red-400' : 'text-blue-400 border-blue-400'}`}>
@@ -1545,7 +1595,7 @@ export default function MMMDisciplinaryAssistant({ trades, accounts, selectedAcc
                   <div className="space-y-4">
                     <h3 className="text-lg font-semibold text-prop-gold">90-Day Mastery</h3>
                     <div className="space-y-3">
-                      {getActionPlan(disciplineData).slice(3, 6).map((plan, index) => (
+                      {getActionPlan(disciplineData, trades, accounts).slice(3, 6).map((plan, index) => (
                         <div key={index} className="bg-green-900/20 border border-green-500/30 rounded-lg p-4">
                           <div className="flex items-center justify-between mb-2">
                             <Badge variant="outline" className="text-green-400 border-green-400">
@@ -1574,7 +1624,7 @@ export default function MMMDisciplinaryAssistant({ trades, accounts, selectedAcc
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {getRedFlagsAnalysis(disciplineData, tradingPatterns).slice(0, 3).map((flag, index) => (
+                  {getRedFlagsAnalysis(disciplineData, tradingPatterns, trades).slice(0, 3).map((flag, index) => (
                     <div key={index} className="bg-red-800/20 rounded-lg p-4">
                       <div className="flex items-center justify-between mb-2">
                         <h4 className="font-semibold text-red-300">{flag.flag}</h4>

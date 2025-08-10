@@ -512,7 +512,7 @@ const DailyPlanPage = () => {
 
               <Button 
                 onClick={() => setIsJournalDialogOpen(true)}
-                className="bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white shadow-lg"
+                className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white shadow-lg"
               >
                 <BookOpen className="h-4 w-4 mr-2" />
                 Journal Entry
@@ -663,7 +663,7 @@ const DailyPlanPage = () => {
                   
                   <Button 
                     onClick={() => setIsJournalDialogOpen(true)}
-                    className="bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white shadow-lg"
+                    className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white shadow-lg"
                   >
                     <BookOpen className="h-4 w-4 mr-2" />
                     Journal Entry
@@ -774,11 +774,11 @@ const DailyPlanPage = () => {
                         </div>
 
                         <div className="flex items-center gap-2 text-xs">
-                          <div className="w-1.5 h-1.5 bg-purple-400 rounded-full"></div>
+                          <div className="w-1.5 h-1.5 bg-amber-400 rounded-full"></div>
                           <span className="text-gray-400">Target:</span>
-                          <span className="text-purple-400">${plan.targetProfit}</span>
+                          <span className="text-amber-400">${plan.targetProfit}</span>
                           <div className="w-1 h-1 bg-gray-500 rounded-full"></div>
-                          <span className="text-purple-400">Max {plan.maxTrades} trades</span>
+                          <span className="text-amber-400">Max {plan.maxTrades} trades</span>
                         </div>
                       </div>
 
@@ -1322,15 +1322,15 @@ const DailyPlanPage = () => {
                   <div className="text-xs text-blue-300 mt-1">Risk Management</div>
                 </div>
 
-                <div className="bg-gradient-to-br from-purple-900/30 to-purple-800/20 p-5 rounded-xl border border-purple-400/30 hover:border-purple-400/50 transition-all">
+                <div className="bg-gradient-to-br from-amber-900/30 to-amber-800/20 p-5 rounded-xl border border-amber-400/30 hover:border-amber-400/50 transition-all">
                   <div className="flex items-center justify-between mb-2">
-                    <div className="text-purple-400 font-bold text-2xl">
+                    <div className="text-amber-400 font-bold text-2xl">
                       {((selectedStrategyForDetails.expectedWinRate / 100) * selectedStrategyForDetails.riskRewardRatio).toFixed(1)}
                     </div>
-                    <Zap className="w-6 h-6 text-purple-400" />
+                    <Zap className="w-6 h-6 text-amber-400" />
                   </div>
                   <div className="text-gray-400 text-sm font-medium">Expected Value</div>
-                  <div className="text-xs text-purple-300 mt-1">Per Trade Edge</div>
+                  <div className="text-xs text-amber-300 mt-1">Per Trade Edge</div>
                 </div>
               </div>
 
@@ -1367,12 +1367,12 @@ const DailyPlanPage = () => {
                     </p>
                   </div>
 
-                  <div className="bg-gradient-to-br from-purple-900/20 to-purple-800/10 p-5 rounded-xl border border-purple-400/20">
+                  <div className="bg-gradient-to-br from-amber-900/20 to-amber-800/10 p-5 rounded-xl border border-amber-400/20">
                     <div className="flex items-center gap-3 mb-3">
-                      <DollarSign className="w-5 h-5 text-purple-400" />
+                      <DollarSign className="w-5 h-5 text-amber-400" />
                       <h4 className="text-white font-semibold">Trading Assets</h4>
                     </div>
-                    <p className="text-purple-300 text-sm leading-relaxed">
+                    <p className="text-amber-300 text-sm leading-relaxed">
                       {selectedStrategyForDetails.assets || 'Multiple Asset Classes'}
                     </p>
                   </div>
@@ -1446,7 +1446,7 @@ const DailyPlanPage = () => {
                     <div className="text-xs text-gray-400">Trades to Profit</div>
                   </div>
                   <div className="text-center">
-                    <div className="text-2xl font-bold text-purple-400">
+                    <div className="text-2xl font-bold text-amber-400">
                       {(selectedStrategyForDetails.expectedWinRate * selectedStrategyForDetails.riskRewardRatio - (100 - selectedStrategyForDetails.expectedWinRate)).toFixed(1)}%
                     </div>
                     <div className="text-xs text-gray-400">Edge per Trade</div>
