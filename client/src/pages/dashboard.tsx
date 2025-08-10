@@ -1703,7 +1703,14 @@ export default function Dashboard() {
                   })()}h
                 </div>
                 <div className="text-sm text-gray-400 mb-1">Hours Worked</div>
-                <div className="text-xs text-indigo-300 mb-1">
+                <div className={`text-xs mb-1 ${(() => {
+                    const today = new Date().toISOString().split('T')[0];
+                    const todayTrades = trades?.filter(t => t.date === today) || [];
+                    const hoursWorked = todayTrades.length * 0.5;
+                    const todayPnL = todayTrades.reduce((sum, t) => sum + (t.pnl || 0), 0);
+                    const hourlyWage = hoursWorked > 0 ? (todayPnL / hoursWorked) : 0;
+                    return getValueColor(hourlyWage);
+                  })()}`}>
                   Hourly wage: ${(() => {
                     const today = new Date().toISOString().split('T')[0];
                     const todayTrades = trades?.filter(t => t.date === today) || [];
@@ -1712,7 +1719,12 @@ export default function Dashboard() {
                     return hoursWorked > 0 ? (todayPnL / hoursWorked).toFixed(2) : '0.00';
                   })()}
                 </div>
-                <div className="text-xs text-gray-300">
+                <div className={`text-xs ${(() => {
+                    const today = new Date().toISOString().split('T')[0];
+                    const todayTrades = trades?.filter(t => t.date === today) || [];
+                    const todayPnL = todayTrades.reduce((sum, t) => sum + (t.pnl || 0), 0);
+                    return getValueColor(todayPnL);
+                  })()}`}>
                   Total: ${(() => {
                     const today = new Date().toISOString().split('T')[0];
                     const todayTrades = trades?.filter(t => t.date === today) || [];
@@ -1997,12 +2009,12 @@ export default function Dashboard() {
                     W/L
                   </div>
                   <div className="flex items-center space-x-1 mb-1">
-                    <span className="text-sm font-bold text-green-400">W: ${Math.abs(combinedAnalytics?.totalWinnings || 0).toFixed(0)}</span>
-                    <span className="text-sm font-bold text-red-400">L: ${Math.abs(combinedAnalytics?.totalLosses || 0).toFixed(0)}</span>
+                    <span className={`text-sm font-bold ${getValueColor(combinedAnalytics?.totalWinnings || 0)}`}>W: ${Math.abs(combinedAnalytics?.totalWinnings || 0).toFixed(0)}</span>
+                    <span className={`text-sm font-bold ${getValueColor(-(Math.abs(combinedAnalytics?.totalLosses || 0)))}`}>L: ${Math.abs(combinedAnalytics?.totalLosses || 0).toFixed(0)}</span>
                   </div>
                   <div className="text-xs text-gray-400">Total Wins and Losses</div>
                   <div className="text-xs text-gray-300 mt-1">
-                    Net: ${((combinedAnalytics?.totalWinnings || 0) - Math.abs(combinedAnalytics?.totalLosses || 0)).toFixed(0)}
+                    Net: <span className={getValueColor((combinedAnalytics?.totalWinnings || 0) - Math.abs(combinedAnalytics?.totalLosses || 0))}>${((combinedAnalytics?.totalWinnings || 0) - Math.abs(combinedAnalytics?.totalLosses || 0)).toFixed(0)}</span>
                   </div>
                 </div>
 
@@ -2011,12 +2023,12 @@ export default function Dashboard() {
                   <div className="absolute top-2 right-2 text-xs text-blue-300">
                     AVG
                   </div>
-                  <div className="text-xl font-bold text-blue-400 mb-1">
-                    ${combinedAnalytics?.avgWin?.toFixed(0) || '0'}/${Math.abs(combinedAnalytics?.avgLoss || 0).toFixed(0)}
+                  <div className="text-xl font-bold mb-1">
+                    <span className={getValueColor(combinedAnalytics?.avgWin || 0)}>${combinedAnalytics?.avgWin?.toFixed(0) || '0'}</span>/<span className={getValueColor(-(Math.abs(combinedAnalytics?.avgLoss || 0)))}>${Math.abs(combinedAnalytics?.avgLoss || 0).toFixed(0)}</span>
                   </div>
                   <div className="text-xs text-gray-400">Avg Win/Loss</div>
                   <div className="text-xs text-blue-300 mt-1">
-                    Ratio: {(combinedAnalytics?.avgLoss || 0) !== 0 ? Math.abs((combinedAnalytics?.avgWin || 0) / (combinedAnalytics?.avgLoss || 1)).toFixed(1) : '∞'}:1
+                    Ratio: <span className={getValueColor((combinedAnalytics?.avgWin || 0) - Math.abs(combinedAnalytics?.avgLoss || 0))}>{(combinedAnalytics?.avgLoss || 0) !== 0 ? Math.abs((combinedAnalytics?.avgWin || 0) / (combinedAnalytics?.avgLoss || 1)).toFixed(1) : '∞'}:1</span>
                   </div>
                 </div>
               </div>
@@ -2143,9 +2155,9 @@ export default function Dashboard() {
                 <BarChart3 className="w-4 h-4 text-orange-400" />
               </div>
               <div className="flex items-center space-x-2 text-lg font-bold mb-1">
-                <span className="text-green-400">{formatCurrency(combinedAnalytics?.averageWin || 0)}</span>
+                <span className={getValueColor(combinedAnalytics?.averageWin || 0)}>{formatCurrency(combinedAnalytics?.averageWin || 0)}</span>
                 <span className="text-gray-400">/</span>
-                <span className="text-red-400">{formatCurrency(Math.abs(combinedAnalytics?.averageLoss || 0))}</span>
+                <span className={getValueColor(-(Math.abs(combinedAnalytics?.averageLoss || 0)))}>{formatCurrency(Math.abs(combinedAnalytics?.averageLoss || 0))}</span>
               </div>
               <div className="text-xs text-gray-400">Win vs Loss ratio</div>
             </div>

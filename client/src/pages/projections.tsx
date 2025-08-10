@@ -983,22 +983,22 @@ export default function Projections() {
                                 
                                 {/* Column 3: Expected Profit */}
                                 <td className="p-4 text-center">
-                                  <div className="text-green-400 font-bold text-lg">${formatCurrency(day.reward)}</div>
+                                  <div className="text-green-400 font-bold text-lg">${formatCurrency(day.reward || 0)}</div>
                                 </td>
                                 
                                 {/* Column 4: Progress to Goal (VERY IMPORTANT - CUMULATIVE PROGRESS) */}
                                 <td className="p-4 text-center">
                                   <div className="space-y-2">
                                     <div className={`font-bold text-lg ${isTargetReached ? 'text-green-400' : 'text-yellow-400'}`}>
-                                      ${formatCurrency(day.targetExpectation)}
+                                      ${formatCurrency(day.targetExpectation || 0)}
                                     </div>
                                     <div className="w-full bg-gray-700 rounded-full h-2">
                                       <div 
                                         className={`h-2 rounded-full transition-all ${isTargetReached ? 'bg-green-400' : 'bg-yellow-400'}`} 
-                                        style={{width: `${Math.min(progressPercent, 100)}%`}}
+                                        style={{width: `${Math.min(progressPercent || 0, 100)}%`}}
                                       ></div>
                                     </div>
-                                    <div className="text-xs text-gray-400">{progressPercent.toFixed(1)}% of goal</div>
+                                    <div className="text-xs text-gray-400">{(progressPercent || 0).toFixed(1)}% of goal</div>
                                     {isTargetReached && (
                                       <div className="flex items-center justify-center gap-1">
                                         <CheckCircle className="w-4 h-4 text-green-400" />
