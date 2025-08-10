@@ -14,6 +14,7 @@ import { useLocation } from "wouter";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import TradeDetailModal from "@/components/trade-detail-modal";
+import * as XLSX from 'xlsx';
 
 // Format price levels (not currency)
 const formatPrice = (price: number): string => {
@@ -204,6 +205,64 @@ const UniversalCsvImport = ({ accounts }: { accounts: Account[] }) => {
     }
     
     return { headers, data };
+  };
+
+  // Parse Excel file into structured data
+  const parseExcel = async (file: File): Promise<{ headers: string[], data: any[] }> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      
+      reader.onload = (e) => {
+        try {
+          const arrayBuffer = new Uint8Array(e.target?.result as ArrayBuffer);
+          const workbook = XLSX.read(arrayBuffer, { type: 'array' });
+          
+          // Get the first worksheet
+          const worksheetName = workbook.SheetNames[0];
+          const worksheet = workbook.Sheets[worksheetName];
+          
+          // Convert to JSON
+          const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+          
+          if (!jsonData || jsonData.length < 2) {
+            resolve({ headers: [], data: [] });
+            return;
+          }
+          
+          // Extract headers from first row
+          const headers = (jsonData[0] as any[]).map(h => String(h || '').trim());
+          
+          // Extract data rows
+          const parsedData = [];
+          for (let i = 1; i < jsonData.length; i++) {
+            const rowData = jsonData[i] as any[];
+            const row: any = {};
+            
+            headers.forEach((header, index) => {
+              const cellValue = rowData[index];
+              // Handle different data types from Excel
+              if (cellValue !== undefined && cellValue !== null) {
+                row[header] = String(cellValue).trim();
+              } else {
+                row[header] = '';
+              }
+            });
+            
+            // Skip empty rows
+            if (Object.values(row).some(v => v !== '')) {
+              parsedData.push(row);
+            }
+          }
+          
+          resolve({ headers, data: parsedData });
+        } catch (error) {
+          reject(error);
+        }
+      };
+      
+      reader.onerror = () => reject(new Error('Failed to read Excel file'));
+      reader.readAsArrayBuffer(file);
+    });
   };
 
   // Find account by name or use first available account as fallback
@@ -814,8 +873,24 @@ const UniversalCsvImport = ({ accounts }: { accounts: Account[] }) => {
     setImportStats(null);
     
     try {
-      const text = await file.text();
-      const { headers, data } = parseCSV(text);
+      let headers: string[] = [];
+      let data: any[] = [];
+      
+      // Check file type and parse accordingly
+      const fileExtension = file.name.toLowerCase().split('.').pop();
+      
+      if (fileExtension === 'xlsx' || fileExtension === 'xls') {
+        console.log('📊 Processing Excel file...');
+        const excelData = await parseExcel(file);
+        headers = excelData.headers;
+        data = excelData.data;
+      } else {
+        console.log('📄 Processing CSV file...');
+        const text = await file.text();
+        const csvData = parseCSV(text);
+        headers = csvData.headers;
+        data = csvData.data;
+      }
       
       setCsvHeaders(headers);
       const detectedFormat = detectCsvFormat(headers);
@@ -824,28 +899,45 @@ const UniversalCsvImport = ({ accounts }: { accounts: Account[] }) => {
       // Show preview
       setPreviewData(data.slice(0, 3));
       
+      console.log(`🔍 File type: ${fileExtension}`);
       console.log(`🔍 Detected format: ${detectedFormat}`);
       console.log(`🔍 Found ${data.length} data rows`);
       console.log(`🔍 Headers:`, headers);
       
     } catch (error) {
-      console.error('Error parsing CSV:', error);
-      console.error(`Error parsing CSV: ${(error as Error).message}`);
+      console.error('Error parsing file:', error);
+      console.error(`Error parsing file: ${(error as Error).message}`);
       setCsvFile(null);
       setPreviewData([]);
       setCsvFormat('unknown');
     }
   };
 
-  // Upload and process CSV
+  // Upload and process file (CSV or Excel)
   const handleUpload = async () => {
     if (!csvFile || csvFormat === 'unknown') return;
 
     setIsUploading(true);
     
     try {
-      const text = await csvFile.text();
-      const { headers, data } = parseCSV(text);
+      let headers: string[] = [];
+      let data: any[] = [];
+      
+      // Check file type and parse accordingly
+      const fileExtension = csvFile.name.toLowerCase().split('.').pop();
+      
+      if (fileExtension === 'xlsx' || fileExtension === 'xls') {
+        console.log('📊 Processing Excel file for upload...');
+        const excelData = await parseExcel(csvFile);
+        headers = excelData.headers;
+        data = excelData.data;
+      } else {
+        console.log('📄 Processing CSV file for upload...');
+        const text = await csvFile.text();
+        const csvData = parseCSV(text);
+        headers = csvData.headers;
+        data = csvData.data;
+      }
       
       console.log(`🔍 Processing ${data.length} rows with format: ${csvFormat}`);
       
@@ -1009,7 +1101,7 @@ const UniversalCsvImport = ({ accounts }: { accounts: Account[] }) => {
               <div className="bg-yellow-600/20 border border-yellow-600 rounded-lg p-3">
                 <div className="flex items-center gap-2">
                   <AlertCircle className="w-4 h-4 text-yellow-400" />
-                  <span className="text-yellow-400 text-sm">Please select an account before uploading CSV files</span>
+                  <span className="text-yellow-400 text-sm">Please select an account before uploading files</span>
                 </div>
               </div>
             )}
@@ -1020,11 +1112,11 @@ const UniversalCsvImport = ({ accounts }: { accounts: Account[] }) => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <label className="block text-sm font-medium text-gray-300 mb-2">
-            Select Position History CSV File
+            Select CSV or Excel File
           </label>
           <Input
             type="file"
-            accept=".csv"
+            accept=".csv,.xlsx,.xls"
             onChange={handleFileChange}
             disabled={!selectedImportAccount}
             className={`bg-gray-700 border-gray-600 text-white file:bg-blue-600 file:text-white file:border-0 file:rounded file:px-3 file:py-1 ${
