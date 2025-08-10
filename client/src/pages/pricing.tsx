@@ -7,68 +7,66 @@ export default function Pricing() {
   const plans = [
     {
       name: "Starter",
-      price: "$29",
+      price: "$9",
       period: "/month",
       description: "Perfect for new prop traders getting started",
       popular: false,
       features: [
-        "Basic journaling and trade tracking",
-        "Pre-session mental fitness check",
-        "Daily trading plan builder",
-        "Up to 2 prop firm accounts",
-        "Basic analytics and reporting",
-        "Email support"
+        "1 Trading Account",
+        "Basic Performance Analytics (7-day history)",
+        "Daily Trading Plans",
+        "Mental Fitness Checks",
+        "Basic Trading Journal (text only)",
+        "30-day data retention",
+        "Email Support"
       ],
       notIncluded: [
-        "Target projection system",
-        "Prop firm spending tracker",
-        "AI trading assistant",
-        "Advanced analytics",
-        "Priority support"
+        "Advanced Reports",
+        "AI Assistant",
+        "Target Projections",
+        "Multiple Accounts"
       ]
     },
     {
       name: "Professional",
-      price: "$79",
+      price: "$14.99",
       period: "/month",
       description: "Most popular choice for serious prop traders",
       popular: true,
       features: [
         "Everything in Starter",
-        "Advanced mental fitness assessments",
-        "Target projection system",
-        "Prop firm spending & payout tracking",
-        "AI trading assistant (Marthy)",
-        "Real-time performance vs plan analysis",
-        "Prop trader news calendar",
-        "Strategy builder & community sharing",
-        "Advanced analytics and reports",
-        "Unlimited prop firm accounts",
-        "Priority support"
+        "5 Trading Accounts",
+        "Advanced Analytics & Reports",
+        "AI Assistant (Marthy)",
+        "Target Projections System",
+        "Prop Spending Tracking",
+        "Enhanced Trading Journal (photos, links, tags)",
+        "90-day data retention",
+        "Priority Support"
       ],
       notIncluded: [
-        "Team collaboration features",
-        "Custom integrations",
-        "Dedicated account manager"
+        "Monte Carlo Simulations",
+        "Unlimited Accounts",
+        "Professional Analytics"
       ]
     },
     {
-      name: "Enterprise",
-      price: "$199",
+      name: "Elite",
+      price: "$24.99",
       period: "/month",
-      description: "For prop firms and trading teams",
+      description: "For Professional Traders",
       popular: false,
       features: [
         "Everything in Professional",
-        "Team collaboration tools",
-        "Custom prop firm integrations",
-        "Advanced team analytics",
-        "Bulk user management",
-        "Custom branding options",
-        "API access and webhooks",
-        "Dedicated account manager",
-        "Phone support",
-        "Custom training sessions"
+        "Unlimited Trading Accounts",
+        "Professional Dashboard (real-time updates)",
+        "Monte Carlo Simulations (probability modeling)",
+        "Institutional Charts & Analytics",
+        "AI-Powered Mental Check (personalized insights)",
+        "Professional Flow State Programs",
+        "Multi-Firm ROI Analysis",
+        "Tax-Ready Payout Reports",
+        "Professional Reporting Suite"
       ],
       notIncluded: []
     }

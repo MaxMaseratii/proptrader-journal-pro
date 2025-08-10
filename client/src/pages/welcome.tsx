@@ -166,31 +166,35 @@ export default function Welcome() {
   const pricingPlans = [
     {
       name: "Starter",
-      price: "$19",
+      price: "$9",
       period: "month",
       description: "Perfect for new prop traders",
       features: [
         "1 Trading Account",
-        "Basic Performance Analytics",
+        "Basic Performance Analytics (7-day history)",
         "Daily Trading Plans",
         "Mental Fitness Checks",
+        "Basic Trading Journal (text only)",
+        "30-day data retention",
         "Email Support"
       ],
       popular: false
     },
     {
       name: "Professional", 
-      price: "$39",
+      price: "$14.99",
       period: "month",
-      originalPrice: "$59",
-      savings: "Save $240/year",
+      originalPrice: "$39",
+      savings: "Save $288/year",
       description: "Most popular for active traders",
       features: [
-        "Unlimited Trading Accounts",
+        "5 Trading Accounts",
         "Advanced Analytics & Reports",
         "AI Assistant (Marthy)",
         "Target Projections System",
         "Prop Spending Tracking",
+        "Enhanced Trading Journal (photos, links, tags)",
+        "90-day data retention",
         "Priority Support",
         "Strategy Builder & Sharing"
       ],
