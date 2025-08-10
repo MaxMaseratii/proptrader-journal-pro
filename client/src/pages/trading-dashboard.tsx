@@ -244,11 +244,14 @@ export default function CompleteTradingDashboard() {
   };
 
   const getStrategyMetrics = (strategy) => {
-    const winRate = strategy.performance.trades > 0 ? 
-      (strategy.performance.wins / strategy.performance.trades * 100).toFixed(1) : 
-      strategy.expectedWinRate;
+    // Handle strategies without performance data (newly created strategies)
+    const hasPerformance = strategy.performance && typeof strategy.performance === 'object';
     
-    const profitFactor = strategy.performance.trades > 0 ? 
+    const winRate = hasPerformance && strategy.performance.trades > 0 ? 
+      (strategy.performance.wins / strategy.performance.trades * 100).toFixed(1) : 
+      strategy.expectedWinRate || 0;
+    
+    const profitFactor = hasPerformance && strategy.performance.trades > 0 ? 
       (strategy.performance.totalPnl / (strategy.performance.trades * 100)).toFixed(2) : 
       ((strategy.expectedWinRate / 100) * strategy.riskRewardRatio).toFixed(2);
 
@@ -1591,8 +1594,8 @@ export default function CompleteTradingDashboard() {
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
                     <CardTitle className="text-white text-lg mb-2">{strategy.name}</CardTitle>
-                    <Badge className={getStatusColor(strategy.status)}>
-                      {strategy.status.toUpperCase()}
+                    <Badge className={getStatusColor(strategy.status || 'active')}>
+                      {(strategy.status || 'active').toUpperCase()}
                     </Badge>
                   </div>
                   <Button variant="ghost" size="sm" className="text-gray-400 hover:text-white">
@@ -1818,7 +1821,7 @@ export default function CompleteTradingDashboard() {
                   },
                   { 
                     label: 'Total Trades', 
-                    value: selectedStrategy.performance.trades, 
+                    value: selectedStrategy.performance?.trades || 0, 
                     color: 'orange',
                     icon: Activity
                   }
@@ -1844,8 +1847,8 @@ export default function CompleteTradingDashboard() {
                 <CardContent>
                   <p className="text-gray-300">{selectedStrategy.description}</p>
                   <div className="mt-4 flex items-center gap-4">
-                    <Badge className={getStatusColor(selectedStrategy.status)}>
-                      {selectedStrategy.status.toUpperCase()}
+                    <Badge className={getStatusColor(selectedStrategy.status || 'active')}>
+                      {(selectedStrategy.status || 'active').toUpperCase()}
                     </Badge>
                     <span className="text-gray-400 text-sm">
                       Created: {selectedStrategy.createdAt}
