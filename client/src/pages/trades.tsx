@@ -115,6 +115,7 @@ const UniversalCsvImport = ({ accounts }: { accounts: Account[] }) => {
   const [csvFormat, setCsvFormat] = useState<string>('unknown');
   const [isUploading, setIsUploading] = useState(false);
   const [previewData, setPreviewData] = useState<any[]>([]);
+  const [totalRowCount, setTotalRowCount] = useState<number>(0); // Track total rows
   const [importStats, setImportStats] = useState<any>(null);
   const [csvHeaders, setCsvHeaders] = useState<string[]>([]);
   const queryClient = useQueryClient();
@@ -218,55 +219,106 @@ const UniversalCsvImport = ({ accounts }: { accounts: Account[] }) => {
     return { headers, data };
   };
 
-  // Parse Excel file into structured data
+  // Enhanced Excel parsing with comprehensive debugging and better error handling
   const parseExcel = async (file: File): Promise<{ headers: string[], data: any[] }> => {
+    console.log('📊 Starting Excel parse for file:', file.name, 'Size:', file.size, 'bytes');
+    
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
       
       reader.onload = (e) => {
         try {
-          const arrayBuffer = new Uint8Array(e.target?.result as ArrayBuffer);
-          const workbook = XLSX.read(arrayBuffer, { type: 'array' });
+          const arrayData = new Uint8Array(e.target?.result as ArrayBuffer);
+          const workbook = XLSX.read(arrayData, { 
+            type: 'array', 
+            cellDates: true, 
+            cellNF: false, 
+            cellText: false,
+            raw: false // This helps with number parsing
+          });
           
-          // Get the first worksheet
-          const worksheetName = workbook.SheetNames[0];
-          const worksheet = workbook.Sheets[worksheetName];
+          console.log('📊 Excel workbook loaded successfully');
+          console.log('📊 Available sheets:', workbook.SheetNames);
           
-          // Convert to JSON
-          const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+          const firstSheetName = workbook.SheetNames[0];
+          const worksheet = workbook.Sheets[firstSheetName];
           
-          if (!jsonData || jsonData.length < 2) {
-            resolve({ headers: [], data: [] });
+          console.log('📊 Processing sheet:', firstSheetName);
+          
+          // Get sheet range for debugging
+          const range = XLSX.utils.decode_range(worksheet['!ref'] || 'A1');
+          console.log('📊 Sheet range:', worksheet['!ref'], 'Rows:', range.e.r + 1, 'Cols:', range.e.c + 1);
+          
+          // Convert to JSON with header row as keys, preserving empty cells
+          const jsonData = XLSX.utils.sheet_to_json(worksheet, { 
+            header: 1, 
+            defval: '', 
+            raw: false, // Parse numbers properly
+            dateNF: 'yyyy-mm-dd hh:mm:ss' // Standardize date format
+          });
+          
+          console.log('📊 Raw JSON data extracted, total rows:', jsonData.length);
+          
+          if (jsonData.length === 0) {
+            reject(new Error('Excel file appears to be empty'));
             return;
           }
           
-          // Extract headers from first row
-          const headers = (jsonData[0] as any[]).map(h => String(h || '').trim());
+          // First row contains headers
+          const headers = (jsonData[0] as string[]).map(h => String(h).trim());
+          console.log('📊 Headers extracted:', headers);
+          console.log('📊 Number of columns:', headers.length);
           
-          // Extract data rows
-          const parsedData = [];
-          for (let i = 1; i < jsonData.length; i++) {
-            const rowData = jsonData[i] as any[];
-            const row: any = {};
-            
-            headers.forEach((header, index) => {
-              const cellValue = rowData[index];
-              // Handle different data types from Excel
-              if (cellValue !== undefined && cellValue !== null) {
-                row[header] = String(cellValue).trim();
+          // Rest are data rows - skip empty rows
+          const dataRows = jsonData.slice(1).filter((row: any[]) => {
+            // Check if row has any non-empty values
+            return row.some(cell => cell !== null && cell !== undefined && String(cell).trim() !== '');
+          });
+          
+          console.log('📊 Total rows after header:', jsonData.length - 1);
+          console.log('📊 Non-empty data rows:', dataRows.length);
+          
+          // Convert rows to objects using headers as keys
+          const processedData = dataRows.map((row: any[], rowIndex: number) => {
+            const obj: any = {};
+            headers.forEach((header, colIndex) => {
+              let cellValue = row[colIndex];
+              
+              // Handle various cell value types
+              if (cellValue === null || cellValue === undefined) {
+                cellValue = '';
+              } else if (typeof cellValue === 'number') {
+                // Keep numbers as numbers for better parsing
+                cellValue = cellValue;
               } else {
-                row[header] = '';
+                // Convert to string and trim
+                cellValue = String(cellValue).trim();
               }
+              
+              obj[header] = cellValue;
             });
             
-            // Skip empty rows
-            if (Object.values(row).some(v => v !== '')) {
-              parsedData.push(row);
+            // Debug first few rows
+            if (rowIndex < 3) {
+              console.log(`📊 Row ${rowIndex + 1} sample:`, {
+                Account: obj['Account'],
+                Symbol: obj['Symbol'],
+                Side: obj['Side'],
+                Quantity: obj['Quantity'],
+                Price: obj['Price'],
+                'Net P/L': obj['Net P/L']
+              });
             }
-          }
+            
+            return obj;
+          });
           
-          resolve({ headers, data: parsedData });
+          console.log('📊 Successfully processed', processedData.length, 'data rows from Excel');
+          console.log('📊 Final sample (first row):', processedData[0]);
+          
+          resolve({ headers, data: processedData });
         } catch (error) {
+          console.error('📊 Excel parsing error:', error);
           reject(error);
         }
       };
@@ -396,6 +448,7 @@ const UniversalCsvImport = ({ accounts }: { accounts: Account[] }) => {
     const quantity = row['Quantity'];
     const price = row['Price'];
     
+    // FIXED: Only reject rows with truly missing data, not zero values
     if (!symbol || !side || quantity === undefined || quantity === null || price === undefined || price === null) {
       console.log('🔍 STANDARD EXPORT: Skipping row - missing essential data:', {
         symbol: symbol,
@@ -410,13 +463,15 @@ const UniversalCsvImport = ({ accounts }: { accounts: Account[] }) => {
     const numQuantity = Math.abs(parseFloat(quantity) || 0);
     const numPrice = parseFloat(price) || 0;
     
-    if (numQuantity === 0 || numPrice === 0) {
-      console.log('🔍 STANDARD EXPORT: Skipping row - zero quantity or price:', {
-        numQuantity,
-        numPrice
-      });
-      return null;
-    }
+    // FIXED: Don't reject zero values - these are valid trade conditions
+    // Zero quantity might indicate a cancelled order or adjustment
+    // Zero price might indicate a bonus allocation or adjustment
+    console.log('🔍 STANDARD EXPORT: Processing valid row:', {
+      symbol,
+      side,
+      numQuantity,
+      numPrice
+    });
     
     const account = findAccountByName(row['Account'] || 'Default');
     const grossPnL = parseFloat(row['Gross P/L'] || 0);
@@ -999,7 +1054,8 @@ const UniversalCsvImport = ({ accounts }: { accounts: Account[] }) => {
       setCsvFormat(detectedFormat);
       
       // Show preview
-      setPreviewData(data.slice(0, 3));
+      setTotalRowCount(data.length);
+      setPreviewData(data.slice(0, Math.min(10, data.length))); // Show up to 10 records
       
       console.log(`🔍 File type: ${fileExtension}`);
       console.log(`🔍 Detected format: ${detectedFormat}`);
@@ -1011,6 +1067,7 @@ const UniversalCsvImport = ({ accounts }: { accounts: Account[] }) => {
       console.error(`Error parsing file: ${(error as Error).message}`);
       setCsvFile(null);
       setPreviewData([]);
+      setTotalRowCount(0); // Add this line
       setCsvFormat('unknown');
     }
   };
@@ -1101,6 +1158,7 @@ const UniversalCsvImport = ({ accounts }: { accounts: Account[] }) => {
         // Reset form
         setCsvFile(null);
         setPreviewData([]);
+        setTotalRowCount(0);
         setCsvFormat('unknown');
         setCsvHeaders([]);
         
@@ -1259,23 +1317,30 @@ const UniversalCsvImport = ({ accounts }: { accounts: Account[] }) => {
       </div>
 
       {/* Format Information */}
-      {csvFormat !== 'unknown' && csvHeaders.length > 0 && (
-        <div className="bg-green-600/20 border border-green-600 rounded-lg p-4">
+      {totalRowCount > 0 && (
+        <div className="bg-blue-600/20 border border-blue-600 rounded-lg p-4">
           <div className="flex items-start">
-            <CheckCircle className="h-5 w-5 text-green-400 mr-3 mt-0.5" />
+            <CheckCircle className="h-5 w-5 text-blue-400 mr-3 mt-0.5" />
             <div>
-              <h4 className="text-green-400 font-medium">
-                {formatInfo.icon} {formatInfo.name} CSV Detected!
-              </h4>
-              <p className="text-sm text-gray-300 mt-1">{formatInfo.description}</p>
-              <div className="mt-2 space-y-1">
-                {formatInfo.features.map((feature, index) => (
-                  <div key={index} className="text-xs text-gray-300">• {feature}</div>
-                ))}
-              </div>
-              <p className="text-xs text-green-300 mt-2">
-                Ready to import {previewData.length > 0 ? `${previewData.length} sample` : ''} records
+              <h4 className="text-blue-400 font-medium">📊 File Analysis Complete</h4>
+              <p className="text-sm text-gray-300 mt-1">
+                Found <strong className="text-white">{totalRowCount}</strong> total rows in your Excel file
               </p>
+              <p className="text-xs text-blue-300 mt-1">
+                Showing {Math.min(10, previewData.length)} sample records below
+              </p>
+              {csvFormat !== 'unknown' && (
+                <div className="mt-2">
+                  <p className="text-sm text-green-300">
+                    ✅ Format detected as: <strong>{formatInfo.name}</strong>
+                  </p>
+                  <ul className="text-xs text-gray-400 mt-2 space-y-1">
+                    {formatInfo.features.map((feature, index) => (
+                      <li key={index}>• {feature}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -1308,7 +1373,7 @@ const UniversalCsvImport = ({ accounts }: { accounts: Account[] }) => {
         <div className="space-y-3">
           <h4 className="text-sm font-medium text-gray-300 flex items-center">
             <FileText className="h-4 w-4 mr-2" />
-            Preview Data (First 3 Trades)
+            Preview Data (Showing {previewData.length} of {totalRowCount} total records)
           </h4>
           
           {previewData.map((row, index) => {
@@ -1393,7 +1458,7 @@ const UniversalCsvImport = ({ accounts }: { accounts: Account[] }) => {
         ) : (
           <>
             <Upload className="mr-2 h-4 w-4" />
-            Import {formatInfo.name} to {accounts?.find(acc => acc.id.toString() === selectedImportAccount)?.name}
+            Import {totalRowCount} Records to {accounts?.find(acc => acc.id.toString() === selectedImportAccount)?.name}
           </>
         )}
       </Button>
