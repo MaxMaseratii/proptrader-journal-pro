@@ -1964,14 +1964,15 @@ Recent trades summary: ${userContext.recentTrades.map((trade: any) =>
 Provide helpful, personalized advice based on this data. Keep responses concise (2-3 paragraphs max) and actionable.`;
 
       // Call DeepSeek API
-      const response = await fetch('https://api.deepseek.com/chat/completions', {
+      console.log("Calling DeepSeek API with message:", message);
+      const response = await fetch('https://api.deepseek.com/v1/chat/completions', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${process.env.DEEPSEEK_API_KEY}`
         },
         body: JSON.stringify({
-          model: 'deepseek-reasoner',
+          model: 'deepseek-chat',
           messages: [
             { role: 'system', content: systemPrompt },
             { role: 'user', content: message }
@@ -1982,10 +1983,13 @@ Provide helpful, personalized advice based on this data. Keep responses concise 
       });
 
       if (!response.ok) {
-        throw new Error(`DeepSeek API error: ${response.status}`);
+        const errorText = await response.text();
+        console.error(`DeepSeek API error: ${response.status} - ${errorText}`);
+        throw new Error(`DeepSeek API error: ${response.status} - ${errorText}`);
       }
 
       const aiResponse = await response.json();
+      console.log("DeepSeek API response:", aiResponse);
       const aiMessage = aiResponse.choices[0]?.message?.content || "I'm having trouble thinking right now, but I'm here to help with your trading!";
 
       res.json({
