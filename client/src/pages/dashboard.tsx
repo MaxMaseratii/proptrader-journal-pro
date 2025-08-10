@@ -772,6 +772,20 @@ export default function Dashboard() {
     queryKey: ["/api/journal"],
   });
 
+  // Auto-fix account selection when trades are loaded
+  useEffect(() => {
+    if (trades && trades.length > 0) {
+      const availableAccountIds = [...new Set(trades.map(t => t.accountId))];
+      
+      // If no account selected or selected account doesn't have trades, auto-select the first available
+      if (selectedAccountIds.length === 0 || !availableAccountIds.includes(selectedAccountIds[0])) {
+        console.log('🔧 Auto-fixing account selection: switching to account', availableAccountIds[0]);
+        setSelectedAccountIds([availableAccountIds[0]]);
+        localStorage.setItem('dashboard-selected-accounts', JSON.stringify([availableAccountIds[0]]));
+      }
+    }
+  }, [trades, selectedAccountIds]);
+
   // Debug journal entries
   useEffect(() => {
     if (journalEntries) {
@@ -870,6 +884,14 @@ export default function Dashboard() {
     }
     
     // FIXED: If mode is 'single' or 'multiple' but no accounts selected, fall back to all trades
+    // Also fix account ID mismatch by auto-selecting the correct account if trades exist
+    if ((accountSelectionMode === 'single' || accountSelectionMode === 'multiple') && selectedAccountIds.length === 0 && trades.length > 0) {
+      const uniqueAccountIds = [...new Set(trades.map(t => t.accountId))];
+      console.log('🔧 Auto-selecting first available account ID:', uniqueAccountIds[0]);
+      setSelectedAccountIds([uniqueAccountIds[0]]);
+      return trades.filter(trade => trade.accountId === uniqueAccountIds[0]);
+    }
+    
     console.log('🔍 No account filter specified, falling back to all trades:', trades.length);
     return trades;
   }, [trades, accountSelectionMode, selectedAccountIds]);
