@@ -198,11 +198,7 @@ export default function CompleteTradingDashboard() {
   // Strategy management functions - now uses API
   const createStrategyMutation = useMutation({
     mutationFn: async (strategyData: any) => {
-      return apiRequest('/api/trading-strategies', {
-        method: 'POST',
-        body: JSON.stringify(strategyData),
-        headers: { 'Content-Type': 'application/json' }
-      });
+      return apiRequest('/api/trading-strategies', 'POST', strategyData);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/trading-strategies'] });
@@ -227,11 +223,7 @@ export default function CompleteTradingDashboard() {
   // Daily plan saving mutation
   const saveDailyPlanMutation = useMutation({
     mutationFn: async (planData: any) => {
-      return apiRequest('/api/daily-plans', {
-        method: 'POST',
-        body: JSON.stringify(planData),
-        headers: { 'Content-Type': 'application/json' }
-      });
+      return apiRequest('/api/daily-plans', 'POST', planData);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/daily-plans'] });
