@@ -388,7 +388,18 @@ const UniversalCsvImport = ({ accounts }: { accounts: Account[] }) => {
 
   // Map Standard Export row to trade format (Excel/CSV from trading platforms)
   const mapStandardExportRow = (row: any): any => {
-    console.log('🔍 STANDARD EXPORT: Mapping row:', row);
+    console.log('🔍 STANDARD EXPORT: Processing row:', row);
+    
+    // Check if this row has essential data
+    if (!row['Symbol'] || !row['Side'] || !row['Quantity'] || !row['Price']) {
+      console.log('🔍 STANDARD EXPORT: Skipping row - missing essential data:', {
+        symbol: row['Symbol'],
+        side: row['Side'],
+        quantity: row['Quantity'],
+        price: row['Price']
+      });
+      return null;
+    }
     
     const account = findAccountByName(row['Account'] || 'Default');
     const price = parseFloat(row['Price'] || 0);
@@ -425,7 +436,7 @@ const UniversalCsvImport = ({ accounts }: { accounts: Account[] }) => {
       tradingViewLink: null
     };
 
-    console.log('🔍 STANDARD EXPORT: Mapped trade:', {
+    console.log('🔍 STANDARD EXPORT: Successfully mapped trade:', {
       symbol: mappedTrade.symbol,
       side: mappedTrade.side,
       quantity: mappedTrade.quantity,
@@ -909,20 +920,32 @@ const UniversalCsvImport = ({ accounts }: { accounts: Account[] }) => {
 
   // Main mapping function - routes to appropriate mapper
   const mapRowsToTrades = (rows: any[], format: string): any[] => {
+    console.log(`🔍 MAPPING: Processing ${rows.length} rows with format: ${format}`);
+    
+    let result: any[] = [];
+    
     switch (format) {
       case 'standard-export':
-        return rows.map(mapStandardExportRow);
+        result = rows.map(mapStandardExportRow).filter(trade => trade !== null);
+        break;
       case 'position-history':
-        return rows.map(mapPositionHistoryRow);
+        result = rows.map(mapPositionHistoryRow);
+        break;
       case 'performance':
-        return rows.map(mapPerformanceRow);
+        result = rows.map(mapPerformanceRow);
+        break;
       case 'orders':
-        return mapOrdersRows(rows);
+        result = mapOrdersRows(rows);
+        break;
       case 'fills':
-        return mapFillsRows(rows);
+        result = mapFillsRows(rows);
+        break;
       default:
         throw new Error(`Unsupported format: ${format}`);
     }
+    
+    console.log(`🔍 MAPPING: Generated ${result.length} trades from ${rows.length} rows`);
+    return result;
   };
 
 
@@ -1008,7 +1031,10 @@ const UniversalCsvImport = ({ accounts }: { accounts: Account[] }) => {
       const errors = [];
       
       try {
+        console.log(`🔍 About to map ${data.length} rows with format: ${csvFormat}`);
+        console.log(`🔍 Sample row data:`, data[0]);
         const mappedTrades = mapRowsToTrades(data, csvFormat);
+        console.log(`🔍 Successfully mapped ${mappedTrades.length} trades from ${data.length} rows`);
         trades.push(...mappedTrades);
       } catch (error) {
         console.error(`🔍 Error mapping trades:`, error);
