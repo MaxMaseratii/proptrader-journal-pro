@@ -6,9 +6,9 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export function formatCurrency(amount: number | string): string {
-  if (amount === 0 || amount === '' || amount === null || amount === undefined) return '';
+  if (amount === '' || amount === null || amount === undefined) return '';
   const numAmount = typeof amount === 'string' ? parseFloat(amount) : amount;
-  if (isNaN(numAmount) || numAmount === 0) return '';
+  if (isNaN(numAmount)) return '';
   return numAmount.toLocaleString('en-US', {
     style: 'currency',
     currency: 'USD',
