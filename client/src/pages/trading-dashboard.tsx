@@ -130,6 +130,18 @@ export default function CompleteTradingDashboard() {
     goNoGoDecision: 'go'
   });
 
+  // Pre-session slider values - MOVED FROM INSIDE renderPreSessionCheck
+  const [sliderValues, setSliderValues] = useState({
+    emotional: 4,
+    physical: 5,
+    focus: 4,
+    confidence: 4,
+    market: 4,
+    risk: 5,
+    humility: 4,
+    professional: 4
+  });
+
   // Daily plan data
   const [dailyPlanData, setDailyPlanData] = useState({
     riskAmount: 100,
@@ -308,18 +320,6 @@ export default function CompleteTradingDashboard() {
   };
 
   const renderPreSessionCheck = () => {
-    // Enhanced state management for better psychology tracking
-    const [sliderValues, setSliderValues] = useState({
-      emotional: 4,
-      physical: 5,
-      focus: 4,
-      confidence: 4,
-      market: 4,
-      risk: 5,
-      humility: 4,
-      professional: 4
-    });
-
     const totalScore = Object.values(sliderValues).reduce((sum, val) => sum + val, 0);
     const maxScore = 40;
     const percentage = (totalScore / maxScore) * 100;
@@ -789,23 +789,63 @@ export default function CompleteTradingDashboard() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-4">
                   <div className="p-4 bg-slate-800/60 rounded-xl border border-amber-500/20">
-                    <Label className="text-amber-300 font-semibold text-sm mb-2 block">I am trading as a:</Label>
-                    <div className="space-y-2">
-                      <div className="flex items-center gap-2">
-                        <Checkbox className="border-amber-500 data-[state=checked]:bg-amber-500" />
-                        <span className="text-amber-200 text-sm">Disciplined professional trader</span>
+                    <Label className="text-amber-300 font-semibold text-sm mb-4 block">Today I am trading as a: (Choose ONE)</Label>
+                    <div className="space-y-3">
+                      <div className="flex items-start gap-3 p-3 bg-slate-700/60 rounded-lg border border-amber-500/10">
+                        <input 
+                          type="radio" 
+                          name="traderIdentity" 
+                          value="disciplined_professional" 
+                          checked={preSessionData.traderIdentity === 'disciplined_professional'}
+                          onChange={(e) => setPreSessionData(prev => ({ ...prev, traderIdentity: e.target.value }))}
+                          className="mt-1 accent-amber-500"
+                        />
+                        <div>
+                          <span className="text-amber-200 font-medium text-sm">Disciplined Professional Trader</span>
+                          <p className="text-gray-400 text-xs mt-1">Follows rules strictly, maintains composure, treats trading as a business with systematic approach.</p>
+                        </div>
                       </div>
-                      <div className="flex items-center gap-2">
-                        <Checkbox className="border-amber-500 data-[state=checked]:bg-amber-500" />
-                        <span className="text-amber-200 text-sm">Patient opportunity hunter</span>
+                      <div className="flex items-start gap-3 p-3 bg-slate-700/60 rounded-lg border border-amber-500/10">
+                        <input 
+                          type="radio" 
+                          name="traderIdentity" 
+                          value="patient_hunter" 
+                          checked={preSessionData.traderIdentity === 'patient_hunter'}
+                          onChange={(e) => setPreSessionData(prev => ({ ...prev, traderIdentity: e.target.value }))}
+                          className="mt-1 accent-amber-500"
+                        />
+                        <div>
+                          <span className="text-amber-200 font-medium text-sm">Patient Opportunity Hunter</span>
+                          <p className="text-gray-400 text-xs mt-1">Waits for high-probability setups, doesn't chase trades, quality over quantity mindset.</p>
+                        </div>
                       </div>
-                      <div className="flex items-center gap-2">
-                        <Checkbox className="border-amber-500 data-[state=checked]:bg-amber-500" />
-                        <span className="text-amber-200 text-sm">Risk management expert</span>
+                      <div className="flex items-start gap-3 p-3 bg-slate-700/60 rounded-lg border border-amber-500/10">
+                        <input 
+                          type="radio" 
+                          name="traderIdentity" 
+                          value="risk_expert" 
+                          checked={preSessionData.traderIdentity === 'risk_expert'}
+                          onChange={(e) => setPreSessionData(prev => ({ ...prev, traderIdentity: e.target.value }))}
+                          className="mt-1 accent-amber-500"
+                        />
+                        <div>
+                          <span className="text-amber-200 font-medium text-sm">Risk Management Expert</span>
+                          <p className="text-gray-400 text-xs mt-1">Capital preservation first, cuts losses quickly, manages position sizes with precision.</p>
+                        </div>
                       </div>
-                      <div className="flex items-center gap-2">
-                        <Checkbox className="border-amber-500 data-[state=checked]:bg-amber-500" />
-                        <span className="text-amber-200 text-sm">Emotionless execution machine</span>
+                      <div className="flex items-start gap-3 p-3 bg-slate-700/60 rounded-lg border border-amber-500/10">
+                        <input 
+                          type="radio" 
+                          name="traderIdentity" 
+                          value="execution_machine" 
+                          checked={preSessionData.traderIdentity === 'execution_machine'}
+                          onChange={(e) => setPreSessionData(prev => ({ ...prev, traderIdentity: e.target.value }))}
+                          className="mt-1 accent-amber-500"
+                        />
+                        <div>
+                          <span className="text-amber-200 font-medium text-sm">Emotionless Execution Machine</span>
+                          <p className="text-gray-400 text-xs mt-1">Executes trades mechanically, no emotional attachment to positions, purely systematic.</p>
+                        </div>
                       </div>
                     </div>
                   </div>
