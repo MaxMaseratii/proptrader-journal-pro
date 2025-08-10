@@ -79,21 +79,21 @@ export function DailyPlanningWidget({ trades = [], selectedAccount, dailyPlan, c
   };
 
   return (
-    <Card className={cn("widget-card", className)}>
+    <Card className={cn("bg-gradient-to-br from-white/90 via-blue-50/80 to-indigo-50/90 border border-indigo-200/60 backdrop-blur-lg shadow-xl rounded-2xl", className)}>
       <CardHeader className="pb-3">
-        <CardTitle className="widget-header flex items-center justify-between">
+        <CardTitle className="text-gray-800 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Target className="w-5 h-5 text-blue-400" />
+            <Target className="w-5 h-5 text-emerald-600" />
             Today's Trading Plan
           </div>
           <div className="flex items-center gap-2">
             {!isTrading ? (
-              <Button onClick={startTradingSession} size="sm" className="bg-green-500 hover:bg-green-600 text-white">
+              <Button onClick={startTradingSession} size="sm" className="bg-gradient-to-r from-emerald-500 to-teal-600 hover:shadow-md transition-all text-white rounded-xl">
                 <PlayCircle className="w-3 h-3 mr-1" />
                 Start
               </Button>
             ) : (
-              <Button onClick={stopTradingSession} size="sm" className="bg-red-500 hover:bg-red-600 text-white">
+              <Button onClick={stopTradingSession} size="sm" className="bg-gradient-to-r from-rose-500 to-red-600 hover:shadow-md transition-all text-white rounded-xl">
                 <PauseCircle className="w-3 h-3 mr-1" />
                 Stop
               </Button>
@@ -104,28 +104,28 @@ export function DailyPlanningWidget({ trades = [], selectedAccount, dailyPlan, c
       <CardContent className="space-y-4">
         {/* Session Timer */}
         {isTrading && (
-          <div className="flex items-center gap-2 p-2 bg-green-900/30 border border-green-500 rounded-lg">
-            <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-            <span className="text-green-400 font-mono text-sm">{formatTime(currentSessionTime)}</span>
+          <div className="flex items-center gap-2 p-3 bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-200/50 rounded-xl shadow-sm">
+            <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
+            <span className="text-emerald-700 font-mono text-sm font-semibold">{formatTime(currentSessionTime)}</span>
           </div>
         )}
 
         {/* Today's Performance Summary */}
         <div className="grid grid-cols-2 gap-3">
-          <div className="text-center p-3 widget-bg border border-prop-gold/10 rounded-lg">
+          <div className="text-center p-4 bg-gradient-to-r from-violet-50 to-indigo-50 border border-violet-200/50 rounded-xl shadow-sm">
             <div className={cn(
               "text-xl font-bold",
-              todayPnL >= 0 ? "text-green-400" : "text-red-400"
+              todayPnL >= 0 ? "text-emerald-600" : "text-rose-600"
             )}>
               {todayPnL >= 0 ? '+' : ''}${todayPnL.toFixed(2)}
             </div>
-            <div className="text-xs widget-text opacity-70">Today's P&L</div>
-            <div className="text-xs widget-text opacity-50">Target: ${dailyTarget}</div>
+            <div className="text-xs text-gray-600">Today's P&L</div>
+            <div className="text-xs text-gray-500">Target: ${dailyTarget}</div>
           </div>
-          <div className="text-center p-3 widget-bg border border-prop-gold/10 rounded-lg">
-            <div className="text-xl font-bold widget-text">{todayTradesCount}</div>
-            <div className="text-xs widget-text opacity-70">Trades Today</div>
-            <div className="text-xs widget-text opacity-50">Max: {maxDailyTrades}</div>
+          <div className="text-center p-4 bg-gradient-to-r from-sky-50 to-cyan-50 border border-sky-200/50 rounded-xl shadow-sm">
+            <div className="text-xl font-bold text-sky-600">{todayTradesCount}</div>
+            <div className="text-xs text-gray-600">Trades Today</div>
+            <div className="text-xs text-gray-500">Max: {maxDailyTrades}</div>
           </div>
         </div>
 

@@ -435,43 +435,43 @@ export default function FlowStateTraining() {
 
   // Main Assessment View
   return (
-    <div className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-black p-6">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-100 to-purple-50 p-6">
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center space-x-3 mb-4">
-            <div className="p-2 bg-teal-900/30 rounded-lg border border-teal-500/30">
-              <Brain className="h-6 w-6 text-teal-400" />
+            <div className="p-2 bg-gradient-to-r from-violet-100 to-indigo-100 rounded-lg border border-violet-200/50 shadow-sm">
+              <Brain className="h-6 w-6 text-violet-600" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-white">Flow State Training Center</h1>
-              <p className="text-gray-400">Master your psychology for optimal trading performance</p>
+              <h1 className="text-2xl font-bold text-gray-800">Flow State Training Center</h1>
+              <p className="text-gray-700">Master your psychology for optimal trading performance</p>
             </div>
           </div>
         </div>
 
         {/* Current Flow Assessment */}
-        <Card className="mb-8 bg-gradient-to-br from-teal-950/50 via-blue-950/50 to-black border-2 border-teal-500/30">
+        <Card className="mb-8 bg-gradient-to-br from-white/90 via-blue-50/80 to-indigo-50/90 border border-indigo-200/60 backdrop-blur-lg shadow-xl rounded-2xl">
           <CardHeader>
-            <CardTitle className="flex items-center space-x-2 text-white">
-              <Waves className="h-5 w-5 text-blue-400" />
+            <CardTitle className="flex items-center space-x-2 text-gray-800">
+              <Waves className="h-5 w-5 text-sky-600" />
               <span>Current Flow State Assessment</span>
             </CardTitle>
-            <CardDescription className="text-teal-200">How connected to flow do you feel right now?</CardDescription>
+            <CardDescription className="text-gray-700">How connected to flow do you feel right now?</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-6">
               <div className="space-y-2">
-                <label className="text-sm font-medium text-teal-300">Flow State Percentage: {flowPercentage}%</label>
+                <label className="text-sm font-medium text-sky-700">Flow State Percentage: {flowPercentage}%</label>
                 <input 
                   type="range" 
                   min="0" 
                   max="100" 
                   value={flowPercentage}
                   onChange={(e) => setFlowPercentage(parseInt(e.target.value))}
-                  className="w-full h-3 bg-gray-700 rounded-lg appearance-none cursor-pointer"
+                  className="w-full h-3 bg-gradient-to-r from-sky-100 to-indigo-100 rounded-lg appearance-none cursor-pointer shadow-inner"
                 />
-                <div className="flex justify-between text-xs text-gray-400">
+                <div className="flex justify-between text-xs text-gray-600">
                   <span>0% - Scattered/Anxious</span>
                   <span>50% - Neutral</span>
                   <span>100% - Perfect Flow</span>
@@ -479,7 +479,7 @@ export default function FlowStateTraining() {
               </div>
 
               <div className="text-center">
-                <Badge className={flowPercentage >= 70 ? 'bg-green-900/50 text-green-300 border border-green-500/30' : flowPercentage >= 40 ? 'bg-yellow-900/50 text-yellow-300 border border-yellow-500/30' : 'bg-teal-900/50 text-teal-300 border border-teal-500/30'}>
+                <Badge className={flowPercentage >= 70 ? 'bg-gradient-to-r from-emerald-50 to-teal-50 text-emerald-700 border border-emerald-200/50' : flowPercentage >= 40 ? 'bg-gradient-to-r from-amber-50 to-orange-50 text-amber-700 border border-amber-200/50' : 'bg-gradient-to-r from-rose-50 to-pink-50 text-rose-700 border border-rose-200/50'}>
                   {flowPercentage >= 70 ? 'Good Flow State' : flowPercentage >= 40 ? 'Moderate Flow' : 'Low Flow - Training Recommended'}
                 </Badge>
               </div>
