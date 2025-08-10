@@ -55,8 +55,8 @@ export const accounts = pgTable("accounts", {
   maxTotalLoss: real("max_total_loss"),
   trailingThreshold: real("trailing_threshold"),
   
-  // Trading Rules
-  consistencyRule: boolean("consistency_rule").default(false),
+  // Trading Rules  
+  consistencyRule: real("consistency_rule").default(0),
   consistencyPercentage: real("consistency_percentage"),
   copyTradingAllowed: boolean("copy_trading_allowed").default(true),
   newsTradingAllowed: boolean("news_trading_allowed").default(true),
