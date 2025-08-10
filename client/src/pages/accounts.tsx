@@ -116,64 +116,61 @@ export default function AccountsPage() {
     queryKey: ['/api/trades'],
   });
 
-  const form = useForm<AccountFormData>({
-    resolver: zodResolver(accountFormSchema),
-    mode: 'onSubmit', // Changed from onChange to reduce re-renders and flickering
-    defaultValues: {
-      // Basic Info Tab
-      name: '',
-      firm: '',
-      type: 'demo' as const,
-      status: 'active' as const,
-      startingBalance: 0,
-      profitTarget: 0,
-      maxDrawdown: 0,
-      minimumTradingDays: 5,
-      timeLimit: 30,
-      consistencyRule: 10,
-      drawdownType: 'trailing' as const,
-      maxDrawdownType: 'EOD' as const,
-      hasDailyLossLimit: false,
-      
-      // Financial Tab
-      accountCost: 0,
-      activationCost: 0,
-      purchaseMethod: 'credit card' as const,
-      resetCount: 0,
-      totalResetsCost: 0,
-      profitSplit: 80,
-      activationFeePaid: false,
-      includesActivationFee: false,
-      
-      // Rules & Risk Tab
-      riskPerTrade: 100,
-      riskPerTradeDivider: 10,
-      dailyLossLimit: 0,
-      riskRewardRatio: 2,
-      maxTradesPerDay: 10,
-      maxRiskPerDay: 500,
-      stopLoss: 20,
-      primaryAsset: '',
-      secondaryAsset: '',
-      tertiaryAsset: '',
-      
-      // Personal Trading Time
-      timeSlot1Start: '09:00',
-      timeSlot1End: '17:00',
-      timeSlot1Timezone: 'UTC',
-      timeSlot2Start: '',
-      timeSlot2End: '',
-      timeSlot2Timezone: 'UTC',
-      timeSlot3Start: '',
-      timeSlot3End: '',
-      timeSlot3Timezone: 'UTC',
-      
-      // Bottom fields
-      dailyWorkingHours: 8.0,
-      hourlyWages: 25.00,
-      liveTradingAccountAvailable: false,
-      challengePayoutsAvailable: false,
-    },
+  // Simple state management to prevent flickering - NO react-hook-form
+  const [formData, setFormData] = useState({
+    // Basic Info Tab
+    name: '',
+    firm: '',
+    type: 'demo',
+    status: 'active',
+    startingBalance: 10000,
+    profitTarget: 1000,
+    maxDrawdown: 500,
+    minimumTradingDays: 5,
+    timeLimit: 30,
+    consistencyRule: 10,
+    drawdownType: 'trailing',
+    maxDrawdownType: 'EOD',
+    hasDailyLossLimit: false,
+    
+    // Financial Tab
+    accountCost: 150,
+    activationCost: 99,
+    purchaseMethod: 'credit card',
+    resetCount: 0,
+    totalResetsCost: 0,
+    profitSplit: 80,
+    activationFeePaid: false,
+    includesActivationFee: false,
+    
+    // Rules & Risk Tab
+    riskPerTrade: 100,
+    riskPerTradeDivider: 10,
+    dailyLossLimit: 500,
+    riskRewardRatio: 2,
+    maxTradesPerDay: 10,
+    maxRiskPerDay: 500,
+    stopLoss: 20,
+    primaryAsset: '',
+    secondaryAsset: '',
+    tertiaryAsset: '',
+    
+    // Personal Trading Time
+    timeSlot1Start: '09:00',
+    timeSlot1End: '17:00',
+    timeSlot1Timezone: 'UTC',
+    timeSlot2Start: '',
+    timeSlot2End: '',
+    timeSlot2Timezone: 'UTC',
+    timeSlot3Start: '',
+    timeSlot3End: '',
+    timeSlot3Timezone: 'UTC',
+    
+    // Bottom fields
+    dailyWorkingHours: 8.0,
+    hourlyWages: 25.00,
+    liveTradingAccountAvailable: false,
+    challengePayoutsAvailable: false
   });
 
   const createAccountMutation = useMutation({
@@ -271,66 +268,58 @@ export default function AccountsPage() {
     };
   };
 
+  // Memoized form input handler to prevent flickering
+  const handleInputChange = useCallback((field, value) => {
+    setFormData(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  }, []);
+
   // Memoized handlers to prevent unnecessary re-renders and flickering
-  const handleCreateAccount = useCallback((data: AccountFormData) => {
-    createAccountMutation.mutate(data);
-  }, [createAccountMutation]);
+  const handleCreateAccount = useCallback(() => {
+    createAccountMutation.mutate(formData);
+  }, [createAccountMutation, formData]);
 
   const handleEditAccount = useCallback((account: Account) => {
     setEditingAccount(account);
     setIsEditDialogOpen(true);
   }, []);
 
-  const handleUpdateAccount = useCallback((data: AccountFormData) => {
+  const handleUpdateAccount = useCallback(() => {
     if (editingAccount) {
-      updateAccountMutation.mutate({ id: editingAccount.id, data });
+      updateAccountMutation.mutate({ id: editingAccount.id, data: formData });
     }
-  }, [editingAccount, updateAccountMutation]);
+  }, [editingAccount, updateAccountMutation, formData]);
 
   // Stable dialog close handlers
   const handleCloseCreateDialog = useCallback(() => {
     setIsCreateDialogOpen(false);
-    form.reset();
-  }, [form]);
-
-  const handleCloseEditDialog = useCallback(() => {
-    setIsEditDialogOpen(false);
-    setEditingAccount(null);
-  }, []);
-
-  // Initialize edit form data when editing account changes (reduces flickering)
-  useEffect(() => {
-    if (editingAccount && isEditDialogOpen) {
-      form.reset({
-        // Basic Info Tab - Use defaults for new comprehensive fields not in the original Account type
-        name: editingAccount.name,
-        firm: editingAccount.firm || '',
-        type: editingAccount.type as 'challenge' | 'funded' | 'live' | 'demo',
-        status: 'active' as const,
-        startingBalance: editingAccount.startingBalance,
-        profitTarget: editingAccount.profitTarget || 0,
-        maxDrawdown: editingAccount.maxDrawdown || 0,
+    setFormData({
+      name: '',
+      firm: '',
+      type: 'demo',
+      status: 'active',
+      startingBalance: 10000,
+      profitTarget: 1000,
+      maxDrawdown: 500,
       minimumTradingDays: 5,
       timeLimit: 30,
       consistencyRule: 10,
-      drawdownType: 'trailing' as const,
-      maxDrawdownType: 'EOD' as const,
+      drawdownType: 'trailing',
+      maxDrawdownType: 'EOD',
       hasDailyLossLimit: false,
-      
-      // Financial Tab - Use defaults
-      accountCost: 0,
-      activationCost: 0,
-      purchaseMethod: 'credit card' as const,
+      accountCost: 150,
+      activationCost: 99,
+      purchaseMethod: 'credit card',
       resetCount: 0,
       totalResetsCost: 0,
       profitSplit: 80,
       activationFeePaid: false,
       includesActivationFee: false,
-      
-        // Rules & Risk Tab - Use existing riskPerTrade if available
-        riskPerTrade: editingAccount.riskPerTrade || 100,
+      riskPerTrade: 100,
       riskPerTradeDivider: 10,
-      dailyLossLimit: 0,
+      dailyLossLimit: 500,
       riskRewardRatio: 2,
       maxTradesPerDay: 10,
       maxRiskPerDay: 500,
@@ -338,8 +327,6 @@ export default function AccountsPage() {
       primaryAsset: '',
       secondaryAsset: '',
       tertiaryAsset: '',
-      
-      // Personal Trading Time - Use defaults
       timeSlot1Start: '09:00',
       timeSlot1End: '17:00',
       timeSlot1Timezone: 'UTC',
@@ -349,15 +336,69 @@ export default function AccountsPage() {
       timeSlot3Start: '',
       timeSlot3End: '',
       timeSlot3Timezone: 'UTC',
-      
-      // Bottom fields - Use defaults
       dailyWorkingHours: 8.0,
       hourlyWages: 25.00,
       liveTradingAccountAvailable: false,
-      challengePayoutsAvailable: false,
+      challengePayoutsAvailable: false
+    });
+  }, []);
+
+  const handleCloseEditDialog = useCallback(() => {
+    setIsEditDialogOpen(false);
+    setEditingAccount(null);
+  }, []);
+
+  // Initialize edit form data when editing account changes (reduces flickering)
+  useEffect(() => {
+    if (editingAccount && isEditDialogOpen) {
+      setFormData({
+        name: editingAccount.name,
+        firm: editingAccount.firm || '',
+        type: editingAccount.type,
+        status: 'active',
+        startingBalance: editingAccount.startingBalance,
+        profitTarget: editingAccount.profitTarget || 1000,
+        maxDrawdown: editingAccount.maxDrawdown || 500,
+        minimumTradingDays: 5,
+        timeLimit: 30,
+        consistencyRule: 10,
+        drawdownType: 'trailing',
+        maxDrawdownType: 'EOD',
+        hasDailyLossLimit: false,
+        accountCost: 150,
+        activationCost: 99,
+        purchaseMethod: 'credit card',
+        resetCount: 0,
+        totalResetsCost: 0,
+        profitSplit: 80,
+        activationFeePaid: false,
+        includesActivationFee: false,
+        riskPerTrade: editingAccount.riskPerTrade || 100,
+        riskPerTradeDivider: 10,
+        dailyLossLimit: 500,
+        riskRewardRatio: 2,
+        maxTradesPerDay: 10,
+        maxRiskPerDay: 500,
+        stopLoss: 20,
+        primaryAsset: '',
+        secondaryAsset: '',
+        tertiaryAsset: '',
+        timeSlot1Start: '09:00',
+        timeSlot1End: '17:00',
+        timeSlot1Timezone: 'UTC',
+        timeSlot2Start: '',
+        timeSlot2End: '',
+        timeSlot2Timezone: 'UTC',
+        timeSlot3Start: '',
+        timeSlot3End: '',
+        timeSlot3Timezone: 'UTC',
+        dailyWorkingHours: 8.0,
+        hourlyWages: 25.00,
+        liveTradingAccountAvailable: false,
+        challengePayoutsAvailable: false
       });
     }
-  }, [editingAccount, isEditDialogOpen, form]);
+  }, [editingAccount, isEditDialogOpen]);
 
 
 
@@ -462,7 +503,7 @@ export default function AccountsPage() {
                 
                 <div className="flex-1 overflow-y-auto py-4">
                   <Form {...form}>
-                    <form id="create-account-form" onSubmit={form.handleSubmit(handleCreateAccount)} className="space-y-6">
+                    <div className="space-y-6">
                     <Tabs defaultValue="basic" className="w-full">
                       <TabsList className="grid w-full grid-cols-3 bg-gray-800/50">
                         <TabsTrigger value="basic" className="data-[state=active]:bg-yellow-500 data-[state=active]:text-black">
