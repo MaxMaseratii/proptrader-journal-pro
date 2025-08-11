@@ -286,9 +286,9 @@ export default function Sidebar() {
           </div>
         </div>
         
-        {/* Profile Section - Bottom with Separator */}
-        <div className="mt-auto pt-4">
-          <div className="border-t border-prop-gold/20 pt-4">
+        {/* Profile Section - Bottom with Separator ABOVE Profile */}
+        <div className="mt-auto border-t border-prop-gold/20 pt-4">
+          <div className="pt-0">
             <ul className="space-y-2 px-4">
             <li>
               <DropdownMenu>
