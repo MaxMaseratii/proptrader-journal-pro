@@ -21,16 +21,20 @@ function PropTraderHeader() {
           {/* PropTrader Journal Logo */}
           <div className="flex-shrink-0">
             <Link href="/" className="flex items-center space-x-3">
-              <div className="w-12 h-12 bg-black rounded-xl flex items-center justify-center shadow-xl border-2 border-teal-400">
-                <Crown className="w-7 h-7 text-yellow-400" />
-              </div>
-              <div className="flex flex-col">
-                <span className="text-2xl font-bold leading-tight tracking-tight">
-                  <span className="text-black">PropTrader</span><span className="text-white">Journal</span>
-                </span>
-                <span className="text-sm font-medium text-black">
-                  Disciplined Trading
-                </span>
+              <div className="bg-gradient-to-r from-yellow-400 to-amber-500 p-3 rounded-lg shadow-xl">
+                <div className="flex items-center space-x-3">
+                  <div className="w-12 h-12 bg-black rounded-lg flex items-center justify-center shadow-lg">
+                    <Crown className="w-7 h-7 text-yellow-400" />
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="text-xl font-bold leading-tight tracking-tight">
+                      <span className="text-teal-600">PropTrader</span><span className="text-black"> Journal</span>
+                    </span>
+                    <span className="text-sm font-medium text-black">
+                      Disciplined Trading
+                    </span>
+                  </div>
+                </div>
               </div>
             </Link>
           </div>

@@ -1,15 +1,48 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { CheckCircle, X } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
+import { CheckCircle, X, Tag, Gift } from "lucide-react";
 import { useLocation } from "wouter";
+import { useState } from "react";
 
 export default function Pricing() {
   const [, setLocation] = useLocation();
+  const [isYearly, setIsYearly] = useState(false);
+  const [promoCode, setPromoCode] = useState("");
+  const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
+  const [promoDiscount, setPromoDiscount] = useState(0);
+
+  const applyPromoCode = () => {
+    const validPromoCodes: Record<string, number> = {
+      "WELCOME20": 0.20,
+      "TRADER10": 0.10,
+      "SAVE15": 0.15,
+      "PROPFIRM25": 0.25,
+      "ELITE30": 0.30
+    };
+
+    const discount = validPromoCodes[promoCode.toUpperCase()] || 0;
+    setPromoDiscount(discount);
+  };
+
+  const getPrice = (basePrice: number) => {
+    let price = basePrice;
+    if (isYearly) {
+      price = price * 12 * 0.83; // 17% yearly discount (2 months free)
+    }
+    if (promoDiscount > 0) {
+      price = price * (1 - promoDiscount);
+    }
+    return price;
+  };
+
   const plans = [
     {
       name: "Starter",
-      price: "$9",
+      price: 9,
       period: "/month",
       description: "Perfect for new prop traders getting started",
       popular: false,
@@ -31,7 +64,7 @@ export default function Pricing() {
     },
     {
       name: "Professional",
-      price: "$14.99",
+      price: 14.99,
       period: "/month",
       description: "Most popular choice for serious prop traders",
       popular: true,
@@ -54,7 +87,7 @@ export default function Pricing() {
     },
     {
       name: "Elite",
-      price: "$24.99",
+      price: 24.99,
       period: "/month",
       description: "For Professional Traders",
       popular: false,
@@ -86,6 +119,24 @@ export default function Pricing() {
             Start your prop trading journey with the plan that fits your needs. 
             All plans include a 3-day free trial.
           </p>
+          
+          {/* Billing Toggle */}
+          <div className="flex items-center justify-center space-x-4 mt-8">
+            <span className={`text-sm ${!isYearly ? 'text-gray-900 dark:text-white font-medium' : 'text-gray-500'}`}>
+              Monthly
+            </span>
+            <Switch
+              checked={isYearly}
+              onCheckedChange={setIsYearly}
+              className="data-[state=checked]:bg-yellow-500"
+            />
+            <span className={`text-sm ${isYearly ? 'text-gray-900 dark:text-white font-medium' : 'text-gray-500'}`}>
+              Yearly
+            </span>
+            <Badge variant="secondary" className="bg-green-100 text-green-700 ml-2">
+              Save 17%
+            </Badge>
+          </div>
         </div>
 
         {/* Pricing Cards */}
@@ -108,12 +159,25 @@ export default function Pricing() {
                   {plan.name}
                 </CardTitle>
                 <div className="mt-4">
-                  <span className="text-4xl font-bold text-gray-900 dark:text-white">
-                    {plan.price}
-                  </span>
-                  <span className="text-gray-600 dark:text-gray-400">
-                    {plan.period}
-                  </span>
+                  <div className="flex items-baseline justify-center">
+                    <span className="text-4xl font-bold text-gray-900 dark:text-white">
+                      ${getPrice(plan.price).toFixed(2)}
+                    </span>
+                    <span className="text-gray-600 dark:text-gray-400 ml-1">
+                      {isYearly ? '/year' : plan.period}
+                    </span>
+                  </div>
+                  {promoDiscount > 0 && (
+                    <div className="text-sm text-green-600 mt-1">
+                      <s className="text-gray-400">${(isYearly ? plan.price * 12 * 0.83 : plan.price).toFixed(2)}</s>
+                      <span className="ml-2 font-medium">{Math.round(promoDiscount * 100)}% off applied!</span>
+                    </div>
+                  )}
+                  {isYearly && (
+                    <div className="text-sm text-green-600 mt-1">
+                      Save ${(plan.price * 12 * 0.17).toFixed(2)} per year
+                    </div>
+                  )}
                 </div>
                 <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">
                   {plan.description}
@@ -122,7 +186,8 @@ export default function Pricing() {
               
               <CardContent>
                 <Button 
-                  onClick={() => setLocation('/signup')}
+                  onClick={() => setSelectedPlan(plan.name.toLowerCase())}
+                  variant={selectedPlan === plan.name.toLowerCase() ? "default" : "outline"}
                   className={`w-full mb-6 ${
                     plan.popular 
                       ? 'bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-white' 
@@ -155,6 +220,50 @@ export default function Pricing() {
             </Card>
           ))}
         </div>
+
+        {/* Promo Code Section */}
+        {selectedPlan && (
+          <div className="max-w-md mx-auto mb-16">
+            <Card className="border-yellow-200 bg-yellow-50 dark:bg-yellow-900/20">
+              <CardHeader className="pb-4">
+                <CardTitle className="text-lg flex items-center">
+                  <Gift className="w-5 h-5 mr-2 text-yellow-600" />
+                  Have a Promo Code?
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="flex space-x-2">
+                  <Input
+                    placeholder="Enter promo code"
+                    value={promoCode}
+                    onChange={(e) => setPromoCode(e.target.value)}
+                    className="flex-1"
+                  />
+                  <Button 
+                    onClick={applyPromoCode}
+                    variant="outline"
+                    size="icon"
+                  >
+                    <Tag className="w-4 h-4" />
+                  </Button>
+                </div>
+                {promoDiscount > 0 && (
+                  <div className="mt-3 text-sm text-green-600 bg-green-50 dark:bg-green-900/20 p-2 rounded">
+                    🎉 Promo code applied! You're saving {Math.round(promoDiscount * 100)}%
+                  </div>
+                )}
+                <div className="mt-4">
+                  <Button 
+                    onClick={() => setLocation('/signup')}
+                    className="w-full bg-yellow-500 hover:bg-yellow-600 text-white"
+                  >
+                    Start Your 3-Day Free Trial
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        )}
 
         {/* FAQ */}
         <Card className="mb-8">
