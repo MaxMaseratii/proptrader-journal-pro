@@ -1,0 +1,47 @@
+# Prometheus configuration for PropTrader Journal monitoring
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+rule_files:
+  - "alert_rules.yml"
+
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+          - alertmanager:9093
+
+scrape_configs:
+  # Prometheus self-monitoring
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+  # PropTrader Journal application metrics
+  - job_name: 'proptrader-app'
+    metrics_path: '/metrics/prometheus'
+    scrape_interval: 30s
+    static_configs:
+      - targets: ['app:5000']
+    scrape_timeout: 10s
+
+  # Nginx metrics (if nginx-prometheus-exporter is installed)
+  - job_name: 'nginx'
+    static_configs:
+      - targets: ['nginx-exporter:9113']
+
+  # PostgreSQL metrics (if postgres_exporter is installed)
+  - job_name: 'postgres'
+    static_configs:
+      - targets: ['postgres-exporter:9187']
+
+  # Redis metrics (if redis_exporter is installed)
+  - job_name: 'redis'
+    static_configs:
+      - targets: ['redis-exporter:9121']
+
+  # Node exporter for system metrics
+  - job_name: 'node-exporter'
+    static_configs:
+      - targets: ['node-exporter:9100']
