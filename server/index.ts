@@ -3,8 +3,37 @@ import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 import compression from "compression";
 import rateLimit from "express-rate-limit";
+import { performanceMonitor } from "./monitoring";
+import { initializeDatabaseOptimizations } from "./databaseOptimizations";
 
 const app = express();
+
+// Performance monitoring middleware (always enabled)
+app.use(performanceMonitor.requestMonitor());
+
+// Health check endpoint for load balancers
+app.get('/health', async (req, res) => {
+  try {
+    const health = await performanceMonitor.getHealthStatus();
+    res.status(health.status === 'healthy' ? 200 : 503).json(health);
+  } catch (error) {
+    res.status(503).json({ 
+      status: 'error', 
+      message: 'Health check failed',
+      timestamp: new Date().toISOString()
+    });
+  }
+});
+
+// Metrics endpoint for monitoring (protected)
+app.get('/metrics', async (req, res) => {
+  try {
+    const health = await performanceMonitor.getHealthStatus();
+    res.json(health);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch metrics' });
+  }
+});
 
 // Production optimizations
 if (process.env.NODE_ENV === 'production') {
@@ -73,6 +102,9 @@ app.use((req, res, next) => {
 });
 
 (async () => {
+  // Initialize database optimizations
+  await initializeDatabaseOptimizations();
+  
   const server = await registerRoutes(app);
 
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {

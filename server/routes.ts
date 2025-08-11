@@ -3,6 +3,7 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { CacheService } from "./redis";
 import { csvProcessingQueue, analyticsQueue } from "./backgroundJobs";
+import { performanceMonitor } from "./monitoring";
 import { 
   insertAccountSchema, 
   insertTradeSchema, 
