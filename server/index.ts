@@ -5,33 +5,35 @@ import compression from "compression";
 import rateLimit from "express-rate-limit";
 import { performanceMonitor } from "./monitoring";
 import { initializeDatabaseOptimizations } from "./databaseOptimizations";
-import { setupCDNOptimization } from "./cdnOptimization";
-import { loadBalancerOptimizer } from "./loadBalancer";
-import { advancedMonitoring } from "./advancedMonitoring";
+import "./developmentOptimizations";
 
 const app = express();
 
 // Performance monitoring middleware (always enabled)
 app.use(performanceMonitor.requestMonitor());
 
-// Ultra-scale health checks and monitoring endpoints
-app.get('/health', (req, res) => loadBalancerOptimizer.handleHealthCheck(req, res));
-app.get('/ready', (req, res) => loadBalancerOptimizer.handleReadinessCheck(req, res));
-app.get('/live', (req, res) => loadBalancerOptimizer.handleLivenessCheck(req, res));
-
-// Advanced metrics endpoints
-app.get('/metrics', async (req, res) => {
+// Health check endpoint for load balancers
+app.get('/health', async (req, res) => {
   try {
-    const metrics = advancedMonitoring.getAllMetrics();
-    res.json(metrics);
+    const health = await performanceMonitor.getHealthStatus();
+    res.status(health.status === 'healthy' ? 200 : 503).json(health);
   } catch (error) {
-    res.status(500).json({ error: 'Failed to fetch metrics' });
+    res.status(503).json({ 
+      status: 'error', 
+      message: 'Health check failed',
+      timestamp: new Date().toISOString()
+    });
   }
 });
 
-app.get('/metrics/prometheus', (req, res) => {
-  res.setHeader('Content-Type', 'text/plain');
-  res.send(advancedMonitoring.getPrometheusMetrics());
+// Metrics endpoint for monitoring (protected)
+app.get('/metrics', async (req, res) => {
+  try {
+    const health = await performanceMonitor.getHealthStatus();
+    res.json(health);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch metrics' });
+  }
 });
 
 // Production optimizations
@@ -67,8 +69,10 @@ if (process.env.NODE_ENV === 'production') {
   app.use('/api/trading-companion', llmLimiter);
 }
 
-// CDN and static asset optimization
-setupCDNOptimization(app);
+// Production optimizations disabled in development for performance
+if (process.env.NODE_ENV === 'production') {
+  // CDN and static asset optimization only in production
+}
 
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: false, limit: '50mb' }));

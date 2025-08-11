@@ -1,7 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { CacheService } from "./redis";
+import { DevCacheService as CacheService } from "./simplifiedRedis";
 import { csvProcessingQueue, analyticsQueue } from "./backgroundJobs";
 import { performanceMonitor } from "./monitoring";
 import { 

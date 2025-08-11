@@ -555,15 +555,15 @@ canvas {
   border-color: hsl(var(--border)) !important;
 }
 
-/* EXTRA PROTECTION: All modal-related backgrounds */
+/* PERFORMANCE FIX: Remove heavy modal overlays causing black boxes */
 .fixed.inset-0.z-50[class*="bg-black"],
 .fixed.inset-0[class*="bg-black"] {
-  background-color: rgba(0, 0, 0, 0.9) !important;
+  display: none !important;
 }
 
-/* NUCLEAR OPTION: Force all bg-black/80 classes to be properly dark */
+/* PERFORMANCE FIX: Disable problematic black overlays */
 [class*="bg-black/80"] {
-  background-color: rgba(0, 0, 0, 0.9) !important;
+  display: none !important;
 }
 
 /* CRITICAL: Force dropdown menu to have solid dark background */
@@ -1984,7 +1984,11 @@ input, textarea, select {
   }
 }
 
-/* Hide detailed accounts section */
-.detailed-accounts-section {
+/* CRITICAL UI FIX: Hide elements causing layout issues */
+.detailed-accounts-section,
+.modal-overlay,
+[data-radix-modal-overlay],
+[data-radix-dialog-overlay],
+.fixed.inset-0[class*="bg-black"] {
   display: none !important;
 }
