@@ -3303,9 +3303,6 @@ export default function Dashboard() {
           </div>
         </DialogContent>
       </Dialog>
-      
-      {/* CRITICAL BLACK FOOTER FIX: Add bottom spacing to prevent content cutoff */}
-      <div className="h-24 bg-transparent"></div>
     </>
   );
 }

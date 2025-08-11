@@ -2,50 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-/* EMERGENCY BLACK SECTION FIX - DISABLE ALL BLOCKING OVERLAYS */
-.fixed.inset-0,
-.fixed.inset-0.z-50,
-.fixed.inset-0.z-40,
-.fixed.inset-0.z-30,
-[class*="fixed"][class*="inset"],
-[class*="bg-black"],
-[class*="backdrop"],
-.modal-overlay,
-.dialog-overlay,
-[data-radix-dialog-overlay],
-[data-radix-modal-overlay],
-[data-radix-alert-dialog-overlay] {
-  display: none !important;
-}
-
-/* CRITICAL LAYOUT FIX - PREVENT BLACK FOOTER BLOCKING */
-html, body {
-  height: auto !important;
-  min-height: 100vh !important;
-  overflow-x: hidden !important;
-}
-
-main, [role="main"], .main-content {
-  min-height: 100vh !important;
-  padding-bottom: 4rem !important;
-  margin-bottom: 0 !important;
-}
-
-/* ENSURE NO FIXED FOOTERS BLOCK CONTENT */
-footer, [role="contentinfo"], .footer {
-  position: relative !important;
-  bottom: auto !important;
-}
-
-/* SPECIFIC FIX FOR ADVANCED STATISTICS SECTION */
-.advanced-statistics, 
-[class*="advanced-statistics"],
-section:last-child,
-div:last-child {
-  margin-bottom: 2rem !important;
-  padding-bottom: 2rem !important;
-}
-
 @layer base {
   :root {
     --background: 0 0% 100%;
@@ -288,7 +244,7 @@ div:last-child {
 
 [data-radix-dialog-overlay],
 .dialog-overlay {
-  display: none !important;
+  background-color: rgba(0, 0, 0, 0.50) !important;
 }
 
 [data-radix-dialog-title],
@@ -573,13 +529,13 @@ canvas {
   color: black !important;
 }
 
-/* CRITICAL UI FIX: Disable ALL modal overlays causing black sections */
+/* CRITICAL: Ensure ALL modal overlays have dark backgrounds */
 [data-radix-dialog-overlay],
 [data-radix-alert-dialog-overlay],
 [data-state="open"][class*="bg-black"],
 [class*="bg-black/80"],
 .drawer-overlay {
-  display: none !important;
+  background-color: rgba(0, 0, 0, 0.9) !important;
 }
 
 /* CRITICAL: Dropdown menu content should have solid background */
@@ -2028,16 +1984,11 @@ input, textarea, select {
   }
 }
 
-/* CRITICAL UI FIX: Hide ALL elements causing black section blocking */
+/* CRITICAL UI FIX: Hide elements causing layout issues */
 .detailed-accounts-section,
 .modal-overlay,
 [data-radix-modal-overlay],
 [data-radix-dialog-overlay],
-.fixed.inset-0[class*="bg-black"],
-.fixed.inset-0.bg-black,
-.bg-black.fixed,
-[class*="bg-black"].fixed,
-.fixed[class*="backdrop"],
-.backdrop-blur {
+.fixed.inset-0[class*="bg-black"] {
   display: none !important;
 }

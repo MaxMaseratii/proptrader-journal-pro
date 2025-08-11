@@ -102,9 +102,9 @@ function Router() {
   }
 
   return (
-    <div className="flex min-h-screen bg-background text-foreground">
+    <div className="flex h-screen bg-background text-foreground">
       <Sidebar />
-      <main className="flex-1 bg-background">
+      <main className="flex-1 overflow-y-auto bg-background">
         <Switch>
             <Route path="/" component={Dashboard} />
             <Route path="/flow-state-training" component={FlowStateTraining} />
