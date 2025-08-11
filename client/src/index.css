@@ -18,6 +18,34 @@
   display: none !important;
 }
 
+/* CRITICAL LAYOUT FIX - PREVENT BLACK FOOTER BLOCKING */
+html, body {
+  height: auto !important;
+  min-height: 100vh !important;
+  overflow-x: hidden !important;
+}
+
+main, [role="main"], .main-content {
+  min-height: 100vh !important;
+  padding-bottom: 4rem !important;
+  margin-bottom: 0 !important;
+}
+
+/* ENSURE NO FIXED FOOTERS BLOCK CONTENT */
+footer, [role="contentinfo"], .footer {
+  position: relative !important;
+  bottom: auto !important;
+}
+
+/* SPECIFIC FIX FOR ADVANCED STATISTICS SECTION */
+.advanced-statistics, 
+[class*="advanced-statistics"],
+section:last-child,
+div:last-child {
+  margin-bottom: 2rem !important;
+  padding-bottom: 2rem !important;
+}
+
 @layer base {
   :root {
     --background: 0 0% 100%;
