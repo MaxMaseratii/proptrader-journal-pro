@@ -1,6 +1,8 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
+import { CacheService } from "./redis";
+import { csvProcessingQueue, analyticsQueue } from "./backgroundJobs";
 import { 
   insertAccountSchema, 
   insertTradeSchema, 
@@ -61,12 +63,31 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ message: "Failed to update hourly wage" });
     }
   });
-  // Account routes
+  // Account routes with caching optimization
   app.get("/api/accounts", requireAuth, async (req: any, res) => {
     try {
+      const userId = req.user?.id;
+      
+      if (!userId) {
+        return res.status(401).json({ message: "User authentication required" });
+      }
+
+      // Check cache for accounts
+      const cacheKey = CacheService.getAccountsKey(userId);
+      const cachedAccounts = await CacheService.get(cacheKey);
+      
+      if (cachedAccounts) {
+        return res.json(cachedAccounts);
+      }
+
       const accounts = await storage.getAccounts();
+      
+      // Cache accounts for 10 minutes
+      await CacheService.set(cacheKey, accounts, 600);
+      
       res.json(accounts);
     } catch (error) {
+      console.error('Accounts fetch error:', error);
       res.status(500).json({ message: "Failed to fetch accounts" });
     }
   });
@@ -409,64 +430,51 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/trades/import-csv", requireAuth, async (req, res) => {
+  // CSV import with optimized background processing for scalability
+  app.post("/api/trades/import-csv", requireAuth, async (req: any, res) => {
     try {
+      const { accountId, csvData, csvContent, trades, fileName } = req.body;
+      const userId = req.user?.id;
+      
+      if (!userId) {
+        return res.status(401).json({ message: "User authentication required" });
+      }
+
       console.log("CSV Import request received:", { 
-        accountId: req.body.accountId, 
-        csvDataLength: req.body.csvData?.length,
-        bodyKeys: Object.keys(req.body),
-        bodyType: typeof req.body,
-        firstLine: req.body.csvData?.split('\n')[0]
+        userId, 
+        accountId, 
+        tradesCount: trades?.length,
+        fileName: fileName || 'imported.csv'
       });
       
-      const { accountId, csvData, csvContent, trades, fileName } = req.body;
-      const csvText = csvData || csvContent;
-      
-      // If trades are already processed, use them directly
+      // If trades are already processed, queue them for background processing
       if (trades && Array.isArray(trades) && accountId) {
-        console.log(`Processing ${trades.length} pre-processed trades for account ${accountId}`);
+        console.log(`Queuing ${trades.length} pre-processed trades for background processing`);
         
-        let recordsImported = 0;
-        const errors: string[] = [];
+        // Add job to background queue for processing
+        const job = await csvProcessingQueue.add('import-csv', {
+          userId,
+          accountId,
+          trades,
+          fileName: fileName || 'imported.csv'
+        }, {
+          priority: 10,
+          delay: 0,
+          attempts: 3,
+          backoff: {
+            type: 'exponential',
+            delay: 2000,
+          },
+        });
         
-        for (const trade of trades) {
-          try {
-            const tradeData = {
-              accountId: parseInt(accountId),
-              symbol: trade.symbol || 'UNKNOWN',
-              side: trade.side || 'long',
-              quantity: trade.quantity || 1,
-              entryPrice: trade.entryPrice || 0,
-              exitPrice: trade.exitPrice || trade.entryPrice || 0,
-              pnl: trade.pnl || 0,
-              date: trade.date || new Date().toISOString().split('T')[0],
-              status: trade.status || 'closed',
-              fillTime: trade.fillTime ? new Date(trade.fillTime) : new Date(),
-              exitTime: trade.exitTime ? new Date(trade.exitTime) : new Date(),
-              initialStopLoss: trade.initialStopLoss || null,
-              finalStopLoss: trade.finalStopLoss || null,
-              initialTakeProfit: trade.initialTakeProfit || null,
-              finalTakeProfit: trade.finalTakeProfit || null,
-              tradeImage: trade.tradeImage || null,
-              tradingViewLink: trade.tradingViewLink || null,
-              notes: trade.notes || 'Imported via Universal CSV'
-            };
-            
-            await storage.createTrade(tradeData);
-            recordsImported++;
-          } catch (error) {
-            errors.push(`Failed to import trade: ${error instanceof Error ? error.message : 'Unknown error'}`);
-          }
-        }
-        
-        const responseData = {
+        // Return immediately with job ID for tracking
+        return res.json({
           success: true,
-          recordsImported,
-          errors,
-          message: `Successfully imported ${recordsImported} trades`
-        };
-        console.log('🔍 SERVER: Sending response:', responseData);
-        return res.json(responseData);
+          message: `CSV import queued for processing. ${trades.length} trades will be imported shortly.`,
+          jobId: job.id,
+          recordsQueued: trades.length,
+          status: 'processing'
+        });
       }
       
       if (!accountId || !csvText) {
@@ -1179,9 +1187,35 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Analytics routes
-  app.get("/api/analytics/dashboard/:accountId", async (req, res) => {
+  // Optimized analytics endpoint with caching for scalability
+  app.get("/api/analytics/dashboard/:accountId", requireAuth, async (req: any, res) => {
     try {
       const accountId = parseInt(req.params.accountId);
+      const userId = req.user?.id;
+      
+      if (!userId) {
+        return res.status(401).json({ message: "User authentication required" });
+      }
+
+      // Check cache first
+      const cacheKey = CacheService.getDashboardKey(userId, accountId.toString());
+      const cachedAnalytics = await CacheService.get(cacheKey);
+      
+      if (cachedAnalytics) {
+        console.log(`Returning cached analytics for user ${userId}, account ${accountId}`);
+        return res.json(cachedAnalytics);
+      }
+
+      // Queue analytics calculation as background job
+      const job = await analyticsQueue.add('calculate-analytics', {
+        userId,
+        accountId
+      }, {
+        priority: 5,
+        attempts: 3,
+      });
+
+      // For immediate response, calculate basic analytics synchronously
       const account = await storage.getAccount(accountId);
       const trades = await storage.getTrades(accountId);
       
@@ -1189,43 +1223,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "Account not found" });
       }
 
-      // Calculate analytics
+      // Quick calculation for immediate response
       const totalPnl = trades.reduce((sum, trade) => sum + trade.pnl, 0);
       const winningTrades = trades.filter(trade => trade.pnl > 0);
-      const losingTrades = trades.filter(trade => trade.pnl < 0);
       const winRate = trades.length > 0 ? (winningTrades.length / trades.length) * 100 : 0;
-      
-      let bestTrade = null;
-      let worstTrade = null;
-      
-      if (trades.length > 0) {
-        bestTrade = trades[0];
-        worstTrade = trades[0];
-        
-        for (const trade of trades) {
-          if (trade.pnl > bestTrade.pnl) bestTrade = trade;
-          if (trade.pnl < worstTrade.pnl) worstTrade = trade;
-        }
-      }
 
-      const analytics = {
+      const quickAnalytics = {
         account,
         totalPnl,
         winRate,
         totalTrades: trades.length,
         winningTrades: winningTrades.length,
-        losingTrades: losingTrades.length,
-        bestTrade: bestTrade?.pnl || 0,
-        worstTrade: worstTrade?.pnl || 0,
+        losingTrades: trades.length - winningTrades.length,
         currentBalance: account.startingBalance + totalPnl,
-        drawdown: Math.max(0, ((account.startingBalance - (account.startingBalance + totalPnl)) / account.startingBalance) * 100),
-        profitTarget: account.profitTarget,
-        dailyLossLimit: account.dailyLossLimit,
-        riskLimitUsed: account.dailyLossLimit ? (Math.abs(worstTrade?.pnl || 0) / account.dailyLossLimit * 100) : 0
+        jobId: job.id,
+        cached: false
       };
 
-      res.json(analytics);
+      res.json(quickAnalytics);
     } catch (error) {
+      console.error('Analytics error:', error);
       res.status(500).json({ message: "Failed to fetch analytics" });
     }
   });

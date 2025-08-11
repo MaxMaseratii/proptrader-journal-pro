@@ -1,8 +1,44 @@
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
+import compression from "compression";
+import rateLimit from "express-rate-limit";
 
 const app = express();
+
+// Production optimizations
+if (process.env.NODE_ENV === 'production') {
+  // Enable gzip compression
+  app.use(compression({
+    level: 6,
+    threshold: 1024,
+    filter: (req: any, res: any) => {
+      if (req.headers['x-no-compression']) {
+        return false;
+      }
+      return compression.filter(req, res);
+    }
+  }));
+  
+  // Rate limiting for production
+  const limiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 1000, // limit each IP to 1000 requests per windowMs
+    message: 'Too many requests from this IP, please try again later.',
+    standardHeaders: true,
+    legacyHeaders: false,
+  });
+  app.use('/api', limiter);
+
+  // Stricter rate limiting for LLM API
+  const llmLimiter = rateLimit({
+    windowMs: 60 * 1000, // 1 minute
+    max: 10, // limit each IP to 10 LLM requests per minute
+    message: 'Too many AI requests, please wait before trying again.',
+  });
+  app.use('/api/trading-companion', llmLimiter);
+}
+
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: false, limit: '50mb' }));
 

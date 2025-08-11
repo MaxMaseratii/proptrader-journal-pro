@@ -13,11 +13,12 @@ if (!process.env.DATABASE_URL) {
   );
 }
 
-// Create connection pool with error handling
+// Create connection pool optimized for high-scale deployment (1M+ users)
 export const pool = new Pool({ 
   connectionString: process.env.DATABASE_URL,
-  max: 10,
-  idleTimeoutMillis: 30000,
+  max: process.env.NODE_ENV === 'production' ? 100 : 20, // Scale connection pool for production
+  min: 5, // Minimum connections to maintain
+  idleTimeoutMillis: 60000, // Increased idle timeout
   connectionTimeoutMillis: 30000,
 });
 
