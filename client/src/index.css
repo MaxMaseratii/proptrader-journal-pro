@@ -2,6 +2,22 @@
 @tailwind components;
 @tailwind utilities;
 
+/* EMERGENCY BLACK SECTION FIX - DISABLE ALL BLOCKING OVERLAYS */
+.fixed.inset-0,
+.fixed.inset-0.z-50,
+.fixed.inset-0.z-40,
+.fixed.inset-0.z-30,
+[class*="fixed"][class*="inset"],
+[class*="bg-black"],
+[class*="backdrop"],
+.modal-overlay,
+.dialog-overlay,
+[data-radix-dialog-overlay],
+[data-radix-modal-overlay],
+[data-radix-alert-dialog-overlay] {
+  display: none !important;
+}
+
 @layer base {
   :root {
     --background: 0 0% 100%;
@@ -244,7 +260,7 @@
 
 [data-radix-dialog-overlay],
 .dialog-overlay {
-  background-color: rgba(0, 0, 0, 0.50) !important;
+  display: none !important;
 }
 
 [data-radix-dialog-title],
@@ -529,13 +545,13 @@ canvas {
   color: black !important;
 }
 
-/* CRITICAL: Ensure ALL modal overlays have dark backgrounds */
+/* CRITICAL UI FIX: Disable ALL modal overlays causing black sections */
 [data-radix-dialog-overlay],
 [data-radix-alert-dialog-overlay],
 [data-state="open"][class*="bg-black"],
 [class*="bg-black/80"],
 .drawer-overlay {
-  background-color: rgba(0, 0, 0, 0.9) !important;
+  display: none !important;
 }
 
 /* CRITICAL: Dropdown menu content should have solid background */
@@ -1984,11 +2000,16 @@ input, textarea, select {
   }
 }
 
-/* CRITICAL UI FIX: Hide elements causing layout issues */
+/* CRITICAL UI FIX: Hide ALL elements causing black section blocking */
 .detailed-accounts-section,
 .modal-overlay,
 [data-radix-modal-overlay],
 [data-radix-dialog-overlay],
-.fixed.inset-0[class*="bg-black"] {
+.fixed.inset-0[class*="bg-black"],
+.fixed.inset-0.bg-black,
+.bg-black.fixed,
+[class*="bg-black"].fixed,
+.fixed[class*="backdrop"],
+.backdrop-blur {
   display: none !important;
 }

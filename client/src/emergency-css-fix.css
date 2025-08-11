@@ -1,0 +1,32 @@
+/* EMERGENCY CSS FIX FOR BLACK SECTION BLOCKING ISSUE */
+
+/* Force disable ALL black overlays and fixed positioned elements */
+* {
+  backdrop-filter: none !important;
+}
+
+.fixed.inset-0,
+.fixed.inset-0.z-50,
+.fixed.inset-0.z-40,
+.fixed.inset-0.z-30,
+[class*="fixed"][class*="inset"],
+[class*="bg-black"],
+[class*="backdrop"],
+.modal-overlay,
+.dialog-overlay,
+[data-radix-dialog-overlay],
+[data-radix-modal-overlay],
+[data-radix-alert-dialog-overlay] {
+  display: none !important;
+}
+
+/* Ensure main content is always visible */
+main, .main-content, [role="main"] {
+  background: transparent !important;
+  z-index: 1 !important;
+}
+
+/* Force containers to be transparent */
+.container, .max-w-7xl, .mx-auto {
+  background: transparent !important;
+}
