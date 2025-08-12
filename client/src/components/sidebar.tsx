@@ -113,7 +113,7 @@ export default function Sidebar() {
                   <h1 className="text-xs font-bold leading-tight tracking-tight">
                     <span className="text-teal-600 dark:text-teal-400">PropTrader</span><span className="text-black dark:text-white"> Journal</span>
                   </h1>
-                  <p className="text-[10px] font-medium text-black dark:text-gray-300 text-center leading-tight">
+                  <p className="text-[10px] font-medium text-black dark:text-black text-center leading-tight">
                     Disciplined Trading
                   </p>
                 </div>
