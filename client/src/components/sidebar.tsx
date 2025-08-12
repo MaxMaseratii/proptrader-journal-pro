@@ -58,16 +58,14 @@ const navItems = [
   { href: "/trading-dashboard", label: "Mental Check & Daily Plan", icon: Brain, section: "mental" },
   { href: "/disciplinary-assistant", label: "Discipline & Psychology Tracker", icon: Settings, section: "mental" },
   
-  // TRADING EXECUTION & RECORDS
+  // ACCOUNTS & RECORDS (Combined Trading and Financial)
   { href: "/accounts", label: "Accounts", icon: Target, section: "trading" },
   { href: "/trades", label: "Trades Log", icon: FileText, section: "trading" },
   { href: "/journal", label: "Trading Journal", icon: Book, section: "trading" },
   { href: "/trading-companion", label: "Trading Companion", icon: Bot, section: "trading" },
-  
-  // FINANCIAL MANAGEMENT
-  { href: "/spending", label: "Prop Firm Spending", icon: Wallet, section: "financial" },
-  { href: "/payouts", label: "Payout Records", icon: DollarSign, section: "financial" },
-  { href: "/reports", label: "Reports", icon: Calendar, section: "financial" },
+  { href: "/spending", label: "Prop Firm Spending", icon: Wallet, section: "trading" },
+  { href: "/payouts", label: "Payout Records", icon: DollarSign, section: "trading" },
+  { href: "/reports", label: "Reports", icon: Calendar, section: "trading" },
   
   { href: "/profile", label: "Profile", icon: User, section: "profile" },
 ];
@@ -82,7 +80,6 @@ export default function Sidebar() {
   const coreItems = navItems.filter(item => item.section === "core");
   const mentalItems = navItems.filter(item => item.section === "mental");
   const tradingItems = navItems.filter(item => item.section === "trading");
-  const financialItems = navItems.filter(item => item.section === "financial");
   const profileItems = navItems.filter(item => item.section === "profile");
 
   const handleToggleCollapse = () => {
@@ -217,7 +214,7 @@ export default function Sidebar() {
             </ul>
           </div>
 
-          {/* TRADING EXECUTION & RECORDS Section */}
+          {/* ACCOUNTS & RECORDS Section (Combined Trading and Financial) */}
           <div className="nav-section">
             {!isCollapsed && !isPartiallyCollapsed && (
               <h3 className="text-xs font-medium text-prop-gold uppercase tracking-wider px-6 mb-3">
@@ -226,40 +223,6 @@ export default function Sidebar() {
             )}
             <ul className="space-y-2 px-4">
               {tradingItems.map(({ href, label, icon: Icon }) => (
-                <li key={href}>
-                  <Link href={href} className={cn(
-                    "flex items-center px-4 py-3 text-sm font-medium rounded-xl smooth-transition cursor-pointer group relative",
-                    location === href 
-                      ? "bg-prop-gradient-gold text-black font-bold" 
-                      : "text-muted-foreground hover:bg-card hover:text-prop-gold hover-scale",
-                    (isCollapsed || isPartiallyCollapsed) ? "justify-center" : ""
-                  )}>
-                    <Icon className={cn(
-                      "h-5 w-5 smooth-transition",
-                      location === href ? "text-black" : "text-muted-foreground group-hover:text-prop-gold",
-                      !(isCollapsed || isPartiallyCollapsed) ? "mr-3" : ""
-                    )} />
-                    {!isCollapsed && !isPartiallyCollapsed && label}
-                    {(isCollapsed || isPartiallyCollapsed) && (
-                      <div className="absolute left-full ml-2 px-2 py-1 bg-card border border-prop-gold/20 rounded-md text-xs text-foreground opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50 shadow-md">
-                        {label}
-                      </div>
-                    )}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* FINANCIAL MANAGEMENT Section */}
-          <div className="nav-section">
-            {!isCollapsed && !isPartiallyCollapsed && (
-              <h3 className="text-xs font-medium text-prop-gold uppercase tracking-wider px-6 mb-3">
-                FINANCIAL MANAGEMENT
-              </h3>
-            )}
-            <ul className="space-y-2 px-4">
-              {financialItems.map(({ href, label, icon: Icon }) => (
                 <li key={href}>
                   <Link href={href} className={cn(
                     "flex items-center px-4 py-3 text-sm font-medium rounded-xl smooth-transition cursor-pointer group relative",
