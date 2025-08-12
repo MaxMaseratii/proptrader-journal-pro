@@ -87,9 +87,9 @@
 
 /* COMPREHENSIVE DROPDOWN FIXES - ALL RADIX UI COMPONENTS */
 
-/* Dropdown Menu Components - Light theme default */
-.light [data-radix-dropdown-menu-content],
-.light .dropdown-menu-content {
+/* 1. Dropdown Menu Components */
+[data-radix-dropdown-menu-content],
+.dropdown-menu-content {
   background-color: white !important;
   color: black !important;
   border: 1px solid #d1d5db !important;
@@ -104,12 +104,7 @@
 .dark .dropdown-menu-content {
   background-color: #111827 !important;
   color: white !important;
-  border: 1px solid #374151 !important;
-  border-radius: 6px !important;
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.2) !important;
-  z-index: 9999 !important;
-  min-width: 8rem !important;
-  padding: 4px !important;
+  border-color: #374151 !important;
 }
 
 [data-radix-dropdown-menu-item],
@@ -513,55 +508,51 @@ canvas {
   color: hsl(var(--widget-text)) !important;
 }
 
-/* Remove old conflicting rules - handled above */
+/* CRITICAL: Override ALL hardcoded dark backgrounds in light mode */
+/* EXCEPTION: Do NOT override modal/dialog overlays and dropdown menus */
+.light .bg-gray-800:not([data-radix-dialog-overlay]):not([data-radix-alert-dialog-overlay]):not([data-state]):not([role="dialog"]):not(.drawer-overlay):not([data-radix-dropdown-menu-content]),
+.light .bg-gray-900:not([data-radix-dialog-overlay]):not([data-radix-alert-dialog-overlay]):not([data-state]):not([role="dialog"]):not(.drawer-overlay):not([data-radix-dropdown-menu-content]),
+.light .bg-black:not([data-radix-dialog-overlay]):not([data-radix-alert-dialog-overlay]):not([data-state]):not([role="dialog"]):not(.drawer-overlay):not([class*="bg-black/"]):not([data-radix-dropdown-menu-content]),
+.light [class*="bg-gray-8"]:not([data-radix-dialog-overlay]):not([data-radix-alert-dialog-overlay]):not([data-state]):not([role="dialog"]):not(.drawer-overlay):not([data-radix-dropdown-menu-content]),
+.light [class*="bg-gray-9"]:not([data-radix-dialog-overlay]):not([data-radix-alert-dialog-overlay]):not([data-state]):not([role="dialog"]):not(.drawer-overlay):not([data-radix-dropdown-menu-content]) {
+  background-color: white !important;
+  color: black !important;
+}
 
-/* Modal overlays should respect theme */
-.dark [data-radix-dialog-overlay],
-.dark [data-radix-alert-dialog-overlay],
-.dark [data-state="open"][class*="bg-black"],
-.dark [class*="bg-black/80"],
-.dark .drawer-overlay {
+/* FORCE text color inheritance for children of white backgrounds */
+.light .bg-white *,
+.light .bg-gray-50 *,
+.light .bg-gray-100 *,
+.light [class*="bg-white"] *,
+.light [class*="bg-gray-50"] *,
+.light [class*="bg-gray-100"] * {
+  color: black !important;
+}
+
+/* CRITICAL: Ensure ALL modal overlays have dark backgrounds */
+[data-radix-dialog-overlay],
+[data-radix-alert-dialog-overlay],
+[data-state="open"][class*="bg-black"],
+[class*="bg-black/80"],
+.drawer-overlay {
   background-color: rgba(0, 0, 0, 0.9) !important;
 }
 
-.light [data-radix-dialog-overlay],
-.light [data-radix-alert-dialog-overlay],
-.light [data-state="open"][class*="bg-black"],
-.light [class*="bg-black/80"],
-.light .drawer-overlay {
-  background-color: rgba(0, 0, 0, 0.1) !important;
-}
-
-/* Dropdown menu content should respect theme */
-.dark [data-radix-dropdown-menu-content] {
-  background-color: #1f2937 !important;
-  border-color: #374151 !important;
-  color: white !important;
+/* CRITICAL: Dropdown menu content should have solid background */
+[data-radix-dropdown-menu-content] {
+  background-color: hsl(var(--popover)) !important;
+  border-color: hsl(var(--border)) !important;
+  color: hsl(var(--popover-foreground)) !important;
   box-shadow: 0 10px 38px -10px rgba(22, 23, 24, 0.35), 0 10px 20px -15px rgba(22, 23, 24, 0.2) !important;
 }
 
-.light [data-radix-dropdown-menu-content] {
-  background-color: white !important;
-  border-color: #e5e7eb !important;
-  color: black !important;
-  box-shadow: 0 10px 38px -10px rgba(0, 0, 0, 0.15), 0 10px 20px -15px rgba(0, 0, 0, 0.1) !important;
-}
-
-/* Dialog content should respect theme */
-.dark [data-radix-dialog-content],
-.dark [data-radix-alert-dialog-content],
-.dark [role="dialog"] {
-  background-color: #1f2937 !important;
-  color: white !important;
-  border-color: #374151 !important;
-}
-
-.light [data-radix-dialog-content],
-.light [data-radix-alert-dialog-content],
-.light [role="dialog"] {
-  background-color: white !important;
-  color: black !important;
-  border-color: #e5e7eb !important;
+/* CRITICAL: Dialog content proper styling */
+[data-radix-dialog-content],
+[data-radix-alert-dialog-content],
+[role="dialog"] {
+  background-color: hsl(var(--background)) !important;
+  color: hsl(var(--foreground)) !important;
+  border-color: hsl(var(--border)) !important;
 }
 
 /* PERFORMANCE FIX: Remove heavy modal overlays causing black boxes */
@@ -642,7 +633,13 @@ input, textarea, select {
   color: inherit !important;
 }
 
-/* Dark theme form styling only */
+/* Force proper styling for all input classes */
+.light .bg-white,
+.light .bg-gray-50,
+.light .bg-gray-100 {
+  color: black !important;
+}
+
 .dark .bg-gray-700,
 .dark .bg-gray-800,
 .dark .bg-gray-900 {
@@ -669,84 +666,53 @@ input, textarea, select {
   color: inherit !important;
 }
 
-/* Select components styling for light theme */
+/* Light mode specific overrides for select elements */
 .light [data-radix-select-trigger],
-.light [data-radix-select-value] {
-  color: #1f2937 !important;
-  background-color: white !important;
-  border: 1px solid #d1d5db !important;
+.light [data-radix-select-value],
+.light [data-radix-select-placeholder] {
+  color: black !important;
 }
 
-/* Sidebar with white background and subtle border */
-.light aside,
-.light .sidebar {
-  background-color: white !important;
-  border-right: 1px solid #e5e7eb !important;
+/* UNIVERSAL RULE: ALL white backgrounds must have black text in light mode */
+.light * {
+  color: black !important;
 }
 
-/* Light Theme - Clean and Professional */
-
-/* Main background should be clean white */
-.light body,
-.light .bg-background {
-  background-color: white !important;
-  color: #1f2937 !important;
+.light [class*="bg-white"],
+.light [class*="bg-gray-50"],
+.light [class*="bg-gray-100"],
+.light .bg-white,
+.light .bg-gray-50,
+.light .bg-gray-100 {
+  color: black !important;
 }
 
-/* Cards with subtle shadow and white backgrounds */
-.light .bg-card,
-.light .widget-bg,
-.light .widget-card {
-  background-color: white !important;
-  color: #1f2937 !important;
-  border: 1px solid #e5e7eb !important;
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06) !important;
-}
-
-/* Convert dark backgrounds to light equivalents */
-.light .bg-gray-800,
-.light .bg-gray-900,
-.light .bg-slate-900,
-.light .bg-slate-950,
-.light .bg-black {
-  background-color: white !important;
-  color: #1f2937 !important;
-  border: 1px solid #e5e7eb !important;
-}
-
-/* Text colors for readability */
-.light .text-white {
-  color: #1f2937 !important;
-}
-
-.light .text-gray-300 {
-  color: #9ca3af !important;
-}
-
-.light .text-gray-400 {
-  color: #6b7280 !important;
-}
-
-/* Muted elements with subtle gray background */
-.light .bg-muted {
-  background-color: #f9fafb !important;
-  color: #374151 !important;
-}
-
-/* Form elements with clean styling */
+/* NUCLEAR OPTION: Force ALL form elements to have proper contrast */
 .light input,
 .light textarea,
-.light select {
-  background-color: white !important;
-  color: #1f2937 !important;
-  border: 1px solid #d1d5db !important;
+.light select,
+.light button,
+.light [role="button"],
+.light [role="combobox"],
+.light [role="listbox"],
+.light [role="option"],
+.light [data-radix-select-trigger],
+.light [data-radix-select-content],
+.light [data-radix-select-item],
+.light [data-radix-select-value],
+.light [data-radix-dropdown-menu-content],
+.light [data-radix-dropdown-menu-item] {
+  color: black !important;
 }
 
-.light input:focus,
-.light textarea:focus,
-.light select:focus {
-  border-color: #2563eb !important;
-  ring: 2px solid #3b82f6 !important;
+/* Specific targeting for common white background elements */
+.light div[style*="background-color: white"],
+.light div[style*="background-color: #fff"],
+.light div[style*="background-color: #ffffff"],
+.light span[style*="background-color: white"],
+.light span[style*="background-color: #fff"],
+.light span[style*="background-color: #ffffff"] {
+  color: black !important;
 }
 
 /* Specific targeting for Tailwind classes commonly used in forms */
@@ -1053,7 +1019,63 @@ input, textarea, select {
   --widget-header: hsl(0, 0%, 98%);
 }
 
-/* Light Theme Variables Removed - Dark Theme Only */
+.light {
+  /* Light Theme Variables */
+  --background: hsl(0, 0%, 100%);
+  --foreground: hsl(0, 0%, 3%);
+  --muted: hsl(0, 0%, 96%);
+  --muted-foreground: hsl(0, 0%, 45%);
+  --popover: hsl(0, 0%, 100%);
+  --popover-foreground: hsl(0, 0%, 3%);
+  --card: hsl(0, 0%, 100%);
+  --card-foreground: hsl(0, 0%, 3%);
+  --border: hsl(0, 0%, 89%);
+  --input: hsl(0, 0%, 89%);
+  --primary: hsl(45, 100%, 45%);
+  --primary-foreground: hsl(0, 0%, 100%);
+  --secondary: hsl(180, 100%, 35%);
+  --secondary-foreground: hsl(0, 0%, 100%);
+  --accent: hsl(322, 100%, 50%);
+  --accent-foreground: hsl(0, 0%, 100%);
+  --destructive: hsl(0, 84.2%, 60.2%);
+  --destructive-foreground: hsl(60, 9.1%, 97.8%);
+  --ring: hsl(45, 100%, 45%);
+
+  /* PropTraderJournal Light Colors */
+  --prop-black: hsl(0, 0%, 100%);
+  --prop-dark: hsl(0, 0%, 96%);
+  --prop-surface: hsl(0, 0%, 98%);
+  --prop-gold: hsl(45, 100%, 45%);
+  --prop-gold-light: hsl(45, 100%, 55%);
+  --prop-tiffany: hsl(180, 70%, 45%);
+  --prop-tiffany-light: hsl(180, 80%, 55%);
+  --prop-green: hsl(142, 76%, 36%);
+  --prop-green-light: hsl(142, 76%, 46%);
+  --prop-blue: hsl(217, 91%, 50%);
+  --prop-blue-light: hsl(217, 91%, 60%);
+  --prop-pink: hsl(322, 100%, 60%);
+  --prop-pink-light: hsl(322, 100%, 70%);
+  
+  /* Additional Light Color Aliases */
+  --dark-bg: hsl(0, 0%, 100%);
+  --dark-card: hsl(0, 0%, 98%);
+  --dark-border: hsl(0, 0%, 89%);
+  --success-green: hsl(142, 76%, 36%);
+  --warning-orange: hsl(25, 100%, 50%);
+  --error-red: hsl(0, 84%, 60%);
+  
+  /* Discipline Analysis Colors - Light */
+  --discipline-card: hsl(220, 26%, 96%);
+  --discipline-border: hsl(220, 13%, 89%);
+  --discipline-rainbow: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  --discipline-gold: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  --discipline-red: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
+  
+  /* Widget theme variables for light mode */
+  --widget-bg: hsl(0, 0%, 100%);
+  --widget-text: hsl(0, 0%, 3%);
+  --widget-header: hsl(0, 0%, 3%);
+}
 
 /* Dashboard Widget Styling - Theme Adaptive */
 .widget-container {
