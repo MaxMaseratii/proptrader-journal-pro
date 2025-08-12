@@ -249,7 +249,7 @@ export default function AccountManagement() {
                 Create Account
               </Button>
             </DialogTrigger>
-            <DialogContent className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 border border-teal-500/30 text-white max-w-4xl max-h-[80vh] overflow-hidden">
+            <DialogContent className="w-[90vw] max-w-4xl max-h-[85vh] bg-gradient-to-br from-gray-900 via-gray-800 to-black border border-yellow-400/20 p-6">
               <DialogHeader>
                 <DialogTitle className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-yellow-600">
                   Create New Trading Account
@@ -259,7 +259,7 @@ export default function AccountManagement() {
                 </DialogDescription>
               </DialogHeader>
               
-              <div className="max-h-[60vh] overflow-y-auto pr-2">
+              <div className="max-h-[60vh] overflow-y-auto">
                 <Form {...form}>
                   <form onSubmit={form.handleSubmit(handleCreateAccount)} className="space-y-4">
                     <div className="grid grid-cols-2 gap-4">
@@ -560,7 +560,7 @@ export default function AccountManagement() {
 
         {/* Edit Account Dialog */}
         <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-          <DialogContent className="max-w-2xl bg-gradient-to-br from-gray-900 via-gray-800 to-black border border-yellow-400/20">
+          <DialogContent className="w-[90vw] max-w-2xl max-h-[85vh] bg-gradient-to-br from-gray-900 via-gray-800 to-black border border-yellow-400/20 p-6">
             <DialogHeader>
               <DialogTitle className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-yellow-600">
                 Edit Trading Account
@@ -570,8 +570,9 @@ export default function AccountManagement() {
               </DialogDescription>
             </DialogHeader>
             
-            <Form {...form}>
-              <form onSubmit={form.handleSubmit(handleUpdateAccount)} className="space-y-4">
+            <div className="max-h-[60vh] overflow-y-auto">
+              <Form {...form}>
+                <form onSubmit={form.handleSubmit(handleUpdateAccount)} className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                   <FormField
                     control={form.control}
@@ -739,8 +740,9 @@ export default function AccountManagement() {
                     {updateAccountMutation.isPending ? 'Updating...' : 'Update Account'}
                   </Button>
                 </div>
-              </form>
-            </Form>
+                </form>
+              </Form>
+            </div>
           </DialogContent>
         </Dialog>
       </div>
