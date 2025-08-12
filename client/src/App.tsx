@@ -102,7 +102,7 @@ function Router() {
   }
 
   return (
-    <div className="flex h-screen bg-background text-foreground overflow-hidden">
+    <div className="flex h-screen bg-background text-foreground">
       <Sidebar />
       <main className="flex-1 overflow-y-auto bg-background">
         <Switch>

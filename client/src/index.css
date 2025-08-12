@@ -2,21 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Fix horizontal black section at bottom */
-html, body {
-  margin: 0 !important;
-  padding: 0 !important;
-  overflow-x: hidden !important;
-  height: 100% !important;
-  max-height: 100vh !important;
-}
-
-#root {
-  height: 100vh !important;
-  max-height: 100vh !important;
-  overflow: hidden !important;
-}
-
 @layer base {
   :root {
     --background: 0 0% 100%;
