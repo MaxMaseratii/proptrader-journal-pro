@@ -350,17 +350,18 @@ export default function AccountsPage() {
           </div>
         </div>
         
-        <Dialog open={isCreateDialogOpen} onOpenChange={(open) => !open && handleCloseCreateDialog()}>
-          <DialogContent className="max-w-4xl h-[85vh] bg-gradient-to-br from-gray-900 via-gray-800 to-black border border-yellow-400/20">
+        <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
+          <DialogContent className="max-w-4xl bg-gradient-to-br from-gray-900 via-gray-800 to-black border border-yellow-400/20 max-h-[90vh] overflow-hidden">
             <DialogHeader>
-              <DialogTitle className="text-lg font-semibold text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-yellow-600">
+              <DialogTitle className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-yellow-600">
                 Create New Trading Account
               </DialogTitle>
-              <DialogDescription className="text-gray-400 text-sm">
+              <DialogDescription className="text-gray-400">
                 Set up a comprehensive trading account with your financial goals, risk parameters, and trading preferences.
               </DialogDescription>
             </DialogHeader>
-            <div className="h-[60vh] overflow-y-auto py-4">
+            
+            <div className="max-h-[70vh] overflow-y-auto pr-4">
                   <Form {...form}>
                     <form id="create-account-form" onSubmit={form.handleSubmit(handleCreateAccount)} className="space-y-6">
                     <Tabs defaultValue="basic" className="w-full">
@@ -1301,8 +1302,7 @@ export default function AccountsPage() {
                 </Form>
               </div>
               
-              {/* Form Actions - Fixed at bottom */}
-              <div className="flex justify-end space-x-3 pt-4 mt-4 border-t border-gray-700">
+              <div className="flex justify-end space-x-3 pt-4 border-t border-gray-700">
                 <Button
                   type="button"
                   variant="outline"
