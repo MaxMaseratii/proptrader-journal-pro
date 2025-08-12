@@ -708,40 +708,90 @@ input, textarea, select {
   background-color: white !important;
 }
 
-/* Light theme: Sidebar background and text */
+/* Light theme: Sidebar with subtle background */
 .light aside,
 .light .sidebar {
+  background-color: #f8fafc !important;
+  border-color: #e5e7eb !important;
+}
+
+/* Light theme: Clean and elegant overrides */
+.light body {
+  background-color: #f8fafc !important;
+  color: #1f2937 !important;
+}
+
+/* Light theme: Main containers */
+.light .bg-background {
+  background-color: #f8fafc !important;
+  color: #1f2937 !important;
+}
+
+/* Light theme: Cards and surfaces */
+.light .bg-card,
+.light .widget-bg,
+.light .widget-card {
   background-color: white !important;
+  color: #1f2937 !important;
+  border-color: #e5e7eb !important;
 }
 
-/* Light theme: COMPLETE override - everything light */
-.light *:not(.text-teal-600):not(.text-yellow-400):not(.text-prop-gold):not(.text-prop-tiffany):not(.text-green-500):not(.text-red-500) {
-  color: black !important;
+/* Light theme: Convert dark backgrounds to appropriate light ones */
+.light .bg-gray-800 {
+  background-color: #f9fafb !important;
+  color: #1f2937 !important;
 }
 
-/* Light theme: Override ALL background colors to light */
-.light *:not([class*="bg-yellow"]):not([class*="bg-amber"]):not([class*="bg-teal"]):not([class*="bg-green-5"]):not([class*="bg-red-5"]):not([class*="gradient"]) {
-  background-color: white !important;
-}
-
-/* Light theme: Specific overrides for common dark classes */
-.light .bg-gray-800,
 .light .bg-gray-900,
 .light .bg-slate-900,
-.light .bg-slate-950,
-.light .bg-black,
-.light .text-white,
-.light .text-gray-300,
-.light .text-gray-400 {
+.light .bg-slate-950 {
   background-color: white !important;
-  color: black !important;
+  color: #1f2937 !important;
+  border: 1px solid #e5e7eb !important;
 }
 
-/* Light theme: Cards should have subtle background */
-.light .bg-card,
+.light .bg-black {
+  background-color: white !important;
+  color: #1f2937 !important;
+  border: 1px solid #d1d5db !important;
+}
+
+/* Light theme: Text colors */
+.light .text-white {
+  color: #1f2937 !important;
+}
+
+.light .text-gray-300,
+.light .text-gray-400 {
+  color: #6b7280 !important;
+}
+
+/* Light theme: Muted backgrounds */
+.light .bg-muted,
 .light [class*="bg-muted"] {
-  background-color: #f8fafc !important;
-  color: black !important;
+  background-color: #f3f4f6 !important;
+  color: #374151 !important;
+}
+
+/* Light theme: Preserve important UI elements */
+.light [class*="gradient"]:not(.bg-gradient-to-r):not(.from-yellow):not(.from-amber) {
+  background: linear-gradient(135deg, #f3f4f6 0%, #ffffff 100%) !important;
+}
+
+/* Light theme: Form elements */
+.light input,
+.light textarea,
+.light select {
+  background-color: white !important;
+  color: #1f2937 !important;
+  border-color: #d1d5db !important;
+}
+
+.light input:focus,
+.light textarea:focus,
+.light select:focus {
+  border-color: #3b82f6 !important;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1) !important;
 }
 
 /* Specific targeting for Tailwind classes commonly used in forms */
