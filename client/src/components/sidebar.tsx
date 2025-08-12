@@ -284,6 +284,40 @@ export default function Sidebar() {
               ))}
             </ul>
           </div>
+
+          {/* FINANCIAL MANAGEMENT Section */}
+          <div className="nav-section">
+            {!isCollapsed && !isPartiallyCollapsed && (
+              <h3 className="text-xs font-medium text-prop-gold uppercase tracking-wider px-6 mb-3">
+                FINANCIAL MANAGEMENT
+              </h3>
+            )}
+            <ul className="space-y-2 px-4">
+              {financialItems.map(({ href, label, icon: Icon }) => (
+                <li key={href}>
+                  <Link href={href} className={cn(
+                    "flex items-center px-4 py-3 text-sm font-medium rounded-xl smooth-transition cursor-pointer group relative",
+                    location === href 
+                      ? "bg-prop-gradient-gold text-black font-bold" 
+                      : "text-muted-foreground hover:bg-card hover:text-prop-gold hover-scale",
+                    (isCollapsed || isPartiallyCollapsed) ? "justify-center" : ""
+                  )}>
+                    <Icon className={cn(
+                      "h-5 w-5 smooth-transition",
+                      location === href ? "text-black" : "text-muted-foreground group-hover:text-prop-gold",
+                      !(isCollapsed || isPartiallyCollapsed) ? "mr-3" : ""
+                    )} />
+                    {!isCollapsed && !isPartiallyCollapsed && label}
+                    {(isCollapsed || isPartiallyCollapsed) && (
+                      <div className="absolute left-full ml-2 px-2 py-1 bg-card border border-prop-gold/20 rounded-md text-xs text-foreground opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50 shadow-md">
+                        {label}
+                      </div>
+                    )}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
       </nav>
       
