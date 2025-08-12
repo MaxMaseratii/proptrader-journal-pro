@@ -23,14 +23,14 @@ function PropTraderHeader() {
             <Link href="/" className="flex items-center space-x-3">
               <div className="bg-gradient-to-r from-yellow-400 to-amber-500 p-3 rounded-lg shadow-xl">
                 <div className="flex items-center space-x-3">
-                  <div className="w-12 h-12 bg-black rounded-lg flex items-center justify-center shadow-lg">
+                  <div className="w-12 h-12 bg-black rounded-lg border-2 border-teal-500 flex items-center justify-center shadow-lg">
                     <Crown className="w-7 h-7 text-yellow-400" />
                   </div>
                   <div className="flex flex-col">
                     <span className="text-xl font-bold leading-tight tracking-tight">
                       <span className="text-teal-600">PropTrader</span><span className="text-black"> Journal</span>
                     </span>
-                    <span className="text-sm font-medium text-black">
+                    <span className="text-sm font-medium text-black text-center">
                       Disciplined Trading
                     </span>
                   </div>
@@ -514,12 +514,21 @@ export default function Welcome() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <div className="flex items-center justify-center space-x-3 mb-6">
-              <div className="w-12 h-12 bg-gradient-to-br from-yellow-400 to-amber-500 rounded-xl flex items-center justify-center shadow-xl">
-                <Crown className="w-7 h-7 text-black" />
+              <div className="bg-gradient-to-r from-yellow-400 to-amber-500 p-3 rounded-lg shadow-xl">
+                <div className="flex items-center space-x-3">
+                  <div className="w-12 h-12 bg-black rounded-lg border-2 border-teal-500 flex items-center justify-center shadow-lg">
+                    <Crown className="w-7 h-7 text-yellow-400" />
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="text-xl font-bold leading-tight tracking-tight">
+                      <span className="text-teal-600">PropTrader</span><span className="text-black"> Journal</span>
+                    </span>
+                    <span className="text-sm font-medium text-black text-center">
+                      Disciplined Trading
+                    </span>
+                  </div>
+                </div>
               </div>
-              <span className="text-2xl font-bold text-gray-900">
-                PropTrader<span className="text-gray-900">Journal</span>
-              </span>
             </div>
             <p className="text-gray-600 mb-8">
               The elite trading journal for prop firm traders. Master discipline, maximize profits.

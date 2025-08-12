@@ -12,38 +12,23 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [theme, setTheme] = useState<Theme>(() => {
-    // Check localStorage first, then system preference, default to dark
-    const stored = localStorage.getItem('prop-journal-theme') as Theme;
-    if (stored && (stored === 'light' || stored === 'dark')) {
-      return stored;
-    }
-    
-    // Check system preference
-    if (window.matchMedia('(prefers-color-scheme: light)').matches) {
-      return 'light';
-    }
-    
+    // Always use dark theme as the only option
     return 'dark';
   });
 
   useEffect(() => {
-    // Apply theme to document root
+    // Always apply dark theme as the only option
     const root = document.documentElement;
+    root.classList.add('dark');
+    root.classList.remove('light');
     
-    if (theme === 'light') {
-      root.classList.add('light');
-      root.classList.remove('dark');
-    } else {
-      root.classList.add('dark');
-      root.classList.remove('light');
-    }
-    
-    // Store in localStorage
-    localStorage.setItem('prop-journal-theme', theme);
-  }, [theme]);
+    // Store dark theme in localStorage
+    localStorage.setItem('prop-journal-theme', 'dark');
+  }, []);
 
   const toggleTheme = () => {
-    setTheme(prev => prev === 'dark' ? 'light' : 'dark');
+    // Dark theme is the only option, no toggling
+    return;
   };
 
   return (

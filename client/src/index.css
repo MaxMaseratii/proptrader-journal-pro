@@ -508,26 +508,7 @@ canvas {
   color: hsl(var(--widget-text)) !important;
 }
 
-/* CRITICAL: Override ALL hardcoded dark backgrounds in light mode */
-/* EXCEPTION: Do NOT override modal/dialog overlays and dropdown menus */
-.light .bg-gray-800:not([data-radix-dialog-overlay]):not([data-radix-alert-dialog-overlay]):not([data-state]):not([role="dialog"]):not(.drawer-overlay):not([data-radix-dropdown-menu-content]),
-.light .bg-gray-900:not([data-radix-dialog-overlay]):not([data-radix-alert-dialog-overlay]):not([data-state]):not([role="dialog"]):not(.drawer-overlay):not([data-radix-dropdown-menu-content]),
-.light .bg-black:not([data-radix-dialog-overlay]):not([data-radix-alert-dialog-overlay]):not([data-state]):not([role="dialog"]):not(.drawer-overlay):not([class*="bg-black/"]):not([data-radix-dropdown-menu-content]),
-.light [class*="bg-gray-8"]:not([data-radix-dialog-overlay]):not([data-radix-alert-dialog-overlay]):not([data-state]):not([role="dialog"]):not(.drawer-overlay):not([data-radix-dropdown-menu-content]),
-.light [class*="bg-gray-9"]:not([data-radix-dialog-overlay]):not([data-radix-alert-dialog-overlay]):not([data-state]):not([role="dialog"]):not(.drawer-overlay):not([data-radix-dropdown-menu-content]) {
-  background-color: white !important;
-  color: black !important;
-}
-
-/* FORCE text color inheritance for children of white backgrounds */
-.light .bg-white *,
-.light .bg-gray-50 *,
-.light .bg-gray-100 *,
-.light [class*="bg-white"] *,
-.light [class*="bg-gray-50"] *,
-.light [class*="bg-gray-100"] * {
-  color: black !important;
-}
+/* Light theme overrides removed - Dark theme only */
 
 /* CRITICAL: Ensure ALL modal overlays have dark backgrounds */
 [data-radix-dialog-overlay],
@@ -633,13 +614,7 @@ input, textarea, select {
   color: inherit !important;
 }
 
-/* Force proper styling for all input classes */
-.light .bg-white,
-.light .bg-gray-50,
-.light .bg-gray-100 {
-  color: black !important;
-}
-
+/* Dark theme form styling only */
 .dark .bg-gray-700,
 .dark .bg-gray-800,
 .dark .bg-gray-900 {
@@ -666,54 +641,7 @@ input, textarea, select {
   color: inherit !important;
 }
 
-/* Light mode specific overrides for select elements */
-.light [data-radix-select-trigger],
-.light [data-radix-select-value],
-.light [data-radix-select-placeholder] {
-  color: black !important;
-}
-
-/* UNIVERSAL RULE: ALL white backgrounds must have black text in light mode */
-.light * {
-  color: black !important;
-}
-
-.light [class*="bg-white"],
-.light [class*="bg-gray-50"],
-.light [class*="bg-gray-100"],
-.light .bg-white,
-.light .bg-gray-50,
-.light .bg-gray-100 {
-  color: black !important;
-}
-
-/* NUCLEAR OPTION: Force ALL form elements to have proper contrast */
-.light input,
-.light textarea,
-.light select,
-.light button,
-.light [role="button"],
-.light [role="combobox"],
-.light [role="listbox"],
-.light [role="option"],
-.light [data-radix-select-trigger],
-.light [data-radix-select-content],
-.light [data-radix-select-item],
-.light [data-radix-select-value],
-.light [data-radix-dropdown-menu-content],
-.light [data-radix-dropdown-menu-item] {
-  color: black !important;
-}
-
-/* Specific targeting for common white background elements */
-.light div[style*="background-color: white"],
-.light div[style*="background-color: #fff"],
-.light div[style*="background-color: #ffffff"],
-.light span[style*="background-color: white"],
-.light span[style*="background-color: #fff"],
-.light span[style*="background-color: #ffffff"] {
-  color: black !important;
-}
+/* Light theme overrides removed - Dark theme only */
 
 /* Specific targeting for Tailwind classes commonly used in forms */
 .dark .bg-gray-700 {
@@ -1019,63 +947,7 @@ input, textarea, select {
   --widget-header: hsl(0, 0%, 98%);
 }
 
-.light {
-  /* Light Theme Variables */
-  --background: hsl(0, 0%, 100%);
-  --foreground: hsl(0, 0%, 3%);
-  --muted: hsl(0, 0%, 96%);
-  --muted-foreground: hsl(0, 0%, 45%);
-  --popover: hsl(0, 0%, 100%);
-  --popover-foreground: hsl(0, 0%, 3%);
-  --card: hsl(0, 0%, 100%);
-  --card-foreground: hsl(0, 0%, 3%);
-  --border: hsl(0, 0%, 89%);
-  --input: hsl(0, 0%, 89%);
-  --primary: hsl(45, 100%, 45%);
-  --primary-foreground: hsl(0, 0%, 100%);
-  --secondary: hsl(180, 100%, 35%);
-  --secondary-foreground: hsl(0, 0%, 100%);
-  --accent: hsl(322, 100%, 50%);
-  --accent-foreground: hsl(0, 0%, 100%);
-  --destructive: hsl(0, 84.2%, 60.2%);
-  --destructive-foreground: hsl(60, 9.1%, 97.8%);
-  --ring: hsl(45, 100%, 45%);
-
-  /* PropTraderJournal Light Colors */
-  --prop-black: hsl(0, 0%, 100%);
-  --prop-dark: hsl(0, 0%, 96%);
-  --prop-surface: hsl(0, 0%, 98%);
-  --prop-gold: hsl(45, 100%, 45%);
-  --prop-gold-light: hsl(45, 100%, 55%);
-  --prop-tiffany: hsl(180, 70%, 45%);
-  --prop-tiffany-light: hsl(180, 80%, 55%);
-  --prop-green: hsl(142, 76%, 36%);
-  --prop-green-light: hsl(142, 76%, 46%);
-  --prop-blue: hsl(217, 91%, 50%);
-  --prop-blue-light: hsl(217, 91%, 60%);
-  --prop-pink: hsl(322, 100%, 60%);
-  --prop-pink-light: hsl(322, 100%, 70%);
-  
-  /* Additional Light Color Aliases */
-  --dark-bg: hsl(0, 0%, 100%);
-  --dark-card: hsl(0, 0%, 98%);
-  --dark-border: hsl(0, 0%, 89%);
-  --success-green: hsl(142, 76%, 36%);
-  --warning-orange: hsl(25, 100%, 50%);
-  --error-red: hsl(0, 84%, 60%);
-  
-  /* Discipline Analysis Colors - Light */
-  --discipline-card: hsl(220, 26%, 96%);
-  --discipline-border: hsl(220, 13%, 89%);
-  --discipline-rainbow: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  --discipline-gold: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-  --discipline-red: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
-  
-  /* Widget theme variables for light mode */
-  --widget-bg: hsl(0, 0%, 100%);
-  --widget-text: hsl(0, 0%, 3%);
-  --widget-header: hsl(0, 0%, 3%);
-}
+/* Light Theme Variables Removed - Dark Theme Only */
 
 /* Dashboard Widget Styling - Theme Adaptive */
 .widget-container {
