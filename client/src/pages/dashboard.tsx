@@ -397,7 +397,7 @@ export default function Dashboard() {
                   ${isSelected
                     ? 'border-amber-400 bg-amber-900/20 shadow-lg ring-2 ring-amber-400/50'
                     : isToday 
-                    ? 'border-gray-400/60 bg-gradient-to-br from-gray-900/30 via-gray-800/40 to-gray-900/30' 
+                    ? 'border-teal-400/60 bg-gradient-to-br from-teal-900/30 via-gray-800/40 to-teal-900/30' 
                     : isCurrentMonth
                     ? 'border-gray-600/40 bg-gradient-to-br from-gray-800/40 via-gray-700/40 to-gray-800/40'
                     : 'border-gray-700/30 bg-gradient-to-br from-gray-900/30 via-gray-800/30 to-gray-900/30 opacity-60'
@@ -428,7 +428,7 @@ export default function Dashboard() {
                 
                 {/* Today indicator */}
                 {isToday && !hasJournal && (
-                  <div className="absolute top-1 right-1 w-2 h-2 rounded-full bg-gray-400 animate-pulse" />
+                  <div className="absolute top-1 right-1 w-2 h-2 rounded-full bg-teal-400 animate-pulse" />
                 )}
                 
                 {/* Selected indicator */}
@@ -529,7 +529,7 @@ export default function Dashboard() {
                     ${selectedDate?.toDateString() === date.toDateString()
                       ? 'border-amber-400 bg-amber-900/20 shadow-lg ring-2 ring-amber-400/50'
                       : isToday 
-                      ? 'border-gray-400/60 bg-gradient-to-br from-gray-900/30 via-gray-800/40 to-gray-900/30' 
+                      ? 'border-teal-400/60 bg-gradient-to-br from-teal-900/30 via-gray-800/40 to-teal-900/30' 
                       : isCurrentMonth
                       ? 'border-gray-600/40 bg-gradient-to-br from-gray-800/40 via-gray-700/40 to-gray-800/40'
                       : 'border-gray-700/30 bg-gradient-to-br from-gray-900/30 via-gray-800/30 to-gray-900/30 opacity-60'
@@ -560,7 +560,7 @@ export default function Dashboard() {
                   
                   {/* Today indicator */}
                   {isToday && !hasJournal && (
-                    <div className="absolute top-1 right-1 w-1.5 h-1.5 rounded-full bg-gray-400 animate-pulse" />
+                    <div className="absolute top-1 right-1 w-1.5 h-1.5 rounded-full bg-teal-400 animate-pulse" />
                   )}
                   
                   {/* Selected indicator */}
@@ -654,7 +654,7 @@ export default function Dashboard() {
                   ${selectedDate.getMonth() === month.getMonth() && selectedDate.getFullYear() === month.getFullYear()
                     ? 'border-amber-400 bg-amber-900/20 shadow-lg'
                     : isCurrentMonth
-                    ? 'border-gray-400/60 bg-gradient-to-br from-gray-900/30 via-gray-800/40 to-gray-900/30'
+                    ? 'border-teal-400/60 bg-gradient-to-br from-teal-900/30 via-gray-800/40 to-teal-900/30'
                     : 'border-gray-600/40 bg-gradient-to-br from-gray-800/40 via-gray-700/40 to-gray-800/40'
                   }
                   hover:border-amber-400/60
@@ -666,12 +666,12 @@ export default function Dashboard() {
               >
                 {/* Current month indicator */}
                 {isCurrentMonth && (
-                  <div className="absolute top-2 right-2 w-2 h-2 rounded-full bg-gray-400 animate-pulse" />
+                  <div className="absolute top-2 right-2 w-2 h-2 rounded-full bg-teal-400 animate-pulse" />
                 )}
                 
                 {/* Month name */}
                 <div className={`text-sm font-semibold mb-1 ${
-                  isCurrentMonth ? 'text-gray-200' : 'text-gray-200'
+                  isCurrentMonth ? 'text-teal-400' : 'text-gray-200'
                 }`}>
                   {monthNames[index]}
                 </div>
@@ -1931,7 +1931,7 @@ export default function Dashboard() {
                 onClick={() => {
                   setCurrentWeekStart(new Date());
                 }}
-                className="px-4 py-2 rounded-lg text-sm font-medium bg-black/80 hover:bg-black text-white transition-all duration-200 border border-gray-500/40 shadow-md"
+                className="px-4 py-2 rounded-lg text-sm font-medium bg-teal-600/80 hover:bg-teal-600 text-white transition-all duration-200 border border-teal-500/40 shadow-md"
               >
                 Go to Today
               </button>
