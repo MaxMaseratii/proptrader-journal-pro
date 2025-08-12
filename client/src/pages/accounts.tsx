@@ -11,6 +11,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Switch } from '@/components/ui/switch';
 import { Slider } from '@/components/ui/slider';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -354,7 +355,7 @@ export default function AccountsPage() {
             form.reset();
           }
         }}>
-          <DialogContent className="max-w-4xl bg-gradient-to-br from-gray-900 via-gray-800 to-black border border-yellow-400/20 max-h-[90vh] overflow-hidden">
+          <DialogContent className="max-w-3xl bg-gradient-to-br from-gray-900 via-gray-800 to-black border border-yellow-400/20 max-h-[90vh] overflow-hidden">
             <DialogHeader>
               <DialogTitle className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-yellow-600">
                 Create New Trading Account
@@ -364,7 +365,7 @@ export default function AccountsPage() {
               </DialogDescription>
             </DialogHeader>
             
-            <div className="max-h-[70vh] overflow-y-auto pr-4">
+            <ScrollArea className="max-h-[70vh] overflow-y-auto pr-4">
                   <Form {...form}>
                     <form id="create-account-form" onSubmit={form.handleSubmit(handleCreateAccount)} className="space-y-6">
                     <Tabs defaultValue="basic" className="w-full">
@@ -1303,7 +1304,7 @@ export default function AccountsPage() {
 
                   </form>
                 </Form>
-              </div>
+            </ScrollArea>
               
               <div className="flex justify-end space-x-3 pt-4 border-t border-gray-700">
                 <Button
