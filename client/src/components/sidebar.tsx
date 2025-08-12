@@ -137,8 +137,8 @@ export default function Sidebar() {
       </Button>
       
       <nav className="mt-6 flex-1 overflow-y-auto pb-4">
-        <div className="space-y-6">
-          {/* CORE TRADING & PERFORMANCE Section */}
+        <div className="space-y-4">
+          {/* SECTION 1: PERFORMANCE */}
           <div className="nav-section">
             {!isCollapsed && !isPartiallyCollapsed && (
               <h3 className="text-xs font-medium text-prop-gold uppercase tracking-wider px-6 mb-3">
@@ -180,7 +180,7 @@ export default function Sidebar() {
             </ul>
           </div>
 
-          {/* MENTAL PREPARATION Section */}
+          {/* SECTION 2: PRE-SESSION PLANNING */}
           <div className="nav-section">
             {!isCollapsed && !isPartiallyCollapsed && (
               <h3 className="text-xs font-medium text-prop-gold uppercase tracking-wider px-6 mb-3">
@@ -214,7 +214,7 @@ export default function Sidebar() {
             </ul>
           </div>
 
-          {/* ACCOUNTS & RECORDS Section (Combined Trading and Financial) */}
+          {/* ACCOUNTS & RECORDS Section (No divider above) */}
           <div className="nav-section">
             {!isCollapsed && !isPartiallyCollapsed && (
               <h3 className="text-xs font-medium text-prop-gold uppercase tracking-wider px-6 mb-3">
