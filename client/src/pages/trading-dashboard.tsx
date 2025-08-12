@@ -476,13 +476,13 @@ export default function CompleteTradingDashboard() {
 
     return (
       <div className="h-full space-y-4">
-        <Card className="bg-gradient-to-br from-teal-900/40 via-cyan-900/30 to-teal-800/40 border-2 border-teal-400/30 shadow-2xl h-full flex flex-col">
-          <CardHeader className="bg-gradient-to-r from-teal-900/50 to-cyan-900/50">
+        <Card className="bg-gradient-to-br from-blue-950 via-indigo-950 to-purple-950 border-2 border-blue-500/30 shadow-2xl h-full flex flex-col">
+          <CardHeader className="bg-gradient-to-r from-blue-900/50 to-purple-900/50">
             <CardTitle className="text-gradient-rainbow flex items-center gap-2 text-xl">
               <Brain className="h-6 w-6 text-yellow-400" />
               Pre-Session Mental Check & Loss-Cutting Mindset
             </CardTitle>
-            <p className="text-teal-200">Complete assessment before trading (2 minutes)</p>
+            <p className="text-blue-200">Complete assessment before trading (2 minutes)</p>
           </CardHeader>
           <CardContent className="space-y-6 p-6 flex-1 overflow-auto">
             {/* Loss-Cutting Psychology Education */}
