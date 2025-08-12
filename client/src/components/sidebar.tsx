@@ -95,10 +95,10 @@ export default function Sidebar() {
 
   return (
     <aside className={cn(
-      "bg-background border-r border-prop-gold/20 flex-shrink-0 transition-all duration-300 ease-in-out relative",
+      "bg-background flex-shrink-0 transition-all duration-300 ease-in-out relative flex flex-col h-full",
       isCollapsed ? "w-16" : isPartiallyCollapsed ? "w-20" : "w-64"
     )}>
-      <div className="p-6 border-b border-prop-gold/20">
+      <div className="p-6 border-b border-prop-gold/20 border-r border-prop-gold/20">
         <div className="flex items-center space-x-3">
           <Link 
             href="/welcome"
@@ -136,123 +136,124 @@ export default function Sidebar() {
          <ChevronLeft className="h-3 w-3" />}
       </Button>
       
-      <nav className="mt-6 flex-1 overflow-y-auto pb-4">
-        <div className="space-y-4">
-          {/* SECTION 1: PERFORMANCE */}
-          <div className="nav-section">
-            {!isCollapsed && !isPartiallyCollapsed && (
-              <h3 className="text-xs font-medium text-prop-gold uppercase tracking-wider px-6 mb-3">
-                PERFORMANCE
-              </h3>
-            )}
-            <ul className="space-y-2 px-4">
-              {coreItems.map(({ href, label, icon: Icon }, index) => (
-                <li key={href}>
-                  <Link href={href} className={cn(
-                    "flex items-center px-4 py-3 text-sm font-medium rounded-xl smooth-transition cursor-pointer group relative",
-                    location === href 
-                      ? "bg-prop-gradient-gold text-black font-bold" 
-                      : "text-muted-foreground hover:bg-card hover:text-prop-gold hover-scale",
-                    (isCollapsed || isPartiallyCollapsed) ? "justify-center" : ""
-                  )}>
-                    <Icon className={cn(
-                      "h-5 w-5 smooth-transition",
-                      location === href ? "text-black" : "text-muted-foreground group-hover:text-prop-gold",
-                      !(isCollapsed || isPartiallyCollapsed) ? "mr-3" : ""
-                    )} />
-                    {!isCollapsed && !isPartiallyCollapsed && label}
-                    {(isCollapsed || isPartiallyCollapsed) && (
-                      <>
+      <div className="flex flex-1 border-r border-prop-gold/20">
+        <nav className="mt-6 flex-1 overflow-y-auto pb-4 w-full">
+          <div className="space-y-4">
+            {/* SECTION 1: PERFORMANCE */}
+            <div className="nav-section">
+              {!isCollapsed && !isPartiallyCollapsed && (
+                <h3 className="text-xs font-medium text-prop-gold uppercase tracking-wider px-6 mb-3">
+                  PERFORMANCE
+                </h3>
+              )}
+              <ul className="space-y-2 px-4">
+                {coreItems.map(({ href, label, icon: Icon }, index) => (
+                  <li key={href}>
+                    <Link href={href} className={cn(
+                      "flex items-center px-4 py-3 text-sm font-medium rounded-xl smooth-transition cursor-pointer group relative",
+                      location === href 
+                        ? "bg-prop-gradient-gold text-black font-bold" 
+                        : "text-muted-foreground hover:bg-card hover:text-prop-gold hover-scale",
+                      (isCollapsed || isPartiallyCollapsed) ? "justify-center" : ""
+                    )}>
+                      <Icon className={cn(
+                        "h-5 w-5 smooth-transition",
+                        location === href ? "text-black" : "text-muted-foreground group-hover:text-prop-gold",
+                        !(isCollapsed || isPartiallyCollapsed) ? "mr-3" : ""
+                      )} />
+                      {!isCollapsed && !isPartiallyCollapsed && label}
+                      {(isCollapsed || isPartiallyCollapsed) && (
+                        <>
+                          <div className="absolute left-full ml-2 px-2 py-1 bg-card border border-prop-gold/20 rounded-md text-xs text-foreground opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50 shadow-md">
+                            {label}
+                          </div>
+                          {/* Show first letter of first menu item when collapsed */}
+                          {index === 0 && (
+                            <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-prop-gold rounded-full flex items-center justify-center text-xs font-bold text-black">
+                              {label.charAt(0)}
+                            </div>
+                          )}
+                        </>
+                      )}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* SECTION 2: PRE-SESSION PLANNING */}
+            <div className="nav-section">
+              {!isCollapsed && !isPartiallyCollapsed && (
+                <h3 className="text-xs font-medium text-prop-gold uppercase tracking-wider px-6 mb-3">
+                  PRE-SESSION PLANNING
+                </h3>
+              )}
+              <ul className="space-y-2 px-4">
+                {mentalItems.map(({ href, label, icon: Icon }) => (
+                  <li key={href}>
+                    <Link href={href} className={cn(
+                      "flex items-center px-4 py-3 text-sm font-medium rounded-xl smooth-transition cursor-pointer group relative",
+                      location === href 
+                        ? "bg-prop-gradient-gold text-black font-bold" 
+                        : "text-muted-foreground hover:bg-card hover:text-prop-gold hover-scale",
+                      (isCollapsed || isPartiallyCollapsed) ? "justify-center" : ""
+                    )}>
+                      <Icon className={cn(
+                        "h-5 w-5 smooth-transition",
+                        location === href ? "text-black" : "text-muted-foreground group-hover:text-prop-gold",
+                        !(isCollapsed || isPartiallyCollapsed) ? "mr-3" : ""
+                      )} />
+                      {!isCollapsed && !isPartiallyCollapsed && label}
+                      {(isCollapsed || isPartiallyCollapsed) && (
                         <div className="absolute left-full ml-2 px-2 py-1 bg-card border border-prop-gold/20 rounded-md text-xs text-foreground opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50 shadow-md">
                           {label}
                         </div>
-                        {/* Show first letter of first menu item when collapsed */}
-                        {index === 0 && (
-                          <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-prop-gold rounded-full flex items-center justify-center text-xs font-bold text-black">
-                            {label.charAt(0)}
-                          </div>
-                        )}
-                      </>
-                    )}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
+                      )}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
 
-          {/* SECTION 2: PRE-SESSION PLANNING */}
-          <div className="nav-section">
-            {!isCollapsed && !isPartiallyCollapsed && (
-              <h3 className="text-xs font-medium text-prop-gold uppercase tracking-wider px-6 mb-3">
-                PRE-SESSION PLANNING
-              </h3>
-            )}
-            <ul className="space-y-2 px-4">
-              {mentalItems.map(({ href, label, icon: Icon }) => (
-                <li key={href}>
-                  <Link href={href} className={cn(
-                    "flex items-center px-4 py-3 text-sm font-medium rounded-xl smooth-transition cursor-pointer group relative",
-                    location === href 
-                      ? "bg-prop-gradient-gold text-black font-bold" 
-                      : "text-muted-foreground hover:bg-card hover:text-prop-gold hover-scale",
-                    (isCollapsed || isPartiallyCollapsed) ? "justify-center" : ""
-                  )}>
-                    <Icon className={cn(
-                      "h-5 w-5 smooth-transition",
-                      location === href ? "text-black" : "text-muted-foreground group-hover:text-prop-gold",
-                      !(isCollapsed || isPartiallyCollapsed) ? "mr-3" : ""
-                    )} />
-                    {!isCollapsed && !isPartiallyCollapsed && label}
-                    {(isCollapsed || isPartiallyCollapsed) && (
-                      <div className="absolute left-full ml-2 px-2 py-1 bg-card border border-prop-gold/20 rounded-md text-xs text-foreground opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50 shadow-md">
-                        {label}
-                      </div>
-                    )}
-                  </Link>
-                </li>
-              ))}
-            </ul>
+            {/* ACCOUNTS & RECORDS Section (No divider above) */}
+            <div className="nav-section">
+              {!isCollapsed && !isPartiallyCollapsed && (
+                <h3 className="text-xs font-medium text-prop-gold uppercase tracking-wider px-6 mb-3">
+                  ACCOUNTS & RECORDS
+                </h3>
+              )}
+              <ul className="space-y-2 px-4">
+                {tradingItems.map(({ href, label, icon: Icon }) => (
+                  <li key={href}>
+                    <Link href={href} className={cn(
+                      "flex items-center px-4 py-3 text-sm font-medium rounded-xl smooth-transition cursor-pointer group relative",
+                      location === href 
+                        ? "bg-prop-gradient-gold text-black font-bold" 
+                        : "text-muted-foreground hover:bg-card hover:text-prop-gold hover-scale",
+                      (isCollapsed || isPartiallyCollapsed) ? "justify-center" : ""
+                    )}>
+                      <Icon className={cn(
+                        "h-5 w-5 smooth-transition",
+                        location === href ? "text-black" : "text-muted-foreground group-hover:text-prop-gold",
+                        !(isCollapsed || isPartiallyCollapsed) ? "mr-3" : ""
+                      )} />
+                      {!isCollapsed && !isPartiallyCollapsed && label}
+                      {(isCollapsed || isPartiallyCollapsed) && (
+                        <div className="absolute left-full ml-2 px-2 py-1 bg-card border border-prop-gold/20 rounded-md text-xs text-foreground opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50 shadow-md">
+                          {label}
+                        </div>
+                      )}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
           </div>
-
-          {/* ACCOUNTS & RECORDS Section (No divider above) */}
-          <div className="nav-section">
-            {!isCollapsed && !isPartiallyCollapsed && (
-              <h3 className="text-xs font-medium text-prop-gold uppercase tracking-wider px-6 mb-3">
-                ACCOUNTS & RECORDS
-              </h3>
-            )}
-            <ul className="space-y-2 px-4">
-              {tradingItems.map(({ href, label, icon: Icon }) => (
-                <li key={href}>
-                  <Link href={href} className={cn(
-                    "flex items-center px-4 py-3 text-sm font-medium rounded-xl smooth-transition cursor-pointer group relative",
-                    location === href 
-                      ? "bg-prop-gradient-gold text-black font-bold" 
-                      : "text-muted-foreground hover:bg-card hover:text-prop-gold hover-scale",
-                    (isCollapsed || isPartiallyCollapsed) ? "justify-center" : ""
-                  )}>
-                    <Icon className={cn(
-                      "h-5 w-5 smooth-transition",
-                      location === href ? "text-black" : "text-muted-foreground group-hover:text-prop-gold",
-                      !(isCollapsed || isPartiallyCollapsed) ? "mr-3" : ""
-                    )} />
-                    {!isCollapsed && !isPartiallyCollapsed && label}
-                    {(isCollapsed || isPartiallyCollapsed) && (
-                      <div className="absolute left-full ml-2 px-2 py-1 bg-card border border-prop-gold/20 rounded-md text-xs text-foreground opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50 shadow-md">
-                        {label}
-                      </div>
-                    )}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </div>
-        
-        {/* Profile Section - Bottom with Separator */}
-        <div className="mt-auto pt-4">
-          <div className="border-t border-prop-gold/20 pt-4">
-            <ul className="space-y-2 px-4">
+          
+          {/* Profile Section - Bottom with Separator */}
+          <div className="mt-auto pt-4">
+            <div className="border-t border-prop-gold/20 pt-4">
+              <ul className="space-y-2 px-4">
             <li>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
@@ -371,7 +372,8 @@ export default function Sidebar() {
             </ul>
           </div>
         </div>
-      </nav>
+        </nav>
+      </div>
     </aside>
   );
 }
