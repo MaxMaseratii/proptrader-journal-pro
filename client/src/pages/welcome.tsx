@@ -30,7 +30,7 @@ function PropTraderHeader() {
                     <span className="text-xl font-bold leading-tight tracking-tight">
                       <span className="text-teal-600 dark:text-teal-400">PropTrader</span><span className="text-black dark:text-white"> Journal</span>
                     </span>
-                    <span className="text-xs font-medium text-black dark:text-black text-center">
+                    <span className="text-xs font-medium text-black text-center">
                       Disciplined Trading
                     </span>
                   </div>
@@ -523,7 +523,7 @@ export default function Welcome() {
                     <span className="text-xl font-bold leading-tight tracking-tight">
                       <span className="text-teal-600 dark:text-teal-400">PropTrader</span><span className="text-black dark:text-white"> Journal</span>
                     </span>
-                    <span className="text-xs font-medium text-black dark:text-black text-center">
+                    <span className="text-xs font-medium text-black text-center">
                       Disciplined Trading
                     </span>
                   </div>

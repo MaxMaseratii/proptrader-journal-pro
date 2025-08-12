@@ -1854,7 +1854,7 @@ export default function Dashboard() {
             </h2>
           </div>
           
-          <div className="bg-gradient-to-br from-cyan-900/40 via-cyan-800/60 to-cyan-700/80 border border-cyan-500/30 rounded-lg p-6">
+          <div className="widget-card p-6">
             
             {/* Enhanced Navigation Header */}
             <div className="flex items-center justify-between mb-6">
@@ -2711,7 +2711,7 @@ export default function Dashboard() {
           
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Account Status */}
-            <div className="bg-gradient-to-br from-cyan-900/40 via-cyan-800/60 to-cyan-700/80 border border-cyan-500/30 rounded-lg p-6 hover:border-amber-400/60 transition-all duration-200">
+            <div className="widget-card p-6 transition-all duration-200">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-semibold text-white">Account Status</h3>
                 <User className="w-5 h-5 text-amber-400" />
@@ -2733,7 +2733,7 @@ export default function Dashboard() {
             </div>
 
             {/* Max Maserati Account */}
-            <div className="bg-gradient-to-br from-cyan-900/40 via-cyan-800/60 to-cyan-700/80 border border-cyan-500/30 rounded-lg p-6 hover:border-amber-400/60 transition-all duration-200">
+            <div className="widget-card p-6 transition-all duration-200">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-semibold text-white">Primary Account</h3>
                 <User className="w-5 h-5 text-amber-400" />
@@ -2759,7 +2759,7 @@ export default function Dashboard() {
             </div>
 
             {/* Portfolio Summary */}
-            <div className="bg-gradient-to-br from-cyan-900/40 via-cyan-800/60 to-cyan-700/80 border border-cyan-500/30 rounded-lg p-6 hover:border-amber-400/60 transition-all duration-200">
+            <div className="widget-card p-6 transition-all duration-200">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-semibold text-white">Portfolio Summary</h3>
                 <BarChart3 className="w-5 h-5 text-amber-400" />
@@ -2924,7 +2924,7 @@ export default function Dashboard() {
           
           {/* ROW 1: Basic Costs (3 widgets) */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-            <div className="bg-gradient-to-br from-cyan-900/40 via-cyan-800/60 to-cyan-700/80 border border-cyan-500/30 rounded-lg p-4 hover:border-amber-400/60 transition-all duration-200">
+            <div className="widget-card p-4 transition-all duration-200">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-sm font-medium text-gray-300">Total Spent on Accounts</span>
                 <DollarSign className="w-4 h-4 text-amber-400" />
@@ -2935,7 +2935,7 @@ export default function Dashboard() {
               <div className="text-xs text-gray-400">Challenge & setup costs</div>
             </div>
 
-            <div className="bg-gradient-to-br from-cyan-900/40 via-cyan-800/60 to-cyan-700/80 border border-cyan-500/30 rounded-lg p-4 hover:border-amber-400/60 transition-all duration-200">
+            <div className="widget-card p-4 transition-all duration-200">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-sm font-medium text-gray-300">Reset Cost</span>
                 <RotateCcw className="w-4 h-4 text-orange-400" />
@@ -2946,7 +2946,7 @@ export default function Dashboard() {
               <div className="text-xs text-gray-400">Failed account resets</div>
             </div>
 
-            <div className="bg-gradient-to-br from-cyan-900/40 via-cyan-800/60 to-cyan-700/80 border border-cyan-500/30 rounded-lg p-4 hover:border-amber-400/60 transition-all duration-200">
+            <div className="widget-card p-4 transition-all duration-200">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-sm font-medium text-gray-300">Activation Costs</span>
                 <CheckCircle className="w-4 h-4 text-blue-400" />
@@ -2960,7 +2960,7 @@ export default function Dashboard() {
 
           {/* ROW 2: Financial Summary (3 widgets) */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="bg-gradient-to-br from-cyan-900/40 via-cyan-800/60 to-cyan-700/80 border border-cyan-500/30 rounded-lg p-4 hover:border-amber-400/60 transition-all duration-200">
+            <div className="widget-card p-4 transition-all duration-200">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-sm font-medium text-gray-300">Total Spent</span>
                 <CreditCard className="w-4 h-4 text-red-400" />
@@ -2971,7 +2971,7 @@ export default function Dashboard() {
               <div className="text-xs text-gray-400">Total investment</div>
             </div>
 
-            <div className="bg-gradient-to-br from-cyan-900/40 via-cyan-800/60 to-cyan-700/80 border border-cyan-500/30 rounded-lg p-4 hover:border-amber-400/60 transition-all duration-200">
+            <div className="widget-card p-4 transition-all duration-200">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-sm font-medium text-gray-300">Payouts</span>
                 <TrendingUp className="w-4 h-4 text-green-400" />
@@ -2982,7 +2982,7 @@ export default function Dashboard() {
               <div className="text-xs text-gray-400">Actual payouts received</div>
             </div>
 
-            <div className="bg-gradient-to-br from-cyan-900/40 via-cyan-800/60 to-cyan-700/80 border border-cyan-500/30 rounded-lg p-4 hover:border-amber-400/60 transition-all duration-200">
+            <div className="widget-card p-4 transition-all duration-200">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-sm font-medium text-gray-300">Profitability</span>
                 <TrendingUp className="w-4 h-4 text-amber-400" />
@@ -3008,7 +3008,7 @@ export default function Dashboard() {
           {/* ROW 1: Core Advanced Metrics (4 widgets) */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
             {/* Profit Factor */}
-            <div className="bg-gradient-to-br from-cyan-900/40 via-cyan-800/60 to-cyan-700/80 border border-cyan-500/30 rounded-lg p-4 hover:border-amber-400/60 transition-all duration-200">
+            <div className="widget-card p-4 transition-all duration-200">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-sm font-medium text-gray-300">Profit Factor</span>
                 <Target className="w-4 h-4 text-green-400" />
@@ -3031,7 +3031,7 @@ export default function Dashboard() {
             </div>
 
             {/* Sharpe Ratio */}
-            <div className="bg-gradient-to-br from-cyan-900/40 via-cyan-800/60 to-cyan-700/80 border border-cyan-500/30 rounded-lg p-4 hover:border-amber-400/60 transition-all duration-200">
+            <div className="widget-card p-4 transition-all duration-200">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-sm font-medium text-gray-300">Sharpe Ratio</span>
                 <TrendingUp className="w-4 h-4 text-blue-400" />
@@ -3060,7 +3060,7 @@ export default function Dashboard() {
             </div>
 
             {/* Max Consecutive Wins */}
-            <div className="bg-gradient-to-br from-cyan-900/40 via-cyan-800/60 to-cyan-700/80 border border-cyan-500/30 rounded-lg p-4 hover:border-amber-400/60 transition-all duration-200">
+            <div className="widget-card p-4 transition-all duration-200">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-sm font-medium text-gray-300">Max Consecutive Wins</span>
                 <TrendingUp className="w-4 h-4 text-green-400" />
@@ -3084,7 +3084,7 @@ export default function Dashboard() {
             </div>
 
             {/* Max Consecutive Losses */}
-            <div className="bg-gradient-to-br from-cyan-900/40 via-cyan-800/60 to-cyan-700/80 border border-cyan-500/30 rounded-lg p-4 hover:border-amber-400/60 transition-all duration-200">
+            <div className="widget-card p-4 transition-all duration-200">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-sm font-medium text-gray-300">Max Consecutive Losses</span>
                 <TrendingDown className="w-4 h-4 text-red-400" />
@@ -3111,7 +3111,7 @@ export default function Dashboard() {
           {/* ROW 2: Risk Metrics (3 widgets) */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {/* Largest Win */}
-            <div className="bg-gradient-to-br from-cyan-900/40 via-cyan-800/60 to-cyan-700/80 border border-cyan-500/30 rounded-lg p-4 hover:border-amber-400/60 transition-all duration-200">
+            <div className="widget-card p-4 transition-all duration-200">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-sm font-medium text-gray-300">Largest Win</span>
                 <Trophy className="w-4 h-4 text-yellow-400" />
@@ -3123,7 +3123,7 @@ export default function Dashboard() {
             </div>
 
             {/* Largest Loss */}
-            <div className="bg-gradient-to-br from-cyan-900/40 via-cyan-800/60 to-cyan-700/80 border border-cyan-500/30 rounded-lg p-4 hover:border-amber-400/60 transition-all duration-200">
+            <div className="widget-card p-4 transition-all duration-200">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-sm font-medium text-gray-300">Largest Loss</span>
                 <AlertTriangle className="w-4 h-4 text-red-400" />
@@ -3135,7 +3135,7 @@ export default function Dashboard() {
             </div>
 
             {/* Average R:R Ratio */}
-            <div className="bg-gradient-to-br from-cyan-900/40 via-cyan-800/60 to-cyan-700/80 border border-cyan-500/30 rounded-lg p-4 hover:border-amber-400/60 transition-all duration-200">
+            <div className="widget-card p-4 transition-all duration-200">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-sm font-medium text-gray-300">Avg R:R Ratio</span>
                 <Scale className="w-4 h-4 text-amber-400" />

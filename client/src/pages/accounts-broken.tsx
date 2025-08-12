@@ -240,7 +240,16 @@ export default function AccountManagement() {
             </h1>
             <p className="text-gray-400 mt-2">Manage your trading accounts and monitor performance</p>
           </div>
-        </div>
+          
+          {/* Create Account Dialog */}
+          <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
+            <DialogTrigger asChild>
+              <Button className="bg-gradient-to-r from-yellow-400 to-amber-500 hover:from-yellow-500 hover:to-amber-600 text-black font-semibold">
+                <Plus className="mr-2 h-4 w-4" />
+                Create Account
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 border border-teal-500/30 text-white max-w-4xl max-h-[80vh] overflow-hidden">
               <DialogHeader>
                 <DialogTitle className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-yellow-600">
                   Create New Trading Account
