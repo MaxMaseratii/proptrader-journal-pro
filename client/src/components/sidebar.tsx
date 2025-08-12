@@ -102,18 +102,20 @@ export default function Sidebar() {
         <div className="flex items-center space-x-3">
           <Link 
             href="/welcome"
-            className="bg-gradient-to-r from-yellow-400 to-amber-500 p-2 rounded-lg shadow-lg hover-glow smooth-transition cursor-pointer block"
+            className="bg-gradient-to-r from-yellow-400 to-amber-500 p-3 rounded-lg shadow-xl hover-glow smooth-transition cursor-pointer block"
           >
-            <div className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-black rounded-lg flex items-center justify-center">
-                <Crown className="h-5 w-5 text-yellow-400" />
+            <div className="flex items-center space-x-3">
+              <div className="w-10 h-10 bg-black rounded-lg border-2 border-teal-500 flex items-center justify-center shadow-lg">
+                <Crown className="w-5 h-5 text-yellow-400" />
               </div>
               {!isCollapsed && !isPartiallyCollapsed && (
-                <div>
-                  <h1 className="text-sm font-bold">
-                    <span className="text-teal-600">PropTrader</span><span className="text-black"> Journal</span>
-                  </h1>
-                  <p className="text-xs text-black">Disciplined Trading</p>
+                <div className="flex flex-col">
+                  <span className="text-sm font-bold leading-tight tracking-tight whitespace-nowrap">
+                    <span className="text-teal-600">PropTrader</span><span className="text-black dark:text-black"> Journal</span>
+                  </span>
+                  <span className="text-xs font-medium text-black dark:text-black text-center whitespace-nowrap">
+                    Disciplined Trading
+                  </span>
                 </div>
               )}
             </div>

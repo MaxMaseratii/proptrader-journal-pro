@@ -11,39 +11,65 @@ interface ThemeContextType {
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setTheme] = useState<Theme>(() => {
-    // Check localStorage first, then system preference, default to dark
-    const stored = localStorage.getItem('prop-journal-theme') as Theme;
-    if (stored && (stored === 'light' || stored === 'dark')) {
-      return stored;
+  const [theme, setThemeState] = useState<Theme>(() => {
+    // Check if we're on the welcome page
+    const isWelcomePage = window.location.pathname === '/welcome' || window.location.pathname === '/';
+    
+    if (isWelcomePage) {
+      return 'dark'; // Welcome page always starts dark
     }
     
-    // Check system preference
-    if (window.matchMedia('(prefers-color-scheme: light)').matches) {
-      return 'light';
-    }
-    
-    return 'dark';
+    // For other pages, check localStorage or default to light
+    const saved = localStorage.getItem('prop-journal-theme') as Theme | null;
+    return saved || 'light';
   });
 
   useEffect(() => {
-    // Apply theme to document root
+    // Apply theme to document
     const root = document.documentElement;
+    root.classList.remove('light', 'dark');
+    root.classList.add(theme);
     
-    if (theme === 'light') {
-      root.classList.add('light');
-      root.classList.remove('dark');
-    } else {
-      root.classList.add('dark');
-      root.classList.remove('light');
+    // Only save theme preference for non-welcome pages
+    const isWelcomePage = window.location.pathname === '/welcome' || window.location.pathname === '/';
+    if (!isWelcomePage) {
+      localStorage.setItem('prop-journal-theme', theme);
     }
+  }, [theme]);
+
+  // Listen for location changes to handle theme when navigating away from welcome
+  useEffect(() => {
+    const handleLocationChange = () => {
+      const isWelcomePage = window.location.pathname === '/welcome' || window.location.pathname === '/';
+      
+      if (isWelcomePage) {
+        // Force dark theme for welcome page
+        setThemeState('dark');
+        document.documentElement.classList.remove('light');
+        document.documentElement.classList.add('dark');
+      } else {
+        // Restore user's preferred theme when leaving welcome page
+        const savedTheme = localStorage.getItem('prop-journal-theme') as Theme | null;
+        if (savedTheme && savedTheme !== theme) {
+          setThemeState(savedTheme);
+        }
+      }
+    };
+
+    // Listen for popstate events (back/forward navigation)
+    window.addEventListener('popstate', handleLocationChange);
     
-    // Store in localStorage
-    localStorage.setItem('prop-journal-theme', theme);
+    return () => {
+      window.removeEventListener('popstate', handleLocationChange);
+    };
   }, [theme]);
 
   const toggleTheme = () => {
-    setTheme(prev => prev === 'dark' ? 'light' : 'dark');
+    setThemeState(prev => prev === 'dark' ? 'light' : 'dark');
+  };
+
+  const setTheme = (newTheme: Theme) => {
+    setThemeState(newTheme);
   };
 
   return (
