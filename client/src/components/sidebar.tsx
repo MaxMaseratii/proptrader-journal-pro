@@ -287,15 +287,14 @@ export default function Sidebar() {
         </div>
       </nav>
       
-      {/* SEPARATE Profile Section - Isolated Footer with Border Above */}
-      <div className="border-t border-prop-gold/20 pt-4 pb-4">
-        <div className="">
-            <ul className="space-y-2 px-4">
-            <li>
+      {/* SEPARATE Profile Section - Minimal Footer */}
+      <div className="border-t border-prop-gold/20 pt-2 pb-2">
+        <ul className="space-y-1 px-4">
+          <li>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <button className={cn(
-                    "w-full flex items-center px-4 py-3 text-sm font-medium rounded-xl smooth-transition cursor-pointer group relative",
+                    "w-full flex items-center px-4 py-2 text-sm font-medium rounded-xl smooth-transition cursor-pointer group relative",
                     location === "/profile" 
                       ? "bg-prop-gradient-gold text-black font-bold" 
                       : "text-muted-foreground hover:bg-card hover:text-prop-gold hover-scale",
@@ -405,10 +404,9 @@ export default function Sidebar() {
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
-            </li>
-            </ul>
-          </div>
-        </div>
+          </li>
+        </ul>
+      </div>
     </aside>
   );
 }
