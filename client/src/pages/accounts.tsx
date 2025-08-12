@@ -351,7 +351,7 @@ export default function AccountsPage() {
         </div>
         
         <Dialog open={isCreateDialogOpen} onOpenChange={(open) => !open && handleCloseCreateDialog()}>
-          <DialogContent className="max-w-4xl max-h-[90vh] bg-gradient-to-br from-gray-900 via-gray-800 to-black border border-yellow-400/20 overflow-hidden">
+          <DialogContent className="max-w-4xl max-h-[85vh] bg-gradient-to-br from-gray-900 via-gray-800 to-black border border-yellow-400/20">
             <DialogHeader>
               <DialogTitle className="text-lg font-semibold text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-yellow-600">
                 Create New Trading Account
@@ -360,12 +360,10 @@ export default function AccountsPage() {
                 Set up a comprehensive trading account with your financial goals, risk parameters, and trading preferences.
               </DialogDescription>
             </DialogHeader>
-            <div className="flex flex-col h-full max-h-[75vh]">
-                
-                <div className="flex-1 overflow-y-auto py-4">
+            <div className="max-h-[60vh] overflow-y-auto py-4">
                   <Form {...form}>
                     <form id="create-account-form" onSubmit={form.handleSubmit(handleCreateAccount)} className="space-y-6">
-                    <Tabs defaultValue="basic" className="w-full">
+                    <Tabs value="basic" className="w-full">
                       <TabsList className="grid w-full grid-cols-3 bg-gray-800/50">
                         <TabsTrigger value="basic" className="data-[state=active]:bg-yellow-500 data-[state=active]:text-black">
                           Basic Info
@@ -1304,7 +1302,7 @@ export default function AccountsPage() {
               </div>
               
               {/* Form Actions - Fixed at bottom */}
-              <div className="flex-shrink-0 flex justify-end space-x-3 pt-4 border-t border-gray-700 bg-gradient-to-br from-gray-900 via-gray-800 to-black">
+              <div className="flex justify-end space-x-3 pt-4 mt-4 border-t border-gray-700">
                 <Button
                   type="button"
                   variant="outline"
@@ -1322,7 +1320,6 @@ export default function AccountsPage() {
                   {createAccountMutation.isPending ? 'Creating...' : 'Create Account'}
                 </Button>
               </div>
-            </div>
           </DialogContent>
         </Dialog>
 
