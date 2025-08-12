@@ -285,10 +285,11 @@ export default function Sidebar() {
             </ul>
           </div>
         </div>
-        
-        {/* Profile Section - Bottom with Separator ABOVE Profile */}
-        <div className="mt-auto border-t border-prop-gold/20 pt-4">
-          <div className="pt-0">
+      </nav>
+      
+      {/* SEPARATE Profile Section - Isolated Footer with Border Above */}
+      <div className="border-t border-prop-gold/20 pt-4 pb-4">
+        <div className="">
             <ul className="space-y-2 px-4">
             <li>
               <DropdownMenu>
@@ -408,7 +409,6 @@ export default function Sidebar() {
             </ul>
           </div>
         </div>
-      </nav>
     </aside>
   );
 }
