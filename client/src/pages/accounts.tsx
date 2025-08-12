@@ -159,7 +159,6 @@ export default function AccountsPage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/accounts'] });
       setIsCreateDialogOpen(false);
-      form.reset();
       toast({
         title: 'Account Created',
         description: 'Your trading account has been created successfully.',
@@ -276,11 +275,10 @@ export default function AccountsPage() {
     }
   }, [editingAccount, updateAccountMutation]);
 
-  // Stable dialog close handlers
+  // Simple dialog close handler
   const handleCloseCreateDialog = useCallback(() => {
     setIsCreateDialogOpen(false);
-    form.reset();
-  }, [form]);
+  }, []);
 
   const handleCloseEditDialog = useCallback(() => {
     setIsEditDialogOpen(false);
@@ -350,7 +348,12 @@ export default function AccountsPage() {
           </div>
         </div>
         
-        <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
+        <Dialog open={isCreateDialogOpen} onOpenChange={(open) => {
+          setIsCreateDialogOpen(open);
+          if (!open) {
+            form.reset();
+          }
+        }}>
           <DialogContent className="max-w-4xl bg-gradient-to-br from-gray-900 via-gray-800 to-black border border-yellow-400/20 max-h-[90vh] overflow-hidden">
             <DialogHeader>
               <DialogTitle className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-yellow-600">
