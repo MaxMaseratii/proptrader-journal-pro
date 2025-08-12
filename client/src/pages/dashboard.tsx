@@ -1854,7 +1854,7 @@ export default function Dashboard() {
             </h2>
           </div>
           
-          <div className="bg-gradient-to-br from-gray-900/40 via-gray-800/60 to-black/80 border border-gray-600/30 rounded-lg p-6">
+          <div className="bg-gradient-to-br from-cyan-900/40 via-cyan-800/60 to-cyan-700/80 border border-cyan-500/30 rounded-lg p-6">
             
             {/* Enhanced Navigation Header */}
             <div className="flex items-center justify-between mb-6">
@@ -1974,8 +1974,8 @@ export default function Dashboard() {
               <div className="grid grid-cols-5 gap-3">
                 
                 {/* Period P&L */}
-                <div className="bg-black/30 rounded-lg p-3 border border-gray-700/50 relative">
-                  <div className="absolute top-2 right-2 text-xs text-gray-400">
+                <div className="bg-cyan-600/30 rounded-lg p-3 border border-cyan-400/50 relative">
+                  <div className="absolute top-2 right-2 text-xs text-cyan-300">
                     P&L
                   </div>
                   <div className={`text-xl font-bold ${combinedAnalytics?.totalPnl >= 0 ? 'text-green-400' : 'text-red-400'} mb-1`}>
@@ -1985,7 +1985,7 @@ export default function Dashboard() {
                 </div>
 
                 {/* Total Trades */}
-                <div className="bg-black/30 rounded-lg p-3 border border-gray-700/50 relative">
+                <div className="bg-cyan-600/30 rounded-lg p-3 border border-cyan-400/50 relative">
                   <div className="absolute top-2 right-2 text-xs text-amber-300">
                     T
                   </div>
@@ -1999,7 +1999,7 @@ export default function Dashboard() {
                 </div>
 
                 {/* Win Rate */}
-                <div className="bg-black/30 rounded-lg p-3 border border-gray-700/50 relative">
+                <div className="bg-cyan-600/30 rounded-lg p-3 border border-cyan-400/50 relative">
                   <div className="absolute top-2 right-2 text-xs text-emerald-300">
                     WR
                   </div>
@@ -2013,7 +2013,7 @@ export default function Dashboard() {
                 </div>
 
                 {/* Total Wins and Losses */}
-                <div className="bg-black/30 rounded-lg p-3 border border-gray-700/50 relative">
+                <div className="bg-cyan-600/30 rounded-lg p-3 border border-cyan-400/50 relative">
                   <div className="absolute top-2 right-2 text-xs text-green-300">
                     W/L
                   </div>
@@ -2028,7 +2028,7 @@ export default function Dashboard() {
                 </div>
 
                 {/* Average Win/Loss */}
-                <div className="bg-black/30 rounded-lg p-3 border border-gray-700/50 relative">
+                <div className="bg-cyan-600/30 rounded-lg p-3 border border-cyan-400/50 relative">
                   <div className="absolute top-2 right-2 text-xs text-blue-300">
                     AVG
                   </div>
@@ -2201,7 +2201,7 @@ export default function Dashboard() {
           
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Latest Trades */}
-            <div className="bg-gradient-to-br from-gray-900/40 via-gray-800/60 to-black/80 border border-gray-600/30 rounded-lg p-6 hover:border-amber-400/60 transition-all duration-200">
+            <div className="bg-gradient-to-br from-cyan-900/40 via-cyan-800/60 to-cyan-700/80 border border-cyan-500/30 rounded-lg p-6 hover:border-amber-400/60 transition-all duration-200">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-semibold text-white">Latest Trades</h3>
                 <Activity className="w-5 h-5 text-amber-400" />
@@ -2213,7 +2213,7 @@ export default function Dashboard() {
                     .slice(-5)
                     .reverse()
                     .map((trade, index) => (
-                      <div key={trade.id || index} className="bg-black/30 rounded-lg p-3 hover:bg-black/40 transition-colors duration-200">
+                      <div key={trade.id || index} className="bg-cyan-600/30 rounded-lg p-3 hover:bg-cyan-600/40 transition-colors duration-200">
                         <div className="flex justify-between items-start mb-1">
                           <span className="text-white font-medium">{trade.symbol}</span>
                           <span className={`font-bold ${(trade.pnl || 0) >= 0 ? 'text-green-400' : 'text-red-400'}`}>
@@ -2273,7 +2273,7 @@ export default function Dashboard() {
             </div>
 
             {/* Account Equity Curve - Premium Design */}
-            <div className="bg-black border border-gray-800 rounded-lg overflow-hidden">
+            <div className="bg-cyan-900/60 border border-cyan-600/60 rounded-lg overflow-hidden">
               {/* Premium Header with Live Stats */}
               <div className="px-6 py-4 border-b border-gray-800">
                 <div className="flex items-center justify-between">
@@ -2711,7 +2711,7 @@ export default function Dashboard() {
           
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Account Status */}
-            <div className="bg-gradient-to-br from-gray-900/40 via-gray-800/60 to-black/80 border border-gray-600/30 rounded-lg p-6 hover:border-amber-400/60 transition-all duration-200">
+            <div className="bg-gradient-to-br from-cyan-900/40 via-cyan-800/60 to-cyan-700/80 border border-cyan-500/30 rounded-lg p-6 hover:border-amber-400/60 transition-all duration-200">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-semibold text-white">Account Status</h3>
                 <User className="w-5 h-5 text-amber-400" />
@@ -2733,7 +2733,7 @@ export default function Dashboard() {
             </div>
 
             {/* Max Maserati Account */}
-            <div className="bg-gradient-to-br from-gray-900/40 via-gray-800/60 to-black/80 border border-gray-600/30 rounded-lg p-6 hover:border-amber-400/60 transition-all duration-200">
+            <div className="bg-gradient-to-br from-cyan-900/40 via-cyan-800/60 to-cyan-700/80 border border-cyan-500/30 rounded-lg p-6 hover:border-amber-400/60 transition-all duration-200">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-semibold text-white">Primary Account</h3>
                 <User className="w-5 h-5 text-amber-400" />
@@ -2759,7 +2759,7 @@ export default function Dashboard() {
             </div>
 
             {/* Portfolio Summary */}
-            <div className="bg-gradient-to-br from-gray-900/40 via-gray-800/60 to-black/80 border border-gray-600/30 rounded-lg p-6 hover:border-amber-400/60 transition-all duration-200">
+            <div className="bg-gradient-to-br from-cyan-900/40 via-cyan-800/60 to-cyan-700/80 border border-cyan-500/30 rounded-lg p-6 hover:border-amber-400/60 transition-all duration-200">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-semibold text-white">Portfolio Summary</h3>
                 <BarChart3 className="w-5 h-5 text-amber-400" />
@@ -2798,7 +2798,7 @@ export default function Dashboard() {
           
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Discipline Score Breakdown */}
-            <div className="bg-gradient-to-br from-gray-900/40 via-gray-800/60 to-black/80 border border-gray-600/30 rounded-lg p-6 hover:border-amber-400/60 transition-all duration-200">
+            <div className="bg-gradient-to-br from-cyan-900/40 via-cyan-800/60 to-cyan-700/80 border border-cyan-500/30 rounded-lg p-6 hover:border-amber-400/60 transition-all duration-200">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-semibold text-white">Discipline Score Breakdown</h3>
                 <Brain className="w-5 h-5 text-amber-400" />
@@ -2853,7 +2853,7 @@ export default function Dashboard() {
             </div>
 
             {/* Risk Alert */}
-            <div className="bg-gradient-to-br from-gray-900/40 via-gray-800/60 to-black/80 border border-gray-600/30 rounded-lg p-6 hover:border-amber-400/60 transition-all duration-200">
+            <div className="bg-gradient-to-br from-cyan-900/40 via-cyan-800/60 to-cyan-700/80 border border-cyan-500/30 rounded-lg p-6 hover:border-amber-400/60 transition-all duration-200">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-semibold text-white">Risk Alert</h3>
                 <AlertTriangle className="w-5 h-5 text-amber-400" />
@@ -2878,7 +2878,7 @@ export default function Dashboard() {
                     .sort((a, b) => b.riskPercentage - a.riskPercentage)
                     .slice(0, 3)
                     .map(({ account, riskPercentage, currentDrawdown, dailyLossLimit }) => (
-                      <div key={account.id} className="bg-black/30 rounded-lg p-3">
+                      <div key={account.id} className="bg-cyan-600/30 rounded-lg p-3">
                         <div className="flex justify-between text-sm mb-2">
                           <span className="truncate">{account.name}</span>
                           <span className={`font-medium ${
@@ -2924,7 +2924,7 @@ export default function Dashboard() {
           
           {/* ROW 1: Basic Costs (3 widgets) */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-            <div className="bg-gradient-to-br from-gray-900/40 via-gray-800/60 to-black/80 border border-gray-600/30 rounded-lg p-4 hover:border-amber-400/60 transition-all duration-200">
+            <div className="bg-gradient-to-br from-cyan-900/40 via-cyan-800/60 to-cyan-700/80 border border-cyan-500/30 rounded-lg p-4 hover:border-amber-400/60 transition-all duration-200">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-sm font-medium text-gray-300">Total Spent on Accounts</span>
                 <DollarSign className="w-4 h-4 text-amber-400" />
@@ -2935,7 +2935,7 @@ export default function Dashboard() {
               <div className="text-xs text-gray-400">Challenge & setup costs</div>
             </div>
 
-            <div className="bg-gradient-to-br from-gray-900/40 via-gray-800/60 to-black/80 border border-gray-600/30 rounded-lg p-4 hover:border-amber-400/60 transition-all duration-200">
+            <div className="bg-gradient-to-br from-cyan-900/40 via-cyan-800/60 to-cyan-700/80 border border-cyan-500/30 rounded-lg p-4 hover:border-amber-400/60 transition-all duration-200">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-sm font-medium text-gray-300">Reset Cost</span>
                 <RotateCcw className="w-4 h-4 text-orange-400" />
@@ -2946,7 +2946,7 @@ export default function Dashboard() {
               <div className="text-xs text-gray-400">Failed account resets</div>
             </div>
 
-            <div className="bg-gradient-to-br from-gray-900/40 via-gray-800/60 to-black/80 border border-gray-600/30 rounded-lg p-4 hover:border-amber-400/60 transition-all duration-200">
+            <div className="bg-gradient-to-br from-cyan-900/40 via-cyan-800/60 to-cyan-700/80 border border-cyan-500/30 rounded-lg p-4 hover:border-amber-400/60 transition-all duration-200">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-sm font-medium text-gray-300">Activation Costs</span>
                 <CheckCircle className="w-4 h-4 text-blue-400" />
@@ -2960,7 +2960,7 @@ export default function Dashboard() {
 
           {/* ROW 2: Financial Summary (3 widgets) */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="bg-gradient-to-br from-gray-900/40 via-gray-800/60 to-black/80 border border-gray-600/30 rounded-lg p-4 hover:border-amber-400/60 transition-all duration-200">
+            <div className="bg-gradient-to-br from-cyan-900/40 via-cyan-800/60 to-cyan-700/80 border border-cyan-500/30 rounded-lg p-4 hover:border-amber-400/60 transition-all duration-200">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-sm font-medium text-gray-300">Total Spent</span>
                 <CreditCard className="w-4 h-4 text-red-400" />
@@ -2971,7 +2971,7 @@ export default function Dashboard() {
               <div className="text-xs text-gray-400">Total investment</div>
             </div>
 
-            <div className="bg-gradient-to-br from-gray-900/40 via-gray-800/60 to-black/80 border border-gray-600/30 rounded-lg p-4 hover:border-amber-400/60 transition-all duration-200">
+            <div className="bg-gradient-to-br from-cyan-900/40 via-cyan-800/60 to-cyan-700/80 border border-cyan-500/30 rounded-lg p-4 hover:border-amber-400/60 transition-all duration-200">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-sm font-medium text-gray-300">Payouts</span>
                 <TrendingUp className="w-4 h-4 text-green-400" />
@@ -2982,7 +2982,7 @@ export default function Dashboard() {
               <div className="text-xs text-gray-400">Actual payouts received</div>
             </div>
 
-            <div className="bg-gradient-to-br from-gray-900/40 via-gray-800/60 to-black/80 border border-gray-600/30 rounded-lg p-4 hover:border-amber-400/60 transition-all duration-200">
+            <div className="bg-gradient-to-br from-cyan-900/40 via-cyan-800/60 to-cyan-700/80 border border-cyan-500/30 rounded-lg p-4 hover:border-amber-400/60 transition-all duration-200">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-sm font-medium text-gray-300">Profitability</span>
                 <TrendingUp className="w-4 h-4 text-amber-400" />
@@ -3008,7 +3008,7 @@ export default function Dashboard() {
           {/* ROW 1: Core Advanced Metrics (4 widgets) */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
             {/* Profit Factor */}
-            <div className="bg-gradient-to-br from-gray-900/40 via-gray-800/60 to-black/80 border border-gray-600/30 rounded-lg p-4 hover:border-amber-400/60 transition-all duration-200">
+            <div className="bg-gradient-to-br from-cyan-900/40 via-cyan-800/60 to-cyan-700/80 border border-cyan-500/30 rounded-lg p-4 hover:border-amber-400/60 transition-all duration-200">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-sm font-medium text-gray-300">Profit Factor</span>
                 <Target className="w-4 h-4 text-green-400" />
@@ -3031,7 +3031,7 @@ export default function Dashboard() {
             </div>
 
             {/* Sharpe Ratio */}
-            <div className="bg-gradient-to-br from-gray-900/40 via-gray-800/60 to-black/80 border border-gray-600/30 rounded-lg p-4 hover:border-amber-400/60 transition-all duration-200">
+            <div className="bg-gradient-to-br from-cyan-900/40 via-cyan-800/60 to-cyan-700/80 border border-cyan-500/30 rounded-lg p-4 hover:border-amber-400/60 transition-all duration-200">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-sm font-medium text-gray-300">Sharpe Ratio</span>
                 <TrendingUp className="w-4 h-4 text-blue-400" />
@@ -3060,7 +3060,7 @@ export default function Dashboard() {
             </div>
 
             {/* Max Consecutive Wins */}
-            <div className="bg-gradient-to-br from-gray-900/40 via-gray-800/60 to-black/80 border border-gray-600/30 rounded-lg p-4 hover:border-amber-400/60 transition-all duration-200">
+            <div className="bg-gradient-to-br from-cyan-900/40 via-cyan-800/60 to-cyan-700/80 border border-cyan-500/30 rounded-lg p-4 hover:border-amber-400/60 transition-all duration-200">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-sm font-medium text-gray-300">Max Consecutive Wins</span>
                 <TrendingUp className="w-4 h-4 text-green-400" />
@@ -3084,7 +3084,7 @@ export default function Dashboard() {
             </div>
 
             {/* Max Consecutive Losses */}
-            <div className="bg-gradient-to-br from-gray-900/40 via-gray-800/60 to-black/80 border border-gray-600/30 rounded-lg p-4 hover:border-amber-400/60 transition-all duration-200">
+            <div className="bg-gradient-to-br from-cyan-900/40 via-cyan-800/60 to-cyan-700/80 border border-cyan-500/30 rounded-lg p-4 hover:border-amber-400/60 transition-all duration-200">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-sm font-medium text-gray-300">Max Consecutive Losses</span>
                 <TrendingDown className="w-4 h-4 text-red-400" />
@@ -3111,7 +3111,7 @@ export default function Dashboard() {
           {/* ROW 2: Risk Metrics (3 widgets) */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {/* Largest Win */}
-            <div className="bg-gradient-to-br from-gray-900/40 via-gray-800/60 to-black/80 border border-gray-600/30 rounded-lg p-4 hover:border-amber-400/60 transition-all duration-200">
+            <div className="bg-gradient-to-br from-cyan-900/40 via-cyan-800/60 to-cyan-700/80 border border-cyan-500/30 rounded-lg p-4 hover:border-amber-400/60 transition-all duration-200">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-sm font-medium text-gray-300">Largest Win</span>
                 <Trophy className="w-4 h-4 text-yellow-400" />
@@ -3123,7 +3123,7 @@ export default function Dashboard() {
             </div>
 
             {/* Largest Loss */}
-            <div className="bg-gradient-to-br from-gray-900/40 via-gray-800/60 to-black/80 border border-gray-600/30 rounded-lg p-4 hover:border-amber-400/60 transition-all duration-200">
+            <div className="bg-gradient-to-br from-cyan-900/40 via-cyan-800/60 to-cyan-700/80 border border-cyan-500/30 rounded-lg p-4 hover:border-amber-400/60 transition-all duration-200">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-sm font-medium text-gray-300">Largest Loss</span>
                 <AlertTriangle className="w-4 h-4 text-red-400" />
@@ -3135,7 +3135,7 @@ export default function Dashboard() {
             </div>
 
             {/* Average R:R Ratio */}
-            <div className="bg-gradient-to-br from-gray-900/40 via-gray-800/60 to-black/80 border border-gray-600/30 rounded-lg p-4 hover:border-amber-400/60 transition-all duration-200">
+            <div className="bg-gradient-to-br from-cyan-900/40 via-cyan-800/60 to-cyan-700/80 border border-cyan-500/30 rounded-lg p-4 hover:border-amber-400/60 transition-all duration-200">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-sm font-medium text-gray-300">Avg R:R Ratio</span>
                 <Scale className="w-4 h-4 text-amber-400" />
