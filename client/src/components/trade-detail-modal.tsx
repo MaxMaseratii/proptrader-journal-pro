@@ -167,7 +167,7 @@ const TradeDetailModal = ({ trade, isOpen, onClose }: TradeDetailModalProps) => 
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-7xl max-h-[95vh] overflow-y-auto bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 border border-purple-500/30">
+      <DialogContent className="max-w-7xl max-h-[95vh] overflow-y-auto bg-gradient-to-br from-teal-900/40 via-cyan-900/30 to-teal-800/40 border border-teal-400/30">
         <DialogHeader>
           <DialogTitle className="text-2xl font-bold text-white flex items-center gap-4">
             <div className="flex items-center gap-3">

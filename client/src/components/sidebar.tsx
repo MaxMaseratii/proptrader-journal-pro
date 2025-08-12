@@ -105,15 +105,15 @@ export default function Sidebar() {
             className="bg-gradient-to-r from-yellow-400 to-amber-500 p-3 rounded-lg shadow-xl hover-glow smooth-transition cursor-pointer block"
           >
             <div className="flex items-center space-x-3">
-              <div className="w-12 h-12 bg-black rounded-lg border-2 border-teal-500 flex items-center justify-center shadow-lg">
-                <Crown className="w-7 h-7 text-yellow-400" />
+              <div className="w-10 h-10 bg-black rounded-lg border-2 border-teal-500 flex items-center justify-center shadow-lg">
+                <Crown className="w-5 h-5 text-yellow-400" />
               </div>
               {!isCollapsed && !isPartiallyCollapsed && (
                 <div className="flex flex-col">
-                  <span className="text-xl font-bold leading-tight tracking-tight">
+                  <span className="text-lg font-bold leading-tight tracking-tight">
                     <span className="text-teal-600">PropTrader</span><span className="text-black"> Journal</span>
                   </span>
-                  <span className="text-sm font-medium text-black text-center">
+                  <span className="text-xs font-medium text-black text-center">
                     Disciplined Trading
                   </span>
                 </div>
