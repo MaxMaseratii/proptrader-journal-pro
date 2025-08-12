@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -94,6 +94,11 @@ function PropTraderHeader() {
 }
 
 export default function Welcome() {
+  // Force dark theme for welcome page only
+  useEffect(() => {
+    document.documentElement.classList.add('dark');
+    document.documentElement.classList.remove('light');
+  }, []);
   const [, setLocation] = useLocation();
 
   // Enhanced features with powerful descriptions and brand colors

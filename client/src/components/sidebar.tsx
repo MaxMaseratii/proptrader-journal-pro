@@ -110,10 +110,10 @@ export default function Sidebar() {
               </div>
               {!isCollapsed && !isPartiallyCollapsed && (
                 <div className="flex flex-col">
-                  <span className="text-lg font-bold leading-tight tracking-tight">
+                  <span className="text-sm font-bold leading-tight tracking-tight whitespace-nowrap">
                     <span className="text-teal-600">PropTrader</span><span className="text-black"> Journal</span>
                   </span>
-                  <span className="text-xs font-medium text-black text-center">
+                  <span className="text-xs font-medium text-black text-center whitespace-nowrap">
                     Disciplined Trading
                   </span>
                 </div>

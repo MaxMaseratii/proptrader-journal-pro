@@ -11,24 +11,38 @@ interface ThemeContextType {
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setTheme] = useState<Theme>(() => {
-    // Always use dark theme as the only option
-    return 'dark';
+  const [theme, setThemeState] = useState<Theme>(() => {
+    // Check if we're on the welcome page
+    const isWelcomePage = window.location.pathname === '/welcome' || window.location.pathname === '/';
+    
+    if (isWelcomePage) {
+      return 'dark'; // Welcome page always starts dark
+    }
+    
+    // For other pages, check localStorage or default to light
+    const saved = localStorage.getItem('prop-journal-theme') as Theme | null;
+    return saved || 'light';
   });
 
   useEffect(() => {
-    // Always apply dark theme as the only option
+    // Apply theme to document
     const root = document.documentElement;
-    root.classList.add('dark');
-    root.classList.remove('light');
+    root.classList.remove('light', 'dark');
+    root.classList.add(theme);
     
-    // Store dark theme in localStorage
-    localStorage.setItem('prop-journal-theme', 'dark');
-  }, []);
+    // Only save theme preference for non-welcome pages
+    const isWelcomePage = window.location.pathname === '/welcome' || window.location.pathname === '/';
+    if (!isWelcomePage) {
+      localStorage.setItem('prop-journal-theme', theme);
+    }
+  }, [theme]);
 
   const toggleTheme = () => {
-    // Dark theme is the only option, no toggling
-    return;
+    setThemeState(prev => prev === 'dark' ? 'light' : 'dark');
+  };
+
+  const setTheme = (newTheme: Theme) => {
+    setThemeState(newTheme);
   };
 
   return (
