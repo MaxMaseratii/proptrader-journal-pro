@@ -287,7 +287,7 @@ export default function AccountManagement() {
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel className="text-white">Account Type</FormLabel>
-                          <Select onValueChange={field.onChange} defaultValue={field.value}>
+                          <Select onValueChange={field.onChange} value={field.value}>
                             <FormControl>
                               <SelectTrigger className="bg-white border-gray-300 text-black">
                                 <SelectValue placeholder="Select type" />
