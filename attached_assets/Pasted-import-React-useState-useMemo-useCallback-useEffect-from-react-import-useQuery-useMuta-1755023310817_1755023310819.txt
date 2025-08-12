@@ -11,7 +11,6 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Switch } from '@/components/ui/switch';
 import { Slider } from '@/components/ui/slider';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ScrollArea } from '@/components/ui/scroll-area';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -30,7 +29,6 @@ import {
   EyeOff,
   X
 } from 'lucide-react';
-import { useLocation } from 'wouter';
 
 // Comprehensive schema for account creation form
 const accountFormSchema = z.object({
@@ -39,34 +37,34 @@ const accountFormSchema = z.object({
   firm: z.string().min(1, 'Prop firm is required'),
   type: z.enum(['challenge', 'funded', 'live', 'demo']),
   status: z.enum(['active', 'inactive', 'pending']),
-  startingBalance: z.coerce.number().min(0, 'Starting balance must be positive').optional(),
-  profitTarget: z.coerce.number().min(0, 'Profit target must be positive').optional(),
-  maxDrawdown: z.coerce.number().min(0, 'Max drawdown must be positive').optional(),
-  minimumTradingDays: z.coerce.number().min(1, 'Minimum trading days required').optional(),
-  timeLimit: z.coerce.number().min(1, 'Time limit required').optional(),
-  consistencyRule: z.coerce.number().min(0).max(100, 'Must be between 0-100%').optional(),
+  startingBalance: z.number().min(0, 'Starting balance must be positive'),
+  profitTarget: z.number().min(0, 'Profit target must be positive'),
+  maxDrawdown: z.number().min(0, 'Max drawdown must be positive'),
+  minimumTradingDays: z.number().min(1, 'Minimum trading days required'),
+  timeLimit: z.number().min(1, 'Time limit required'),
+  consistencyRule: z.number().min(0).max(100, 'Must be between 0-100%'),
   drawdownType: z.enum(['trailing', 'static', 'balance_based']),
   maxDrawdownType: z.enum(['EOD', 'real-time', 'session_close']),
   hasDailyLossLimit: z.boolean(),
   
   // Financial Tab
-  accountCost: z.coerce.number().min(0, 'Account cost must be positive').optional(),
-  activationCost: z.coerce.number().min(0, 'Activation cost must be positive').optional(),
+  accountCost: z.number().min(0, 'Account cost must be positive'),
+  activationCost: z.number().min(0, 'Activation cost must be positive'),
   purchaseMethod: z.enum(['credit card', 'PayPal', 'bank transfer', 'crypto']),
-  resetCount: z.coerce.number().min(0, 'Reset count must be positive').optional(),
-  totalResetsCost: z.coerce.number().min(0, 'Total resets cost must be positive').optional(),
-  profitSplit: z.coerce.number().min(0).max(100, 'Must be between 0-100%').optional(),
+  resetCount: z.number().min(0, 'Reset count must be positive'),
+  totalResetsCost: z.number().min(0, 'Total resets cost must be positive'),
+  profitSplit: z.number().min(0).max(100, 'Must be between 0-100%'),
   activationFeePaid: z.boolean(),
   includesActivationFee: z.boolean(),
   
   // Rules & Risk Tab
-  riskPerTrade: z.coerce.number().min(0, 'Risk per trade must be positive').optional(),
-  riskPerTradeDivider: z.coerce.number().min(1, 'Divider must be at least 1').optional(),
-  dailyLossLimit: z.coerce.number().min(0, 'Daily loss limit must be positive').optional(),
-  riskRewardRatio: z.coerce.number().min(0.1, 'Risk reward ratio must be positive').optional(),
-  maxTradesPerDay: z.coerce.number().min(1, 'Must allow at least 1 trade per day').optional(),
-  maxRiskPerDay: z.coerce.number().min(0, 'Max risk per day must be positive').optional(),
-  stopLoss: z.coerce.number().min(0, 'Stop loss must be positive').optional(),
+  riskPerTrade: z.number().min(0, 'Risk per trade must be positive'),
+  riskPerTradeDivider: z.number().min(1, 'Divider must be at least 1'),
+  dailyLossLimit: z.number().min(0, 'Daily loss limit must be positive'),
+  riskRewardRatio: z.number().min(0.1, 'Risk reward ratio must be positive'),
+  maxTradesPerDay: z.number().min(1, 'Must allow at least 1 trade per day'),
+  maxRiskPerDay: z.number().min(0, 'Max risk per day must be positive'),
+  stopLoss: z.number().min(0, 'Stop loss must be positive'),
   primaryAsset: z.string().min(1, 'Primary asset is required'),
   secondaryAsset: z.string().optional(),
   tertiaryAsset: z.string().optional(),
@@ -83,8 +81,8 @@ const accountFormSchema = z.object({
   timeSlot3Timezone: z.string().optional(),
   
   // Bottom fields
-  dailyWorkingHours: z.coerce.number().min(0).max(24, 'Must be between 0-24 hours').optional(),
-  hourlyWages: z.coerce.number().min(0, 'Hourly wages must be positive').optional(),
+  dailyWorkingHours: z.number().min(0).max(24, 'Must be between 0-24 hours'),
+  hourlyWages: z.number().min(0, 'Hourly wages must be positive'),
   liveTradingAccountAvailable: z.boolean(),
   challengePayoutsAvailable: z.boolean(),
 });
@@ -109,7 +107,6 @@ export default function AccountsPage() {
   const [showBalance, setShowBalance] = useState<Record<number, boolean>>({});
   const { toast } = useToast();
   const queryClient = useQueryClient();
-  const [, setLocation] = useLocation();
 
   const { data: accounts = [], isLoading } = useQuery<Account[]>({
     queryKey: ['/api/accounts'],
@@ -183,6 +180,7 @@ export default function AccountsPage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/accounts'] });
       setIsCreateDialogOpen(false);
+      form.reset();
       toast({
         title: 'Account Created',
         description: 'Your trading account has been created successfully.',
@@ -196,19 +194,6 @@ export default function AccountsPage() {
       });
     },
   });
-
-  // Memoized form input handler to prevent flickering
-  const handleInputChange = useCallback((field, value) => {
-    setFormData(prev => ({
-      ...prev,
-      [field]: value
-    }));
-  }, []);
-
-  // Memoized handlers to prevent unnecessary re-renders and flickering
-  const handleCreateAccount = useCallback(() => {
-    createAccountMutation.mutate(formData);
-  }, [createAccountMutation, formData]);
 
   const updateAccountMutation = useMutation({
     mutationFn: async ({ id, data }: { id: number; data: Partial<AccountFormData> }) => {
@@ -251,6 +236,50 @@ export default function AccountsPage() {
       });
     },
   });
+
+  const calculateAccountMetrics = (account: Account): AccountMetrics => {
+    const accountTrades = trades.filter(trade => trade.accountId === account.id);
+    const totalPnL = accountTrades.reduce((sum, trade) => sum + (trade.pnl || 0), 0);
+    const winningTrades = accountTrades.filter(trade => (trade.pnl || 0) > 0).length;
+    const winRate = accountTrades.length > 0 ? (winningTrades / accountTrades.length) * 100 : 0;
+    
+    const currentBalance = account.startingBalance + totalPnL;
+    const drawdownAmount = Math.max(0, account.startingBalance - currentBalance);
+    const drawdownPercent = account.startingBalance > 0 ? (drawdownAmount / account.startingBalance) * 100 : 0;
+    
+    const lastTrade = accountTrades.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())[0];
+    const lastTradeDate = lastTrade ? lastTrade.date : 'Never';
+    
+    const daysSinceStart = Math.ceil((new Date().getTime() - new Date(account.createdAt || new Date()).getTime()) / (1000 * 60 * 60 * 24));
+    
+    let riskLevel = 'Low';
+    if (drawdownPercent > 8) riskLevel = 'High';
+    else if (drawdownPercent > 5) riskLevel = 'Medium';
+    
+    return {
+      totalPnL,
+      winRate,
+      totalTrades: accountTrades.length,
+      drawdown: drawdownPercent,
+      riskLevel,
+      daysActive: daysSinceStart,
+      lastTradeDate,
+      isActive: true,
+    };
+  };
+
+  // Memoized form input handler to prevent flickering
+  const handleInputChange = useCallback((field, value) => {
+    setFormData(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  }, []);
+
+  // Memoized handlers to prevent unnecessary re-renders and flickering
+  const handleCreateAccount = useCallback(() => {
+    createAccountMutation.mutate(formData);
+  }, [createAccountMutation, formData]);
 
   const handleEditAccount = useCallback((account: Account) => {
     setEditingAccount(account);
@@ -319,77 +348,57 @@ export default function AccountsPage() {
     setEditingAccount(null);
   }, []);
 
-  const calculateAccountMetrics = (account: Account): AccountMetrics => {
-    const accountTrades = trades.filter(trade => trade.accountId === account.id);
-    const totalPnL = accountTrades.reduce((sum, trade) => sum + (trade.pnl || 0), 0);
-    const winningTrades = accountTrades.filter(trade => (trade.pnl || 0) > 0).length;
-    const winRate = accountTrades.length > 0 ? (winningTrades / accountTrades.length) * 100 : 0;
-    
-    const currentBalance = account.startingBalance + totalPnL;
-    const drawdownAmount = Math.max(0, account.startingBalance - currentBalance);
-    const drawdownPercent = account.startingBalance > 0 ? (drawdownAmount / account.startingBalance) * 100 : 0;
-    
-    const lastTrade = accountTrades.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())[0];
-    const lastTradeDate = lastTrade ? lastTrade.date : 'Never';
-    
-    const daysSinceStart = Math.ceil((new Date().getTime() - new Date(account.createdAt || new Date()).getTime()) / (1000 * 60 * 60 * 24));
-    
-    let riskLevel = 'Low';
-    if (drawdownPercent > 8) riskLevel = 'High';
-    else if (drawdownPercent > 5) riskLevel = 'Medium';
-    
-    return {
-      totalPnL,
-      winRate,
-      totalTrades: accountTrades.length,
-      drawdown: drawdownPercent,
-      riskLevel,
-      daysActive: daysSinceStart,
-      lastTradeDate,
-      isActive: true,
-    };
-  };
-
-  // Form submission handler
-  const handleCreateAccount = useCallback((data: AccountFormData) => {
-    createAccountMutation.mutate(data);
-  }, [createAccountMutation]);
-
-  const handleEditAccount = useCallback((account: Account) => {
-    setEditingAccount(account);
-    setIsEditDialogOpen(true);
-    // Pre-populate form with existing account data
-    form.reset({
-      name: account.name,
-      firm: account.firm,
-      type: account.type as 'demo' | 'live' | 'challenge',
-      status: account.status,
-      startingBalance: account.startingBalance?.toString() || '',
-      profitTarget: account.profitTarget?.toString() || '',
-      maxDrawdown: account.maxDrawdown?.toString() || '',
-      primaryAsset: account.primaryTradingAsset || '',
-      secondaryAsset: account.secondaryTradingAsset || '',
-      tertiaryAsset: account.tertiaryTradingAsset || '',
-    });
-  }, [form]);
-
-  const handleUpdateAccount = useCallback((data: AccountFormData) => {
-    if (editingAccount) {
-      updateAccountMutation.mutate({ id: editingAccount.id, data });
+  // Initialize edit form data when editing account changes (reduces flickering)
+  useEffect(() => {
+    if (editingAccount && isEditDialogOpen) {
+      setFormData({
+        name: editingAccount.name,
+        firm: editingAccount.firm || '',
+        type: editingAccount.type,
+        status: 'active',
+        startingBalance: editingAccount.startingBalance,
+        profitTarget: editingAccount.profitTarget || 1000,
+        maxDrawdown: editingAccount.maxDrawdown || 500,
+        minimumTradingDays: 5,
+        timeLimit: 30,
+        consistencyRule: 10,
+        drawdownType: 'trailing',
+        maxDrawdownType: 'EOD',
+        hasDailyLossLimit: false,
+        accountCost: 150,
+        activationCost: 99,
+        purchaseMethod: 'credit card',
+        resetCount: 0,
+        totalResetsCost: 0,
+        profitSplit: 80,
+        activationFeePaid: false,
+        includesActivationFee: false,
+        riskPerTrade: editingAccount.riskPerTrade || 100,
+        riskPerTradeDivider: 10,
+        dailyLossLimit: 500,
+        riskRewardRatio: 2,
+        maxTradesPerDay: 10,
+        maxRiskPerDay: 500,
+        stopLoss: 20,
+        primaryAsset: '',
+        secondaryAsset: '',
+        tertiaryAsset: '',
+        timeSlot1Start: '09:00',
+        timeSlot1End: '17:00',
+        timeSlot1Timezone: 'UTC',
+        timeSlot2Start: '',
+        timeSlot2End: '',
+        timeSlot2Timezone: 'UTC',
+        timeSlot3Start: '',
+        timeSlot3End: '',
+        timeSlot3Timezone: 'UTC',
+        dailyWorkingHours: 8.0,
+        hourlyWages: 25.00,
+        liveTradingAccountAvailable: false,
+        challengePayoutsAvailable: false
+      });
     }
-  }, [editingAccount, updateAccountMutation]);
-
-  // Simple dialog close handler
-  const handleCloseCreateDialog = useCallback(() => {
-    setIsCreateDialogOpen(false);
-  }, []);
-
-  const handleCloseEditDialog = useCallback(() => {
-    setIsEditDialogOpen(false);
-    setEditingAccount(null);
-  }, []);
-
-  // Form is already initialized in handleEditAccount - no duplicate effect needed
+  }, [editingAccount, isEditDialogOpen]);
 
 
 
@@ -436,11 +445,39 @@ export default function AccountsPage() {
           </div>
           <div className="flex gap-3">
             <Button 
-              className="bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-600 hover:to-teal-700"
-              onClick={() => setLocation('/trades')}
+              variant="outline"
+              className="border-yellow-400 text-yellow-400 hover:bg-yellow-400/10"
+              onClick={async () => {
+                try {
+                  const response = await fetch('/api/create-mock-data', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include'
+                  });
+                  const data = await response.json();
+                  
+                  if (response.ok) {
+                    toast({
+                      title: "Mock Data Created",
+                      description: `Created FTMO $100K account with 10 trades. Total P&L: $${data.summary.totalPnL}`,
+                      className: "bg-green-600 text-white border-green-500"
+                    });
+                    queryClient.invalidateQueries({ queryKey: ['/api/accounts'] });
+                    queryClient.invalidateQueries({ queryKey: ['/api/trades'] });
+                  } else {
+                    throw new Error(data.message || 'Failed to create mock data');
+                  }
+                } catch (error) {
+                  toast({
+                    title: "Error",
+                    description: error instanceof Error ? error.message : "Failed to create mock data",
+                    variant: "destructive"
+                  });
+                }
+              }}
             >
               <Plus className="h-4 w-4 mr-2" />
-              Add Trade
+              Create Mock Data
             </Button>
             <Button 
               className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700"
@@ -452,18 +489,20 @@ export default function AccountsPage() {
           </div>
         </div>
         
-        <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
-          <DialogContent className="max-w-3xl bg-gradient-to-br from-gray-900 via-gray-800 to-black border border-yellow-400/20 max-h-[90vh] overflow-hidden">
+        <Dialog open={isCreateDialogOpen} onOpenChange={(open) => !open && handleCloseCreateDialog()}>
+          <DialogContent className="max-w-4xl max-h-[90vh] bg-gradient-to-br from-gray-900 via-gray-800 to-black border border-yellow-400/20 overflow-hidden">
             <DialogHeader>
-              <DialogTitle className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-yellow-600">
+              <DialogTitle className="text-lg font-semibold text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-yellow-600">
                 Create New Trading Account
               </DialogTitle>
-              <DialogDescription className="text-gray-400">
+              <DialogDescription className="text-gray-400 text-sm">
                 Set up a comprehensive trading account with your financial goals, risk parameters, and trading preferences.
               </DialogDescription>
             </DialogHeader>
-            
-            <ScrollArea className="max-h-[70vh] overflow-y-auto pr-4">
+            <div className="flex flex-col h-full max-h-[75vh]">
+                
+                <div className="flex-1 overflow-y-auto py-4">
+                  <Form {...form}>
                     <div className="space-y-6">
                     <Tabs defaultValue="basic" className="w-full">
                       <TabsList className="grid w-full grid-cols-3 bg-gray-800/50">
@@ -577,10 +616,10 @@ export default function AccountsPage() {
                                 <FormControl>
                                   <Input 
                                     type="number" 
-                                    placeholder="" 
+                                    placeholder="10000" 
                                     className="bg-gray-800 border-gray-600 text-white"
                                     {...field}
-                                    onChange={field.onChange}
+                                    onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
                                   />
                                 </FormControl>
                                 <FormMessage />
@@ -597,10 +636,10 @@ export default function AccountsPage() {
                                 <FormControl>
                                   <Input 
                                     type="number" 
-                                    placeholder="" 
+                                    placeholder="1000" 
                                     className="bg-gray-800 border-gray-600 text-white"
                                     {...field}
-                                    onChange={field.onChange}
+                                    onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
                                   />
                                 </FormControl>
                                 <FormMessage />
@@ -617,10 +656,10 @@ export default function AccountsPage() {
                                 <FormControl>
                                   <Input 
                                     type="number" 
-                                    placeholder="" 
+                                    placeholder="500" 
                                     className="bg-gray-800 border-gray-600 text-white"
                                     {...field}
-                                    onChange={field.onChange}
+                                    onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
                                   />
                                 </FormControl>
                                 <FormMessage />
@@ -639,10 +678,10 @@ export default function AccountsPage() {
                                 <FormControl>
                                   <Input 
                                     type="number" 
-                                    placeholder="" 
+                                    placeholder="5" 
                                     className="bg-gray-800 border-gray-600 text-white"
                                     {...field}
-                                    onChange={(e) => field.onChange(e.target.value === "" ? "" : parseInt(e.target.value))}
+                                    onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
                                   />
                                 </FormControl>
                                 <FormMessage />
@@ -659,10 +698,10 @@ export default function AccountsPage() {
                                 <FormControl>
                                   <Input 
                                     type="number" 
-                                    placeholder="" 
+                                    placeholder="30" 
                                     className="bg-gray-800 border-gray-600 text-white"
                                     {...field}
-                                    onChange={(e) => field.onChange(e.target.value === "" ? "" : parseInt(e.target.value))}
+                                    onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
                                   />
                                 </FormControl>
                                 <FormMessage />
@@ -679,10 +718,10 @@ export default function AccountsPage() {
                                 <FormControl>
                                   <Input 
                                     type="number" 
-                                    placeholder="" 
+                                    placeholder="10" 
                                     className="bg-gray-800 border-gray-600 text-white"
                                     {...field}
-                                    onChange={field.onChange}
+                                    onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
                                   />
                                 </FormControl>
                                 <FormMessage />
@@ -771,10 +810,10 @@ export default function AccountsPage() {
                                 <FormControl>
                                   <Input 
                                     type="number" 
-                                    placeholder="" 
+                                    placeholder="150" 
                                     className="bg-gray-800 border-gray-600 text-white"
                                     {...field}
-                                    onChange={field.onChange}
+                                    onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
                                   />
                                 </FormControl>
                                 <FormMessage />
@@ -791,10 +830,10 @@ export default function AccountsPage() {
                                 <FormControl>
                                   <Input 
                                     type="number" 
-                                    placeholder="" 
+                                    placeholder="99" 
                                     className="bg-gray-800 border-gray-600 text-white"
                                     {...field}
-                                    onChange={field.onChange}
+                                    onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
                                   />
                                 </FormControl>
                                 <FormMessage />
@@ -837,10 +876,10 @@ export default function AccountsPage() {
                                 <FormControl>
                                   <Input 
                                     type="number" 
-                                    placeholder="" 
+                                    placeholder="0" 
                                     className="bg-gray-800 border-gray-600 text-white"
                                     {...field}
-                                    onChange={(e) => field.onChange(e.target.value === "" ? "" : parseInt(e.target.value))}
+                                    onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
                                   />
                                 </FormControl>
                                 <FormMessage />
@@ -857,10 +896,10 @@ export default function AccountsPage() {
                                 <FormControl>
                                   <Input 
                                     type="number" 
-                                    placeholder="" 
+                                    placeholder="0" 
                                     className="bg-gray-800 border-gray-600 text-white"
                                     {...field}
-                                    onChange={field.onChange}
+                                    onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
                                   />
                                 </FormControl>
                                 <FormMessage />
@@ -877,10 +916,10 @@ export default function AccountsPage() {
                                 <FormControl>
                                   <Input 
                                     type="number" 
-                                    placeholder="" 
+                                    placeholder="80" 
                                     className="bg-gray-800 border-gray-600 text-white"
                                     {...field}
-                                    onChange={field.onChange}
+                                    onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
                                   />
                                 </FormControl>
                                 <FormMessage />
@@ -942,10 +981,10 @@ export default function AccountsPage() {
                                 <FormControl>
                                   <Input 
                                     type="number" 
-                                    placeholder="" 
+                                    placeholder="100" 
                                     className="bg-gray-800 border-gray-600 text-white"
                                     {...field}
-                                    onChange={field.onChange}
+                                    onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
                                   />
                                 </FormControl>
                                 <FormMessage />
@@ -962,10 +1001,10 @@ export default function AccountsPage() {
                                 <FormControl>
                                   <Input 
                                     type="number" 
-                                    placeholder="" 
+                                    placeholder="10" 
                                     className="bg-gray-800 border-gray-600 text-white"
                                     {...field}
-                                    onChange={field.onChange}
+                                    onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
                                   />
                                 </FormControl>
                                 <div className="text-xs text-gray-400 mt-1">Helper: Used to calculate position size</div>
@@ -985,10 +1024,10 @@ export default function AccountsPage() {
                                 <FormControl>
                                   <Input 
                                     type="number" 
-                                    placeholder="" 
+                                    placeholder="500" 
                                     className="bg-gray-800 border-gray-600 text-white"
                                     {...field}
-                                    onChange={field.onChange}
+                                    onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
                                   />
                                 </FormControl>
                                 <FormMessage />
@@ -1005,10 +1044,10 @@ export default function AccountsPage() {
                                 <FormControl>
                                   <Input 
                                     type="number" 
-                                    placeholder="" 
+                                    placeholder="2" 
                                     className="bg-gray-800 border-gray-600 text-white"
                                     {...field}
-                                    onChange={field.onChange}
+                                    onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
                                   />
                                 </FormControl>
                                 <FormMessage />
@@ -1025,10 +1064,10 @@ export default function AccountsPage() {
                                 <FormControl>
                                   <Input 
                                     type="number" 
-                                    placeholder="" 
+                                    placeholder="10" 
                                     className="bg-gray-800 border-gray-600 text-white"
                                     {...field}
-                                    onChange={(e) => field.onChange(e.target.value === "" ? "" : parseInt(e.target.value))}
+                                    onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
                                   />
                                 </FormControl>
                                 <FormMessage />
@@ -1047,10 +1086,10 @@ export default function AccountsPage() {
                                 <FormControl>
                                   <Input 
                                     type="number" 
-                                    placeholder="" 
+                                    placeholder="500" 
                                     className="bg-gray-800 border-gray-600 text-white"
                                     {...field}
-                                    onChange={field.onChange}
+                                    onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
                                   />
                                 </FormControl>
                                 <FormMessage />
@@ -1067,10 +1106,10 @@ export default function AccountsPage() {
                                 <FormControl>
                                   <Input 
                                     type="number" 
-                                    placeholder="" 
+                                    placeholder="20" 
                                     className="bg-gray-800 border-gray-600 text-white"
                                     {...field}
-                                    onChange={field.onChange}
+                                    onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
                                   />
                                 </FormControl>
                                 <FormMessage />
@@ -1323,10 +1362,10 @@ export default function AccountsPage() {
                                     <Input 
                                       type="number" 
                                       step="0.1"
-                                      placeholder="" 
+                                      placeholder="8.0" 
                                       className="bg-gray-800 border-gray-600 text-white"
                                       {...field}
-                                      onChange={field.onChange}
+                                      onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
                                     />
                                   </FormControl>
                                   <FormMessage />
@@ -1344,10 +1383,10 @@ export default function AccountsPage() {
                                     <Input 
                                       type="number" 
                                       step="0.01"
-                                      placeholder="" 
+                                      placeholder="25.00" 
                                       className="bg-gray-800 border-gray-600 text-white"
                                       {...field}
-                                      onChange={field.onChange}
+                                      onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
                                     />
                                   </FormControl>
                                   <FormMessage />
@@ -1401,9 +1440,10 @@ export default function AccountsPage() {
 
                   </form>
                 </Form>
-            </ScrollArea>
+              </div>
               
-              <div className="flex justify-end space-x-3 pt-4 border-t border-gray-700">
+              {/* Form Actions - Fixed at bottom */}
+              <div className="flex-shrink-0 flex justify-end space-x-3 pt-4 border-t border-gray-700 bg-gradient-to-br from-gray-900 via-gray-800 to-black">
                 <Button
                   type="button"
                   variant="outline"
@@ -1421,6 +1461,7 @@ export default function AccountsPage() {
                   {createAccountMutation.isPending ? 'Creating...' : 'Create Account'}
                 </Button>
               </div>
+            </div>
           </DialogContent>
         </Dialog>
 
@@ -1630,10 +1671,10 @@ export default function AccountsPage() {
                         <FormControl>
                           <Input 
                             type="number" 
-                            placeholder="" 
+                            placeholder="10000" 
                             className="bg-white border-gray-300 text-black"
                             {...field}
-                            onChange={field.onChange}
+                            onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
                           />
                         </FormControl>
                         <FormMessage />
@@ -1650,10 +1691,10 @@ export default function AccountsPage() {
                         <FormControl>
                           <Input 
                             type="number" 
-                            placeholder="" 
+                            placeholder="1000" 
                             className="bg-white border-gray-300 text-black"
                             {...field}
-                            onChange={field.onChange}
+                            onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
                           />
                         </FormControl>
                         <FormMessage />
@@ -1670,10 +1711,10 @@ export default function AccountsPage() {
                         <FormControl>
                           <Input 
                             type="number" 
-                            placeholder="" 
+                            placeholder="500" 
                             className="bg-white border-gray-300 text-black"
                             {...field}
-                            onChange={field.onChange}
+                            onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
                           />
                         </FormControl>
                         <FormMessage />
