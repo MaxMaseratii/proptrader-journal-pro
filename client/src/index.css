@@ -508,13 +508,31 @@ canvas {
   color: hsl(var(--widget-text)) !important;
 }
 
-/* Light theme: Override dark backgrounds to white */
+/* Light theme: Override dark backgrounds to proper light colors */
 .light .bg-gray-800,
 .light .bg-gray-900,
 .light .bg-black,
 .light [class*="bg-gray-8"],
-.light [class*="bg-gray-9"] {
+.light [class*="bg-gray-9"],
+.light .bg-slate-900,
+.light .bg-slate-950,
+.light [class*="bg-slate-9"] {
   background-color: white !important;
+  color: black !important;
+}
+
+/* Light theme: Main background should be white */
+.light body,
+.light .bg-background {
+  background-color: white !important;
+  color: black !important;
+}
+
+/* Light theme: Cards and surfaces */
+.light .bg-card,
+.light [class*="bg-gray-1"],
+.light [class*="bg-gray-5"] {
+  background-color: #f8fafc !important;
   color: black !important;
 }
 
@@ -660,6 +678,28 @@ input, textarea, select {
 .light select {
   color: black !important;
   background-color: white !important;
+}
+
+/* Light theme: Sidebar background and text */
+.light aside,
+.light .sidebar {
+  background-color: white !important;
+}
+
+/* Light theme: Ensure all text is black */
+.light * {
+  color: black;
+}
+
+.light .text-white {
+  color: black !important;
+}
+
+.light .text-gray-300,
+.light .text-gray-400,
+.light .text-gray-500,
+.light .text-gray-600 {
+  color: #374151 !important;
 }
 
 /* Specific targeting for Tailwind classes commonly used in forms */
