@@ -69,7 +69,7 @@ export default function AccountManagement() {
 
   const form = useForm<AccountFormData>({
     resolver: zodResolver(accountFormSchema),
-    mode: 'onBlur', // Changed from 'onChange' to reduce flickering
+    mode: 'onSubmit', // Changed to onSubmit to prevent flickering
     defaultValues: {
       name: '',
       type: 'demo',
@@ -182,18 +182,15 @@ export default function AccountManagement() {
 
   const handleEditAccount = useCallback((account: Account) => {
     setEditingAccount(account);
-    // Delay form reset to prevent flickering during dialog opening
-    setTimeout(() => {
-      form.reset({
-        name: account.name,
-        type: account.type,
-        firm: account.firm || '',
-        startingBalance: account.startingBalance,
-        profitTarget: account.profitTarget || 0,
-        maxDrawdown: account.maxDrawdown || 0,
-        riskPerTrade: account.riskPerTrade || 2,
-      });
-    }, 100);
+    form.reset({
+      name: account.name,
+      type: account.type,
+      firm: account.firm || '',
+      startingBalance: account.startingBalance,
+      profitTarget: account.profitTarget || 0,
+      maxDrawdown: account.maxDrawdown || 0,
+      riskPerTrade: account.riskPerTrade || 2,
+    });
     setIsEditDialogOpen(true);
   }, [form]);
 
@@ -245,14 +242,21 @@ export default function AccountManagement() {
           </div>
           
           {/* Create Account Dialog */}
-          <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
+          <Dialog open={isCreateDialogOpen} onOpenChange={(open) => {
+          if (!open) {
+            setIsCreateDialogOpen(false);
+            form.reset();
+          } else {
+            setIsCreateDialogOpen(true);
+          }
+        }}>
             <DialogTrigger asChild>
               <Button className="bg-gradient-to-r from-yellow-400 to-amber-500 hover:from-yellow-500 hover:to-amber-600 text-black font-semibold">
                 <Plus className="mr-2 h-4 w-4" />
                 Create Account
               </Button>
             </DialogTrigger>
-            <DialogContent className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 border border-teal-500/30 text-white max-w-4xl max-h-[80vh] overflow-hidden">
+            <DialogContent className="bg-black/95 border border-gray-700 text-white max-w-4xl max-h-[80vh] overflow-hidden" style={{ backgroundColor: 'rgba(0, 0, 0, 0.95)' }}>
               <DialogHeader>
                 <DialogTitle className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-yellow-600">
                   Create New Trading Account
@@ -562,8 +566,16 @@ export default function AccountManagement() {
         )}
 
         {/* Edit Account Dialog */}
-        <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-          <DialogContent className="max-w-2xl bg-gradient-to-br from-gray-900 via-gray-800 to-black border border-yellow-400/20">
+        <Dialog open={isEditDialogOpen} onOpenChange={(open) => {
+          if (!open) {
+            setIsEditDialogOpen(false);
+            setEditingAccount(null);
+            form.reset();
+          } else {
+            setIsEditDialogOpen(true);
+          }
+        }}>
+          <DialogContent className="max-w-2xl bg-black/95 border border-gray-700" style={{ backgroundColor: 'rgba(0, 0, 0, 0.95)' }}>
             <DialogHeader>
               <DialogTitle className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-yellow-600">
                 Edit Trading Account

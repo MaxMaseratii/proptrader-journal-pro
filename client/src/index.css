@@ -244,7 +244,8 @@
 
 [data-radix-dialog-overlay],
 .dialog-overlay {
-  background-color: rgba(0, 0, 0, 0.50) !important;
+  background-color: rgba(0, 0, 0, 0.85) !important;
+  backdrop-filter: blur(8px) !important;
 }
 
 [data-radix-dialog-title],
@@ -272,6 +273,16 @@
 /* MODAL Z-INDEX FIXES - ENSURE MODALS ARE ABOVE NAVIGATION */
 [data-radix-dialog-overlay] {
   z-index: 9999 !important;
+}
+
+[data-radix-dialog-content] {
+  z-index: 10000 !important;
+}
+
+/* Account Form Dialog Specific Fixes */
+.DialogContent {
+  pointer-events: auto !important;
+  position: fixed !important;
 }
 
 [data-radix-dialog-content] {
