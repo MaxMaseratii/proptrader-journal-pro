@@ -2798,7 +2798,7 @@ export default function Dashboard() {
           
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Discipline Score Breakdown */}
-            <div className="bg-gradient-to-br from-cyan-900/40 via-cyan-800/60 to-cyan-700/80 border border-cyan-500/30 rounded-lg p-6 hover:border-amber-400/60 transition-all duration-200">
+            <div className="widget-card p-6 transition-all duration-200">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-semibold text-white">Discipline Score Breakdown</h3>
                 <Brain className="w-5 h-5 text-amber-400" />
@@ -2853,7 +2853,7 @@ export default function Dashboard() {
             </div>
 
             {/* Risk Alert */}
-            <div className="bg-gradient-to-br from-cyan-900/40 via-cyan-800/60 to-cyan-700/80 border border-cyan-500/30 rounded-lg p-6 hover:border-amber-400/60 transition-all duration-200">
+            <div className="widget-card p-6 transition-all duration-200">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-semibold text-white">Risk Alert</h3>
                 <AlertTriangle className="w-5 h-5 text-amber-400" />

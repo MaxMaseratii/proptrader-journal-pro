@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -69,7 +69,7 @@ export default function AccountManagement() {
 
   const form = useForm<AccountFormData>({
     resolver: zodResolver(accountFormSchema),
-    mode: 'onChange',
+    mode: 'onBlur', // Changed from 'onChange' to reduce flickering
     defaultValues: {
       name: '',
       type: 'demo',
@@ -180,19 +180,22 @@ export default function AccountManagement() {
     createAccountMutation.mutate(data);
   };
 
-  const handleEditAccount = (account: Account) => {
+  const handleEditAccount = useCallback((account: Account) => {
     setEditingAccount(account);
-    form.reset({
-      name: account.name,
-      type: account.type,
-      firm: account.firm || '',
-      startingBalance: account.startingBalance,
-      profitTarget: account.profitTarget || 0,
-      maxDrawdown: account.maxDrawdown || 0,
-      riskPerTrade: account.riskPerTrade || 2,
-    });
+    // Delay form reset to prevent flickering during dialog opening
+    setTimeout(() => {
+      form.reset({
+        name: account.name,
+        type: account.type,
+        firm: account.firm || '',
+        startingBalance: account.startingBalance,
+        profitTarget: account.profitTarget || 0,
+        maxDrawdown: account.maxDrawdown || 0,
+        riskPerTrade: account.riskPerTrade || 2,
+      });
+    }, 100);
     setIsEditDialogOpen(true);
-  };
+  }, [form]);
 
   const handleUpdateAccount = (data: AccountFormData) => {
     if (!editingAccount) return;

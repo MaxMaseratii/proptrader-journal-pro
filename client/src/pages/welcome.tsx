@@ -23,12 +23,12 @@ function PropTraderHeader() {
             <Link href="/" className="flex items-center space-x-3">
               <div className="bg-gradient-to-r from-yellow-400 to-amber-500 p-3 rounded-lg shadow-xl">
                 <div className="flex items-center space-x-3">
-                  <div className="w-12 h-12 bg-black dark:bg-gray-900 rounded-lg flex items-center justify-center border-2 border-teal-500 dark:border-teal-400 shadow-lg">
-                    <Crown className="w-7 h-7 text-yellow-400 dark:text-yellow-300" />
+                  <div className="w-12 h-12 bg-black rounded-lg flex items-center justify-center border-2 border-teal-500 shadow-lg">
+                    <Crown className="w-7 h-7 text-yellow-400" />
                   </div>
                   <div className="flex flex-col">
                     <span className="text-xl font-bold leading-tight tracking-tight">
-                      <span className="text-teal-600 dark:text-teal-400">PropTrader</span><span className="text-black dark:text-white"> Journal</span>
+                      <span className="text-teal-600">PropTrader</span><span className="text-black"> Journal</span>
                     </span>
                     <span className="text-xs font-medium text-black text-center">
                       Disciplined Trading
@@ -516,12 +516,12 @@ export default function Welcome() {
             <div className="flex items-center justify-center mb-6">
               <div className="bg-gradient-to-r from-yellow-400 to-amber-500 p-3 rounded-lg shadow-xl">
                 <div className="flex items-center space-x-3">
-                  <div className="w-12 h-12 bg-black dark:bg-gray-900 rounded-lg flex items-center justify-center border-2 border-teal-500 dark:border-teal-400 shadow-lg">
-                    <Crown className="w-7 h-7 text-yellow-400 dark:text-yellow-300" />
+                  <div className="w-12 h-12 bg-black rounded-lg flex items-center justify-center border-2 border-teal-500 shadow-lg">
+                    <Crown className="w-7 h-7 text-yellow-400" />
                   </div>
                   <div className="flex flex-col">
                     <span className="text-xl font-bold leading-tight tracking-tight">
-                      <span className="text-teal-600 dark:text-teal-400">PropTrader</span><span className="text-black dark:text-white"> Journal</span>
+                      <span className="text-teal-600">PropTrader</span><span className="text-black"> Journal</span>
                     </span>
                     <span className="text-xs font-medium text-black text-center">
                       Disciplined Trading

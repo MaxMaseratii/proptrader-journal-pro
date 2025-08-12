@@ -173,10 +173,10 @@ export default function Billing() {
           <CardHeader>
             <CardTitle className="text-xl text-white">Payment Method</CardTitle>
             <CardDescription className="text-gray-400">
-              Manage your payment information
+              Manage your payment information and promo codes
             </CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="space-y-4">
             <div className="flex items-center justify-between p-4 bg-gray-900/50 rounded-lg border border-gray-700">
               <div className="flex items-center space-x-4">
                 <div className="bg-blue-600 p-2 rounded">
@@ -190,6 +190,29 @@ export default function Billing() {
               <Button variant="outline" size="sm" className="border-gray-600 text-gray-300 hover:bg-gray-700">
                 Update
               </Button>
+            </div>
+
+            {/* Promo Code Section */}
+            <div className="p-4 bg-gray-900/30 rounded-lg border border-gray-700">
+              <div className="flex items-center space-x-3 mb-3">
+                <div className="bg-prop-gold p-2 rounded">
+                  <Star className="h-4 w-4 text-black" />
+                </div>
+                <div>
+                  <p className="text-white font-medium">Promo Code</p>
+                  <p className="text-gray-400 text-sm">Apply a discount code to your subscription</p>
+                </div>
+              </div>
+              <div className="flex space-x-2">
+                <input 
+                  type="text" 
+                  placeholder="Enter promo code" 
+                  className="flex-1 px-3 py-2 bg-gray-800 border border-gray-600 rounded-md text-white placeholder-gray-400 focus:border-prop-gold focus:outline-none"
+                />
+                <Button className="bg-prop-gold text-black hover:bg-prop-gold/90 font-semibold">
+                  Apply
+                </Button>
+              </div>
             </div>
           </CardContent>
         </Card>
