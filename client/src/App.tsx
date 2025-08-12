@@ -39,7 +39,7 @@ import TradingDashboard from "@/pages/trading-dashboard";
 import Notifications from "@/pages/notifications";
 import Watchlists from "@/pages/watchlists";
 import PositionSizing from "@/pages/position-sizing";
-import AccountsNew from "@/pages/accounts-new";
+import Accounts from "@/pages/accounts";
 import RiskManagement from "@/pages/risk-management";
 
 import AccountManager from "@/pages/account-manager";
@@ -133,7 +133,7 @@ function Router() {
             <Route path="/knowledge-base/article/:category/:article" component={KnowledgeBaseArticle} />
             
             {/* Missing critical pages */}
-            <Route path="/accounts" component={AccountsNew} />
+            <Route path="/accounts" component={Accounts} />
             <Route path="/notifications" component={Notifications} />
             <Route path="/risk-management" component={RiskManagement} />
             <Route path="/watchlists" component={Watchlists} />

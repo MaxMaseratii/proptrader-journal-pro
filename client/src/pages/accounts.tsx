@@ -11,7 +11,6 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Switch } from '@/components/ui/switch';
 import { Slider } from '@/components/ui/slider';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ScrollArea } from '@/components/ui/scroll-area';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -119,62 +118,39 @@ export default function AccountsPage() {
     queryKey: ['/api/trades'],
   });
 
-  // Simple state management to prevent flickering - NO react-hook-form
-  const [formData, setFormData] = useState({
-    // Basic Info Tab
-    name: '',
-    firm: '',
-    type: 'demo',
-    status: 'active',
-    startingBalance: 10000,
-    profitTarget: 1000,
-    maxDrawdown: 500,
-    minimumTradingDays: 5,
-    timeLimit: 30,
-    consistencyRule: 10,
-    drawdownType: 'trailing',
-    maxDrawdownType: 'EOD',
-    hasDailyLossLimit: false,
-    
-    // Financial Tab
-    accountCost: 150,
-    activationCost: 99,
-    purchaseMethod: 'credit card',
-    resetCount: 0,
-    totalResetsCost: 0,
-    profitSplit: 80,
-    activationFeePaid: false,
-    includesActivationFee: false,
-    
-    // Rules & Risk Tab
-    riskPerTrade: 100,
-    riskPerTradeDivider: 10,
-    dailyLossLimit: 500,
-    riskRewardRatio: 2,
-    maxTradesPerDay: 10,
-    maxRiskPerDay: 500,
-    stopLoss: 20,
-    primaryAsset: '',
-    secondaryAsset: '',
-    tertiaryAsset: '',
-    
-    // Personal Trading Time
-    timeSlot1Start: '09:00',
-    timeSlot1End: '17:00',
-    timeSlot1Timezone: 'UTC',
-    timeSlot2Start: '',
-    timeSlot2End: '',
-    timeSlot2Timezone: 'UTC',
-    timeSlot3Start: '',
-    timeSlot3End: '',
-    timeSlot3Timezone: 'UTC',
-    
-    // Bottom fields
-    dailyWorkingHours: 8.0,
-    hourlyWages: 25.00,
-    liveTradingAccountAvailable: false,
-    challengePayoutsAvailable: false
+  // React Hook Form setup with NO default values for number fields
+  const form = useForm<AccountFormData>({
+    resolver: zodResolver(accountFormSchema),
+    defaultValues: {
+      name: '',
+      firm: '',
+      type: 'demo',
+      status: 'active',
+      drawdownType: 'trailing',
+      maxDrawdownType: 'EOD',
+      hasDailyLossLimit: false,
+      purchaseMethod: 'credit card',
+      activationFeePaid: false,
+      includesActivationFee: false,
+      primaryAsset: '',
+      secondaryAsset: '',
+      tertiaryAsset: '',
+      timeSlot1Start: '',
+      timeSlot1End: '',
+      timeSlot1Timezone: '',
+      timeSlot2Start: '',
+      timeSlot2End: '',
+      timeSlot2Timezone: '',
+      timeSlot3Start: '',
+      timeSlot3End: '',
+      timeSlot3Timezone: '',
+      liveTradingAccountAvailable: false,
+      challengePayoutsAvailable: false,
+      // ALL NUMBER FIELDS LEFT UNDEFINED - NO DEFAULTS
+    }
   });
+
+  // Removed duplicate formData state - using ONLY React Hook Form now
 
   const createAccountMutation = useMutation({
     mutationFn: async (data: AccountFormData) => {
@@ -183,6 +159,7 @@ export default function AccountsPage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/accounts'] });
       setIsCreateDialogOpen(false);
+      form.reset();
       toast({
         title: 'Account Created',
         description: 'Your trading account has been created successfully.',
@@ -196,19 +173,6 @@ export default function AccountsPage() {
       });
     },
   });
-
-  // Memoized form input handler to prevent flickering
-  const handleInputChange = useCallback((field, value) => {
-    setFormData(prev => ({
-      ...prev,
-      [field]: value
-    }));
-  }, []);
-
-  // Memoized handlers to prevent unnecessary re-renders and flickering
-  const handleCreateAccount = useCallback(() => {
-    createAccountMutation.mutate(formData);
-  }, [createAccountMutation, formData]);
 
   const updateAccountMutation = useMutation({
     mutationFn: async ({ id, data }: { id: number; data: Partial<AccountFormData> }) => {
@@ -251,73 +215,6 @@ export default function AccountsPage() {
       });
     },
   });
-
-  const handleEditAccount = useCallback((account: Account) => {
-    setEditingAccount(account);
-    setIsEditDialogOpen(true);
-  }, []);
-
-  const handleUpdateAccount = useCallback(() => {
-    if (editingAccount) {
-      updateAccountMutation.mutate({ id: editingAccount.id, data: formData });
-    }
-  }, [editingAccount, updateAccountMutation, formData]);
-
-  // Stable dialog close handlers
-  const handleCloseCreateDialog = useCallback(() => {
-    setIsCreateDialogOpen(false);
-    setFormData({
-      name: '',
-      firm: '',
-      type: 'demo',
-      status: 'active',
-      startingBalance: 10000,
-      profitTarget: 1000,
-      maxDrawdown: 500,
-      minimumTradingDays: 5,
-      timeLimit: 30,
-      consistencyRule: 10,
-      drawdownType: 'trailing',
-      maxDrawdownType: 'EOD',
-      hasDailyLossLimit: false,
-      accountCost: 150,
-      activationCost: 99,
-      purchaseMethod: 'credit card',
-      resetCount: 0,
-      totalResetsCost: 0,
-      profitSplit: 80,
-      activationFeePaid: false,
-      includesActivationFee: false,
-      riskPerTrade: 100,
-      riskPerTradeDivider: 10,
-      dailyLossLimit: 500,
-      riskRewardRatio: 2,
-      maxTradesPerDay: 10,
-      maxRiskPerDay: 500,
-      stopLoss: 20,
-      primaryAsset: '',
-      secondaryAsset: '',
-      tertiaryAsset: '',
-      timeSlot1Start: '09:00',
-      timeSlot1End: '17:00',
-      timeSlot1Timezone: 'UTC',
-      timeSlot2Start: '',
-      timeSlot2End: '',
-      timeSlot2Timezone: 'UTC',
-      timeSlot3Start: '',
-      timeSlot3End: '',
-      timeSlot3Timezone: 'UTC',
-      dailyWorkingHours: 8.0,
-      hourlyWages: 25.00,
-      liveTradingAccountAvailable: false,
-      challengePayoutsAvailable: false
-    });
-  }, []);
-
-  const handleCloseEditDialog = useCallback(() => {
-    setIsEditDialogOpen(false);
-    setEditingAccount(null);
-  }, []);
 
   const calculateAccountMetrics = (account: Account): AccountMetrics => {
     const accountTrades = trades.filter(trade => trade.accountId === account.id);
@@ -379,10 +276,11 @@ export default function AccountsPage() {
     }
   }, [editingAccount, updateAccountMutation]);
 
-  // Simple dialog close handler
+  // Stable dialog close handlers
   const handleCloseCreateDialog = useCallback(() => {
     setIsCreateDialogOpen(false);
-  }, []);
+    form.reset();
+  }, [form]);
 
   const handleCloseEditDialog = useCallback(() => {
     setIsEditDialogOpen(false);
@@ -452,19 +350,21 @@ export default function AccountsPage() {
           </div>
         </div>
         
-        <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
-          <DialogContent className="max-w-3xl bg-gradient-to-br from-gray-900 via-gray-800 to-black border border-yellow-400/20 max-h-[90vh] overflow-hidden">
+        <Dialog open={isCreateDialogOpen} onOpenChange={(open) => !open && handleCloseCreateDialog()}>
+          <DialogContent className="max-w-4xl max-h-[90vh] bg-gradient-to-br from-gray-900 via-gray-800 to-black border border-yellow-400/20 overflow-hidden">
             <DialogHeader>
-              <DialogTitle className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-yellow-600">
+              <DialogTitle className="text-lg font-semibold text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-yellow-600">
                 Create New Trading Account
               </DialogTitle>
-              <DialogDescription className="text-gray-400">
+              <DialogDescription className="text-gray-400 text-sm">
                 Set up a comprehensive trading account with your financial goals, risk parameters, and trading preferences.
               </DialogDescription>
             </DialogHeader>
-            
-            <ScrollArea className="max-h-[70vh] overflow-y-auto pr-4">
-                    <div className="space-y-6">
+            <div className="flex flex-col h-full max-h-[75vh]">
+                
+                <div className="flex-1 overflow-y-auto py-4">
+                  <Form {...form}>
+                    <form id="create-account-form" onSubmit={form.handleSubmit(handleCreateAccount)} className="space-y-6">
                     <Tabs defaultValue="basic" className="w-full">
                       <TabsList className="grid w-full grid-cols-3 bg-gray-800/50">
                         <TabsTrigger value="basic" className="data-[state=active]:bg-yellow-500 data-[state=active]:text-black">
@@ -1401,9 +1301,10 @@ export default function AccountsPage() {
 
                   </form>
                 </Form>
-            </ScrollArea>
+              </div>
               
-              <div className="flex justify-end space-x-3 pt-4 border-t border-gray-700">
+              {/* Form Actions - Fixed at bottom */}
+              <div className="flex-shrink-0 flex justify-end space-x-3 pt-4 border-t border-gray-700 bg-gradient-to-br from-gray-900 via-gray-800 to-black">
                 <Button
                   type="button"
                   variant="outline"
@@ -1421,6 +1322,7 @@ export default function AccountsPage() {
                   {createAccountMutation.isPending ? 'Creating...' : 'Create Account'}
                 </Button>
               </div>
+            </div>
           </DialogContent>
         </Dialog>
 
