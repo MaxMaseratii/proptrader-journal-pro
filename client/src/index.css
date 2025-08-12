@@ -508,24 +508,13 @@ canvas {
   color: hsl(var(--widget-text)) !important;
 }
 
-/* CRITICAL: Override ALL hardcoded dark backgrounds in light mode */
-/* EXCEPTION: Do NOT override modal/dialog overlays and dropdown menus */
-.light .bg-gray-800:not([data-radix-dialog-overlay]):not([data-radix-alert-dialog-overlay]):not([data-state]):not([role="dialog"]):not(.drawer-overlay):not([data-radix-dropdown-menu-content]),
-.light .bg-gray-900:not([data-radix-dialog-overlay]):not([data-radix-alert-dialog-overlay]):not([data-state]):not([role="dialog"]):not(.drawer-overlay):not([data-radix-dropdown-menu-content]),
-.light .bg-black:not([data-radix-dialog-overlay]):not([data-radix-alert-dialog-overlay]):not([data-state]):not([role="dialog"]):not(.drawer-overlay):not([class*="bg-black/"]):not([data-radix-dropdown-menu-content]),
-.light [class*="bg-gray-8"]:not([data-radix-dialog-overlay]):not([data-radix-alert-dialog-overlay]):not([data-state]):not([role="dialog"]):not(.drawer-overlay):not([data-radix-dropdown-menu-content]),
-.light [class*="bg-gray-9"]:not([data-radix-dialog-overlay]):not([data-radix-alert-dialog-overlay]):not([data-state]):not([role="dialog"]):not(.drawer-overlay):not([data-radix-dropdown-menu-content]) {
+/* Light theme: Override dark backgrounds to white */
+.light .bg-gray-800,
+.light .bg-gray-900,
+.light .bg-black,
+.light [class*="bg-gray-8"],
+.light [class*="bg-gray-9"] {
   background-color: white !important;
-  color: black !important;
-}
-
-/* FORCE text color inheritance for children of white backgrounds */
-.light .bg-white *,
-.light .bg-gray-50 *,
-.light .bg-gray-100 *,
-.light [class*="bg-white"] *,
-.light [class*="bg-gray-50"] *,
-.light [class*="bg-gray-100"] * {
   color: black !important;
 }
 
@@ -660,29 +649,17 @@ input, textarea, select {
   color: inherit !important;
 }
 
-/* Light mode specific overrides for select elements */
+/* Light theme: Form elements and select components */
 .light [data-radix-select-trigger],
-.light [data-radix-select-value],
-.light [data-radix-select-placeholder] {
+.light [data-radix-select-value] {
   color: black !important;
 }
 
-/* NUCLEAR OPTION: Force ALL form elements to have proper contrast */
 .light input,
 .light textarea,
-.light select,
-.light button,
-.light [role="button"],
-.light [role="combobox"],
-.light [role="listbox"],
-.light [role="option"],
-.light [data-radix-select-trigger],
-.light [data-radix-select-content],
-.light [data-radix-select-item],
-.light [data-radix-select-value],
-.light [data-radix-dropdown-menu-content],
-.light [data-radix-dropdown-menu-item] {
+.light select {
   color: black !important;
+  background-color: white !important;
 }
 
 /* Specific targeting for Tailwind classes commonly used in forms */

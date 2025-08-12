@@ -37,6 +37,33 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     }
   }, [theme]);
 
+  // Listen for location changes to handle theme when navigating away from welcome
+  useEffect(() => {
+    const handleLocationChange = () => {
+      const isWelcomePage = window.location.pathname === '/welcome' || window.location.pathname === '/';
+      
+      if (isWelcomePage) {
+        // Force dark theme for welcome page
+        setThemeState('dark');
+        document.documentElement.classList.remove('light');
+        document.documentElement.classList.add('dark');
+      } else {
+        // Restore user's preferred theme when leaving welcome page
+        const savedTheme = localStorage.getItem('prop-journal-theme') as Theme | null;
+        if (savedTheme && savedTheme !== theme) {
+          setThemeState(savedTheme);
+        }
+      }
+    };
+
+    // Listen for popstate events (back/forward navigation)
+    window.addEventListener('popstate', handleLocationChange);
+    
+    return () => {
+      window.removeEventListener('popstate', handleLocationChange);
+    };
+  }, [theme]);
+
   const toggleTheme = () => {
     setThemeState(prev => prev === 'dark' ? 'light' : 'dark');
   };
