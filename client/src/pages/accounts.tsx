@@ -853,7 +853,11 @@ export default React.memo(function AccountsPage() {
   const handleDelete = useCallback(async (id: number) => {
     if (!confirm('Delete this account? This cannot be undone.')) return;
     
-    setDeletingIds(prev => new Set([...prev, id]));
+    setDeletingIds(prev => {
+      const newSet = new Set([...prev]);
+      newSet.add(id);
+      return newSet;
+    });
     try {
       const response = await fetch(`/api/accounts/${id}`, {
         method: 'DELETE',
