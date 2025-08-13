@@ -448,36 +448,125 @@ export async function registerRoutes(app: Express): Promise<Server> {
         fileName: fileName || 'imported.csv'
       });
       
-      // If trades are already processed, queue them for background processing
+      // If trades are already processed, process them directly in development or queue for production
       if (trades && Array.isArray(trades) && accountId) {
-        console.log(`Queuing ${trades.length} pre-processed trades for background processing`);
+        console.log(`Processing ${trades.length} pre-processed trades`);
         
-        // Add job to background queue for processing
-        const job = await csvProcessingQueue.add('import-csv', {
-          userId,
-          accountId,
-          trades,
-          fileName: fileName || 'imported.csv'
-        }, {
-          priority: 10,
-          delay: 0,
-          attempts: 3,
-          backoff: {
-            type: 'exponential',
-            delay: 2000,
-          },
-        });
-        
-        // Return immediately with job ID for tracking
-        return res.json({
-          success: true,
-          message: `CSV import queued for processing. ${trades.length} trades will be imported shortly.`,
-          jobId: job.id,
-          recordsQueued: trades.length,
-          status: 'processing'
-        });
+        // In development mode, process directly without Redis
+        if (process.env.NODE_ENV === 'development') {
+          let recordsImported = 0;
+          const errors: string[] = [];
+          
+          for (const trade of trades) {
+            try {
+              const tradeData = {
+                accountId: parseInt(accountId),
+                symbol: trade.symbol || 'UNKNOWN',
+                side: trade.side || 'long',
+                quantity: trade.quantity || 1,
+                entryPrice: trade.entryPrice || 0,
+                exitPrice: trade.exitPrice || trade.entryPrice || 0,
+                pnl: trade.pnl || 0,
+                date: trade.date || new Date().toISOString().split('T')[0],
+                status: trade.status || 'closed',
+                fillTime: trade.fillTime ? new Date(trade.fillTime) : new Date(),
+                exitTime: trade.exitTime ? new Date(trade.exitTime) : new Date(),
+                initialStopLoss: trade.initialStopLoss || null,
+                finalStopLoss: trade.finalStopLoss || null,
+                initialTakeProfit: trade.initialTakeProfit || null,
+                finalTakeProfit: trade.finalTakeProfit || null,
+                tradeImage: trade.tradeImage || null,
+                tradingViewLink: trade.tradingViewLink || null,
+                notes: trade.notes || 'Imported via Universal CSV'
+              };
+              
+              await storage.createTrade(tradeData);
+              recordsImported++;
+            } catch (error) {
+              errors.push(`Failed to import trade: ${error instanceof Error ? error.message : 'Unknown error'}`);
+            }
+          }
+          
+          return res.json({
+            success: true,
+            message: `Successfully imported ${recordsImported} trades`,
+            recordsImported,
+            errors: errors.length > 0 ? errors : undefined,
+            status: 'completed'
+          });
+        } else {
+          // Production mode: use background queue
+          try {
+            const job = await csvProcessingQueue.add('import-csv', {
+              userId,
+              accountId,
+              trades,
+              fileName: fileName || 'imported.csv'
+            }, {
+              priority: 10,
+              delay: 0,
+              attempts: 3,
+              backoff: {
+                type: 'exponential',
+                delay: 2000,
+              },
+            });
+            
+            return res.json({
+              success: true,
+              message: `CSV import queued for processing. ${trades.length} trades will be imported shortly.`,
+              jobId: job.id,
+              recordsQueued: trades.length,
+              status: 'processing'
+            });
+          } catch (redisError) {
+            console.error('Redis error, falling back to direct processing:', redisError);
+            // Fallback to direct processing if Redis fails
+            let recordsImported = 0;
+            const errors: string[] = [];
+            
+            for (const trade of trades) {
+              try {
+                const tradeData = {
+                  accountId: parseInt(accountId),
+                  symbol: trade.symbol || 'UNKNOWN',
+                  side: trade.side || 'long',
+                  quantity: trade.quantity || 1,
+                  entryPrice: trade.entryPrice || 0,
+                  exitPrice: trade.exitPrice || trade.entryPrice || 0,
+                  pnl: trade.pnl || 0,
+                  date: trade.date || new Date().toISOString().split('T')[0],
+                  status: trade.status || 'closed',
+                  fillTime: trade.fillTime ? new Date(trade.fillTime) : new Date(),
+                  exitTime: trade.exitTime ? new Date(trade.exitTime) : new Date(),
+                  initialStopLoss: trade.initialStopLoss || null,
+                  finalStopLoss: trade.finalStopLoss || null,
+                  initialTakeProfit: trade.initialTakeProfit || null,
+                  finalTakeProfit: trade.finalTakeProfit || null,
+                  tradeImage: trade.tradeImage || null,
+                  tradingViewLink: trade.tradingViewLink || null,
+                  notes: trade.notes || 'Imported via Universal CSV'
+                };
+                
+                await storage.createTrade(tradeData);
+                recordsImported++;
+              } catch (error) {
+                errors.push(`Failed to import trade: ${error instanceof Error ? error.message : 'Unknown error'}`);
+              }
+            }
+            
+            return res.json({
+              success: true,
+              message: `Successfully imported ${recordsImported} trades (fallback processing)`,
+              recordsImported,
+              errors: errors.length > 0 ? errors : undefined,
+              status: 'completed'
+            });
+          }
+        }
       }
       
+      const csvText = csvContent || csvData;
       if (!accountId || !csvText) {
         console.log("Missing required fields:", { accountId: !!accountId, csvData: !!csvData, csvContent: !!csvContent });
         return res.status(400).json({ message: "Account ID and CSV content are required" });
