@@ -854,7 +854,7 @@ export default React.memo(function AccountsPage() {
     if (!confirm('Delete this account? This cannot be undone.')) return;
     
     setDeletingIds(prev => {
-      const newSet = new Set([...prev]);
+      const newSet = new Set(Array.from(prev));
       newSet.add(id);
       return newSet;
     });
@@ -870,7 +870,7 @@ export default React.memo(function AccountsPage() {
       console.error('Failed to delete account:', error);
     } finally {
       setDeletingIds(prev => {
-        const newSet = new Set([...prev]);
+        const newSet = new Set(Array.from(prev));
         newSet.delete(id);
         return newSet;
       });

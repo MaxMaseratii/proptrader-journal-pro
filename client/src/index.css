@@ -576,6 +576,21 @@ canvas {
   color: black !important;
 }
 
+/* EXCEPTION: Preserve dark form styling with explicit text-white classes */
+.light input.text-white,
+.light select.text-white,
+.light textarea.text-white,
+.light label.text-white,
+.light .text-white,
+.light [class*="bg-gray-800"] input,
+.light [class*="bg-gray-800"] select,
+.light [class*="bg-gray-800"] textarea,
+.light [class*="bg-gray-900"] input,
+.light [class*="bg-gray-900"] select,
+.light [class*="bg-gray-900"] textarea {
+  color: white !important;
+}
+
 /* CRITICAL: Ensure ALL modal overlays have dark backgrounds */
 [data-radix-dialog-overlay],
 [data-radix-alert-dialog-overlay],
