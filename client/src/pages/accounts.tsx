@@ -1,5 +1,4 @@
 import React, { useState, useMemo, useCallback, useEffect } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -35,6 +34,11 @@ const AccountForm = React.memo(({
   isLoading, 
   initialData = null,
   onCancel 
+}: {
+  onSubmit: (formData: any) => void;
+  isLoading: boolean;
+  initialData?: Account | null;
+  onCancel: () => void;
 }) => {
   const [formData, setFormData] = useState({
     // Basic Info Tab
@@ -108,7 +112,7 @@ const AccountForm = React.memo(({
     }
   }, [initialData]);
 
-  const handleInputChange = useCallback((field, value) => {
+  const handleInputChange = useCallback((field: string, value: any) => {
     setFormData(prev => ({
       ...prev,
       [field]: value
@@ -687,83 +691,187 @@ const AccountForm = React.memo(({
   );
 });
 
-export default function AccountsPage() {
+// Memoized Account Card Component to prevent re-renders
+const AccountCard = React.memo(({ 
+  account, 
+  onEdit, 
+  onDelete, 
+  isDeleting 
+}: {
+  account: Account;
+  onEdit: (account: Account) => void;
+  onDelete: (id: number) => void;
+  isDeleting: boolean;
+}) => {
+  return (
+    <Card className="bg-gray-900 border-gray-700 hover:border-yellow-500 transition-colors">
+      <CardHeader>
+        <CardTitle className="text-white flex items-center justify-between">
+          {account.name}
+          <Badge variant={account.type === 'funded' ? 'default' : 'secondary'}>
+            {account.type}
+          </Badge>
+        </CardTitle>
+        <div className="text-sm text-gray-400">{account.firm}</div>
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-2 text-sm">
+          <div className="flex justify-between">
+            <span className="text-gray-400">Starting Balance:</span>
+            <span className="text-green-400">${account.startingBalance.toLocaleString()}</span>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-gray-400">Profit Target:</span>
+            <span className="text-blue-400">${account.profitTarget.toLocaleString()}</span>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-gray-400">Max Drawdown:</span>
+            <span className="text-red-400">${account.maxDrawdown.toLocaleString()}</span>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-gray-400">Risk Per Trade:</span>
+            <span className="text-yellow-400">${account.riskPerTrade}</span>
+          </div>
+        </div>
+        
+        <div className="flex space-x-2 mt-4">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => onEdit(account)}
+            className="flex-1 border-gray-600 text-gray-300 hover:bg-gray-700"
+          >
+            <Edit className="h-3 w-3 mr-1" />
+            Edit
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => onDelete(account.id)}
+            className="border-red-600 text-red-400 hover:bg-red-600/20"
+            disabled={isDeleting}
+          >
+            <Trash2 className="h-3 w-3" />
+          </Button>
+        </div>
+      </CardContent>
+    </Card>
+  );
+});
+
+export default React.memo(function AccountsPage() {
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [showEditDialog, setShowEditDialog] = useState(false);
   const [editingAccount, setEditingAccount] = useState<Account | null>(null);
+  const [accounts, setAccounts] = useState<Account[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isCreating, setIsCreating] = useState(false);
+  const [isUpdating, setIsUpdating] = useState(false);
+  const [deletingIds, setDeletingIds] = useState<Set<number>>(new Set());
 
-  const queryClient = useQueryClient();
+  // Load accounts on mount
+  useEffect(() => {
+    const loadAccounts = async () => {
+      try {
+        const response = await fetch('/api/accounts');
+        if (response.ok) {
+          const data = await response.json();
+          setAccounts(data);
+        }
+      } catch (error) {
+        console.error('Failed to load accounts:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    loadAccounts();
+  }, []);
 
-  const { data: accounts = [], isLoading } = useQuery<Account[]>({
-    queryKey: ['/api/accounts'],
-  });
-
-  const createMutation = useMutation({
-    mutationFn: async (data: any) => {
+  const handleCreateSubmit = useCallback(async (formData: any) => {
+    setIsCreating(true);
+    try {
       const response = await fetch('/api/accounts', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          name: data.name,
-          firm: data.firm,
-          type: data.type,
-          startingBalance: data.startingBalance,
-          profitTarget: data.profitTarget,
-          maxDrawdown: data.maxDrawdown,
-          riskPerTrade: data.riskPerTrade
+          name: formData.name,
+          firm: formData.firm,
+          type: formData.type,
+          startingBalance: formData.startingBalance,
+          profitTarget: formData.profitTarget,
+          maxDrawdown: formData.maxDrawdown,
+          riskPerTrade: formData.riskPerTrade
         }),
       });
-      return response.json();
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/accounts'] });
-      setShowCreateDialog(false);
-    },
-  });
+      
+      if (response.ok) {
+        const newAccount = await response.json();
+        setAccounts(prev => [...prev, newAccount]);
+        setShowCreateDialog(false);
+      }
+    } catch (error) {
+      console.error('Failed to create account:', error);
+    } finally {
+      setIsCreating(false);
+    }
+  }, []);
 
-  const updateMutation = useMutation({
-    mutationFn: async (data: any) => {
-      const response = await fetch(`/api/accounts/${editingAccount?.id}`, {
+  const handleEditSubmit = useCallback(async (formData: any) => {
+    if (!editingAccount) return;
+    
+    setIsUpdating(true);
+    try {
+      const response = await fetch(`/api/accounts/${editingAccount.id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          name: data.name,
-          firm: data.firm,
-          type: data.type,
-          startingBalance: data.startingBalance,
-          profitTarget: data.profitTarget,
-          maxDrawdown: data.maxDrawdown,
-          riskPerTrade: data.riskPerTrade
+          name: formData.name,
+          firm: formData.firm,
+          type: formData.type,
+          startingBalance: formData.startingBalance,
+          profitTarget: formData.profitTarget,
+          maxDrawdown: formData.maxDrawdown,
+          riskPerTrade: formData.riskPerTrade
         }),
       });
-      return response.json();
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/accounts'] });
-      setShowEditDialog(false);
-      setEditingAccount(null);
-    },
-  });
+      
+      if (response.ok) {
+        const updatedAccount = await response.json();
+        setAccounts(prev => prev.map(acc => 
+          acc.id === editingAccount.id ? updatedAccount : acc
+        ));
+        setShowEditDialog(false);
+        setEditingAccount(null);
+      }
+    } catch (error) {
+      console.error('Failed to update account:', error);
+    } finally {
+      setIsUpdating(false);
+    }
+  }, [editingAccount]);
 
-  const deleteMutation = useMutation({
-    mutationFn: async (id: number) => {
+  const handleDelete = useCallback(async (id: number) => {
+    if (!confirm('Delete this account? This cannot be undone.')) return;
+    
+    setDeletingIds(prev => new Set([...prev, id]));
+    try {
       const response = await fetch(`/api/accounts/${id}`, {
         method: 'DELETE',
       });
-      return response.json();
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/accounts'] });
-    },
-  });
-
-  const handleCreateSubmit = useCallback((formData: any) => {
-    createMutation.mutate(formData);
-  }, [createMutation]);
-
-  const handleEditSubmit = useCallback((formData: any) => {
-    updateMutation.mutate(formData);
-  }, [updateMutation]);
+      
+      if (response.ok) {
+        setAccounts(prev => prev.filter(acc => acc.id !== id));
+      }
+    } catch (error) {
+      console.error('Failed to delete account:', error);
+    } finally {
+      setDeletingIds(prev => {
+        const newSet = new Set([...prev]);
+        newSet.delete(id);
+        return newSet;
+      });
+    }
+  }, []);
 
   const openEditDialog = useCallback((account: Account) => {
     setEditingAccount(account);
@@ -787,14 +895,7 @@ export default function AccountsPage() {
               Create Account
             </Button>
           </DialogTrigger>
-          <DialogContent 
-            className="max-w-4xl max-h-[90vh] overflow-y-auto"
-            style={{
-              backgroundColor: 'rgba(25, 25, 112, 0.95)', // Midnight blue with darkest opacity
-              borderColor: '#1e40af',
-              color: 'white',
-            }}
-          >
+          <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto bg-black border-gray-700">
             <DialogHeader>
               <DialogTitle className="text-yellow-400 text-2xl">Create New Trading Account</DialogTitle>
               <DialogDescription className="text-gray-300">
@@ -804,7 +905,7 @@ export default function AccountsPage() {
             
             <AccountForm
               onSubmit={handleCreateSubmit}
-              isLoading={createMutation.isPending}
+              isLoading={isCreating}
               onCancel={() => setShowCreateDialog(false)}
             />
           </DialogContent>
@@ -826,76 +927,20 @@ export default function AccountsPage() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {accounts.map((account) => (
-            <Card key={account.id} className="bg-gray-900 border-gray-700 hover:border-yellow-500 transition-colors">
-              <CardHeader>
-                <CardTitle className="text-white flex items-center justify-between">
-                  {account.name}
-                  <Badge variant={account.type === 'funded' ? 'default' : 'secondary'}>
-                    {account.type}
-                  </Badge>
-                </CardTitle>
-                <div className="text-sm text-gray-400">{account.firm}</div>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-2 text-sm">
-                  <div className="flex justify-between">
-                    <span className="text-gray-400">Starting Balance:</span>
-                    <span className="text-green-400">${account.startingBalance.toLocaleString()}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-400">Profit Target:</span>
-                    <span className="text-blue-400">${account.profitTarget.toLocaleString()}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-400">Max Drawdown:</span>
-                    <span className="text-red-400">${account.maxDrawdown.toLocaleString()}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-400">Risk Per Trade:</span>
-                    <span className="text-yellow-400">${account.riskPerTrade}</span>
-                  </div>
-                </div>
-                
-                <div className="flex space-x-2 mt-4">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => openEditDialog(account)}
-                    className="flex-1 border-gray-600 text-gray-300 hover:bg-gray-700"
-                  >
-                    <Edit className="h-3 w-3 mr-1" />
-                    Edit
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => {
-                      if (confirm('Delete this account? This cannot be undone.')) {
-                        deleteMutation.mutate(account.id);
-                      }
-                    }}
-                    className="border-red-600 text-red-400 hover:bg-red-600/20"
-                    disabled={deleteMutation.isPending}
-                  >
-                    <Trash2 className="h-3 w-3" />
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
+            <AccountCard
+              key={account.id}
+              account={account}
+              onEdit={openEditDialog}
+              onDelete={handleDelete}
+              isDeleting={deletingIds.has(account.id)}
+            />
           ))}
         </div>
       )}
 
       {/* Edit Dialog */}
       <Dialog open={showEditDialog} onOpenChange={setShowEditDialog}>
-        <DialogContent 
-          className="max-w-4xl max-h-[90vh] overflow-y-auto"
-          style={{
-            backgroundColor: 'rgba(25, 25, 112, 0.95)', // Midnight blue with darkest opacity
-            borderColor: '#1e40af',
-            color: 'white',
-          }}
-        >
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto bg-black border-gray-700">
           <DialogHeader>
             <DialogTitle className="text-yellow-400 text-2xl">Edit Trading Account</DialogTitle>
             <DialogDescription className="text-gray-300">
@@ -905,7 +950,7 @@ export default function AccountsPage() {
           
           <AccountForm
             onSubmit={handleEditSubmit}
-            isLoading={updateMutation.isPending}
+            isLoading={isUpdating}
             initialData={editingAccount}
             onCancel={() => {
               setShowEditDialog(false);
@@ -916,4 +961,4 @@ export default function AccountsPage() {
       </Dialog>
     </div>
   );
-}
+});
