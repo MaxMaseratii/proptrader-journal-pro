@@ -43,10 +43,12 @@ export default function AccountsPage() {
 
   const createMutation = useMutation({
     mutationFn: async (data: Omit<Account, 'id'>) => {
-      return apiRequest('/api/accounts', {
+      const response = await fetch('/api/accounts', {
         method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
       });
+      return response.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/accounts'] });
@@ -57,23 +59,26 @@ export default function AccountsPage() {
 
   const updateMutation = useMutation({
     mutationFn: async ({ id, ...data }: Account) => {
-      return apiRequest(`/api/accounts/${id}`, {
+      const response = await fetch(`/api/accounts/${id}`, {
         method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
       });
+      return response.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/accounts'] });
-      resetForm();
+      resetEditForm();
       setShowEditDialog(false);
     },
   });
 
   const deleteMutation = useMutation({
     mutationFn: async (id: number) => {
-      return apiRequest(`/api/accounts/${id}`, {
+      const response = await fetch(`/api/accounts/${id}`, {
         method: 'DELETE',
       });
+      return response.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/accounts'] });
@@ -88,17 +93,36 @@ export default function AccountsPage() {
     setProfitTarget(1000);
     setMaxDrawdown(500);
     setRiskPerTrade(2);
+  };
+
+  const resetEditForm = () => {
+    setEditName('');
+    setEditType('demo');
+    setEditFirm('');
+    setEditStartingBalance(10000);
+    setEditProfitTarget(1000);
+    setEditMaxDrawdown(500);
+    setEditRiskPerTrade(2);
     setEditingAccount(null);
   };
 
+  // Separate form state for editing
+  const [editName, setEditName] = useState('');
+  const [editType, setEditType] = useState<'demo' | 'live' | 'paper' | 'challenge'>('demo');
+  const [editFirm, setEditFirm] = useState('');
+  const [editStartingBalance, setEditStartingBalance] = useState(10000);
+  const [editProfitTarget, setEditProfitTarget] = useState(1000);
+  const [editMaxDrawdown, setEditMaxDrawdown] = useState(500);
+  const [editRiskPerTrade, setEditRiskPerTrade] = useState(2);
+
   const openEditDialog = (account: Account) => {
-    setName(account.name);
-    setType(account.type);
-    setFirm(account.firm);
-    setStartingBalance(account.startingBalance);
-    setProfitTarget(account.profitTarget);
-    setMaxDrawdown(account.maxDrawdown);
-    setRiskPerTrade(account.riskPerTrade);
+    setEditName(account.name);
+    setEditType(account.type);
+    setEditFirm(account.firm);
+    setEditStartingBalance(account.startingBalance);
+    setEditProfitTarget(account.profitTarget);
+    setEditMaxDrawdown(account.maxDrawdown);
+    setEditRiskPerTrade(account.riskPerTrade);
     setEditingAccount(account);
     setShowEditDialog(true);
   };
@@ -119,13 +143,13 @@ export default function AccountsPage() {
     if (!editingAccount) return;
     updateMutation.mutate({
       id: editingAccount.id,
-      name,
-      type,
-      firm,
-      startingBalance,
-      profitTarget,
-      maxDrawdown,
-      riskPerTrade,
+      name: editName,
+      type: editType,
+      firm: editFirm,
+      startingBalance: editStartingBalance,
+      profitTarget: editProfitTarget,
+      maxDrawdown: editMaxDrawdown,
+      riskPerTrade: editRiskPerTrade,
     });
   };
 
@@ -150,8 +174,8 @@ export default function AccountsPage() {
           <DialogContent 
             className="max-w-2xl"
             style={{
-              backgroundColor: 'black',
-              borderColor: '#374151',
+              backgroundColor: 'rgba(25, 25, 112, 0.95)', // Midnight blue with darkest opacity
+              borderColor: '#1e40af',
               color: 'white',
               position: 'fixed',
               top: '50%',
@@ -346,8 +370,8 @@ export default function AccountsPage() {
         <DialogContent 
           className="max-w-2xl"
           style={{
-            backgroundColor: 'black',
-            borderColor: '#374151',
+            backgroundColor: 'rgba(25, 25, 112, 0.95)', // Midnight blue with darkest opacity
+            borderColor: '#1e40af',
             color: 'white',
             position: 'fixed',
             top: '50%',
@@ -365,15 +389,15 @@ export default function AccountsPage() {
               <div>
                 <Label className="text-white">Account Name</Label>
                 <Input
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
+                  value={editName}
+                  onChange={(e) => setEditName(e.target.value)}
                   className="bg-white text-black border-gray-300"
                 />
               </div>
               
               <div>
                 <Label className="text-white">Account Type</Label>
-                <Select value={type} onValueChange={(value: any) => setType(value)}>
+                <Select value={editType} onValueChange={(value: any) => setEditType(value)}>
                   <SelectTrigger className="bg-white text-black border-gray-300">
                     <SelectValue />
                   </SelectTrigger>
@@ -390,8 +414,8 @@ export default function AccountsPage() {
             <div>
               <Label className="text-white">Prop Firm / Broker</Label>
               <Input
-                value={firm}
-                onChange={(e) => setFirm(e.target.value)}
+                value={editFirm}
+                onChange={(e) => setEditFirm(e.target.value)}
                 className="bg-white text-black border-gray-300"
               />
             </div>
@@ -401,8 +425,8 @@ export default function AccountsPage() {
                 <Label className="text-white">Starting Balance</Label>
                 <Input
                   type="number"
-                  value={startingBalance}
-                  onChange={(e) => setStartingBalance(Number(e.target.value))}
+                  value={editStartingBalance}
+                  onChange={(e) => setEditStartingBalance(Number(e.target.value))}
                   className="bg-white text-black border-gray-300"
                 />
               </div>
@@ -411,8 +435,8 @@ export default function AccountsPage() {
                 <Label className="text-white">Profit Target</Label>
                 <Input
                   type="number"
-                  value={profitTarget}
-                  onChange={(e) => setProfitTarget(Number(e.target.value))}
+                  value={editProfitTarget}
+                  onChange={(e) => setEditProfitTarget(Number(e.target.value))}
                   className="bg-white text-black border-gray-300"
                 />
               </div>
@@ -421,8 +445,8 @@ export default function AccountsPage() {
                 <Label className="text-white">Max Drawdown</Label>
                 <Input
                   type="number"
-                  value={maxDrawdown}
-                  onChange={(e) => setMaxDrawdown(Number(e.target.value))}
+                  value={editMaxDrawdown}
+                  onChange={(e) => setEditMaxDrawdown(Number(e.target.value))}
                   className="bg-white text-black border-gray-300"
                 />
               </div>
@@ -431,15 +455,15 @@ export default function AccountsPage() {
             <div>
               <Label className="text-white">Risk Per Trade (%)</Label>
               <Slider
-                value={[riskPerTrade]}
-                onValueChange={(value) => setRiskPerTrade(value[0])}
+                value={[editRiskPerTrade]}
+                onValueChange={(value) => setEditRiskPerTrade(value[0])}
                 max={10}
                 min={0.1}
                 step={0.1}
                 className="w-full"
               />
               <div className="text-center text-sm text-gray-400 mt-2">
-                {riskPerTrade}% per trade
+                {editRiskPerTrade}% per trade
               </div>
             </div>
 
@@ -447,7 +471,7 @@ export default function AccountsPage() {
               <Button
                 variant="outline"
                 onClick={() => {
-                  resetForm();
+                  resetEditForm();
                   setShowEditDialog(false);
                 }}
                 className="border-gray-600 text-gray-300 hover:bg-gray-700"
