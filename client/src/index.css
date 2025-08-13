@@ -237,14 +237,21 @@
 [data-radix-dialog-content],
 [role="dialog"],
 .dialog-content {
-  background-color: hsl(var(--background)) !important;
-  color: hsl(var(--foreground)) !important;
-  border: 1px solid hsl(var(--border)) !important;
+  background-color: rgba(0, 0, 0, 0.98) !important;
+  color: white !important;
+  border: 1px solid #374151 !important;
+  position: fixed !important;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
+  max-height: 90vh !important;
+  width: 90vw !important;
+  max-width: 800px !important;
 }
 
 [data-radix-dialog-overlay],
 .dialog-overlay {
-  background-color: rgba(0, 0, 0, 0.85) !important;
+  background-color: rgba(0, 0, 0, 0.95) !important;
   backdrop-filter: blur(8px) !important;
 }
 
@@ -283,6 +290,35 @@
 .DialogContent {
   pointer-events: auto !important;
   position: fixed !important;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
+  background-color: black !important;
+}
+
+/* Prevent dialog movement on hover */
+[data-radix-dialog-content]:hover,
+[data-radix-dialog-content]:focus,
+[data-radix-dialog-content] {
+  transform: translate(-50%, -50%) !important;
+  position: fixed !important;
+  top: 50% !important;
+  left: 50% !important;
+  background-color: black !important;
+}
+
+/* Force black overlay */
+[data-radix-dialog-overlay] {
+  background-color: rgba(0, 0, 0, 0.95) !important;
+}
+
+/* Additional hover prevention */
+[data-radix-dialog-content] * {
+  pointer-events: auto !important;
+}
+
+[data-radix-dialog-content] form {
+  pointer-events: auto !important;
 }
 
 [data-radix-dialog-content] {

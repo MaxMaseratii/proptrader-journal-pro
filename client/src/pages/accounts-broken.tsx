@@ -256,7 +256,13 @@ export default function AccountManagement() {
                 Create Account
               </Button>
             </DialogTrigger>
-            <DialogContent className="bg-black/95 border border-gray-700 text-white max-w-4xl max-h-[80vh] overflow-hidden" style={{ backgroundColor: 'rgba(0, 0, 0, 0.95)' }}>
+            <DialogContent className="border border-gray-700 text-white max-w-4xl max-h-[80vh] overflow-hidden" style={{ 
+              backgroundColor: 'black',
+              position: 'fixed',
+              top: '50%',
+              left: '50%',
+              transform: 'translate(-50%, -50%)'
+            }}>
               <DialogHeader>
                 <DialogTitle className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-yellow-600">
                   Create New Trading Account
@@ -575,7 +581,13 @@ export default function AccountManagement() {
             setIsEditDialogOpen(true);
           }
         }}>
-          <DialogContent className="max-w-2xl bg-black/95 border border-gray-700" style={{ backgroundColor: 'rgba(0, 0, 0, 0.95)' }}>
+          <DialogContent className="max-w-2xl border border-gray-700" style={{ 
+            backgroundColor: 'black',
+            position: 'fixed',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)'
+          }}>
             <DialogHeader>
               <DialogTitle className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-yellow-600">
                 Edit Trading Account
