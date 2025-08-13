@@ -1,11 +1,10 @@
 import React, { useState, useMemo, useCallback, useEffect } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Checkbox } from '@/components/ui/checkbox';
 import { 
@@ -18,16 +17,37 @@ import {
   EyeOff
 } from 'lucide-react';
 
-interface Account {
-  id: number;
-  name: string;
-  type: 'demo' | 'live' | 'paper' | 'challenge' | 'funded';
-  firm: string;
-  startingBalance: number;
-  profitTarget: number;
-  maxDrawdown: number;
-  riskPerTrade: number;
-}
+// Mock data for demonstration
+const mockAccounts = [
+  {
+    id: 1,
+    name: "Main Trading Account",
+    firm: "FTMO",
+    type: "challenge",
+    startingBalance: 10000,
+    profitTarget: 1000,
+    maxDrawdown: 500,
+    riskPerTrade: 2,
+    createdAt: "2024-01-01"
+  },
+  {
+    id: 2,
+    name: "Secondary Account", 
+    firm: "TopstepTrader",
+    type: "funded",
+    startingBalance: 25000,
+    profitTarget: 2500,
+    maxDrawdown: 1250,
+    riskPerTrade: 1.5,
+    createdAt: "2024-02-01"
+  }
+];
+
+const mockTrades = [
+  { id: 1, accountId: 1, pnl: 150, date: "2024-03-01" },
+  { id: 2, accountId: 1, pnl: -80, date: "2024-03-02" },
+  { id: 3, accountId: 2, pnl: 300, date: "2024-03-01" }
+];
 
 // Separate form component to prevent re-renders
 const AccountForm = React.memo(({ 
@@ -390,7 +410,7 @@ const AccountForm = React.memo(({
 
         {/* Rules & Risk Tab */}
         <TabsContent value="rules" className="mt-6 space-y-4">
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-2 gap-4">
             <div>
               <Label className="text-white">Risk Per Trade ($)</Label>
               <Input 
@@ -411,8 +431,11 @@ const AccountForm = React.memo(({
                 value={formData.riskPerTradeDivider}
                 onChange={(e) => handleInputChange('riskPerTradeDivider', parseFloat(e.target.value) || 0)}
               />
+              <div className="text-xs text-gray-400 mt-1">Helper: Used to calculate position size</div>
             </div>
+          </div>
 
+          <div className="grid grid-cols-3 gap-4">
             <div>
               <Label className="text-white">Daily Loss Limit ($)</Label>
               <Input 
@@ -423,11 +446,9 @@ const AccountForm = React.memo(({
                 onChange={(e) => handleInputChange('dailyLossLimit', parseFloat(e.target.value) || 0)}
               />
             </div>
-          </div>
 
-          <div className="grid grid-cols-3 gap-4">
             <div>
-              <Label className="text-white">Risk-Reward Ratio</Label>
+              <Label className="text-white">Risk:Reward Ratio (1:X)</Label>
               <Input 
                 type="number" 
                 placeholder="2" 
@@ -447,7 +468,9 @@ const AccountForm = React.memo(({
                 onChange={(e) => handleInputChange('maxTradesPerDay', parseInt(e.target.value) || 0)}
               />
             </div>
+          </div>
 
+          <div className="grid grid-cols-2 gap-4">
             <div>
               <Label className="text-white">Max Risk Per Day ($)</Label>
               <Input 
@@ -458,24 +481,24 @@ const AccountForm = React.memo(({
                 onChange={(e) => handleInputChange('maxRiskPerDay', parseFloat(e.target.value) || 0)}
               />
             </div>
-          </div>
 
-          <div>
-            <Label className="text-white">Stop Loss (pips/points)</Label>
-            <Input 
-              type="number" 
-              placeholder="20" 
-              className="bg-gray-800 border-gray-600 text-white mt-1"
-              value={formData.stopLoss}
-              onChange={(e) => handleInputChange('stopLoss', parseFloat(e.target.value) || 0)}
-            />
+            <div>
+              <Label className="text-white">Stop Loss (Points/Pips)</Label>
+              <Input 
+                type="number" 
+                placeholder="20" 
+                className="bg-gray-800 border-gray-600 text-white mt-1"
+                value={formData.stopLoss}
+                onChange={(e) => handleInputChange('stopLoss', parseFloat(e.target.value) || 0)}
+              />
+            </div>
           </div>
 
           <div className="grid grid-cols-3 gap-4">
             <div>
-              <Label className="text-white">Primary Asset</Label>
+              <Label className="text-white">Primary Asset *</Label>
               <Input 
-                placeholder="e.g., EURUSD, NQ, ES" 
+                placeholder="e.g., ES, NQ, Gold" 
                 className="bg-gray-800 border-gray-600 text-white mt-1"
                 value={formData.primaryAsset}
                 onChange={(e) => handleInputChange('primaryAsset', e.target.value)}
@@ -485,7 +508,7 @@ const AccountForm = React.memo(({
             <div>
               <Label className="text-white">Secondary Asset</Label>
               <Input 
-                placeholder="e.g., GBPUSD, YM" 
+                placeholder="Optional" 
                 className="bg-gray-800 border-gray-600 text-white mt-1"
                 value={formData.secondaryAsset}
                 onChange={(e) => handleInputChange('secondaryAsset', e.target.value)}
@@ -495,7 +518,7 @@ const AccountForm = React.memo(({
             <div>
               <Label className="text-white">Tertiary Asset</Label>
               <Input 
-                placeholder="e.g., USDJPY, RTY" 
+                placeholder="Optional" 
                 className="bg-gray-800 border-gray-600 text-white mt-1"
                 value={formData.tertiaryAsset}
                 onChange={(e) => handleInputChange('tertiaryAsset', e.target.value)}
@@ -503,16 +526,16 @@ const AccountForm = React.memo(({
             </div>
           </div>
 
-          {/* Personal Trading Time Section */}
-          <div className="mt-6">
-            <h4 className="text-lg font-semibold text-yellow-400 mb-4">Personal Trading Time</h4>
+          {/* Personal Trading Time */}
+          <div className="space-y-4 pt-6 border-t border-gray-700">
+            <h3 className="text-lg font-semibold text-white">Personal Trading Time</h3>
             
             <div className="space-y-4">
               <div className="grid grid-cols-3 gap-4">
                 <div>
-                  <Label className="text-white">Time Slot 1 Start</Label>
+                  <Label className="text-white">Time Slot 1 (Primary) - Start</Label>
                   <Input 
-                    type="time" 
+                    type="time"
                     className="bg-gray-800 border-gray-600 text-white mt-1"
                     value={formData.timeSlot1Start}
                     onChange={(e) => handleInputChange('timeSlot1Start', e.target.value)}
@@ -520,9 +543,9 @@ const AccountForm = React.memo(({
                 </div>
 
                 <div>
-                  <Label className="text-white">Time Slot 1 End</Label>
+                  <Label className="text-white">End Time</Label>
                   <Input 
-                    type="time" 
+                    type="time"
                     className="bg-gray-800 border-gray-600 text-white mt-1"
                     value={formData.timeSlot1End}
                     onChange={(e) => handleInputChange('timeSlot1End', e.target.value)}
@@ -531,24 +554,20 @@ const AccountForm = React.memo(({
 
                 <div>
                   <Label className="text-white">Timezone</Label>
-                  <select 
-                    className="w-full mt-1 bg-gray-800 border border-gray-600 text-white rounded-md px-3 py-2"
+                  <Input 
+                    placeholder="UTC"
+                    className="bg-gray-800 border-gray-600 text-white mt-1"
                     value={formData.timeSlot1Timezone}
                     onChange={(e) => handleInputChange('timeSlot1Timezone', e.target.value)}
-                  >
-                    <option value="UTC">UTC</option>
-                    <option value="EST">EST</option>
-                    <option value="PST">PST</option>
-                    <option value="GMT">GMT</option>
-                  </select>
+                  />
                 </div>
               </div>
 
               <div className="grid grid-cols-3 gap-4">
                 <div>
-                  <Label className="text-white">Time Slot 2 Start</Label>
+                  <Label className="text-white">Time Slot 2 (Secondary) - Start</Label>
                   <Input 
-                    type="time" 
+                    type="time"
                     className="bg-gray-800 border-gray-600 text-white mt-1"
                     value={formData.timeSlot2Start}
                     onChange={(e) => handleInputChange('timeSlot2Start', e.target.value)}
@@ -556,9 +575,9 @@ const AccountForm = React.memo(({
                 </div>
 
                 <div>
-                  <Label className="text-white">Time Slot 2 End</Label>
+                  <Label className="text-white">End Time</Label>
                   <Input 
-                    type="time" 
+                    type="time"
                     className="bg-gray-800 border-gray-600 text-white mt-1"
                     value={formData.timeSlot2End}
                     onChange={(e) => handleInputChange('timeSlot2End', e.target.value)}
@@ -567,24 +586,20 @@ const AccountForm = React.memo(({
 
                 <div>
                   <Label className="text-white">Timezone</Label>
-                  <select 
-                    className="w-full mt-1 bg-gray-800 border border-gray-600 text-white rounded-md px-3 py-2"
+                  <Input 
+                    placeholder="UTC"
+                    className="bg-gray-800 border-gray-600 text-white mt-1"
                     value={formData.timeSlot2Timezone}
                     onChange={(e) => handleInputChange('timeSlot2Timezone', e.target.value)}
-                  >
-                    <option value="UTC">UTC</option>
-                    <option value="EST">EST</option>
-                    <option value="PST">PST</option>
-                    <option value="GMT">GMT</option>
-                  </select>
+                  />
                 </div>
               </div>
 
               <div className="grid grid-cols-3 gap-4">
                 <div>
-                  <Label className="text-white">Time Slot 3 Start</Label>
+                  <Label className="text-white">Time Slot 3 (Tertiary) - Start</Label>
                   <Input 
-                    type="time" 
+                    type="time"
                     className="bg-gray-800 border-gray-600 text-white mt-1"
                     value={formData.timeSlot3Start}
                     onChange={(e) => handleInputChange('timeSlot3Start', e.target.value)}
@@ -592,9 +607,9 @@ const AccountForm = React.memo(({
                 </div>
 
                 <div>
-                  <Label className="text-white">Time Slot 3 End</Label>
+                  <Label className="text-white">End Time</Label>
                   <Input 
-                    type="time" 
+                    type="time"
                     className="bg-gray-800 border-gray-600 text-white mt-1"
                     value={formData.timeSlot3End}
                     onChange={(e) => handleInputChange('timeSlot3End', e.target.value)}
@@ -603,29 +618,25 @@ const AccountForm = React.memo(({
 
                 <div>
                   <Label className="text-white">Timezone</Label>
-                  <select 
-                    className="w-full mt-1 bg-gray-800 border border-gray-600 text-white rounded-md px-3 py-2"
+                  <Input 
+                    placeholder="UTC"
+                    className="bg-gray-800 border-gray-600 text-white mt-1"
                     value={formData.timeSlot3Timezone}
                     onChange={(e) => handleInputChange('timeSlot3Timezone', e.target.value)}
-                  >
-                    <option value="UTC">UTC</option>
-                    <option value="EST">EST</option>
-                    <option value="PST">PST</option>
-                    <option value="GMT">GMT</option>
-                  </select>
+                  />
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Bottom Fields */}
-          <div className="mt-6 space-y-4">
+          {/* Bottom fields */}
+          <div className="space-y-4 pt-6 border-t border-gray-700">
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <Label className="text-white">Daily Working Hours</Label>
                 <Input 
                   type="number" 
-                  step="0.5"
+                  step="0.1"
                   placeholder="8.0" 
                   className="bg-gray-800 border-gray-600 text-white mt-1"
                   value={formData.dailyWorkingHours}
@@ -669,6 +680,7 @@ const AccountForm = React.memo(({
 
       <div className="flex justify-end space-x-3 pt-4 border-t border-gray-700">
         <Button
+          type="button"
           variant="outline"
           onClick={onCancel}
           className="border-gray-600 text-gray-300 hover:bg-gray-700"
@@ -676,244 +688,336 @@ const AccountForm = React.memo(({
           Cancel
         </Button>
         <Button
-          onClick={handleSubmit}
+          type="button"
           disabled={isLoading}
+          onClick={handleSubmit}
           className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700"
         >
-          {isLoading ? 'Creating...' : initialData ? 'Update Account' : 'Create Account'}
+          {isLoading ? (initialData ? 'Updating...' : 'Creating...') : (initialData ? 'Update Account' : 'Create Account')}
         </Button>
       </div>
     </div>
   );
 });
 
-export default function AccountsPage() {
-  const [showCreateDialog, setShowCreateDialog] = useState(false);
-  const [showEditDialog, setShowEditDialog] = useState(false);
-  const [editingAccount, setEditingAccount] = useState<Account | null>(null);
+export default function AccountManagement() {
+  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [editingAccount, setEditingAccount] = useState(null);
+  const [showBalance, setShowBalance] = useState({});
+  const [accounts, setAccounts] = useState(mockAccounts);
+  const [trades] = useState(mockTrades);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const queryClient = useQueryClient();
+  const formatCurrency = (amount) => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD'
+    }).format(amount);
+  };
 
-  const { data: accounts = [], isLoading } = useQuery<Account[]>({
-    queryKey: ['/api/accounts'],
-  });
+  const formatPercentage = (value) => {
+    return `${value.toFixed(1)}%`;
+  };
 
-  const createMutation = useMutation({
-    mutationFn: async (data: any) => {
-      const response = await fetch('/api/accounts', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name: data.name,
-          firm: data.firm,
-          type: data.type,
-          startingBalance: data.startingBalance,
-          profitTarget: data.profitTarget,
-          maxDrawdown: data.maxDrawdown,
-          riskPerTrade: data.riskPerTrade
-        }),
-      });
-      return response.json();
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/accounts'] });
-      setShowCreateDialog(false);
-    },
-  });
+  const calculateAccountMetrics = useCallback((account) => {
+    const accountTrades = trades.filter(trade => trade.accountId === account.id);
+    const totalPnL = accountTrades.reduce((sum, trade) => sum + (trade.pnl || 0), 0);
+    const winningTrades = accountTrades.filter(trade => (trade.pnl || 0) > 0).length;
+    const winRate = accountTrades.length > 0 ? (winningTrades / accountTrades.length) * 100 : 0;
+    
+    const currentBalance = account.startingBalance + totalPnL;
+    const drawdownAmount = Math.max(0, account.startingBalance - currentBalance);
+    const drawdownPercent = account.startingBalance > 0 ? (drawdownAmount / account.startingBalance) * 100 : 0;
+    
+    const lastTrade = accountTrades.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())[0];
+    const lastTradeDate = lastTrade ? lastTrade.date : 'Never';
+    
+    const daysSinceStart = Math.ceil((new Date().getTime() - new Date(account.createdAt || new Date()).getTime()) / (1000 * 60 * 60 * 24));
+    
+    let riskLevel = 'Low';
+    if (drawdownPercent > 8) riskLevel = 'High';
+    else if (drawdownPercent > 5) riskLevel = 'Medium';
+    
+    return {
+      totalPnL,
+      winRate,
+      totalTrades: accountTrades.length,
+      drawdown: drawdownPercent,
+      riskLevel,
+      daysActive: daysSinceStart,
+      lastTradeDate,
+      isActive: true,
+    };
+  }, [trades]);
 
-  const updateMutation = useMutation({
-    mutationFn: async (data: any) => {
-      const response = await fetch(`/api/accounts/${editingAccount?.id}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name: data.name,
-          firm: data.firm,
-          type: data.type,
-          startingBalance: data.startingBalance,
-          profitTarget: data.profitTarget,
-          maxDrawdown: data.maxDrawdown,
-          riskPerTrade: data.riskPerTrade
-        }),
-      });
-      return response.json();
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/accounts'] });
-      setShowEditDialog(false);
-      setEditingAccount(null);
-    },
-  });
+  // Stable handlers to prevent re-renders
+  const handleCreateAccount = useCallback(async (data) => {
+    setIsLoading(true);
+    try {
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      const newAccount = {
+        ...data,
+        id: Date.now(),
+        createdAt: new Date().toISOString()
+      };
+      
+      setAccounts(prev => [...prev, newAccount]);
+      setIsCreateDialogOpen(false);
+    } catch (error) {
+      console.error('Failed to create account:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
 
-  const deleteMutation = useMutation({
-    mutationFn: async (id: number) => {
-      const response = await fetch(`/api/accounts/${id}`, {
-        method: 'DELETE',
-      });
-      return response.json();
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/accounts'] });
-    },
-  });
-
-  const handleCreateSubmit = useCallback((formData: any) => {
-    createMutation.mutate(formData);
-  }, [createMutation]);
-
-  const handleEditSubmit = useCallback((formData: any) => {
-    updateMutation.mutate(formData);
-  }, [updateMutation]);
-
-  const openEditDialog = useCallback((account: Account) => {
+  const handleEditAccount = useCallback((account) => {
     setEditingAccount(account);
-    setShowEditDialog(true);
+    setIsEditDialogOpen(true);
+  }, []);
+
+  const handleUpdateAccount = useCallback(async (data) => {
+    if (!editingAccount) return;
+    
+    setIsLoading(true);
+    try {
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      setAccounts(prev => prev.map(acc => 
+        acc.id === editingAccount.id ? { ...acc, ...data } : acc
+      ));
+      
+      setIsEditDialogOpen(false);
+      setEditingAccount(null);
+    } catch (error) {
+      console.error('Failed to update account:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [editingAccount]);
+
+  const handleDeleteAccount = useCallback((id) => {
+    if (confirm('Are you sure you want to delete this account? This action cannot be undone.')) {
+      setAccounts(prev => prev.filter(acc => acc.id !== id));
+    }
+  }, []);
+
+  const toggleBalanceVisibility = useCallback((accountId) => {
+    setShowBalance(prev => ({ ...prev, [accountId]: !prev[accountId] }));
+  }, []);
+
+  const getAccountTypeColor = (type) => {
+    switch (type) {
+      case 'live': return 'bg-green-100 text-green-800';
+      case 'demo': return 'bg-blue-100 text-blue-800';
+      case 'challenge': return 'bg-purple-100 text-purple-800';
+      case 'funded': return 'bg-yellow-100 text-yellow-800';
+      default: return 'bg-gray-100 text-gray-800';
+    }
+  };
+
+  const getRiskLevelColor = (level) => {
+    switch (level) {
+      case 'Low': return 'text-green-400';
+      case 'Medium': return 'text-yellow-400';
+      case 'High': return 'text-red-400';
+      default: return 'text-gray-400';
+    }
+  };
+
+  const handleCloseCreateDialog = useCallback(() => {
+    setIsCreateDialogOpen(false);
+  }, []);
+
+  const handleCloseEditDialog = useCallback(() => {
+    setIsEditDialogOpen(false);
+    setEditingAccount(null);
   }, []);
 
   return (
-    <div className="space-y-6 p-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-gradient-rainbow">Account Management</h1>
-          <p className="text-gray-400 mt-2">Manage your trading accounts and monitor performance</p>
+    <div className="min-h-screen bg-gray-900 text-white p-6">
+      <div className="space-y-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold bg-gradient-to-r from-yellow-400 to-yellow-600 bg-clip-text text-transparent">
+              Account Management
+            </h1>
+            <p className="text-gray-400 mt-2">Manage your trading accounts and monitor performance</p>
+          </div>
+          <Button 
+            className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700"
+            onClick={() => setIsCreateDialogOpen(true)}
+          >
+            <Plus className="h-4 w-4 mr-2" />
+            Create Account
+          </Button>
         </div>
         
-        <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
-          <DialogTrigger asChild>
-            <Button 
-              className="bg-gradient-to-r from-yellow-400 to-amber-500 hover:from-yellow-500 hover:to-amber-600 text-black font-semibold"
-            >
-              <Plus className="mr-2 h-4 w-4" />
-              Create Account
-            </Button>
-          </DialogTrigger>
-          <DialogContent 
-            className="max-w-4xl max-h-[90vh] overflow-y-auto"
-            style={{
-              backgroundColor: 'rgba(25, 25, 112, 0.95)', // Midnight blue with darkest opacity
-              borderColor: '#1e40af',
-              color: 'white',
-            }}
-          >
+        {/* Create Dialog */}
+        <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
+          <DialogContent className="max-w-4xl max-h-[90vh] bg-gradient-to-br from-gray-900 via-gray-800 to-black border border-yellow-400/20">
             <DialogHeader>
-              <DialogTitle className="text-yellow-400 text-2xl">Create New Trading Account</DialogTitle>
-              <DialogDescription className="text-gray-300">
-                Fill out the complete form to create your new trading account with all necessary details.
+              <DialogTitle className="text-lg font-semibold text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-yellow-600">
+                Create New Trading Account
+              </DialogTitle>
+              <DialogDescription className="text-gray-400 text-sm">
+                Set up a comprehensive trading account with your financial goals and risk parameters.
               </DialogDescription>
             </DialogHeader>
             
-            <AccountForm
-              onSubmit={handleCreateSubmit}
-              isLoading={createMutation.isPending}
-              onCancel={() => setShowCreateDialog(false)}
-            />
+            <div className="overflow-y-auto max-h-[calc(90vh-140px)] pr-2">
+              <AccountForm 
+                onSubmit={handleCreateAccount}
+                isLoading={isLoading}
+                onCancel={handleCloseCreateDialog}
+              />
+            </div>
           </DialogContent>
         </Dialog>
-      </div>
 
-      {isLoading ? (
-        <div className="flex items-center justify-center min-h-[400px]">
-          <div className="text-xl text-gray-400">Loading accounts...</div>
-        </div>
-      ) : accounts.length === 0 ? (
-        <div className="flex items-center justify-center min-h-[400px]">
-          <div className="text-center">
-            <Wallet className="mx-auto h-16 w-16 text-gray-500 mb-4" />
-            <h3 className="text-xl font-medium text-gray-300 mb-2">No Trading Accounts</h3>
-            <p className="text-gray-500 mb-4">Create your first trading account to start tracking performance</p>
+        {/* Edit Dialog */}
+        <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+          <DialogContent className="max-w-4xl max-h-[90vh] bg-gradient-to-br from-gray-900 via-gray-800 to-black border border-yellow-400/20">
+            <DialogHeader>
+              <DialogTitle className="text-lg font-semibold text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-yellow-600">
+                Edit Trading Account
+              </DialogTitle>
+              <DialogDescription className="text-gray-400 text-sm">
+                Update your account settings and risk parameters.
+              </DialogDescription>
+            </DialogHeader>
+            
+            <div className="overflow-y-auto max-h-[calc(90vh-140px)] pr-2">
+              <AccountForm 
+                onSubmit={handleUpdateAccount}
+                isLoading={isLoading}
+                initialData={editingAccount}
+                onCancel={handleCloseEditDialog}
+              />
+            </div>
+          </DialogContent>
+        </Dialog>
+
+        {accounts.length === 0 ? (
+          <div className="flex items-center justify-center min-h-[400px]">
+            <div className="text-center">
+              <Wallet className="mx-auto h-16 w-16 text-gray-500 mb-4" />
+              <h3 className="text-xl font-medium text-gray-300 mb-2">No Trading Accounts</h3>
+              <p className="text-gray-500 mb-4">Create your first trading account to start tracking performance</p>
+            </div>
           </div>
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {accounts.map((account) => (
-            <Card key={account.id} className="bg-gray-900 border-gray-700 hover:border-yellow-500 transition-colors">
-              <CardHeader>
-                <CardTitle className="text-white flex items-center justify-between">
-                  {account.name}
-                  <Badge variant={account.type === 'funded' ? 'default' : 'secondary'}>
-                    {account.type}
-                  </Badge>
-                </CardTitle>
-                <div className="text-sm text-gray-400">{account.firm}</div>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-2 text-sm">
-                  <div className="flex justify-between">
-                    <span className="text-gray-400">Starting Balance:</span>
-                    <span className="text-green-400">${account.startingBalance.toLocaleString()}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-400">Profit Target:</span>
-                    <span className="text-blue-400">${account.profitTarget.toLocaleString()}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-400">Max Drawdown:</span>
-                    <span className="text-red-400">${account.maxDrawdown.toLocaleString()}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-400">Risk Per Trade:</span>
-                    <span className="text-yellow-400">${account.riskPerTrade}</span>
-                  </div>
-                </div>
-                
-                <div className="flex space-x-2 mt-4">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => openEditDialog(account)}
-                    className="flex-1 border-gray-600 text-gray-300 hover:bg-gray-700"
-                  >
-                    <Edit className="h-3 w-3 mr-1" />
-                    Edit
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => {
-                      if (confirm('Delete this account? This cannot be undone.')) {
-                        deleteMutation.mutate(account.id);
-                      }
-                    }}
-                    className="border-red-600 text-red-400 hover:bg-red-600/20"
-                    disabled={deleteMutation.isPending}
-                  >
-                    <Trash2 className="h-3 w-3" />
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      )}
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {accounts.map((account) => {
+              const metrics = calculateAccountMetrics(account);
+              const isBalanceVisible = showBalance[account.id];
+              
+              return (
+                <Card key={account.id} className="bg-gradient-to-br from-gray-900 via-gray-800 to-black border border-yellow-400/20 hover:border-yellow-400/40 transition-all duration-300">
+                  <CardHeader className="pb-3">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-2">
+                        <Badge className={getAccountTypeColor(account.type)}>
+                          {account.type.charAt(0).toUpperCase() + account.type.slice(1)}
+                        </Badge>
+                        <Badge className="bg-green-100 text-green-800">
+                          <CheckCircle className="h-3 w-3 mr-1" />
+                          Active
+                        </Badge>
+                      </div>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => toggleBalanceVisibility(account.id)}
+                        className="text-gray-400 hover:text-white h-8 w-8 p-0"
+                      >
+                        {isBalanceVisible ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                      </Button>
+                    </div>
+                    <CardTitle className="text-white">{account.name}</CardTitle>
+                    {account.firm && (
+                      <p className="text-sm text-gray-400">{account.firm}</p>
+                    )}
+                  </CardHeader>
+                  
+                  <CardContent className="space-y-4">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <p className="text-xs text-gray-400 mb-1">Current Balance</p>
+                        <p className="text-lg font-semibold text-white">
+                          {isBalanceVisible ? formatCurrency(account.startingBalance + metrics.totalPnL) : '••••••'}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-gray-400 mb-1">Total P&L</p>
+                        <p className={`text-lg font-semibold ${metrics.totalPnL >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                          {isBalanceVisible ? formatCurrency(metrics.totalPnL) : '••••••'}
+                        </p>
+                      </div>
+                    </div>
 
-      {/* Edit Dialog */}
-      <Dialog open={showEditDialog} onOpenChange={setShowEditDialog}>
-        <DialogContent 
-          className="max-w-4xl max-h-[90vh] overflow-y-auto"
-          style={{
-            backgroundColor: 'rgba(25, 25, 112, 0.95)', // Midnight blue with darkest opacity
-            borderColor: '#1e40af',
-            color: 'white',
-          }}
-        >
-          <DialogHeader>
-            <DialogTitle className="text-yellow-400 text-2xl">Edit Trading Account</DialogTitle>
-            <DialogDescription className="text-gray-300">
-              Update your trading account details and configuration.
-            </DialogDescription>
-          </DialogHeader>
-          
-          <AccountForm
-            onSubmit={handleEditSubmit}
-            isLoading={updateMutation.isPending}
-            initialData={editingAccount}
-            onCancel={() => {
-              setShowEditDialog(false);
-              setEditingAccount(null);
-            }}
-          />
-        </DialogContent>
-      </Dialog>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <p className="text-xs text-gray-400 mb-1">Win Rate</p>
+                        <p className="text-sm font-medium text-white">{formatPercentage(metrics.winRate)}</p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-gray-400 mb-1">Total Trades</p>
+                        <p className="text-sm font-medium text-white">{metrics.totalTrades}</p>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <p className="text-xs text-gray-400 mb-1">Drawdown</p>
+                        <p className={`text-sm font-medium ${getRiskLevelColor(metrics.riskLevel)}`}>
+                          {formatPercentage(metrics.drawdown)}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-gray-400 mb-1">Risk Level</p>
+                        <p className={`text-sm font-medium ${getRiskLevelColor(metrics.riskLevel)}`}>
+                          {metrics.riskLevel}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="pt-2 border-t border-gray-700">
+                      <div className="flex items-center justify-between text-xs text-gray-400">
+                        <span>Last Trade: {metrics.lastTradeDate}</span>
+                        <span>{metrics.daysActive} days active</span>
+                      </div>
+                    </div>
+
+                    <div className="flex space-x-2 pt-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleEditAccount(account)}
+                        className="flex-1 border-gray-600 text-gray-300 hover:bg-gray-700"
+                      >
+                        <Edit className="h-3 w-3 mr-1" />
+                        Edit
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleDeleteAccount(account.id)}
+                        className="border-red-600 text-red-400 hover:bg-red-600/20"
+                      >
+                        <Trash2 className="h-3 w-3" />
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              );
+            })}
+          </div>
+        )}
+      </div>
     </div>
   );
 }
