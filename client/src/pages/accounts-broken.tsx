@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useMemo } from 'react';
+import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -7,11 +7,10 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+// Removed react-hook-form imports to prevent flickering
 import { Switch } from '@/components/ui/switch';
 import { Slider } from '@/components/ui/slider';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
+// Removed react-hook-form to prevent flickering - using useState instead
 import type { Account, Trade } from '@shared/schema';
 import { useToast } from '@/hooks/use-toast';
 import { apiRequest } from '@/lib/queryClient';
@@ -67,28 +66,60 @@ export default function AccountManagement() {
     queryKey: ['/api/trades'],
   });
 
-  const form = useForm<AccountFormData>({
-    resolver: zodResolver(accountFormSchema),
-    mode: 'onSubmit', // Changed to onSubmit to prevent flickering
-    defaultValues: {
-      name: '',
-      type: 'demo',
-      firm: '',
-      startingBalance: 0,
-      profitTarget: 0,
-      maxDrawdown: 0,
-      riskPerTrade: 2,
-    },
+  // Replace react-hook-form with simple state management to prevent flickering
+  const [formData, setFormData] = useState({
+    name: '',
+    type: 'demo',
+    firm: '',
+    startingBalance: 0,
+    profitTarget: 0,
+    maxDrawdown: 0,
+    riskPerTrade: 2,
   });
 
+  const [formErrors, setFormErrors] = useState<Record<string, string>>({});
+
+  // Memoized form input handler to prevent re-renders
+  const handleInputChange = useCallback((field: string, value: any) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+    // Clear error when user starts typing
+    if (formErrors[field]) {
+      setFormErrors(prev => ({ ...prev, [field]: '' }));
+    }
+  }, [formErrors]);
+
+  // Memoized form validation
+  const validateForm = useCallback((data: typeof formData) => {
+    const errors: Record<string, string> = {};
+    
+    if (!data.name.trim()) errors.name = 'Account name is required';
+    if (!data.type) errors.type = 'Account type is required';
+    if (!data.firm.trim()) errors.firm = 'Firm name is required';
+    if (data.startingBalance <= 0) errors.startingBalance = 'Starting balance must be positive';
+    if (data.profitTarget <= 0) errors.profitTarget = 'Profit target must be positive';
+    if (data.maxDrawdown <= 0) errors.maxDrawdown = 'Max drawdown must be positive';
+    if (data.riskPerTrade < 0.1 || data.riskPerTrade > 10) errors.riskPerTrade = 'Risk per trade must be between 0.1% and 10%';
+    
+    return errors;
+  }, []);
+
   const createAccountMutation = useMutation({
-    mutationFn: async (data: AccountFormData) => {
+    mutationFn: async (data: typeof formData) => {
       return apiRequest('/api/accounts', 'POST', data);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/accounts'] });
       setIsCreateDialogOpen(false);
-      form.reset();
+      setFormData({
+        name: '',
+        type: 'demo',
+        firm: '',
+        startingBalance: 0,
+        profitTarget: 0,
+        maxDrawdown: 0,
+        riskPerTrade: 2,
+      });
+      setFormErrors({});
       toast({
         title: 'Account Created',
         description: 'Your trading account has been created successfully.',
@@ -104,16 +135,27 @@ export default function AccountManagement() {
   });
 
   const updateAccountMutation = useMutation({
-    mutationFn: async ({ id, data }: { id: number; data: Partial<AccountFormData> }) => {
-      return apiRequest(`/api/accounts/${id}`, 'PATCH', data);
+    mutationFn: async (data: typeof formData) => {
+      if (!editingAccount) throw new Error('No account selected for editing');
+      return apiRequest(`/api/accounts/${editingAccount.id}`, 'PUT', data);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/accounts'] });
       setIsEditDialogOpen(false);
       setEditingAccount(null);
+      setFormData({
+        name: '',
+        type: 'demo',
+        firm: '',
+        startingBalance: 0,
+        profitTarget: 0,
+        maxDrawdown: 0,
+        riskPerTrade: 2,
+      });
+      setFormErrors({});
       toast({
         title: 'Account Updated',
-        description: 'Your account has been updated successfully.',
+        description: 'Your trading account has been updated successfully.',
       });
     },
     onError: (error: any) => {
@@ -176,28 +218,76 @@ export default function AccountManagement() {
     };
   };
 
-  const handleCreateAccount = (data: AccountFormData) => {
-    createAccountMutation.mutate(data);
-  };
+  // Stable dialog close handlers to prevent re-renders
+  const handleCloseCreateDialog = useCallback(() => {
+    setIsCreateDialogOpen(false);
+    setFormData({
+      name: '',
+      type: 'demo',
+      firm: '',
+      startingBalance: 0,
+      profitTarget: 0,
+      maxDrawdown: 0,
+      riskPerTrade: 2,
+    });
+    setFormErrors({});
+  }, []);
+
+  const handleCloseEditDialog = useCallback(() => {
+    setIsEditDialogOpen(false);
+    setEditingAccount(null);
+    setFormData({
+      name: '',
+      type: 'demo',
+      firm: '',
+      startingBalance: 0,
+      profitTarget: 0,
+      maxDrawdown: 0,
+      riskPerTrade: 2,
+    });
+    setFormErrors({});
+  }, []);
+
+  // Initialize form data when editing account
+  useEffect(() => {
+    if (editingAccount) {
+      setFormData({
+        name: editingAccount.name,
+        type: editingAccount.type,
+        firm: editingAccount.firm || '',
+        startingBalance: editingAccount.startingBalance,
+        profitTarget: editingAccount.profitTarget || 0,
+        maxDrawdown: editingAccount.maxDrawdown || 0,
+        riskPerTrade: editingAccount.riskPerTrade || 2,
+      });
+    }
+  }, [editingAccount]);
+
+  // Memoized form submit handlers
+  const handleCreateAccount = useCallback((e: React.FormEvent) => {
+    e.preventDefault();
+    const errors = validateForm(formData);
+    if (Object.keys(errors).length > 0) {
+      setFormErrors(errors);
+      return;
+    }
+    createAccountMutation.mutate(formData);
+  }, [formData, validateForm, createAccountMutation]);
 
   const handleEditAccount = useCallback((account: Account) => {
     setEditingAccount(account);
-    form.reset({
-      name: account.name,
-      type: account.type,
-      firm: account.firm || '',
-      startingBalance: account.startingBalance,
-      profitTarget: account.profitTarget || 0,
-      maxDrawdown: account.maxDrawdown || 0,
-      riskPerTrade: account.riskPerTrade || 2,
-    });
     setIsEditDialogOpen(true);
-  }, [form]);
+  }, []);
 
-  const handleUpdateAccount = (data: AccountFormData) => {
-    if (!editingAccount) return;
-    updateAccountMutation.mutate({ id: editingAccount.id, data });
-  };
+  const handleUpdateAccount = useCallback((e: React.FormEvent) => {
+    e.preventDefault();
+    const errors = validateForm(formData);
+    if (Object.keys(errors).length > 0) {
+      setFormErrors(errors);
+      return;
+    }
+    updateAccountMutation.mutate(formData);
+  }, [formData, validateForm, updateAccountMutation]);
 
   const toggleBalanceVisibility = (accountId: number) => {
     setShowBalance(prev => ({ ...prev, [accountId]: !prev[accountId] }));
@@ -243,13 +333,12 @@ export default function AccountManagement() {
           
           {/* Create Account Dialog */}
           <Dialog open={isCreateDialogOpen} onOpenChange={(open) => {
-          if (!open) {
-            setIsCreateDialogOpen(false);
-            form.reset();
-          } else {
-            setIsCreateDialogOpen(true);
-          }
-        }}>
+            if (!open) {
+              handleCloseCreateDialog();
+            } else {
+              setIsCreateDialogOpen(true);
+            }
+          }}>
             <DialogTrigger asChild>
               <Button className="bg-gradient-to-r from-yellow-400 to-amber-500 hover:from-yellow-500 hover:to-amber-600 text-black font-semibold">
                 <Plus className="mr-2 h-4 w-4" />
@@ -273,130 +362,83 @@ export default function AccountManagement() {
               </DialogHeader>
               
               <div className="max-h-[60vh] overflow-y-auto pr-2">
-                <Form {...form}>
-                  <form onSubmit={form.handleSubmit(handleCreateAccount)} className="space-y-4">
+                <form onSubmit={handleCreateAccount} className="space-y-4">
                     <div className="grid grid-cols-2 gap-4">
-                    <FormField
-                      control={form.control}
-                      name="name"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-white">Account Name</FormLabel>
-                          <FormControl>
-                            <Input 
-                              placeholder="e.g., Main Trading Account" 
-                              className="bg-white border-gray-300 text-black"
-                              {...field} 
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+                      <div>
+                        <Label className="text-white">Account Name</Label>
+                        <Input 
+                          placeholder="e.g., Main Trading Account" 
+                          className="bg-white border-gray-300 text-black"
+                          value={formData.name}
+                          onChange={(e) => handleInputChange('name', e.target.value)}
+                        />
+                        {formErrors.name && <p className="text-red-400 text-sm mt-1">{formErrors.name}</p>}
+                      </div>
+                      
+                      <div>
+                        <Label className="text-white">Account Type</Label>
+                        <Select onValueChange={(value) => handleInputChange('type', value)} value={formData.type}>
+                          <SelectTrigger className="bg-white border-gray-300 text-black">
+                            <SelectValue placeholder="Select type" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="demo">Demo</SelectItem>
+                            <SelectItem value="live">Live</SelectItem>
+                            <SelectItem value="paper">Paper Trading</SelectItem>
+                            <SelectItem value="challenge">Challenge</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        {formErrors.type && <p className="text-red-400 text-sm mt-1">{formErrors.type}</p>}
+                      </div>
+                    </div>
                     
-                    <FormField
-                      control={form.control}
-                      name="type"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-white">Account Type</FormLabel>
-                          <Select onValueChange={field.onChange} defaultValue={field.value}>
-                            <FormControl>
-                              <SelectTrigger className="bg-white border-gray-300 text-black">
-                                <SelectValue placeholder="Select type" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              <SelectItem value="demo">Demo</SelectItem>
-                              <SelectItem value="live">Live</SelectItem>
-                              <SelectItem value="paper">Paper Trading</SelectItem>
-                              <SelectItem value="challenge">Challenge</SelectItem>
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-
-                  <FormField
-                    control={form.control}
-                    name="firm"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-white">Prop Firm / Broker</FormLabel>
-                        <FormControl>
-                          <Input 
-                            placeholder="e.g., FTMO, TopstepTrader, Interactive Brokers" 
-                            className="bg-white border-gray-300 text-black"
-                            {...field} 
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                    <div>
+                      <Label className="text-white">Prop Firm / Broker</Label>
+                      <Input 
+                        placeholder="e.g., FTMO, TopstepTrader, Interactive Brokers" 
+                        className="bg-white border-gray-300 text-black"
+                        value={formData.firm}
+                        onChange={(e) => handleInputChange('firm', e.target.value)}
+                      />
+                      {formErrors.firm && <p className="text-red-400 text-sm mt-1">{formErrors.firm}</p>}
+                    </div>
 
                   <div className="grid grid-cols-3 gap-4">
-                    <FormField
-                      control={form.control}
-                      name="startingBalance"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-white">Starting Balance</FormLabel>
-                          <FormControl>
-                            <Input 
-                              type="number" 
-                              placeholder="10000" 
-                              className="bg-white border-gray-300 text-black"
-                              {...field}
-                              onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+                    <div>
+                      <Label className="text-white">Starting Balance</Label>
+                      <Input 
+                        type="number" 
+                        placeholder="10000" 
+                        className="bg-white border-gray-300 text-black"
+                        value={formData.startingBalance}
+                        onChange={(e) => handleInputChange('startingBalance', parseFloat(e.target.value) || 0)}
+                      />
+                      {formErrors.startingBalance && <p className="text-red-400 text-sm mt-1">{formErrors.startingBalance}</p>}
+                    </div>
                     
-                    <FormField
-                      control={form.control}
-                      name="profitTarget"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-white">Profit Target</FormLabel>
-                          <FormControl>
-                            <Input 
-                              type="number" 
-                              placeholder="1000" 
-                              className="bg-white border-gray-300 text-black"
-                              {...field}
-                              onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+                    <div>
+                      <Label className="text-white">Profit Target</Label>
+                      <Input 
+                        type="number" 
+                        placeholder="1000" 
+                        className="bg-white border-gray-300 text-black"
+                        value={formData.profitTarget}
+                        onChange={(e) => handleInputChange('profitTarget', parseFloat(e.target.value) || 0)}
+                      />
+                      {formErrors.profitTarget && <p className="text-red-400 text-sm mt-1">{formErrors.profitTarget}</p>}
+                    </div>
                     
-                    <FormField
-                      control={form.control}
-                      name="maxDrawdown"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-white">Max Drawdown</FormLabel>
-                          <FormControl>
-                            <Input 
-                              type="number" 
-                              placeholder="500" 
-                              className="bg-white border-gray-300 text-black"
-                              {...field}
-                              onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+                    <div>
+                      <Label className="text-white">Max Drawdown</Label>
+                      <Input 
+                        type="number" 
+                        placeholder="500" 
+                        className="bg-white border-gray-300 text-black"
+                        value={formData.maxDrawdown}
+                        onChange={(e) => handleInputChange('maxDrawdown', parseFloat(e.target.value) || 0)}
+                      />
+                      {formErrors.maxDrawdown && <p className="text-red-400 text-sm mt-1">{formErrors.maxDrawdown}</p>}
+                    </div>
                   </div>
 
                   <FormField
@@ -574,9 +616,7 @@ export default function AccountManagement() {
         {/* Edit Account Dialog */}
         <Dialog open={isEditDialogOpen} onOpenChange={(open) => {
           if (!open) {
-            setIsEditDialogOpen(false);
-            setEditingAccount(null);
-            form.reset();
+            handleCloseEditDialog();
           } else {
             setIsEditDialogOpen(true);
           }
@@ -597,8 +637,7 @@ export default function AccountManagement() {
               </DialogDescription>
             </DialogHeader>
             
-            <Form {...form}>
-              <form onSubmit={form.handleSubmit(handleUpdateAccount)} className="space-y-4">
+            <form onSubmit={handleUpdateAccount} className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                   <FormField
                     control={form.control}
@@ -662,92 +701,60 @@ export default function AccountManagement() {
                 />
 
                 <div className="grid grid-cols-3 gap-4">
-                  <FormField
-                    control={form.control}
-                    name="startingBalance"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-white">Starting Balance</FormLabel>
-                        <FormControl>
-                          <Input 
-                            type="number" 
-                            placeholder="10000" 
-                            className="bg-white border-gray-300 text-black"
-                            {...field}
-                            onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                  <div>
+                    <Label className="text-white">Starting Balance</Label>
+                    <Input 
+                      type="number" 
+                      placeholder="10000" 
+                      className="bg-white border-gray-300 text-black"
+                      value={formData.startingBalance}
+                      onChange={(e) => handleInputChange('startingBalance', parseFloat(e.target.value) || 0)}
+                    />
+                    {formErrors.startingBalance && <p className="text-red-400 text-sm mt-1">{formErrors.startingBalance}</p>}
+                  </div>
                   
-                  <FormField
-                    control={form.control}
-                    name="profitTarget"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-white">Profit Target</FormLabel>
-                        <FormControl>
-                          <Input 
-                            type="number" 
-                            placeholder="1000" 
-                            className="bg-white border-gray-300 text-black"
-                            {...field}
-                            onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                  <div>
+                    <Label className="text-white">Profit Target</Label>
+                    <Input 
+                      type="number" 
+                      placeholder="1000" 
+                      className="bg-white border-gray-300 text-black"
+                      value={formData.profitTarget}
+                      onChange={(e) => handleInputChange('profitTarget', parseFloat(e.target.value) || 0)}
+                    />
+                    {formErrors.profitTarget && <p className="text-red-400 text-sm mt-1">{formErrors.profitTarget}</p>}
+                  </div>
                   
-                  <FormField
-                    control={form.control}
-                    name="maxDrawdown"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-white">Max Drawdown</FormLabel>
-                        <FormControl>
-                          <Input 
-                            type="number" 
-                            placeholder="500" 
-                            className="bg-white border-gray-300 text-black"
-                            {...field}
-                            onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                  <div>
+                    <Label className="text-white">Max Drawdown</Label>
+                    <Input 
+                      type="number" 
+                      placeholder="500" 
+                      className="bg-white border-gray-300 text-black"
+                      value={formData.maxDrawdown}
+                      onChange={(e) => handleInputChange('maxDrawdown', parseFloat(e.target.value) || 0)}
+                    />
+                    {formErrors.maxDrawdown && <p className="text-red-400 text-sm mt-1">{formErrors.maxDrawdown}</p>}
+                  </div>
                 </div>
 
-                <FormField
-                  control={form.control}
-                  name="riskPerTrade"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-white">Risk Per Trade (%)</FormLabel>
-                      <FormControl>
-                        <div className="space-y-2">
-                          <Slider
-                            value={[field.value || 2]}
-                            onValueChange={(value) => field.onChange(value[0])}
-                            max={10}
-                            min={0.1}
-                            step={0.1}
-                            className="w-full"
-                          />
-                          <div className="text-center text-sm text-gray-400">
-                            {field.value || 2}% per trade
-                          </div>
-                        </div>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                <div>
+                  <Label className="text-white">Risk Per Trade (%)</Label>
+                  <div className="space-y-2">
+                    <Slider
+                      value={[formData.riskPerTrade]}
+                      onValueChange={(value) => handleInputChange('riskPerTrade', value[0])}
+                      max={10}
+                      min={0.1}
+                      step={0.1}
+                      className="w-full"
+                    />
+                    <div className="text-center text-sm text-gray-400">
+                      {formData.riskPerTrade}% per trade
+                    </div>
+                  </div>
+                  {formErrors.riskPerTrade && <p className="text-red-400 text-sm mt-1">{formErrors.riskPerTrade}</p>}
+                </div>
 
                 <div className="flex justify-end space-x-3 pt-4">
                   <Button
