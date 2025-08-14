@@ -9,14 +9,16 @@ import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { CalendarIcon, PlusCircle, BookOpen, TrendingUp, TrendingDown, Brain } from 'lucide-react';
+import { CalendarIcon, PlusCircle, BookOpen, TrendingUp, TrendingDown, Brain, X, Eye } from 'lucide-react';
 import { format } from 'date-fns';
 import { apiRequest } from '@/lib/queryClient';
 import type { Account, JournalEntry } from '@shared/schema';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 
 const Journal = () => {
   const queryClient = useQueryClient();
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+  const [selectedEntryForReview, setSelectedEntryForReview] = useState<JournalEntry | null>(null);
   const [formData, setFormData] = useState({
     accountId: null as number | null,
     whatWentWrong: '',
@@ -305,7 +307,7 @@ const Journal = () => {
                     <div
                       key={entry.id}
                       className="p-3 rounded-lg bg-gradient-to-r from-gray-800 to-gray-700 hover:from-gray-700 hover:to-gray-600 cursor-pointer transition-colors border border-yellow-400/10"
-                      onClick={() => setSelectedDate(new Date(entry.date))}
+                      onClick={() => setSelectedEntryForReview(entry)}
                     >
                       <div className="flex items-center justify-between mb-2">
                         <div className="font-medium text-sm text-white">
@@ -355,6 +357,78 @@ const Journal = () => {
           )}
         </div>
       </div>
+
+      {/* Journal Entry Review Dialog */}
+      {selectedEntryForReview && (
+        <Dialog open={!!selectedEntryForReview} onOpenChange={() => setSelectedEntryForReview(null)}>
+          <DialogContent className="max-w-2xl bg-black border-yellow-400/30">
+            <DialogHeader>
+              <DialogTitle className="text-white flex items-center gap-2">
+                <Eye className="h-5 w-5 text-yellow-400" />
+                Journal Entry Review - {format(new Date(selectedEntryForReview.date), 'MMMM dd, yyyy')}
+              </DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4 max-h-96 overflow-y-auto">
+              <div>
+                <Label className="text-white font-semibold">Emotional State</Label>
+                <Badge className={getEmotionalStateColor(selectedEntryForReview.emotionalState)} variant="secondary">
+                  {selectedEntryForReview.emotionalState}
+                </Badge>
+              </div>
+              
+              {selectedEntryForReview.whatWentRight && (
+                <div>
+                  <Label className="text-white font-semibold">What Went Right</Label>
+                  <div className="mt-1 p-3 rounded-lg bg-green-900/20 border border-green-500/20">
+                    <p className="text-gray-300">{selectedEntryForReview.whatWentRight}</p>
+                  </div>
+                </div>
+              )}
+              
+              {selectedEntryForReview.whatWentWrong && (
+                <div>
+                  <Label className="text-white font-semibold">What Went Wrong</Label>
+                  <div className="mt-1 p-3 rounded-lg bg-red-900/20 border border-red-500/20">
+                    <p className="text-gray-300">{selectedEntryForReview.whatWentWrong}</p>
+                  </div>
+                </div>
+              )}
+              
+              {selectedEntryForReview.lessonsLearned && (
+                <div>
+                  <Label className="text-white font-semibold">Lessons Learned</Label>
+                  <div className="mt-1 p-3 rounded-lg bg-blue-900/20 border border-blue-500/20">
+                    <p className="text-gray-300">{selectedEntryForReview.lessonsLearned}</p>
+                  </div>
+                </div>
+              )}
+              
+              {selectedEntryForReview.improvementPlan && (
+                <div>
+                  <Label className="text-white font-semibold">Improvement Plan</Label>
+                  <div className="mt-1 p-3 rounded-lg bg-yellow-900/20 border border-yellow-500/20">
+                    <p className="text-gray-300">{selectedEntryForReview.improvementPlan}</p>
+                  </div>
+                </div>
+              )}
+              
+              {selectedEntryForReview.marketConditions && (
+                <div>
+                  <Label className="text-white font-semibold">Market Conditions</Label>
+                  <div className="mt-1 p-3 rounded-lg bg-gray-800 border border-gray-600">
+                    <p className="text-gray-300">{selectedEntryForReview.marketConditions}</p>
+                  </div>
+                </div>
+              )}
+            </div>
+            <div className="flex justify-end">
+              <Button onClick={() => setSelectedEntryForReview(null)} variant="outline" className="text-white border-gray-600 hover:bg-gray-800">
+                Close
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
+      )}
     </div>
     </div>
   );

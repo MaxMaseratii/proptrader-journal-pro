@@ -225,20 +225,33 @@ export const SimpleChart: React.FC<SimpleChartProps> = ({
             }}
           >
             <div className="text-sm">
-              <div className="font-semibold text-white mb-1">
-                {hoveredTrade.symbol} Trade
+              <div className="font-semibold text-white mb-2 border-b border-gray-600 pb-1">
+                {hoveredTrade.symbol} Trade Details
               </div>
-              <div className="text-gray-300">
-                Date: {new Date(hoveredTrade.date).toLocaleDateString()}
-              </div>
-              <div className="text-gray-300">
-                Entry: ${hoveredTrade.entryPrice?.toFixed(2) || 'N/A'}
-              </div>
-              <div className="text-gray-300">
-                Exit: ${hoveredTrade.exitPrice?.toFixed(2) || 'N/A'}
-              </div>
-              <div className={`font-semibold ${(hoveredTrade.pnl || 0) >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-                P&L: ${(hoveredTrade.pnl || 0).toFixed(2)}
+              <div className="space-y-1">
+                <div className="text-gray-300">
+                  📅 Date: {new Date(hoveredTrade.date).toLocaleDateString()}
+                </div>
+                <div className="text-gray-300">
+                  📈 Entry: ${hoveredTrade.entryPrice?.toFixed(2) || 'N/A'}
+                </div>
+                <div className="text-gray-300">
+                  📉 Exit: ${hoveredTrade.exitPrice?.toFixed(2) || 'N/A'}
+                </div>
+                <div className="text-gray-300">
+                  📊 Quantity: {hoveredTrade.quantity || 'N/A'}
+                </div>
+                <div className="text-gray-300">
+                  🔄 Side: {hoveredTrade.side?.toUpperCase() || 'N/A'}
+                </div>
+                <div className={`font-semibold text-lg border-t border-gray-600 pt-1 ${(hoveredTrade.pnl || 0) >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                  💰 P&L: ${(hoveredTrade.pnl || 0).toFixed(2)}
+                </div>
+                {hoveredTrade.notes && (
+                  <div className="text-gray-400 text-xs mt-1 max-w-48">
+                    📝 {hoveredTrade.notes}
+                  </div>
+                )}
               </div>
             </div>
           </div>

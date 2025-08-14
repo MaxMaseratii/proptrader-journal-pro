@@ -165,8 +165,14 @@ const Spending = () => {
     ? spendingRecords 
     : spendingRecords.filter(record => record.accountId === parseInt(selectedAccountId));
 
-  // Calculate account-based costs (prop trading costs)
-  const totalAccountCosts = filteredAccounts.reduce((sum, account) => sum + (account.accountCost || 0), 0);
+  // Calculate account-based costs (prop trading costs) including starting balance as account purchase cost
+  const totalAccountCosts = filteredAccounts.reduce((sum, account) => {
+    // Starting balance represents the cost to purchase the account
+    const accountPurchaseCost = account.startingBalance || 0;
+    // Include additional account cost fields if available
+    const additionalCost = account.accountCost || 0;
+    return sum + accountPurchaseCost + additionalCost;
+  }, 0);
   const totalActivationCosts = filteredAccounts.reduce((sum, account) => sum + (account.activationCost || 0), 0);
   const totalResetCosts = filteredAccounts.reduce((sum, account) => sum + (account.totalResetsCost || 0), 0);
   const totalPropTradingCosts = totalAccountCosts + totalActivationCosts + totalResetCosts;
@@ -212,10 +218,12 @@ const Spending = () => {
     const expenseData = {
       accountId: selectedAccountId === "all" ? (accounts[0]?.id || 1) : parseInt(selectedAccountId),
       amount: parseFloat(newExpense.amount),
-      spendingType: newExpense.category,
+      spendingType: 'other',
       description: newExpense.description,
+      paymentMethod: 'credit_card',
       date: new Date().toISOString().split('T')[0],
-      category: newExpense.category
+      category: newExpense.category,
+      isRecurring: false
     };
 
     addExpenseMutation.mutate(expenseData);
@@ -335,7 +343,7 @@ const Spending = () => {
             <DollarSign className="h-4 w-4 text-yellow-400" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-yellow-400 widget-value">
+            <div className={`text-2xl font-bold widget-value ${totalAccountCosts > 0 ? 'text-red-400' : 'text-green-400'}`}>
               {formatCurrency(totalAccountCosts) || '$0.00'}
             </div>
             <p className="text-xs widget-text opacity-70">Challenge & setup costs</p>
@@ -364,7 +372,7 @@ const Spending = () => {
               <TrendingUp className="h-4 w-4 text-orange-400" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-orange-400 widget-value">
+              <div className={`text-2xl font-bold widget-value ${totalActivationCosts > 0 ? 'text-red-400' : 'text-green-400'}`}>
                 {formatCurrency(totalActivationCosts)}
               </div>
               <p className="text-xs widget-text opacity-70">Total activation fees</p>
@@ -447,55 +455,55 @@ const Spending = () => {
                   {!activeBudgetPlan ? "Create Budget Plan" : "Update Budget Plan"}
                 </Button>
               </DialogTrigger>
-              <DialogContent className="max-w-2xl widget-card">
+              <DialogContent className="max-w-2xl bg-black border-yellow-400/30">
                 <DialogHeader>
-                  <DialogTitle className="widget-text">
+                  <DialogTitle className="text-white">
                     {!activeBudgetPlan ? "Create New Budget Plan" : "Update Budget Plan"}
                   </DialogTitle>
                 </DialogHeader>
                 <div className="space-y-4">
                   <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                     <div className="space-y-2">
-                      <Label className="widget-text">Budget Period</Label>
+                      <Label className="text-white">Budget Period</Label>
                       <Select value={budgetSetup.period} onValueChange={(value) => setBudgetSetup({...budgetSetup, period: value})}>
-                        <SelectTrigger className="widget-bg border-yellow-400/20 widget-text">
+                        <SelectTrigger className="bg-gray-800 border-yellow-400/20 text-white">
                           <SelectValue />
                         </SelectTrigger>
-                        <SelectContent className="widget-bg border-yellow-400/20">
-                          <SelectItem value="weekly" className="widget-text hover:bg-prop-gold/20">Weekly</SelectItem>
-                          <SelectItem value="monthly" className="widget-text hover:bg-prop-gold/20">Monthly</SelectItem>
-                          <SelectItem value="yearly" className="widget-text hover:bg-prop-gold/20">Yearly</SelectItem>
+                        <SelectContent className="bg-gray-800 border-yellow-400/20">
+                          <SelectItem value="weekly" className="text-white hover:bg-yellow-400/20">Weekly</SelectItem>
+                          <SelectItem value="monthly" className="text-white hover:bg-yellow-400/20">Monthly</SelectItem>
+                          <SelectItem value="yearly" className="text-white hover:bg-yellow-400/20">Yearly</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
                     <div className="space-y-2">
-                      <Label className="widget-text">Total Budget</Label>
+                      <Label className="text-white">Total Budget</Label>
                       <Input
                         type="number"
                         placeholder="Total monthly budget"
                         value={budgetSetup.totalBudget}
                         onChange={(e) => setBudgetSetup({...budgetSetup, totalBudget: e.target.value})}
-                        className="widget-bg border-yellow-400/20 widget-text"
+                        className="bg-gray-800 border-yellow-400/20 text-white"
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label className="widget-text">Trading Budget</Label>
+                      <Label className="text-white">Trading Budget</Label>
                       <Input
                         type="number"
                         placeholder="Budget for trading"
                         value={budgetSetup.tradingBudget}
                         onChange={(e) => setBudgetSetup({...budgetSetup, tradingBudget: e.target.value})}
-                        className="widget-bg border-yellow-400/20 widget-text"
+                        className="bg-gray-800 border-yellow-400/20 text-white"
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label className="widget-text">Personal Budget</Label>
+                      <Label className="text-white">Personal Budget</Label>
                       <Input
                         type="number"
                         placeholder="Personal expenses budget"
                         value={budgetSetup.personalBudget}
                         onChange={(e) => setBudgetSetup({...budgetSetup, personalBudget: e.target.value})}
-                        className="widget-bg border-yellow-400/20 widget-text"
+                        className="bg-gray-800 border-yellow-400/20 text-white"
                       />
                     </div>
                   </div>
@@ -518,31 +526,31 @@ const Spending = () => {
                   Add Spending Entry
                 </Button>
               </DialogTrigger>
-              <DialogContent className="max-w-md widget-bg border-prop-gold/20">
+              <DialogContent className="max-w-md bg-black border-yellow-400/30">
                 <DialogHeader>
-                  <DialogTitle className="widget-text">Add New Expense</DialogTitle>
+                  <DialogTitle className="text-white">Add New Expense</DialogTitle>
                 </DialogHeader>
                 <div className="space-y-4">
                   <div className="space-y-2">
-                    <Label htmlFor="amount" className="widget-text">Amount</Label>
+                    <Label htmlFor="amount" className="text-white">Amount</Label>
                     <Input
                       id="amount"
                       type="number"
                       placeholder="0.00"
                       value={newExpense.amount}
                       onChange={(e) => setNewExpense({...newExpense, amount: e.target.value})}
-                      className="widget-bg border-yellow-400/20 widget-text"
+                      className="bg-gray-800 border-yellow-400/20 text-white"
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="category" className="widget-text">Category</Label>
+                    <Label htmlFor="category" className="text-white">Category</Label>
                     <Select value={newExpense.category} onValueChange={(value) => setNewExpense({...newExpense, category: value})}>
-                      <SelectTrigger className="widget-bg border-yellow-400/20 widget-text">
+                      <SelectTrigger className="bg-gray-800 border-yellow-400/20 text-white">
                         <SelectValue placeholder="Select category" />
                       </SelectTrigger>
-                      <SelectContent className="widget-bg border-yellow-400/20">
+                      <SelectContent className="bg-gray-800 border-yellow-400/20">
                         {[...tradingCategories, ...personalCategories].map((category) => (
-                          <SelectItem key={category.id} value={category.name} className="widget-text hover:bg-prop-gold/20">
+                          <SelectItem key={category.id} value={category.name} className="text-white hover:bg-yellow-400/20">
                             {category.name}
                           </SelectItem>
                         ))}
@@ -550,13 +558,13 @@ const Spending = () => {
                     </Select>
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="description" className="widget-text">Description</Label>
+                    <Label htmlFor="description" className="text-white">Description</Label>
                     <Textarea
                       id="description"
                       placeholder="What did you spend money on?"
                       value={newExpense.description}
                       onChange={(e) => setNewExpense({...newExpense, description: e.target.value})}
-                      className="widget-bg border-yellow-400/20 widget-text"
+                      className="bg-gray-800 border-yellow-400/20 text-white"
                     />
                   </div>
                   <Button 
@@ -578,9 +586,9 @@ const Spending = () => {
                   Manage Categories
                 </Button>
               </DialogTrigger>
-              <DialogContent className="max-w-4xl widget-card">
+              <DialogContent className="max-w-4xl bg-black border-yellow-400/30">
                 <DialogHeader>
-                  <DialogTitle className="widget-header">Manage Budget Categories</DialogTitle>
+                  <DialogTitle className="text-white">Manage Budget Categories</DialogTitle>
                 </DialogHeader>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
                   {/* Trading Categories in Dialog */}
@@ -675,7 +683,7 @@ const Spending = () => {
                     <CreditCard className="h-4 w-4 text-yellow-400" />
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl font-bold text-yellow-400">{formatCurrency(totalSpending)}</div>
+                    <div className={`text-2xl font-bold ${totalSpending > 0 ? 'text-red-400' : 'text-green-400'}`}>{formatCurrency(totalSpending)}</div>
                     <p className="text-xs text-gray-400">of {formatCurrency(currentBudget)} budget</p>
                     <Progress value={Math.min(budgetUsagePercentage, 100)} className="mt-2" />
                   </CardContent>
@@ -687,7 +695,7 @@ const Spending = () => {
                     <TrendingUp className="h-4 w-4 text-blue-500" />
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl font-bold text-blue-500">{formatCurrency(totalPropTradingCosts)}</div>
+                    <div className={`text-2xl font-bold ${totalPropTradingCosts > 0 ? 'text-red-400' : 'text-green-400'}`}>{formatCurrency(totalPropTradingCosts)}</div>
                     <p className="text-xs text-gray-400">of {formatCurrency(tradingBudget)} budget</p>
                     <Progress value={Math.min((totalPropTradingCosts / tradingBudget) * 100, 100)} className="mt-2" />
                   </CardContent>
@@ -699,7 +707,7 @@ const Spending = () => {
                     <TrendingDown className="h-4 w-4 text-orange-500" />
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl font-bold text-orange-500">{formatCurrency(totalManualSpending)}</div>
+                    <div className={`text-2xl font-bold ${totalManualSpending > 0 ? 'text-red-400' : 'text-green-400'}`}>{formatCurrency(totalManualSpending)}</div>
                     <p className="text-xs text-gray-400">of {formatCurrency(personalBudget)} budget</p>
                     <Progress value={Math.min((totalManualSpending / personalBudget) * 100, 100)} className="mt-2" />
                   </CardContent>
@@ -741,7 +749,7 @@ const Spending = () => {
                             <span className="font-medium text-white">{expense.name}</span>
                           </div>
                           <div className="text-right">
-                            <span className="font-semibold text-white">{formatCurrency(expense.amount)}</span>
+                            <span className={`font-semibold ${expense.amount > 0 ? 'text-red-400' : 'text-green-400'}`}>{formatCurrency(expense.amount)}</span>
                           </div>
                         </div>
                       </div>
