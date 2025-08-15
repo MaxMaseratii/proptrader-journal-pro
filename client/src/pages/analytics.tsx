@@ -872,7 +872,7 @@ export default function Analytics() {
                             const winningTrades = accountTrades.filter(t => (t.pnl || 0) > 0).length;
                             const accountWinRate = accountTrades.length > 0 ? winningTrades / accountTrades.length : 0;
                             const avgTrade = accountTrades.length > 0 ? accountPnL / accountTrades.length : 0;
-                            const drawdown = ((account.currentBalance - account.startingBalance) / account.startingBalance) * 100;
+                            const drawdown = ((account.balance - account.startingBalance) / account.startingBalance) * 100;
                             
                             return (
                               <tr key={account.id} className="border-b border-gray-700 hover:bg-gray-700/50">
@@ -894,7 +894,7 @@ export default function Analytics() {
                                 <td className={`text-right py-3 ${getUniversalValueColor(avgTrade, 'pnl').textColor}`}>
                                   {formatCurrency(avgTrade)}
                                 </td>
-                                <td className={`text-right py-3 ${Math.abs(drawdown) > 10 ? 'text-red-500' : Math.abs(drawdown) > 5 ? 'text-orange-400' : 'text-green-500'}`}>
+                                <td className={`text-right py-3 ${getUniversalValueColor(drawdown, 'drawdown', { warning: 5, danger: 10 }).textColor}`}>
                                   {formatPercentage(drawdown)}
                                 </td>
                                 <td className="text-right py-3 pr-4">
@@ -937,7 +937,7 @@ export default function Analytics() {
                             <div key={account.id} className="space-y-1">
                               <div className="flex justify-between text-sm">
                                 <span className="text-gray-300">{account.name}</span>
-                                <span className={accountPnL >= 0 ? 'text-green-500' : 'text-red-500'}>
+                                <span className={getUniversalValueColor(accountPnL, 'pnl').textColor}>
                                   {formatCurrency(accountPnL)}
                                 </span>
                               </div>

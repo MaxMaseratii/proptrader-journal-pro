@@ -8,7 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Calendar, CalendarDays, Download, Filter, Search, Plus, Edit3, Save, X, Upload, FileText, AlertCircle, CheckCircle, Target } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { formatCurrency, formatDate } from "@/lib/utils";
-import { getUniversalValueColor, getStatusColor } from "@/lib/colorUtils";
+import { getUniversalValueColor, getPercentageColor, getStatusColor } from "@/lib/colorUtils";
 import type { Trade, Account } from "@shared/schema";
 import { useState, useMemo, useEffect } from "react";
 import { useLocation } from "wouter";
