@@ -30,7 +30,8 @@ import {
   Sun,
   Moon,
   Waves,
-  Crown
+  Crown,
+  Upload
 } from "lucide-react";
 import { useTheme } from "@/contexts/ThemeContext";
 import { Button } from "@/components/ui/button";
@@ -60,6 +61,7 @@ const navItems = [
   
   // ACCOUNTS & RECORDS (Combined Trading and Financial)
   { href: "/accounts", label: "Accounts", icon: Target, section: "trading" },
+  { href: "/csv-import", label: "Universal CSV Import", icon: Upload, section: "trading" },
   { href: "/trades", label: "Trades Log", icon: FileText, section: "trading" },
   { href: "/journal", label: "Trading Journal", icon: Book, section: "trading" },
   { href: "/trading-companion", label: "Trading Companion", icon: Bot, section: "trading" },

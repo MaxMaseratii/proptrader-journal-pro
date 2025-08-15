@@ -425,14 +425,86 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.error('Error re-processing trades:', error);
       res.status(500).json({ 
         success: false, 
-        message: 'Failed to re-process trades',
+        message: "Failed to re-process trades",
         error: error instanceof Error ? error.message : 'Unknown error'
       });
     }
   });
 
-  // CSV import with optimized background processing for scalability
-  app.post("/api/trades/import-csv", requireAuth, async (req: any, res) => {
+  // Universal CSV Import Route - Supports 37+ Brokers
+  app.post("/api/trades/import-csv", requireAuth, async (req, res) => {
+    try {
+      const { accountId, csvData, fileName } = req.body;
+      
+      if (!accountId || !csvData) {
+        return res.status(400).json({ 
+          message: "Missing required fields: accountId and csvData" 
+        });
+      }
+
+      // Import the CSV detection and parsing functions
+      const { detectBrokerFormat, parseCsvWithFormat } = await import('./csv-broker-detection');
+      
+      // Detect broker format
+      const detection = detectBrokerFormat(csvData);
+      
+      if (!detection.format || detection.confidence < 60) {
+        return res.status(400).json({
+          success: false,
+          message: "Could not detect CSV format. Please check your file format.",
+          recordsProcessed: 0,
+          recordsImported: 0,
+          detectedFormat: "unknown",
+          errors: ["Unrecognized CSV format. Supported formats include IBKR, ThinkorSwim, MT4/5, NinjaTrader, Tradovate, and 30+ others."]
+        });
+      }
+
+      // Parse CSV with detected format
+      const parseResult = parseCsvWithFormat(csvData, detection.format, accountId);
+      
+      // Import trades to database
+      let importedCount = 0;
+      const importErrors: string[] = [...parseResult.errors];
+      
+      for (const trade of parseResult.trades) {
+        try {
+          await storage.createTrade(trade as InsertTrade);
+          importedCount++;
+        } catch (error) {
+          importErrors.push(`Trade import failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+        }
+      }
+
+      // Calculate success metrics
+      const success = importedCount > 0 && importErrors.length < parseResult.trades.length;
+      
+      res.json({
+        success,
+        recordsProcessed: parseResult.trades.length,
+        recordsImported: importedCount,
+        detectedFormat: detection.format.name,
+        errors: importErrors,
+        totalPnL: parseResult.totalPnL,
+        winRate: parseResult.winRate,
+        confidence: Math.round(detection.confidence),
+        importedTrades: parseResult.trades.slice(0, 5) // Return first 5 trades for preview
+      });
+
+    } catch (error) {
+      console.error("CSV import error:", error);
+      res.status(500).json({
+        success: false,
+        message: "Failed to process CSV import",
+        recordsProcessed: 0,
+        recordsImported: 0,
+        detectedFormat: "error",
+        errors: [error instanceof Error ? error.message : "Unknown server error"]
+      });
+    }
+  });
+
+  // Legacy CSV import route (keeping for backward compatibility)
+  app.post("/api/trades/import-csv-legacy", requireAuth, async (req: any, res) => {
     try {
       const { accountId, csvData, csvContent, trades, fileName } = req.body;
       const userId = req.user?.id;

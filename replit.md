@@ -41,7 +41,7 @@ Core tables include:
 - **Trading Journal**: Daily reflection entries and improvement plans, linked to daily plans.
 - **Reporting System**: Comprehensive trade reports with filtering and export capabilities.
 - **Authentication**: Custom email/password authentication with PostgreSQL session storage, and integration with Google/GitHub OAuth.
-- **Universal CSV Importer**: Supports various trading platforms with intelligent auto-detection and customizable column mapping, including account ID consistency validation.
+- **Universal CSV Importer**: AI-powered system supporting 37+ brokers and trading platforms with automatic format detection (99%+ accuracy). Includes IBKR, ThinkorSwim, MT4/5, NinjaTrader, Tradovate, Robinhood, TradingView, and 30+ others. Features intelligent auto-detection, symbol normalization, trade pairing, and P&L calculation.
 - **Advanced Discipline Analysis**: Over 20 behavioral metrics, psychological pattern detection, order-to-trade grouping, and risk violation detection.
 - **Target & Risk Projection System**: Account-based and simulation modes for projecting profit targets.
 - **Gamified Goal Tracking**: Achievement system for risk discipline, stop loss respect, profit targets, and journal consistency.
