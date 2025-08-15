@@ -18,6 +18,7 @@ import type { TradingStrategy, Trade } from '@shared/schema';
 import { useToast } from '@/hooks/use-toast';
 import { apiRequest } from '@/lib/queryClient';
 import { formatCurrency, formatPercentage } from '@/lib/utils';
+import { getUniversalValueColor, getStatusColor } from "@/lib/colorUtils";
 import { z } from 'zod';
 import { 
   Plus, 

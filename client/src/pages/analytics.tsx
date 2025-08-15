@@ -10,6 +10,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { formatCurrency, formatPercentage, formatDate } from "@/lib/utils";
+import { getUniversalValueColor, getPercentageColor, getStatusColor } from "@/lib/colorUtils";
 import { calculateDisciplinedScore, type DisciplinedAnalysis } from "@/lib/disciplined-score";
 import { EquityChart, MonthlyPerformanceChart } from "@/components/chart-components";
 import EnhancedDisciplineAnalyzer from "@/components/enhanced-discipline-analyzer";

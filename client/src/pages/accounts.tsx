@@ -1,4 +1,5 @@
 import React, { useState, useMemo, useCallback, useEffect } from 'react';
+import { getUniversalValueColor, getStatusColor } from '@/lib/colorUtils';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -708,7 +709,7 @@ const AccountCard = React.memo(({
       <CardHeader>
         <CardTitle className="text-white flex items-center justify-between">
           {account.name}
-          <Badge variant={account.type === 'funded' ? 'default' : 'secondary'}>
+          <Badge className={getStatusColor(account.type).textColor}>
             {account.type}
           </Badge>
         </CardTitle>
@@ -718,7 +719,7 @@ const AccountCard = React.memo(({
         <div className="space-y-2 text-sm">
           <div className="flex justify-between">
             <span className="text-gray-400">Starting Balance:</span>
-            <span className="text-green-500">${account.startingBalance.toLocaleString()}</span>
+            <span className={getUniversalValueColor(account.startingBalance, 'balance').textColor}>${account.startingBalance.toLocaleString()}</span>
           </div>
           <div className="flex justify-between">
             <span className="text-gray-400">Profit Target:</span>
@@ -726,11 +727,11 @@ const AccountCard = React.memo(({
           </div>
           <div className="flex justify-between">
             <span className="text-gray-400">Max Drawdown:</span>
-            <span className="text-red-500">${account.maxDrawdown.toLocaleString()}</span>
+            <span className={getUniversalValueColor(account.maxDrawdown, 'expense').textColor}>${account.maxDrawdown.toLocaleString()}</span>
           </div>
           <div className="flex justify-between">
             <span className="text-gray-400">Risk Per Trade:</span>
-            <span className="text-yellow-400">${account.riskPerTrade}</span>
+            <span className={getUniversalValueColor(account.riskPerTrade, 'risk').textColor}>${account.riskPerTrade}</span>
           </div>
         </div>
         

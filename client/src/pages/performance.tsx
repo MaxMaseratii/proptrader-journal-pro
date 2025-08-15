@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { EquityChart, MonthlyPerformanceChart } from "@/components/chart-components";
 import { formatCurrency, formatPercentage, formatDate, calculateWinRate } from "@/lib/utils";
+import { getUniversalValueColor, getPercentageColor, getStatusColor } from "@/lib/colorUtils";
 import { 
   TrendingUp, 
   TrendingDown, 

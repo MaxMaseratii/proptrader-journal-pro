@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { getUniversalValueColor, getStatusColor } from "@/lib/colorUtils";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";

@@ -7,6 +7,7 @@ import { Switch } from "@/components/ui/switch";
 import { CheckCircle, X, Tag, Gift } from "lucide-react";
 import { useLocation } from "wouter";
 import { useState } from "react";
+import { getUniversalValueColor, getStatusColor } from "@/lib/colorUtils";
 
 export default function Pricing() {
   const [, setLocation] = useLocation();

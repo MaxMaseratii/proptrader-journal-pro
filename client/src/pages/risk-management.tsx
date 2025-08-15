@@ -4,6 +4,7 @@ import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { formatCurrency, formatPercentage } from "@/lib/utils";
+import { getUniversalValueColor, getPercentageColor, getStatusColor } from "@/lib/colorUtils";
 import { AlertTriangle, Shield, TrendingDown, Target, Activity } from "lucide-react";
 import { useState } from "react";
 import type { Account, Trade } from "@shared/schema";

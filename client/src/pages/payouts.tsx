@@ -13,6 +13,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { formatCurrency, formatDate } from "@/lib/utils";
+import { getUniversalValueColor, getStatusColor } from "@/lib/colorUtils";
 import { 
   DollarSign, 
   Calendar, 

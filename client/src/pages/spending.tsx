@@ -24,19 +24,10 @@ import {
   CheckCircle
 } from 'lucide-react';
 
-// Professional color coding utility function
-const getValueColor = (value: number, isExpense: boolean = false) => {
-  if (value === 0) return 'text-gray-400';
-  
-  if (isExpense) {
-    // For expenses/costs (always negative impact)
-    return 'text-red-400'; // All expenses are RED
-  } else {
-    // For profits/gains/income
-    if (value > 0) return 'text-green-400'; // Positive = GREEN
-    if (value < 0) return 'text-red-400';   // Negative = RED
-  }
-  return 'text-gray-400';
+// UNIVERSAL COLOR CODING SYSTEM - Applied across entire project
+const getValueColor = (value: number, context: 'profit' | 'expense' | 'budget' | 'roi' | 'balance' | 'pnl' | 'drawdown' | 'risk' = 'pnl') => {
+  const colorResult = getUniversalValueColor(value, context);
+  return colorResult.textColor;
 };
 
 // Professional Budget Widget Component

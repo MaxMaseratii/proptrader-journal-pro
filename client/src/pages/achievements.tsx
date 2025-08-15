@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { getUniversalValueColor, getStatusColor } from "@/lib/colorUtils";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import EnhancedAchievementSystem from "@/components/enhanced-achievement-system";

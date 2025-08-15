@@ -16,15 +16,14 @@ import { EquityChart, MonthlyPerformanceChart } from "@/components/chart-compone
 import { formatCurrency, formatPercentage, formatDate } from "@/lib/utils";
 import { calculateDisciplinedScore, getScoreColor, getGradeColor } from "@/lib/disciplined-score";
 import { calculateComprehensiveDisciplineMetrics } from "@/lib/discipline-calculator";
+import { getUniversalValueColor, getPercentageColor, getStatusColor } from "@/lib/colorUtils";
 import DailyPlanningWidget from "@/components/daily-planning-widget";
 import WeeklyPerformanceOverview from "@/components/weekly-performance-overview";
 
-// Color coding utility function
-const getValueColor = (value: number, type: 'currency' | 'percentage' | 'neutral' = 'currency') => {
-  if (type === 'neutral') return 'text-gray-200';
-  if (value > 0) return 'text-green-400';
-  if (value < 0) return 'text-red-400';
-  return 'text-gray-200'; // zero/neutral
+// UNIVERSAL COLOR CODING SYSTEM - Applied across entire project
+const getValueColor = (value: number, context: 'profit' | 'expense' | 'budget' | 'roi' | 'balance' | 'pnl' | 'drawdown' | 'risk' = 'pnl') => {
+  const colorResult = getUniversalValueColor(value, context);
+  return colorResult.textColor;
 };
 import TradeCalendar from "@/components/trade-calendar";
 import TradeEntry from "@/components/trade-entry";
