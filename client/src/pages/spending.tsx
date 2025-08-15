@@ -594,7 +594,7 @@ const Spending = () => {
                 <div className="border-t border-gray-700 pt-3">
                   <div className="flex justify-between items-center font-semibold">
                     <span className="text-gray-100">Total Personal Expenses</span>
-                    <span className="style={{color: "#ef4444"}} text-lg">
+                    <span style={{color: "#ef4444"}} className="text-lg">
                       {formatCurrency(totalManualSpending)}
                     </span>
                   </div>

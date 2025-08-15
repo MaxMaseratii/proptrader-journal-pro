@@ -605,7 +605,7 @@ export default function CompleteTradingDashboard() {
                         className="flex-1"
                       />
                       <span className="text-xs text-gray-500 min-w-[40px]">Sharp</span>
-                      <span className="style={{color: "#22c55e"}} font-bold min-w-[20px] text-lg">{sliderValues.focus}</span>
+                      <span className="font-bold min-w-[20px] text-lg" style={{color: "#22c55e"}}>{sliderValues.focus}</span>
                     </div>
                   </div>
 
@@ -850,7 +850,7 @@ export default function CompleteTradingDashboard() {
                 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
                   <div className="p-3 bg-emerald-900/30 rounded-xl border border-emerald-500/30">
-                    <div className="style={{color: "#22c55e"}} font-bold text-lg">DISCIPLINE</div>
+                    <div className="font-bold text-lg" style={{color: "#22c55e"}}>DISCIPLINE</div>
                     <div className="text-emerald-300 text-sm">I follow my rules</div>
                   </div>
                   <div className="p-3 bg-blue-900/30 rounded-xl border border-blue-500/30">
