@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .text-green-400 {
+            color: #22c55e !important;
+        }
+        .force-green {
+            color: #22c55e !important;
+        }
+    </style>
+</head>
+<body class="bg-black p-8">
+    <div class="text-white mb-4">Testing color system:</div>
+    <div class="text-green-400 text-2xl mb-2">This should be GREEN via Tailwind class</div>
+    <div class="force-green text-2xl mb-2">This should be GREEN via custom class</div>
+    <div style="color: #22c55e !important;" class="text-2xl mb-2">This should be GREEN via inline style</div>
+    <div class="text-white text-2xl">This should be WHITE</div>
+</body>
+</html>
