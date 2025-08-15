@@ -175,6 +175,34 @@ const BROKER_FORMATS: { [key: string]: BrokerFormat } = {
     requiredColumns: ["Date Time", "Symbol", "Side", "Quantity", "Price"],
   },
 
+  // Standard Export Formats (common from trading platforms)
+  standard_export: {
+    name: "Standard Trading Export",
+    dateColumn: "Date",
+    symbolColumn: "Symbol",
+    sideColumn: "Side",
+    quantityColumn: "Quantity", 
+    priceColumn: "Entry Price",
+    pnlColumn: "P&L",
+    dateFormat: "YYYY-MM-DD",
+    sideMapping: { "buy": "buy", "sell": "sell", "long": "buy", "short": "sell", "BUY": "buy", "SELL": "sell" },
+    requiredColumns: ["Date", "Symbol", "Side", "Quantity"],
+  },
+
+  // Orders CSV format (with detailed order data)
+  orders_export: {
+    name: "Orders Export",
+    dateColumn: "Fill Time",
+    symbolColumn: "Contract",
+    sideColumn: "B/S",
+    quantityColumn: "Filled Qty",
+    priceColumn: "Avg Fill Price",
+    pnlColumn: "P&L",
+    dateFormat: "YYYY-MM-DD HH:mm:ss",
+    sideMapping: { "B": "buy", "S": "sell", "BUY": "buy", "SELL": "sell", "Buy": "buy", "Sell": "sell" },
+    requiredColumns: ["Fill Time", "Contract", "B/S"],
+  },
+
   // Generic formats for auto-detection fallback
   generic_v1: {
     name: "Generic Format 1",
@@ -206,10 +234,12 @@ const BROKER_FORMATS: { [key: string]: BrokerFormat } = {
 export function detectBrokerFormat(csvData: string): { format: BrokerFormat | null; confidence: number } {
   const lines = csvData.trim().split('\n');
   if (lines.length < 2) {
+    console.log('🔍 CSV Detection: Not enough lines');
     return { format: null, confidence: 0 };
   }
 
   const headers = lines[0].toLowerCase().split(',').map(h => h.trim().replace(/"/g, ''));
+  console.log('🔍 CSV Detection: Headers found:', headers);
   let bestMatch: { format: BrokerFormat; confidence: number } | null = null;
 
   // Check each broker format
@@ -220,17 +250,25 @@ export function detectBrokerFormat(csvData: string): { format: BrokerFormat | nu
     // Check for required columns
     for (const required of format.requiredColumns) {
       const requiredLower = required.toLowerCase();
-      const found = headers.some(header => 
-        header.includes(requiredLower) || 
-        requiredLower.includes(header) ||
-        // Fuzzy matching for common variations
-        (requiredLower.includes('date') && header.includes('date')) ||
-        (requiredLower.includes('time') && header.includes('time')) ||
-        (requiredLower.includes('symbol') && (header.includes('symbol') || header.includes('instrument') || header.includes('contract'))) ||
-        (requiredLower.includes('side') && (header.includes('side') || header.includes('action') || header.includes('type'))) ||
-        (requiredLower.includes('qty') && (header.includes('qty') || header.includes('quantity') || header.includes('size') || header.includes('volume'))) ||
-        (requiredLower.includes('price') && header.includes('price'))
-      );
+      const found = headers.some(header => {
+        const match = header.includes(requiredLower) || 
+          requiredLower.includes(header) ||
+          // Enhanced fuzzy matching for common variations
+          (requiredLower.includes('date') && header.includes('date')) ||
+          (requiredLower.includes('time') && (header.includes('time') || header.includes('timestamp'))) ||
+          (requiredLower.includes('symbol') && (header.includes('symbol') || header.includes('instrument') || header.includes('contract'))) ||
+          (requiredLower.includes('side') && (header.includes('side') || header.includes('action') || header.includes('type') || header.includes('b/s'))) ||
+          (requiredLower.includes('qty') && (header.includes('qty') || header.includes('quantity') || header.includes('size') || header.includes('volume') || header.includes('filled qty'))) ||
+          (requiredLower.includes('price') && (header.includes('price') || header.includes('entry price') || header.includes('avg fill price'))) ||
+          // Specific matches for common patterns
+          (requiredLower === 'fill time' && (header.includes('fill time') || header.includes('timestamp'))) ||
+          (requiredLower === 'b/s' && (header.includes('b/s') || header.includes('side'))) ||
+          (requiredLower === 'contract' && (header.includes('contract') || header.includes('symbol'))) ||
+          (requiredLower === 'filled qty' && (header.includes('filled qty') || header.includes('quantity'))) ||
+          (requiredLower === 'avg fill price' && (header.includes('avg fill price') || header.includes('price')));
+        
+        return match;
+      });
       
       if (found) {
         requiredMatches++;
@@ -240,21 +278,29 @@ export function detectBrokerFormat(csvData: string): { format: BrokerFormat | nu
 
     // Bonus points for optional columns
     if (format.pnlColumn && headers.some(h => h.includes('p&l') || h.includes('pnl') || h.includes('profit'))) {
-      confidence += 10;
+      confidence += 15;
     }
     if (format.commissionColumn && headers.some(h => h.includes('commission') || h.includes('fee'))) {
       confidence += 10;
     }
 
-    // Must have at least 80% of required columns
+    // Lower threshold to 60% for required columns (was 80%)
     const requiredRatio = requiredMatches / format.requiredColumns.length;
-    if (requiredRatio >= 0.8) {
+    if (requiredRatio >= 0.6) {
       confidence = Math.min(confidence * requiredRatio, 100);
+      
+      console.log(`🔍 Format ${key} (${format.name}): ${requiredMatches}/${format.requiredColumns.length} matches, confidence: ${Math.round(confidence)}`);
       
       if (!bestMatch || confidence > bestMatch.confidence) {
         bestMatch = { format, confidence };
       }
     }
+  }
+
+  if (bestMatch) {
+    console.log(`🔍 Best match: ${bestMatch.format.name} with ${Math.round(bestMatch.confidence)}% confidence`);
+  } else {
+    console.log('🔍 No suitable format detected');
   }
 
   return bestMatch || { format: null, confidence: 0 };
