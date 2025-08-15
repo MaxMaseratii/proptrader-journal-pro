@@ -266,16 +266,16 @@ export default function Performance() {
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="widget-text opacity-70 text-sm mb-1">Total P&L</p>
-                      <p className={`text-2xl font-bold ${metrics.totalPnL >= 0 ? 'text-success-green' : 'text-error-red'}`}>
+                      <p className={`text-2xl font-bold ${getUniversalValueColor(metrics.totalPnL, 'pnl').textColor}`}>
                         {formatCurrency(metrics.totalPnL)}
                       </p>
                       <p className="text-xs widget-text opacity-70 mt-1">{metrics.totalTrades} trades</p>
                     </div>
-                    <div className={`bg-opacity-20 p-3 rounded-lg ${metrics.totalPnL >= 0 ? 'bg-success-green' : 'bg-error-red'}`}>
+                    <div className={`bg-opacity-20 p-3 rounded-lg ${getUniversalValueColor(metrics.totalPnL, 'pnl').bgColor}`}>
                       {metrics.totalPnL >= 0 ? (
-                        <TrendingUp className="text-success-green h-6 w-6" />
+                        <TrendingUp className={`${getUniversalValueColor(metrics.totalPnL, 'pnl').textColor} h-6 w-6`} />
                       ) : (
-                        <TrendingDown className="text-error-red h-6 w-6" />
+                        <TrendingDown className={`${getUniversalValueColor(metrics.totalPnL, 'pnl').textColor} h-6 w-6`} />
                       )}
                     </div>
                   </div>
@@ -366,19 +366,19 @@ export default function Performance() {
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <p className="text-sm font-medium widget-text">Average Win</p>
-                      <p className="text-lg font-bold text-success-green">{formatCurrency(metrics.averageWin)}</p>
+                      <p className={`text-lg font-bold ${getUniversalValueColor(metrics.averageWin, 'profit').textColor}`}>{formatCurrency(metrics.averageWin)}</p>
                     </div>
                     <div className="space-y-2">
                       <p className="text-sm font-medium widget-text">Average Loss</p>
-                      <p className="text-lg font-bold text-error-red">{formatCurrency(-metrics.averageLoss)}</p>
+                      <p className={`text-lg font-bold ${getUniversalValueColor(-metrics.averageLoss, 'pnl').textColor}`}>{formatCurrency(-metrics.averageLoss)}</p>
                     </div>
                     <div className="space-y-2">
                       <p className="text-sm font-medium widget-text">Best Day</p>
-                      <p className="text-lg font-bold text-success-green">{formatCurrency(metrics.bestDay)}</p>
+                      <p className={`text-lg font-bold ${getUniversalValueColor(metrics.bestDay, 'profit').textColor}`}>{formatCurrency(metrics.bestDay)}</p>
                     </div>
                     <div className="space-y-2">
                       <p className="text-sm font-medium widget-text">Worst Day</p>
-                      <p className="text-lg font-bold text-error-red">{formatCurrency(metrics.worstDay)}</p>
+                      <p className={`text-lg font-bold ${getUniversalValueColor(metrics.worstDay, 'pnl').textColor}`}>{formatCurrency(metrics.worstDay)}</p>
                     </div>
                     <div className="space-y-2">
                       <p className="text-sm font-medium widget-text">Trading Days</p>
@@ -402,14 +402,14 @@ export default function Performance() {
                     <div>
                       <div className="flex justify-between items-center mb-2">
                         <span className="text-sm widget-text">Max Consecutive Wins</span>
-                        <Badge className="bg-success-green text-white">{metrics.maxConsecutiveWins}</Badge>
+                        <Badge className={`${getUniversalValueColor(metrics.maxConsecutiveWins, 'profit').bgColor} text-white`}>{metrics.maxConsecutiveWins}</Badge>
                       </div>
                       <Progress value={(metrics.maxConsecutiveWins / Math.max(metrics.maxConsecutiveWins, metrics.maxConsecutiveLosses, 1)) * 100} className="h-2" />
                     </div>
                     <div>
                       <div className="flex justify-between items-center mb-2">
                         <span className="text-sm widget-text">Max Consecutive Losses</span>
-                        <Badge className="bg-error-red text-white">{metrics.maxConsecutiveLosses}</Badge>
+                        <Badge className={`${getUniversalValueColor(-metrics.maxConsecutiveLosses, 'pnl').bgColor} text-white`}>{metrics.maxConsecutiveLosses}</Badge>
                       </div>
                       <Progress value={(metrics.maxConsecutiveLosses / Math.max(metrics.maxConsecutiveWins, metrics.maxConsecutiveLosses, 1)) * 100} className="h-2" />
                     </div>

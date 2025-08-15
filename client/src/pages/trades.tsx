@@ -1261,7 +1261,7 @@ const UniversalCsvImport = ({ accounts }: { accounts: Account[] }) => {
                 </SelectContent>
               </Select>
               {selectedImportAccount && (
-                <p className="text-sm text-green-500 mt-2">
+                <p className={`text-sm mt-2 ${getUniversalValueColor(1, 'profit').textColor}`}>
                   ✓ Selected: {accounts?.find(acc => acc.id.toString() === selectedImportAccount)?.name}
                 </p>
               )}
@@ -1270,8 +1270,8 @@ const UniversalCsvImport = ({ accounts }: { accounts: Account[] }) => {
             {!selectedImportAccount && (
               <div className="bg-yellow-600/20 border border-yellow-600 rounded-lg p-3">
                 <div className="flex items-center gap-2">
-                  <AlertCircle className="w-4 h-4 text-yellow-400" />
-                  <span className="text-yellow-400 text-sm">Please select an account before uploading files</span>
+                  <AlertCircle className={`w-4 h-4 ${getPercentageColor(75).textColor}`} />
+                  <span className={`text-sm ${getPercentageColor(75).textColor}`}>Please select an account before uploading files</span>
                 </div>
               </div>
             )}
@@ -1294,7 +1294,7 @@ const UniversalCsvImport = ({ accounts }: { accounts: Account[] }) => {
             }`}
           />
           {!selectedImportAccount && (
-            <p className="text-xs text-yellow-400 mt-1">Select an account first</p>
+            <p className={`text-xs mt-1 ${getPercentageColor(75).textColor}`}>Select an account first</p>
           )}
         </div>
         
@@ -1304,7 +1304,7 @@ const UniversalCsvImport = ({ accounts }: { accounts: Account[] }) => {
           </label>
           <div className="p-3 bg-gray-700 rounded-md flex items-center">
             {csvFormat === 'position-history' ? (
-              <><CheckCircle className="h-4 w-4 text-green-500 mr-2" />
+              <><CheckCircle className={`h-4 w-4 mr-2 ${getUniversalValueColor(1, 'profit').textColor}`} />
               <Badge className="bg-green-600 text-white">✅ Position History CSV</Badge></>
             ) : csvFormat === 'unknown' ? (
               <><AlertCircle className="h-4 w-4 text-red-500 mr-2" />
@@ -1828,7 +1828,7 @@ export default function Trades() {
         </Card>
         <Card className="bg-dark-card border-dark-border">
           <CardContent className="p-4">
-            <div className="text-2xl font-bold text-green-500">
+            <div className={`text-2xl font-bold ${getUniversalValueColor(filteredTrades.reduce((sum, trade) => sum + Math.max(0, trade.pnl), 0), 'profit').textColor}`}>
               {formatCurrency(filteredTrades.reduce((sum, trade) => sum + Math.max(0, trade.pnl), 0))}
             </div>
             <div className="text-sm text-gray-400">Total Wins</div>
@@ -1836,7 +1836,7 @@ export default function Trades() {
         </Card>
         <Card className="bg-dark-card border-dark-border">
           <CardContent className="p-4">
-            <div className="text-2xl font-bold text-red-500">
+            <div className={`text-2xl font-bold ${getUniversalValueColor(-Math.abs(filteredTrades.reduce((sum, trade) => sum + Math.min(0, trade.pnl), 0)), 'pnl').textColor}`}>
               {formatCurrency(Math.abs(filteredTrades.reduce((sum, trade) => sum + Math.min(0, trade.pnl), 0)))}
             </div>
             <div className="text-sm text-gray-400">Total Losses</div>
@@ -1844,9 +1844,7 @@ export default function Trades() {
         </Card>
         <Card className="bg-dark-card border-dark-border">
           <CardContent className="p-4">
-            <div className={`text-2xl font-bold ${
-              filteredTrades.reduce((sum, trade) => sum + trade.pnl, 0) >= 0 ? 'text-green-500' : 'text-red-500'
-            }`}>
+            <div className={`text-2xl font-bold ${getUniversalValueColor(filteredTrades.reduce((sum, trade) => sum + trade.pnl, 0), 'pnl').textColor}`}>
               {formatCurrency(filteredTrades.reduce((sum, trade) => sum + trade.pnl, 0))}
             </div>
             <div className="text-sm text-gray-400">Net P&L</div>

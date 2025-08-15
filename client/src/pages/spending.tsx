@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { formatCurrency } from "@/lib/utils";
+import { getUniversalValueColor, getPercentageColor, getStatusColor } from "@/lib/colorUtils";
 import { apiRequest } from "@/lib/queryClient";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
@@ -102,7 +103,7 @@ const BudgetWidget = ({ title, icon: Icon, spent, total, iconColor, category }: 
 
         {/* Main Amount Display */}
         <div className="text-center mb-6">
-          <div className={`text-4xl font-bold mb-2 ${spent > total ? 'text-red-400' : 'text-gray-100'}`}>
+          <div className={`text-4xl font-bold mb-2 ${getUniversalValueColor(spent, 'expense').textColor}`}>
             {formatCurrency(spent)}
           </div>
           <p className="text-gray-400 text-sm">
@@ -138,7 +139,7 @@ const BudgetWidget = ({ title, icon: Icon, spent, total, iconColor, category }: 
             <span className={`font-medium ${statusInfo.textColor}`}>
               {percentage.toFixed(1)}% used
             </span>
-            <span className={`${remaining >= 0 ? 'text-gray-400' : 'text-red-400'}`}>
+            <span className={`${getUniversalValueColor(remaining, remaining >= 0 ? 'budget' : 'expense').textColor}`}>
               {remaining >= 0 ? formatCurrency(remaining) : formatCurrency(Math.abs(remaining))} 
               {remaining >= 0 ? ' remaining' : ' over budget'}
             </span>

@@ -442,16 +442,16 @@ export default function Analytics() {
           <TabsContent value="overview" className="space-y-6">
             {/* Key Performance Metrics */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-              <Card className="bg-gradient-to-br from-green-900 to-green-800 border-green-700">
+              <Card className="bg-gradient-to-br from-gray-900 to-gray-800 border-gray-700">
                 <CardContent className="p-4">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-green-200 text-sm">Total P&L</p>
-                      <p className="text-2xl font-bold text-white">
+                      <p className="text-gray-200 text-sm">Total P&L</p>
+                      <p className={`text-2xl font-bold ${getUniversalValueColor(advancedMetrics.totalPnL, 'pnl').textColor}`}>
                         {formatCurrency(advancedMetrics.totalPnL)}
                       </p>
                     </div>
-                    <DollarSign className="h-8 w-8 text-green-500" />
+                    <DollarSign className={`h-8 w-8 ${getUniversalValueColor(advancedMetrics.totalPnL, 'pnl').textColor}`} />
                   </div>
                 </CardContent>
               </Card>
@@ -534,7 +534,7 @@ export default function Analytics() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               <Card className="bg-gray-800 border-gray-700">
                 <CardHeader>
-                  <CardTitle className="text-green-500">Winning Trades</CardTitle>
+                  <CardTitle className={getUniversalValueColor(1, 'profit').textColor}>Winning Trades</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3">
                   <div className="flex justify-between">
@@ -543,13 +543,13 @@ export default function Analytics() {
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-400">Average Win:</span>
-                    <span className="font-medium text-green-500">
+                    <span className={`font-medium ${getUniversalValueColor(advancedMetrics.averageWin, 'profit').textColor}`}>
                       {formatCurrency(advancedMetrics.averageWin)}
                     </span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-400">Largest Win:</span>
-                    <span className="font-medium text-green-500">
+                    <span className={`font-medium ${getUniversalValueColor(advancedMetrics.largestWin, 'profit').textColor}`}>
                       {formatCurrency(advancedMetrics.largestWin)}
                     </span>
                   </div>
@@ -562,7 +562,7 @@ export default function Analytics() {
 
               <Card className="bg-gray-800 border-gray-700">
                 <CardHeader>
-                  <CardTitle className="text-red-500">Losing Trades</CardTitle>
+                  <CardTitle className={getUniversalValueColor(-1, 'pnl').textColor}>Losing Trades</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3">
                   <div className="flex justify-between">
@@ -571,13 +571,13 @@ export default function Analytics() {
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-400">Average Loss:</span>
-                    <span className="font-medium text-red-500">
+                    <span className={`font-medium ${getUniversalValueColor(-advancedMetrics.averageLoss, 'pnl').textColor}`}>
                       -{formatCurrency(advancedMetrics.averageLoss)}
                     </span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-400">Largest Loss:</span>
-                    <span className="font-medium text-red-500">
+                    <span className={`font-medium ${getUniversalValueColor(advancedMetrics.largestLoss, 'pnl').textColor}`}>
                       {formatCurrency(advancedMetrics.largestLoss)}
                     </span>
                   </div>
@@ -595,7 +595,7 @@ export default function Analytics() {
                 <CardContent className="space-y-3">
                   <div className="flex justify-between">
                     <span className="text-gray-400">Expectancy:</span>
-                    <span className={`font-medium ${advancedMetrics.expectancy >= 0 ? 'text-green-500' : 'text-red-500'}`}>
+                    <span className={`font-medium ${getUniversalValueColor(advancedMetrics.expectancy, 'pnl').textColor}`}>
                       {formatCurrency(advancedMetrics.expectancy)}
                     </span>
                   </div>

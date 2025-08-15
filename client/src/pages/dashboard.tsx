@@ -445,10 +445,7 @@ export default function Dashboard() {
                 </div>
                 
                 {/* P&L - FIXED: Complete Red/Green Color System */}
-                <div className={`text-xs font-bold mb-1 ${
-                  metrics.totalPnL > 0 ? 'text-green-500' : 
-                  metrics.totalPnL < 0 ? 'text-red-500' : 'text-gray-400'
-                }`}>
+                <div className={`text-xs font-bold mb-1 ${getUniversalValueColor(metrics.totalPnL, 'pnl').textColor}`}>
                   {metrics.totalPnL > 0 ? '+$' : metrics.totalPnL < 0 ? '-$' : '$'}{Math.abs(metrics.totalPnL).toFixed(0)}
                 </div>
                 
@@ -456,9 +453,8 @@ export default function Dashboard() {
                 <div className="flex justify-between items-center text-xs">
                   <span className="text-gray-400">{metrics.totalTrades}T</span>
                   <span className={`font-medium ${
-                    metrics.winRate >= 70 ? 'text-green-500' :
-                    metrics.winRate >= 50 ? 'text-yellow-500' :
-                    metrics.winRate >= 30 ? 'text-orange-500' : 'text-red-500'
+                    metrics.totalTrades === 0 ? 'text-gray-500' :
+                    getPercentageColor(metrics.winRate).textColor
                   }`}>
                     {metrics.totalTrades > 0 ? Math.round(metrics.winRate) : 0}%
                   </span>
@@ -577,10 +573,7 @@ export default function Dashboard() {
                   </div>
                   
                   {/* P&L */}
-                  <div className={`text-xs font-bold mb-1 ${
-                    metrics.totalPnL > 0 ? 'text-green-500' : 
-                    metrics.totalPnL < 0 ? 'text-red-500' : 'text-gray-400'
-                  }`}>
+                  <div className={`text-xs font-bold mb-1 ${getUniversalValueColor(metrics.totalPnL, 'pnl').textColor}`}>
                     {metrics.totalTrades > 0 ? (
                       <>
                         {metrics.totalPnL > 0 ? '+$' : metrics.totalPnL < 0 ? '-$' : '$'}{Math.abs(metrics.totalPnL).toFixed(0)}
@@ -595,9 +588,7 @@ export default function Dashboard() {
                     <span className="text-gray-400">{metrics.totalTrades}T</span>
                     <span className={`font-medium ${
                       metrics.totalTrades === 0 ? 'text-gray-500' :
-                      metrics.winRate >= 80 ? 'text-green-500' :
-                      metrics.winRate >= 60 ? 'text-yellow-500' :
-                      metrics.winRate >= 40 ? 'text-orange-500' : 'text-red-500'
+                      getPercentageColor(metrics.winRate).textColor
                     }`}>
                       {metrics.totalTrades > 0 ? Math.round(metrics.winRate) : 0}%
                     </span>
