@@ -450,7 +450,7 @@ export default function Analytics() {
                         {formatCurrency(advancedMetrics.totalPnL)}
                       </p>
                     </div>
-                    <DollarSign className="h-8 w-8 text-green-400" />
+                    <DollarSign className="h-8 w-8 text-green-500" />
                   </div>
                 </CardContent>
               </Card>
@@ -533,7 +533,7 @@ export default function Analytics() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               <Card className="bg-gray-800 border-gray-700">
                 <CardHeader>
-                  <CardTitle className="text-green-400">Winning Trades</CardTitle>
+                  <CardTitle className="text-green-500">Winning Trades</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3">
                   <div className="flex justify-between">
@@ -542,13 +542,13 @@ export default function Analytics() {
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-400">Average Win:</span>
-                    <span className="font-medium text-green-400">
+                    <span className="font-medium text-green-500">
                       {formatCurrency(advancedMetrics.averageWin)}
                     </span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-400">Largest Win:</span>
-                    <span className="font-medium text-green-400">
+                    <span className="font-medium text-green-500">
                       {formatCurrency(advancedMetrics.largestWin)}
                     </span>
                   </div>
@@ -561,7 +561,7 @@ export default function Analytics() {
 
               <Card className="bg-gray-800 border-gray-700">
                 <CardHeader>
-                  <CardTitle className="text-red-400">Losing Trades</CardTitle>
+                  <CardTitle className="text-red-500">Losing Trades</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3">
                   <div className="flex justify-between">
@@ -570,13 +570,13 @@ export default function Analytics() {
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-400">Average Loss:</span>
-                    <span className="font-medium text-red-400">
+                    <span className="font-medium text-red-500">
                       -{formatCurrency(advancedMetrics.averageLoss)}
                     </span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-400">Largest Loss:</span>
-                    <span className="font-medium text-red-400">
+                    <span className="font-medium text-red-500">
                       {formatCurrency(advancedMetrics.largestLoss)}
                     </span>
                   </div>
@@ -594,7 +594,7 @@ export default function Analytics() {
                 <CardContent className="space-y-3">
                   <div className="flex justify-between">
                     <span className="text-gray-400">Expectancy:</span>
-                    <span className={`font-medium ${advancedMetrics.expectancy >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                    <span className={`font-medium ${advancedMetrics.expectancy >= 0 ? 'text-green-500' : 'text-red-500'}`}>
                       {formatCurrency(advancedMetrics.expectancy)}
                     </span>
                   </div>
@@ -641,7 +641,7 @@ export default function Analytics() {
                     <div className="space-y-3">
                       <div className="flex justify-between">
                         <span className="text-gray-400">Risk Violations:</span>
-                        <span className={`font-medium ${disciplinedAnalysis.violationsCount > 0 ? 'text-red-400' : 'text-green-400'}`}>
+                        <span className={`font-medium ${disciplinedAnalysis.violationsCount > 0 ? 'text-red-500' : 'text-green-500'}`}>
                           {disciplinedAnalysis.violationsCount}
                         </span>
                       </div>
@@ -685,7 +685,7 @@ export default function Analytics() {
                 <CardContent className="space-y-4">
                   <div className="grid grid-cols-2 gap-4">
                     <div className="bg-red-900/20 p-3 rounded-lg">
-                      <p className="text-red-400 text-sm">Max Drawdown</p>
+                      <p className="text-red-500 text-sm">Max Drawdown</p>
                       <p className="text-xl font-bold text-white">
                         {formatPercentage(Math.abs(advancedMetrics.maxDrawdown))}
                       </p>
@@ -720,13 +720,13 @@ export default function Analytics() {
                   <div className="space-y-3">
                     <div className="flex justify-between items-center">
                       <span className="text-gray-400">Best Trading Day</span>
-                      <span className={`font-bold ${advancedMetrics.bestDay >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                      <span className={`font-bold ${advancedMetrics.bestDay >= 0 ? 'text-green-500' : 'text-red-500'}`}>
                         {formatCurrency(advancedMetrics.bestDay)}
                       </span>
                     </div>
                     <div className="flex justify-between items-center">
                       <span className="text-gray-400">Worst Trading Day</span>
-                      <span className={`font-bold ${advancedMetrics.worstDay >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                      <span className={`font-bold ${advancedMetrics.worstDay >= 0 ? 'text-green-500' : 'text-red-500'}`}>
                         {formatCurrency(advancedMetrics.worstDay)}
                       </span>
                     </div>
@@ -738,13 +738,13 @@ export default function Analytics() {
                     </div>
                     <div className="flex justify-between items-center">
                       <span className="text-gray-400">Max Consecutive Wins</span>
-                      <span className="font-bold text-green-400">
+                      <span className="font-bold text-green-500">
                         {advancedMetrics.maxConsecutiveWins}
                       </span>
                     </div>
                     <div className="flex justify-between items-center">
                       <span className="text-gray-400">Max Consecutive Losses</span>
-                      <span className="font-bold text-red-400">
+                      <span className="font-bold text-red-500">
                         {advancedMetrics.maxConsecutiveLosses}
                       </span>
                     </div>
@@ -765,7 +765,7 @@ export default function Analytics() {
                     <div className="space-y-2">
                       <div className="flex justify-between">
                         <span className="text-gray-400">Expectancy</span>
-                        <span className={`font-medium ${advancedMetrics.expectancy >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                        <span className={`font-medium ${advancedMetrics.expectancy >= 0 ? 'text-green-500' : 'text-red-500'}`}>
                           {formatCurrency(advancedMetrics.expectancy)}
                         </span>
                       </div>
@@ -789,25 +789,25 @@ export default function Analytics() {
                     <div className="space-y-2">
                       <div className="flex justify-between">
                         <span className="text-gray-400">Largest Win</span>
-                        <span className="font-medium text-green-400">
+                        <span className="font-medium text-green-500">
                           {formatCurrency(advancedMetrics.largestWin)}
                         </span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-gray-400">Largest Loss</span>
-                        <span className="font-medium text-red-400">
+                        <span className="font-medium text-red-500">
                           {formatCurrency(Math.abs(advancedMetrics.largestLoss))}
                         </span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-gray-400">Average Win</span>
-                        <span className="font-medium text-green-400">
+                        <span className="font-medium text-green-500">
                           {formatCurrency(advancedMetrics.averageWin)}
                         </span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-gray-400">Average Loss</span>
-                        <span className="font-medium text-red-400">
+                        <span className="font-medium text-red-500">
                           {formatCurrency(Math.abs(advancedMetrics.averageLoss))}
                         </span>
                       </div>
@@ -881,7 +881,7 @@ export default function Analytics() {
                                     <p className="text-xs text-gray-400 capitalize">{account.type}</p>
                                   </div>
                                 </td>
-                                <td className={`text-right py-3 font-bold ${accountPnL >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                                <td className={`text-right py-3 font-bold ${accountPnL >= 0 ? 'text-green-500' : 'text-red-500'}`}>
                                   {formatCurrency(accountPnL)}
                                 </td>
                                 <td className="text-right py-3 text-white">
@@ -890,10 +890,10 @@ export default function Analytics() {
                                 <td className="text-right py-3 text-white">
                                   {accountTrades.length}
                                 </td>
-                                <td className={`text-right py-3 ${avgTrade >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                                <td className={`text-right py-3 ${avgTrade >= 0 ? 'text-green-500' : 'text-red-500'}`}>
                                   {formatCurrency(avgTrade)}
                                 </td>
-                                <td className={`text-right py-3 ${Math.abs(drawdown) > 10 ? 'text-red-400' : Math.abs(drawdown) > 5 ? 'text-orange-400' : 'text-green-400'}`}>
+                                <td className={`text-right py-3 ${Math.abs(drawdown) > 10 ? 'text-red-500' : Math.abs(drawdown) > 5 ? 'text-orange-400' : 'text-green-500'}`}>
                                   {formatPercentage(drawdown)}
                                 </td>
                                 <td className="text-right py-3 pr-4">
@@ -936,7 +936,7 @@ export default function Analytics() {
                             <div key={account.id} className="space-y-1">
                               <div className="flex justify-between text-sm">
                                 <span className="text-gray-300">{account.name}</span>
-                                <span className={accountPnL >= 0 ? 'text-green-400' : 'text-red-400'}>
+                                <span className={accountPnL >= 0 ? 'text-green-500' : 'text-red-500'}>
                                   {formatCurrency(accountPnL)}
                                 </span>
                               </div>

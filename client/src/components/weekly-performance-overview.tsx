@@ -111,7 +111,7 @@ export function WeeklyPerformanceOverview({ trades = [], selectedAccount, classN
         <div className="text-center p-2 bg-gray-800/40 rounded">
           <div className={cn(
             "text-lg font-bold",
-            weeklyPnL >= 0 ? "text-green-400" : "text-red-400"
+            weeklyPnL >= 0 ? "text-green-500" : "text-red-500"
           )}>
             {weeklyPnL >= 0 ? '+' : ''}${weeklyPnL.toFixed(0)}
           </div>
@@ -149,7 +149,7 @@ export function WeeklyPerformanceOverview({ trades = [], selectedAccount, classN
             {!day.isFuture ? (
               <div className={cn(
                 "text-xs font-bold",
-                day.pnl > 0 ? "text-green-400" : day.pnl < 0 ? "text-red-400" : "text-gray-400"
+                day.pnl > 0 ? "text-green-500" : day.pnl < 0 ? "text-red-500" : "text-gray-400"
               )}>
                 {day.pnl === 0 ? '—' : (day.pnl > 0 ? '+' : '') + day.pnl.toFixed(0)}
               </div>
@@ -164,9 +164,9 @@ export function WeeklyPerformanceOverview({ trades = [], selectedAccount, classN
       <div className="flex items-center justify-center mt-4 p-2 bg-gray-800/30 rounded">
         <div className="flex items-center gap-2">
           {weeklyPnL >= 0 ? (
-            <TrendingUp className="w-3 h-3 text-green-400" />
+            <TrendingUp className="w-3 h-3 text-green-500" />
           ) : (
-            <TrendingDown className="w-3 h-3 text-red-400" />
+            <TrendingDown className="w-3 h-3 text-red-500" />
           )}
           <span className="text-xs text-gray-300">
             {profitableDays > 3 ? 'Strong Week' : profitableDays > 1 ? 'Mixed Week' : 'Challenging Week'}

@@ -487,7 +487,7 @@ export default function Payouts() {
                       </div>
                       <div className="flex justify-between">
                         <span className="text-gray-400">Current Balance</span>
-                        <span className={`font-medium ${(trades?.reduce((sum, trade) => sum + trade.pnl, 0) || 0) >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                        <span className={`font-medium ${(trades?.reduce((sum, trade) => sum + trade.pnl, 0) || 0) >= 0 ? 'text-green-500' : 'text-red-500'}`}>
                           {formatCurrency(selectedAccount.startingBalance + (trades?.reduce((sum, trade) => sum + trade.pnl, 0) || 0))}
                         </span>
                       </div>
@@ -504,7 +504,7 @@ export default function Payouts() {
                       </div>
                       <div className="flex justify-between">
                         <span className="text-gray-400">Daily Loss Limit</span>
-                        <span className="font-medium text-red-400">{formatCurrency(selectedAccount.dailyLossLimit)}</span>
+                        <span className="font-medium text-red-500">{formatCurrency(selectedAccount.dailyLossLimit)}</span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-gray-400">Firm</span>
@@ -569,8 +569,8 @@ export default function Payouts() {
                   {selectedAccount.status === 'funded' && (
                     <div className="mt-4 p-3 bg-green-900/20 rounded-lg border border-green-500/30">
                       <div className="flex items-center">
-                        <CheckCircle className="h-4 w-4 text-green-400 mr-2" />
-                        <p className="text-sm text-green-400">
+                        <CheckCircle className="h-4 w-4 text-green-500 mr-2" />
+                        <p className="text-sm text-green-500">
                           This account is eligible for payouts based on your trading performance
                         </p>
                       </div>
@@ -624,7 +624,7 @@ export default function Payouts() {
                         </div>
                         <div className="bg-gray-700 p-3 rounded">
                           <p className="text-xs text-gray-400">Remaining</p>
-                          <p className="font-bold text-green-400">{formatCurrency((metrics?.availablePayout || 0) - calculateSuggestedPayout())}</p>
+                          <p className="font-bold text-green-500">{formatCurrency((metrics?.availablePayout || 0) - calculateSuggestedPayout())}</p>
                         </div>
                       </div>
                       
@@ -837,7 +837,7 @@ export default function Payouts() {
                                     <div className="flex items-center">
                                       {renderStars(payout.firmRating)}
                                     </div>
-                                    <Badge variant="outline" className="border-green-600 text-green-400">
+                                    <Badge variant="outline" className="border-green-600 text-green-500">
                                       Rated
                                     </Badge>
                                   </div>

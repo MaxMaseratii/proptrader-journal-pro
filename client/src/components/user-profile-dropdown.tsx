@@ -117,7 +117,7 @@ export default function UserProfileDropdown() {
         <DropdownMenuSeparator className="bg-prop-gold/20" />
         
         <DropdownMenuItem 
-          className="cursor-pointer hover:bg-red-500/20 focus:bg-red-500/20 text-red-400"
+          className="cursor-pointer hover:bg-red-500/20 focus:bg-red-500/20 text-red-500"
           onClick={handleSignOut}
         >
           <LogOut className="mr-2 h-4 w-4" />

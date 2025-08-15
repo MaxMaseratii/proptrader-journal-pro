@@ -102,7 +102,7 @@ export function DashboardWidget({
                   </DropdownMenuItem>
                   <DropdownMenuItem 
                     onClick={() => onRemove?.(id)}
-                    className="text-red-400 hover:bg-red-900/20"
+                    className="text-red-500 hover:bg-red-900/20"
                   >
                     <X className="mr-2 h-4 w-4" />
                     Remove

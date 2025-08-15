@@ -52,7 +52,7 @@ const DashboardWidget: React.FC<{
               variant="ghost"
               size="sm"
               onClick={() => onRemove(id)}
-              className="h-6 w-6 p-0 hover:bg-red-500/20 text-red-400"
+              className="h-6 w-6 p-0 hover:bg-red-500/20 text-red-500"
             >
               <X className="h-3 w-3" />
             </Button>
@@ -204,7 +204,7 @@ export default function CustomizableDashboard({ accounts, trades }: Customizable
               recentTrades.map((trade: any, index: number) => (
                 <div key={index} className="flex justify-between items-center p-2 bg-prop-dark rounded">
                   <span className="text-sm text-gray-300">{trade.symbol}</span>
-                  <span className={`text-sm font-medium ${trade.pnl >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                  <span className={`text-sm font-medium ${trade.pnl >= 0 ? 'text-green-500' : 'text-red-500'}`}>
                     {trade.pnl >= 0 ? '+' : ''}${trade.pnl}
                   </span>
                 </div>
@@ -233,11 +233,11 @@ export default function CustomizableDashboard({ accounts, trades }: Customizable
             </div>
             <div className="flex justify-between">
               <span className="text-sm text-gray-400">Max Drawdown</span>
-              <span className="text-sm text-red-400">-2.5%</span>
+              <span className="text-sm text-red-500">-2.5%</span>
             </div>
             <div className="flex justify-between">
               <span className="text-sm text-gray-400">Win Rate</span>
-              <span className="text-sm text-green-400">68%</span>
+              <span className="text-sm text-green-500">68%</span>
             </div>
           </div>
         );
@@ -290,7 +290,7 @@ export default function CustomizableDashboard({ accounts, trades }: Customizable
                   variant="outline"
                   size="sm"
                   onClick={saveLayout}
-                  className="border-green-400/30 text-green-400 hover:bg-green-400/10"
+                  className="border-green-400/30 text-green-500 hover:bg-green-400/10"
                 >
                   <Save className="h-4 w-4 mr-2" />
                   Save

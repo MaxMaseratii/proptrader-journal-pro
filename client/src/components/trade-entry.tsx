@@ -255,7 +255,7 @@ export default function TradeEntry({ accounts }: TradeEntryProps) {
               <Card className="bg-gray-800 border-gray-700">
                 <CardHeader className="pb-4">
                   <CardTitle className="text-lg text-white flex items-center">
-                    <TrendingUp className="mr-2 h-5 w-5 text-green-400" />
+                    <TrendingUp className="mr-2 h-5 w-5 text-green-500" />
                     Trade Information
                   </CardTitle>
                 </CardHeader>
@@ -288,7 +288,7 @@ export default function TradeEntry({ accounts }: TradeEntryProps) {
                     </div>
 
                     <div className="space-y-2">
-                      <Label className="text-gray-300 font-medium text-green-400">Entry Time</Label>
+                      <Label className="text-gray-300 font-medium text-green-500">Entry Time</Label>
                       <Input 
                         type="datetime-local"
                         value={formData.fillTime ? new Date(formData.fillTime).toISOString().slice(0, 16) : ""}
@@ -302,7 +302,7 @@ export default function TradeEntry({ accounts }: TradeEntryProps) {
                     </div>
 
                     <div className="space-y-2">
-                      <Label className="text-gray-300 font-medium text-red-400">Exit Time</Label>
+                      <Label className="text-gray-300 font-medium text-red-500">Exit Time</Label>
                       <Input 
                         type="datetime-local"
                         value={formData.exitTime ? new Date(formData.exitTime).toISOString().slice(0, 16) : ""}
@@ -601,7 +601,7 @@ export default function TradeEntry({ accounts }: TradeEntryProps) {
                 <CardContent className="space-y-4">
                   <p className="text-gray-300">Your CSV file should include the following columns:</p>
                   <div className="bg-gray-800 p-4 rounded-lg">
-                    <code className="text-green-400 text-sm font-mono">
+                    <code className="text-green-500 text-sm font-mono">
                       Symbol, Date, Side, Quantity, EntryPrice, ExitPrice, PnL, Status, Notes
                     </code>
                   </div>
@@ -674,9 +674,9 @@ export default function TradeEntry({ accounts }: TradeEntryProps) {
                     {csvFile && (
                       <div className="bg-green-900/30 border border-green-600/30 rounded-lg p-4">
                         <div className="flex items-center">
-                          <FileText className="h-5 w-5 text-green-400 mr-2" />
+                          <FileText className="h-5 w-5 text-green-500 mr-2" />
                           <span className="text-green-300 font-medium">{csvFile.name}</span>
-                          <span className="text-green-400 text-sm ml-2">
+                          <span className="text-green-500 text-sm ml-2">
                             ({Math.round(csvFile.size / 1024)} KB)
                           </span>
                         </div>

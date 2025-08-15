@@ -135,13 +135,13 @@ export const ChartGrid: React.FC<ChartGridProps> = ({
               <div className="space-y-1">
                 <div className="flex justify-between text-xs">
                   <span className="text-gray-400">P&L:</span>
-                  <span className={totalPnl >= 0 ? 'text-green-400' : 'text-red-400'}>
+                  <span className={totalPnl >= 0 ? 'text-green-500' : 'text-red-500'}>
                     ${totalPnl.toFixed(0)}
                   </span>
                 </div>
                 <div className="flex justify-between text-xs">
                   <span className="text-gray-400">Win Rate:</span>
-                  <span className={parseFloat(winRate) >= 50 ? 'text-green-400' : 'text-red-400'}>
+                  <span className={parseFloat(winRate) >= 50 ? 'text-green-500' : 'text-red-500'}>
                     {winRate}%
                   </span>
                 </div>

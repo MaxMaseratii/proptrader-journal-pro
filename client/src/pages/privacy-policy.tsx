@@ -60,7 +60,7 @@ export default function PrivacyPolicy() {
           {/* How We Use Data */}
           <Card className="bg-gray-900 border-gray-700">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-green-400">
+              <CardTitle className="flex items-center gap-2 text-green-500">
                 <Eye className="h-5 w-5" />
                 How We Use Your Information
               </CardTitle>

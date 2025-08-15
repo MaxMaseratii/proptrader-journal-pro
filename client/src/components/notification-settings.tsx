@@ -128,7 +128,7 @@ export default function NotificationSettings() {
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <TrendingUp className="h-4 w-4 text-green-400" />
+                <TrendingUp className="h-4 w-4 text-green-500" />
                 <div>
                   <Label className="text-gray-300">Account Milestones</Label>
                   <p className="text-xs text-gray-500">Profit targets, passing challenges, account upgrades</p>
@@ -158,7 +158,7 @@ export default function NotificationSettings() {
 
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <Shield className="h-4 w-4 text-red-400" />
+                <Shield className="h-4 w-4 text-red-500" />
                 <div>
                   <Label className="text-gray-300">Risk Warnings</Label>
                   <p className="text-xs text-gray-500">Daily loss limits, drawdown warnings, rule violations</p>

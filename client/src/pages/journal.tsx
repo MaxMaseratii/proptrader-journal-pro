@@ -223,7 +223,7 @@ const Journal = () => {
 
               <div className="space-y-2">
                 <Label htmlFor="whatWentRight" className="flex items-center gap-2 text-white">
-                  <TrendingUp className="h-4 w-4 text-green-400" />
+                  <TrendingUp className="h-4 w-4 text-green-500" />
                   What Went Right
                 </Label>
                 <Textarea
@@ -238,7 +238,7 @@ const Journal = () => {
 
               <div className="space-y-2">
                 <Label htmlFor="whatWentWrong" className="flex items-center gap-2 text-white">
-                  <TrendingDown className="h-4 w-4 text-red-400" />
+                  <TrendingDown className="h-4 w-4 text-red-500" />
                   What Went Wrong
                 </Label>
                 <Textarea

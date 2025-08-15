@@ -184,7 +184,7 @@ export default function MentalFitness() {
           <CardContent>
             <div className="space-y-4">
               <div className="p-4 bg-green-50 dark:bg-green-900/20 rounded-lg">
-                <h4 className="font-medium text-green-800 dark:text-green-400 mb-2">Strengths to Leverage</h4>
+                <h4 className="font-medium text-green-800 dark:text-green-500 mb-2">Strengths to Leverage</h4>
                 <ul className="text-sm text-green-700 dark:text-green-300 space-y-1">
                   <li>• High focus level - perfect for detailed chart analysis</li>
                   <li>• Strong discipline - ideal for following your trading plan</li>

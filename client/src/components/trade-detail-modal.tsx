@@ -184,7 +184,7 @@ const TradeDetailModal = ({ trade, isOpen, onClose }: TradeDetailModalProps) => 
               </div>
             </div>
             <div className="text-right">
-              <div className={`text-2xl font-black ${trade.pnl >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+              <div className={`text-2xl font-black ${trade.pnl >= 0 ? 'text-green-500' : 'text-red-500'}`}>
                 {trade.pnl >= 0 ? '+' : ''}${Math.abs(trade.pnl)}
               </div>
               <Badge className={`${trade.pnl >= 0 ? 'bg-green-500/20 text-green-300 border-green-500/30' : 'bg-red-500/20 text-red-300 border-red-500/30'}`}>
@@ -220,7 +220,7 @@ const TradeDetailModal = ({ trade, isOpen, onClose }: TradeDetailModalProps) => 
             
             <div className="bg-gradient-to-br from-red-500/10 to-red-600/10 border border-red-500/20 rounded-xl p-4">
               <div className="flex items-center gap-2 mb-2">
-                <X className="w-4 h-4 text-red-400" />
+                <X className="w-4 h-4 text-red-500" />
                 <span className="text-red-300 text-sm font-medium">Stop Loss</span>
               </div>
               <div className="text-xl font-bold text-white">${trade.initialStopLoss?.toFixed(2) || 'N/A'}</div>
@@ -229,7 +229,7 @@ const TradeDetailModal = ({ trade, isOpen, onClose }: TradeDetailModalProps) => 
 
             <div className="bg-gradient-to-br from-green-500/10 to-emerald-500/10 border border-green-500/20 rounded-xl p-4">
               <div className="flex items-center gap-2 mb-2">
-                <Target className="w-4 h-4 text-green-400" />
+                <Target className="w-4 h-4 text-green-500" />
                 <span className="text-green-300 text-sm font-medium">Take Profit</span>
               </div>
               <div className="text-xl font-bold text-white">${trade.initialTakeProfit?.toFixed(2) || 'N/A'}</div>
@@ -401,7 +401,7 @@ const TradeDetailModal = ({ trade, isOpen, onClose }: TradeDetailModalProps) => 
                     <div className="grid grid-cols-4 gap-4 text-sm text-white py-2 hover:bg-gray-700/20 rounded">
                       <span className="font-mono">{formatTime(trade.fillTime)}</span>
                       <span className="font-mono">${trade.entryPrice?.toFixed(2)}</span>
-                      <span className={`font-mono font-semibold ${trade.side === 'sell' ? 'text-red-400' : 'text-green-400'}`}>
+                      <span className={`font-mono font-semibold ${trade.side === 'sell' ? 'text-red-500' : 'text-green-500'}`}>
                         {trade.side === 'sell' ? '-' : '+'}{trade.quantity}
                       </span>
                       <span className="font-mono">$0</span>
@@ -412,10 +412,10 @@ const TradeDetailModal = ({ trade, isOpen, onClose }: TradeDetailModalProps) => 
                       <div className="grid grid-cols-4 gap-4 text-sm text-white py-2 hover:bg-gray-700/20 rounded">
                         <span className="font-mono">{formatTime(trade.exitTime)}</span>
                         <span className="font-mono">${trade.exitPrice.toFixed(2)}</span>
-                        <span className={`font-mono font-semibold ${trade.side === 'sell' ? 'text-green-400' : 'text-red-400'}`}>
+                        <span className={`font-mono font-semibold ${trade.side === 'sell' ? 'text-green-500' : 'text-red-500'}`}>
                           {trade.side === 'sell' ? '+' : '-'}{trade.quantity}
                         </span>
-                        <span className={`font-mono font-semibold ${trade.pnl >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                        <span className={`font-mono font-semibold ${trade.pnl >= 0 ? 'text-green-500' : 'text-red-500'}`}>
                           {trade.pnl >= 0 ? '+' : ''}${trade.pnl}
                         </span>
                       </div>

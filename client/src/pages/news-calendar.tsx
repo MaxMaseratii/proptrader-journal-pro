@@ -33,7 +33,7 @@ export default function NewsCalendar() {
               <Globe className="h-3 w-3 mr-1" />
               Prop Trader Focused
             </Badge>
-            <Badge className="bg-red-100 text-red-700 dark:bg-red-900/20 dark:text-red-400">
+            <Badge className="bg-red-100 text-red-700 dark:bg-red-900/20 dark:text-red-500">
               <AlertTriangle className="h-3 w-3 mr-1" />
               High Impact Today
             </Badge>
@@ -54,7 +54,7 @@ export default function NewsCalendar() {
               <div className="border-l-4 border-l-red-500 pl-4 py-3 bg-red-50 dark:bg-red-900/20 rounded-r-lg">
                 <div className="flex justify-between items-start mb-2">
                   <div>
-                    <h3 className="font-medium text-red-800 dark:text-red-400">US Non-Farm Payrolls</h3>
+                    <h3 className="font-medium text-red-800 dark:text-red-500">US Non-Farm Payrolls</h3>
                     <p className="text-sm text-red-600 dark:text-red-300">Expected: 185K | Previous: 206K</p>
                   </div>
                   <div className="text-right">
@@ -150,7 +150,7 @@ export default function NewsCalendar() {
             <CardContent>
               <div className="space-y-4">
                 <div className="p-3 bg-red-50 dark:bg-red-900/20 rounded-lg">
-                  <h4 className="font-medium text-red-800 dark:text-red-400 mb-1">High Impact Events</h4>
+                  <h4 className="font-medium text-red-800 dark:text-red-500 mb-1">High Impact Events</h4>
                   <p className="text-sm text-red-700 dark:text-red-300">
                     Reduce position sizes to 50% of normal. Avoid trading 30 minutes before and after.
                   </p>
@@ -164,7 +164,7 @@ export default function NewsCalendar() {
                 </div>
                 
                 <div className="p-3 bg-green-50 dark:bg-green-900/20 rounded-lg">
-                  <h4 className="font-medium text-green-800 dark:text-green-400 mb-1">Trading Opportunities</h4>
+                  <h4 className="font-medium text-green-800 dark:text-green-500 mb-1">Trading Opportunities</h4>
                   <p className="text-sm text-green-700 dark:text-green-300">
                     Breakout strategies work well during high volatility periods.
                   </p>

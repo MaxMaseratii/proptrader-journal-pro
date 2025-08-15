@@ -84,10 +84,10 @@ export default function RiskManagement() {
   };
 
   const getRiskLevel = (percentage: number) => {
-    if (percentage >= 90) return { level: "Critical", color: "text-red-400", bgColor: "bg-red-500" };
+    if (percentage >= 90) return { level: "Critical", color: "text-red-500", bgColor: "bg-red-500" };
     if (percentage >= 70) return { level: "High", color: "text-orange-400", bgColor: "bg-orange-500" };
     if (percentage >= 50) return { level: "Medium", color: "text-yellow-400", bgColor: "bg-yellow-500" };
-    return { level: "Low", color: "text-green-400", bgColor: "bg-green-500" };
+    return { level: "Low", color: "text-green-500", bgColor: "bg-green-500" };
   };
 
   const metrics = calculateRiskMetrics();

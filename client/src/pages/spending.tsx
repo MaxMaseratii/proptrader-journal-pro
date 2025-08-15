@@ -357,7 +357,7 @@ const Spending = () => {
             <DollarSign className="h-4 w-4 text-yellow-400" />
           </CardHeader>
           <CardContent>
-            <div className={`text-2xl font-bold widget-value ${totalAccountCosts > 0 ? 'text-red-400' : 'text-green-400'}`}>
+            <div className={`text-2xl font-bold widget-value ${totalAccountCosts > 0 ? 'text-red-500' : 'text-green-500'}`}>
               {formatCurrency(totalAccountCosts) || '$0.00'}
             </div>
             <p className="text-xs widget-text opacity-70">Challenge & setup costs</p>
@@ -386,7 +386,7 @@ const Spending = () => {
               <TrendingUp className="h-4 w-4 text-orange-400" />
             </CardHeader>
             <CardContent>
-              <div className={`text-2xl font-bold widget-value ${totalActivationCosts > 0 ? 'text-red-400' : 'text-green-400'}`}>
+              <div className={`text-2xl font-bold widget-value ${totalActivationCosts > 0 ? 'text-red-500' : 'text-green-500'}`}>
                 {formatCurrency(totalActivationCosts)}
               </div>
               <p className="text-xs widget-text opacity-70">Total activation fees</p>
@@ -397,10 +397,10 @@ const Spending = () => {
         <Card className="widget-card">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium widget-header">Reset Cost</CardTitle>
-            <RotateCcw className="h-4 w-4 text-red-400" />
+            <RotateCcw className="h-4 w-4 text-red-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-red-400 widget-value">
+            <div className="text-2xl font-bold text-red-500 widget-value">
               {formatCurrency(accounts.reduce((sum, acc) => sum + (acc.totalResetsCost || 0), 0))}
             </div>
             <p className="text-xs widget-text opacity-70">Total reset costs</p>
@@ -410,10 +410,10 @@ const Spending = () => {
         <Card className="widget-card">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium widget-header">Payout Total</CardTitle>
-            <DollarSign className="h-4 w-4 text-green-400" />
+            <DollarSign className="h-4 w-4 text-green-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-green-400 widget-value">
+            <div className="text-2xl font-bold text-green-500 widget-value">
               {formatCurrency(0)}
             </div>
             <p className="text-xs widget-text opacity-70">Total payouts received</p>
@@ -428,7 +428,7 @@ const Spending = () => {
           <CardContent>
             {totalPayoutsReceived > 0 ? (
               <>
-                <div className={`text-2xl font-bold widget-value ${actualProfitability >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                <div className={`text-2xl font-bold widget-value ${actualProfitability >= 0 ? 'text-green-500' : 'text-red-500'}`}>
                   {formatCurrency(actualProfitability)}
                 </div>
                 <p className="text-xs widget-text opacity-70">Payouts received - total costs</p>
@@ -697,7 +697,7 @@ const Spending = () => {
                     <CreditCard className="h-4 w-4 text-yellow-400" />
                   </CardHeader>
                   <CardContent>
-                    <div className={`text-2xl font-bold ${totalSpending > 0 ? 'text-red-400' : 'text-green-400'}`}>{formatCurrency(totalSpending)}</div>
+                    <div className={`text-2xl font-bold ${totalSpending > 0 ? 'text-red-500' : 'text-green-500'}`}>{formatCurrency(totalSpending)}</div>
                     <p className="text-xs text-gray-400">of {formatCurrency(currentBudget)} budget</p>
                     <Progress value={Math.min(budgetUsagePercentage, 100)} className="mt-2" />
                   </CardContent>
@@ -709,7 +709,7 @@ const Spending = () => {
                     <TrendingUp className="h-4 w-4 text-blue-500" />
                   </CardHeader>
                   <CardContent>
-                    <div className={`text-2xl font-bold ${totalPropTradingCosts > 0 ? 'text-red-400' : 'text-green-400'}`}>{formatCurrency(totalPropTradingCosts)}</div>
+                    <div className={`text-2xl font-bold ${totalPropTradingCosts > 0 ? 'text-red-500' : 'text-green-500'}`}>{formatCurrency(totalPropTradingCosts)}</div>
                     <p className="text-xs text-gray-400">of {formatCurrency(tradingBudget)} budget</p>
                     <Progress value={Math.min((totalPropTradingCosts / tradingBudget) * 100, 100)} className="mt-2" />
                   </CardContent>
@@ -1051,8 +1051,8 @@ const Spending = () => {
                 <label htmlFor="receipt" className="cursor-pointer">
                   {newExpense.receiptImage ? (
                     <div className="space-y-2">
-                      <FileImage className="h-8 w-8 text-green-400 mx-auto" />
-                      <p className="text-green-400 font-medium">{newExpense.receiptImage.name}</p>
+                      <FileImage className="h-8 w-8 text-green-500 mx-auto" />
+                      <p className="text-green-500 font-medium">{newExpense.receiptImage.name}</p>
                       <p className="text-sm text-gray-400">Click to change receipt</p>
                     </div>
                   ) : (
@@ -1070,7 +1070,7 @@ const Spending = () => {
                   variant="outline"
                   size="sm"
                   onClick={() => setNewExpense({...newExpense, receiptImage: null})}
-                  className="w-full border-red-500/50 text-red-400 hover:bg-red-500/10"
+                  className="w-full border-red-500/50 text-red-500 hover:bg-red-500/10"
                 >
                   <X className="h-4 w-4 mr-2" />
                   Remove Receipt
@@ -1123,7 +1123,7 @@ const Spending = () => {
                       </div>
                     </div>
                     <div className="text-right">
-                      <div className="font-semibold text-red-400">-{formatCurrency(expense.amount)}</div>
+                      <div className="font-semibold text-red-500">-{formatCurrency(expense.amount)}</div>
                       <Badge variant="outline" className={`text-xs ${expense.spendingType.includes('trading') || expense.spendingType.includes('account') ? 'border-blue-500 text-blue-500' : 'border-orange-500 text-orange-500'}`}>
                         {expense.spendingType.includes('trading') || expense.spendingType.includes('account') ? 'trading' : 'personal'}
                       </Badge>

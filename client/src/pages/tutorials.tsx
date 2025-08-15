@@ -143,7 +143,7 @@ export default function Tutorials() {
         <div className="text-center mb-16">
           <div className="flex justify-center mb-4">
             <div className="p-3 bg-red-100 dark:bg-red-900/20 rounded-full">
-              <Play className="h-8 w-8 text-red-600 dark:text-red-400" />
+              <Play className="h-8 w-8 text-red-600 dark:text-red-500" />
             </div>
           </div>
           <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">

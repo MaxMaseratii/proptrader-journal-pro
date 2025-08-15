@@ -783,7 +783,7 @@ export default function RobustTradeEntry() {
                   
                   {detectedFormat && (
                     <Alert className="bg-green-900/20 border-green-500/30">
-                      <CheckCircle className="h-4 w-4 text-green-400" />
+                      <CheckCircle className="h-4 w-4 text-green-500" />
                       <AlertDescription className="text-green-300">
                         Detected format: {formatTemplates[detectedFormat as keyof typeof formatTemplates]?.name}
                       </AlertDescription>
@@ -845,11 +845,11 @@ export default function RobustTradeEntry() {
                       <div className="text-gray-400 text-sm">Total Rows</div>
                     </div>
                     <div className="text-center">
-                      <div className="text-2xl font-bold text-green-400">{validationResults.validRows}</div>
+                      <div className="text-2xl font-bold text-green-500">{validationResults.validRows}</div>
                       <div className="text-gray-400 text-sm">Valid Rows</div>
                     </div>
                     <div className="text-center">
-                      <div className="text-2xl font-bold text-red-400">{validationResults.invalidRows}</div>
+                      <div className="text-2xl font-bold text-red-500">{validationResults.invalidRows}</div>
                       <div className="text-gray-400 text-sm">Invalid Rows</div>
                     </div>
                     <div className="text-center">
@@ -860,7 +860,7 @@ export default function RobustTradeEntry() {
                   
                   {validationResults.errors.length > 0 && (
                     <Alert className="bg-red-900/20 border-red-500/30 mb-4">
-                      <AlertCircle className="h-4 w-4 text-red-400" />
+                      <AlertCircle className="h-4 w-4 text-red-500" />
                       <AlertDescription className="text-red-300">
                         {validationResults.errors.length} errors found. Review and fix before importing.
                       </AlertDescription>
@@ -907,10 +907,10 @@ export default function RobustTradeEntry() {
                             <td className="p-2 text-white">{trade.entryPrice?.toFixed(2)}</td>
                             <td className="p-2 text-white">{trade.exitPrice?.toFixed(2)}</td>
                             <td className="p-2 text-blue-400">{trade.initialStopLoss?.toFixed(2) || 'N/A'}</td>
-                            <td className="p-2 text-red-400">{trade.finalStopLoss?.toFixed(2) || 'N/A'}</td>
-                            <td className="p-2 text-green-400">{trade.initialTakeProfit?.toFixed(2) || 'N/A'}</td>
+                            <td className="p-2 text-red-500">{trade.finalStopLoss?.toFixed(2) || 'N/A'}</td>
+                            <td className="p-2 text-green-500">{trade.initialTakeProfit?.toFixed(2) || 'N/A'}</td>
                             <td className="p-2 text-emerald-400">{trade.finalTakeProfit?.toFixed(2) || 'N/A'}</td>
-                            <td className={`p-2 ${trade.pnl >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                            <td className={`p-2 ${trade.pnl >= 0 ? 'text-green-500' : 'text-red-500'}`}>
                               ${trade.pnl?.toFixed(2)}
                             </td>
                           </tr>

@@ -21,11 +21,11 @@ interface NotificationDropdownProps {
 }
 
 const getNotificationIcon = (type: string, priority: string) => {
-  if (priority === 'urgent') return <AlertTriangle className="h-4 w-4 text-red-400" />;
+  if (priority === 'urgent') return <AlertTriangle className="h-4 w-4 text-red-500" />;
   
   switch (type) {
     case 'account_milestone':
-      return <CheckCircle className="h-4 w-4 text-green-400" />;
+      return <CheckCircle className="h-4 w-4 text-green-500" />;
     case 'payout_ready':
       return <Star className="h-4 w-4 text-yellow-400" />;
     case 'risk_warning':

@@ -219,7 +219,7 @@ export const TradingViewChart: React.FC<TradingViewChartProps> = ({
               Trades: <span className="text-white font-medium">{filteredTrades.length}</span>
             </div>
             <div className="text-gray-400">
-              Win Rate: <span className={`font-medium ${parseFloat(winRate) >= 50 ? 'text-green-400' : 'text-red-400'}`}>
+              Win Rate: <span className={`font-medium ${parseFloat(winRate) >= 50 ? 'text-green-500' : 'text-red-500'}`}>
                 {winRate}%
               </span>
             </div>

@@ -277,7 +277,7 @@ export default function StrategyManagement() {
   };
 
   const getPerformanceColor = (value: number) => {
-    return value >= 0 ? 'text-green-400' : 'text-red-400';
+    return value >= 0 ? 'text-green-500' : 'text-red-500';
   };
 
   if (isLoading) {
@@ -373,7 +373,7 @@ export default function StrategyManagement() {
                                 variant="outline"
                                 size="sm"
                                 onClick={() => removeRule(index)}
-                                className="border-red-600 text-red-400 hover:bg-red-600/20"
+                                className="border-red-600 text-red-500 hover:bg-red-600/20"
                               >
                                 ×
                               </Button>
@@ -627,7 +627,7 @@ export default function StrategyManagement() {
                               deleteStrategyMutation.mutate(strategy.id);
                             }
                           }}
-                          className="text-gray-400 hover:text-red-400 h-8 w-8 p-0"
+                          className="text-gray-400 hover:text-red-500 h-8 w-8 p-0"
                         >
                           <Trash2 className="h-3 w-3" />
                         </Button>

@@ -180,7 +180,7 @@ export default function Reports() {
                       {formatCurrency(quickStats.totalPnL)}
                     </p>
                   </div>
-                  <DollarSign className="h-8 w-8 text-green-400" />
+                  <DollarSign className="h-8 w-8 text-green-500" />
                 </div>
               </CardContent>
             </Card>
@@ -293,7 +293,7 @@ export default function Reports() {
                             </div>
                             <div className="flex justify-between">
                               <span className="widget-text opacity-70">Balance:</span>
-                              <span className={account.currentBalance >= account.startingBalance ? 'text-green-400' : 'text-red-400'}>
+                              <span className={account.currentBalance >= account.startingBalance ? 'text-green-500' : 'text-red-500'}>
                                 {formatCurrency(account.currentBalance)}
                               </span>
                             </div>
@@ -323,7 +323,7 @@ export default function Reports() {
                               </div>
                             </div>
                             <div className="text-right">
-                              <p className={`font-medium ${trade.pnl >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                              <p className={`font-medium ${trade.pnl >= 0 ? 'text-green-500' : 'text-red-500'}`}>
                                 {formatCurrency(trade.pnl)}
                               </p>
                               <p className="text-sm widget-text opacity-70">{formatDate(trade.date)}</p>
@@ -360,7 +360,7 @@ export default function Reports() {
               <Card className="bg-gray-800 border-gray-700 hover:border-green-600 transition-colors cursor-pointer">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
-                    <Target className="h-5 w-5 text-green-400" />
+                    <Target className="h-5 w-5 text-green-500" />
                     Risk Analysis
                   </CardTitle>
                 </CardHeader>

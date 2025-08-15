@@ -240,10 +240,10 @@ const DailyPlanPage = () => {
 
   const getProgressColor = (actual: number, target: number) => {
     const percentage = target > 0 ? (actual / target) * 100 : 0;
-    if (percentage >= 100) return "text-green-400";
+    if (percentage >= 100) return "text-green-500";
     if (percentage >= 80) return "text-yellow-400";
     if (percentage >= 60) return "text-orange-400";
-    return "text-red-400";
+    return "text-red-500";
   };
 
   const startTradingSession = () => {
@@ -635,11 +635,11 @@ const DailyPlanPage = () => {
                 <div className="bg-gray-800/50 rounded-lg p-4 border border-gray-600">
                   <div className="flex items-center justify-between mb-3">
                     <span className="text-gray-300 font-medium">Mental Fitness Score</span>
-                    <span className="text-2xl font-bold text-green-400">29/40</span>
+                    <span className="text-2xl font-bold text-green-500">29/40</span>
                   </div>
                   <Progress value={72.5} className="h-3 mb-2" />
                   <div className="text-sm text-gray-400">
-                    <span className="text-green-400 font-medium">Good readiness</span> - You're mentally prepared for trading today. Remember to stay disciplined.
+                    <span className="text-green-500 font-medium">Good readiness</span> - You're mentally prepared for trading today. Remember to stay disciplined.
                   </div>
                 </div>
                 
@@ -711,12 +711,12 @@ const DailyPlanPage = () => {
                 </div>
                 <div className="text-center p-4 widget-card">
                   <div className="text-sm text-gray-400 mb-2">Risk Amount</div>
-                  <div className="text-2xl font-bold text-red-400">${currentPlan.riskAmount}</div>
+                  <div className="text-2xl font-bold text-red-500">${currentPlan.riskAmount}</div>
                   <div className="text-xs text-gray-500">Used: ${actualResults.riskUsed.toFixed(2)}</div>
                 </div>
                 <div className="text-center p-4 widget-card">
                   <div className="text-sm text-gray-400 mb-2">Win Rate</div>
-                  <div className="text-2xl font-bold text-green-400">{calculateWinRate()}%</div>
+                  <div className="text-2xl font-bold text-green-500">{calculateWinRate()}%</div>
                   <div className="text-xs text-gray-500">{actualResults.wins}W / {actualResults.losses}L</div>
                 </div>
               </div>
@@ -752,7 +752,7 @@ const DailyPlanPage = () => {
                           <div className="w-1 h-1 bg-gray-400 rounded-full"></div>
                           <span className="text-gray-300 text-sm">{plan.strategy?.name}</span>
                         </div>
-                        <div className={`px-2 py-1 rounded-full text-xs font-bold ${plan.performance.totalPnL >= 0 ? 'bg-green-900/30 text-green-400 border border-green-400/30' : 'bg-red-900/30 text-red-400 border border-red-400/30'}`}>
+                        <div className={`px-2 py-1 rounded-full text-xs font-bold ${plan.performance.totalPnL >= 0 ? 'bg-green-900/30 text-green-500 border border-green-400/30' : 'bg-red-900/30 text-red-500 border border-red-400/30'}`}>
                           ${plan.performance.totalPnL.toFixed(2)}
                         </div>
                       </div>
@@ -830,7 +830,7 @@ const DailyPlanPage = () => {
 
                         {/* Compact Metrics & Management Buttons */}
                         <div className="flex items-center gap-2">
-                          <div className="text-xs text-green-400 font-medium">
+                          <div className="text-xs text-green-500 font-medium">
                             {strategy.expectedWinRate}% WR
                           </div>
                           <div className="text-xs text-blue-400 font-medium">
@@ -864,7 +864,7 @@ const DailyPlanPage = () => {
                             <Button
                               size="sm"
                               variant="ghost"
-                              className="h-7 px-1 text-gray-400 hover:text-red-400 hover:bg-gray-700"
+                              className="h-7 px-1 text-gray-400 hover:text-red-500 hover:bg-gray-700"
                               onClick={(e) => {
                                 e.stopPropagation();
                                 if (window.confirm(`Are you sure you want to delete the strategy "${strategy.name}"? This cannot be undone.`)) {
@@ -919,7 +919,7 @@ const DailyPlanPage = () => {
                       <div className="text-xs text-gray-400">Target Profit</div>
                     </div>
                     <div className="text-center p-3 bg-gray-800/50 rounded-lg">
-                      <div className={`text-lg font-bold ${selectedPlanForStats.performance.totalPnL >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                      <div className={`text-lg font-bold ${selectedPlanForStats.performance.totalPnL >= 0 ? 'text-green-500' : 'text-red-500'}`}>
                         ${selectedPlanForStats.performance.totalPnL.toFixed(2)}
                       </div>
                       <div className="text-xs text-gray-400">Actual P&L</div>
@@ -942,11 +942,11 @@ const DailyPlanPage = () => {
                     <div className="text-sm text-white mb-2">Performance Breakdown</div>
                     <div className="grid grid-cols-3 gap-2 text-xs">
                       <div className="text-center p-2 bg-green-900/20 rounded">
-                        <div className="text-green-400 font-bold">{selectedPlanForStats.performance.wins}</div>
+                        <div className="text-green-500 font-bold">{selectedPlanForStats.performance.wins}</div>
                         <div className="text-gray-400">Wins</div>
                       </div>
                       <div className="text-center p-2 bg-red-900/20 rounded">
-                        <div className="text-red-400 font-bold">{selectedPlanForStats.performance.losses}</div>
+                        <div className="text-red-500 font-bold">{selectedPlanForStats.performance.losses}</div>
                         <div className="text-gray-400">Losses</div>
                       </div>
                       <div className="text-center p-2 bg-blue-900/20 rounded">
@@ -962,7 +962,7 @@ const DailyPlanPage = () => {
                       <div className="bg-gray-800/50 rounded-lg p-3">
                         <div className="text-yellow-400 font-medium">{selectedPlanForStats.strategy.name}</div>
                         <div className="text-xs text-gray-400 mt-1">{selectedPlanForStats.strategy.description}</div>
-                        <div className="text-xs text-green-400 mt-2">
+                        <div className="text-xs text-green-500 mt-2">
                           Expected WR: {selectedPlanForStats.strategy.expectedWinRate}% • RR: 1:{selectedPlanForStats.strategy.riskRewardRatio}
                         </div>
                       </div>
@@ -1194,7 +1194,7 @@ const DailyPlanPage = () => {
               {/* Row 1 */}
               <div>
                 <Label className="text-white text-sm flex items-center gap-2 mb-2">
-                  <TrendingDown className="h-4 w-4 text-red-400" />
+                  <TrendingDown className="h-4 w-4 text-red-500" />
                   What went wrong today?
                 </Label>
                 <Textarea
@@ -1208,7 +1208,7 @@ const DailyPlanPage = () => {
               
               <div>
                 <Label className="text-white text-sm flex items-center gap-2 mb-2">
-                  <TrendingUp className="h-4 w-4 text-green-400" />
+                  <TrendingUp className="h-4 w-4 text-green-500" />
                   What went right today?
                 </Label>
                 <Textarea
@@ -1295,7 +1295,7 @@ const DailyPlanPage = () => {
               </DialogTitle>
               <div className="flex items-center gap-2">
                 <div className="w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
-                <span className="text-green-400 text-sm font-medium">Active Strategy</span>
+                <span className="text-green-500 text-sm font-medium">Active Strategy</span>
               </div>
             </div>
           </DialogHeader>
@@ -1306,8 +1306,8 @@ const DailyPlanPage = () => {
               <div className="grid grid-cols-3 gap-4">
                 <div className="bg-gradient-to-br from-green-900/30 to-green-800/20 p-5 rounded-xl border border-green-400/30 hover:border-green-400/50 transition-all">
                   <div className="flex items-center justify-between mb-2">
-                    <div className="text-green-400 font-bold text-2xl">{selectedStrategyForDetails.expectedWinRate}%</div>
-                    <TrendingUp className="w-6 h-6 text-green-400" />
+                    <div className="text-green-500 font-bold text-2xl">{selectedStrategyForDetails.expectedWinRate}%</div>
+                    <TrendingUp className="w-6 h-6 text-green-500" />
                   </div>
                   <div className="text-gray-400 text-sm font-medium">Expected Win Rate</div>
                   <div className="text-xs text-green-300 mt-1">Target Performance</div>
@@ -1406,14 +1406,14 @@ const DailyPlanPage = () => {
                       {selectedStrategyForDetails.lastUsed && (
                         <div className="flex justify-between">
                           <span className="text-gray-400">Last Used:</span>
-                          <span className="text-green-400">
+                          <span className="text-green-500">
                             {new Date(selectedStrategyForDetails.lastUsed).toLocaleDateString()}
                           </span>
                         </div>
                       )}
                       <div className="flex justify-between">
                         <span className="text-gray-400">Status:</span>
-                        <span className="text-green-400 font-medium">Active</span>
+                        <span className="text-green-500 font-medium">Active</span>
                       </div>
                     </div>
                   </div>
@@ -1428,7 +1428,7 @@ const DailyPlanPage = () => {
                 </div>
                 <div className="grid grid-cols-4 gap-4">
                   <div className="text-center">
-                    <div className="text-2xl font-bold text-green-400">
+                    <div className="text-2xl font-bold text-green-500">
                       ${(selectedStrategyForDetails.riskRewardRatio * 100).toFixed(0)}
                     </div>
                     <div className="text-xs text-gray-400">Expected Profit ($100 risk)</div>

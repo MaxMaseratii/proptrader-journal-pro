@@ -198,7 +198,7 @@ export default function AchievementSystem() {
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-gray-300">Stop Loss Respect Streak</span>
-                  <span className="text-green-400 font-semibold">{userStats.stopLossRespectStreak} trades</span>
+                  <span className="text-green-500 font-semibold">{userStats.stopLossRespectStreak} trades</span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-gray-300">Journal Streak</span>

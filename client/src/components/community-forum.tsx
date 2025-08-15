@@ -212,7 +212,7 @@ export default function CommunityForum() {
   const getCategoryColor = (category: string) => {
     switch (category) {
       case 'Strategy': return 'bg-prop-gold/20 text-prop-gold border-prop-gold/30';
-      case 'Risk Management': return 'bg-red-500/20 text-red-400 border-red-500/30';
+      case 'Risk Management': return 'bg-red-500/20 text-red-500 border-red-500/30';
       case 'Psychology': return 'bg-prop-tiffany/20 text-prop-tiffany border-prop-tiffany/30';
       case 'Prop Firms': return 'bg-purple-500/20 text-purple-400 border-purple-500/30';
       case 'Tools': return 'bg-blue-500/20 text-blue-400 border-blue-500/30';
@@ -408,7 +408,7 @@ export default function CommunityForum() {
                       </Badge>
                     )}
                     {post.isHot && (
-                      <Badge className="bg-red-500/20 text-red-400 border-red-500/30">
+                      <Badge className="bg-red-500/20 text-red-500 border-red-500/30">
                         Hot
                       </Badge>
                     )}
@@ -472,7 +472,7 @@ export default function CommunityForum() {
                     variant="ghost"
                     size="sm"
                     onClick={() => handleVote(post.id, 'up')}
-                    className="h-8 w-8 p-0 hover:bg-green-500/20 hover:text-green-400"
+                    className="h-8 w-8 p-0 hover:bg-green-500/20 hover:text-green-500"
                   >
                     <ThumbsUp className="h-4 w-4" />
                   </Button>
@@ -483,7 +483,7 @@ export default function CommunityForum() {
                     variant="ghost"
                     size="sm"
                     onClick={() => handleVote(post.id, 'down')}
-                    className="h-8 w-8 p-0 hover:bg-red-500/20 hover:text-red-400"
+                    className="h-8 w-8 p-0 hover:bg-red-500/20 hover:text-red-500"
                   >
                     <ThumbsDown className="h-4 w-4" />
                   </Button>

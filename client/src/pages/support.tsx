@@ -236,7 +236,7 @@ export default function Support() {
         {/* Emergency Contact */}
         <Card className="bg-gradient-to-r from-red-900/20 to-orange-900/20 border-red-500/30">
           <CardContent className="pt-6 text-center">
-            <AlertCircle className="h-12 w-12 text-red-400 mx-auto mb-4" />
+            <AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
             <h3 className="text-lg font-semibold text-white mb-2">
               Account Emergency?
             </h3>

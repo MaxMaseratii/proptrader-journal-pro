@@ -194,15 +194,15 @@ export default function AdvancedDashboard() {
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
                     <span className="text-gray-300">Real-time market data</span>
-                    <span className="text-green-400 text-sm">Connected</span>
+                    <span className="text-green-500 text-sm">Connected</span>
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-gray-300">News feed</span>
-                    <span className="text-green-400 text-sm">Active</span>
+                    <span className="text-green-500 text-sm">Active</span>
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-gray-300">Economic calendar</span>
-                    <span className="text-green-400 text-sm">Synced</span>
+                    <span className="text-green-500 text-sm">Synced</span>
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-gray-300">Broker integration</span>

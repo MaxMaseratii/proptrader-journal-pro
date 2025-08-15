@@ -117,7 +117,7 @@ export default function Profile() {
                     <div className="flex items-center gap-3 mb-2">
                       <h2 className="text-2xl font-bold">{profile.name}</h2>
                       <Badge className="bg-purple-600 text-white">Pro Trader</Badge>
-                      <Badge variant="outline" className="border-green-500 text-green-400">
+                      <Badge variant="outline" className="border-green-500 text-green-500">
                         Verified
                       </Badge>
                     </div>

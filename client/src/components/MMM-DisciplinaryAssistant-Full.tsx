@@ -744,7 +744,7 @@ export default function MMMDisciplinaryAssistant({ trades, accounts, accountIdId
     if (score >= 80 && totalPnL > 0) return {
       level: "ELITE TRADER",
       description: `Exceptional discipline with ${profitableDays.toFixed(1)}% profitable days. Your CSV data shows mastery across all areas.`,
-      color: "text-green-400",
+      color: "text-green-500",
       bgColor: "bg-green-500/10",
       borderColor: "border-green-400/30"
     };
@@ -758,7 +758,7 @@ export default function MMMDisciplinaryAssistant({ trades, accounts, accountIdId
     return {
       level: "NOVICE TRADER",
       description: `${profitableDays.toFixed(1)}% profitable days. Your trading data shows you need fundamental discipline work before risking more capital.`,
-      color: "text-red-400",
+      color: "text-red-500",
       bgColor: "bg-red-500/10",
       borderColor: "border-red-400/30"
     };
@@ -1033,9 +1033,9 @@ export default function MMMDisciplinaryAssistant({ trades, accounts, accountIdId
   };
 
   const getScoreColor = (score: number) => {
-    if (score >= 80) return "text-green-400";
+    if (score >= 80) return "text-green-500";
     if (score >= 60) return "text-yellow-400";
-    return "text-red-400";
+    return "text-red-500";
   };
 
   const getScoreLevel = (score: number) => {
@@ -1191,14 +1191,14 @@ export default function MMMDisciplinaryAssistant({ trades, accounts, accountIdId
             {/* Red Flags Assessment */}
             <Card className="bg-prop-card border-red-400/30">
               <CardHeader>
-                <CardTitle className="text-red-400 flex items-center">
+                <CardTitle className="text-red-500 flex items-center">
                   <AlertTriangle className="h-5 w-5 mr-2" />
                   Red Flags Assessment
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="text-center space-y-4">
-                  <div className="text-6xl font-bold text-red-400">
+                  <div className="text-6xl font-bold text-red-500">
                     {getRedFlagsCount(disciplineData, tradingPatterns)}
                   </div>
                   <div className="text-xl text-gray-300">
@@ -1218,13 +1218,13 @@ export default function MMMDisciplinaryAssistant({ trades, accounts, accountIdId
               <Card className="bg-black border-gray-700">
                 <CardHeader className="pb-3">
                   <CardTitle className="text-sm text-white flex items-center gap-2">
-                    <TrendingDown className="h-5 w-5 text-red-400" />
+                    <TrendingDown className="h-5 w-5 text-red-500" />
                     Impact Analysis
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="text-center p-6 bg-red-900/30 rounded-lg border border-red-500/20">
-                    <div className="text-3xl font-bold text-red-400">
+                    <div className="text-3xl font-bold text-red-500">
                       ${disciplineData.excessLosses.toFixed(0)}
                     </div>
                     <div className="text-sm text-gray-400 mt-1">
@@ -1237,7 +1237,7 @@ export default function MMMDisciplinaryAssistant({ trades, accounts, accountIdId
               <Card className="bg-black border-gray-700">
                 <CardHeader className="pb-3">
                   <CardTitle className="text-sm text-white flex items-center gap-2">
-                    <AlertTriangle className="h-5 w-5 text-red-400" />
+                    <AlertTriangle className="h-5 w-5 text-red-500" />
                     Warning Indicators
                   </CardTitle>
                 </CardHeader>
@@ -1256,7 +1256,7 @@ export default function MMMDisciplinaryAssistant({ trades, accounts, accountIdId
             <Card className="bg-yellow-400/20 border-yellow-400 shadow-lg shadow-yellow-400/20">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-white">
-                  <AlertTriangle className="h-6 w-6 text-red-400" />
+                  <AlertTriangle className="h-6 w-6 text-red-500" />
                   Critical Red Flags Assessment
                 </CardTitle>
               </CardHeader>
@@ -1271,7 +1271,7 @@ export default function MMMDisciplinaryAssistant({ trades, accounts, accountIdId
                       }`}>
                         <div className="flex items-start gap-3">
                           <AlertTriangle className={`w-5 h-5 mt-1 flex-shrink-0 ${
-                            flag.severity === 'critical' ? 'text-red-400' : 'text-orange-400'
+                            flag.severity === 'critical' ? 'text-red-500' : 'text-orange-400'
                           }`} />
                           <div className="flex-1">
                             <h4 className={`font-semibold mb-2 ${
@@ -1359,7 +1359,7 @@ export default function MMMDisciplinaryAssistant({ trades, accounts, accountIdId
                             </ul>
                           </div>
                           <div>
-                            <h5 className="text-green-400 font-medium mb-2">Intervention Strategy:</h5>
+                            <h5 className="text-green-500 font-medium mb-2">Intervention Strategy:</h5>
                             <p className="text-gray-200 text-sm bg-green-900/20 p-3 rounded border border-green-700">
                               {assessment.intervention}
                             </p>
@@ -1430,25 +1430,25 @@ export default function MMMDisciplinaryAssistant({ trades, accounts, accountIdId
                     <div className="space-y-3">
                       <div className="flex justify-between">
                         <span className="text-sm text-gray-400">Revenge Trading</span>
-                        <span className={`font-bold ${tradingPatterns.revengeTrading > 10 ? 'text-red-400' : 'text-green-400'}`}>
+                        <span className={`font-bold ${tradingPatterns.revengeTrading > 10 ? 'text-red-500' : 'text-green-500'}`}>
                           {tradingPatterns.revengeTrading.toFixed(1)}%
                         </span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-sm text-gray-400">FOMO Trades</span>
-                        <span className={`font-bold ${tradingPatterns.fomoTrades > 15 ? 'text-red-400' : 'text-green-400'}`}>
+                        <span className={`font-bold ${tradingPatterns.fomoTrades > 15 ? 'text-red-500' : 'text-green-500'}`}>
                           {tradingPatterns.fomoTrades.toFixed(1)}%
                         </span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-sm text-gray-400">Stop Loss Violations</span>
-                        <span className={`font-bold ${tradingPatterns.stopLossViolations > 20 ? 'text-red-400' : 'text-green-400'}`}>
+                        <span className={`font-bold ${tradingPatterns.stopLossViolations > 20 ? 'text-red-500' : 'text-green-500'}`}>
                           {tradingPatterns.stopLossViolations.toFixed(1)}%
                         </span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-sm text-gray-400">Overtrading Frequency</span>
-                        <span className={`font-bold ${tradingPatterns.overTradingFrequency > 20 ? 'text-red-400' : 'text-green-400'}`}>
+                        <span className={`font-bold ${tradingPatterns.overTradingFrequency > 20 ? 'text-red-500' : 'text-green-500'}`}>
                           {tradingPatterns.overTradingFrequency.toFixed(1)}%
                         </span>
                       </div>
@@ -1581,7 +1581,7 @@ export default function MMMDisciplinaryAssistant({ trades, accounts, accountIdId
                       {getActionPlan(disciplineData, trades, accounts).slice(0, 3).map((plan, index) => (
                         <div key={index} className="bg-blue-900/20 border border-blue-500/30 rounded-lg p-4">
                           <div className="flex items-center justify-between mb-2">
-                            <Badge variant="outline" className={`${plan.priority === 'HIGH' ? 'text-red-400 border-red-400' : 'text-blue-400 border-blue-400'}`}>
+                            <Badge variant="outline" className={`${plan.priority === 'HIGH' ? 'text-red-500 border-red-400' : 'text-blue-400 border-blue-400'}`}>
                               {plan.priority} PRIORITY
                             </Badge>
                             <span className="text-xs text-blue-400">{plan.timeline}</span>
@@ -1601,10 +1601,10 @@ export default function MMMDisciplinaryAssistant({ trades, accounts, accountIdId
                       {getActionPlan(disciplineData, trades, accounts).slice(3, 6).map((plan, index) => (
                         <div key={index} className="bg-green-900/20 border border-green-500/30 rounded-lg p-4">
                           <div className="flex items-center justify-between mb-2">
-                            <Badge variant="outline" className="text-green-400 border-green-400">
+                            <Badge variant="outline" className="text-green-500 border-green-400">
                               MASTERY
                             </Badge>
-                            <span className="text-xs text-green-400">{plan.timeline}</span>
+                            <span className="text-xs text-green-500">{plan.timeline}</span>
                           </div>
                           <h4 className="font-bold text-green-300 mb-2">{plan.area}</h4>
                           <p className="text-sm text-gray-300 mb-2">{plan.action}</p>
@@ -1705,7 +1705,7 @@ export default function MMMDisciplinaryAssistant({ trades, accounts, accountIdId
               <Card className="bg-prop-card border-prop-gold/20">
                 <CardContent className="p-4">
                   <div className="text-center space-y-2">
-                    <div className="text-2xl font-bold text-green-400">
+                    <div className="text-2xl font-bold text-green-500">
                       +{((disciplineData.disciplineScore - 50) > 0 ? (disciplineData.disciplineScore - 50) : 0).toFixed(0)}%
                     </div>
                     <div className="text-sm text-gray-400">Improvement</div>
@@ -1748,7 +1748,7 @@ export default function MMMDisciplinaryAssistant({ trades, accounts, accountIdId
                     <div className="text-sm text-gray-400">Current Value</div>
                   </div>
                   <div className="text-center space-y-2">
-                    <div className="text-4xl font-bold text-green-400">
+                    <div className="text-4xl font-bold text-green-500">
                       {((disciplineData.emotionalControlScore - 50) > 0 ? (disciplineData.emotionalControlScore - 50) : 0).toFixed(1)}%
                     </div>
                     <div className="text-sm text-gray-400">Improvement</div>
@@ -1823,13 +1823,13 @@ export default function MMMDisciplinaryAssistant({ trades, accounts, accountIdId
                               className="w-4 h-4 text-prop-gold bg-gray-700 border-gray-600 rounded focus:ring-prop-gold"
                               readOnly
                             />
-                            <span className={`text-sm ${item.completed ? 'text-green-400 line-through' : 'text-gray-300'}`}>
+                            <span className={`text-sm ${item.completed ? 'text-green-500 line-through' : 'text-gray-300'}`}>
                               {item.task}
                             </span>
                           </div>
                           <div className="flex items-center space-x-2">
                             <span className="text-xs text-gray-400">{item.dueDate}</span>
-                            <Badge className={`${item.completed ? 'bg-green-500/20 text-green-400' : 'bg-yellow-500/20 text-yellow-400'}`}>
+                            <Badge className={`${item.completed ? 'bg-green-500/20 text-green-500' : 'bg-yellow-500/20 text-yellow-400'}`}>
                               {item.completed ? 'Completed' : 'In Progress'}
                             </Badge>
                           </div>
@@ -1859,7 +1859,7 @@ export default function MMMDisciplinaryAssistant({ trades, accounts, accountIdId
                               className="w-4 h-4 text-prop-gold bg-gray-700 border-gray-600 rounded focus:ring-prop-gold"
                               readOnly
                             />
-                            <span className={`text-sm ${item.completed ? 'text-green-400 line-through' : 'text-gray-300'}`}>
+                            <span className={`text-sm ${item.completed ? 'text-green-500 line-through' : 'text-gray-300'}`}>
                               {item.task}
                             </span>
                           </div>
@@ -1901,7 +1901,7 @@ export default function MMMDisciplinaryAssistant({ trades, accounts, accountIdId
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
                     <span className="text-sm text-gray-400">Today's Journal Entry</span>
-                    <Badge className="bg-red-500/20 text-red-400 border-red-500/30">
+                    <Badge className="bg-red-500/20 text-red-500 border-red-500/30">
                       Not Completed
                     </Badge>
                   </div>

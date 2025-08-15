@@ -204,7 +204,7 @@ export default function TradeAnalysisCalendar({ trades, accounts, viewMode = 'mo
                   {dayTrades.length > 0 && (
                     <div className="space-y-1">
                       <div className={`text-xs font-bold ${
-                        dayPnl >= 0 ? 'text-prop-green' : 'text-red-400'
+                        dayPnl >= 0 ? 'text-prop-green' : 'text-red-500'
                       }`}>
                         {formatCurrency(dayPnl)}
                       </div>
@@ -291,7 +291,7 @@ export default function TradeAnalysisCalendar({ trades, accounts, viewMode = 'mo
                 {day.tradeCount > 0 && (
                   <div className="space-y-1">
                     <div className={`text-xs font-bold ${
-                      day.pnl >= 0 ? 'text-green-400' : 'text-red-400'
+                      day.pnl >= 0 ? 'text-green-500' : 'text-red-500'
                     }`}>
                       {day.pnl >= 0 ? '+' : '-'}{formatCurrency(Math.abs(day.pnl))}
                     </div>
@@ -353,7 +353,7 @@ export default function TradeAnalysisCalendar({ trades, accounts, viewMode = 'mo
                   {monthTrades.length > 0 && (
                     <div className="space-y-1">
                       <div className={`text-sm font-bold ${
-                        monthPnl >= 0 ? 'text-prop-green' : 'text-red-400'
+                        monthPnl >= 0 ? 'text-prop-green' : 'text-red-500'
                       }`}>
                         {formatCurrency(monthPnl)}
                       </div>

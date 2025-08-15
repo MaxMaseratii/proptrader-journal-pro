@@ -301,7 +301,7 @@ export default function Sidebar() {
                     className="text-foreground hover:bg-muted cursor-pointer"
                     onClick={() => window.location.href = '/billing'}
                   >
-                    <Activity className="mr-2 h-4 w-4 text-green-400" />
+                    <Activity className="mr-2 h-4 w-4 text-green-500" />
                     Billing & Subscription
                   </DropdownMenuItem>
                   
@@ -331,7 +331,7 @@ export default function Sidebar() {
                     className="text-foreground hover:bg-muted cursor-pointer"
                     onClick={() => window.location.href = '/support'}
                   >
-                    <Shield className="mr-2 h-4 w-4 text-green-400" />
+                    <Shield className="mr-2 h-4 w-4 text-green-500" />
                     Support Center
                   </DropdownMenuItem>
                   
@@ -354,7 +354,7 @@ export default function Sidebar() {
                   <DropdownMenuSeparator className="bg-prop-gold/20" />
                   
                   <DropdownMenuItem 
-                    className="text-red-400 hover:bg-red-900/20 hover:text-red-300 cursor-pointer"
+                    className="text-red-500 hover:bg-red-900/20 hover:text-red-300 cursor-pointer"
                     onClick={async () => {
                       try {
                         await fetch('/api/auth/logout', { method: 'POST' });
@@ -365,7 +365,7 @@ export default function Sidebar() {
                       }
                     }}
                   >
-                    <LogOut className="mr-2 h-4 w-4 text-red-400" />
+                    <LogOut className="mr-2 h-4 w-4 text-red-500" />
                     Sign Out
                   </DropdownMenuItem>
                 </DropdownMenuContent>

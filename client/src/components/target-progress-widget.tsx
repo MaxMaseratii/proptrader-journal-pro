@@ -83,11 +83,11 @@ export default function TargetProgressWidget({ accounts, trades, selectedAccount
     
     if (totalPnL >= account.profitTarget) {
       status = 'Target Reached';
-      statusColor = 'text-green-400';
+      statusColor = 'text-green-500';
       statusIcon = Target;
     } else if (currentBalance <= trailingDrawdownFloor) {
       status = 'Failed - EOD Drawdown';
-      statusColor = 'text-red-400';
+      statusColor = 'text-red-500';
       statusIcon = TrendingDown;
     } else if (totalPnL < 0) {
       status = 'Drawdown';
@@ -165,7 +165,7 @@ export default function TargetProgressWidget({ accounts, trades, selectedAccount
                 {/* Key metrics in compact format */}
                 <div className="grid grid-cols-2 gap-2 text-xs">
                   <div className="text-center">
-                    <div className={`widget-value ${account.totalPnL >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                    <div className={`widget-value ${account.totalPnL >= 0 ? 'text-green-500' : 'text-red-500'}`}>
                       ${account.totalPnL >= 0 ? '+' : '-'}${Math.abs(account.totalPnL).toFixed(2)}
                     </div>
                     <div className="text-gray-500">P&L</div>
@@ -181,7 +181,7 @@ export default function TargetProgressWidget({ accounts, trades, selectedAccount
                 {/* EOD Information */}
                 <div className="grid grid-cols-2 gap-2 text-xs">
                   <div className="text-center">
-                    <div className="text-green-400 font-medium">
+                    <div className="text-green-500 font-medium">
                       ${account.highestEODBalance.toFixed(2)}
                     </div>
                     <div className="text-gray-500">Highest EOD</div>
@@ -197,7 +197,7 @@ export default function TargetProgressWidget({ accounts, trades, selectedAccount
                 {/* Buffer and Target */}
                 <div className="grid grid-cols-2 gap-2 text-xs">
                   <div className="text-center">
-                    <div className={`font-medium ${account.remainingBuffer >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                    <div className={`font-medium ${account.remainingBuffer >= 0 ? 'text-green-500' : 'text-red-500'}`}>
                       ${account.remainingBuffer >= 0 ? '+' : '-'}${Math.abs(account.remainingBuffer).toFixed(2)}
                     </div>
                     <div className="text-gray-500">Buffer</div>

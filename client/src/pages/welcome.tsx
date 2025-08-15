@@ -293,7 +293,7 @@ export default function Welcome() {
               The only trading journal engineered specifically for prop firm success. 
               <span className="text-yellow-400 font-semibold"> 8 unique capabilities</span> designed to maximize your 
               <span className="text-teal-400 font-semibold"> funded account performance</span> through advanced 
-              <span className="text-green-400 font-semibold"> discipline tracking</span> and 
+              <span className="text-green-500 font-semibold"> discipline tracking</span> and 
               <span className="text-yellow-400 font-semibold"> AI-powered insights</span>.
             </p>
 
@@ -433,7 +433,7 @@ export default function Welcome() {
                   </div>
                   {plan.savings && (
                     <div className="mt-2">
-                      <span className="text-sm text-green-400 font-semibold">{plan.savings}</span>
+                      <span className="text-sm text-green-500 font-semibold">{plan.savings}</span>
                     </div>
                   )}
                 </CardHeader>
@@ -442,7 +442,7 @@ export default function Welcome() {
                   <ul className="space-y-4 mb-8">
                     {plan.features.map((feature, featureIndex) => (
                       <li key={featureIndex} className="flex items-center">
-                        <CheckCircle className="h-5 w-5 text-green-400 mr-3 flex-shrink-0" />
+                        <CheckCircle className="h-5 w-5 text-green-500 mr-3 flex-shrink-0" />
                         <span className="text-gray-300">{feature}</span>
                       </li>
                     ))}

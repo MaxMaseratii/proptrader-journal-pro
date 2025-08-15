@@ -364,7 +364,7 @@ export default function CompleteTradingDashboard() {
 
   const getStatusColor = (status) => {
     switch (status) {
-      case 'active': return 'bg-green-900/30 text-green-400 border-green-400/30';
+      case 'active': return 'bg-green-900/30 text-green-500 border-green-400/30';
       case 'testing': return 'bg-yellow-900/30 text-yellow-400 border-yellow-400/30';
       case 'paused': return 'bg-gray-900/30 text-gray-400 border-gray-400/30';
       default: return 'bg-blue-900/30 text-blue-400 border-blue-400/30';
@@ -405,10 +405,10 @@ export default function CompleteTradingDashboard() {
         <Card className="max-w-2xl w-full mx-4 bg-gradient-to-br from-red-950 via-red-900 to-black border-2 border-red-500/50 shadow-2xl">
           <CardHeader className="bg-gradient-to-r from-red-900/50 to-red-800/50">
             <CardTitle className="text-gradient-rainbow flex items-center gap-2 text-xl">
-              <AlertTriangle className="w-6 h-6 text-red-400 animate-pulse" />
+              <AlertTriangle className="w-6 h-6 text-red-500 animate-pulse" />
               Emergency Protocol: Emotional Spike
             </CardTitle>
-            <Badge className="bg-red-500/20 text-red-400 w-fit border border-red-500/30">
+            <Badge className="bg-red-500/20 text-red-500 w-fit border border-red-500/30">
               Step {emergencyStep} of {steps.length}
             </Badge>
           </CardHeader>
@@ -416,7 +416,7 @@ export default function CompleteTradingDashboard() {
             <div className="space-y-6">
               <div className="text-center p-8 bg-red-950/50 border-2 border-red-500/30 rounded-lg">
                 {React.createElement(steps[emergencyStep - 1].icon, {
-                  className: "w-12 h-12 text-red-400 mx-auto mb-4 animate-pulse"
+                  className: "w-12 h-12 text-red-500 mx-auto mb-4 animate-pulse"
                 })}
                 <h2 className="text-white text-2xl font-bold mb-4">
                   {steps[emergencyStep - 1].title}
@@ -469,7 +469,7 @@ export default function CompleteTradingDashboard() {
       if (score >= 35) return { label: "Excellent", color: "text-emerald-400" };
       if (score >= 30) return { label: "Good", color: "text-blue-400" };
       if (score >= 25) return { label: "Fair", color: "text-yellow-400" };
-      return { label: "Needs Improvement", color: "text-red-400" };
+      return { label: "Needs Improvement", color: "text-red-500" };
     };
 
     const scoreInfo = getScoreLabel(totalScore);
@@ -488,12 +488,12 @@ export default function CompleteTradingDashboard() {
             {/* Loss-Cutting Psychology Education */}
             <div className="bg-gradient-to-r from-red-900/20 via-pink-900/20 to-orange-900/20 p-6 rounded-2xl border border-red-500/30 shadow-lg">
               <div className="flex items-center gap-3 mb-4">
-                <AlertTriangle className="w-6 h-6 text-red-400" />
+                <AlertTriangle className="w-6 h-6 text-red-500" />
                 <h4 className="text-white font-bold text-lg">The Mental Battle: Why We Hold Losing Trades</h4>
               </div>
               <div className="space-y-4 text-gray-300">
                 <p className="leading-relaxed">
-                  <strong className="text-red-400">Every trader faces this moment:</strong> Your trade is moving against you. Your stop-loss level 
+                  <strong className="text-red-500">Every trader faces this moment:</strong> Your trade is moving against you. Your stop-loss level 
                   is getting closer. Logic says "exit now," but your emotions scream "just wait a little longer!"
                 </p>
                 <p className="leading-relaxed text-sm">
@@ -671,7 +671,7 @@ export default function CompleteTradingDashboard() {
                         className="flex-1"
                       />
                       <span className="text-xs text-gray-500 min-w-[40px]">Alert</span>
-                      <span className="text-green-400 font-bold min-w-[20px] text-lg">{sliderValues.physical}</span>
+                      <span className="text-green-500 font-bold min-w-[20px] text-lg">{sliderValues.physical}</span>
                     </div>
                   </div>
 
@@ -1458,15 +1458,15 @@ export default function CompleteTradingDashboard() {
               <div className="text-center p-6 bg-gradient-to-br from-slate-900/50 to-slate-800/50 border border-purple-500/30 rounded-lg mt-6">
                 <h3 className="text-white font-semibold mb-2">Total Discipline Score</h3>
                 <div className="text-4xl font-bold mb-2">
-                  <span className={`${totalDisciplineScore >= 20 ? 'text-green-400' : 
-                                     totalDisciplineScore >= 15 ? 'text-yellow-400' : 'text-red-400'}`}>
+                  <span className={`${totalDisciplineScore >= 20 ? 'text-green-500' : 
+                                     totalDisciplineScore >= 15 ? 'text-yellow-400' : 'text-red-500'}`}>
                     {totalDisciplineScore}/25
                   </span>
                 </div>
                 <Badge className={`text-lg px-4 py-2 ${
-                  totalDisciplineScore >= 20 ? 'bg-green-900/30 text-green-400 border-green-400/30' :
+                  totalDisciplineScore >= 20 ? 'bg-green-900/30 text-green-500 border-green-400/30' :
                   totalDisciplineScore >= 15 ? 'bg-yellow-900/30 text-yellow-400 border-yellow-400/30' :
-                  'bg-red-900/30 text-red-400 border-red-400/30'
+                  'bg-red-900/30 text-red-500 border-red-400/30'
                 }`}>
                   {totalDisciplineScore >= 20 ? 'EXCELLENT' : 
                    totalDisciplineScore >= 15 ? 'GOOD' : 'NEEDS WORK'}
@@ -1717,7 +1717,7 @@ export default function CompleteTradingDashboard() {
                   {/* Performance Metrics */}
                   <div className="grid grid-cols-2 gap-4">
                     <div className="text-center p-3 bg-gradient-to-br from-green-950/50 to-emerald-950/50 border border-green-500/30 rounded-lg">
-                      <div className="text-green-400 font-bold text-lg">{metrics.winRate}%</div>
+                      <div className="text-green-500 font-bold text-lg">{metrics.winRate}%</div>
                       <div className="text-green-300 text-xs">Win Rate</div>
                     </div>
                     <div className="text-center p-3 bg-gradient-to-br from-blue-950/50 to-indigo-950/50 border border-blue-500/30 rounded-lg">
@@ -1744,7 +1744,7 @@ export default function CompleteTradingDashboard() {
                         </div>
                         <div className="flex justify-between">
                           <span>Total P&L:</span>
-                          <span className={(strategy.performance?.totalPnl || 0) >= 0 ? 'text-green-400' : 'text-red-400'}>
+                          <span className={(strategy.performance?.totalPnl || 0) >= 0 ? 'text-green-500' : 'text-red-500'}>
                             ${strategy.performance?.totalPnl || 0}
                           </span>
                         </div>
@@ -2118,7 +2118,7 @@ export default function CompleteTradingDashboard() {
                   <div className="space-y-2">
                     {selectedStrategy.rules.split('\n').map((rule, index) => (
                       <div key={index} className="flex items-start gap-2">
-                        <span className="text-green-400 font-bold min-w-6">{index + 1}.</span>
+                        <span className="text-green-500 font-bold min-w-6">{index + 1}.</span>
                         <span className="text-gray-300">{rule.replace('• ', '')}</span>
                       </div>
                     ))}
@@ -2198,8 +2198,8 @@ export default function CompleteTradingDashboard() {
                   <div className="text-right">
                     <div className="text-sm text-gray-400">Readiness Score</div>
                     <div className={`text-xl font-bold ${
-                      plan.overallReadiness >= 16 ? 'text-green-400' : 
-                      plan.overallReadiness >= 12 ? 'text-yellow-400' : 'text-red-400'
+                      plan.overallReadiness >= 16 ? 'text-green-500' : 
+                      plan.overallReadiness >= 12 ? 'text-yellow-400' : 'text-red-500'
                     }`}>
                       {plan.overallReadiness}/20
                     </div>
@@ -2268,13 +2268,13 @@ export default function CompleteTradingDashboard() {
                       </div>
                       <div className="flex justify-between">
                         <span className="text-gray-400">Actual P&L:</span>
-                        <span className={(plan.actualPnL || 0) >= 0 ? 'text-green-400' : 'text-red-400'}>
+                        <span className={(plan.actualPnL || 0) >= 0 ? 'text-green-500' : 'text-red-500'}>
                           {(plan.actualPnL || 0) >= 0 ? '+' : ''}${plan.actualPnL || 0}
                         </span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-gray-400">Plan Status:</span>
-                        <span className="text-green-400">
+                        <span className="text-green-500">
                           {plan.isPlanSaved ? 'Completed' : 'Draft'}
                         </span>
                       </div>
@@ -2368,7 +2368,7 @@ export default function CompleteTradingDashboard() {
       <Dialog open={deleteConfirmation?.open || false} onOpenChange={(open) => !open && setDeleteConfirmation(null)}>
         <DialogContent className="max-w-md bg-gradient-to-br from-red-950 via-red-900 to-slate-900 border border-red-500/30">
           <DialogHeader>
-            <DialogTitle className="text-red-400 text-xl flex items-center gap-2">
+            <DialogTitle className="text-red-500 text-xl flex items-center gap-2">
               <AlertTriangle className="w-6 h-6" />
               Delete Strategy
             </DialogTitle>
@@ -2376,7 +2376,7 @@ export default function CompleteTradingDashboard() {
           <div className="space-y-4 p-6">
             <div className="text-center space-y-3">
               <div className="w-16 h-16 mx-auto bg-red-500/20 rounded-full flex items-center justify-center">
-                <Trash2 className="w-8 h-8 text-red-400" />
+                <Trash2 className="w-8 h-8 text-red-500" />
               </div>
               <h3 className="text-lg font-semibold text-white">
                 Delete "{deleteConfirmation?.strategy?.name}"?
@@ -2434,7 +2434,7 @@ export default function CompleteTradingDashboard() {
                 {errorDialog?.type === 'dependency' ? (
                   <Settings className="w-8 h-8 text-orange-400" />
                 ) : (
-                  <AlertTriangle className="w-8 h-8 text-red-400" />
+                  <AlertTriangle className="w-8 h-8 text-red-500" />
                 )}
               </div>
               <p className="text-gray-300 text-sm leading-relaxed whitespace-pre-line">

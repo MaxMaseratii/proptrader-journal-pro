@@ -147,7 +147,7 @@ export default function Billing() {
                   <ul className="space-y-3 mb-6">
                     {plan.features.map((feature, index) => (
                       <li key={index} className="flex items-center text-gray-300">
-                        <Check className="h-4 w-4 text-green-400 mr-2 flex-shrink-0" />
+                        <Check className="h-4 w-4 text-green-500 mr-2 flex-shrink-0" />
                         {feature}
                       </li>
                     ))}
@@ -239,7 +239,7 @@ export default function Billing() {
                 <div key={item.id} className="flex items-center justify-between p-4 bg-gray-900/50 rounded-lg border border-gray-700">
                   <div className="flex items-center space-x-4">
                     <div className="bg-green-600/20 p-2 rounded">
-                      <Calendar className="h-4 w-4 text-green-400" />
+                      <Calendar className="h-4 w-4 text-green-500" />
                     </div>
                     <div>
                       <p className="text-white font-medium">{item.plan}</p>
@@ -249,7 +249,7 @@ export default function Billing() {
                   <div className="flex items-center space-x-4">
                     <div className="text-right">
                       <p className="text-white font-medium">{item.amount}</p>
-                      <Badge variant="secondary" className="bg-green-600/20 text-green-400 text-xs">
+                      <Badge variant="secondary" className="bg-green-600/20 text-green-500 text-xs">
                         {item.status}
                       </Badge>
                     </div>
@@ -284,7 +284,7 @@ export default function Billing() {
                 <div className="text-xs text-gray-500">Unlimited</div>
               </div>
               <div className="text-center">
-                <div className="text-2xl font-bold text-green-400">5.2GB</div>
+                <div className="text-2xl font-bold text-green-500">5.2GB</div>
                 <div className="text-sm text-gray-400">Data Storage</div>
                 <div className="text-xs text-gray-500">10GB Limit</div>
               </div>

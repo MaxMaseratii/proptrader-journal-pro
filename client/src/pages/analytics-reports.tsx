@@ -46,7 +46,7 @@ export default function AnalyticsReports() {
             <CardContent className="p-6">
               <div className="flex items-center space-x-3">
                 <div className="p-2 bg-green-100 dark:bg-green-900/20 rounded-lg">
-                  <DollarSign className="h-5 w-5 text-green-600 dark:text-green-400" />
+                  <DollarSign className="h-5 w-5 text-green-600 dark:text-green-500" />
                 </div>
                 <div>
                   <p className="text-sm text-gray-600 dark:text-gray-400">Total P&L</p>

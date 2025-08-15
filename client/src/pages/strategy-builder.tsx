@@ -203,7 +203,7 @@ export default function StrategyBuilder() {
               <div className="border rounded-lg p-4 bg-gradient-to-r from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20">
                 <div className="flex justify-between items-start mb-3">
                   <div>
-                    <h3 className="font-medium text-green-800 dark:text-green-400">London Session Scalper</h3>
+                    <h3 className="font-medium text-green-800 dark:text-green-500">London Session Scalper</h3>
                     <p className="text-sm text-green-600 dark:text-green-300">by @PropTrader_Mike</p>
                   </div>
                   <div className="flex items-center space-x-2">

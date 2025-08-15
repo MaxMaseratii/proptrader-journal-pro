@@ -127,9 +127,9 @@ export default function TradingDisciplineSystem({
   ];
 
   const getScoreColor = (score: number) => {
-    if (score >= 80) return "text-green-400";
+    if (score >= 80) return "text-green-500";
     if (score >= 60) return "text-yellow-400";
-    return "text-red-400";
+    return "text-red-500";
   };
 
   const getScoreLevel = (score: number) => {
@@ -147,9 +147,9 @@ export default function TradingDisciplineSystem({
   const insights = {
     elite: {
       title: "Elite Trader Performance",
-      color: "text-green-400",
+      color: "text-green-500",
       bgColor: "bg-green-900/20 border-green-500/30",
-      icon: <CheckCircle className="h-5 w-5 text-green-400" />,
+      icon: <CheckCircle className="h-5 w-5 text-green-500" />,
       analysis: [
         "Exceptional discipline across all trading dimensions",
         "Consistent risk management and emotional control",
@@ -185,9 +185,9 @@ export default function TradingDisciplineSystem({
     },
     developing: {
       title: "Foundation Building Required",
-      color: "text-red-400",
+      color: "text-red-500",
       bgColor: "bg-red-900/20 border-red-500/30",
-      icon: <AlertTriangle className="h-5 w-5 text-red-400" />,
+      icon: <AlertTriangle className="h-5 w-5 text-red-500" />,
       analysis: [
         "Significant discipline gaps affecting profitability",
         "Emotional trading patterns dominating decisions",
@@ -389,10 +389,10 @@ export default function TradingDisciplineSystem({
                 </div>
                 <div className="p-4 bg-gray-800/50 rounded-lg border border-prop-gold/20">
                   <div className="flex items-center gap-2 mb-2">
-                    <TrendingUp className="h-4 w-4 text-green-400" />
+                    <TrendingUp className="h-4 w-4 text-green-500" />
                     <span className="text-sm font-medium text-white">Improvement</span>
                   </div>
-                  <div className="text-2xl font-bold text-green-400">+{(disciplineScore * 0.1).toFixed(1)}</div>
+                  <div className="text-2xl font-bold text-green-500">+{(disciplineScore * 0.1).toFixed(1)}</div>
                   <div className="text-xs text-gray-400">This week</div>
                 </div>
                 <div className="p-4 bg-gray-800/50 rounded-lg border border-prop-gold/20">
@@ -417,7 +417,7 @@ export default function TradingDisciplineSystem({
               </div>
               <div className="space-y-4">
                 <Alert className="bg-red-900/20 border-red-500/30">
-                  <AlertTriangle className="h-4 w-4 text-red-400" />
+                  <AlertTriangle className="h-4 w-4 text-red-500" />
                   <AlertDescription className="text-red-300">
                     <strong>Reality Check:</strong> Your discipline score of {disciplineScore.toFixed(1)}% indicates 
                     {disciplineScore >= 80 ? " exceptional trading discipline. You're operating at a professional level." :

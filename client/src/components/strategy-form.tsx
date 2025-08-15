@@ -210,7 +210,7 @@ const StrategyForm: React.FC<StrategyFormProps> = ({ onClose, editStrategy }) =>
                   variant="ghost"
                   size="sm"
                   onClick={() => removeRule(index)}
-                  className="text-red-400 hover:text-red-300"
+                  className="text-red-500 hover:text-red-300"
                   disabled={rules.length === 1}
                 >
                   <Trash2 className="w-4 h-4" />
@@ -287,7 +287,7 @@ const StrategyForm: React.FC<StrategyFormProps> = ({ onClose, editStrategy }) =>
           <div className="p-4 bg-gray-700 rounded-lg border border-yellow-400/20">
             <div className="flex items-center justify-between">
               <span className="text-white font-medium">Expected Value per Trade:</span>
-              <span className={`text-xl font-bold ${expectedValue > 20 ? 'text-green-400' : expectedValue > 0 ? 'text-yellow-400' : 'text-red-400'}`}>
+              <span className={`text-xl font-bold ${expectedValue > 20 ? 'text-green-500' : expectedValue > 0 ? 'text-yellow-400' : 'text-red-500'}`}>
                 ${expectedValue.toFixed(2)}
               </span>
             </div>

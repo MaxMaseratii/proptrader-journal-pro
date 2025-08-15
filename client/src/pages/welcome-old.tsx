@@ -609,7 +609,7 @@ export default function Welcome() {
                   </div>
                   {plan.savings && (
                     <div className="mt-2">
-                      <span className="text-sm text-green-600 dark:text-green-400 font-medium">
+                      <span className="text-sm text-green-600 dark:text-green-500 font-medium">
                         {plan.savings}
                       </span>
                     </div>
@@ -785,50 +785,50 @@ export default function Welcome() {
                   <tr className="border-b bg-gray-50 dark:bg-gray-800">
                     <td className="p-4 font-medium text-gray-900 dark:text-white">Pre-Session Mental Fitness Check</td>
                     <td className="text-center p-4 text-gray-700 dark:text-gray-300">Basic</td>
-                    <td className="text-center p-4 text-green-700 dark:text-green-400">Advanced</td>
-                    <td className="text-center p-4 text-green-700 dark:text-green-400">Advanced + Custom</td>
+                    <td className="text-center p-4 text-green-700 dark:text-green-500">Advanced</td>
+                    <td className="text-center p-4 text-green-700 dark:text-green-500">Advanced + Custom</td>
                   </tr>
                   <tr className="border-b">
                     <td className="p-4 font-medium text-gray-900 dark:text-white">Daily Trading Plan Builder</td>
-                    <td className="text-center p-4 text-green-700 dark:text-green-400">Basic</td>
-                    <td className="text-center p-4 text-green-700 dark:text-green-400">Advanced</td>
-                    <td className="text-center p-4 text-green-700 dark:text-green-400">Team Plans</td>
+                    <td className="text-center p-4 text-green-700 dark:text-green-500">Basic</td>
+                    <td className="text-center p-4 text-green-700 dark:text-green-500">Advanced</td>
+                    <td className="text-center p-4 text-green-700 dark:text-green-500">Team Plans</td>
                   </tr>
                   <tr className="border-b bg-gray-50 dark:bg-gray-800">
                     <td className="p-4 font-medium text-gray-900 dark:text-white">Target Projection System</td>
                     <td className="text-center p-4 text-gray-500 dark:text-gray-400">-</td>
-                    <td className="text-center p-4 text-green-700 dark:text-green-400">Full Access</td>
-                    <td className="text-center p-4 text-green-700 dark:text-green-400">Advanced + API</td>
+                    <td className="text-center p-4 text-green-700 dark:text-green-500">Full Access</td>
+                    <td className="text-center p-4 text-green-700 dark:text-green-500">Advanced + API</td>
                   </tr>
                   <tr className="border-b">
                     <td className="p-4 font-medium text-gray-900 dark:text-white">Prop Firm Spending & Payout Eligibility</td>
                     <td className="text-center p-4 text-gray-500 dark:text-gray-400">-</td>
-                    <td className="text-center p-4 text-green-700 dark:text-green-400">Full Tracking</td>
-                    <td className="text-center p-4 text-green-700 dark:text-green-400">Multi-Firm + Reports</td>
+                    <td className="text-center p-4 text-green-700 dark:text-green-500">Full Tracking</td>
+                    <td className="text-center p-4 text-green-700 dark:text-green-500">Multi-Firm + Reports</td>
                   </tr>
                   <tr className="border-b bg-gray-50 dark:bg-gray-800">
                     <td className="p-4 font-medium text-gray-900 dark:text-white">AI-Integrated Trading Journal & Assistant</td>
-                    <td className="text-center p-4 text-green-700 dark:text-green-400">Basic</td>
-                    <td className="text-center p-4 text-green-700 dark:text-green-400">Advanced</td>
-                    <td className="text-center p-4 text-green-700 dark:text-green-400">AI Analysis</td>
+                    <td className="text-center p-4 text-green-700 dark:text-green-500">Basic</td>
+                    <td className="text-center p-4 text-green-700 dark:text-green-500">Advanced</td>
+                    <td className="text-center p-4 text-green-700 dark:text-green-500">AI Analysis</td>
                   </tr>
                   <tr className="border-b">
                     <td className="p-4 font-medium text-gray-900 dark:text-white">Daily Performance vs Plan Analysis</td>
                     <td className="text-center p-4 text-gray-500 dark:text-gray-400">-</td>
-                    <td className="text-center p-4 text-green-700 dark:text-green-400">Real-time</td>
-                    <td className="text-center p-4 text-green-700 dark:text-green-400">Real-time + Alerts</td>
+                    <td className="text-center p-4 text-green-700 dark:text-green-500">Real-time</td>
+                    <td className="text-center p-4 text-green-700 dark:text-green-500">Real-time + Alerts</td>
                   </tr>
                   <tr className="border-b bg-gray-50 dark:bg-gray-800">
                     <td className="p-4 font-medium text-gray-900 dark:text-white">Prop Trader News Calendar</td>
                     <td className="text-center p-4 text-gray-500 dark:text-gray-400">-</td>
-                    <td className="text-center p-4 text-green-700 dark:text-green-400">Full Access</td>
-                    <td className="text-center p-4 text-green-700 dark:text-green-400">Custom Alerts</td>
+                    <td className="text-center p-4 text-green-700 dark:text-green-500">Full Access</td>
+                    <td className="text-center p-4 text-green-700 dark:text-green-500">Custom Alerts</td>
                   </tr>
                   <tr className="border-b">
                     <td className="p-4 font-medium text-gray-900 dark:text-white">Strategy Builder & Sharing</td>
                     <td className="text-center p-4 text-gray-500 dark:text-gray-400">-</td>
-                    <td className="text-center p-4 text-green-700 dark:text-green-400">Community</td>
-                    <td className="text-center p-4 text-green-700 dark:text-green-400">Private + Teams</td>
+                    <td className="text-center p-4 text-green-700 dark:text-green-500">Community</td>
+                    <td className="text-center p-4 text-green-700 dark:text-green-500">Private + Teams</td>
                   </tr>
                   <tr className="border-b">
                     <td className="p-4 font-medium text-gray-900 dark:text-white">Support</td>
@@ -871,9 +871,9 @@ export default function Welcome() {
           {/* Password Security */}
           <Card className="bg-gradient-to-br from-gray-800/50 via-gray-900/60 to-black/70 border border-amber-500/20">
             <CardContent className="p-3 text-center">
-              <Shield className="h-6 w-6 text-green-400 mx-auto mb-1" />
+              <Shield className="h-6 w-6 text-green-500 mx-auto mb-1" />
               <h3 className="text-xs font-semibold text-white mb-1">Password</h3>
-              <div className="text-lg font-bold text-green-400">A+</div>
+              <div className="text-lg font-bold text-green-500">A+</div>
             </CardContent>
           </Card>
 

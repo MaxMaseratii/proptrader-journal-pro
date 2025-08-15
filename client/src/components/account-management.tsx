@@ -286,7 +286,7 @@ export default function AccountManagement({ accounts }: AccountManagementProps) 
     if (label.includes('DF')) return 'text-blue-400';
     if (label.includes('PL')) return 'text-yellow-400'; // Gold color for Personal Live
     if (label.includes('L')) return 'text-yellow-400'; // Yellow for Live
-    if (label.includes('F')) return 'text-green-400'; // Green for Funded
+    if (label.includes('F')) return 'text-green-500'; // Green for Funded
     if (label.includes('C')) return 'text-blue-400'; // Blue for Challenge
     return 'text-gray-400';
   };
@@ -372,7 +372,7 @@ export default function AccountManagement({ accounts }: AccountManagementProps) 
       );
     }
     return (
-      <div className="text-sm text-green-400">
+      <div className="text-sm text-green-500">
         Unlimited trades/day
       </div>
     );
@@ -435,7 +435,7 @@ export default function AccountManagement({ accounts }: AccountManagementProps) 
         return {
           eligible: true,
           reason: `Eligible for ${payoutFrequency} payout (${daysRequiredForPayout} days required)`,
-          color: "text-green-400"
+          color: "text-green-500"
         };
       } else {
         return {
@@ -452,7 +452,7 @@ export default function AccountManagement({ accounts }: AccountManagementProps) 
         return {
           eligible: true,
           reason: `On-demand payout available (${payoutFrequency})`,
-          color: "text-green-400"
+          color: "text-green-500"
         };
       } else {
         return {
@@ -593,7 +593,7 @@ export default function AccountManagement({ accounts }: AccountManagementProps) 
                                       <div className="text-xs text-gray-400">Target Profit</div>
                                     </div>
                                     <div className="text-center">
-                                      <div className="text-lg font-bold text-green-400">
+                                      <div className="text-lg font-bold text-green-500">
                                         {formatCurrency(totalActualPnl)}
                                       </div>
                                       <div className="text-xs text-gray-400">Actual P&L</div>
@@ -619,10 +619,10 @@ export default function AccountManagement({ accounts }: AccountManagementProps) 
                                       <span className="text-gray-300">Risk/Trade: {formatCurrency(projection.riskPerTrade)}</span>
                                       <span className="text-gray-300">RR Ratio: 1:{projection.rewardRiskRatio}</span>
                                       {projection.compoundingEnabled && (
-                                        <span className="text-green-400">Compounding: {projection.compoundingPercentage}%</span>
+                                        <span className="text-green-500">Compounding: {projection.compoundingPercentage}%</span>
                                       )}
                                       {projection.riskCuttingEnabled && (
-                                        <span className="text-red-400">Risk Cutting: {projection.riskCuttingPercentage}%</span>
+                                        <span className="text-red-500">Risk Cutting: {projection.riskCuttingPercentage}%</span>
                                       )}
                                     </div>
                                   </div>
@@ -734,7 +734,7 @@ export default function AccountManagement({ accounts }: AccountManagementProps) 
                         <Button 
                           variant="outline" 
                           size="sm" 
-                          className="border-green-600 text-green-400 hover:bg-green-600 hover:text-white h-6 w-6 p-0"
+                          className="border-green-600 text-green-500 hover:bg-green-600 hover:text-white h-6 w-6 p-0"
                           disabled={account.status === 'withdrawn'}
                           title="Ready for Funded"
                         >
@@ -744,7 +744,7 @@ export default function AccountManagement({ accounts }: AccountManagementProps) 
                       <DialogContent className="bg-gray-900 border-gray-700 max-w-4xl max-h-[80vh] overflow-y-auto">
                         <DialogHeader>
                           <DialogTitle className="text-white flex items-center gap-2">
-                            <CheckCircle className="h-5 w-5 text-green-400" />
+                            <CheckCircle className="h-5 w-5 text-green-500" />
                             Convert Challenge to Funded Account
                           </DialogTitle>
                           <DialogDescription className="text-gray-300">
@@ -763,7 +763,7 @@ export default function AccountManagement({ accounts }: AccountManagementProps) 
                             
                             {/* Account Setup */}
                             <div className="space-y-4">
-                              <h4 className="text-md font-medium text-green-400">Account Setup</h4>
+                              <h4 className="text-md font-medium text-green-500">Account Setup</h4>
                               <div className="grid grid-cols-2 gap-4">
                                 <div>
                                   <Label className="text-gray-300">Starting Balance ($)</Label>
@@ -1305,7 +1305,7 @@ export default function AccountManagement({ accounts }: AccountManagementProps) 
                 <Button 
                   variant="outline" 
                   size="sm" 
-                  className="border-red-600 text-red-400 hover:bg-red-600 hover:text-white"
+                  className="border-red-600 text-red-500 hover:bg-red-600 hover:text-white"
                 >
                   <Trash2 className="h-4 w-4" />
                 </Button>
@@ -1313,7 +1313,7 @@ export default function AccountManagement({ accounts }: AccountManagementProps) 
               <AlertDialogContent className="widget-card border-red-500/30">
                 <AlertDialogHeader>
                   <AlertDialogTitle className="widget-text flex items-center gap-2">
-                    <Trash2 className="h-5 w-5 text-red-400" />
+                    <Trash2 className="h-5 w-5 text-red-500" />
                     Delete Account
                   </AlertDialogTitle>
                       <AlertDialogDescription className="widget-text opacity-80">
@@ -1347,13 +1347,13 @@ export default function AccountManagement({ accounts }: AccountManagementProps) 
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-gray-400 text-xs">Target</span>
-                <span className="text-sm font-semibold text-green-400">
+                <span className="text-sm font-semibold text-green-500">
                   {formatCurrency(account.profitTarget)}
                 </span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-gray-400 text-xs">Max DD</span>
-                <span className="text-sm font-semibold text-red-400">
+                <span className="text-sm font-semibold text-red-500">
                   {formatCurrency(account.maxDrawdown)}
                 </span>
               </div>

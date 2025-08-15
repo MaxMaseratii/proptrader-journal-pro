@@ -114,10 +114,10 @@ export default function UnrealizedProfitWidgets({ trades, selectedAccountIds, ac
 
   // Determine risk level based on remaining buffer
   const getBufferRiskLevel = (buffer: number) => {
-    if (buffer > 1000) return { level: 'safe', color: 'text-green-400', bgColor: 'bg-green-500/20' };
+    if (buffer > 1000) return { level: 'safe', color: 'text-green-500', bgColor: 'bg-green-500/20' };
     if (buffer > 500) return { level: 'moderate', color: 'text-yellow-400', bgColor: 'bg-yellow-500/20' };
     if (buffer > 200) return { level: 'high', color: 'text-orange-400', bgColor: 'bg-orange-500/20' };
-    return { level: 'critical', color: 'text-red-400', bgColor: 'bg-red-500/20' };
+    return { level: 'critical', color: 'text-red-500', bgColor: 'bg-red-500/20' };
   };
 
   const bufferRisk = getBufferRiskLevel(remainingBuffer);
@@ -136,7 +136,7 @@ export default function UnrealizedProfitWidgets({ trades, selectedAccountIds, ac
         <Card className="widget-card h-full" style={{contain: 'layout', overflow: 'hidden'}}>
           <CardHeader className="pb-2">
             <CardTitle className="widget-header flex items-center text-sm">
-              <Shield className="mr-2 h-4 w-4 text-red-400" />
+              <Shield className="mr-2 h-4 w-4 text-red-500" />
               Drawdown Buffer Remaining
             </CardTitle>
           </CardHeader>
@@ -153,11 +153,11 @@ export default function UnrealizedProfitWidgets({ trades, selectedAccountIds, ac
                 <div className="space-y-2 text-xs">
                   <div className="flex justify-between">
                     <span className="text-gray-400">Current:</span>
-                    <span className="text-red-400 font-medium">${currentBalance.toFixed(2)}</span>
+                    <span className="text-red-500 font-medium">${currentBalance.toFixed(2)}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-400">Highest EOD:</span>
-                    <span className="text-green-400 font-medium">${highestEODBalance.toFixed(2)}</span>
+                    <span className="text-green-500 font-medium">${highestEODBalance.toFixed(2)}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-400">Floor:</span>
@@ -167,9 +167,9 @@ export default function UnrealizedProfitWidgets({ trades, selectedAccountIds, ac
               </div>
               
               <div className={`mt-auto px-2 py-1 rounded text-xs text-center font-medium ${
-                remainingBuffer <= 200 ? 'bg-red-500/20 text-red-400' : 
+                remainingBuffer <= 200 ? 'bg-red-500/20 text-red-500' : 
                 remainingBuffer <= 500 ? 'bg-orange-500/20 text-orange-400' : 
-                'bg-green-500/20 text-green-400'
+                'bg-green-500/20 text-green-500'
               }`}>
                 {remainingBuffer <= 200 ? 'CRITICAL RISK' : remainingBuffer <= 500 ? 'HIGH RISK' : 'BUFFER SAFE'}
               </div>
@@ -191,7 +191,7 @@ export default function UnrealizedProfitWidgets({ trades, selectedAccountIds, ac
             <div className="flex flex-col h-full">
               <div className="flex-1 space-y-3">
                 <div className="text-center">
-                  <div className={`text-xl font-bold ${consistencyViolations > 0 ? 'text-red-400' : 'text-green-400'}`}>
+                  <div className={`text-xl font-bold ${consistencyViolations > 0 ? 'text-red-500' : 'text-green-500'}`}>
                     {consistencyViolations}
                   </div>
                   <div className="text-xs text-gray-400">Rule Violations</div>
@@ -212,7 +212,7 @@ export default function UnrealizedProfitWidgets({ trades, selectedAccountIds, ac
               </div>
               
               <div className={`mt-auto px-2 py-1 rounded text-xs text-center font-medium ${
-                consistencyViolations > 0 ? 'bg-red-500/20 text-red-400' : 'bg-green-500/20 text-green-400'
+                consistencyViolations > 0 ? 'bg-red-500/20 text-red-500' : 'bg-green-500/20 text-green-500'
               }`}>
                 {consistencyViolations > 0 ? 'RULE VIOLATED' : 'COMPLIANT'}
               </div>

@@ -167,11 +167,11 @@ const EnhancedAchievementSystem = () => {
   const getRarityColor = (rarity: string) => {
     switch (rarity) {
       case 'common': return 'border-gray-400 text-gray-400 bg-gray-400/10';
-      case 'uncommon': return 'border-green-400 text-green-400 bg-green-400/10';
+      case 'uncommon': return 'border-green-400 text-green-500 bg-green-400/10';
       case 'rare': return 'border-blue-400 text-blue-400 bg-blue-400/10';
       case 'epic': return 'border-purple-400 text-purple-400 bg-purple-400/10';
       case 'legendary': return 'border-yellow-400 text-yellow-400 bg-yellow-400/10';
-      case 'mythic': return 'border-red-400 text-red-400 bg-red-400/10';
+      case 'mythic': return 'border-red-400 text-red-500 bg-red-400/10';
       default: return 'border-gray-400 text-gray-400 bg-gray-400/10';
     }
   };
@@ -229,10 +229,10 @@ const EnhancedAchievementSystem = () => {
         <Card className="widget-card">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium widget-header">Progress</CardTitle>
-            <TrendingUp className="h-4 w-4 text-green-400" />
+            <TrendingUp className="h-4 w-4 text-green-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-green-400 widget-value">{playerStats.completionRate}%</div>
+            <div className="text-2xl font-bold text-green-500 widget-value">{playerStats.completionRate}%</div>
             <Progress value={playerStats.completionRate} className="mt-2" />
           </CardContent>
         </Card>
@@ -307,7 +307,7 @@ const EnhancedAchievementSystem = () => {
                       </p>
                       
                       {achievement.unlocked ? (
-                        <Badge className="bg-green-400/20 text-green-400 border-green-400">
+                        <Badge className="bg-green-400/20 text-green-500 border-green-400">
                           <Trophy className="h-3 w-3 mr-1" />
                           Unlocked • {achievement.points} pts
                         </Badge>

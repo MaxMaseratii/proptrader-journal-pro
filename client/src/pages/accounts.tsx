@@ -718,7 +718,7 @@ const AccountCard = React.memo(({
         <div className="space-y-2 text-sm">
           <div className="flex justify-between">
             <span className="text-gray-400">Starting Balance:</span>
-            <span className="text-green-400">${account.startingBalance.toLocaleString()}</span>
+            <span className="text-green-500">${account.startingBalance.toLocaleString()}</span>
           </div>
           <div className="flex justify-between">
             <span className="text-gray-400">Profit Target:</span>
@@ -726,7 +726,7 @@ const AccountCard = React.memo(({
           </div>
           <div className="flex justify-between">
             <span className="text-gray-400">Max Drawdown:</span>
-            <span className="text-red-400">${account.maxDrawdown.toLocaleString()}</span>
+            <span className="text-red-500">${account.maxDrawdown.toLocaleString()}</span>
           </div>
           <div className="flex justify-between">
             <span className="text-gray-400">Risk Per Trade:</span>
@@ -748,7 +748,7 @@ const AccountCard = React.memo(({
             variant="outline"
             size="sm"
             onClick={() => onDelete(account.id)}
-            className="border-red-600 text-red-400 hover:bg-red-600/20"
+            className="border-red-600 text-red-500 hover:bg-red-600/20"
             disabled={isDeleting}
           >
             <Trash2 className="h-3 w-3" />
@@ -840,6 +840,23 @@ export default React.memo(function AccountsPage() {
         setAccounts(prev => prev.map(acc => 
           acc.id === editingAccount.id ? updatedAccount : acc
         ));
+        
+        // FIXED: Invalidate spending queries so updates reflect immediately
+        // Force refresh of spending data when account is updated
+        try {
+          const refreshSpending = await fetch('/api/spending', { 
+            headers: { 'Cache-Control': 'no-cache' } 
+          });
+          if (refreshSpending.ok) {
+            // Trigger a manual refresh of spending page if user is viewing it
+            window.dispatchEvent(new CustomEvent('accountUpdated', { 
+              detail: { accountId: editingAccount.id, account: updatedAccount } 
+            }));
+          }
+        } catch (e) {
+          console.log('Spending refresh skipped:', e);
+        }
+        
         setShowEditDialog(false);
         setEditingAccount(null);
       }

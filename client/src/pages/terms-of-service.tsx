@@ -70,7 +70,7 @@ export default function TermsOfService() {
           {/* Eligibility & Account Registration */}
           <Card className="bg-gray-900 border-gray-700">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-green-400">
+              <CardTitle className="flex items-center gap-2 text-green-500">
                 <Users className="h-5 w-5" />
                 Eligibility & Account Registration
               </CardTitle>
@@ -290,7 +290,7 @@ export default function TermsOfService() {
           {/* Limitation of Liability */}
           <Card className="bg-gray-900 border-gray-700">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-red-400">
+              <CardTitle className="flex items-center gap-2 text-red-500">
                 <Gavel className="h-5 w-5" />
                 Limitation of Liability & Disclaimers
               </CardTitle>
@@ -365,7 +365,7 @@ export default function TermsOfService() {
           {/* Contact Information */}
           <Card className="bg-gray-900 border-gray-700">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-green-400">
+              <CardTitle className="flex items-center gap-2 text-green-500">
                 <FileText className="h-5 w-5" />
                 Contact & Legal Information
               </CardTitle>

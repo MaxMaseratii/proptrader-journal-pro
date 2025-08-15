@@ -80,8 +80,8 @@ export default function TradeCalendar({ trades, currentDate = new Date(), onDate
   };
 
   const getPnLColor = (pnl: number) => {
-    if (pnl > 0) return 'text-green-400';
-    if (pnl < 0) return 'text-red-400';
+    if (pnl > 0) return 'text-green-500';
+    if (pnl < 0) return 'text-red-500';
     return 'text-gray-400';
   };
 

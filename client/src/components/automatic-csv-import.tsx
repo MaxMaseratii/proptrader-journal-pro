@@ -221,7 +221,7 @@ export default function AutomaticCsvImport() {
                 
                 {csvFile && (
                   <Alert className="bg-green-900/20 border-green-500/30">
-                    <FileText className="h-4 w-4 text-green-400" />
+                    <FileText className="h-4 w-4 text-green-500" />
                     <AlertDescription className="text-green-300">
                       File ready: {csvFile.name} ({(csvFile.size / 1024).toFixed(1)} KB)
                     </AlertDescription>

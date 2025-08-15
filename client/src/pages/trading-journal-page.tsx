@@ -20,7 +20,7 @@ export default function TradingJournalPage() {
         <div className="mb-8">
           <div className="flex items-center space-x-3 mb-4">
             <div className="p-2 bg-green-100 dark:bg-green-900/20 rounded-lg">
-              <BookOpen className="h-6 w-6 text-green-600 dark:text-green-400" />
+              <BookOpen className="h-6 w-6 text-green-600 dark:text-green-500" />
             </div>
             <div>
               <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Trading Journal</h1>
@@ -60,7 +60,7 @@ export default function TradingJournalPage() {
             <CardContent className="p-6">
               <div className="flex items-center space-x-3">
                 <div className="p-2 bg-green-100 dark:bg-green-900/20 rounded-lg">
-                  <CheckCircle className="h-5 w-5 text-green-600 dark:text-green-400" />
+                  <CheckCircle className="h-5 w-5 text-green-600 dark:text-green-500" />
                 </div>
                 <div>
                   <p className="text-sm text-gray-600 dark:text-gray-400">Consistency</p>
@@ -216,7 +216,7 @@ export default function TradingJournalPage() {
                   </p>
                 </div>
                 <div className="p-3 bg-red-50 dark:bg-red-900/20 rounded-lg">
-                  <h4 className="font-medium text-red-800 dark:text-red-400">Emotional Control</h4>
+                  <h4 className="font-medium text-red-800 dark:text-red-500">Emotional Control</h4>
                   <p className="text-sm text-red-700 dark:text-red-300">
                     Don't revenge trade after losses
                   </p>

@@ -116,9 +116,9 @@ const StrategyManagement: React.FC<StrategyManagementProps> = ({ editStrategyId,
   }, [editStrategyId, strategies]);
 
   const getStrategyPerformanceColor = (expectedValue: number) => {
-    if (expectedValue > 20) return 'text-green-400';
+    if (expectedValue > 20) return 'text-green-500';
     if (expectedValue > 0) return 'text-yellow-400';
-    return 'text-red-400';
+    return 'text-red-500';
   };
 
 
@@ -194,7 +194,7 @@ const StrategyManagement: React.FC<StrategyManagementProps> = ({ editStrategyId,
                         variant="ghost"
                         size="sm"
                         onClick={() => confirmDelete(strategy)}
-                        className="h-8 px-3 text-red-400 hover:text-red-300 hover:bg-red-400/10 border border-red-400/30 hover:border-red-400/50"
+                        className="h-8 px-3 text-red-500 hover:text-red-300 hover:bg-red-400/10 border border-red-400/30 hover:border-red-400/50"
                         title="Delete strategy"
                       >
                         <Trash2 className="w-4 h-4 mr-1" />
@@ -238,7 +238,7 @@ const StrategyManagement: React.FC<StrategyManagementProps> = ({ editStrategyId,
                     <div className="space-y-1">
                       {strategy.rules.slice(0, 3).map((rule, index) => (
                         <div key={index} className="text-xs text-gray-400 flex items-start gap-1">
-                          <CheckCircle className="w-3 h-3 text-green-400 mt-0.5 flex-shrink-0" />
+                          <CheckCircle className="w-3 h-3 text-green-500 mt-0.5 flex-shrink-0" />
                           {rule}
                         </div>
                       ))}

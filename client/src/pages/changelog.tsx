@@ -89,7 +89,7 @@ export default function Changelog() {
         <div className="text-center mb-16">
           <div className="flex justify-center mb-4">
             <div className="p-3 bg-green-100 dark:bg-green-900/20 rounded-full">
-              <Calendar className="h-8 w-8 text-green-600 dark:text-green-400" />
+              <Calendar className="h-8 w-8 text-green-600 dark:text-green-500" />
             </div>
           </div>
           <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">

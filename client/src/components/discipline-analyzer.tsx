@@ -217,9 +217,9 @@ export default function DisciplineAnalyzer() {
   };
 
   const getScoreColor = (score: number) => {
-    if (score >= 80) return "text-green-400";
+    if (score >= 80) return "text-green-500";
     if (score >= 60) return "text-yellow-400";
-    return "text-red-400";
+    return "text-red-500";
   };
 
   const getScoreBadgeVariant = (score: number) => {
@@ -360,7 +360,7 @@ export default function DisciplineAnalyzer() {
             <Card className="bg-gray-800 border-gray-700">
               <CardHeader className="pb-3">
                 <CardTitle className="text-sm flex items-center gap-2">
-                  <Target className="h-4 w-4 text-green-400" />
+                  <Target className="h-4 w-4 text-green-500" />
                   Consistency
                 </CardTitle>
               </CardHeader>
@@ -391,7 +391,7 @@ export default function DisciplineAnalyzer() {
                   <div className="text-sm text-gray-400">Total Trades</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-green-400">{formatPercentage(disciplineData.winRate)}</div>
+                  <div className="text-2xl font-bold text-green-500">{formatPercentage(disciplineData.winRate)}</div>
                   <div className="text-sm text-gray-400">Win Rate</div>
                 </div>
                 <div className="text-center">
@@ -399,7 +399,7 @@ export default function DisciplineAnalyzer() {
                   <div className="text-sm text-gray-400">Profit Factor</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-red-400">{formatCurrency(disciplineData.maxDrawdown)}</div>
+                  <div className="text-2xl font-bold text-red-500">{formatCurrency(disciplineData.maxDrawdown)}</div>
                   <div className="text-sm text-gray-400">Max Drawdown</div>
                 </div>
               </div>
@@ -419,7 +419,7 @@ export default function DisciplineAnalyzer() {
                 <ul className="space-y-2">
                   {disciplineData.recommendations.map((rec, index) => (
                     <li key={index} className="flex items-start gap-2">
-                      <CheckCircle className="h-4 w-4 text-green-400 mt-0.5 flex-shrink-0" />
+                      <CheckCircle className="h-4 w-4 text-green-500 mt-0.5 flex-shrink-0" />
                       <span className="text-sm text-gray-300">{rec}</span>
                     </li>
                   ))}

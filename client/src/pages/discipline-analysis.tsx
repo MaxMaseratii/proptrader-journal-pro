@@ -119,7 +119,7 @@ export default function DisciplineAnalysis() {
           <Card className="bg-gradient-to-br from-green-900/50 to-green-800/30 border-green-700">
             <CardContent className="p-6">
               <div className="flex items-center gap-3 mb-3">
-                <Target className="h-8 w-8 text-green-400" />
+                <Target className="h-8 w-8 text-green-500" />
                 <div>
                   <h3 className="font-semibold text-white">Platform Support</h3>
                   <p className="text-sm text-green-300">All major brokers</p>
@@ -166,7 +166,7 @@ export default function DisciplineAnalysis() {
                 <h4 className="font-semibold text-white mb-3">Interpreting Your Scores</h4>
                 <ul className="space-y-2 text-sm text-gray-300">
                   <li className="flex items-start gap-2">
-                    <span className="text-green-400">•</span>
+                    <span className="text-green-500">•</span>
                     <strong>90-100:</strong> Excellent discipline - maintain current approach
                   </li>
                   <li className="flex items-start gap-2">
@@ -178,7 +178,7 @@ export default function DisciplineAnalysis() {
                     <strong>50-69:</strong> Moderate discipline - focus on emotional control
                   </li>
                   <li className="flex items-start gap-2">
-                    <span className="text-red-400">•</span>
+                    <span className="text-red-500">•</span>
                     <strong>Below 50:</strong> Needs improvement - review risk management
                   </li>
                 </ul>

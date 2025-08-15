@@ -305,9 +305,9 @@ export default function AccountManagement() {
 
   const getRiskLevelColor = (level: string) => {
     switch (level) {
-      case 'Low': return 'text-green-400';
+      case 'Low': return 'text-green-500';
       case 'Medium': return 'text-yellow-400';
-      case 'High': return 'text-red-400';
+      case 'High': return 'text-red-500';
       default: return 'text-gray-400';
     }
   };
@@ -372,7 +372,7 @@ export default function AccountManagement() {
                           value={formData.name}
                           onChange={(e) => handleInputChange('name', e.target.value)}
                         />
-                        {formErrors.name && <p className="text-red-400 text-sm mt-1">{formErrors.name}</p>}
+                        {formErrors.name && <p className="text-red-500 text-sm mt-1">{formErrors.name}</p>}
                       </div>
                       
                       <div>
@@ -388,7 +388,7 @@ export default function AccountManagement() {
                             <SelectItem value="challenge">Challenge</SelectItem>
                           </SelectContent>
                         </Select>
-                        {formErrors.type && <p className="text-red-400 text-sm mt-1">{formErrors.type}</p>}
+                        {formErrors.type && <p className="text-red-500 text-sm mt-1">{formErrors.type}</p>}
                       </div>
                     </div>
                     
@@ -400,7 +400,7 @@ export default function AccountManagement() {
                         value={formData.firm}
                         onChange={(e) => handleInputChange('firm', e.target.value)}
                       />
-                      {formErrors.firm && <p className="text-red-400 text-sm mt-1">{formErrors.firm}</p>}
+                      {formErrors.firm && <p className="text-red-500 text-sm mt-1">{formErrors.firm}</p>}
                     </div>
 
                   <div className="grid grid-cols-3 gap-4">
@@ -413,7 +413,7 @@ export default function AccountManagement() {
                         value={formData.startingBalance}
                         onChange={(e) => handleInputChange('startingBalance', parseFloat(e.target.value) || 0)}
                       />
-                      {formErrors.startingBalance && <p className="text-red-400 text-sm mt-1">{formErrors.startingBalance}</p>}
+                      {formErrors.startingBalance && <p className="text-red-500 text-sm mt-1">{formErrors.startingBalance}</p>}
                     </div>
                     
                     <div>
@@ -425,7 +425,7 @@ export default function AccountManagement() {
                         value={formData.profitTarget}
                         onChange={(e) => handleInputChange('profitTarget', parseFloat(e.target.value) || 0)}
                       />
-                      {formErrors.profitTarget && <p className="text-red-400 text-sm mt-1">{formErrors.profitTarget}</p>}
+                      {formErrors.profitTarget && <p className="text-red-500 text-sm mt-1">{formErrors.profitTarget}</p>}
                     </div>
                     
                     <div>
@@ -437,7 +437,7 @@ export default function AccountManagement() {
                         value={formData.maxDrawdown}
                         onChange={(e) => handleInputChange('maxDrawdown', parseFloat(e.target.value) || 0)}
                       />
-                      {formErrors.maxDrawdown && <p className="text-red-400 text-sm mt-1">{formErrors.maxDrawdown}</p>}
+                      {formErrors.maxDrawdown && <p className="text-red-500 text-sm mt-1">{formErrors.maxDrawdown}</p>}
                     </div>
                   </div>
 
@@ -544,7 +544,7 @@ export default function AccountManagement() {
                       </div>
                       <div>
                         <p className="text-xs text-gray-400 mb-1">Total P&L</p>
-                        <p className={`text-lg font-semibold ${metrics.totalPnL >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                        <p className={`text-lg font-semibold ${metrics.totalPnL >= 0 ? 'text-green-500' : 'text-red-500'}`}>
                           {isBalanceVisible ? formatCurrency(metrics.totalPnL) : '••••••'}
                         </p>
                       </div>
@@ -601,7 +601,7 @@ export default function AccountManagement() {
                             deleteAccountMutation.mutate(account.id);
                           }
                         }}
-                        className="border-red-600 text-red-400 hover:bg-red-600/20"
+                        className="border-red-600 text-red-500 hover:bg-red-600/20"
                       >
                         <Trash2 className="h-3 w-3" />
                       </Button>
@@ -710,7 +710,7 @@ export default function AccountManagement() {
                       value={formData.startingBalance}
                       onChange={(e) => handleInputChange('startingBalance', parseFloat(e.target.value) || 0)}
                     />
-                    {formErrors.startingBalance && <p className="text-red-400 text-sm mt-1">{formErrors.startingBalance}</p>}
+                    {formErrors.startingBalance && <p className="text-red-500 text-sm mt-1">{formErrors.startingBalance}</p>}
                   </div>
                   
                   <div>
@@ -722,7 +722,7 @@ export default function AccountManagement() {
                       value={formData.profitTarget}
                       onChange={(e) => handleInputChange('profitTarget', parseFloat(e.target.value) || 0)}
                     />
-                    {formErrors.profitTarget && <p className="text-red-400 text-sm mt-1">{formErrors.profitTarget}</p>}
+                    {formErrors.profitTarget && <p className="text-red-500 text-sm mt-1">{formErrors.profitTarget}</p>}
                   </div>
                   
                   <div>
@@ -734,7 +734,7 @@ export default function AccountManagement() {
                       value={formData.maxDrawdown}
                       onChange={(e) => handleInputChange('maxDrawdown', parseFloat(e.target.value) || 0)}
                     />
-                    {formErrors.maxDrawdown && <p className="text-red-400 text-sm mt-1">{formErrors.maxDrawdown}</p>}
+                    {formErrors.maxDrawdown && <p className="text-red-500 text-sm mt-1">{formErrors.maxDrawdown}</p>}
                   </div>
                 </div>
 
@@ -753,7 +753,7 @@ export default function AccountManagement() {
                       {formData.riskPerTrade}% per trade
                     </div>
                   </div>
-                  {formErrors.riskPerTrade && <p className="text-red-400 text-sm mt-1">{formErrors.riskPerTrade}</p>}
+                  {formErrors.riskPerTrade && <p className="text-red-500 text-sm mt-1">{formErrors.riskPerTrade}</p>}
                 </div>
 
                 <div className="flex justify-end space-x-3 pt-4">

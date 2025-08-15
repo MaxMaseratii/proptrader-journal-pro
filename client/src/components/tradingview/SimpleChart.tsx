@@ -248,7 +248,7 @@ export const SimpleChart: React.FC<SimpleChartProps> = ({
                 <div className="text-gray-300">
                   🔄 Side: {hoveredTrade.side?.toUpperCase() || 'N/A'}
                 </div>
-                <div className={`font-semibold text-lg border-t border-gray-600 pt-1 ${(hoveredTrade.pnl || 0) >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                <div className={`font-semibold text-lg border-t border-gray-600 pt-1 ${(hoveredTrade.pnl || 0) >= 0 ? 'text-green-500' : 'text-red-500'}`}>
                   💰 P&L: ${(hoveredTrade.pnl || 0).toFixed(2)}
                 </div>
                 {hoveredTrade.notes && (

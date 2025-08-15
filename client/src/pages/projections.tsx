@@ -319,18 +319,18 @@ export default function Projections() {
 
   const getRiskLevelColor = (level: 'low' | 'moderate' | 'high' | 'critical') => {
     switch (level) {
-      case 'low': return 'text-green-400 bg-green-500/20';
+      case 'low': return 'text-green-500 bg-green-500/20';
       case 'moderate': return 'text-yellow-400 bg-yellow-500/20';
       case 'high': return 'text-orange-400 bg-orange-500/20';
-      case 'critical': return 'text-red-400 bg-red-500/20';
+      case 'critical': return 'text-red-500 bg-red-500/20';
     }
   };
 
   const getAccountStatusColor = (status: 'active' | 'passed' | 'failed' | 'withdrawn') => {
     switch (status) {
       case 'active': return 'text-blue-400 bg-blue-500/20';
-      case 'passed': return 'text-green-400 bg-green-500/20';
-      case 'failed': return 'text-red-400 bg-red-500/20';
+      case 'passed': return 'text-green-500 bg-green-500/20';
+      case 'failed': return 'text-red-500 bg-red-500/20';
       case 'withdrawn': return 'text-gray-400 bg-gray-500/20';
     }
   };
@@ -702,16 +702,16 @@ export default function Projections() {
                         </div>
                         {settings.riskCuttingPercent > 0 && (
                           <div className="flex justify-between">
-                            <span className="text-red-400">After Loss:</span>
-                            <span className="text-red-400">
+                            <span className="text-red-500">After Loss:</span>
+                            <span className="text-red-500">
                               {formatCurrency(settings.riskPerTrade * (1 - settings.riskCuttingPercent / 100))}
                             </span>
                           </div>
                         )}
                         {settings.compoundingPercent > 0 && (
                           <div className="flex justify-between">
-                            <span className="text-green-400">After Win:</span>
-                            <span className="text-green-400">
+                            <span className="text-green-500">After Win:</span>
+                            <span className="text-green-500">
                               {formatCurrency(settings.riskPerTrade * (1 + settings.compoundingPercent / 100))}
                             </span>
                           </div>
@@ -780,7 +780,7 @@ export default function Projections() {
                   <CardContent>
                     <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                       <div className="text-center">
-                        <div className="text-lg font-bold text-green-400">
+                        <div className="text-lg font-bold text-green-500">
                           {formatCurrency(selectedAccountData.account.startingBalance + selectedAccountData.totalPnl)}
                         </div>
                         <div className="text-sm text-gray-400">Current Balance</div>
@@ -837,8 +837,8 @@ export default function Projections() {
                     {/* Daily Profit Target Card */}
                     <div className="bg-green-500/10 border border-green-500/30 rounded-lg p-4">
                       <div className="flex items-center gap-2 mb-2">
-                        <Target className="w-4 h-4 text-green-400" />
-                        <span className="text-green-400 font-medium text-sm">DAILY PROFIT TARGET</span>
+                        <Target className="w-4 h-4 text-green-500" />
+                        <span className="text-green-500 font-medium text-sm">DAILY PROFIT TARGET</span>
                       </div>
                       <div className="text-2xl font-bold text-white">{formatCurrency(settings.riskPerTrade * settings.riskRewardRatio)}</div>
                       <div className="text-xs text-gray-400">Single account only</div>
@@ -925,10 +925,10 @@ export default function Projections() {
                                 const exceeded = dailyPnl >= dailyTarget;
                                 resultDisplay = (
                                   <div className="space-y-1">
-                                    <div className="text-green-400 font-bold text-lg">+${formatCurrency(dailyPnl)}</div>
+                                    <div className="text-green-500 font-bold text-lg">+${formatCurrency(dailyPnl)}</div>
                                     <div className="flex items-center justify-center gap-1">
-                                      <CheckCircle className="w-3 h-3 text-green-400" />
-                                      <span className="text-xs text-green-400 font-medium">
+                                      <CheckCircle className="w-3 h-3 text-green-500" />
+                                      <span className="text-xs text-green-500 font-medium">
                                         {exceeded ? "✓ Target exceeded" : "✓ Profitable"}
                                       </span>
                                     </div>
@@ -937,10 +937,10 @@ export default function Projections() {
                               } else if (dailyPnl < 0) {
                                 resultDisplay = (
                                   <div className="space-y-1">
-                                    <div className="text-red-400 font-bold text-lg">-${formatCurrency(Math.abs(dailyPnl))}</div>
+                                    <div className="text-red-500 font-bold text-lg">-${formatCurrency(Math.abs(dailyPnl))}</div>
                                     <div className="flex items-center justify-center gap-1">
-                                      <span className="text-red-400 text-xs">✗</span>
-                                      <span className="text-xs text-red-400 font-medium">✗ Below target</span>
+                                      <span className="text-red-500 text-xs">✗</span>
+                                      <span className="text-xs text-red-500 font-medium">✗ Below target</span>
                                     </div>
                                   </div>
                                 );
@@ -983,13 +983,13 @@ export default function Projections() {
                                 
                                 {/* Column 3: Expected Profit */}
                                 <td className="p-4 text-center">
-                                  <div className="text-green-400 font-bold text-lg">{formatCurrency(day.reward || 0)}</div>
+                                  <div className="text-green-500 font-bold text-lg">{formatCurrency(day.reward || 0)}</div>
                                 </td>
                                 
                                 {/* Column 4: Progress to Goal (VERY IMPORTANT - CUMULATIVE PROGRESS) */}
                                 <td className="p-4 text-center">
                                   <div className="space-y-2">
-                                    <div className={`font-bold text-lg ${isTargetReached ? 'text-green-400' : 'text-yellow-400'}`}>
+                                    <div className={`font-bold text-lg ${isTargetReached ? 'text-green-500' : 'text-yellow-400'}`}>
                                       {formatCurrency(day.targetExpectation || 0)}
                                     </div>
                                     <div className="w-full bg-gray-700 rounded-full h-2">
@@ -1001,8 +1001,8 @@ export default function Projections() {
                                     <div className="text-xs text-gray-400">{(progressPercent || 0).toFixed(1)}% of goal</div>
                                     {isTargetReached && (
                                       <div className="flex items-center justify-center gap-1">
-                                        <CheckCircle className="w-4 h-4 text-green-400" />
-                                        <span className="text-xs text-green-400 font-medium">TARGET REACHED!</span>
+                                        <CheckCircle className="w-4 h-4 text-green-500" />
+                                        <span className="text-xs text-green-500 font-medium">TARGET REACHED!</span>
                                       </div>
                                     )}
                                   </div>

@@ -353,7 +353,7 @@ export default function FlowStateTraining() {
                 </div>
                 <div className={`text-center p-4 rounded-lg ${zone.zone === 'Flow' ? 'bg-green-950/50 border-2 border-green-500' : 'bg-green-950/30 border border-green-500/30'}`}>
                   <h4 className="font-medium text-green-300">Flow Zone</h4>
-                  <p className="text-sm text-green-400">High Challenge + High Skill</p>
+                  <p className="text-sm text-green-500">High Challenge + High Skill</p>
                 </div>
                 <div className={`text-center p-4 rounded-lg ${zone.zone === 'Apathy' ? 'bg-gray-800 border-2 border-gray-500' : 'bg-gray-800/50 border border-gray-500/30'}`}>
                   <h4 className="font-medium text-gray-300">Apathy Zone</h4>
@@ -377,13 +377,13 @@ export default function FlowStateTraining() {
           <Card className="mb-8 bg-gradient-to-br from-green-950/50 via-blue-950/50 to-black border-l-4 border-l-green-500">
             <CardHeader>
               <CardTitle className="flex items-center space-x-2 text-white">
-                <Waves className="h-5 w-5 text-green-400" />
+                <Waves className="h-5 w-5 text-green-500" />
                 <span>Flow Zone Assessment Score</span>
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-center mb-6">
-                <div className="text-6xl font-bold text-green-400 mb-2">{flowScore}</div>
+                <div className="text-6xl font-bold text-green-500 mb-2">{flowScore}</div>
                 <div className="text-lg text-gray-400">Overall Flow State Score</div>
                 <Badge className={flowScore >= 80 ? 'bg-green-900/50 text-green-300 border border-green-500/30' : flowScore >= 60 ? 'bg-yellow-900/50 text-yellow-300 border border-yellow-500/30' : 'bg-teal-900/50 text-teal-300 border border-teal-500/30'}>
                   {flowScore >= 80 ? 'Excellent - Ready to Trade' : flowScore >= 60 ? 'Good - Proceed with Caution' : 'Poor - Consider Paper Trading'}
@@ -400,7 +400,7 @@ export default function FlowStateTraining() {
                   <div className="text-sm text-teal-300">Zone Bonus</div>
                 </div>
                 <div className="text-center p-4 bg-green-900/30 rounded-lg border border-green-500/30">
-                  <div className="text-2xl font-bold text-green-400">{ritualCompleted ? '+10' : '0'}</div>
+                  <div className="text-2xl font-bold text-green-500">{ritualCompleted ? '+10' : '0'}</div>
                   <div className="text-sm text-green-300">Ritual Bonus</div>
                 </div>
               </div>
@@ -505,7 +505,7 @@ export default function FlowStateTraining() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="p-4 bg-green-950/30 rounded-lg border border-green-500/30">
                   <h4 className="font-medium text-green-300 mb-2">Flow State Benefits:</h4>
-                  <ul className="text-sm text-green-400 space-y-1">
+                  <ul className="text-sm text-green-500 space-y-1">
                     <li>• 200-400% increase in profitability</li>
                     <li>• 73% reduction in stress hormones</li>
                     <li>• Enhanced pattern recognition</li>

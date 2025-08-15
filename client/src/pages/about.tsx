@@ -140,7 +140,7 @@ export default function About() {
               
               <div className="flex items-start space-x-4">
                 <div className="w-12 h-12 bg-green-100 dark:bg-green-900/20 rounded-full flex items-center justify-center flex-shrink-0">
-                  <span className="text-green-600 dark:text-green-400 font-bold">2023</span>
+                  <span className="text-green-600 dark:text-green-500 font-bold">2023</span>
                 </div>
                 <div>
                   <h3 className="font-semibold text-gray-900 dark:text-white mb-2">The Solution</h3>

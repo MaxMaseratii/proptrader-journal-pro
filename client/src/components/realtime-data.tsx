@@ -117,17 +117,17 @@ export default function RealtimeData() {
 
   const getImpactColor = (impact: string) => {
     switch (impact) {
-      case 'high': return 'text-red-400';
+      case 'high': return 'text-red-500';
       case 'medium': return 'text-yellow-400';
-      case 'low': return 'text-green-400';
+      case 'low': return 'text-green-500';
       default: return 'text-gray-400';
     }
   };
 
   const getSentimentIcon = (sentiment: string) => {
     switch (sentiment) {
-      case 'positive': return <TrendingUp className="h-4 w-4 text-green-400" />;
-      case 'negative': return <TrendingDown className="h-4 w-4 text-red-400" />;
+      case 'positive': return <TrendingUp className="h-4 w-4 text-green-500" />;
+      case 'negative': return <TrendingDown className="h-4 w-4 text-red-500" />;
       default: return <BarChart3 className="h-4 w-4 text-gray-400" />;
     }
   };
@@ -152,9 +152,9 @@ export default function RealtimeData() {
               </div>
               <div className="flex items-center space-x-2">
                 {isConnected ? (
-                  <Wifi className="h-5 w-5 text-green-400" />
+                  <Wifi className="h-5 w-5 text-green-500" />
                 ) : (
-                  <WifiOff className="h-5 w-5 text-red-400" />
+                  <WifiOff className="h-5 w-5 text-red-500" />
                 )}
                 <Badge variant={isConnected ? "default" : "destructive"}>
                   {isConnected ? 'Connected' : 'Disconnected'}
@@ -177,9 +177,9 @@ export default function RealtimeData() {
               <div className="flex items-center justify-between mb-2">
                 <h3 className="text-lg font-bold text-white">{item.symbol}</h3>
                 {item.changePercent >= 0 ? (
-                  <TrendingUp className="h-5 w-5 text-green-400" />
+                  <TrendingUp className="h-5 w-5 text-green-500" />
                 ) : (
-                  <TrendingDown className="h-5 w-5 text-red-400" />
+                  <TrendingDown className="h-5 w-5 text-red-500" />
                 )}
               </div>
               <div className="space-y-1">
@@ -187,7 +187,7 @@ export default function RealtimeData() {
                   ${item.price.toFixed(2)}
                 </div>
                 <div className={`text-sm font-medium ${
-                  item.change >= 0 ? 'text-green-400' : 'text-red-400'
+                  item.change >= 0 ? 'text-green-500' : 'text-red-500'
                 }`}>
                   {item.change >= 0 ? '+' : ''}{item.change.toFixed(2)} 
                   ({item.changePercent >= 0 ? '+' : ''}{item.changePercent.toFixed(2)}%)
@@ -292,15 +292,15 @@ export default function RealtimeData() {
           <div className="flex items-center justify-between text-sm">
             <div className="flex items-center space-x-4">
               <div className="flex items-center space-x-2">
-                <CheckCircle className="h-4 w-4 text-green-400" />
+                <CheckCircle className="h-4 w-4 text-green-500" />
                 <span className="text-gray-300">Market Data: Real-time</span>
               </div>
               <div className="flex items-center space-x-2">
-                <CheckCircle className="h-4 w-4 text-green-400" />
+                <CheckCircle className="h-4 w-4 text-green-500" />
                 <span className="text-gray-300">News: Live Feed</span>
               </div>
               <div className="flex items-center space-x-2">
-                <CheckCircle className="h-4 w-4 text-green-400" />
+                <CheckCircle className="h-4 w-4 text-green-500" />
                 <span className="text-gray-300">Economics: Calendar API</span>
               </div>
             </div>

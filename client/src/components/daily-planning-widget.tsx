@@ -106,7 +106,7 @@ export function DailyPlanningWidget({ trades = [], selectedAccount, dailyPlan, c
         {isTrading && (
           <div className="flex items-center gap-2 p-2 bg-green-900/30 border border-green-500 rounded-lg">
             <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-            <span className="text-green-400 font-mono text-sm">{formatTime(currentSessionTime)}</span>
+            <span className="text-green-500 font-mono text-sm">{formatTime(currentSessionTime)}</span>
           </div>
         )}
 
@@ -115,7 +115,7 @@ export function DailyPlanningWidget({ trades = [], selectedAccount, dailyPlan, c
           <div className="text-center p-3 widget-bg border border-prop-gold/10 rounded-lg">
             <div className={cn(
               "text-xl font-bold",
-              todayPnL >= 0 ? "text-green-400" : "text-red-400"
+              todayPnL >= 0 ? "text-green-500" : "text-red-500"
             )}>
               {todayPnL >= 0 ? '+' : ''}${todayPnL.toFixed(2)}
             </div>
@@ -151,11 +151,11 @@ export function DailyPlanningWidget({ trades = [], selectedAccount, dailyPlan, c
         {/* Today's Stats */}
         <div className="grid grid-cols-3 gap-2 text-center">
           <div className="p-2 widget-bg border border-prop-gold/10 rounded">
-            <div className="text-sm font-medium text-green-400">{todayWins}</div>
+            <div className="text-sm font-medium text-green-500">{todayWins}</div>
             <div className="text-xs widget-text opacity-70">Wins</div>
           </div>
           <div className="p-2 widget-bg border border-prop-gold/10 rounded">
-            <div className="text-sm font-medium text-red-400">{todayLosses}</div>
+            <div className="text-sm font-medium text-red-500">{todayLosses}</div>
             <div className="text-xs widget-text opacity-70">Losses</div>
           </div>
           <div className="p-2 widget-bg border border-prop-gold/10 rounded">
@@ -168,7 +168,7 @@ export function DailyPlanningWidget({ trades = [], selectedAccount, dailyPlan, c
         <div className="flex items-center justify-between p-2 widget-bg border border-prop-gold/10 rounded-lg">
           <div className="flex items-center gap-2">
             {todayPnL >= dailyTarget ? (
-              <CheckCircle className="w-4 h-4 text-green-400" />
+              <CheckCircle className="w-4 h-4 text-green-500" />
             ) : (
               <AlertTriangle className="w-4 h-4 text-orange-400" />
             )}

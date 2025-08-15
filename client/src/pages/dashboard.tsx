@@ -22,8 +22,8 @@ import WeeklyPerformanceOverview from "@/components/weekly-performance-overview"
 // Color coding utility function
 const getValueColor = (value: number, type: 'currency' | 'percentage' | 'neutral' = 'currency') => {
   if (type === 'neutral') return 'text-white';
-  if (value > 0) return 'text-green-400';
-  if (value < 0) return 'text-red-400';
+  if (value > 0) return 'text-green-500';
+  if (value < 0) return 'text-red-500';
   return 'text-white'; // zero/neutral
 };
 import TradeCalendar from "@/components/trade-calendar";
@@ -579,12 +579,12 @@ export default function Dashboard() {
                   
                   {/* P&L */}
                   <div className={`text-xs font-bold mb-1 ${
-                    metrics.totalPnL > 0 ? 'text-green-400' : 
-                    metrics.totalPnL < 0 ? 'text-red-400' : 'text-gray-400'
+                    metrics.totalPnL > 0 ? 'text-green-500' : 
+                    metrics.totalPnL < 0 ? 'text-red-500' : 'text-gray-400'
                   }`}>
                     {metrics.totalTrades > 0 ? (
                       <>
-                        {metrics.totalPnL > 0 ? '+' : ''}${Math.abs(metrics.totalPnL).toFixed(0)}
+                        {metrics.totalPnL > 0 ? '+$' : metrics.totalPnL < 0 ? '-$' : '$'}{Math.abs(metrics.totalPnL).toFixed(0)}
                       </>
                     ) : (
                       '$0'
@@ -596,9 +596,9 @@ export default function Dashboard() {
                     <span className="text-gray-400">{metrics.totalTrades}T</span>
                     <span className={`font-medium ${
                       metrics.totalTrades === 0 ? 'text-gray-500' :
-                      metrics.winRate >= 80 ? 'text-green-400' :
-                      metrics.winRate >= 60 ? 'text-yellow-400' :
-                      metrics.winRate >= 40 ? 'text-orange-400' : 'text-red-400'
+                      metrics.winRate >= 80 ? 'text-green-500' :
+                      metrics.winRate >= 60 ? 'text-yellow-500' :
+                      metrics.winRate >= 40 ? 'text-orange-500' : 'text-red-500'
                     }`}>
                       {metrics.totalTrades > 0 ? Math.round(metrics.winRate) : 0}%
                     </span>
@@ -678,8 +678,8 @@ export default function Dashboard() {
                 
                 {/* P&L */}
                 <div className={`text-sm font-bold mb-1 ${
-                  monthPnL > 0 ? 'text-green-400' : 
-                  monthPnL < 0 ? 'text-red-400' : 'text-gray-400'
+                  monthPnL > 0 ? 'text-green-500' : 
+                  monthPnL < 0 ? 'text-red-500' : 'text-gray-400'
                 }`}>
                   {monthPnL > 0 ? '+' : ''}${Math.abs(monthPnL).toFixed(0)}
                 </div>
@@ -689,9 +689,9 @@ export default function Dashboard() {
                   <span className="text-gray-400">{monthTrades}T</span>
                   <span className={`font-medium ${
                     monthTrades === 0 ? 'text-gray-500' :
-                    monthWinRate >= 80 ? 'text-green-400' :
+                    monthWinRate >= 80 ? 'text-green-500' :
                     monthWinRate >= 60 ? 'text-yellow-400' :
-                    monthWinRate >= 40 ? 'text-orange-400' : 'text-red-400'
+                    monthWinRate >= 40 ? 'text-orange-400' : 'text-red-500'
                   }`}>
                     {monthTrades > 0 ? Math.round(monthWinRate) : 0}%
                   </span>
@@ -1365,7 +1365,7 @@ export default function Dashboard() {
                     : 'bg-yellow-500/20'
                 }`}>
                   {congratulationsBanner.type === 'funded' ? (
-                    <Trophy className="h-6 w-6 text-green-400" />
+                    <Trophy className="h-6 w-6 text-green-500" />
                   ) : (
                     <Star className="h-6 w-6 text-yellow-400" />
                   )}
@@ -1431,7 +1431,7 @@ export default function Dashboard() {
                 <div className="flex items-center space-x-2">
                   <span className="text-sm text-gray-400">Daily P&L:</span>
                   <span className={`text-lg font-bold ${
-                    selectedDayData?.dayPnL >= 0 ? 'text-green-400' : 'text-red-400'
+                    selectedDayData?.dayPnL >= 0 ? 'text-green-500' : 'text-red-500'
                   }`}>
                     {selectedDayData?.dayPnL >= 0 ? '+' : ''}${Math.abs(selectedDayData?.dayPnL || 0).toFixed(2)}
                   </span>
@@ -1446,7 +1446,7 @@ export default function Dashboard() {
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-2">
-                      <AlertTriangle className="w-4 h-4 text-red-400" />
+                      <AlertTriangle className="w-4 h-4 text-red-500" />
                       <span className="text-gray-300 font-medium">Daily Loss Limit</span>
                     </div>
                     <span className={`px-3 py-1 rounded-full text-xs font-bold ${
@@ -1506,7 +1506,7 @@ export default function Dashboard() {
                   
                   <div className="text-center">
                     <span className={`text-sm font-bold ${
-                      Math.abs(selectedDayData.dayPnL) >= 100 ? 'text-red-400' : 
+                      Math.abs(selectedDayData.dayPnL) >= 100 ? 'text-red-500' : 
                       Math.abs(selectedDayData.dayPnL) >= 80 ? 'text-orange-400' : 
                       'text-yellow-400'
                     }`}>
@@ -1533,7 +1533,7 @@ export default function Dashboard() {
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-2">
-                      <Target className="w-4 h-4 text-green-400" />
+                      <Target className="w-4 h-4 text-green-500" />
                       <span className="text-gray-300 font-medium">Daily Profit Target</span>
                     </div>
                     <span className={`px-3 py-1 rounded-full text-xs font-bold ${
@@ -1585,7 +1585,7 @@ export default function Dashboard() {
                   </div>
                   
                   <div className="text-center">
-                    <span className="text-sm font-bold text-green-400">
+                    <span className="text-sm font-bold text-green-500">
                       ${selectedDayData.dayPnL} of $100 target ({((selectedDayData.dayPnL / 100) * 100).toFixed(0)}%)
                     </span>
                   </div>
@@ -1633,10 +1633,10 @@ export default function Dashboard() {
               <div className="bg-black/30 rounded-lg p-4 border border-gray-700/50 relative">
                 {combinedAnalytics && combinedAnalytics.accounts.length > 0 ? (
                   <>
-                    <div className="absolute top-3 right-3 text-xs text-red-400">
+                    <div className="absolute top-3 right-3 text-xs text-red-500">
                       Max: ${combinedAnalytics.accounts[0]?.dailyLossLimit || 0}
                     </div>
-                    <div className="text-3xl font-bold text-red-400 mb-1">
+                    <div className="text-3xl font-bold text-red-500 mb-1">
                       ${combinedAnalytics.accounts[0]?.riskPerTrade || 0}
                     </div>
                   </>
@@ -1764,10 +1764,10 @@ export default function Dashboard() {
                 </div>
                 <div className={`text-3xl font-bold mb-1 ${
                   !combinedAnalytics || combinedAnalytics.totalTrades === 0 || !selectedDayData || selectedDayData.totalDayTrades === 0 ? 'text-gray-500' :
-                  (selectedDayData?.disciplineScore || 0) >= 90 ? 'text-green-400' : 
-                  (selectedDayData?.disciplineScore || 0) >= 80 ? 'text-green-400' : 
+                  (selectedDayData?.disciplineScore || 0) >= 90 ? 'text-green-500' : 
+                  (selectedDayData?.disciplineScore || 0) >= 80 ? 'text-green-500' : 
                   (selectedDayData?.disciplineScore || 0) >= 70 ? 'text-yellow-400' : 
-                  (selectedDayData?.disciplineScore || 0) >= 60 ? 'text-orange-400' : 'text-red-400'
+                  (selectedDayData?.disciplineScore || 0) >= 60 ? 'text-orange-400' : 'text-red-500'
                 }`}>
                   {!combinedAnalytics || combinedAnalytics.totalTrades === 0 || !selectedDayData || selectedDayData.totalDayTrades === 0 ? '--' : 
                    `${Math.round(selectedDayData?.disciplineScore || 0)}% ${
@@ -1809,7 +1809,7 @@ export default function Dashboard() {
                 <div className="absolute top-3 right-3 text-xs text-green-300">
                   WR
                 </div>
-                <div className={`text-3xl font-bold mb-1 ${(selectedDayData?.winRate || 0) >= 50 ? 'text-green-400' : 'text-red-400'}`}>
+                <div className={`text-3xl font-bold mb-1 ${(selectedDayData?.winRate || 0) >= 50 ? 'text-green-500' : 'text-red-500'}`}>
                   {Math.round(selectedDayData?.winRate || 0)}%
                 </div>
                 <div className="text-sm text-gray-400 mb-1">Win Rate</div>
@@ -1827,7 +1827,7 @@ export default function Dashboard() {
                   const grossWin = selectedDayData?.trades?.filter(t => (t.pnl || 0) > 0).reduce((sum, t) => sum + (t.pnl || 0), 0) || 0;
                   const grossLoss = Math.abs(selectedDayData?.trades?.filter(t => (t.pnl || 0) < 0).reduce((sum, t) => sum + (t.pnl || 0), 0) || 0);
                   const profitFactor = grossLoss > 0 ? grossWin / grossLoss : grossWin > 0 ? 999 : 0;
-                  return profitFactor >= 1 ? 'text-green-400' : 'text-red-400';
+                  return profitFactor >= 1 ? 'text-green-500' : 'text-red-500';
                 })()}`}>
                   {(() => {
                     const grossWin = selectedDayData?.trades?.filter(t => (t.pnl || 0) > 0).reduce((sum, t) => sum + (t.pnl || 0), 0) || 0;
@@ -1978,7 +1978,7 @@ export default function Dashboard() {
                   <div className="absolute top-2 right-2 text-xs text-cyan-300">
                     P&L
                   </div>
-                  <div className={`text-xl font-bold ${combinedAnalytics?.totalPnl >= 0 ? 'text-green-400' : 'text-red-400'} mb-1`}>
+                  <div className={`text-xl font-bold ${combinedAnalytics?.totalPnl >= 0 ? 'text-green-500' : 'text-red-500'} mb-1`}>
                     {combinedAnalytics?.totalPnl >= 0 ? '+' : ''}${(combinedAnalytics?.totalPnl || 0).toFixed(0)}
                   </div>
                   <div className="text-xs text-gray-400">{calendarViewMode.charAt(0).toUpperCase() + calendarViewMode.slice(1)} P&L</div>
@@ -2075,7 +2075,7 @@ export default function Dashboard() {
             <div className="widget-card p-4 transition-all duration-200">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-sm font-medium text-gray-300">Total P&L</span>
-                <TrendingUp className="w-4 h-4 text-green-400" />
+                <TrendingUp className="w-4 h-4 text-green-500" />
               </div>
               <div className={`text-2xl font-bold mb-1 ${getValueColor(combinedAnalytics?.totalPnl || 0)}`}>
                 {formatCurrency(combinedAnalytics?.totalPnl || 0)}
@@ -2087,9 +2087,9 @@ export default function Dashboard() {
             <div className="widget-card p-4 transition-all duration-200">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-sm font-medium text-gray-300">Win Rate</span>
-                <Target className="w-4 h-4 text-green-400" />
+                <Target className="w-4 h-4 text-green-500" />
               </div>
-              <div className={`text-2xl font-bold mb-1 ${(combinedAnalytics?.winRate || 0) > 50 ? 'text-green-400' : 'text-red-400'}`}>
+              <div className={`text-2xl font-bold mb-1 ${(combinedAnalytics?.winRate || 0) > 50 ? 'text-green-500' : 'text-red-500'}`}>
                 {formatPercentage(combinedAnalytics?.winRate || 0)}
               </div>
               <div className="text-xs text-gray-400">Winning trades percentage</div>
@@ -2149,9 +2149,9 @@ export default function Dashboard() {
             <div className="widget-card p-4 transition-all duration-200">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-sm font-medium text-gray-300">Profit Factor</span>
-                <TrendingUp className="w-4 h-4 text-green-400" />
+                <TrendingUp className="w-4 h-4 text-green-500" />
               </div>
-              <div className="text-2xl font-bold mb-1 text-green-400">
+              <div className="text-2xl font-bold mb-1 text-green-500">
                 {combinedAnalytics?.profitFactor?.toFixed(2) || '0.00'}
               </div>
               <div className="text-xs text-gray-400">Gross Win / Gross Loss</div>
@@ -2216,7 +2216,7 @@ export default function Dashboard() {
                       <div key={trade.id || index} className="bg-cyan-600/30 rounded-lg p-3 hover:bg-cyan-600/40 transition-colors duration-200">
                         <div className="flex justify-between items-start mb-1">
                           <span className="text-white font-medium">{trade.symbol}</span>
-                          <span className={`font-bold ${(trade.pnl || 0) >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                          <span className={`font-bold ${(trade.pnl || 0) >= 0 ? 'text-green-500' : 'text-red-500'}`}>
                             {(trade.pnl || 0) >= 0 ? '+' : '-'}{formatCurrency(Math.abs(trade.pnl || 0))}
                           </span>
                         </div>
@@ -2244,7 +2244,7 @@ export default function Dashboard() {
                                 href={trade.tradeImage}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="inline-flex items-center px-2 py-1 text-xs bg-green-600/20 text-green-400 rounded hover:bg-green-600/30 transition-colors"
+                                className="inline-flex items-center px-2 py-1 text-xs bg-green-600/20 text-green-500 rounded hover:bg-green-600/30 transition-colors"
                               >
                                 <FileText className="w-3 h-3 mr-1" />
                                 Chart
@@ -2433,7 +2433,7 @@ export default function Dashboard() {
                                     content = `
                                       <div class="font-semibold text-yellow-400">${point.trade.symbol}</div>
                                       <div class="text-xs mt-1">
-                                        <div>P&L: <span class="${point.trade.pnl >= 0 ? 'text-green-400' : 'text-red-400'}">${point.trade.pnl >= 0 ? '+' : ''}$${Math.abs(point.trade.pnl).toFixed(2)}</span></div>
+                                        <div>P&L: <span class="${point.trade.pnl >= 0 ? 'text-green-500' : 'text-red-500'}">${point.trade.pnl >= 0 ? '+' : ''}$${Math.abs(point.trade.pnl).toFixed(2)}</span></div>
                                         <div>Date: ${new Date(point.date).toLocaleDateString()}</div>
                                         <div>Trade #${point.tradesCount}</div>
                                       </div>
@@ -2646,7 +2646,7 @@ export default function Dashboard() {
 
                                           <!-- Main value -->
                                           <div class="text-center mb-3">
-                                            <div class="text-xl font-black ${(trade.pnl || 0) >= 0 ? 'text-green-400' : 'text-red-400'}">${(trade.pnl || 0) >= 0 ? '+' : ''}$${Math.abs(trade.pnl || 0).toFixed(2)}</div>
+                                            <div class="text-xl font-black ${(trade.pnl || 0) >= 0 ? 'text-green-500' : 'text-red-500'}">${(trade.pnl || 0) >= 0 ? '+' : ''}$${Math.abs(trade.pnl || 0).toFixed(2)}</div>
                                           </div>
 
                                           <!-- Compact stats -->
@@ -2657,7 +2657,7 @@ export default function Dashboard() {
                                             </div>
                                             <div class="flex justify-between">
                                               <span class="text-gray-400">Return:</span>
-                                              <span class="${returnPercent >= 0 ? 'text-green-400' : 'text-red-400'} font-semibold">${returnPercent.toFixed(1)}%</span>
+                                              <span class="${returnPercent >= 0 ? 'text-green-500' : 'text-red-500'} font-semibold">${returnPercent.toFixed(1)}%</span>
                                             </div>
                                           </div>
                                         </div>
@@ -2719,7 +2719,7 @@ export default function Dashboard() {
               <div className="space-y-3">
                 <div className="flex justify-between">
                   <span className="text-gray-400">Active Accounts:</span>
-                  <span className="text-green-400 font-semibold">{accounts?.filter(a => a.status === 'active').length || 0}</span>
+                  <span className="text-green-500 font-semibold">{accounts?.filter(a => a.status === 'active').length || 0}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-400">Challenge Accounts:</span>
@@ -2727,7 +2727,7 @@ export default function Dashboard() {
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-400">Funded Accounts:</span>
-                  <span className="text-green-400 font-semibold">{accounts?.filter(a => a.type === 'funded').length || 0}</span>
+                  <span className="text-green-500 font-semibold">{accounts?.filter(a => a.type === 'funded').length || 0}</span>
                 </div>
               </div>
             </div>
@@ -2746,7 +2746,7 @@ export default function Dashboard() {
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-400">Type:</span>
-                    <span className={`font-semibold capitalize ${accounts[0].type === 'funded' ? 'text-green-400' : accounts[0].type === 'challenge' ? 'text-yellow-400' : 'text-blue-400'}`}>
+                    <span className={`font-semibold capitalize ${accounts[0].type === 'funded' ? 'text-green-500' : accounts[0].type === 'challenge' ? 'text-yellow-400' : 'text-blue-400'}`}>
                       {accounts[0].type}
                     </span>
                   </div>
@@ -2827,7 +2827,7 @@ export default function Dashboard() {
                   <div className="space-y-4">
                     <div className="flex justify-between items-center">
                       <span className="text-gray-400">Overall Score:</span>
-                      <span className={`text-xl font-bold ${disciplineMetrics.disciplineScore >= 80 ? 'text-green-400' : disciplineMetrics.disciplineScore >= 60 ? 'text-yellow-400' : 'text-red-400'}`}>
+                      <span className={`text-xl font-bold ${disciplineMetrics.disciplineScore >= 80 ? 'text-green-500' : disciplineMetrics.disciplineScore >= 60 ? 'text-yellow-400' : 'text-red-500'}`}>
                         {(() => {
                           const score = Math.round(disciplineMetrics.disciplineScore);
                           const grade = score >= 90 ? 'A' : score >= 80 ? 'B' : score >= 70 ? 'C' : score >= 60 ? 'D' : 'F';
@@ -2845,7 +2845,7 @@ export default function Dashboard() {
                     </div>
                     <div className="flex justify-between items-center">
                       <span className="text-gray-400">Consistency:</span>
-                      <span className="text-green-400 font-semibold">{Math.round(disciplineMetrics.consistencyScore)}%</span>
+                      <span className="text-green-500 font-semibold">{Math.round(disciplineMetrics.consistencyScore)}%</span>
                     </div>
                   </div>
                 );
@@ -2882,7 +2882,7 @@ export default function Dashboard() {
                         <div className="flex justify-between text-sm mb-2">
                           <span className="truncate">{account.name}</span>
                           <span className={`font-medium ${
-                            riskPercentage > 80 ? 'text-red-400' : 
+                            riskPercentage > 80 ? 'text-red-500' : 
                             riskPercentage > 60 ? 'text-orange-400' : 
                             'text-yellow-400'
                           }`}>
@@ -2963,7 +2963,7 @@ export default function Dashboard() {
             <div className="widget-card p-4 transition-all duration-200">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-sm font-medium text-gray-300">Total Spent</span>
-                <CreditCard className="w-4 h-4 text-red-400" />
+                <CreditCard className="w-4 h-4 text-red-500" />
               </div>
               <div className={`text-2xl font-bold mb-1 ${getValueColor(-((accounts?.reduce((sum, acc) => sum + (acc.accountCost || 0) + (acc.totalResetsCost || 0) + (acc.activationCost || 0), 0) || 0)))}`}>
                 -{formatCurrency((accounts?.reduce((sum, acc) => sum + (acc.accountCost || 0) + (acc.totalResetsCost || 0) + (acc.activationCost || 0), 0) || 0))}
@@ -2974,7 +2974,7 @@ export default function Dashboard() {
             <div className="widget-card p-4 transition-all duration-200">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-sm font-medium text-gray-300">Payouts</span>
-                <TrendingUp className="w-4 h-4 text-green-400" />
+                <TrendingUp className="w-4 h-4 text-green-500" />
               </div>
               <div className={`text-2xl font-bold mb-1 ${getValueColor(calculateTotalAvailablePayouts())}`}>
                 +{formatCurrency(calculateTotalAvailablePayouts())}
@@ -3011,7 +3011,7 @@ export default function Dashboard() {
             <div className="widget-card p-4 transition-all duration-200">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-sm font-medium text-gray-300">Profit Factor</span>
-                <Target className="w-4 h-4 text-green-400" />
+                <Target className="w-4 h-4 text-green-500" />
               </div>
               <div className={`text-2xl font-bold mb-1 ${(() => {
                 const filteredTrades = getFilteredTrades();
@@ -3063,9 +3063,9 @@ export default function Dashboard() {
             <div className="widget-card p-4 transition-all duration-200">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-sm font-medium text-gray-300">Max Consecutive Wins</span>
-                <TrendingUp className="w-4 h-4 text-green-400" />
+                <TrendingUp className="w-4 h-4 text-green-500" />
               </div>
-              <div className="text-2xl font-bold mb-1 text-green-400">
+              <div className="text-2xl font-bold mb-1 text-green-500">
                 {(() => {
                   const filteredTrades = getFilteredTrades();
                   let maxWins = 0, currentWins = 0;
@@ -3087,9 +3087,9 @@ export default function Dashboard() {
             <div className="widget-card p-4 transition-all duration-200">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-sm font-medium text-gray-300">Max Consecutive Losses</span>
-                <TrendingDown className="w-4 h-4 text-red-400" />
+                <TrendingDown className="w-4 h-4 text-red-500" />
               </div>
-              <div className="text-2xl font-bold mb-1 text-red-400">
+              <div className="text-2xl font-bold mb-1 text-red-500">
                 {(() => {
                   const filteredTrades = getFilteredTrades();
                   let maxLosses = 0, currentLosses = 0;
@@ -3116,7 +3116,7 @@ export default function Dashboard() {
                 <span className="text-sm font-medium text-gray-300">Largest Win</span>
                 <Trophy className="w-4 h-4 text-yellow-400" />
               </div>
-              <div className="text-2xl font-bold mb-1 text-green-400">
+              <div className="text-2xl font-bold mb-1 text-green-500">
                 {formatCurrency(Math.max(...getFilteredTrades().map(t => t.pnl || 0), 0))}
               </div>
               <div className="text-xs text-gray-400">Best single trade</div>
@@ -3126,9 +3126,9 @@ export default function Dashboard() {
             <div className="widget-card p-4 transition-all duration-200">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-sm font-medium text-gray-300">Largest Loss</span>
-                <AlertTriangle className="w-4 h-4 text-red-400" />
+                <AlertTriangle className="w-4 h-4 text-red-500" />
               </div>
-              <div className="text-2xl font-bold mb-1 text-red-400">
+              <div className="text-2xl font-bold mb-1 text-red-500">
                 {formatCurrency(Math.min(...getFilteredTrades().map(t => t.pnl || 0), 0))}
               </div>
               <div className="text-xs text-gray-400">Worst single trade</div>
@@ -3198,7 +3198,7 @@ export default function Dashboard() {
               {/* What Went Wrong & What Went Right */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-3">
-                  <h3 className="text-red-400 font-semibold flex items-center gap-2">
+                  <h3 className="text-red-500 font-semibold flex items-center gap-2">
                     <AlertTriangle className="w-4 h-4" />
                     What Went Wrong
                   </h3>
@@ -3210,7 +3210,7 @@ export default function Dashboard() {
                 </div>
                 
                 <div className="space-y-3">
-                  <h3 className="text-green-400 font-semibold flex items-center gap-2">
+                  <h3 className="text-green-500 font-semibold flex items-center gap-2">
                     <CheckCircle className="w-4 h-4" />
                     What Went Right
                   </h3>
