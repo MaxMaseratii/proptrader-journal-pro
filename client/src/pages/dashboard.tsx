@@ -2052,7 +2052,7 @@ export default function Dashboard() {
                 <span className="text-sm font-medium text-gray-300">Net Balance</span>
                 <DollarSign className="w-4 h-4 text-amber-400" />
               </div>
-              <div className="text-2xl font-bold mb-1 text-green-400">
+              <div style={{color: '#22c55e', fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '0.25rem'}}>
                 {formatCurrency(calculateNetBalance())}
               </div>
               <div className="text-xs text-gray-400">Starting balance + Total P&L</div>
@@ -2064,7 +2064,7 @@ export default function Dashboard() {
                 <span className="text-sm font-medium text-gray-300">Total P&L</span>
                 <TrendingUp className="w-4 h-4 text-green-500" />
               </div>
-              <div className="text-2xl font-bold mb-1 text-green-400">
+              <div style={{color: '#22c55e', fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '0.25rem'}}>
                 {formatCurrency(combinedAnalytics?.totalPnl || 0)}
               </div>
               <div className="text-xs text-gray-400">Net profit/loss</div>
