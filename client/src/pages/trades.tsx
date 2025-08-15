@@ -110,14 +110,29 @@ const calculateDurationForCSV = (trade: Trade): string => {
   }
 };
 
-// Universal CSV Import Component supporting all formats
+// Enhanced import statistics interface for AI-powered detection
+interface ImportStats {
+  imported: number;
+  errors: number;
+  longTrades: number;
+  shortTrades: number;
+  format: string;
+  confidence?: number; // AI detection confidence percentage
+  totalPnL?: number; // Total P&L of imported trades
+  winRate?: number; // Win rate percentage
+  originalRows?: number; // Original number of rows processed
+  brokerDetected?: string; // Detected broker/platform format
+  errorMessage?: string; // Error message if import failed
+}
+
+// Universal CSV Import Component supporting all formats with AI-powered broker detection
 const UniversalCsvImport = ({ accounts }: { accounts: Account[] }) => {
   const [csvFile, setCsvFile] = useState<File | null>(null);
   const [csvFormat, setCsvFormat] = useState<string>('unknown');
   const [isUploading, setIsUploading] = useState(false);
   const [previewData, setPreviewData] = useState<any[]>([]);
   const [totalRowCount, setTotalRowCount] = useState<number>(0); // Track total rows
-  const [importStats, setImportStats] = useState<any>(null);
+  const [importStats, setImportStats] = useState<ImportStats | null>(null);
   const [csvHeaders, setCsvHeaders] = useState<string[]>([]);
   const queryClient = useQueryClient();
 
@@ -271,16 +286,16 @@ const UniversalCsvImport = ({ accounts }: { accounts: Account[] }) => {
           console.log('📊 Number of columns:', headers.length);
           
           // Rest are data rows - skip empty rows
-          const dataRows = jsonData.slice(1).filter((row: any[]) => {
+          const dataRows = (jsonData.slice(1) as any[]).filter((row: any) => {
             // Check if row has any non-empty values
-            return row.some(cell => cell !== null && cell !== undefined && String(cell).trim() !== '');
+            return Array.isArray(row) && row.some(cell => cell !== null && cell !== undefined && String(cell).trim() !== '');
           });
           
           console.log('📊 Total rows after header:', jsonData.length - 1);
           console.log('📊 Non-empty data rows:', dataRows.length);
           
           // Convert rows to objects using headers as keys
-          const processedData = dataRows.map((row: any[], rowIndex: number) => {
+          const processedData = dataRows.map((row: any, rowIndex: number) => {
             const obj: any = {};
             headers.forEach((header, colIndex) => {
               let cellValue = row[colIndex];
@@ -1073,148 +1088,150 @@ const UniversalCsvImport = ({ accounts }: { accounts: Account[] }) => {
     }
   };
 
-  // Upload and process file (CSV or Excel)
+  // Enhanced AI-powered CSV upload supporting 37+ brokers
   const handleUpload = async () => {
-    if (!csvFile || csvFormat === 'unknown') return;
+    if (!csvFile || !selectedImportAccount) return;
 
     setIsUploading(true);
     
     try {
-      let headers: string[] = [];
-      let data: any[] = [];
-      
-      // Check file type and parse accordingly
-      const fileExtension = csvFile.name.toLowerCase().split('.').pop();
-      
-      if (fileExtension === 'xlsx' || fileExtension === 'xls') {
-        console.log('📊 Processing Excel file for upload...');
-        const excelData = await parseExcel(csvFile);
-        headers = excelData.headers;
-        data = excelData.data;
-      } else {
-        console.log('📄 Processing CSV file for upload...');
-        const text = await csvFile.text();
-        const csvData = parseCSV(text);
-        headers = csvData.headers;
-        data = csvData.data;
-      }
-      
-      console.log(`🔍 Processing ${data.length} rows with format: ${csvFormat}`);
-      
-      const trades = [];
-      const errors = [];
-      
-      try {
-        console.log(`🔍 About to map ${data.length} rows with format: ${csvFormat}`);
-        console.log(`🔍 Sample row data:`, data[0]);
-        const mappedTrades = mapRowsToTrades(data, csvFormat);
-        console.log(`🔍 Successfully mapped ${mappedTrades.length} trades from ${data.length} rows`);
-        trades.push(...mappedTrades);
-      } catch (error) {
-        console.error(`🔍 Error mapping trades:`, error);
-        errors.push(`Mapping error: ${(error as Error).message}`);
-      }
-      
-      if (errors.length > 0 && trades.length === 0) {
-        throw new Error(errors.join('\n'));
-      }
-      
-      console.log(`🔍 Prepared ${trades.length} trades for import`);
-      console.log(`🔍 Sample trade:`, trades[0]);
-      
-      // Override trades with selected account ID
-      const tradesWithAccount = trades.map(trade => ({
-        ...trade,
-        accountId: parseInt(selectedImportAccount)
-      }));
+      // Read file content
+      const fileContent = await csvFile.text();
+      console.log("📄 Universal CSV Import - File content loaded:", { 
+        fileName: csvFile.name, 
+        contentLength: fileContent.length,
+        accountId: selectedImportAccount,
+        firstChars: fileContent.substring(0, 200)
+      });
 
-      // Send to Universal CSV Import API
-      const rawResponse = await apiRequest('/api/trades/import-csv', 'POST', {
-        trades: tradesWithAccount,
-        accountId: parseInt(selectedImportAccount),
-        source: `${csvFormat}-csv`
+      // Send to AI-powered backend for broker detection and processing
+      const response = await fetch('/api/trades/import-csv', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          accountId: parseInt(selectedImportAccount),
+          csvData: fileContent,
+          fileName: csvFile.name
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ message: 'Network error' }));
+        throw new Error(errorData.message || 'Failed to process CSV');
+      }
+
+      const result = await response.json();
+      
+      if (!result.success) {
+        throw new Error(result.message || 'Import failed');
+      }
+
+      console.log('🎯 Universal CSV Import - AI detection result:', {
+        detectedFormat: result.detectedFormat,
+        confidence: result.confidence,
+        recordsProcessed: result.recordsProcessed,
+        recordsImported: result.recordsImported,
+        totalPnL: result.totalPnL,
+        winRate: result.winRate
       });
       
-      const response = await rawResponse.json();
+      // Show preview of imported trades  
+      setPreviewData(result.importedTrades || []);
       
-      console.log('🔍 API Response:', response);
-      console.log('🔍 API Response type:', typeof response);
-      console.log('🔍 API Response success:', response?.success);
+      // Set import statistics with AI detection results
+      setImportStats({
+        imported: result.recordsImported,
+        errors: result.errors?.length || 0,
+        longTrades: (result.importedTrades || []).filter((t: any) => t.side === 'buy').length,
+        shortTrades: (result.importedTrades || []).filter((t: any) => t.side === 'sell').length,
+        format: result.detectedFormat,
+        confidence: result.confidence,
+        totalPnL: result.totalPnL,
+        winRate: result.winRate,
+        originalRows: result.recordsProcessed,
+        brokerDetected: result.detectedFormat
+      });
+
+      // Refresh trades list to show new imports
+      queryClient.invalidateQueries({ queryKey: ['/api/trades'] });
       
-      if (response && response.success) {
-        const imported = response.recordsImported || trades.length;
-        
-        setImportStats({
-          imported: imported,
-          errors: errors.length,
-          longTrades: trades.filter(t => t.side === 'buy').length,
-          shortTrades: trades.filter(t => t.side === 'sell').length,
-          format: csvFormat
-        });
-        
-        // REMOVED: No popup for production app - silent success
-        
-        queryClient.invalidateQueries({ queryKey: ['/api/trades'] });
-        
-        // Reset form
-        setCsvFile(null);
-        setPreviewData([]);
-        setTotalRowCount(0);
-        setCsvFormat('unknown');
-        setCsvHeaders([]);
-        
-      } else {
-        console.error('🔍 Import failed - Response:', response);
-        throw new Error(response.message || 'Import failed - check server logs');
-      }
+      // Reset form
+      setCsvFile(null);
+      setPreviewData([]);
+      setTotalRowCount(0);
+      setCsvFormat('unknown');
+      setCsvHeaders([]);
       
     } catch (error) {
-      console.error('Import error:', error);
-      // REMOVED: No error popup for production app - logged only
+      console.error('Universal CSV Import error:', error);
+      setImportStats({
+        imported: 0,
+        errors: 1,
+        longTrades: 0,
+        shortTrades: 0,
+        format: 'error',
+        errorMessage: error instanceof Error ? error.message : 'Unknown error occurred'
+      });
     } finally {
       setIsUploading(false);
     }
   };
 
-  // Get format info
+  // Enhanced broker detection info with 37+ supported platforms
   const getFormatInfo = (format: string) => {
     const formatDetails = {
-      'standard-export': {
-        icon: '📊',
-        name: 'Standard Export',
-        description: 'Standard trading platform export with account, time, symbol, and P&L data',
-        features: ['✅ Excel & CSV Support', '✅ Account Info', '✅ Date/Time', '✅ Symbol & Side', '✅ Quantity & Price', '✅ P&L Data']
-      },
-      'position-history': {
-        icon: '🏛️',
-        name: 'Position History',
-        description: 'Complete trade pairs with entry/exit timestamps',
-        features: ['✅ Entry & Exit Times', '✅ Long & Short Detection', '✅ Calculated P&L', '✅ Account Info']
-      },
-      'performance': {
-        icon: '📊',
-        name: 'Performance',
-        description: 'Trade performance data with P&L metrics',
-        features: ['✅ Entry & Exit Times', '✅ Pre-calculated P&L', '✅ Fill IDs', '⚠️ May need account mapping']
-      },
-      'orders': {
-        icon: '📋',
-        name: 'Orders',
-        description: 'Individual order records (will match buy/sell pairs)',
-        features: ['✅ Order matching', '✅ Fill times', '⚠️ Requires buy/sell pairing', '✅ Account info']
-      },
-      'fills': {
-        icon: '🔄',
-        name: 'Fills/Trades',
-        description: 'Individual fill records (will group by Order ID)',
-        features: ['✅ Fill-level detail', '✅ Timestamps', '⚠️ Requires fill matching', '✅ Commission data']
-      },
-      'unknown': {
-        icon: '❓',
-        name: 'Unknown Format',
-        description: 'CSV format not recognized',
-        features: ['❌ Unsupported format']
-      }
+      // Traditional Brokers (12)
+      'interactive-brokers': { icon: '🏦', name: 'Interactive Brokers', description: 'IBKR Flex Query exports and activity statements', features: ['✅ TWS Reports', '✅ Flex Queries', '✅ Activity Statements'] },
+      'thinkorswim': { icon: '📈', name: 'ThinkorSwim (TD Ameritrade)', description: 'ToS account statements and trade history', features: ['✅ Account Statements', '✅ Order History', '✅ P&L Reports'] },
+      'robinhood': { icon: '🤖', name: 'Robinhood', description: 'Robinhood trading reports and statements', features: ['✅ Order Reports', '✅ Dividend History', '✅ Account Activity'] },
+      'etrade': { icon: '💼', name: 'E*TRADE', description: 'E*TRADE account downloads and trade confirmations', features: ['✅ Trade Confirmations', '✅ Account Downloads', '✅ Portfolio Reports'] },
+      'schwab': { icon: '🏛️', name: 'Charles Schwab', description: 'Schwab StreetSmart reports and account exports', features: ['✅ StreetSmart Reports', '✅ Account Exports', '✅ Trade History'] },
+      'fidelity': { icon: '🔷', name: 'Fidelity', description: 'Fidelity Active Trader Pro and account reports', features: ['✅ ATP Reports', '✅ Account History', '✅ Trade Confirmations'] },
+      'webull': { icon: '🌐', name: 'Webull', description: 'Webull desktop and mobile trading reports', features: ['✅ Trading Reports', '✅ Account Statements', '✅ P&L History'] },
+      'coinbase': { icon: '₿', name: 'Coinbase Pro', description: 'Coinbase trading history and portfolio reports', features: ['✅ Trading History', '✅ Portfolio Reports', '✅ Tax Documents'] },
+      'kraken': { icon: '🐙', name: 'Kraken', description: 'Kraken trading history and ledger exports', features: ['✅ Trading History', '✅ Ledger Exports', '✅ Trade Reports'] },
+      'binance': { icon: '🔶', name: 'Binance', description: 'Binance spot and futures trading history', features: ['✅ Spot Trading', '✅ Futures Trading', '✅ P&L Reports'] },
+      'tastytrade': { icon: '🎯', name: 'Tastytrade', description: 'Tastytrade platform reports and trade history', features: ['✅ Trade History', '✅ P&L Reports', '✅ Account Activity'] },
+      'alpaca': { icon: '🦙', name: 'Alpaca', description: 'Alpaca API trading data and portfolio reports', features: ['✅ API Data', '✅ Portfolio Reports', '✅ Trade History'] },
+
+      // Trading Platforms (19)
+      'metatrader4': { icon: '📊', name: 'MetaTrader 4', description: 'MT4 history exports and trade reports', features: ['✅ Account History', '✅ Trade Reports', '✅ Custom Periods'] },
+      'metatrader5': { icon: '📈', name: 'MetaTrader 5', description: 'MT5 detailed history and position reports', features: ['✅ Position History', '✅ Deal History', '✅ Account Reports'] },
+      'ninjatrader': { icon: '🥷', name: 'NinjaTrader', description: 'NinjaTrader 8 trade performance and execution reports', features: ['✅ Trade Performance', '✅ Execution Reports', '✅ Strategy Reports'] },
+      'tradestation': { icon: '🚂', name: 'TradeStation', description: 'TradeStation portfolio and trade analysis reports', features: ['✅ Portfolio Reports', '✅ Trade Analysis', '✅ P&L Reports'] },
+      'tradingview': { icon: '📺', name: 'TradingView', description: 'TradingView broker integration exports', features: ['✅ Broker Integration', '✅ Paper Trading', '✅ Strategy Reports'] },
+      'ctrader': { icon: '⚡', name: 'cTrader', description: 'cTrader history and trade reports', features: ['✅ Trade History', '✅ Position Reports', '✅ Account Statistics'] },
+      'jforex': { icon: '🏪', name: 'JForex', description: 'Dukascopy JForex platform reports', features: ['✅ Platform Reports', '✅ Trade History', '✅ Strategy Reports'] },
+      'tws': { icon: '💹', name: 'TWS (Trader Workstation)', description: 'IBKR TWS activity reports and trade logs', features: ['✅ Activity Reports', '✅ Trade Logs', '✅ Portfolio Reports'] },
+      'tos': { icon: '🎨', name: 'ThinkOrSwim Platform', description: 'ToS platform monitor and trade reports', features: ['✅ Monitor Reports', '✅ Trade Reports', '✅ Strategy Reports'] },
+      'sterling': { icon: '💎', name: 'Sterling Trader Pro', description: 'Sterling professional trading platform reports', features: ['✅ Professional Reports', '✅ Trade Blotter', '✅ P&L Reports'] },
+      'das': { icon: '⚖️', name: 'DAS Trader', description: 'DAS Trader Pro execution and trade reports', features: ['✅ Execution Reports', '✅ Trade Reports', '✅ Risk Reports'] },
+      'speedtrader': { icon: '🏃', name: 'SpeedTrader', description: 'SpeedTrader platform trade and execution reports', features: ['✅ Trade Reports', '✅ Execution Reports', '✅ Account Reports'] },
+      'lightspeed': { icon: '💨', name: 'Lightspeed', description: 'Lightspeed Trader platform reports', features: ['✅ Platform Reports', '✅ Trade History', '✅ P&L Analysis'] },
+      'centerpoint': { icon: '🎯', name: 'CenterPoint Securities', description: 'CenterPoint trading platform reports', features: ['✅ Trading Reports', '✅ Account Activity', '✅ P&L Reports'] },
+      'eris': { icon: '⚔️', name: 'Eris X', description: 'Eris Exchange trading reports', features: ['✅ Exchange Reports', '✅ Trade History', '✅ Settlement Reports'] },
+      'volfix': { icon: '📊', name: 'Volfix', description: 'Volfix volume analysis platform exports', features: ['✅ Volume Analysis', '✅ Trade Reports', '✅ Market Data'] },
+      'bookmap': { icon: '📚', name: 'Bookmap', description: 'Bookmap visualization platform trade data', features: ['✅ Visualization Data', '✅ Trade Reports', '✅ Market Analysis'] },
+      'quantower': { icon: '🌊', name: 'Quantower', description: 'Quantower platform trade and analysis reports', features: ['✅ Trade Reports', '✅ Analysis Reports', '✅ Portfolio Data'] },
+      'rithmic': { icon: '🎵', name: 'Rithmic', description: 'Rithmic trading platform data feeds', features: ['✅ Data Feeds', '✅ Trade Reports', '✅ Account Data'] },
+
+      // Futures & Specialized (6)
+      'tradovate': { icon: '🌾', name: 'Tradovate', description: 'Tradovate futures trading platform reports', features: ['✅ Futures Trading', '✅ Account Reports', '✅ P&L Analysis'] },
+      'amp': { icon: '🔌', name: 'AMP Futures', description: 'AMP Global futures trading reports', features: ['✅ Futures Reports', '✅ Trade History', '✅ Account Activity'] },
+      'advantage': { icon: '✨', name: 'Advantage Futures', description: 'Advantage Futures platform trade reports', features: ['✅ Platform Reports', '✅ Trade History', '✅ Account Data'] },
+      'bybit': { icon: '🚀', name: 'Bybit', description: 'Bybit crypto derivatives trading history', features: ['✅ Derivatives Trading', '✅ Crypto History', '✅ P&L Reports'] },
+      'bitmex': { icon: '⚡', name: 'BitMEX', description: 'BitMEX crypto derivatives and trading data', features: ['✅ Derivatives Data', '✅ Trading History', '✅ Account Reports'] },
+      'alphaticks': { icon: '🎭', name: 'Alpha Ticks', description: 'Alpha Ticks professional trading data', features: ['✅ Professional Data', '✅ Trade Reports', '✅ Market Analysis'] },
+
+      // Generic formats for fallback
+      'standard-export': { icon: '📊', name: 'Standard Export', description: 'Standard trading platform export with account, time, symbol, and P&L data', features: ['✅ Excel & CSV Support', '✅ Account Info', '✅ Date/Time', '✅ Symbol & Side', '✅ Quantity & Price', '✅ P&L Data'] },
+      'position-history': { icon: '🏛️', name: 'Position History', description: 'Complete trade pairs with entry/exit timestamps', features: ['✅ Entry & Exit Times', '✅ Long & Short Detection', '✅ Calculated P&L', '✅ Account Info'] },
+      'performance': { icon: '📊', name: 'Performance', description: 'Trade performance data with P&L metrics', features: ['✅ Entry & Exit Times', '✅ Pre-calculated P&L', '✅ Fill IDs', '⚠️ May need account mapping'] },
+      'orders': { icon: '📋', name: 'Orders', description: 'Individual order records (will match buy/sell pairs)', features: ['✅ Order matching', '✅ Fill times', '⚠️ Requires buy/sell pairing', '✅ Account info'] },
+      'fills': { icon: '🔄', name: 'Fills/Trades', description: 'Individual fill records (will group by Order ID)', features: ['✅ Fill-level detail', '✅ Timestamps', '⚠️ Requires fill matching', '✅ Commission data'] },
+      'unknown': { icon: '❓', name: 'Unknown Format', description: 'CSV format not recognized - AI will analyze and detect automatically', features: ['🤖 AI-Powered Detection', '📊 37+ Broker Support', '🔍 Smart Analysis'] }
     };
     
     return formatDetails[format as keyof typeof formatDetails] || formatDetails['unknown'];
@@ -1278,13 +1295,34 @@ const UniversalCsvImport = ({ accounts }: { accounts: Account[] }) => {
           </div>
         </CardContent>
       </Card>
-      {/* File Upload Section */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div>
-          <label className="block text-sm font-medium text-gray-300 mb-2">
-            Select CSV or Excel File
-          </label>
-          <Input
+      {/* Universal CSV Import Section */}
+      <Card className="bg-gradient-to-br from-purple-500/10 to-pink-500/10 border-purple-500/30">
+        <CardHeader>
+          <div className="flex items-center gap-3">
+            <Upload className="w-6 h-6 text-purple-400" />
+            <div>
+              <CardTitle className="text-purple-400">Universal CSV Import System</CardTitle>
+              <div className="flex items-center gap-2 mt-1">
+                <Badge className="bg-gradient-to-r from-purple-600 to-pink-600 text-white text-xs">
+                  🤖 AI-Powered Detection
+                </Badge>
+                <Badge variant="outline" className="text-purple-400 border-purple-400 text-xs">
+                  37+ Brokers Supported
+                </Badge>
+              </div>
+            </div>
+          </div>
+          <p className="text-gray-400">
+            Automatically detects and imports from Interactive Brokers, ThinkorSwim, MetaTrader, NinjaTrader, Tradovate, Robinhood, TradingView, and 30+ other platforms
+          </p>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-2">
+                Select CSV or Excel File
+              </label>
+              <Input
             type="file"
             accept=".csv,.xlsx,.xls"
             onChange={handleFileChange}
@@ -1315,7 +1353,9 @@ const UniversalCsvImport = ({ accounts }: { accounts: Account[] }) => {
             )}
           </div>
         </div>
-      </div>
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Format Information */}
       {totalRowCount > 0 && (
@@ -1414,11 +1454,23 @@ const UniversalCsvImport = ({ accounts }: { accounts: Account[] }) => {
         </div>
       )}
 
-      {/* Import Stats */}
+      {/* Enhanced Import Stats with AI Detection Results */}
       {importStats && (
-        <div className="bg-blue-600/20 border border-blue-600 rounded-lg p-4">
-          <h4 className="text-blue-400 font-medium mb-2">📊 Import Statistics</h4>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+        <div className="bg-gradient-to-br from-blue-600/20 to-purple-600/20 border border-blue-600 rounded-lg p-4">
+          <h4 className="text-blue-400 font-medium mb-2 flex items-center gap-2">
+            📊 Import Statistics
+            {importStats.confidence && (
+              <Badge className="bg-purple-600 text-white text-xs">
+                🤖 {importStats.confidence}% AI Confidence
+              </Badge>
+            )}
+            {importStats.brokerDetected && (
+              <Badge variant="outline" className="text-green-400 border-green-400 text-xs">
+                {getFormatInfo(importStats.brokerDetected).icon} {getFormatInfo(importStats.brokerDetected).name}
+              </Badge>
+            )}
+          </h4>
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-4 text-sm">
             <div>
               <div className="text-gray-400">Total Imported</div>
               <div className="text-xl font-bold text-white">{importStats.imported}</div>
@@ -1431,25 +1483,46 @@ const UniversalCsvImport = ({ accounts }: { accounts: Account[] }) => {
               <div className="text-gray-400">Short Trades</div>
               <div className={`text-xl font-bold ${getUniversalValueColor(importStats.shortTrades > 0 ? -1 : 0, 'pnl').textColor}`}>{importStats.shortTrades}</div>
             </div>
+            {importStats.totalPnL !== undefined && (
+              <div>
+                <div className="text-gray-400">Total P&L</div>
+                <div className={`text-xl font-bold ${getUniversalValueColor(importStats.totalPnL, 'pnl').textColor}`}>
+                  ${importStats.totalPnL.toFixed(2)}
+                </div>
+              </div>
+            )}
+            {importStats.winRate !== undefined && (
+              <div>
+                <div className="text-gray-400">Win Rate</div>
+                <div className={`text-xl font-bold ${getUniversalValueColor(importStats.winRate, 'percentage').textColor}`}>
+                  {importStats.winRate.toFixed(1)}%
+                </div>
+              </div>
+            )}
             <div>
               <div className="text-gray-400">Errors</div>
               <div className="text-xl font-bold text-yellow-400">{importStats.errors}</div>
             </div>
           </div>
+          {importStats.errorMessage && (
+            <div className="mt-3 p-2 bg-red-600/20 border border-red-600 rounded text-red-300 text-sm">
+              Error: {importStats.errorMessage}
+            </div>
+          )}
         </div>
       )}
 
-      {/* Import Button */}
+      {/* AI-Powered Import Button */}
       <Button 
         onClick={handleUpload}
-        disabled={!csvFile || csvFormat === 'unknown' || isUploading || !selectedImportAccount}
-        className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600"
+        disabled={!csvFile || isUploading || !selectedImportAccount}
+        className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 disabled:from-gray-600 disabled:to-gray-600 shadow-lg transform transition-all duration-200 hover:scale-105"
         size="lg"
       >
         {isUploading ? (
           <>
             <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-            Importing {formatInfo.name} to {accounts?.find(acc => acc.id.toString() === selectedImportAccount)?.name}...
+            🤖 AI Processing {formatInfo.name}...
           </>
         ) : !selectedImportAccount ? (
           <>
@@ -1459,10 +1532,80 @@ const UniversalCsvImport = ({ accounts }: { accounts: Account[] }) => {
         ) : (
           <>
             <Upload className="mr-2 h-4 w-4" />
-            Import {totalRowCount} Records to {accounts?.find(acc => acc.id.toString() === selectedImportAccount)?.name}
+            🤖 Universal Import ({totalRowCount} Records) to {accounts?.find(acc => acc.id.toString() === selectedImportAccount)?.name}
           </>
         )}
       </Button>
+      
+      {/* Supported Brokers Info */}
+      <Card className="bg-gradient-to-br from-gray-800/50 to-gray-900/50 border-gray-700">
+        <CardHeader>
+          <CardTitle className="text-gray-300 text-sm flex items-center gap-2">
+            <CheckCircle className="w-4 h-4 text-green-400" />
+            Supported Trading Platforms & Brokers
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+            <div>
+              <h5 className="font-medium text-blue-400 mb-2">Traditional Brokers (12)</h5>
+              <div className="space-y-1 text-gray-400">
+                <div>🏦 Interactive Brokers</div>
+                <div>📈 ThinkorSwim</div>
+                <div>🤖 Robinhood</div>
+                <div>💼 E*TRADE</div>
+                <div>🏛️ Charles Schwab</div>
+                <div>🔷 Fidelity</div>
+                <div>🌐 Webull</div>
+                <div>₿ Coinbase Pro</div>
+                <div>🐙 Kraken</div>
+                <div>🔶 Binance</div>
+                <div>🎯 Tastytrade</div>
+                <div>🦙 Alpaca</div>
+              </div>
+            </div>
+            <div>
+              <h5 className="font-medium text-purple-400 mb-2">Trading Platforms (19)</h5>
+              <div className="space-y-1 text-gray-400">
+                <div>📊 MetaTrader 4/5</div>
+                <div>🥷 NinjaTrader</div>
+                <div>🚂 TradeStation</div>
+                <div>📺 TradingView</div>
+                <div>⚡ cTrader</div>
+                <div>🏪 JForex</div>
+                <div>💹 TWS</div>
+                <div>💎 Sterling Trader Pro</div>
+                <div>⚖️ DAS Trader</div>
+                <div>🏃 SpeedTrader</div>
+                <div>💨 Lightspeed</div>
+                <div>🎯 CenterPoint</div>
+                <div>⚔️ Eris X</div>
+                <div>📊 Volfix</div>
+                <div>📚 Bookmap</div>
+                <div>🌊 Quantower</div>
+                <div>🎵 Rithmic</div>
+                <div>And 2+ more...</div>
+              </div>
+            </div>
+            <div>
+              <h5 className="font-medium text-green-400 mb-2">Futures & Specialized (6)</h5>
+              <div className="space-y-1 text-gray-400">
+                <div>🌾 Tradovate</div>
+                <div>🔌 AMP Futures</div>
+                <div>✨ Advantage Futures</div>
+                <div>🚀 Bybit</div>
+                <div>⚡ BitMEX</div>
+                <div>🎭 Alpha Ticks</div>
+              </div>
+            </div>
+          </div>
+          <div className="mt-4 p-3 bg-purple-600/20 rounded-lg border border-purple-600/30">
+            <p className="text-xs text-purple-300">
+              <strong>🤖 AI-Powered Detection:</strong> Don't see your broker listed? Our AI system automatically detects and processes most CSV/Excel formats. Simply upload your file and let the system analyze it!
+            </p>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 };
