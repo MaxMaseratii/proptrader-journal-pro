@@ -1965,7 +1965,7 @@ export default function Dashboard() {
                   <div className="absolute top-2 right-2 text-xs text-cyan-300">
                     P&L
                   </div>
-                  <div className={`text-xl font-bold ${getUniversalValueColor(combinedAnalytics?.totalPnl || 0, 'pnl').textColor} mb-1`}>
+                  <div style={{color: '#22c55e', fontSize: '1.25rem', fontWeight: 'bold', marginBottom: '0.25rem'}}>
                     {combinedAnalytics?.totalPnl >= 0 ? '+' : ''}${(combinedAnalytics?.totalPnl || 0).toFixed(0)}
                   </div>
                   <div className="text-xs text-gray-400">{calendarViewMode.charAt(0).toUpperCase() + calendarViewMode.slice(1)} P&L</div>
@@ -2076,7 +2076,7 @@ export default function Dashboard() {
                 <span className="text-sm font-medium text-gray-300">Win Rate</span>
                 <Target className="w-4 h-4 text-green-500" />
               </div>
-              <div className="text-2xl font-bold mb-1 text-green-400">
+              <div style={{color: '#22c55e', fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '0.25rem'}}>
                 {formatPercentage(combinedAnalytics?.winRate || 0)}
               </div>
               <div className="text-xs text-gray-400">Winning trades percentage</div>
@@ -2131,7 +2131,7 @@ export default function Dashboard() {
                 <span className="text-sm font-medium text-gray-300">R Factor</span>
                 <BarChart3 className="w-4 h-4 text-cyan-400" />
               </div>
-              <div className="text-2xl font-bold mb-1 text-green-400">
+              <div style={{color: '#22c55e', fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '0.25rem'}}>
                 {combinedAnalytics?.rFactor?.toFixed(2) || '0.00'}
               </div>
               <div className="text-xs text-gray-400">Risk/Reward ratio</div>
@@ -2143,7 +2143,7 @@ export default function Dashboard() {
                 <span className="text-sm font-medium text-gray-300">Profit Factor</span>
                 <TrendingUp className={`w-4 h-4 ${getUniversalValueColor((combinedAnalytics?.profitFactor || 1) - 1, 'roi').textColor}`} />
               </div>
-              <div className="text-2xl font-bold mb-1 text-green-400">
+              <div style={{color: '#22c55e', fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '0.25rem'}}>
                 {combinedAnalytics?.profitFactor?.toFixed(2) || '0.00'}
               </div>
               <div className="text-xs text-gray-400">Gross Win / Gross Loss</div>
