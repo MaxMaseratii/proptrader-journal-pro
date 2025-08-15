@@ -186,7 +186,7 @@ const BROKER_FORMATS: { [key: string]: BrokerFormat } = {
     pnlColumn: "P&L",
     dateFormat: "YYYY-MM-DD",
     sideMapping: { "buy": "buy", "sell": "sell", "long": "buy", "short": "sell", "BUY": "buy", "SELL": "sell" },
-    requiredColumns: ["Date", "Symbol", "Side", "Quantity"],
+    requiredColumns: ["Date", "Symbol", "Side", "Quantity", "Entry Price"],
   },
 
   // Orders CSV format (with detailed order data)
@@ -319,13 +319,43 @@ export function parseCsvWithFormat(csvData: string, format: BrokerFormat, accoun
   let totalPnL = 0;
   let winningTrades = 0;
 
-  // Create column mapping
+  // Create enhanced column mapping with better matching
   const getColumnIndex = (columnName: string): number => {
-    const index = headers.findIndex(h => 
-      h.toLowerCase().includes(columnName.toLowerCase()) ||
-      columnName.toLowerCase().includes(h.toLowerCase())
+    const searchName = columnName.toLowerCase();
+    
+    // First try exact match
+    let index = headers.findIndex(h => h.toLowerCase() === searchName);
+    if (index >= 0) return index;
+    
+    // Then try contains match
+    index = headers.findIndex(h => 
+      h.toLowerCase().includes(searchName) ||
+      searchName.includes(h.toLowerCase())
     );
-    return index >= 0 ? index : -1;
+    if (index >= 0) return index;
+    
+    // Special handling for common variations
+    if (searchName.includes('price')) {
+      index = headers.findIndex(h => 
+        h.toLowerCase().includes('entry price') ||
+        h.toLowerCase().includes('avg fill price') ||
+        h.toLowerCase().includes('fill price') ||
+        h.toLowerCase().includes('price')
+      );
+      if (index >= 0) return index;
+    }
+    
+    if (searchName.includes('time') || searchName.includes('date')) {
+      index = headers.findIndex(h => 
+        h.toLowerCase().includes('date') ||
+        h.toLowerCase().includes('time') ||
+        h.toLowerCase().includes('timestamp')
+      );
+      if (index >= 0) return index;
+    }
+    
+    console.log(`🔍 Column not found: ${columnName}, available headers:`, headers);
+    return -1;
   };
 
   const dateIndex = getColumnIndex(format.dateColumn);
@@ -335,6 +365,16 @@ export function parseCsvWithFormat(csvData: string, format: BrokerFormat, accoun
   const priceIndex = getColumnIndex(format.priceColumn);
   const pnlIndex = format.pnlColumn ? getColumnIndex(format.pnlColumn) : -1;
   const commissionIndex = format.commissionColumn ? getColumnIndex(format.commissionColumn) : -1;
+
+  console.log(`🔍 Column mapping for ${format.name}:`, {
+    dateIndex: `${dateIndex} (${format.dateColumn})`,
+    symbolIndex: `${symbolIndex} (${format.symbolColumn})`,
+    sideIndex: `${sideIndex} (${format.sideColumn})`,
+    quantityIndex: `${quantityIndex} (${format.quantityColumn})`,
+    priceIndex: `${priceIndex} (${format.priceColumn})`,
+    pnlIndex: `${pnlIndex} (${format.pnlColumn})`,
+    headers: headers
+  });
 
   // Process data rows
   for (let i = (format.skipRows || 0) + 1; i < lines.length; i++) {
@@ -395,7 +435,16 @@ export function parseCsvWithFormat(csvData: string, format: BrokerFormat, accoun
       // Normalize symbol (remove common suffixes)
       const normalizedSymbol = symbol.replace(/[=\-_]?F$|M\d{2}$|U\d{2}$|Z\d{2}$/, '').toUpperCase();
 
-      // Create trade object
+      // Handle specific columns for this CSV format
+      const exitPriceIndex = headers.findIndex(h => h.toLowerCase().includes('exit price'));
+      const statusIndex = headers.findIndex(h => h.toLowerCase().includes('status'));
+      const orderIdIndex = headers.findIndex(h => h.toLowerCase().includes('order id'));
+      
+      const exitPrice = exitPriceIndex >= 0 ? parseFloat(row[exitPriceIndex].replace(/[,$]/g, '')) : price;
+      const status = statusIndex >= 0 ? row[statusIndex].toLowerCase() : 'closed';
+      const orderId = orderIdIndex >= 0 ? row[orderIdIndex] : `import-${Date.now()}-${i}`;
+
+      // Create complete trade object matching the schema
       const trade: Partial<InsertTrade> = {
         accountId,
         date: tradeDate,
@@ -403,12 +452,21 @@ export function parseCsvWithFormat(csvData: string, format: BrokerFormat, accoun
         side,
         quantity,
         entryPrice: price,
-        exitPrice: price, // For individual fills, entry and exit are the same
-        pnl: pnl || (side === 'sell' ? quantity * price : -quantity * price), // Estimate if no P&L
-        commission,
-
+        exitPrice: exitPrice,
+        pnl: pnl,
+        commission: commission || 0,
+        status: status as 'open' | 'closed',
+        orderId: orderId,
         notes: `Imported from ${format.name}`,
-        tags: ['imported', format.name.toLowerCase().replace(/\s+/g, '-')]
+        // Required fields with sensible defaults
+        fillTime: tradeDate + 'T12:00:00.000Z', // Default to noon on trade date
+        initialStopLoss: null,
+        finalStopLoss: null,
+        initialTakeProfit: null,
+        finalTakeProfit: null,
+        tradeImage: null,
+        tradingViewLink: null,
+        exitTime: status === 'closed' ? tradeDate + 'T12:00:00.000Z' : null
       };
 
       trades.push(trade);

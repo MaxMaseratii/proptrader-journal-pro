@@ -459,8 +459,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
 
+      console.log(`📊 Starting CSV parsing with format: ${detection.format.name}, confidence: ${detection.confidence}%`);
+      
       // Parse CSV with detected format
       const parseResult = parseCsvWithFormat(csvData, detection.format, accountId);
+      
+      console.log(`📊 Parse result summary:`, {
+        tradesFound: parseResult.trades.length,
+        errorsCount: parseResult.errors.length,
+        totalPnL: parseResult.totalPnL,
+        winRate: parseResult.winRate
+      });
+      
+      // Sample first trade for debugging
+      if (parseResult.trades.length > 0) {
+        console.log("📋 Sample trade:", parseResult.trades[0]);
+      }
+      
+      if (parseResult.errors.length > 0) {
+        console.log("❌ CSV parsing errors:", parseResult.errors.slice(0, 5)); // Show first 5 errors
+      }
       
       // Import trades to database
       let importedCount = 0;
