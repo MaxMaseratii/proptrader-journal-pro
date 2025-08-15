@@ -642,7 +642,7 @@ export default function Analytics() {
                     <div className="space-y-3">
                       <div className="flex justify-between">
                         <span className="text-gray-400">Risk Violations:</span>
-                        <span className={`font-medium ${disciplinedAnalysis.violationsCount > 0 ? 'text-red-500' : 'text-green-500'}`}>
+                        <span className={`font-medium ${getUniversalValueColor(disciplinedAnalysis.violationsCount > 0 ? -1 : 1, 'pnl').textColor}`}>
                           {disciplinedAnalysis.violationsCount}
                         </span>
                       </div>
@@ -686,7 +686,7 @@ export default function Analytics() {
                 <CardContent className="space-y-4">
                   <div className="grid grid-cols-2 gap-4">
                     <div className="bg-red-900/20 p-3 rounded-lg">
-                      <p className="text-red-500 text-sm">Max Drawdown</p>
+                      <p className={`text-sm ${getUniversalValueColor(-1, 'drawdown').textColor}`}>Max Drawdown</p>
                       <p className="text-xl font-bold text-white">
                         {formatPercentage(Math.abs(advancedMetrics.maxDrawdown))}
                       </p>
@@ -721,13 +721,13 @@ export default function Analytics() {
                   <div className="space-y-3">
                     <div className="flex justify-between items-center">
                       <span className="text-gray-400">Best Trading Day</span>
-                      <span className={`font-bold ${advancedMetrics.bestDay >= 0 ? 'text-green-500' : 'text-red-500'}`}>
+                      <span className={`font-bold ${getUniversalValueColor(advancedMetrics.bestDay, 'pnl').textColor}`}>
                         {formatCurrency(advancedMetrics.bestDay)}
                       </span>
                     </div>
                     <div className="flex justify-between items-center">
                       <span className="text-gray-400">Worst Trading Day</span>
-                      <span className={`font-bold ${advancedMetrics.worstDay >= 0 ? 'text-green-500' : 'text-red-500'}`}>
+                      <span className={`font-bold ${getUniversalValueColor(advancedMetrics.worstDay, 'pnl').textColor}`}>
                         {formatCurrency(advancedMetrics.worstDay)}
                       </span>
                     </div>
@@ -739,13 +739,13 @@ export default function Analytics() {
                     </div>
                     <div className="flex justify-between items-center">
                       <span className="text-gray-400">Max Consecutive Wins</span>
-                      <span className="font-bold text-green-500">
+                      <span className={`font-bold ${getUniversalValueColor(advancedMetrics.largestWin, 'profit').textColor}`}>
                         {advancedMetrics.maxConsecutiveWins}
                       </span>
                     </div>
                     <div className="flex justify-between items-center">
                       <span className="text-gray-400">Max Consecutive Losses</span>
-                      <span className="font-bold text-red-500">
+                      <span className={`font-bold ${getUniversalValueColor(advancedMetrics.largestLoss, 'pnl').textColor}`}>
                         {advancedMetrics.maxConsecutiveLosses}
                       </span>
                     </div>
@@ -766,7 +766,7 @@ export default function Analytics() {
                     <div className="space-y-2">
                       <div className="flex justify-between">
                         <span className="text-gray-400">Expectancy</span>
-                        <span className={`font-medium ${advancedMetrics.expectancy >= 0 ? 'text-green-500' : 'text-red-500'}`}>
+                        <span className={`font-medium ${getUniversalValueColor(advancedMetrics.expectancy, 'pnl').textColor}`}>
                           {formatCurrency(advancedMetrics.expectancy)}
                         </span>
                       </div>
@@ -790,25 +790,25 @@ export default function Analytics() {
                     <div className="space-y-2">
                       <div className="flex justify-between">
                         <span className="text-gray-400">Largest Win</span>
-                        <span className="font-medium text-green-500">
+                        <span className={`font-medium ${getUniversalValueColor(advancedMetrics.largestWin, 'profit').textColor}`}>
                           {formatCurrency(advancedMetrics.largestWin)}
                         </span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-gray-400">Largest Loss</span>
-                        <span className="font-medium text-red-500">
+                        <span className={`font-medium ${getUniversalValueColor(advancedMetrics.largestLoss, 'pnl').textColor}`}>
                           {formatCurrency(Math.abs(advancedMetrics.largestLoss))}
                         </span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-gray-400">Average Win</span>
-                        <span className="font-medium text-green-500">
+                        <span className={`font-medium ${getUniversalValueColor(advancedMetrics.averageWin, 'profit').textColor}`}>
                           {formatCurrency(advancedMetrics.averageWin)}
                         </span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-gray-400">Average Loss</span>
-                        <span className="font-medium text-red-500">
+                        <span className={`font-medium ${getUniversalValueColor(-Math.abs(advancedMetrics.averageLoss), 'pnl').textColor}`}>
                           {formatCurrency(Math.abs(advancedMetrics.averageLoss))}
                         </span>
                       </div>
@@ -882,7 +882,7 @@ export default function Analytics() {
                                     <p className="text-xs text-gray-400 capitalize">{account.type}</p>
                                   </div>
                                 </td>
-                                <td className={`text-right py-3 font-bold ${accountPnL >= 0 ? 'text-green-500' : 'text-red-500'}`}>
+                                <td className={`text-right py-3 font-bold ${getUniversalValueColor(accountPnL, 'pnl').textColor}`}>
                                   {formatCurrency(accountPnL)}
                                 </td>
                                 <td className="text-right py-3 text-white">
@@ -891,7 +891,7 @@ export default function Analytics() {
                                 <td className="text-right py-3 text-white">
                                   {accountTrades.length}
                                 </td>
-                                <td className={`text-right py-3 ${avgTrade >= 0 ? 'text-green-500' : 'text-red-500'}`}>
+                                <td className={`text-right py-3 ${getUniversalValueColor(avgTrade, 'pnl').textColor}`}>
                                   {formatCurrency(avgTrade)}
                                 </td>
                                 <td className={`text-right py-3 ${Math.abs(drawdown) > 10 ? 'text-red-500' : Math.abs(drawdown) > 5 ? 'text-orange-400' : 'text-green-500'}`}>

@@ -1307,7 +1307,7 @@ const UniversalCsvImport = ({ accounts }: { accounts: Account[] }) => {
               <><CheckCircle className={`h-4 w-4 mr-2 ${getUniversalValueColor(1, 'profit').textColor}`} />
               <Badge className="bg-green-600 text-white">✅ Position History CSV</Badge></>
             ) : csvFormat === 'unknown' ? (
-              <><AlertCircle className="h-4 w-4 text-red-500 mr-2" />
+              <><AlertCircle className={`h-4 w-4 mr-2 ${getUniversalValueColor(-1, 'pnl').textColor}`} />
               <Badge variant="destructive">❌ Unknown Format</Badge></>
             ) : (
               <><AlertCircle className="h-4 w-4 text-yellow-400 mr-2" />
@@ -1391,7 +1391,7 @@ const UniversalCsvImport = ({ accounts }: { accounts: Account[] }) => {
                   </div>
                   <div>
                     <span className="text-gray-400">Direction:</span>
-                    <div className={`font-medium ${isShort ? 'text-red-500' : 'text-green-500'}`}>
+                    <div className={`font-medium ${getUniversalValueColor(isShort ? -1 : 1, 'pnl').textColor}`}>
                       {isShort ? 'SHORT' : 'LONG'}
                     </div>
                   </div>
@@ -1403,7 +1403,7 @@ const UniversalCsvImport = ({ accounts }: { accounts: Account[] }) => {
                   </div>
                   <div>
                     <span className="text-gray-400">P&L:</span>
-                    <div className={`font-medium ${parseFloat(row['P/L']) >= 0 ? 'text-green-500' : 'text-red-500'}`}>
+                    <div className={`font-medium ${getUniversalValueColor(parseFloat(row['P/L']) || 0, 'pnl').textColor}`}>
                       ${row['P/L']}
                     </div>
                   </div>
@@ -1425,11 +1425,11 @@ const UniversalCsvImport = ({ accounts }: { accounts: Account[] }) => {
             </div>
             <div>
               <div className="text-gray-400">Long Trades</div>
-              <div className="text-xl font-bold text-green-500">{importStats.longTrades}</div>
+              <div className={`text-xl font-bold ${getUniversalValueColor(importStats.longTrades, 'profit').textColor}`}>{importStats.longTrades}</div>
             </div>
             <div>
               <div className="text-gray-400">Short Trades</div>
-              <div className="text-xl font-bold text-red-500">{importStats.shortTrades}</div>
+              <div className={`text-xl font-bold ${getUniversalValueColor(importStats.shortTrades > 0 ? -1 : 0, 'pnl').textColor}`}>{importStats.shortTrades}</div>
             </div>
             <div>
               <div className="text-gray-400">Errors</div>
@@ -1891,7 +1891,7 @@ export default function Trades() {
                     <td className="py-3 px-4 text-gray-200">{formatDate(trade.date)}</td>
                     <td className="py-3 px-4 text-gray-300">
                       <div className="space-y-1">
-                        <div className="text-green-500 text-xs font-medium">Entry:</div>
+                        <div className={`text-xs font-medium ${getUniversalValueColor(1, 'profit').textColor}`}>Entry:</div>
                         <div>
                           {trade.fillTime ? new Date(trade.fillTime).toLocaleTimeString('en-US', { 
                             hour: '2-digit', 
@@ -1899,7 +1899,7 @@ export default function Trades() {
                             hour12: false 
                           }) : '-'}
                         </div>
-                        <div className="text-red-500 text-xs font-medium">Exit:</div>
+                        <div className={`text-xs font-medium ${getUniversalValueColor(-1, 'pnl').textColor}`}>Exit:</div>
                         <div>
                           {trade.exitTime ? new Date(trade.exitTime).toLocaleTimeString('en-US', { 
                             hour: '2-digit', 
@@ -1973,7 +1973,7 @@ export default function Trades() {
                       {trade.exitPrice ? formatPrice(trade.exitPrice) : '-'}
                     </td>
                     <td className={`py-3 px-4 text-right font-medium ${
-                      trade.pnl > 0 ? 'text-green-500' : trade.pnl < 0 ? 'text-red-500' : 'text-gray-400'
+                      getUniversalValueColor(trade.pnl, 'pnl').textColor
                     }`}>
                       {trade.pnl >= 0 ? '+' : '-'}{formatCurrency(Math.abs(trade.pnl))}
                     </td>
