@@ -359,8 +359,8 @@ const Spending = () => {
         {/* PROFESSIONAL INVESTMENT SUMMARY - UPDATED WITH CORRECT COLORS */}
         <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
           <Card className="bg-gradient-to-br from-gray-900 via-gray-800 to-black border border-yellow-400/20 shadow-lg">
-            <CardHeader>
-              <CardTitle className="text-gray-100">Total Invested</CardTitle>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-white">Total Invested</CardTitle>
               <DollarSign className="h-4 w-4 text-yellow-400" />
             </CardHeader>
             <CardContent>
@@ -372,8 +372,8 @@ const Spending = () => {
           </Card>
 
           <Card className="bg-gradient-to-br from-gray-900 via-gray-800 to-black border border-yellow-400/20 shadow-lg">
-            <CardHeader>
-              <CardTitle className="text-gray-100">Additional Costs</CardTitle>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-white">Additional Costs</CardTitle>
               <TrendingUp className="h-4 w-4 text-orange-400" />
             </CardHeader>
             <CardContent>
@@ -385,21 +385,21 @@ const Spending = () => {
           </Card>
 
           <Card className="bg-gradient-to-br from-gray-900 via-gray-800 to-black border border-yellow-400/20 shadow-lg">
-            <CardHeader>
-              <CardTitle className="text-gray-100">Total Payouts</CardTitle>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-white">Total Payouts</CardTitle>
               <DollarSign className="h-4 w-4 text-green-400" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-green-400">
                 {formatCurrency(totalPayoutsReceived)}
               </div>
-              <p className="text-xs text-gray-400">From payout page</p>
+              <p className="text-xs text-gray-400">From payout records</p>
             </CardContent>
           </Card>
 
           <Card className="bg-gradient-to-br from-gray-900 via-gray-800 to-black border border-yellow-400/20 shadow-lg">
-            <CardHeader>
-              <CardTitle className="text-gray-100">Net ROI</CardTitle>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-white">Net ROI</CardTitle>
               <TrendingUp className="h-4 w-4 text-blue-400" />
             </CardHeader>
             <CardContent>
@@ -411,23 +411,25 @@ const Spending = () => {
           </Card>
 
           <Card className="bg-gradient-to-br from-gray-900 via-gray-800 to-black border border-yellow-400/20 shadow-lg">
-            <CardHeader>
-              <CardTitle className="text-gray-100">ROI Percentage</CardTitle>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-white">ROI Percentage</CardTitle>
               <Target className="h-4 w-4 text-purple-400" />
             </CardHeader>
             <CardContent>
               <div className={`text-2xl font-bold ${actualProfitability >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-                {totalPropTradingCosts > 0 ? ((actualProfitability / totalPropTradingCosts) * 100).toFixed(1) : 0}%
+                {totalAccountCosts > 0 ? ((actualProfitability / totalAccountCosts) * 100).toFixed(1) : 0}%
               </div>
               <p className="text-xs text-gray-400">Return on investment</p>
             </CardContent>
           </Card>
         </div>
 
-        {/* PROFESSIONAL BUDGET WIDGETS SECTION */}
+        {/* PROFESSIONAL BUDGET OVERVIEW WITH ENHANCED WIDGETS */}
         {activeBudgetPlan && (
           <div className="space-y-6">
-            <h2 className="text-2xl font-bold text-gray-100">Budget Overview</h2>
+            <h2 className="text-2xl font-bold bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 bg-clip-text text-transparent">
+              Budget Overview
+            </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               <BudgetWidget
                 title="Monthly Budget"
@@ -457,210 +459,220 @@ const Spending = () => {
           </div>
         )}
 
-        {/* ADD CATEGORY FUNCTIONALITY */}
-        {showAddCategory && (
-          <Card className="bg-gradient-to-br from-gray-900 via-gray-800 to-black border border-yellow-400/20 shadow-lg">
-            <CardHeader>
-              <CardTitle className="text-gray-100">Add New Category</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div>
-                <Label htmlFor="categoryName" className="text-gray-200">Category Name</Label>
-                <Input
-                  id="categoryName"
-                  placeholder="Enter category name..."
-                  value={newCategory.name}
-                  onChange={(e) => setNewCategory({...newCategory, name: e.target.value})}
-                  className="bg-gray-800 border-gray-700 text-gray-100"
-                />
-              </div>
-              <div>
-                <Label htmlFor="budgetAmount" className="text-gray-200">Budget Amount</Label>
-                <Input
-                  id="budgetAmount"
-                  type="number"
-                  placeholder="0.00"
-                  value={newCategory.budgetAmount}
-                  onChange={(e) => setNewCategory({...newCategory, budgetAmount: e.target.value})}
-                  className="bg-gray-800 border-gray-700 text-gray-100"
-                />
-              </div>
-              <div>
-                <Label className="text-gray-200">Type</Label>
-                <Select value={newCategory.type} onValueChange={(value: 'trading' | 'personal') => setNewCategory({...newCategory, type: value})}>
-                  <SelectTrigger className="bg-gray-800 border-gray-700 text-gray-100">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="trading">Trading</SelectItem>
-                    <SelectItem value="personal">Personal</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="flex gap-2">
-                <Button
-                  onClick={() => {
-                    if (newCategory.name && newCategory.budgetAmount) {
-                      const categoryData = {
-                        userId: (user as any)?.id || "",
-                        name: newCategory.name,
-                        type: newCategory.type,
-                        emoji: newCategory.emoji,
-                        budgetAmount: parseFloat(newCategory.budgetAmount),
-                        isActive: true
-                      };
-                      createCategoryMutation.mutate(categoryData);
-                      setShowAddCategory(false);
-                    }
-                  }}
-                  className="bg-green-600 hover:bg-green-700"
-                >
-                  Create Category
-                </Button>
-                <Button
-                  variant="outline"
-                  onClick={() => setShowAddCategory(false)}
-                  className="border-gray-600 text-gray-300"
-                >
-                  Cancel
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        )}
+        {/* CATEGORY MANAGEMENT SECTION */}
+        <div className="space-y-6">
+          <div className="flex items-center justify-between">
+            <h2 className="text-2xl font-bold bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 bg-clip-text text-transparent">
+              Budget Categories
+            </h2>
+            <Button
+              onClick={() => setShowAddCategory(!showAddCategory)}
+              className="bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 text-black font-semibold"
+            >
+              <Plus className="h-4 w-4 mr-2" />
+              Add Category
+            </Button>
+          </div>
 
-        <Button
-          onClick={() => setShowAddCategory(!showAddCategory)}
-          className="bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 text-black font-semibold"
-        >
-          <Plus className="h-4 w-4 mr-2" />
-          Add New Category
-        </Button>
-
-        {/* PROFESSIONAL EXPENSE CATEGORIES */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Trading Expenses */}
-          <Card className="bg-gradient-to-br from-gray-900 via-gray-800 to-black border border-yellow-400/20 shadow-lg">
-            <CardHeader>
-              <CardTitle className="text-gray-100 flex items-center gap-2">
-                <TrendingUp className="h-5 w-5 text-blue-400" />
-                Trading Expenses
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {defaultTradingExpenses.map((expense, index) => (
-                  <div key={index} className="flex justify-between items-center p-3 bg-gray-800/50 rounded-lg">
-                    <div className="flex items-center gap-3">
-                      <div className="w-2 h-2 bg-red-400 rounded-full"></div>
-                      <span className="text-gray-200">{expense.name}</span>
-                    </div>
-                    <span className="font-semibold text-red-400">
-                      {formatCurrency(expense.amount)}
-                    </span>
+          {/* Add Category Form */}
+          {showAddCategory && (
+            <Card className="bg-gradient-to-br from-gray-900 via-gray-800 to-black border border-yellow-400/30 shadow-lg">
+              <CardHeader>
+                <CardTitle className="text-white">Create New Budget Category</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                  <div>
+                    <Label className="text-gray-200">Emoji</Label>
+                    <Select value={newCategory.emoji} onValueChange={(value) => setNewCategory({...newCategory, emoji: value})}>
+                      <SelectTrigger className="bg-gray-800 border-yellow-400/20 text-white">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent className="bg-gray-800 border-yellow-400/20">
+                        {['📊', '💰', '🏠', '🍔', '🚗', '💳', '📱', '🎯', '⚡', '🔥'].map(emoji => (
+                          <SelectItem key={emoji} value={emoji} className="text-white hover:bg-gray-700">
+                            {emoji}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </div>
-                ))}
-                <div className="border-t border-gray-700 pt-3">
-                  <div className="flex justify-between items-center font-semibold">
-                    <span className="text-gray-100">Total Trading Expenses</span>
-                    <span className="text-red-400 text-lg">
-                      {formatCurrency(totalPropTradingCosts)}
-                    </span>
+                  <div>
+                    <Label htmlFor="categoryName" className="text-gray-200">Category Name</Label>
+                    <Input
+                      id="categoryName"
+                      placeholder="e.g., Education, Software"
+                      value={newCategory.name}
+                      onChange={(e) => setNewCategory({...newCategory, name: e.target.value})}
+                      className="bg-gray-800 border-yellow-400/20 text-gray-100"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="budgetAmount" className="text-gray-200">Budget Amount</Label>
+                    <Input
+                      id="budgetAmount"
+                      type="number"
+                      placeholder="0.00"
+                      value={newCategory.budgetAmount}
+                      onChange={(e) => setNewCategory({...newCategory, budgetAmount: e.target.value})}
+                      className="bg-gray-800 border-yellow-400/20 text-gray-100"
+                    />
+                  </div>
+                  <div>
+                    <Label className="text-gray-200">Type</Label>
+                    <Select value={newCategory.type} onValueChange={(value: 'trading' | 'personal') => setNewCategory({...newCategory, type: value})}>
+                      <SelectTrigger className="bg-gray-800 border-yellow-400/20 text-white">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent className="bg-gray-800 border-yellow-400/20">
+                        <SelectItem value="trading" className="text-white hover:bg-gray-700">Trading</SelectItem>
+                        <SelectItem value="personal" className="text-white hover:bg-gray-700">Personal</SelectItem>
+                      </SelectContent>
+                    </Select>
                   </div>
                 </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Personal Expenses */}
-          <Card className="bg-gradient-to-br from-gray-900 via-gray-800 to-black border border-yellow-400/20 shadow-lg">
-            <CardHeader>
-              <CardTitle className="text-gray-100 flex items-center gap-2">
-                <ShoppingCart className="h-5 w-5 text-orange-400" />
-                Personal Expenses
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {Object.entries(spendingByCategory).length > 0 ? (
-                  Object.entries(spendingByCategory).map(([category, amount]) => (
-                    <div key={category} className="flex justify-between items-center p-3 bg-gray-800/50 rounded-lg">
-                      <div className="flex items-center gap-3">
-                        <div className="w-2 h-2 bg-orange-400 rounded-full"></div>
-                        <span className="text-gray-200">{category}</span>
-                      </div>
-                      <span className="font-semibold text-red-400">
-                        {formatCurrency(amount)}
-                      </span>
-                    </div>
-                  ))
-                ) : (
-                  <p className="text-gray-400 text-center py-4">No personal expenses recorded yet</p>
-                )}
-                <div className="border-t border-gray-700 pt-3">
-                  <div className="flex justify-between items-center font-semibold">
-                    <span className="text-gray-100">Total Personal Expenses</span>
-                    <span className="text-red-400 text-lg">
-                      {formatCurrency(totalManualSpending)}
-                    </span>
-                  </div>
+                <div className="flex gap-2">
+                  <Button
+                    onClick={() => {
+                      if (newCategory.name && newCategory.budgetAmount) {
+                        const categoryData = {
+                          userId: (user as any)?.id || "",
+                          name: newCategory.name,
+                          type: newCategory.type,
+                          emoji: newCategory.emoji,
+                          budgetAmount: parseFloat(newCategory.budgetAmount),
+                          isActive: true
+                        };
+                        createCategoryMutation.mutate(categoryData);
+                        setShowAddCategory(false);
+                      } else {
+                        toast({ 
+                          title: "Missing Information", 
+                          description: "Please fill in category name and budget amount." 
+                        });
+                      }
+                    }}
+                    disabled={createCategoryMutation.isPending}
+                    className="bg-green-600 hover:bg-green-700"
+                  >
+                    {createCategoryMutation.isPending ? 'Creating...' : 'Create Category'}
+                  </Button>
+                  <Button
+                    variant="outline"
+                    onClick={() => setShowAddCategory(false)}
+                    className="border-gray-600 text-gray-300 hover:bg-gray-700"
+                  >
+                    Cancel
+                  </Button>
                 </div>
-              </div>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Budget Categories Display */}
+          {budgetCategories.length > 0 && (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {budgetCategories.map((category) => {
+                const categorySpending = spendingByCategory[category.name] || 0;
+                return (
+                  <BudgetWidget
+                    key={category.id}
+                    title={`${category.emoji} ${category.name}`}
+                    icon={category.type === 'trading' ? TrendingUp : ShoppingCart}
+                    spent={categorySpending}
+                    total={category.budgetAmount}
+                    iconColor={category.type === 'trading' ? 'text-blue-400' : 'text-orange-400'}
+                    category={category.type}
+                  />
+                );
+              })}
+            </div>
+          )}
         </div>
 
-        {/* QUICK ADD EXPENSE */}
-        <Card className="bg-gradient-to-br from-gray-900 via-gray-800 to-black border border-yellow-400/20 shadow-lg">
-          <CardHeader>
-            <CardTitle className="text-gray-100">Quick Add Expense</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-              <div>
-                <Label htmlFor="amount" className="text-gray-200">Amount</Label>
-                <Input
-                  id="amount"
-                  type="number"
-                  placeholder="0.00"
-                  value={newExpense.amount}
-                  onChange={(e) => setNewExpense({...newExpense, amount: e.target.value})}
-                  className="bg-gray-800 border-gray-700 text-gray-100"
-                />
-              </div>
-              <div>
-                <Label htmlFor="category" className="text-gray-200">Category</Label>
-                <Input
-                  id="category"
-                  placeholder="Category name"
-                  value={newExpense.category}
-                  onChange={(e) => setNewExpense({...newExpense, category: e.target.value})}
-                  className="bg-gray-800 border-gray-700 text-gray-100"
-                />
-              </div>
-              <div>
-                <Label htmlFor="description" className="text-gray-200">Description</Label>
-                <Input
-                  id="description"
-                  placeholder="What was this for?"
-                  value={newExpense.description}
-                  onChange={(e) => setNewExpense({...newExpense, description: e.target.value})}
-                  className="bg-gray-800 border-gray-700 text-gray-100"
-                />
-              </div>
-              <div className="flex items-end">
-                <Button
-                  onClick={handleAddExpense}
-                  disabled={addExpenseMutation.isPending}
-                  className="w-full bg-green-600 hover:bg-green-700"
-                >
-                  {addExpenseMutation.isPending ? 'Adding...' : 'Add Expense'}
-                </Button>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-        
+        {/* EXPENSE BREAKDOWN SECTION */}
+        <div className="space-y-6">
+          <h2 className="text-2xl font-bold bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 bg-clip-text text-transparent">
+            Expense Breakdown
+          </h2>
+          
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Trading Expenses */}
+            <Card className="bg-gradient-to-br from-gray-900 via-gray-800 to-black border border-yellow-400/20 shadow-lg">
+              <CardHeader>
+                <CardTitle className="text-white flex items-center gap-2">
+                  <TrendingUp className="h-5 w-5 text-blue-400" />
+                  Trading Expenses
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {defaultTradingExpenses.map((expense, index) => (
+                    <div key={index} className="flex justify-between items-center p-3 bg-gray-800/50 rounded-lg border border-gray-700/30">
+                      <div className="flex items-center gap-3">
+                        <div className="w-2 h-2 bg-red-400 rounded-full"></div>
+                        <span className="text-gray-200">{expense.name}</span>
+                      </div>
+                      <span className="font-semibold text-red-400">
+                        {formatCurrency(expense.amount)}
+                      </span>
+                    </div>
+                  ))}
+                  <div className="border-t border-gray-700 pt-3">
+                    <div className="flex justify-between items-center font-semibold">
+                      <span className="text-white">Total Trading Expenses</span>
+                      <span className="text-red-400 text-lg">
+                        {formatCurrency(totalPropTradingCosts)}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Personal Expenses */}
+            <Card className="bg-gradient-to-br from-gray-900 via-gray-800 to-black border border-yellow-400/20 shadow-lg">
+              <CardHeader>
+                <CardTitle className="text-white flex items-center gap-2">
+                  <ShoppingCart className="h-5 w-5 text-orange-400" />
+                  Personal Expenses
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {Object.entries(spendingByCategory).length > 0 ? (
+                    Object.entries(spendingByCategory).map(([category, amount]) => (
+                      <div key={category} className="flex justify-between items-center p-3 bg-gray-800/50 rounded-lg border border-gray-700/30">
+                        <div className="flex items-center gap-3">
+                          <div className="w-2 h-2 bg-orange-400 rounded-full"></div>
+                          <span className="text-gray-200">{category}</span>
+                        </div>
+                        <span className="font-semibold text-red-400">
+                          {formatCurrency(amount)}
+                        </span>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="text-center py-8">
+                      <ShoppingCart className="h-12 w-12 text-gray-600 mx-auto mb-3" />
+                      <p className="text-gray-400">No personal expenses recorded yet</p>
+                      <p className="text-sm text-gray-500">Add your first expense below</p>
+                    </div>
+                  )}
+                  <div className="border-t border-gray-700 pt-3">
+                    <div className="flex justify-between items-center font-semibold">
+                      <span className="text-white">Total Personal Expenses</span>
+                      <span className="text-red-400 text-lg">
+                        {formatCurrency(totalManualSpending)}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+
       </div>
     </div>
   );
