@@ -178,10 +178,10 @@ export default function Charts() {
               <Card className="bg-gradient-to-br from-gray-900 via-gray-800 to-black border border-yellow-400/20">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-sm font-medium text-white">Total P&L</CardTitle>
-                  <TrendingUp className="h-4 w-4 text-green-500" />
+                  <TrendingUp style={{color: '#22c55e'}} className="h-4 w-4" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold text-green-400">
+                  <div className="text-2xl font-bold style={{color: "#22c55e"}}">
                     ${trades.reduce((sum, t) => sum + (t.pnl || 0), 0).toFixed(2)}
                   </div>
                   <p className="text-xs text-gray-400">Net profit/loss</p>
@@ -194,7 +194,7 @@ export default function Charts() {
                   <Activity className="h-4 w-4 text-blue-500" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold text-green-400">
+                  <div className="text-2xl font-bold style={{color: "#22c55e"}}">
                     {(trades.filter(t => (t.pnl || 0) > 0).length / trades.length * 100).toFixed(1)}%
                   </div>
                   <p className="text-xs text-gray-400">Winning trades percentage</p>
@@ -207,7 +207,7 @@ export default function Charts() {
                   <Calendar className="h-4 w-4 text-purple-500" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold text-green-400">
+                  <div className="text-2xl font-bold style={{color: "#22c55e"}}">
                     ${(trades.reduce((sum, t) => sum + (t.pnl || 0), 0) / trades.length).toFixed(2)}
                   </div>
                   <p className="text-xs text-gray-400">Average per trade</p>
@@ -268,7 +268,7 @@ export default function Charts() {
                       </div>
                       <div className="flex justify-between">
                         <span className="text-gray-400">Win Rate:</span>
-                        <span className={`font-semibold ${stat.winRate >= 50 ? 'text-green-500' : 'text-red-500'}`}>
+                        <span style={{color: stat.winRate >= 50 ? '#22c55e' : '#ef4444'}} className="font-semibold">
                           {stat.winRate.toFixed(1)}%
                         </span>
                       </div>

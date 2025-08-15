@@ -180,7 +180,7 @@ export default function Reports() {
                       {formatCurrency(quickStats.totalPnL)}
                     </p>
                   </div>
-                  <DollarSign className="h-8 w-8 text-green-500" />
+                  <DollarSign style={{color: '#22c55e'}} className="h-8 w-8" />
                 </div>
               </CardContent>
             </Card>
@@ -293,7 +293,7 @@ export default function Reports() {
                             </div>
                             <div className="flex justify-between">
                               <span className="widget-text opacity-70">Balance:</span>
-                              <span className={account.currentBalance >= account.startingBalance ? 'text-green-500' : 'text-red-500'}>
+                              <span style={{color: account.currentBalance >= account.startingBalance ? '#22c55e' : '#ef4444'}}>
                                 {formatCurrency(account.currentBalance)}
                               </span>
                             </div>

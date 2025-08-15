@@ -512,7 +512,7 @@ export default function CompleteTradingDashboard() {
             {/* Simple Loss-Cutting System */}
             <div className="bg-gradient-to-r from-emerald-900/20 via-teal-900/20 to-cyan-900/20 p-6 rounded-2xl border border-emerald-500/30 shadow-lg">
               <div className="flex items-center gap-3 mb-4">
-                <Shield className="w-6 h-6 text-emerald-400" />
+                <Shield style={{color: '#22c55e'}} className="w-6 h-6" />
                 <h4 className="text-white font-bold text-lg">Simple 4-Step Loss Control System</h4>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -551,7 +551,7 @@ export default function CompleteTradingDashboard() {
               </div>
               <div className="mt-4 bg-slate-800/70 p-4 rounded-xl border border-teal-500/30 shadow-sm">
                 <p className="text-gray-300 text-sm">
-                  <span className="text-emerald-400 font-semibold">Pro Tip:</span> Practice this system in a demo account until it becomes automatic. 
+                  <span style={{color: '#22c55e'}} className="font-semibold">Pro Tip:</span> Practice this system in a demo account until it becomes automatic. 
                   The traders who master loss control are the ones who survive and thrive in all market conditions.
                 </p>
               </div>
@@ -605,7 +605,7 @@ export default function CompleteTradingDashboard() {
                         className="flex-1"
                       />
                       <span className="text-xs text-gray-500 min-w-[40px]">Sharp</span>
-                      <span className="text-emerald-400 font-bold min-w-[20px] text-lg">{sliderValues.focus}</span>
+                      <span className="style={{color: "#22c55e"}} font-bold min-w-[20px] text-lg">{sliderValues.focus}</span>
                     </div>
                   </div>
 
@@ -760,8 +760,8 @@ export default function CompleteTradingDashboard() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <div className="flex items-center gap-2">
-                    <CheckCircle className="w-4 h-4 text-emerald-400" />
-                    <span className="text-sm text-emerald-400 font-semibold">
+                    <CheckCircle style={{color: '#22c55e'}} className="w-4 h-4" />
+                    <span style={{color: '#22c55e'}} className="text-sm font-semibold">
                       {percentage >= 75 ? "High readiness level" : 
                        percentage >= 60 ? "Good readiness level" : 
                        "Needs improvement"}
@@ -850,7 +850,7 @@ export default function CompleteTradingDashboard() {
                 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
                   <div className="p-3 bg-emerald-900/30 rounded-xl border border-emerald-500/30">
-                    <div className="text-emerald-400 font-bold text-lg">DISCIPLINE</div>
+                    <div className="style={{color: "#22c55e"}} font-bold text-lg">DISCIPLINE</div>
                     <div className="text-emerald-300 text-sm">I follow my rules</div>
                   </div>
                   <div className="p-3 bg-blue-900/30 rounded-xl border border-blue-500/30">

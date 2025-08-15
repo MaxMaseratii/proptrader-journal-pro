@@ -150,7 +150,7 @@ const BudgetWidget = ({ title, icon: Icon, spent, total, iconColor, category }: 
         <div className="grid grid-cols-2 gap-4 pt-4 border-t border-gray-700/50">
           <div className="text-center">
             <div className="text-xs text-gray-500 uppercase tracking-wide mb-1">Spent</div>
-            <div className="text-lg font-semibold text-red-400">
+            <div style={{color: '#ef4444'}} className="text-lg font-semibold">
               {formatCurrency(spent)}
             </div>
           </div>
@@ -158,7 +158,7 @@ const BudgetWidget = ({ title, icon: Icon, spent, total, iconColor, category }: 
             <div className="text-xs text-gray-500 uppercase tracking-wide mb-1">
               {remaining >= 0 ? 'Available' : 'Overspent'}
             </div>
-            <div className={`text-lg font-semibold ${remaining >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+            <div className={`text-lg font-semibold ${remaining >= 0 ? 'style={{color: "#22c55e"}}' : 'style={{color: "#ef4444"}}'}`}>
               {formatCurrency(Math.abs(remaining))}
             </div>
           </div>
@@ -358,7 +358,7 @@ const Spending = () => {
               <DollarSign className="h-4 w-4 text-yellow-400" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-red-400">
+              <div style={{color: '#ef4444'}} className="text-2xl font-bold">
                 {formatCurrency(totalAccountCosts)}
               </div>
               <p className="text-xs text-gray-400">Challenge purchase costs</p>
@@ -371,7 +371,7 @@ const Spending = () => {
               <TrendingUp className="h-4 w-4 text-orange-400" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-red-400">
+              <div style={{color: '#ef4444'}} className="text-2xl font-bold">
                 {formatCurrency(totalActivationCosts + totalResetCosts)}
               </div>
               <p className="text-xs text-gray-400">Activations & resets</p>
@@ -381,10 +381,10 @@ const Spending = () => {
           <Card className="bg-gradient-to-br from-gray-900 via-gray-800 to-black border border-yellow-400/20 shadow-lg">
             <CardHeader>
               <CardTitle className="text-gray-100">Total Payouts</CardTitle>
-              <DollarSign className="h-4 w-4 text-green-400" />
+              <DollarSign style={{color: '#22c55e'}} className="h-4 w-4" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-green-400">
+              <div style={{color: '#22c55e'}} className="text-2xl font-bold">
                 {formatCurrency(totalPayoutsReceived)}
               </div>
               <p className="text-xs text-gray-400">From payout page</p>
@@ -397,7 +397,7 @@ const Spending = () => {
               <TrendingUp className="h-4 w-4 text-blue-400" />
             </CardHeader>
             <CardContent>
-              <div className={`text-2xl font-bold ${actualProfitability >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+              <div className={`text-2xl font-bold ${actualProfitability >= 0 ? 'style={{color: "#22c55e"}}' : 'style={{color: "#ef4444"}}'}`}>
                 {formatCurrency(actualProfitability)}
               </div>
               <p className="text-xs text-gray-400">Payouts - total costs</p>
@@ -410,7 +410,7 @@ const Spending = () => {
               <Target className="h-4 w-4 text-purple-400" />
             </CardHeader>
             <CardContent>
-              <div className={`text-2xl font-bold ${actualProfitability >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+              <div className={`text-2xl font-bold ${actualProfitability >= 0 ? 'style={{color: "#22c55e"}}' : 'style={{color: "#ef4444"}}'}`}>
                 {totalPropTradingCosts > 0 ? ((actualProfitability / totalPropTradingCosts) * 100).toFixed(1) : 0}%
               </div>
               <p className="text-xs text-gray-400">Return on investment</p>
@@ -549,7 +549,7 @@ const Spending = () => {
                       <div className="w-2 h-2 bg-red-400 rounded-full"></div>
                       <span className="text-gray-200">{expense.name}</span>
                     </div>
-                    <span className="font-semibold text-red-400">
+                    <span style={{color: '#ef4444'}} className="font-semibold">
                       {formatCurrency(expense.amount)}
                     </span>
                   </div>
@@ -557,7 +557,7 @@ const Spending = () => {
                 <div className="border-t border-gray-700 pt-3">
                   <div className="flex justify-between items-center font-semibold">
                     <span className="text-gray-100">Total Trading Expenses</span>
-                    <span className="text-red-400 text-lg">
+                    <span style={{color: '#ef4444'}} className="text-lg">
                       {formatCurrency(totalPropTradingCosts)}
                     </span>
                   </div>
@@ -583,7 +583,7 @@ const Spending = () => {
                         <div className="w-2 h-2 bg-orange-400 rounded-full"></div>
                         <span className="text-gray-200">{category}</span>
                       </div>
-                      <span className="font-semibold text-red-400">
+                      <span style={{color: '#ef4444'}} className="font-semibold">
                         {formatCurrency(amount)}
                       </span>
                     </div>
@@ -594,7 +594,7 @@ const Spending = () => {
                 <div className="border-t border-gray-700 pt-3">
                   <div className="flex justify-between items-center font-semibold">
                     <span className="text-gray-100">Total Personal Expenses</span>
-                    <span className="text-red-400 text-lg">
+                    <span className="style={{color: "#ef4444"}} text-lg">
                       {formatCurrency(totalManualSpending)}
                     </span>
                   </div>
