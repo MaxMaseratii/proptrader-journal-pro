@@ -2156,9 +2156,9 @@ export default function Dashboard() {
                 <BarChart3 className="w-4 h-4 text-orange-400" />
               </div>
               <div className="flex items-center space-x-2 text-lg font-bold mb-1">
-                <span className={getUniversalValueColor(combinedAnalytics?.averageWin || 0, 'profit').textColor}>{formatCurrency(combinedAnalytics?.averageWin || 0)}</span>
+                <span className="text-green-400">{formatCurrency(combinedAnalytics?.averageWin || 0)}</span>
                 <span className="text-gray-400">/</span>
-                <span className={getUniversalValueColor(-(Math.abs(combinedAnalytics?.averageLoss || 0)), 'pnl').textColor}>{formatCurrency(Math.abs(combinedAnalytics?.averageLoss || 0))}</span>
+                <span className="text-red-400">{formatCurrency(Math.abs(combinedAnalytics?.averageLoss || 0))}</span>
               </div>
               <div className="text-xs text-gray-400">Win vs Loss ratio</div>
             </div>
@@ -3005,13 +3005,7 @@ export default function Dashboard() {
                 <span className="text-sm font-medium text-gray-300">Profit Factor</span>
                 <Target className={`w-4 h-4 ${getUniversalValueColor(1, 'profit').textColor}`} />
               </div>
-              <div className={`text-2xl font-bold mb-1 ${(() => {
-                const filteredTrades = getFilteredTrades();
-                const totalWinnings = filteredTrades.filter(t => (t.pnl || 0) > 0).reduce((sum, t) => sum + (t.pnl || 0), 0);
-                const totalLosses = Math.abs(filteredTrades.filter(t => (t.pnl || 0) < 0).reduce((sum, t) => sum + (t.pnl || 0), 0));
-                const profitFactor = totalLosses > 0 ? (totalWinnings / totalLosses) : (totalWinnings > 0 ? 999 : 0);
-                return getUniversalValueColor(profitFactor - 1, 'roi').textColor; // Profit factor > 1 is green, < 1 is red
-              })()}`}>
+              <div className="text-2xl font-bold mb-1 text-green-400">
                 {(() => {
                   const filteredTrades = getFilteredTrades();
                   const totalWinnings = filteredTrades.filter(t => (t.pnl || 0) > 0).reduce((sum, t) => sum + (t.pnl || 0), 0);
@@ -3028,16 +3022,7 @@ export default function Dashboard() {
                 <span className="text-sm font-medium text-gray-300">Sharpe Ratio</span>
                 <TrendingUp className={`w-4 h-4 ${getUniversalValueColor(1, 'roi').textColor}`} />
               </div>
-              <div className={`text-2xl font-bold mb-1 ${(() => {
-                const filteredTrades = getFilteredTrades();
-                if (filteredTrades.length === 0) return 'text-white';
-                const returns = filteredTrades.map(t => t.pnl || 0);
-                const avgReturn = returns.reduce((sum, r) => sum + r, 0) / returns.length;
-                const variance = returns.reduce((sum, r) => sum + Math.pow(r - avgReturn, 2), 0) / returns.length;
-                const stdDev = Math.sqrt(variance);
-                const sharpe = stdDev > 0 ? (avgReturn / stdDev) : 0;
-                return getUniversalValueColor(sharpe, 'roi').textColor;
-              })()}`}>
+              <div className="text-2xl font-bold mb-1 text-green-400">
                 {(() => {
                   const filteredTrades = getFilteredTrades();
                   if (filteredTrades.length === 0) return '0.00';
@@ -3057,19 +3042,7 @@ export default function Dashboard() {
                 <span className="text-sm font-medium text-gray-300">Max Consecutive Wins</span>
                 <TrendingUp className={`w-4 h-4 ${getUniversalValueColor(1, 'profit').textColor}`} />
               </div>
-              <div className={`text-2xl font-bold mb-1 ${(() => {
-                const filteredTrades = getFilteredTrades();
-                let maxWins = 0, currentWins = 0;
-                filteredTrades.forEach(trade => {
-                  if ((trade.pnl || 0) > 0) {
-                    currentWins++;
-                    maxWins = Math.max(maxWins, currentWins);
-                  } else {
-                    currentWins = 0;
-                  }
-                });
-                return getUniversalValueColor(maxWins, 'profit').textColor;
-              })()}`}>
+              <div className="text-2xl font-bold mb-1 text-green-400">
                 {(() => {
                   const filteredTrades = getFilteredTrades();
                   let maxWins = 0, currentWins = 0;
@@ -3093,19 +3066,7 @@ export default function Dashboard() {
                 <span className="text-sm font-medium text-gray-300">Max Consecutive Losses</span>
                 <TrendingDown className={`w-4 h-4 ${getUniversalValueColor(-1, 'pnl').textColor}`} />
               </div>
-              <div className={`text-2xl font-bold mb-1 ${(() => {
-                const filteredTrades = getFilteredTrades();
-                let maxLosses = 0, currentLosses = 0;
-                filteredTrades.forEach(trade => {
-                  if ((trade.pnl || 0) < 0) {
-                    currentLosses++;
-                    maxLosses = Math.max(maxLosses, currentLosses);
-                  } else {
-                    currentLosses = 0;
-                  }
-                });
-                return getUniversalValueColor(-maxLosses, 'pnl').textColor;
-              })()}`}>
+              <div className="text-2xl font-bold mb-1 text-red-400">
                 {(() => {
                   const filteredTrades = getFilteredTrades();
                   let maxLosses = 0, currentLosses = 0;
@@ -3132,7 +3093,7 @@ export default function Dashboard() {
                 <span className="text-sm font-medium text-gray-300">Largest Win</span>
                 <Trophy className={`w-4 h-4 ${getUniversalValueColor(1, 'profit').textColor}`} />
               </div>
-              <div className={`text-2xl font-bold mb-1 ${getUniversalValueColor(Math.max(...getFilteredTrades().map(t => t.pnl || 0), 0), 'profit').textColor}`}>
+              <div className="text-2xl font-bold mb-1 text-green-400">
                 {formatCurrency(Math.max(...getFilteredTrades().map(t => t.pnl || 0), 0))}
               </div>
               <div className="text-xs text-gray-400">Best single trade</div>
@@ -3144,7 +3105,7 @@ export default function Dashboard() {
                 <span className="text-sm font-medium text-gray-300">Largest Loss</span>
                 <AlertTriangle className={`w-4 h-4 ${getUniversalValueColor(-1, 'pnl').textColor}`} />
               </div>
-              <div className={`text-2xl font-bold mb-1 ${getUniversalValueColor(Math.min(...getFilteredTrades().map(t => t.pnl || 0), 0), 'pnl').textColor}`}>
+              <div className="text-2xl font-bold mb-1 text-red-400">
                 {formatCurrency(Math.min(...getFilteredTrades().map(t => t.pnl || 0), 0))}
               </div>
               <div className="text-xs text-gray-400">Worst single trade</div>
@@ -3156,13 +3117,7 @@ export default function Dashboard() {
                 <span className="text-sm font-medium text-gray-300">Avg R:R Ratio</span>
                 <Scale className="w-4 h-4 text-amber-400" />
               </div>
-              <div className={`text-2xl font-bold mb-1 ${(() => {
-                const filteredTrades = getFilteredTrades();
-                const validRRTrades = filteredTrades.filter(t => t.riskRewardRatio && t.riskRewardRatio > 0);
-                if (validRRTrades.length === 0) return 'text-white';
-                const avgRR = validRRTrades.reduce((sum, t) => sum + (t.riskRewardRatio || 0), 0) / validRRTrades.length;
-                return getUniversalValueColor(avgRR - 1, 'roi').textColor;
-              })()}`}>
+              <div className="text-2xl font-bold mb-1 text-green-400">
                 {(() => {
                   const filteredTrades = getFilteredTrades();
                   const validRRTrades = filteredTrades.filter(t => t.riskRewardRatio && t.riskRewardRatio > 0);
