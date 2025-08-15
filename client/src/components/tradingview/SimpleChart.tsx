@@ -16,6 +16,7 @@ export const SimpleChart: React.FC<SimpleChartProps> = ({
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [hoveredTrade, setHoveredTrade] = useState<Trade | null>(null);
   const [mousePos, setMousePos] = useState<{x: number, y: number} | null>(null);
+  const [forceRefresh, setForceRefresh] = useState(0);
 
   useEffect(() => {
     if (!canvasRef.current || trades.length === 0) return;
@@ -150,22 +151,22 @@ export const SimpleChart: React.FC<SimpleChartProps> = ({
         <div className="flex items-center space-x-4">
           <div className="flex items-center text-sm">
             {totalPnl >= 0 ? (
-              <TrendingUp className="h-4 w-4 text-green-400 mr-1" />
+              <TrendingUp className="h-4 w-4 text-green-500 mr-1" />
             ) : (
-              <TrendingDown className="h-4 w-4 text-red-400 mr-1" />
+              <TrendingDown className="h-4 w-4 text-red-500 mr-1" />
             )}
-            <span className={totalPnl >= 0 ? 'text-green-400' : 'text-red-400'}>
-              {totalPnl >= 0 ? '+' : ''}${totalPnl.toFixed(0)}
+            <span className={totalPnl >= 0 ? 'text-green-500' : 'text-red-500'}>
+              {totalPnl >= 0 ? '+$' : '-$'}{Math.abs(totalPnl).toFixed(0)}
             </span>
           </div>
           <div className="text-sm text-gray-400">
-            <span className="text-green-400">{profitableTrades}</span>
+            <span className="text-green-500">{profitableTrades}</span>
             <span className="mx-1">/</span>
-            <span className="text-red-400">{trades.length - profitableTrades}</span>
+            <span className="text-red-500">{trades.length - profitableTrades}</span>
           </div>
           <div className="text-sm">
             <span className="text-gray-400">Win: </span>
-            <span className={`font-medium ${parseFloat(winRate) >= 50 ? 'text-green-400' : 'text-red-400'}`}>
+            <span className={`font-medium ${parseFloat(winRate) >= 50 ? 'text-green-500' : 'text-red-500'}`}>
               {winRate}%
             </span>
           </div>
@@ -200,11 +201,13 @@ export const SimpleChart: React.FC<SimpleChartProps> = ({
               }
             });
             
-            // Always update hover state - no restrictions
-            setHoveredTrade(closestTrade);
+            // FIXED: Force update hover state on every mousemove
             if (closestTrade) {
+              setHoveredTrade(closestTrade);
               setMousePos({ x: e.clientX, y: e.clientY });
+              setForceRefresh(prev => prev + 1); // Force tooltip refresh
             } else {
+              setHoveredTrade(null);
               setMousePos(null);
             }
           }}
@@ -214,9 +217,10 @@ export const SimpleChart: React.FC<SimpleChartProps> = ({
           }}
         />
         
-        {/* Enhanced Tooltip - FIXED: Always shows on hover */}
+        {/* PERSISTENT TOOLTIP - FIXED: Always displays on hover */}
         {hoveredTrade && mousePos && (
           <div 
+            key={`tooltip-${hoveredTrade.id}-${forceRefresh}`}
             className="fixed z-50 bg-black border-2 border-yellow-400/50 rounded-lg p-4 shadow-2xl pointer-events-none backdrop-blur-sm"
             style={{
               left: Math.min(mousePos.x + 15, window.innerWidth - 280),

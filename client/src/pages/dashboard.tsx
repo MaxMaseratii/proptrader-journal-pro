@@ -445,21 +445,21 @@ export default function Dashboard() {
                   {date.getDate()}
                 </div>
                 
-                {/* P&L - Enhanced Red/Green Color Coding */}
+                {/* P&L - FIXED: Complete Red/Green Color System */}
                 <div className={`text-xs font-bold mb-1 ${
-                  metrics.totalPnL > 0 ? 'text-green-400' : 
-                  metrics.totalPnL < 0 ? 'text-red-400' : 'text-gray-400'
+                  metrics.totalPnL > 0 ? 'text-green-500' : 
+                  metrics.totalPnL < 0 ? 'text-red-500' : 'text-gray-400'
                 }`}>
-                  {metrics.totalPnL > 0 ? '+' : ''}${Math.abs(metrics.totalPnL).toFixed(0)}
+                  {metrics.totalPnL > 0 ? '+$' : metrics.totalPnL < 0 ? '-$' : '$'}{Math.abs(metrics.totalPnL).toFixed(0)}
                 </div>
                 
                 {/* Bottom metrics */}
                 <div className="flex justify-between items-center text-xs">
                   <span className="text-gray-400">{metrics.totalTrades}T</span>
                   <span className={`font-medium ${
-                    metrics.winRate >= 70 ? 'text-green-400' :
-                    metrics.winRate >= 50 ? 'text-yellow-400' :
-                    metrics.winRate >= 30 ? 'text-orange-400' : 'text-red-400'
+                    metrics.winRate >= 70 ? 'text-green-500' :
+                    metrics.winRate >= 50 ? 'text-yellow-500' :
+                    metrics.winRate >= 30 ? 'text-orange-500' : 'text-red-500'
                   }`}>
                     {metrics.totalTrades > 0 ? Math.round(metrics.winRate) : 0}%
                   </span>

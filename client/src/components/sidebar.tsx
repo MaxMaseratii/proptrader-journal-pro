@@ -105,7 +105,7 @@ export default function Sidebar() {
             className="bg-gradient-to-r from-yellow-400 to-amber-500 p-3 rounded-lg shadow-xl hover-glow smooth-transition cursor-pointer block"
           >
             <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-black dark:bg-black rounded-lg flex items-center justify-center border-2 border-teal-500 shadow-lg">
+              <div className="w-10 h-10 bg-black rounded-lg flex items-center justify-center border-2 border-teal-500 shadow-lg">
                 <Crown className="h-6 w-6 text-yellow-400" />
               </div>
               {!isCollapsed && !isPartiallyCollapsed && (
