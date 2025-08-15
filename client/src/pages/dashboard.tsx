@@ -2919,9 +2919,9 @@ export default function Dashboard() {
             <div className="widget-card p-4 transition-all duration-200">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-sm font-medium text-gray-300">Total Spent on Accounts</span>
-                <DollarSign className="w-4 h-4 text-amber-400" />
+                <DollarSign className={`w-4 h-4 ${getUniversalValueColor(-1, 'expense').textColor}`} />
               </div>
-              <div className={`text-2xl font-bold mb-1 ${getValueColor(-(accounts?.reduce((sum, acc) => sum + (acc.accountCost || 0), 0) || 0))}`}>
+              <div className={`text-2xl font-bold mb-1 ${getUniversalValueColor(-(accounts?.reduce((sum, acc) => sum + (acc.accountCost || 0), 0) || 0), 'expense').textColor}`}>
                 -{formatCurrency(accounts?.reduce((sum, acc) => sum + (acc.accountCost || 0), 0) || 0)}
               </div>
               <div className="text-xs text-gray-400">Challenge & setup costs</div>
@@ -2930,9 +2930,9 @@ export default function Dashboard() {
             <div className="widget-card p-4 transition-all duration-200">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-sm font-medium text-gray-300">Reset Cost</span>
-                <RotateCcw className="w-4 h-4 text-orange-400" />
+                <RotateCcw className={`w-4 h-4 ${getUniversalValueColor(-1, 'expense').textColor}`} />
               </div>
-              <div className={`text-2xl font-bold mb-1 ${getValueColor(-(accounts?.reduce((sum, acc) => sum + (acc.totalResetsCost || 0), 0) || 0))}`}>
+              <div className={`text-2xl font-bold mb-1 ${getUniversalValueColor(-(accounts?.reduce((sum, acc) => sum + (acc.totalResetsCost || 0), 0) || 0), 'expense').textColor}`}>
                 -{formatCurrency(accounts?.reduce((sum, acc) => sum + (acc.totalResetsCost || 0), 0) || 0)}
               </div>
               <div className="text-xs text-gray-400">Failed account resets</div>
@@ -2941,9 +2941,9 @@ export default function Dashboard() {
             <div className="widget-card p-4 transition-all duration-200">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-sm font-medium text-gray-300">Activation Costs</span>
-                <CheckCircle className="w-4 h-4 text-blue-400" />
+                <CheckCircle className={`w-4 h-4 ${getUniversalValueColor(-1, 'expense').textColor}`} />
               </div>
-              <div className={`text-2xl font-bold mb-1 ${getValueColor(-(accounts?.reduce((sum, acc) => sum + (acc.activationCost || 0), 0) || 0))}`}>
+              <div className={`text-2xl font-bold mb-1 ${getUniversalValueColor(-(accounts?.reduce((sum, acc) => sum + (acc.activationCost || 0), 0) || 0), 'expense').textColor}`}>
                 -{formatCurrency(accounts?.reduce((sum, acc) => sum + (acc.activationCost || 0), 0) || 0)}
               </div>
               <div className="text-xs text-gray-400">Account activation fees</div>
@@ -2955,9 +2955,9 @@ export default function Dashboard() {
             <div className="widget-card p-4 transition-all duration-200">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-sm font-medium text-gray-300">Total Spent</span>
-                <CreditCard className="w-4 h-4 text-red-500" />
+                <CreditCard className={`w-4 h-4 ${getUniversalValueColor(-1, 'expense').textColor}`} />
               </div>
-              <div className={`text-2xl font-bold mb-1 ${getValueColor(-((accounts?.reduce((sum, acc) => sum + (acc.accountCost || 0) + (acc.totalResetsCost || 0) + (acc.activationCost || 0), 0) || 0)))}`}>
+              <div className={`text-2xl font-bold mb-1 ${getUniversalValueColor(-((accounts?.reduce((sum, acc) => sum + (acc.accountCost || 0) + (acc.totalResetsCost || 0) + (acc.activationCost || 0), 0) || 0)), 'expense').textColor}`}>
                 -{formatCurrency((accounts?.reduce((sum, acc) => sum + (acc.accountCost || 0) + (acc.totalResetsCost || 0) + (acc.activationCost || 0), 0) || 0))}
               </div>
               <div className="text-xs text-gray-400">Total investment</div>
@@ -2966,9 +2966,9 @@ export default function Dashboard() {
             <div className="widget-card p-4 transition-all duration-200">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-sm font-medium text-gray-300">Payouts</span>
-                <TrendingUp className="w-4 h-4 text-green-500" />
+                <TrendingUp className={`w-4 h-4 ${getUniversalValueColor(1, 'profit').textColor}`} />
               </div>
-              <div className={`text-2xl font-bold mb-1 ${getValueColor(calculateTotalAvailablePayouts())}`}>
+              <div className={`text-2xl font-bold mb-1 ${getUniversalValueColor(calculateTotalAvailablePayouts(), 'profit').textColor}`}>
                 +{formatCurrency(calculateTotalAvailablePayouts())}
               </div>
               <div className="text-xs text-gray-400">Actual payouts received</div>
@@ -2977,9 +2977,9 @@ export default function Dashboard() {
             <div className="widget-card p-4 transition-all duration-200">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-sm font-medium text-gray-300">Profitability</span>
-                <TrendingUp className="w-4 h-4 text-amber-400" />
+                <TrendingUp className={`w-4 h-4 ${getUniversalValueColor(1, 'profit').textColor}`} />
               </div>
-              <div className={`text-2xl font-bold mb-1 ${getValueColor(calculateTotalAvailablePayouts() - (accounts?.reduce((sum, acc) => sum + (acc.accountCost || 0) + (acc.totalResetsCost || 0) + (acc.activationCost || 0), 0) || 0))}`}>
+              <div className={`text-2xl font-bold mb-1 ${getUniversalValueColor(calculateTotalAvailablePayouts() - (accounts?.reduce((sum, acc) => sum + (acc.accountCost || 0) + (acc.totalResetsCost || 0) + (acc.activationCost || 0), 0) || 0), 'pnl').textColor}`}>
                 {formatCurrency(calculateTotalAvailablePayouts() - (accounts?.reduce((sum, acc) => sum + (acc.accountCost || 0) + (acc.totalResetsCost || 0) + (acc.activationCost || 0), 0) || 0))}
               </div>
               <div className="text-xs text-gray-400">Real profit (received payouts - costs)</div>
@@ -3003,14 +3003,14 @@ export default function Dashboard() {
             <div className="widget-card p-4 transition-all duration-200">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-sm font-medium text-gray-300">Profit Factor</span>
-                <Target className="w-4 h-4 text-green-500" />
+                <Target className={`w-4 h-4 ${getUniversalValueColor(1, 'profit').textColor}`} />
               </div>
               <div className={`text-2xl font-bold mb-1 ${(() => {
                 const filteredTrades = getFilteredTrades();
                 const totalWinnings = filteredTrades.filter(t => (t.pnl || 0) > 0).reduce((sum, t) => sum + (t.pnl || 0), 0);
                 const totalLosses = Math.abs(filteredTrades.filter(t => (t.pnl || 0) < 0).reduce((sum, t) => sum + (t.pnl || 0), 0));
                 const profitFactor = totalLosses > 0 ? (totalWinnings / totalLosses) : (totalWinnings > 0 ? 999 : 0);
-                return getValueColor(profitFactor - 1); // Profit factor > 1 is green, < 1 is red
+                return getUniversalValueColor(profitFactor - 1, 'roi').textColor; // Profit factor > 1 is green, < 1 is red
               })()}`}>
                 {(() => {
                   const filteredTrades = getFilteredTrades();
@@ -3026,7 +3026,7 @@ export default function Dashboard() {
             <div className="widget-card p-4 transition-all duration-200">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-sm font-medium text-gray-300">Sharpe Ratio</span>
-                <TrendingUp className="w-4 h-4 text-blue-400" />
+                <TrendingUp className={`w-4 h-4 ${getUniversalValueColor(1, 'roi').textColor}`} />
               </div>
               <div className={`text-2xl font-bold mb-1 ${(() => {
                 const filteredTrades = getFilteredTrades();
@@ -3036,7 +3036,7 @@ export default function Dashboard() {
                 const variance = returns.reduce((sum, r) => sum + Math.pow(r - avgReturn, 2), 0) / returns.length;
                 const stdDev = Math.sqrt(variance);
                 const sharpe = stdDev > 0 ? (avgReturn / stdDev) : 0;
-                return getValueColor(sharpe);
+                return getUniversalValueColor(sharpe, 'roi').textColor;
               })()}`}>
                 {(() => {
                   const filteredTrades = getFilteredTrades();
