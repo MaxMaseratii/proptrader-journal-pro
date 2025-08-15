@@ -1889,7 +1889,7 @@ export default function Trades() {
                     className="border-b border-gray-800 hover:bg-gray-800/50 cursor-pointer"
                     onClick={() => openTradeDetail(trade)}
                   >
-                    <td className="py-3 px-4 text-white">{formatDate(trade.date)}</td>
+                    <td className="py-3 px-4 text-gray-200">{formatDate(trade.date)}</td>
                     <td className="py-3 px-4 text-gray-300">
                       <div className="space-y-1">
                         <div className="text-green-500 text-xs font-medium">Entry:</div>
@@ -1958,8 +1958,8 @@ export default function Trades() {
                         }
                       })()}
                     </td>
-                    <td className="py-3 px-4 text-gray-300">{getAccountName(trade.accountId)}</td>
-                    <td className="py-3 px-4 text-white font-medium">{trade.symbol}</td>
+                    <td className="py-3 px-4 text-gray-200">{getAccountName(trade.accountId)}</td>
+                    <td className="py-3 px-4 text-gray-100 font-medium">{trade.symbol}</td>
                     <td className="py-3 px-4">
                       <Badge 
                         variant={trade.side === 'buy' ? 'default' : 'secondary'}
@@ -1968,9 +1968,9 @@ export default function Trades() {
                         {trade.side.toUpperCase()}
                       </Badge>
                     </td>
-                    <td className="py-3 px-4 text-right text-white">{trade.quantity}</td>
-                    <td className="py-3 px-4 text-right text-white">{formatPrice(trade.entryPrice)}</td>
-                    <td className="py-3 px-4 text-right text-white">
+                    <td className="py-3 px-4 text-right text-gray-200">{trade.quantity}</td>
+                    <td className="py-3 px-4 text-right text-gray-200">{formatPrice(trade.entryPrice)}</td>
+                    <td className="py-3 px-4 text-right text-gray-200">
                       {trade.exitPrice ? formatPrice(trade.exitPrice) : '-'}
                     </td>
                     <td className={`py-3 px-4 text-right font-medium ${

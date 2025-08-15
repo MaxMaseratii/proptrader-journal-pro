@@ -1634,7 +1634,7 @@ export default function Dashboard() {
                 {combinedAnalytics && combinedAnalytics.accounts.length > 0 ? (
                   <>
                     <div className="absolute top-3 right-3 text-xs text-red-500">
-                      Max: ${combinedAnalytics.accounts[0]?.dailyLossLimit || 0}
+                      Max: ${combinedAnalytics.accounts[0]?.maxDrawdown || 0}
                     </div>
                     <div className="text-3xl font-bold text-red-500 mb-1">
                       ${combinedAnalytics.accounts[0]?.riskPerTrade || 0}
