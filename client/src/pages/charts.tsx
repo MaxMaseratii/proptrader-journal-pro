@@ -181,7 +181,7 @@ export default function Charts() {
                   <TrendingUp className="h-4 w-4 text-green-500" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold text-green-400">
+                  <div className="text-2xl font-bold" style={{ color: 'hsl(142, 76%, 54%)' }}>
                     ${trades.reduce((sum, t) => sum + (t.pnl || 0), 0).toFixed(2)}
                   </div>
                   <p className="text-xs text-gray-400">Net profit/loss</p>
@@ -194,7 +194,7 @@ export default function Charts() {
                   <Activity className="h-4 w-4 text-blue-500" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold text-green-400">
+                  <div className="text-2xl font-bold" style={{ color: 'hsl(142, 76%, 54%)' }}>
                     {(trades.filter(t => (t.pnl || 0) > 0).length / trades.length * 100).toFixed(1)}%
                   </div>
                   <p className="text-xs text-gray-400">Winning trades percentage</p>
@@ -207,7 +207,7 @@ export default function Charts() {
                   <Calendar className="h-4 w-4 text-purple-500" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold text-green-400">
+                  <div className="text-2xl font-bold" style={{ color: 'hsl(142, 76%, 54%)' }}>
                     ${(trades.reduce((sum, t) => sum + (t.pnl || 0), 0) / trades.length).toFixed(2)}
                   </div>
                   <p className="text-xs text-gray-400">Average per trade</p>
