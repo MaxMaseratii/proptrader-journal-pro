@@ -668,8 +668,7 @@ export default function Dashboard() {
                 
                 {/* P&L */}
                 <div className={`text-sm font-bold mb-1 ${
-                  monthPnL > 0 ? 'text-green-500' : 
-                  monthPnL < 0 ? 'text-red-500' : 'text-gray-400'
+                  getUniversalValueColor(monthPnL, 'pnl').textColor
                 }`}>
                   {monthPnL > 0 ? '+' : ''}${Math.abs(monthPnL).toFixed(0)}
                 </div>
@@ -679,9 +678,7 @@ export default function Dashboard() {
                   <span className="text-gray-400">{monthTrades}T</span>
                   <span className={`font-medium ${
                     monthTrades === 0 ? 'text-gray-500' :
-                    monthWinRate >= 80 ? 'text-green-500' :
-                    monthWinRate >= 60 ? 'text-yellow-400' :
-                    monthWinRate >= 40 ? 'text-orange-400' : 'text-red-500'
+                    getPercentageColor(monthWinRate).textColor
                   }`}>
                     {monthTrades > 0 ? Math.round(monthWinRate) : 0}%
                   </span>
@@ -1355,7 +1352,7 @@ export default function Dashboard() {
                     : 'bg-yellow-500/20'
                 }`}>
                   {congratulationsBanner.type === 'funded' ? (
-                    <Trophy className="h-6 w-6 text-green-500" />
+                    <Trophy className={`h-6 w-6 ${getUniversalValueColor(1, 'profit').textColor}`} />
                   ) : (
                     <Star className="h-6 w-6 text-yellow-400" />
                   )}
@@ -1421,7 +1418,7 @@ export default function Dashboard() {
                 <div className="flex items-center space-x-2">
                   <span className="text-sm text-gray-400">Daily P&L:</span>
                   <span className={`text-lg font-bold ${
-                    selectedDayData?.dayPnL >= 0 ? 'text-green-500' : 'text-red-500'
+                    getUniversalValueColor(selectedDayData?.dayPnL || 0, 'pnl').textColor
                   }`}>
                     {selectedDayData?.dayPnL >= 0 ? '+' : ''}${Math.abs(selectedDayData?.dayPnL || 0).toFixed(2)}
                   </span>
@@ -1436,7 +1433,7 @@ export default function Dashboard() {
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-2">
-                      <AlertTriangle className="w-4 h-4 text-red-500" />
+                      <AlertTriangle className={`w-4 h-4 ${getUniversalValueColor(-1, 'pnl').textColor}`} />
                       <span className="text-gray-300 font-medium">Daily Loss Limit</span>
                     </div>
                     <span className={`px-3 py-1 rounded-full text-xs font-bold ${
@@ -1496,7 +1493,7 @@ export default function Dashboard() {
                   
                   <div className="text-center">
                     <span className={`text-sm font-bold ${
-                      Math.abs(selectedDayData.dayPnL) >= 100 ? 'text-red-500' : 
+                      Math.abs(selectedDayData.dayPnL) >= 100 ? getUniversalValueColor(-1, 'pnl').textColor : 
                       Math.abs(selectedDayData.dayPnL) >= 80 ? 'text-orange-400' : 
                       'text-yellow-400'
                     }`}>
@@ -1523,7 +1520,7 @@ export default function Dashboard() {
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-2">
-                      <Target className="w-4 h-4 text-green-500" />
+                      <Target className={`w-4 h-4 ${getUniversalValueColor(1, 'profit').textColor}`} />
                       <span className="text-gray-300 font-medium">Daily Profit Target</span>
                     </div>
                     <span className={`px-3 py-1 rounded-full text-xs font-bold ${
@@ -1799,7 +1796,7 @@ export default function Dashboard() {
                 <div className="absolute top-3 right-3 text-xs text-green-300">
                   WR
                 </div>
-                <div className={`text-3xl font-bold mb-1 ${(selectedDayData?.winRate || 0) >= 50 ? 'text-green-500' : 'text-red-500'}`}>
+                <div className={`text-3xl font-bold mb-1 ${getPercentageColor(selectedDayData?.winRate || 0).textColor}`}>
                   {Math.round(selectedDayData?.winRate || 0)}%
                 </div>
                 <div className="text-sm text-gray-400 mb-1">Win Rate</div>
@@ -1968,7 +1965,7 @@ export default function Dashboard() {
                   <div className="absolute top-2 right-2 text-xs text-cyan-300">
                     P&L
                   </div>
-                  <div className={`text-xl font-bold ${combinedAnalytics?.totalPnl >= 0 ? 'text-green-500' : 'text-red-500'} mb-1`}>
+                  <div className={`text-xl font-bold ${getUniversalValueColor(combinedAnalytics?.totalPnl || 0, 'pnl').textColor} mb-1`}>
                     {combinedAnalytics?.totalPnl >= 0 ? '+' : ''}${(combinedAnalytics?.totalPnl || 0).toFixed(0)}
                   </div>
                   <div className="text-xs text-gray-400">{calendarViewMode.charAt(0).toUpperCase() + calendarViewMode.slice(1)} P&L</div>
@@ -2079,7 +2076,7 @@ export default function Dashboard() {
                 <span className="text-sm font-medium text-gray-300">Win Rate</span>
                 <Target className="w-4 h-4 text-green-500" />
               </div>
-              <div className={`text-2xl font-bold mb-1 ${(combinedAnalytics?.winRate || 0) > 50 ? 'text-green-500' : 'text-red-500'}`}>
+              <div className={`text-2xl font-bold mb-1 ${getPercentageColor(combinedAnalytics?.winRate || 0).textColor}`}>
                 {formatPercentage(combinedAnalytics?.winRate || 0)}
               </div>
               <div className="text-xs text-gray-400">Winning trades percentage</div>
@@ -2206,7 +2203,7 @@ export default function Dashboard() {
                       <div key={trade.id || index} className="bg-cyan-600/30 rounded-lg p-3 hover:bg-cyan-600/40 transition-colors duration-200">
                         <div className="flex justify-between items-start mb-1">
                           <span className="text-gray-100 font-medium">{trade.symbol}</span>
-                          <span className={`font-bold ${(trade.pnl || 0) >= 0 ? 'text-green-500' : 'text-red-500'}`}>
+                          <span className={`font-bold ${getUniversalValueColor(trade.pnl || 0, 'pnl').textColor}`}>
                             {(trade.pnl || 0) >= 0 ? '+' : '-'}{formatCurrency(Math.abs(trade.pnl || 0))}
                           </span>
                         </div>
