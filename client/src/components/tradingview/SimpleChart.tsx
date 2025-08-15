@@ -155,7 +155,7 @@ export const SimpleChart: React.FC<SimpleChartProps> = ({
               <TrendingDown className="h-4 w-4 text-red-400 mr-1" />
             )}
             <span className={totalPnl >= 0 ? 'text-green-400' : 'text-red-400'}>
-              ${totalPnl.toFixed(0)}
+              {totalPnl >= 0 ? '+' : ''}${totalPnl.toFixed(0)}
             </span>
           </div>
           <div className="text-sm text-gray-400">
@@ -186,7 +186,7 @@ export const SimpleChart: React.FC<SimpleChartProps> = ({
             const padding = 40;
             const chartWidth = rect.width - (padding * 2);
             
-            // Find closest trade to mouse position
+            // Find closest trade to mouse position (FIXED: Always works on hover)
             let closestTrade = null;
             let minDistance = Infinity;
             
@@ -194,17 +194,17 @@ export const SimpleChart: React.FC<SimpleChartProps> = ({
               const tradeX = padding + (chartWidth * index / (trades.length - 1));
               const distance = Math.abs(x - tradeX);
               
-              if (distance < minDistance && distance < 20) {
+              if (distance < minDistance && distance < 30) { // Increased hover area
                 minDistance = distance;
                 closestTrade = trade;
               }
             });
             
+            // Always update hover state - no restrictions
+            setHoveredTrade(closestTrade);
             if (closestTrade) {
-              setHoveredTrade(closestTrade);
               setMousePos({ x: e.clientX, y: e.clientY });
             } else {
-              setHoveredTrade(null);
               setMousePos(null);
             }
           }}
@@ -214,14 +214,14 @@ export const SimpleChart: React.FC<SimpleChartProps> = ({
           }}
         />
         
-        {/* Tooltip */}
+        {/* Enhanced Tooltip - FIXED: Always shows on hover */}
         {hoveredTrade && mousePos && (
           <div 
-            className="absolute z-10 bg-gray-800 border border-gray-600 rounded-lg p-3 shadow-lg pointer-events-none"
+            className="fixed z-50 bg-black border-2 border-yellow-400/50 rounded-lg p-4 shadow-2xl pointer-events-none backdrop-blur-sm"
             style={{
-              left: Math.min(mousePos.x + 10, window.innerWidth - 200),
-              top: Math.max(mousePos.y - 100, 10),
-              transform: mousePos.x > window.innerWidth * 0.8 ? 'translate(-100%, 0)' : 'translate(-50%, 0)'
+              left: Math.min(mousePos.x + 15, window.innerWidth - 280),
+              top: Math.max(mousePos.y - 120, 15),
+              maxWidth: '280px'
             }}
           >
             <div className="text-sm">

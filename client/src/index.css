@@ -391,6 +391,24 @@
   border: 1px solid hsl(217.2 32.6% 17.5%) !important;
 }
 
+/* DIALOG COMPONENTS - SOLID BLACK BACKGROUNDS */
+[data-radix-dialog-content],
+.dialog-content {
+  background-color: black !important;
+  color: white !important;
+  border: 1px solid rgba(250, 204, 21, 0.4) !important;
+  border-radius: 12px !important;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8) !important;
+  z-index: 10000 !important;
+}
+
+[data-radix-dialog-overlay],
+.dialog-overlay {
+  background-color: rgba(0, 0, 0, 0.85) !important;
+  backdrop-filter: blur(4px) !important;
+  z-index: 9999 !important;
+}
+
 /* COMPREHENSIVE DROPDOWN FIX FOR ALL PAGES - LIGHT & DARK MODE */
 
 /* Fix ALL Select triggers (dropdown buttons) */

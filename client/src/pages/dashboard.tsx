@@ -445,7 +445,7 @@ export default function Dashboard() {
                   {date.getDate()}
                 </div>
                 
-                {/* P&L */}
+                {/* P&L - Enhanced Red/Green Color Coding */}
                 <div className={`text-xs font-bold mb-1 ${
                   metrics.totalPnL > 0 ? 'text-green-400' : 
                   metrics.totalPnL < 0 ? 'text-red-400' : 'text-gray-400'
@@ -457,9 +457,9 @@ export default function Dashboard() {
                 <div className="flex justify-between items-center text-xs">
                   <span className="text-gray-400">{metrics.totalTrades}T</span>
                   <span className={`font-medium ${
-                    metrics.winRate >= 80 ? 'text-green-400' :
-                    metrics.winRate >= 60 ? 'text-yellow-400' :
-                    metrics.winRate >= 40 ? 'text-orange-400' : 'text-red-400'
+                    metrics.winRate >= 70 ? 'text-green-400' :
+                    metrics.winRate >= 50 ? 'text-yellow-400' :
+                    metrics.winRate >= 30 ? 'text-orange-400' : 'text-red-400'
                   }`}>
                     {metrics.totalTrades > 0 ? Math.round(metrics.winRate) : 0}%
                   </span>

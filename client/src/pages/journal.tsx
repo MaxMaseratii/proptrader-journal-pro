@@ -306,11 +306,13 @@ const Journal = () => {
                   .map((entry) => (
                     <div
                       key={entry.id}
-                      className="p-3 rounded-lg bg-gradient-to-r from-gray-800 to-gray-700 hover:from-gray-700 hover:to-gray-600 cursor-pointer transition-colors border border-yellow-400/10"
+                      className="p-3 rounded-lg bg-gradient-to-r from-gray-800 to-gray-700 hover:from-gray-700 hover:to-gray-600 cursor-pointer transition-colors border border-yellow-400/10 hover:border-yellow-400/30"
                       onClick={() => setSelectedEntryForReview(entry)}
+                      title="Click to view full journal entry details"
                     >
                       <div className="flex items-center justify-between mb-2">
-                        <div className="font-medium text-sm text-white">
+                        <div className="font-medium text-sm text-white flex items-center gap-2">
+                          <Eye className="h-3 w-3 text-yellow-400" />
                           {format(new Date(entry.date), 'MMM dd')}
                         </div>
                         <Badge className={getEmotionalStateColor(entry.emotionalState)} variant="secondary">

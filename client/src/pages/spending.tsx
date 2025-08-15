@@ -165,13 +165,12 @@ const Spending = () => {
     ? spendingRecords 
     : spendingRecords.filter(record => record.accountId === parseInt(selectedAccountId));
 
-  // Calculate account-based costs (prop trading costs) including starting balance as account purchase cost
+  // FIXED: Calculate account-based costs correctly (accountCost field, NOT startingBalance)
   const totalAccountCosts = filteredAccounts.reduce((sum, account) => {
-    // Starting balance represents the cost to purchase the account
-    const accountPurchaseCost = account.startingBalance || 0;
-    // Include additional account cost fields if available
-    const additionalCost = account.accountCost || 0;
-    return sum + accountPurchaseCost + additionalCost;
+    // accountCost is the actual cost to purchase the account
+    // startingBalance is the account size, NOT the cost
+    const accountPurchaseCost = account.accountCost || 0;
+    return sum + accountPurchaseCost;
   }, 0);
   const totalActivationCosts = filteredAccounts.reduce((sum, account) => sum + (account.activationCost || 0), 0);
   const totalResetCosts = filteredAccounts.reduce((sum, account) => sum + (account.totalResetsCost || 0), 0);
