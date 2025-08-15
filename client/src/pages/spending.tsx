@@ -103,7 +103,7 @@ const BudgetWidget = ({ title, icon: Icon, spent, total, iconColor, category }: 
 
         {/* Main Amount Display */}
         <div className="text-center mb-6">
-          <div style={{color: '#ef4444', fontSize: '2.25rem', fontWeight: 'bold', marginBottom: '0.5rem'}}>
+          <div className={`text-4xl font-bold mb-2 ${getUniversalValueColor(-spent, 'expense').textColor}`}>
             {formatCurrency(spent)}
           </div>
           <p className="text-gray-400 text-sm">
@@ -139,7 +139,7 @@ const BudgetWidget = ({ title, icon: Icon, spent, total, iconColor, category }: 
             <span className={`font-medium ${statusInfo.textColor}`}>
               {percentage.toFixed(1)}% used
             </span>
-            <span style={{color: remaining >= 0 ? '#22c55e' : '#ef4444'}}>
+            <span className={`${getUniversalValueColor(remaining, remaining >= 0 ? 'profit' : 'expense').textColor}`}>
               {remaining >= 0 ? formatCurrency(remaining) : formatCurrency(Math.abs(remaining))} 
               {remaining >= 0 ? ' remaining' : ' over budget'}
             </span>
@@ -358,7 +358,7 @@ const Spending = () => {
               <DollarSign className="h-4 w-4 text-yellow-400" />
             </CardHeader>
             <CardContent>
-              <div style={{color: '#ef4444'}} className="text-2xl font-bold">
+              <div className={`text-2xl font-bold ${getUniversalValueColor(-totalAccountCosts, 'expense').textColor}`}>
                 {formatCurrency(totalAccountCosts)}
               </div>
               <p className="text-xs text-gray-400">Challenge purchase costs</p>
@@ -371,7 +371,7 @@ const Spending = () => {
               <TrendingUp className="h-4 w-4 text-orange-400" />
             </CardHeader>
             <CardContent>
-              <div style={{color: '#ef4444'}} className="text-2xl font-bold">
+              <div className={`text-2xl font-bold ${getUniversalValueColor(-(totalActivationCosts + totalResetCosts), 'expense').textColor}`}>
                 {formatCurrency(totalActivationCosts + totalResetCosts)}
               </div>
               <p className="text-xs text-gray-400">Activations & resets</p>
@@ -381,10 +381,10 @@ const Spending = () => {
           <Card className="bg-gradient-to-br from-gray-900 via-gray-800 to-black border border-yellow-400/20 shadow-lg">
             <CardHeader>
               <CardTitle className="text-gray-100">Total Payouts</CardTitle>
-              <DollarSign style={{color: '#22c55e'}} className="h-4 w-4" />
+              <DollarSign className={`h-4 w-4 ${getUniversalValueColor(totalPayoutsReceived, 'profit').textColor}`} />
             </CardHeader>
             <CardContent>
-              <div style={{color: '#22c55e'}} className="text-2xl font-bold">
+              <div className={`text-2xl font-bold ${getUniversalValueColor(totalPayoutsReceived, 'profit').textColor}`}>
                 {formatCurrency(totalPayoutsReceived)}
               </div>
               <p className="text-xs text-gray-400">From payout page</p>
@@ -397,7 +397,7 @@ const Spending = () => {
               <TrendingUp className="h-4 w-4 text-blue-400" />
             </CardHeader>
             <CardContent>
-              <div className={`text-2xl font-bold ${actualProfitability >= 0 ? 'style={{color: "#22c55e"}}' : 'style={{color: "#ef4444"}}'}`}>
+              <div className={`text-2xl font-bold ${getUniversalValueColor(actualProfitability, 'pnl').textColor}`}>
                 {formatCurrency(actualProfitability)}
               </div>
               <p className="text-xs text-gray-400">Payouts - total costs</p>
@@ -410,7 +410,7 @@ const Spending = () => {
               <Target className="h-4 w-4 text-purple-400" />
             </CardHeader>
             <CardContent>
-              <div className={`text-2xl font-bold ${actualProfitability >= 0 ? 'style={{color: "#22c55e"}}' : 'style={{color: "#ef4444"}}'}`}>
+              <div className={`text-2xl font-bold ${getUniversalValueColor(actualProfitability, 'pnl').textColor}`}>
                 {totalPropTradingCosts > 0 ? ((actualProfitability / totalPropTradingCosts) * 100).toFixed(1) : 0}%
               </div>
               <p className="text-xs text-gray-400">Return on investment</p>
@@ -549,7 +549,7 @@ const Spending = () => {
                       <div className="w-2 h-2 bg-red-400 rounded-full"></div>
                       <span className="text-gray-200">{expense.name}</span>
                     </div>
-                    <span style={{color: '#ef4444'}} className="font-semibold">
+                    <span className={`font-semibold ${getUniversalValueColor(-expense.amount, 'expense').textColor}`}>
                       {formatCurrency(expense.amount)}
                     </span>
                   </div>
@@ -557,7 +557,7 @@ const Spending = () => {
                 <div className="border-t border-gray-700 pt-3">
                   <div className="flex justify-between items-center font-semibold">
                     <span className="text-gray-100">Total Trading Expenses</span>
-                    <span style={{color: '#ef4444'}} className="text-lg">
+                    <span className={`text-lg ${getUniversalValueColor(-totalPropTradingCosts, 'expense').textColor}`}>
                       {formatCurrency(totalPropTradingCosts)}
                     </span>
                   </div>
@@ -583,7 +583,7 @@ const Spending = () => {
                         <div className="w-2 h-2 bg-orange-400 rounded-full"></div>
                         <span className="text-gray-200">{category}</span>
                       </div>
-                      <span style={{color: '#ef4444'}} className="font-semibold">
+                      <span className={`font-semibold ${getUniversalValueColor(-amount, 'expense').textColor}`}>
                         {formatCurrency(amount)}
                       </span>
                     </div>
@@ -594,7 +594,7 @@ const Spending = () => {
                 <div className="border-t border-gray-700 pt-3">
                   <div className="flex justify-between items-center font-semibold">
                     <span className="text-gray-100">Total Personal Expenses</span>
-                    <span style={{color: "#ef4444"}} className="text-lg">
+                    <span className={`text-lg ${getUniversalValueColor(-totalManualSpending, 'expense').textColor}`}>
                       {formatCurrency(totalManualSpending)}
                     </span>
                   </div>

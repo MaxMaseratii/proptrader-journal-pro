@@ -719,7 +719,7 @@ const AccountCard = React.memo(({
         <div className="space-y-2 text-sm">
           <div className="flex justify-between">
             <span className="text-gray-400">Starting Balance:</span>
-            <span style={{color: '#22c55e'}}>${account.startingBalance.toLocaleString()}</span>
+            <span className={getUniversalValueColor(account.startingBalance, 'balance').textColor}>${account.startingBalance.toLocaleString()}</span>
           </div>
           <div className="flex justify-between">
             <span className="text-gray-400">Profit Target:</span>
@@ -727,11 +727,11 @@ const AccountCard = React.memo(({
           </div>
           <div className="flex justify-between">
             <span className="text-gray-400">Max Drawdown:</span>
-            <span style={{color: '#ef4444'}}>${account.maxDrawdown.toLocaleString()}</span>
+            <span className={getUniversalValueColor(-account.maxDrawdown, 'drawdown').textColor}>${account.maxDrawdown.toLocaleString()}</span>
           </div>
           <div className="flex justify-between">
             <span className="text-gray-400">Risk Per Trade:</span>
-            <span style={{color: '#ef4444'}}>${account.riskPerTrade}</span>
+            <span className={getUniversalValueColor(-account.riskPerTrade, 'risk').textColor}>${account.riskPerTrade}</span>
           </div>
         </div>
         

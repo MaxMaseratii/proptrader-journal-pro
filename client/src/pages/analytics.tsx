@@ -447,7 +447,7 @@ export default function Analytics() {
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-gray-200 text-sm">Total P&L</p>
-                      <p style={{color: '#22c55e', fontSize: '1.5rem', fontWeight: 'bold'}}>
+                      <p className={`text-2xl font-bold ${getUniversalValueColor(advancedMetrics.totalPnL, 'pnl').textColor}`}>
                         {formatCurrency(advancedMetrics.totalPnL)}
                       </p>
                     </div>
@@ -571,13 +571,13 @@ export default function Analytics() {
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-400">Average Loss:</span>
-                    <span style={{color: '#ef4444', fontWeight: '500'}}>
+                    <span className={`font-medium ${getUniversalValueColor(-advancedMetrics.averageLoss, 'pnl').textColor}`}>
                       -{formatCurrency(advancedMetrics.averageLoss)}
                     </span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-400">Largest Loss:</span>
-                    <span style={{color: '#ef4444', fontWeight: '500'}}>
+                    <span className={`font-medium ${getUniversalValueColor(advancedMetrics.largestLoss, 'pnl').textColor}`}>
                       {formatCurrency(advancedMetrics.largestLoss)}
                     </span>
                   </div>
