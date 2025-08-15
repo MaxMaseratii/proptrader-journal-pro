@@ -91,7 +91,7 @@ const BudgetWidget = ({ title, icon: Icon, spent, total, iconColor, category }: 
       {/* Glow effect on hover */}
       <div className={`absolute -inset-0.5 bg-gradient-to-r ${statusInfo.progressGradient} rounded-2xl blur opacity-0 group-hover:opacity-30 transition-opacity duration-300`}></div>
       
-      <div className={`relative bg-gradient-to-br from-gray-900 via-slate-800 to-gray-900 border ${statusInfo.borderColor} rounded-2xl p-6 shadow-2xl hover:shadow-3xl transition-all duration-300 group-hover:scale-[1.02] backdrop-blur-sm`}>
+      <div className="budget-widget">
         
         {/* Header with Icon and Status Badge */}
         <div className="flex items-center justify-between mb-6">
@@ -103,7 +103,7 @@ const BudgetWidget = ({ title, icon: Icon, spent, total, iconColor, category }: 
           </div>
           
           {/* Status Badge */}
-          <div className={`px-3 py-1.5 rounded-full text-xs font-medium ${statusInfo.bgGradient} ${statusInfo.textColor} border ${statusInfo.borderColor} flex items-center gap-1.5`}>
+          <div className={`status-badge ${percentage <= 50 ? 'status-badge-success' : percentage <= 80 ? 'status-badge-warning' : 'status-badge-danger'}`}>
             <StatusIcon className="h-3 w-3" />
             {statusInfo.status}
           </div>
@@ -122,13 +122,11 @@ const BudgetWidget = ({ title, icon: Icon, spent, total, iconColor, category }: 
         {/* Animated Progress Bar */}
         <div className="space-y-3 mb-6">
           <div className="relative">
-            <div className="w-full bg-gray-700/50 rounded-full h-3 shadow-inner overflow-hidden">
+            <div className="animated-progress">
               <div 
-                className={`h-full bg-gradient-to-r ${statusInfo.progressGradient} rounded-full transition-all duration-700 ease-out shadow-lg relative`}
+                className={`animated-progress-fill bg-gradient-to-r ${statusInfo.progressGradient}`}
                 style={{ width: `${Math.min(percentage, 100)}%` }}
               >
-                {/* Shine effect */}
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-pulse"></div>
               </div>
             </div>
             
