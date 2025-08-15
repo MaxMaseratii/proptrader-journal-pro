@@ -1594,19 +1594,19 @@ span.text-white {
   }
 
   .text-amber-400, .text-yellow-400 {
-    color: var(--prop-gold) !important;
+    color: #fbbf24 !important;
   }
 
   .text-blue-400, .text-blue-500 {
-    color: var(--prop-blue) !important;
+    color: #60a5fa !important;
   }
 
   .text-purple-400, .text-purple-500 {
-    color: var(--prop-pink) !important;
+    color: #c084fc !important;
   }
 
   .text-emerald-400, .text-emerald-500 {
-    color: var(--prop-tiffany) !important;
+    color: #34d399 !important;
   }
 
   /* Border colors for consistency */
@@ -1636,7 +1636,7 @@ span.text-white {
   }
 
   .light .text-amber-400, .light .text-yellow-400 {
-    color: var(--prop-gold) !important;
+    color: #fbbf24 !important;
   }
 
   .light .bg-gradient-to-br.from-gray-900\/40.via-gray-800\/60.to-black\/80,
