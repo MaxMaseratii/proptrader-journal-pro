@@ -1246,19 +1246,19 @@ input, textarea, select {
 
 /* Color overrides for widget values - Theme Adaptive */
 .text-green-400 {
-  color: var(--prop-green) !important;
+  color: #22c55e !important;
 }
 
 .text-red-400 {
-  color: var(--error-red) !important;
+  color: #ef4444 !important;
 }
 
 .text-yellow-400 {
-  color: var(--prop-gold-light) !important;
+  color: #fbbf24 !important;
 }
 
 .text-white {
-  color: var(--foreground) !important;
+  color: #ffffff !important;
 }
 
 .widget-description {
