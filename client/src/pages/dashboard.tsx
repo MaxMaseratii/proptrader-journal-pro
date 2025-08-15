@@ -21,10 +21,10 @@ import WeeklyPerformanceOverview from "@/components/weekly-performance-overview"
 
 // Color coding utility function
 const getValueColor = (value: number, type: 'currency' | 'percentage' | 'neutral' = 'currency') => {
-  if (type === 'neutral') return 'text-white';
-  if (value > 0) return 'text-green-500';
-  if (value < 0) return 'text-red-500';
-  return 'text-white'; // zero/neutral
+  if (type === 'neutral') return 'text-gray-200';
+  if (value > 0) return 'text-green-400';
+  if (value < 0) return 'text-red-400';
+  return 'text-gray-200'; // zero/neutral
 };
 import TradeCalendar from "@/components/trade-calendar";
 import TradeEntry from "@/components/trade-entry";
@@ -165,7 +165,7 @@ const ShareStats: React.FC<ShareStatsProps> = ({ totalPnL, winRate, totalTrades,
         <div className="absolute top-full right-0 mt-2 bg-gray-900/95 backdrop-blur-sm border border-gray-700 rounded-2xl shadow-2xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50 min-w-[320px]">
           <div className="p-4">
             <div className="text-center mb-3">
-              <h4 className="text-white font-semibold text-sm">Share Your Trading Stats</h4>
+              <h4 className="text-gray-100 font-semibold text-sm">Share Your Trading Stats</h4>
               <p className="text-gray-400 text-xs">Showcase your success on social media</p>
             </div>
             <div className="space-y-2">
@@ -1371,7 +1371,7 @@ export default function Dashboard() {
                   )}
                 </div>
                 <div>
-                  <p className="text-white font-medium text-sm">
+                  <p className="text-gray-100 font-medium text-sm">
                     {congratulationsBanner.message}
                   </p>
                   <p className="text-gray-300 text-xs mt-1">
@@ -1399,7 +1399,7 @@ export default function Dashboard() {
         {/* Daily Trading Plan & Performance - Consolidated Section */}
         <div className="mb-8">
           <div className="flex items-center justify-between mb-6 border-b border-gray-700 pb-3">
-            <h2 className="text-xl font-bold text-white flex items-center">
+            <h2 className="text-xl font-bold text-gray-100 flex items-center">
               <BarChart3 className="mr-3 h-5 w-5 text-prop-gold" />
               Daily Trading Plan & Performance
             </h2>
@@ -2101,7 +2101,7 @@ export default function Dashboard() {
                 <span className="text-sm font-medium text-gray-300">Total Trades</span>
                 <Activity className="w-4 h-4 text-amber-400" />
               </div>
-              <div className="text-2xl font-bold mb-1 text-white">
+              <div className="text-2xl font-bold mb-1 text-gray-100">
                 {combinedAnalytics?.totalTrades || 0}
               </div>
               <div className="text-xs text-gray-400">All executed trades</div>
@@ -2203,7 +2203,7 @@ export default function Dashboard() {
             {/* Latest Trades */}
             <div className="bg-gradient-to-br from-cyan-900/40 via-cyan-800/60 to-cyan-700/80 border border-cyan-500/30 rounded-lg p-6 hover:border-amber-400/60 transition-all duration-200">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-semibold text-white">Latest Trades</h3>
+                <h3 className="text-lg font-semibold text-gray-100">Latest Trades</h3>
                 <Activity className="w-5 h-5 text-amber-400" />
               </div>
               <div className="space-y-3 max-h-64 overflow-y-auto">
@@ -2215,7 +2215,7 @@ export default function Dashboard() {
                     .map((trade, index) => (
                       <div key={trade.id || index} className="bg-cyan-600/30 rounded-lg p-3 hover:bg-cyan-600/40 transition-colors duration-200">
                         <div className="flex justify-between items-start mb-1">
-                          <span className="text-white font-medium">{trade.symbol}</span>
+                          <span className="text-gray-100 font-medium">{trade.symbol}</span>
                           <span className={`font-bold ${(trade.pnl || 0) >= 0 ? 'text-green-500' : 'text-red-500'}`}>
                             {(trade.pnl || 0) >= 0 ? '+' : '-'}{formatCurrency(Math.abs(trade.pnl || 0))}
                           </span>
@@ -2279,7 +2279,7 @@ export default function Dashboard() {
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-3">
                     <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-                    <h3 className="text-lg font-semibold text-white">Equity Curve</h3>
+                    <h3 className="text-lg font-semibold text-gray-100">Equity Curve</h3>
                   </div>
                   
                   {(() => {

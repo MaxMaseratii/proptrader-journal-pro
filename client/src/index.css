@@ -30,11 +30,14 @@
     --chart-4: 43 74% 66%;
     --chart-5: 27 87% 67%;
 
-    /* Light theme widget styles */
+    /* Light theme widget styles - HIGH CONTRAST */
     --widget-bg: 0 0% 100%;
     --widget-text: 222.2 84% 4.9%;
     --widget-card: 0 0% 100%;
     --widget-border: 214.3 31.8% 91.4%;
+    --profit-color: 142 76% 36%;
+    --loss-color: 0 84% 60%;
+    --neutral-color: 220 13% 18%;
   }
 
   .dark {
@@ -63,11 +66,14 @@
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%;
 
-    /* Dark theme widget styles */
+    /* Dark theme widget styles - HIGH CONTRAST */
     --widget-bg: 217.2 32.6% 17.5%;
     --widget-text: 210 40% 98%;
     --widget-card: 217.2 32.6% 17.5%;
     --widget-border: 217.2 32.6% 25%;
+    --profit-color: 142 76% 54%;
+    --loss-color: 0 84% 72%;
+    --neutral-color: 220 13% 91%;
   }
 }
 
@@ -83,6 +89,19 @@
 .widget-card {
   background-color: hsl(var(--widget-card)) !important;
   border-color: hsl(var(--widget-border)) !important;
+}
+
+/* UNIVERSAL PROFIT/LOSS COLORS */
+.profit-text {
+  color: hsl(var(--profit-color)) !important;
+}
+
+.loss-text {
+  color: hsl(var(--loss-color)) !important;
+}
+
+.neutral-text {
+  color: hsl(var(--neutral-color)) !important;
 }
 
 /* COMPREHENSIVE DROPDOWN FIXES - ALL RADIX UI COMPONENTS */
