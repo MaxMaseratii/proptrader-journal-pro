@@ -2921,7 +2921,7 @@ export default function Dashboard() {
                 <span className="text-sm font-medium text-gray-300">Total Spent on Accounts</span>
                 <DollarSign className={`w-4 h-4 ${getUniversalValueColor(-1, 'expense').textColor}`} />
               </div>
-              <div className={`text-2xl font-bold mb-1 ${getUniversalValueColor(-(accounts?.reduce((sum, acc) => sum + (acc.accountCost || 0), 0) || 0), 'expense').textColor}`}>
+              <div className="text-2xl font-bold mb-1 text-red-400">
                 -{formatCurrency(accounts?.reduce((sum, acc) => sum + (acc.accountCost || 0), 0) || 0)}
               </div>
               <div className="text-xs text-gray-400">Challenge & setup costs</div>
@@ -2932,7 +2932,7 @@ export default function Dashboard() {
                 <span className="text-sm font-medium text-gray-300">Reset Cost</span>
                 <RotateCcw className={`w-4 h-4 ${getUniversalValueColor(-1, 'expense').textColor}`} />
               </div>
-              <div className={`text-2xl font-bold mb-1 ${getUniversalValueColor(-(accounts?.reduce((sum, acc) => sum + (acc.totalResetsCost || 0), 0) || 0), 'expense').textColor}`}>
+              <div className="text-2xl font-bold mb-1 text-red-400">
                 -{formatCurrency(accounts?.reduce((sum, acc) => sum + (acc.totalResetsCost || 0), 0) || 0)}
               </div>
               <div className="text-xs text-gray-400">Failed account resets</div>
@@ -2943,7 +2943,7 @@ export default function Dashboard() {
                 <span className="text-sm font-medium text-gray-300">Activation Costs</span>
                 <CheckCircle className={`w-4 h-4 ${getUniversalValueColor(-1, 'expense').textColor}`} />
               </div>
-              <div className={`text-2xl font-bold mb-1 ${getUniversalValueColor(-(accounts?.reduce((sum, acc) => sum + (acc.activationCost || 0), 0) || 0), 'expense').textColor}`}>
+              <div className="text-2xl font-bold mb-1 text-red-400">
                 -{formatCurrency(accounts?.reduce((sum, acc) => sum + (acc.activationCost || 0), 0) || 0)}
               </div>
               <div className="text-xs text-gray-400">Account activation fees</div>
@@ -2957,7 +2957,7 @@ export default function Dashboard() {
                 <span className="text-sm font-medium text-gray-300">Total Spent</span>
                 <CreditCard className={`w-4 h-4 ${getUniversalValueColor(-1, 'expense').textColor}`} />
               </div>
-              <div className={`text-2xl font-bold mb-1 ${getUniversalValueColor(-((accounts?.reduce((sum, acc) => sum + (acc.accountCost || 0) + (acc.totalResetsCost || 0) + (acc.activationCost || 0), 0) || 0)), 'expense').textColor}`}>
+              <div className="text-2xl font-bold mb-1 text-red-400">
                 -{formatCurrency((accounts?.reduce((sum, acc) => sum + (acc.accountCost || 0) + (acc.totalResetsCost || 0) + (acc.activationCost || 0), 0) || 0))}
               </div>
               <div className="text-xs text-gray-400">Total investment</div>
@@ -2968,7 +2968,7 @@ export default function Dashboard() {
                 <span className="text-sm font-medium text-gray-300">Payouts</span>
                 <TrendingUp className={`w-4 h-4 ${getUniversalValueColor(1, 'profit').textColor}`} />
               </div>
-              <div className={`text-2xl font-bold mb-1 ${getUniversalValueColor(calculateTotalAvailablePayouts(), 'profit').textColor}`}>
+              <div className="text-2xl font-bold mb-1 text-green-400">
                 +{formatCurrency(calculateTotalAvailablePayouts())}
               </div>
               <div className="text-xs text-gray-400">Actual payouts received</div>
