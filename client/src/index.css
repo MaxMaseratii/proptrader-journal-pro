@@ -1584,13 +1584,13 @@ span.text-white {
     border: 1px solid rgba(107, 114, 128, 0.3) !important;
   }
 
-  /* Ensure all performance metrics use consistent colors */
+  /* FIXED: Ensure all performance metrics use consistent colors */
   .text-green-400, .text-green-500 {
-    color: var(--prop-green) !important;
+    color: #22c55e !important;
   }
 
   .text-red-400, .text-red-500 {
-    color: var(--destructive) !important;
+    color: #ef4444 !important;
   }
 
   .text-amber-400, .text-yellow-400 {
@@ -1626,13 +1626,13 @@ span.text-white {
     border-color: rgba(251, 191, 36, 0.6) !important;
   }
 
-  /* Light theme color overrides */
+  /* FIXED: Light theme color overrides */
   .light .text-green-400, .light .text-green-500 {
-    color: var(--prop-green) !important;
+    color: #22c55e !important;
   }
 
   .light .text-red-400, .light .text-red-500 {
-    color: var(--destructive) !important;
+    color: #ef4444 !important;
   }
 
   .light .text-amber-400, .light .text-yellow-400 {
