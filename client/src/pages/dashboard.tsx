@@ -300,7 +300,7 @@ export default function Dashboard() {
 
   // Check if a date has journal entries
   const hasJournalEntry = (date: Date) => {
-    if (!journalEntries) {
+    if (!journalEntries || !Array.isArray(journalEntries)) {
       console.log('📝 No journal entries loaded');
       return false;
     }
@@ -316,7 +316,7 @@ export default function Dashboard() {
 
   // Get journal entry for a specific date
   const getJournalEntry = (date: Date) => {
-    if (!journalEntries) return null;
+    if (!journalEntries || !Array.isArray(journalEntries)) return null;
     const dateStr = date.toISOString().split('T')[0];
     return journalEntries.find((entry: any) => 
       entry.date?.split('T')[0] === dateStr
@@ -762,7 +762,7 @@ export default function Dashboard() {
   // Auto-fix account selection when trades are loaded
   useEffect(() => {
     if (trades && trades.length > 0) {
-      const availableAccountIds = [...new Set(trades.map(t => t.accountId))];
+      const availableAccountIds = Array.from(new Set(trades.map(t => t.accountId)));
       
       // If no account selected or selected account doesn't have trades, auto-select the first available
       if (selectedAccountIds.length === 0 || !availableAccountIds.includes(selectedAccountIds[0])) {
@@ -775,7 +775,7 @@ export default function Dashboard() {
 
   // Debug journal entries
   useEffect(() => {
-    if (journalEntries) {
+    if (journalEntries && Array.isArray(journalEntries)) {
       console.log('📚 Journal entries loaded:', journalEntries.length, journalEntries);
     }
   }, [journalEntries]);
@@ -858,7 +858,7 @@ export default function Dashboard() {
       console.log('🔍 Returning all trades:', trades.length);
       return trades;
     } else if (accountSelectionMode === 'single' && selectedAccountIds.length > 0) {
-      const uniqueAccountIds = [...new Set(trades.map(t => t.accountId))];
+      const uniqueAccountIds = Array.from(new Set(trades.map(t => t.accountId)));
       console.log('🔍 Available account IDs in trades:', uniqueAccountIds);
       console.log('🔍 Looking for account ID:', selectedAccountIds[0]);
       const filtered = trades.filter(trade => trade.accountId === selectedAccountIds[0]);
@@ -873,7 +873,7 @@ export default function Dashboard() {
     // FIXED: If mode is 'single' or 'multiple' but no accounts selected, fall back to all trades
     // Also fix account ID mismatch by auto-selecting the correct account if trades exist
     if ((accountSelectionMode === 'single' || accountSelectionMode === 'multiple') && selectedAccountIds.length === 0 && trades.length > 0) {
-      const uniqueAccountIds = [...new Set(trades.map(t => t.accountId))];
+      const uniqueAccountIds = Array.from(new Set(trades.map(t => t.accountId)));
       console.log('🔧 Auto-selecting first available account ID:', uniqueAccountIds[0]);
       setSelectedAccountIds([uniqueAccountIds[0]]);
       return trades.filter(trade => trade.accountId === uniqueAccountIds[0]);
@@ -1099,7 +1099,7 @@ export default function Dashboard() {
       const daysRequired = account.daysRequiredForPayout || 0;
       const winningDayMinimum = account.winningDayMinimum || 0;
       const minimumPayoutAmount = account.minimumPayoutAmount || 0;
-      const maxPayoutPercentage = account.maximumPayoutPercentage ? (account.maximumPayoutPercentage / 100) : 1;
+      const maxPayoutPercentage = account.maximumPayoutPerAccount ? (account.maximumPayoutPerAccount / 100) : 1;
       const profitSplit = account.profitSplit ? (account.profitSplit / 100) : 1;
       const bufferPercentage = account.bufferPercentage ? (account.bufferPercentage / 100) : 0;
       
@@ -1437,12 +1437,12 @@ export default function Dashboard() {
                       <span className="text-gray-300 font-medium">Daily Loss Limit</span>
                     </div>
                     <span className={`px-3 py-1 rounded-full text-xs font-bold ${
-                      Math.abs(selectedDayData.dayPnL) >= 100 ? 'bg-red-500 text-white animate-pulse' : 
-                      Math.abs(selectedDayData.dayPnL) >= 80 ? 'bg-orange-500 text-black' : 
+                      Math.abs(selectedDayData?.dayPnL || 0) >= 100 ? 'bg-red-500 text-white animate-pulse' : 
+                      Math.abs(selectedDayData?.dayPnL || 0) >= 80 ? 'bg-orange-500 text-black' : 
                       'bg-yellow-500 text-black'
                     }`}>
-                      {Math.abs(selectedDayData.dayPnL) >= 100 ? 'LIMIT BREACHED' : 
-                       Math.abs(selectedDayData.dayPnL) >= 80 ? 'HIGH RISK' : 'CAUTION'}
+                      {Math.abs(selectedDayData?.dayPnL || 0) >= 100 ? 'LIMIT BREACHED' : 
+                       Math.abs(selectedDayData?.dayPnL || 0) >= 80 ? 'HIGH RISK' : 'CAUTION'}
                     </span>
                   </div>
                   
@@ -1451,14 +1451,14 @@ export default function Dashboard() {
                     <div className="w-full rounded-full h-6 overflow-hidden bg-gray-700">
                       <div 
                         className={`h-full transition-all duration-1000 ease-out relative ${
-                          Math.abs(selectedDayData.dayPnL) >= 100 ? 'bg-red-400' : 
-                          Math.abs(selectedDayData.dayPnL) >= 80 ? 'bg-orange-500' : 
+                          Math.abs(selectedDayData?.dayPnL || 0) >= 100 ? 'bg-red-400' : 
+                          Math.abs(selectedDayData?.dayPnL || 0) >= 80 ? 'bg-orange-500' : 
                           'bg-yellow-500'
                         }`}
-                        style={{ width: `${Math.min((Math.abs(selectedDayData.dayPnL) / 100) * 100, 100)}%` }}
+                        style={{ width: `${Math.min((Math.abs(selectedDayData?.dayPnL || 0) / 100) * 100, 100)}%` }}
                       >
                         {/* Critical pulsing effect */}
-                        {Math.abs(selectedDayData.dayPnL) >= 100 && (
+                        {Math.abs(selectedDayData?.dayPnL || 0) >= 100 && (
                           <div className="absolute inset-0 bg-red-300 animate-pulse opacity-30"></div>
                         )}
                         
@@ -1482,10 +1482,10 @@ export default function Dashboard() {
                       {/* Current value indicator */}
                       <div 
                         className="absolute top-0 h-full flex items-center transform -translate-x-1/2"
-                        style={{ left: `${Math.min((Math.abs(selectedDayData.dayPnL) / 100) * 100, 95)}%` }}
+                        style={{ left: `${Math.min((Math.abs(selectedDayData?.dayPnL || 0) / 100) * 100, 95)}%` }}
                       >
                         <div className="bg-white/90 text-black text-xs font-bold px-2 py-0.5 rounded-full shadow-lg">
-                          ${Math.abs(selectedDayData.dayPnL).toFixed(0)}
+                          ${Math.abs(selectedDayData?.dayPnL || 0).toFixed(0)}
                         </div>
                       </div>
                     </div>
@@ -1493,23 +1493,23 @@ export default function Dashboard() {
                   
                   <div className="text-center">
                     <span className={`text-sm font-bold ${
-                      Math.abs(selectedDayData.dayPnL) >= 100 ? getUniversalValueColor(-1, 'pnl').textColor : 
-                      Math.abs(selectedDayData.dayPnL) >= 80 ? 'text-orange-400' : 
+                      Math.abs(selectedDayData?.dayPnL || 0) >= 100 ? getUniversalValueColor(-1, 'pnl').textColor : 
+                      Math.abs(selectedDayData?.dayPnL || 0) >= 80 ? 'text-orange-400' : 
                       'text-yellow-400'
                     }`}>
-                      ${Math.abs(selectedDayData.dayPnL)} of $100 daily limit used ({Math.min((Math.abs(selectedDayData.dayPnL) / 100) * 100, 100).toFixed(0)}%)
+                      ${Math.abs(selectedDayData?.dayPnL || 0)} of $100 daily limit used ({Math.min((Math.abs(selectedDayData?.dayPnL || 0) / 100) * 100, 100).toFixed(0)}%)
                     </span>
                   </div>
                   
                   {/* Warning message */}
                   <div className={`text-xs text-center p-2 rounded ${
-                    Math.abs(selectedDayData.dayPnL) >= 100 ? 'bg-red-900/50 text-red-300' : 
-                    Math.abs(selectedDayData.dayPnL) >= 80 ? 'bg-orange-900/50 text-orange-300' : 
+                    Math.abs(selectedDayData?.dayPnL || 0) >= 100 ? 'bg-red-900/50 text-red-300' : 
+                    Math.abs(selectedDayData?.dayPnL || 0) >= 80 ? 'bg-orange-900/50 text-orange-300' : 
                     'bg-yellow-900/50 text-yellow-300'
                   }`}>
-                    {Math.abs(selectedDayData.dayPnL) >= 100 ? 
+                    {Math.abs(selectedDayData?.dayPnL || 0) >= 100 ? 
                       '⚠️ Daily loss limit exceeded - Review risk management immediately' :
-                      Math.abs(selectedDayData.dayPnL) >= 80 ? 
+                      Math.abs(selectedDayData?.dayPnL || 0) >= 80 ? 
                       '⚠️ Approaching daily loss limit - Exercise extreme caution' :
                       '⚠️ Monitor risk levels throughout the day'
                     }
@@ -1524,12 +1524,12 @@ export default function Dashboard() {
                       <span className="text-gray-300 font-medium">Daily Profit Target</span>
                     </div>
                     <span className={`px-3 py-1 rounded-full text-xs font-bold ${
-                      selectedDayData.dayPnL >= 100 ? 'bg-green-500 text-black' : 
-                      selectedDayData.dayPnL >= 50 ? 'bg-blue-500 text-white' : 
+                      selectedDayData?.dayPnL >= 100 ? 'bg-green-500 text-black' : 
+                      selectedDayData?.dayPnL >= 50 ? 'bg-blue-500 text-white' : 
                       'bg-gray-500 text-white'
                     }`}>
-                      {selectedDayData.dayPnL >= 100 ? 'TARGET ACHIEVED' : 
-                       selectedDayData.dayPnL >= 50 ? 'ON TRACK' : 'BUILDING'}
+                      {selectedDayData?.dayPnL >= 100 ? 'TARGET ACHIEVED' : 
+                       selectedDayData?.dayPnL >= 50 ? 'ON TRACK' : 'BUILDING'}
                     </span>
                   </div>
                   
@@ -1538,13 +1538,13 @@ export default function Dashboard() {
                     <div className="w-full rounded-full h-6 overflow-hidden bg-gray-700">
                       <div 
                         className={`h-full transition-all duration-1000 ease-out relative ${
-                          selectedDayData.dayPnL >= 100 ? 'bg-green-500' : 
-                          selectedDayData.dayPnL >= 50 ? 'bg-blue-500' : 
+                          selectedDayData?.dayPnL >= 100 ? 'bg-green-500' : 
+                          selectedDayData?.dayPnL >= 50 ? 'bg-blue-500' : 
                           'bg-gray-400'
                         }`}
-                        style={{ width: `${Math.min((selectedDayData.dayPnL / 100) * 100, 100)}%` }}
+                        style={{ width: `${Math.min(((selectedDayData?.dayPnL || 0) / 100) * 100, 100)}%` }}
                       >
-                        {selectedDayData.dayPnL >= 100 && (
+                        {selectedDayData?.dayPnL >= 100 && (
                           <div className="absolute inset-0 bg-green-300 animate-pulse opacity-50"></div>
                         )}
                         <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent"></div>
@@ -1562,10 +1562,10 @@ export default function Dashboard() {
                       
                       <div 
                         className="absolute top-0 h-full flex items-center transform -translate-x-1/2"
-                        style={{ left: `${Math.min((selectedDayData.dayPnL / 100) * 100, 95)}%` }}
+                        style={{ left: `${Math.min(((selectedDayData?.dayPnL || 0) / 100) * 100, 95)}%` }}
                       >
                         <div className="bg-white/90 text-black text-xs font-bold px-2 py-0.5 rounded-full shadow-lg">
-                          ${selectedDayData.dayPnL.toFixed(0)}
+                          ${(selectedDayData?.dayPnL || 0).toFixed(0)}
                         </div>
                       </div>
                     </div>
@@ -1573,7 +1573,7 @@ export default function Dashboard() {
                   
                   <div className="text-center">
                     <span className="text-sm font-bold text-green-500">
-                      ${selectedDayData.dayPnL} of $100 target ({((selectedDayData.dayPnL / 100) * 100).toFixed(0)}%)
+                      ${(selectedDayData?.dayPnL || 0)} of $100 target ({(((selectedDayData?.dayPnL || 0) / 100) * 100).toFixed(0)}%)
                     </span>
                   </div>
                   
