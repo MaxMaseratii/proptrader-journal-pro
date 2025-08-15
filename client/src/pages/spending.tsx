@@ -103,7 +103,7 @@ const BudgetWidget = ({ title, icon: Icon, spent, total, iconColor, category }: 
 
         {/* Main Amount Display */}
         <div className="text-center mb-6">
-          <div className={`text-4xl font-bold mb-2 ${getUniversalValueColor(spent, 'expense').textColor}`}>
+          <div style={{color: '#ef4444', fontSize: '2.25rem', fontWeight: 'bold', marginBottom: '0.5rem'}}>
             {formatCurrency(spent)}
           </div>
           <p className="text-gray-400 text-sm">
@@ -139,7 +139,7 @@ const BudgetWidget = ({ title, icon: Icon, spent, total, iconColor, category }: 
             <span className={`font-medium ${statusInfo.textColor}`}>
               {percentage.toFixed(1)}% used
             </span>
-            <span className={`${getUniversalValueColor(remaining, remaining >= 0 ? 'budget' : 'expense').textColor}`}>
+            <span style={{color: remaining >= 0 ? '#22c55e' : '#ef4444'}}>
               {remaining >= 0 ? formatCurrency(remaining) : formatCurrency(Math.abs(remaining))} 
               {remaining >= 0 ? ' remaining' : ' over budget'}
             </span>

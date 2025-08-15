@@ -1261,7 +1261,7 @@ const UniversalCsvImport = ({ accounts }: { accounts: Account[] }) => {
                 </SelectContent>
               </Select>
               {selectedImportAccount && (
-                <p className={`text-sm mt-2 ${getUniversalValueColor(1, 'profit').textColor}`}>
+                <p style={{color: '#22c55e', fontSize: '0.875rem', marginTop: '0.5rem'}}>
                   ✓ Selected: {accounts?.find(acc => acc.id.toString() === selectedImportAccount)?.name}
                 </p>
               )}
@@ -1304,10 +1304,10 @@ const UniversalCsvImport = ({ accounts }: { accounts: Account[] }) => {
           </label>
           <div className="p-3 bg-gray-700 rounded-md flex items-center">
             {csvFormat === 'position-history' ? (
-              <><CheckCircle className={`h-4 w-4 mr-2 ${getUniversalValueColor(1, 'profit').textColor}`} />
+              <><CheckCircle style={{color: '#22c55e'}} className="h-4 w-4 mr-2" />
               <Badge className="bg-green-600 text-white">✅ Position History CSV</Badge></>
             ) : csvFormat === 'unknown' ? (
-              <><AlertCircle className={`h-4 w-4 mr-2 ${getUniversalValueColor(-1, 'pnl').textColor}`} />
+              <><AlertCircle style={{color: '#ef4444'}} className="h-4 w-4 mr-2" />
               <Badge variant="destructive">❌ Unknown Format</Badge></>
             ) : (
               <><AlertCircle className="h-4 w-4 text-yellow-400 mr-2" />
@@ -1391,7 +1391,7 @@ const UniversalCsvImport = ({ accounts }: { accounts: Account[] }) => {
                   </div>
                   <div>
                     <span className="text-gray-400">Direction:</span>
-                    <div className={`font-medium ${getUniversalValueColor(isShort ? -1 : 1, 'pnl').textColor}`}>
+                    <div style={{color: isShort ? '#ef4444' : '#22c55e', fontWeight: '500'}}>
                       {isShort ? 'SHORT' : 'LONG'}
                     </div>
                   </div>

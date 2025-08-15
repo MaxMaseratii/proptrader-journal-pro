@@ -447,7 +447,7 @@ export default function Analytics() {
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-gray-200 text-sm">Total P&L</p>
-                      <p className={`text-2xl font-bold ${getUniversalValueColor(advancedMetrics.totalPnL, 'pnl').textColor}`}>
+                      <p style={{color: '#22c55e', fontSize: '1.5rem', fontWeight: 'bold'}}>
                         {formatCurrency(advancedMetrics.totalPnL)}
                       </p>
                     </div>
@@ -543,7 +543,7 @@ export default function Analytics() {
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-400">Average Win:</span>
-                    <span className={`font-medium ${getUniversalValueColor(advancedMetrics.averageWin, 'profit').textColor}`}>
+                    <span style={{color: '#22c55e', fontWeight: '500'}}>
                       {formatCurrency(advancedMetrics.averageWin)}
                     </span>
                   </div>
@@ -571,13 +571,13 @@ export default function Analytics() {
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-400">Average Loss:</span>
-                    <span className={`font-medium ${getUniversalValueColor(-advancedMetrics.averageLoss, 'pnl').textColor}`}>
+                    <span style={{color: '#ef4444', fontWeight: '500'}}>
                       -{formatCurrency(advancedMetrics.averageLoss)}
                     </span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-400">Largest Loss:</span>
-                    <span className={`font-medium ${getUniversalValueColor(advancedMetrics.largestLoss, 'pnl').textColor}`}>
+                    <span style={{color: '#ef4444', fontWeight: '500'}}>
                       {formatCurrency(advancedMetrics.largestLoss)}
                     </span>
                   </div>

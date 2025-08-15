@@ -266,7 +266,7 @@ export default function Performance() {
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="widget-text opacity-70 text-sm mb-1">Total P&L</p>
-                      <p className={`text-2xl font-bold ${getUniversalValueColor(metrics.totalPnL, 'pnl').textColor}`}>
+                      <p style={{color: metrics.totalPnL >= 0 ? '#22c55e' : '#ef4444', fontSize: '1.5rem', fontWeight: 'bold'}}>
                         {formatCurrency(metrics.totalPnL)}
                       </p>
                       <p className="text-xs widget-text opacity-70 mt-1">{metrics.totalTrades} trades</p>
