@@ -1965,7 +1965,7 @@ export default function Dashboard() {
                   <div className="absolute top-2 right-2 text-xs text-cyan-300">
                     P&L
                   </div>
-                  <div className="text-xl font-bold text-green-400 mb-1">
+                  <div className="text-xl font-bold text-green-400 mb-1" style={{ color: '#22c55e !important' }}>
                     {combinedAnalytics?.totalPnl >= 0 ? '+' : ''}${(combinedAnalytics?.totalPnl || 0).toFixed(0)}
                   </div>
                   <div className="text-xs text-gray-400">{calendarViewMode.charAt(0).toUpperCase() + calendarViewMode.slice(1)} P&L</div>

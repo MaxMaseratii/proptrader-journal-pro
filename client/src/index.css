@@ -1244,20 +1244,32 @@ input, textarea, select {
   line-height: 1.1;
 }
 
-/* Color overrides for widget values - Theme Adaptive */
-.text-green-400 {
+/* NUCLEAR APPROACH: Force color overrides everywhere */
+.text-green-400,
+[class*="text-green-400"],
+div.text-green-400,
+span.text-green-400 {
   color: #22c55e !important;
 }
 
-.text-red-400 {
+.text-red-400,
+[class*="text-red-400"],
+div.text-red-400,
+span.text-red-400 {
   color: #ef4444 !important;
 }
 
-.text-yellow-400 {
+.text-yellow-400,
+[class*="text-yellow-400"],
+div.text-yellow-400,
+span.text-yellow-400 {
   color: #fbbf24 !important;
 }
 
-.text-white {
+.text-white,
+[class*="text-white"],
+div.text-white,
+span.text-white {
   color: #ffffff !important;
 }
 
