@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Calendar, CalendarDays, Download, Filter, Search, Plus, Edit3, Save, X, Upload, FileText, AlertCircle, CheckCircle, Target } from "lucide-react";
+import { Calendar, CalendarDays, Download, Filter, Search, Plus, Edit3, Save, X, Upload, FileText, AlertCircle, CheckCircle, Target, RotateCcw } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { formatCurrency, formatDate } from "@/lib/utils";
 import { getUniversalValueColor, getPercentageColor, getStatusColor } from "@/lib/colorUtils";
@@ -1258,7 +1258,20 @@ const UniversalCsvImport = ({ accounts }: { accounts: Account[] }) => {
         <CardContent>
           <div className="space-y-4">
             <div>
-              <Label className="text-gray-300 font-medium">Select Trading Account</Label>
+              <div className="flex items-center justify-between mb-2">
+                <Label className="text-gray-300 font-medium">Select Trading Account</Label>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => {
+                    queryClient.invalidateQueries({ queryKey: ['/api/accounts'] });
+                    console.log('🔄 Refreshing accounts list...');
+                  }}
+                  className="text-blue-400 hover:text-blue-300 hover:bg-blue-500/10 h-auto p-1"
+                >
+                  <RotateCcw className="w-4 h-4" />
+                </Button>
+              </div>
               <Select 
                 value={selectedImportAccount} 
                 onValueChange={setSelectedImportAccount}
