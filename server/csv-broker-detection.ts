@@ -206,15 +206,15 @@ const BROKER_FORMATS: { [key: string]: BrokerFormat } = {
   // Generic formats for auto-detection fallback
   generic_v1: {
     name: "Generic Format 1",
-    dateColumn: "date",
-    symbolColumn: "symbol", 
-    sideColumn: "side",
-    quantityColumn: "quantity",
-    priceColumn: "price",
-    pnlColumn: "pnl",
+    dateColumn: "Date",
+    symbolColumn: "Symbol", 
+    sideColumn: "Side",
+    quantityColumn: "Quantity",
+    priceColumn: "Entry Price",
+    pnlColumn: "P&L",
     dateFormat: "YYYY-MM-DD",
-    sideMapping: { "buy": "buy", "sell": "sell", "BUY": "buy", "SELL": "sell" },
-    requiredColumns: ["date", "symbol", "side", "quantity", "price"],
+    sideMapping: { "buy": "buy", "sell": "sell", "long": "buy", "short": "sell", "BUY": "buy", "SELL": "sell" },
+    requiredColumns: ["Date", "Symbol", "Side", "Quantity", "Entry Price"],
   },
 
   generic_v2: {
@@ -459,14 +459,14 @@ export function parseCsvWithFormat(csvData: string, format: BrokerFormat, accoun
         orderId: orderId,
         notes: `Imported from ${format.name}`,
         // Required fields with sensible defaults
-        fillTime: tradeDate + 'T12:00:00.000Z', // Default to noon on trade date
+        fillTime: new Date(tradeDate + 'T12:00:00.000Z'), // Default to noon on trade date
         initialStopLoss: null,
         finalStopLoss: null,
         initialTakeProfit: null,
         finalTakeProfit: null,
         tradeImage: null,
         tradingViewLink: null,
-        exitTime: status === 'closed' ? tradeDate + 'T12:00:00.000Z' : null
+        exitTime: status === 'closed' ? new Date(tradeDate + 'T12:00:00.000Z') : null
       };
 
       trades.push(trade);

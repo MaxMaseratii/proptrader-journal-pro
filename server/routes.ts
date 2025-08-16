@@ -448,7 +448,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Detect broker format
       const detection = detectBrokerFormat(csvData);
       
-      if (!detection.format || detection.confidence < 40) {
+      if (!detection.format || detection.confidence < 30) {
         return res.status(400).json({
           success: false,
           message: "Could not detect CSV format. Please check your file format.",
