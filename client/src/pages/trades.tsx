@@ -15,6 +15,7 @@ import { useLocation } from "wouter";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import TradeDetailModal from "@/components/trade-detail-modal";
+import EnhancedCsvImport from "@/components/enhanced-csv-import";
 import * as XLSX from 'xlsx';
 
 // Format price levels (not currency)
@@ -1241,6 +1242,7 @@ const UniversalCsvImport = ({ accounts }: { accounts: Account[] }) => {
 
   // Account selection state for CSV import
   const [selectedImportAccount, setSelectedImportAccount] = useState<string>("");
+  const [useEnhancedImport, setUseEnhancedImport] = useState(false);
 
   return (
     <div className="space-y-6">
@@ -1295,7 +1297,67 @@ const UniversalCsvImport = ({ accounts }: { accounts: Account[] }) => {
           </div>
         </CardContent>
       </Card>
-      {/* Universal CSV Import Section */}
+
+      {/* Import Mode Toggle */}
+      <Card className="bg-gradient-to-br from-green-500/10 to-blue-500/10 border-green-500/30">
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <Upload className="w-6 h-6 text-green-400" />
+              <div>
+                <CardTitle className="text-green-400">Import Mode</CardTitle>
+                <p className="text-gray-400 text-sm">Choose your preferred CSV import experience</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className={`text-sm ${!useEnhancedImport ? 'text-white font-medium' : 'text-gray-400'}`}>
+                Classic
+              </span>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setUseEnhancedImport(!useEnhancedImport)}
+                className={`relative w-12 h-6 border-2 transition-colors ${
+                  useEnhancedImport 
+                    ? 'bg-blue-500 border-blue-500' 
+                    : 'bg-gray-600 border-gray-500'
+                }`}
+              >
+                <div className={`absolute w-4 h-4 bg-white rounded transition-transform ${
+                  useEnhancedImport ? 'translate-x-5' : 'translate-x-0'
+                }`} />
+              </Button>
+              <span className={`text-sm ${useEnhancedImport ? 'text-white font-medium' : 'text-gray-400'}`}>
+                Enhanced
+              </span>
+            </div>
+          </div>
+          <div className="mt-3">
+            {useEnhancedImport ? (
+              <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-3">
+                <p className="text-blue-400 text-sm font-medium">Enhanced Import Mode</p>
+                <p className="text-gray-300 text-xs mt-1">
+                  ✨ Modern UI with real-time progress • Better error handling • Comprehensive format detection
+                </p>
+              </div>
+            ) : (
+              <div className="bg-purple-500/10 border border-purple-500/20 rounded-lg p-3">
+                <p className="text-purple-400 text-sm font-medium">Classic Import Mode</p>
+                <p className="text-gray-300 text-xs mt-1">
+                  🤖 AI-powered detection • 37+ broker support • Advanced mapping algorithms
+                </p>
+              </div>
+            )}
+          </div>
+        </CardHeader>
+      </Card>
+
+      {/* Conditional Import Interface */}
+      {useEnhancedImport ? (
+        <EnhancedCsvImport className="bg-transparent p-0" />
+      ) : (
+        <>
+          {/* Universal CSV Import Section */}
       <Card className="bg-gradient-to-br from-purple-500/10 to-pink-500/10 border-purple-500/30">
         <CardHeader>
           <div className="flex items-center gap-3">
@@ -1606,6 +1668,8 @@ const UniversalCsvImport = ({ accounts }: { accounts: Account[] }) => {
           </div>
         </CardContent>
       </Card>
+        </>
+      )}
     </div>
   );
 };
