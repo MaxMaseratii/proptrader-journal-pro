@@ -6,7 +6,6 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Crown, ArrowLeft, CheckCircle, Star } from "lucide-react";
-import { LogoIcon } from "@/components/Logo";
 
 export default function Signup() {
   const [, setLocation] = useLocation();
@@ -36,7 +35,7 @@ export default function Signup() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
             <Link href="/welcome" className="flex items-center space-x-2">
-              <LogoIcon size="sm" />
+              <Crown className="h-8 w-8 text-yellow-500" />
               <span className="text-xl font-bold bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 bg-clip-text text-transparent">
                 PropTrader
               </span>

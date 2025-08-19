@@ -33,7 +33,6 @@ import {
   Crown,
   Upload
 } from "lucide-react";
-import { LogoIcon } from "@/components/Logo";
 import { useTheme } from "@/contexts/ThemeContext";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
@@ -108,13 +107,15 @@ export default function Sidebar() {
             className="bg-gradient-to-r from-yellow-400 to-amber-500 p-3 rounded-lg shadow-xl hover-glow smooth-transition cursor-pointer block"
           >
             <div className="flex items-center space-x-3">
-              <LogoIcon size="sm" />
+              <div className="w-10 h-10 bg-black rounded-lg flex items-center justify-center border-2 border-teal-500 shadow-lg">
+                <Crown className="h-6 w-6 text-yellow-400" />
+              </div>
               {!isCollapsed && !isPartiallyCollapsed && (
                 <div className="flex flex-col">
                   <h1 className="text-xs font-bold leading-tight tracking-tight">
-                    <span className="text-[#81d8d0]">PropTrader</span><span className="text-foreground"> Journal</span>
+                    <span className="text-teal-400">PropTrader</span><span className="text-black"> Journal</span>
                   </h1>
-                  <p className="text-[10px] font-medium text-muted-foreground text-center leading-tight">
+                  <p className="text-[10px] font-medium text-black text-center leading-tight">
                     Disciplined Trading
                   </p>
                 </div>

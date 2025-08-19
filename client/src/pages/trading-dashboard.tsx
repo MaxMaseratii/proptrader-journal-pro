@@ -48,7 +48,6 @@ import {
   Crown,
   Edit
 } from 'lucide-react';
-import { LogoIcon } from "@/components/Logo";
 
 // Strategy data will be loaded from API
 
@@ -924,7 +923,7 @@ export default function CompleteTradingDashboard() {
             {/* Trading Identity & Goal Setting */}
             <div className="bg-gradient-to-r from-amber-900/20 via-yellow-900/20 to-orange-900/20 p-6 rounded-2xl border border-amber-500/30 shadow-lg">
               <div className="flex items-center gap-3 mb-6">
-                <LogoIcon size="sm" />
+                <Crown className="w-6 h-6 text-amber-400" />
                 <h4 className="text-white font-bold text-lg">Trading Identity & Today's Commitment</h4>
               </div>
               
