@@ -1233,19 +1233,21 @@ export default function Dashboard() {
             </Button>
           </Link>
           
-          {/* Social Media Share Button */}
-          <ShareStats 
-            totalPnL={combinedAnalytics?.totalPnl || 0}
-            winRate={combinedAnalytics?.winRate || 0}
-            totalTrades={combinedAnalytics?.totalTrades || 0}
-            bestTrade={combinedAnalytics?.bestTrade || 0}
-            accountName={selectedAccountIds.length === 1 
-              ? accounts?.find(acc => acc.id === selectedAccountIds[0])?.name || 'Selected Account'
-              : selectedAccountIds.length > 1 
-                ? `${selectedAccountIds.length} Accounts` 
-                : 'All Accounts'
-            }
-          />
+          {/* Time Period Selection moved here */}
+          <div className="flex items-center space-x-2 border-l border-gray-600 pl-3">
+            <Clock className="h-4 w-4 text-gray-400" />
+            <Select value={timePeriod} onValueChange={(value: any) => setTimePeriod(value)}>
+              <SelectTrigger className="w-32 bg-gray-800 border-gray-600 text-white text-xs">
+                <SelectValue placeholder="Period" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="daily">Daily</SelectItem>
+                <SelectItem value="weekly">Weekly</SelectItem>
+                <SelectItem value="monthly">Monthly</SelectItem>
+                <SelectItem value="yearly">Yearly</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
         </div>,
         document.getElementById('dashboard-action-buttons')
       )}
@@ -1316,29 +1318,27 @@ export default function Dashboard() {
           )}
           
           <NotificationDropdown />
+          
+          {/* Share Button moved to far right */}
+          <div className="border-l border-gray-600 pl-3">
+            <ShareStats 
+              totalPnL={combinedAnalytics?.totalPnl || 0}
+              winRate={combinedAnalytics?.winRate || 0}
+              totalTrades={combinedAnalytics?.totalTrades || 0}
+              bestTrade={combinedAnalytics?.bestTrade || 0}
+              accountName={selectedAccountIds.length === 1 
+                ? accounts?.find(acc => acc.id === selectedAccountIds[0])?.name || 'Selected Account'
+                : selectedAccountIds.length > 1 
+                  ? `${selectedAccountIds.length} Accounts` 
+                  : 'All Accounts'
+              }
+            />
+          </div>
         </div>,
         document.getElementById('dashboard-header-controls')
       )}
 
-      {/* Secondary Controls Header - Time Period Only */}
-      <div className="bg-gray-900/50 border-b border-gray-700 px-8 py-2">
-        <div className="flex justify-center items-center">
-          <div className="flex items-center space-x-2">
-            <Clock className="h-4 w-4 text-gray-400" />
-            <Select value={timePeriod} onValueChange={(value: any) => setTimePeriod(value)}>
-              <SelectTrigger className="w-32 bg-gray-800 border-gray-600 text-white">
-                <SelectValue placeholder="Period" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="daily">Daily</SelectItem>
-                <SelectItem value="weekly">Weekly</SelectItem>
-                <SelectItem value="monthly">Monthly</SelectItem>
-                <SelectItem value="yearly">Yearly</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
-      </div>
+
 
       {/* Congratulations Banner */}
       {congratulationsBanner.visible && (
