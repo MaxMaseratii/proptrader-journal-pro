@@ -74,7 +74,8 @@ import {
   ChevronDown,
   ChevronUp,
   Share2,
-  ExternalLink
+  ExternalLink,
+  Crown
 } from "lucide-react";
 import type { Account, Trade } from "@shared/schema";
 
@@ -1198,11 +1199,23 @@ export default function Dashboard() {
       {/* Enhanced Header */}
       <header className="bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 border-b border-gray-700 px-8 py-6">
         <div className="flex justify-between items-center">
-          <div>
-            <h2 className="text-3xl font-bold text-gradient-rainbow">
-              Trading Dashboard
-            </h2>
-
+          <div className="flex items-center space-x-4">
+            {/* Logo matching welcome page styling */}
+            <div className="bg-gradient-to-r from-yellow-400 to-amber-500 p-3 rounded-lg shadow-xl">
+              <div className="flex items-center space-x-3">
+                <div className="w-12 h-12 bg-black rounded-lg flex items-center justify-center border-2 border-teal-500 shadow-lg">
+                  <Crown className="w-7 h-7 text-yellow-400" />
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-xl font-bold leading-tight tracking-tight">
+                    <span className="text-teal-600">PropTrader</span><span className="text-black"> Journal</span>
+                  </span>
+                  <span className="text-xs font-medium text-black text-center">
+                    Trading Dashboard
+                  </span>
+                </div>
+              </div>
+            </div>
           </div>
           <div className="flex items-center space-x-4">
             {/* Account Selection */}
