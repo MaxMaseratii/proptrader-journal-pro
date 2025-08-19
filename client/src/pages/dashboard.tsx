@@ -1324,25 +1324,7 @@ export default function Dashboard() {
 
 
 
-      {/* Time Period Selection - Moved to content area */}
-      <div className="bg-gray-900/50 border-b border-gray-700 px-8 py-2">
-        <div className="flex justify-center items-center">
-          <div className="flex items-center space-x-2">
-            <Clock className="h-4 w-4 text-gray-400" />
-            <Select value={timePeriod} onValueChange={(value: any) => setTimePeriod(value)}>
-              <SelectTrigger className="w-32 bg-gray-800 border-gray-600 text-white">
-                <SelectValue placeholder="Period" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="daily">Daily</SelectItem>
-                <SelectItem value="weekly">Weekly</SelectItem>
-                <SelectItem value="monthly">Monthly</SelectItem>
-                <SelectItem value="yearly">Yearly</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
-      </div>
+
 
       {/* Congratulations Banner */}
       {congratulationsBanner.visible && (
