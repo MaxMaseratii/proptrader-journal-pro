@@ -1370,7 +1370,7 @@ export default function Dashboard() {
         </div>
       )}
 
-      <div className="p-6 space-y-6 bg-transparent min-h-screen">
+      <div className="p-6 space-y-6 bg-transparent">
         
         {/* Daily Trading Plan & Performance - Consolidated Section */}
         <div className="mb-8">

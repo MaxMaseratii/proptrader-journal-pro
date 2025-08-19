@@ -139,7 +139,7 @@ function Router() {
       {/* Content Area */}
       <div className="flex flex-1 min-h-0">
         <Sidebar />
-        <main className="flex-1 overflow-y-auto bg-background">
+        <main className="flex-1 overflow-y-auto bg-transparent">
           <Switch>
             <Route path="/" component={Dashboard} />
             <Route path="/flow-state-training" component={FlowStateTraining} />
