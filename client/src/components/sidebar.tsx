@@ -100,38 +100,13 @@ export default function Sidebar() {
       "bg-background flex-shrink-0 transition-all duration-300 ease-in-out relative flex flex-col h-full",
       isCollapsed ? "w-16" : isPartiallyCollapsed ? "w-20" : "w-64"
     )}>
-      <div className="p-6 border-b border-prop-gold/20 border-r border-prop-gold/20">
-        <div className="flex items-center justify-center">
-          <Link 
-            href="/welcome"
-            className="bg-gradient-to-r from-yellow-400 to-amber-500 p-3 rounded-lg shadow-xl hover-glow smooth-transition cursor-pointer block"
-          >
-            <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-black rounded-lg flex items-center justify-center border-2 border-teal-500 shadow-lg">
-                <Crown className="h-6 w-6 text-yellow-400" />
-              </div>
-              {!isCollapsed && !isPartiallyCollapsed && (
-                <div className="flex flex-col">
-                  <h1 className="text-xs font-bold leading-tight tracking-tight">
-                    <span className="text-teal-400">PropTrader</span><span className="text-black"> Journal</span>
-                  </h1>
-                  <p className="text-[10px] font-medium text-black text-center leading-tight">
-                    Disciplined Trading
-                  </p>
-                </div>
-              )}
-            </div>
-          </Link>
-        </div>
-      </div>
-      
-      {/* Sidebar toggle button */}
+      {/* Sidebar toggle button - positioned below unified header */}
       <Button
         variant="ghost"
         size="sm"
         onClick={handleToggleCollapse}
         className={cn(
-          "absolute top-4 -right-3 z-10 h-6 w-6 p-0 rounded-full bg-card border border-prop-gold/20 text-prop-gold hover:text-foreground hover:bg-prop-gold/20 hover:border-prop-gold/40 transition-all duration-200 shadow-md",
+          "absolute top-2 -right-3 z-10 h-6 w-6 p-0 rounded-full bg-card border border-prop-gold/20 text-prop-gold hover:text-foreground hover:bg-prop-gold/20 hover:border-prop-gold/40 transition-all duration-200 shadow-md",
           "flex items-center justify-center"
         )}
       >

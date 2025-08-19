@@ -4,6 +4,7 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider } from "@/contexts/ThemeContext";
+import { Crown } from "lucide-react";
 
 import Dashboard from "@/pages/dashboard";
 import DashboardShowcase from "@/pages/dashboard-showcase";
@@ -102,10 +103,34 @@ function Router() {
   }
 
   return (
-    <div className="flex h-screen bg-background text-foreground">
-      <Sidebar />
-      <main className="flex-1 overflow-y-auto bg-background">
-        <Switch>
+    <div className="flex flex-col h-screen bg-background text-foreground">
+      {/* Unified Header */}
+      <header className="bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 border-b border-gray-700 px-8 py-4 flex-shrink-0">
+        <div className="flex justify-center items-center">
+          {/* Centered Logo */}
+          <div className="bg-gradient-to-r from-yellow-400 to-amber-500 p-3 rounded-lg shadow-xl">
+            <div className="flex items-center space-x-3">
+              <div className="w-12 h-12 bg-black rounded-lg flex items-center justify-center border-2 border-teal-500 shadow-lg">
+                <Crown className="w-7 h-7 text-yellow-400" />
+              </div>
+              <div className="flex flex-col">
+                <span className="text-xl font-bold leading-tight tracking-tight">
+                  <span className="text-teal-600">PropTrader</span><span className="text-black"> Journal</span>
+                </span>
+                <span className="text-xs font-medium text-black text-center">
+                  Professional Trading Platform
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </header>
+      
+      {/* Content Area */}
+      <div className="flex flex-1 min-h-0">
+        <Sidebar />
+        <main className="flex-1 overflow-y-auto bg-background">
+          <Switch>
             <Route path="/" component={Dashboard} />
             <Route path="/flow-state-training" component={FlowStateTraining} />
             <Route path="/dashboard-simple" component={DashboardShowcase} />
@@ -168,7 +193,8 @@ function Router() {
             <Route path="/signup" component={Signup} />
             <Route component={NotFound} />
           </Switch>
-      </main>
+        </main>
+      </div>
     </div>
   );
 }
