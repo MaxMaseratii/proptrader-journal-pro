@@ -1325,7 +1325,6 @@ export default function Dashboard() {
 
 
 
-
       {/* Congratulations Banner */}
       {congratulationsBanner.visible && (
         <div className="mx-4 mt-4 mb-2">
