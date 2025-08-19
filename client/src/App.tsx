@@ -106,7 +106,10 @@ function Router() {
     <div className="flex flex-col h-screen bg-background text-foreground">
       {/* Unified Header */}
       <header className="bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 border-b border-gray-700 px-8 py-4 flex-shrink-0">
-        <div className="flex justify-center items-center">
+        <div className="flex justify-between items-center">
+          {/* Left spacer for balance */}
+          <div className="flex-1"></div>
+          
           {/* Centered Logo */}
           <div className="bg-gradient-to-r from-yellow-400 to-amber-500 p-3 rounded-lg shadow-xl">
             <div className="flex items-center space-x-3">
@@ -122,6 +125,11 @@ function Router() {
                 </span>
               </div>
             </div>
+          </div>
+          
+          {/* Right side - Account Controls */}
+          <div id="dashboard-header-controls" className="flex-1 flex justify-end">
+            {/* Account controls will be injected here by Dashboard component */}
           </div>
         </div>
       </header>

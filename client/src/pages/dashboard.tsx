@@ -2,6 +2,7 @@ import React, { useState, useMemo, useEffect, useCallback } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Link } from "wouter";
 import { apiRequest } from "@/lib/queryClient";
+import { createPortal } from "react-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -1194,74 +1195,85 @@ export default function Dashboard() {
     );
   }
 
+  // Render account controls in the unified header using portal
+  const headerControlsElement = document.getElementById('dashboard-header-controls');
+  
   return (
     <>
-      {/* Page Controls Header */}
-      <div className="bg-gray-900/50 border-b border-gray-700 px-8 py-4">
+      {/* Inject controls into unified header */}
+      {headerControlsElement && createPortal(
+        <div className="flex items-center space-x-4">
+          {/* Account Selection */}
+          <div className="flex items-center space-x-2">
+            <Filter className="h-4 w-4 text-gray-400" />
+            <Select value={accountSelectionMode} onValueChange={(value: any) => setAccountSelectionMode(value)}>
+              <SelectTrigger className="w-40 bg-gray-800 border-gray-600 text-white">
+                <SelectValue placeholder="View mode" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Accounts</SelectItem>
+                <SelectItem value="single">Single Account</SelectItem>
+                <SelectItem value="multiple">Multiple Accounts</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          
+          {/* Account Selection Dropdown */}
+          {accountSelectionMode !== 'all' && accounts && (
+            <div className="flex items-center space-x-2">
+              {accountSelectionMode === 'single' ? (
+                <Select 
+                  value={selectedAccountIds[0]?.toString() || ''} 
+                  onValueChange={(value) => setSelectedAccountIds([parseInt(value)])}
+                >
+                  <SelectTrigger className="w-48 bg-gray-800 border-gray-600 text-white">
+                    <SelectValue placeholder="Select account" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {accounts.map((account) => (
+                      <SelectItem key={account.id} value={account.id.toString()}>
+                        {account.name} ({account.firm})
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              ) : (
+                <div className="bg-gray-800 border border-gray-600 rounded-md p-2 max-w-sm">
+                  <p className="text-xs text-gray-400 mb-2">Select accounts:</p>
+                  <div className="space-y-1 max-h-32 overflow-y-auto">
+                    {accounts.map((account) => (
+                      <div key={account.id} className="flex items-center space-x-2">
+                        <Checkbox
+                          id={`account-${account.id}`}
+                          checked={selectedAccountIds.includes(account.id)}
+                          onCheckedChange={(checked) => {
+                            if (checked) {
+                              setSelectedAccountIds([...selectedAccountIds, account.id]);
+                            } else {
+                              setSelectedAccountIds(selectedAccountIds.filter(id => id !== account.id));
+                            }
+                          }}
+                        />
+                        <label htmlFor={`account-${account.id}`} className="text-xs cursor-pointer text-white">
+                          {account.name}
+                        </label>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+          
+          <NotificationDropdown />
+        </div>,
+        headerControlsElement
+      )}
+
+      {/* Secondary Controls Header */}
+      <div className="bg-gray-900/50 border-b border-gray-700 px-8 py-3">
         <div className="flex justify-between items-center">
           <div className="flex items-center space-x-4">
-            {/* Account Selection */}
-            <div className="flex items-center space-x-2">
-              <Filter className="h-4 w-4 text-gray-400" />
-              <Select value={accountSelectionMode} onValueChange={(value: any) => setAccountSelectionMode(value)}>
-                <SelectTrigger className="w-40">
-                  <SelectValue placeholder="View mode" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Accounts</SelectItem>
-                  <SelectItem value="single">Single Account</SelectItem>
-                  <SelectItem value="multiple">Multiple Accounts</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            
-            {/* Account Selection Dropdown */}
-            {accountSelectionMode !== 'all' && accounts && (
-              <div className="flex items-center space-x-2">
-                {accountSelectionMode === 'single' ? (
-                  <Select 
-                    value={selectedAccountIds[0]?.toString() || ''} 
-                    onValueChange={(value) => setSelectedAccountIds([parseInt(value)])}
-                  >
-                    <SelectTrigger className="w-48">
-                      <SelectValue placeholder="Select account" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {accounts.map((account) => (
-                        <SelectItem key={account.id} value={account.id.toString()}>
-                          {account.name} ({account.firm})
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                ) : (
-                  <div className="bg-dark-card border border-dark-border rounded-md p-2 max-w-sm">
-                    <p className="text-xs text-gray-400 mb-2">Select accounts:</p>
-                    <div className="space-y-1 max-h-32 overflow-y-auto">
-                      {accounts.map((account) => (
-                        <div key={account.id} className="flex items-center space-x-2">
-                          <Checkbox
-                            id={`account-${account.id}`}
-                            checked={selectedAccountIds.includes(account.id)}
-                            onCheckedChange={(checked) => {
-                              if (checked) {
-                                setSelectedAccountIds([...selectedAccountIds, account.id]);
-                              } else {
-                                setSelectedAccountIds(selectedAccountIds.filter(id => id !== account.id));
-                              }
-                            }}
-                          />
-                          <label htmlFor={`account-${account.id}`} className="text-xs cursor-pointer">
-                            {account.name}
-                          </label>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </div>
-            )}
-
             {/* TASK 1: Time Period Selection */}
             <div className="flex items-center space-x-2">
               <Clock className="h-4 w-4 text-gray-400" />
@@ -1326,7 +1338,6 @@ export default function Dashboard() {
                 }
               />
             </div>
-            <NotificationDropdown />
           </div>
         </div>
       </div>
