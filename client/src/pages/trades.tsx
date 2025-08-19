@@ -1885,15 +1885,14 @@ export default function Trades() {
                     });
                     const result = await response.json();
                     if (result.success) {
-                      // REMOVED: No popup for production app - silent success
-                      window.location.reload();
+                      // Invalidate trades cache to show updated SL/TP values
+                      queryClient.invalidateQueries({ queryKey: ['/api/trades'] });
+                      console.log(`✅ Successfully updated ${result.updatedCount} trades`);
                     } else {
-                      // REMOVED: No error popup for production app - log error only
                       console.error('Failed to reprocess trades:', result.message);
                     }
                   } catch (error) {
                     console.error('Reprocessing error:', error);
-                    // REMOVED: No error popup for production app - log error only
                   }
                 }}
                 className="bg-green-600 hover:bg-green-700"
