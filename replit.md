@@ -15,7 +15,7 @@ Preferred communication style: Simple, everyday language.
 - **Styling**: Tailwind CSS with shadcn/ui
 - **Build Tool**: Vite
 - **Charts**: Chart.js
-- **UI/UX**: Modern dark-themed UI with gold/yellow gradients, consistent card styling, and rainbow gradient headers. Focus on compact layouts, intuitive workflows, and visual feedback. All popup modal forms have been removed. Logo is standardized across the application with a tiffany blue border, black square background, and yellow crown icon. Full light/dark mode support is implemented.
+- **UI/UX**: Modern dark-themed UI with gold/yellow gradients, consistent card styling, and rainbow gradient headers. Focus on compact layouts, intuitive workflows, and visual feedback. All popup modal forms have been removed. Unified header design with compact logo positioned in far left corner for professional appearance, action buttons (Account, Trade, Journal, sharing) in center, and account controls on right side. Full light/dark mode support is implemented.
 
 ### Backend
 - **Runtime**: Node.js with Express.js

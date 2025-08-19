@@ -105,31 +105,33 @@ function Router() {
   return (
     <div className="flex flex-col h-screen bg-background text-foreground">
       {/* Unified Header */}
-      <header className="bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 border-b-2 border-gradient-to-r from-yellow-400 to-amber-500 px-8 py-5 flex-shrink-0 shadow-2xl">
+      <header className="bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 border-b border-gray-700 px-6 py-3 flex-shrink-0 shadow-lg">
         <div className="flex justify-between items-center">
-          {/* Left spacer for balance */}
-          <div className="flex-1"></div>
-          
-          {/* Centered Logo with enhanced styling */}
-          <div className="bg-gradient-to-r from-yellow-400 to-amber-500 p-4 rounded-xl shadow-2xl hover:shadow-yellow-500/25 transition-all duration-300 transform hover:scale-105">
-            <div className="flex items-center space-x-4">
-              <div className="w-14 h-14 bg-black rounded-xl flex items-center justify-center border-3 border-teal-500 shadow-xl">
-                <Crown className="w-8 h-8 text-yellow-400" />
+          {/* Left side - Compact Logo */}
+          <div className="bg-gradient-to-r from-yellow-400 to-amber-500 p-2 rounded-lg shadow-md">
+            <div className="flex items-center space-x-2">
+              <div className="w-8 h-8 bg-black rounded-md flex items-center justify-center border border-teal-500">
+                <Crown className="w-5 h-5 text-yellow-400" />
               </div>
               <div className="flex flex-col">
-                <span className="text-2xl font-bold leading-tight tracking-tight">
+                <span className="text-sm font-bold leading-tight tracking-tight">
                   <span className="text-teal-600">PropTrader</span><span className="text-black"> Journal</span>
                 </span>
-                <span className="text-sm font-medium text-black text-center">
-                  Professional Trading Platform
+                <span className="text-[10px] font-medium text-black leading-none">
+                  Professional Platform
                 </span>
               </div>
             </div>
           </div>
           
-          {/* Right side - All Controls */}
-          <div id="dashboard-header-controls" className="flex-1 flex justify-end">
-            {/* All controls will be injected here by Dashboard component */}
+          {/* Center - Action Buttons */}
+          <div id="dashboard-action-buttons" className="flex items-center space-x-3">
+            {/* Action buttons will be injected here by Dashboard component */}
+          </div>
+          
+          {/* Right side - Account Controls */}
+          <div id="dashboard-header-controls" className="flex items-center space-x-3">
+            {/* Account controls will be injected here by Dashboard component */}
           </div>
         </div>
       </header>

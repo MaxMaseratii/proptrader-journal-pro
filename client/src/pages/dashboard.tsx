@@ -1200,14 +1200,64 @@ export default function Dashboard() {
   
   return (
     <>
-      {/* Inject controls into unified header */}
-      {headerControlsElement && createPortal(
-        <div className="flex items-center space-x-4">
+      {/* Inject action buttons into unified header center */}
+      {document.getElementById('dashboard-action-buttons') && createPortal(
+        <div className="flex items-center gap-3">
+          <Link href="/accounts">
+            <Button 
+              size="sm" 
+              className="bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white shadow-md hover:shadow-lg transition-all duration-200"
+            >
+              <Plus className="mr-1 h-3 w-3" />
+              Account
+            </Button>
+          </Link>
+          
+          <Link href="/trades?tab=add">
+            <Button 
+              size="sm" 
+              className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white shadow-md hover:shadow-lg transition-all duration-200"
+            >
+              <Plus className="mr-1 h-3 w-3" />
+              Trade
+            </Button>
+          </Link>
+
+          <Link href="/journal">
+            <Button 
+              size="sm" 
+              className="bg-gradient-to-r from-yellow-600 to-orange-600 hover:from-yellow-700 hover:to-orange-700 text-white shadow-md hover:shadow-lg transition-all duration-200"
+            >
+              <BookOpen className="mr-1 h-3 w-3" />
+              Journal
+            </Button>
+          </Link>
+          
+          {/* Social Media Share Button */}
+          <ShareStats 
+            totalPnL={combinedAnalytics?.totalPnl || 0}
+            winRate={combinedAnalytics?.winRate || 0}
+            totalTrades={combinedAnalytics?.totalTrades || 0}
+            bestTrade={combinedAnalytics?.bestTrade || 0}
+            accountName={selectedAccountIds.length === 1 
+              ? accounts?.find(acc => acc.id === selectedAccountIds[0])?.name || 'Selected Account'
+              : selectedAccountIds.length > 1 
+                ? `${selectedAccountIds.length} Accounts` 
+                : 'All Accounts'
+            }
+          />
+        </div>,
+        document.getElementById('dashboard-action-buttons')
+      )}
+
+      {/* Inject account controls into unified header */}
+      {document.getElementById('dashboard-header-controls') && createPortal(
+        <div className="flex items-center space-x-3">
           {/* Account Selection */}
           <div className="flex items-center space-x-2">
             <Filter className="h-4 w-4 text-gray-400" />
             <Select value={accountSelectionMode} onValueChange={(value: any) => setAccountSelectionMode(value)}>
-              <SelectTrigger className="w-40 bg-gray-800 border-gray-600 text-white">
+              <SelectTrigger className="w-36 bg-gray-800 border-gray-600 text-white text-xs">
                 <SelectValue placeholder="View mode" />
               </SelectTrigger>
               <SelectContent>
@@ -1226,7 +1276,7 @@ export default function Dashboard() {
                   value={selectedAccountIds[0]?.toString() || ''} 
                   onValueChange={(value) => setSelectedAccountIds([parseInt(value)])}
                 >
-                  <SelectTrigger className="w-48 bg-gray-800 border-gray-600 text-white">
+                  <SelectTrigger className="w-40 bg-gray-800 border-gray-600 text-white text-xs">
                     <SelectValue placeholder="Select account" />
                   </SelectTrigger>
                   <SelectContent>
@@ -1265,8 +1315,15 @@ export default function Dashboard() {
             </div>
           )}
           
-          {/* Time Period Selection */}
-          <div className="flex items-center space-x-2 border-l border-gray-600 pl-4">
+          <NotificationDropdown />
+        </div>,
+        document.getElementById('dashboard-header-controls')
+      )}
+
+      {/* Secondary Controls Header - Time Period Only */}
+      <div className="bg-gray-900/50 border-b border-gray-700 px-8 py-2">
+        <div className="flex justify-center items-center">
+          <div className="flex items-center space-x-2">
             <Clock className="h-4 w-4 text-gray-400" />
             <Select value={timePeriod} onValueChange={(value: any) => setTimePeriod(value)}>
               <SelectTrigger className="w-32 bg-gray-800 border-gray-600 text-white">
@@ -1280,58 +1337,8 @@ export default function Dashboard() {
               </SelectContent>
             </Select>
           </div>
-
-          {/* Professional Action Buttons Group */}
-          <div className="flex items-center gap-2 border-l border-gray-600 pl-4">
-            <Link href="/accounts">
-              <Button 
-                size="sm" 
-                className="bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
-              >
-                <Plus className="mr-1 h-3 w-3" />
-                Account
-              </Button>
-            </Link>
-            
-            <Link href="/trades?tab=add">
-              <Button 
-                size="sm" 
-                className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
-              >
-                <Plus className="mr-1 h-3 w-3" />
-                Trade
-              </Button>
-            </Link>
-
-            <Link href="/journal">
-              <Button 
-                size="sm" 
-                className="bg-gradient-to-r from-yellow-600 to-orange-600 hover:from-yellow-700 hover:to-orange-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
-              >
-                <BookOpen className="mr-1 h-3 w-3" />
-                Journal
-              </Button>
-            </Link>
-            
-            {/* Social Media Share Button */}
-            <ShareStats 
-              totalPnL={combinedAnalytics?.totalPnl || 0}
-              winRate={combinedAnalytics?.winRate || 0}
-              totalTrades={combinedAnalytics?.totalTrades || 0}
-              bestTrade={combinedAnalytics?.bestTrade || 0}
-              accountName={selectedAccountIds.length === 1 
-                ? accounts?.find(acc => acc.id === selectedAccountIds[0])?.name || 'Selected Account'
-                : selectedAccountIds.length > 1 
-                  ? `${selectedAccountIds.length} Accounts` 
-                  : 'All Accounts'
-              }
-            />
-          </div>
-
-          <NotificationDropdown />
-        </div>,
-        headerControlsElement
-      )}
+        </div>
+      </div>
 
       {/* Congratulations Banner */}
       {congratulationsBanner.visible && (
