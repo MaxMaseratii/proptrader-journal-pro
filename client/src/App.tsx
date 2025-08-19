@@ -103,7 +103,7 @@ function Router() {
   }
 
   return (
-    <div className="flex flex-col h-screen bg-background text-foreground">
+    <div className="flex flex-col h-screen bg-transparent text-foreground">
       {/* Unified Header */}
       <header className="bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 border-b border-gray-700 px-6 py-3 flex-shrink-0 shadow-lg">
         <div className="flex justify-between items-center">
