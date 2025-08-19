@@ -107,11 +107,13 @@ function Router() {
       {/* Unified Header */}
       <header className="bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 border-b-2 border-gradient-to-r from-yellow-400 to-amber-500 px-8 py-5 flex-shrink-0 shadow-2xl">
         <div className="flex justify-between items-center">
-          {/* Left spacer for balance */}
-          <div className="flex-1"></div>
+          {/* Left side - All Controls */}
+          <div id="dashboard-header-controls" className="flex-1 flex justify-start">
+            {/* All controls will be injected here by Dashboard component */}
+          </div>
           
-          {/* Centered Logo with enhanced styling */}
-          <div className="bg-gradient-to-r from-yellow-400 to-amber-500 p-4 rounded-xl shadow-2xl hover:shadow-yellow-500/25 transition-all duration-300 transform hover:scale-105">
+          {/* Far Right Logo with enhanced styling */}
+          <div className="bg-gradient-to-r from-yellow-400 to-amber-500 p-4 rounded-xl shadow-2xl hover:shadow-yellow-500/25 transition-all duration-300 transform hover:scale-105 ml-8">
             <div className="flex items-center space-x-4">
               <div className="w-14 h-14 bg-black rounded-xl flex items-center justify-center border-3 border-teal-500 shadow-xl">
                 <Crown className="w-8 h-8 text-yellow-400" />
@@ -125,11 +127,6 @@ function Router() {
                 </span>
               </div>
             </div>
-          </div>
-          
-          {/* Right side - All Controls */}
-          <div id="dashboard-header-controls" className="flex-1 flex justify-end">
-            {/* All controls will be injected here by Dashboard component */}
           </div>
         </div>
       </header>
