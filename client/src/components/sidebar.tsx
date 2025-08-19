@@ -97,7 +97,7 @@ export default function Sidebar() {
 
   return (
     <aside className={cn(
-      "bg-background flex-shrink-0 transition-all duration-300 ease-in-out relative flex flex-col h-full",
+      "bg-transparent flex-shrink-0 transition-all duration-300 ease-in-out relative flex flex-col h-full",
       isCollapsed ? "w-16" : isPartiallyCollapsed ? "w-20" : "w-64"
     )}>
       {/* Sidebar toggle button - positioned below unified header */}
@@ -231,7 +231,7 @@ export default function Sidebar() {
           
           {/* Profile Section - Bottom with Separator */}
           <div className="mt-auto pt-4">
-            <div className="border-t border-prop-gold/20 pt-4">
+            <div className="border-t border-prop-gold/20 pt-4 bg-transparent">
               <ul className="space-y-2 px-4">
             <li>
               <DropdownMenu>
