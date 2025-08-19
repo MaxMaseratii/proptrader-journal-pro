@@ -25,14 +25,15 @@ export function Logo({ size = 'md', className = '', showText = true, showTagline
       >
         <rect x="0" y="0" width="64" height="64" rx="12" fill="black" stroke="#81d8d0" strokeWidth="4"/>
         <path d="M8 20L20 36L32 20L44 36L56 20L48 48H16L8 20Z" fill="#fdd835"/>
+        <line x1="16" y1="48" x2="48" y2="48" stroke="#fdd835" strokeWidth="2"/>
       </svg>
       
       {/* Text Block */}
       {showText && (
         <div className="flex flex-col">
           <div className={`${sizeConfig.text} font-bold leading-tight tracking-tight`}>
-            <span className="text-[#81d8d0]">PropTrader</span>
-            <span className="text-foreground"> Journal</span>
+            <span className="text-[#4a9a96]">PropTrader</span>
+            <span className="text-black"> Journal</span>
           </div>
           {showTagline && (
             <span className={`${sizeConfig.tagline} font-medium text-muted-foreground`}>
@@ -61,6 +62,7 @@ export function LogoIcon({ size = 'md', className = '' }: { size?: 'sm' | 'md' |
     >
       <rect x="0" y="0" width="64" height="64" rx="12" fill="black" stroke="#81d8d0" strokeWidth="4"/>
       <path d="M8 20L20 36L32 20L44 36L56 20L48 48H16L8 20Z" fill="#fdd835"/>
+      <line x1="16" y1="48" x2="48" y2="48" stroke="#fdd835" strokeWidth="2"/>
     </svg>
   );
 }
