@@ -511,7 +511,7 @@ export default function Welcome() {
       </section>
 
       {/* Footer */}
-      <footer className="bg-transparent py-12">
+      <footer className="bg-gradient-to-br from-gray-100 via-white to-gray-50 py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <div className="flex items-center justify-center mb-6">
