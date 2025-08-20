@@ -178,6 +178,7 @@ export default function Welcome() {
       name: "Starter",
       price: "$9",
       period: "month",
+      trialDays: 3,
       description: "Perfect for new prop traders",
       features: [
         "1 Trading Account",
@@ -194,6 +195,7 @@ export default function Welcome() {
       name: "Professional", 
       price: "$14.99",
       period: "month",
+      trialDays: 3,
       originalPrice: "$39",
       savings: "Save $288/year",
       description: "Most popular for active traders",
@@ -213,7 +215,8 @@ export default function Welcome() {
     {
       name: "Elite",
       price: "$24.99",
-      period: "month", 
+      period: "month",
+      trialDays: 3,
       originalPrice: "$99",
       savings: "Save $900/year",
       description: "For Professional Traders",
@@ -435,6 +438,13 @@ export default function Welcome() {
                   {plan.savings && (
                     <div className="mt-2">
                       <span className="text-sm text-green-500 font-semibold">{plan.savings}</span>
+                    </div>
+                  )}
+                  {plan.trialDays && (
+                    <div className="mt-3 px-3 py-2 bg-green-500/20 border border-green-500/30 rounded-lg">
+                      <span className="text-green-400 font-semibold text-sm">
+                        🎯 {plan.trialDays}-Day Free Trial
+                      </span>
                     </div>
                   )}
                 </CardHeader>
