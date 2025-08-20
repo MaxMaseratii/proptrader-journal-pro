@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
-import { Shield, Lock, CreditCard } from "lucide-react";
+import { Shield, Lock, CreditCard, Tag, Check } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 
@@ -22,6 +23,10 @@ export default function PaymentForm({ selectedPlan, billingPeriod, onSuccess }: 
   const elements = useElements();
   const { toast } = useToast();
   const [isProcessing, setIsProcessing] = useState(false);
+  const [promoCode, setPromoCode] = useState("");
+  const [promoApplied, setPromoApplied] = useState(false);
+  const [discountAmount, setDiscountAmount] = useState(0);
+  const [finalPrice, setFinalPrice] = useState(billingPeriod === 'monthly' ? selectedPlan.monthlyPrice : selectedPlan.annualPrice / 12);
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -51,7 +56,8 @@ export default function PaymentForm({ selectedPlan, billingPeriod, onSuccess }: 
       // Create payment intent on the server
       const response = await apiRequest('POST', '/api/create-payment-intent', {
         planId: selectedPlan.id,
-        billingPeriod
+        billingPeriod,
+        promoCode: promoApplied ? promoCode : undefined
       });
 
       const { clientSecret } = await response.json();
@@ -96,6 +102,50 @@ export default function PaymentForm({ selectedPlan, billingPeriod, onSuccess }: 
     }
   };
 
+  const handleApplyPromo = async () => {
+    if (!promoCode.trim()) {
+      toast({
+        title: "Promo Code Required",
+        description: "Please enter a promo code to apply.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      const response = await apiRequest('POST', '/api/validate-promo', {
+        promoCode: promoCode.trim(),
+        planId: selectedPlan.id,
+        billingPeriod
+      });
+
+      const result = await response.json();
+
+      if (result.valid) {
+        setPromoApplied(true);
+        setDiscountAmount(result.discountAmount);
+        setFinalPrice(result.finalPrice);
+        toast({
+          title: "Promo Code Applied!",
+          description: `You saved $${result.discountAmount.toFixed(2)}`,
+        });
+      } else {
+        toast({
+          title: "Invalid Promo Code",
+          description: result.message || "This promo code is not valid or has expired.",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      console.error("Promo validation error:", error);
+      toast({
+        title: "Error",
+        description: "Failed to validate promo code. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
   const cardElementOptions = {
     style: {
       base: {
@@ -118,6 +168,51 @@ export default function PaymentForm({ selectedPlan, billingPeriod, onSuccess }: 
     <Card className="bg-gray-800 border-gray-600">
       <CardContent className="p-6">
         <form onSubmit={handleSubmit} className="space-y-6">
+          {/* Promo Code Section */}
+          <div className="space-y-4">
+            <div className="flex items-center gap-2 text-white">
+              <Tag className="h-5 w-5" />
+              <h3 className="text-lg font-semibold">Promo Code</h3>
+            </div>
+            
+            <div className="flex gap-3">
+              <div className="flex-1">
+                <Input
+                  type="text"
+                  placeholder="Enter promo code"
+                  value={promoCode}
+                  onChange={(e) => setPromoCode(e.target.value.toUpperCase())}
+                  className="bg-gray-700/50 border-gray-600 text-white"
+                  disabled={promoApplied}
+                />
+              </div>
+              <Button
+                type="button"
+                onClick={handleApplyPromo}
+                disabled={promoApplied || !promoCode.trim()}
+                variant="outline"
+                className="border-gray-600 text-gray-300 hover:bg-gray-700"
+              >
+                {promoApplied ? (
+                  <>
+                    <Check className="h-4 w-4 mr-2 text-green-400" />
+                    Applied
+                  </>
+                ) : (
+                  'Apply'
+                )}
+              </Button>
+            </div>
+            
+            {promoApplied && (
+              <div className="bg-green-900/20 border border-green-700/50 rounded-lg p-3">
+                <p className="text-green-300 text-sm font-medium">
+                  ✓ Promo code "{promoCode}" applied - You saved ${discountAmount.toFixed(2)}!
+                </p>
+              </div>
+            )}
+          </div>
+
           <div className="space-y-4">
             <div className="flex items-center gap-2 text-white">
               <CreditCard className="h-5 w-5" />
@@ -155,7 +250,7 @@ export default function PaymentForm({ selectedPlan, billingPeriod, onSuccess }: 
                 Processing Payment...
               </>
             ) : (
-              `Complete Payment - $${billingPeriod === 'monthly' ? selectedPlan.monthlyPrice.toFixed(2) : (selectedPlan.annualPrice / 12).toFixed(2)}${billingPeriod === 'monthly' ? '/month' : '/month (billed annually)'}`
+              `Complete Payment - $${finalPrice.toFixed(2)}${billingPeriod === 'monthly' ? '/month' : '/month (billed annually)'}`
             )}
           </Button>
         </form>

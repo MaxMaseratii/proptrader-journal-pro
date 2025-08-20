@@ -675,6 +675,11 @@ export default function EnhancedSignup() {
                         Includes {selectedPlan.trialDays}-day free trial
                       </p>
                     )}
+                    <div className="mt-3 pt-3 border-t border-gray-600">
+                      <p className="text-gray-400 text-sm">
+                        Have a promo code? Apply it during payment to get instant savings!
+                      </p>
+                    </div>
                   </div>
 
                   {/* Security Notice */}

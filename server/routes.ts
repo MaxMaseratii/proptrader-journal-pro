@@ -102,10 +102,59 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Promo code validation endpoint
+  app.post('/api/validate-promo', async (req, res) => {
+    try {
+      const { promoCode, planId, billingPeriod = 'monthly' } = req.body;
+      
+      if (!promoCode || !planId || !SUBSCRIPTION_PLANS[planId]) {
+        return res.status(400).json({ message: "Missing required fields" });
+      }
+
+      const plan = SUBSCRIPTION_PLANS[planId];
+      const pricing = getPlanPricing(plan, billingPeriod === 'annual');
+      
+      // Define available promo codes with their discounts
+      const promoCodes: Record<string, { discount: number; description: string }> = {
+        'LAUNCH50': { discount: 0.50, description: '50% off launch special' },
+        'WELCOME25': { discount: 0.25, description: '25% off welcome bonus' },
+        'TRADER15': { discount: 0.15, description: '15% off for traders' },
+        'SAVE10': { discount: 0.10, description: '10% off discount' },
+        'NEWUSER': { discount: 0.20, description: '20% off for new users' },
+        'PROPTRADER': { discount: 0.30, description: '30% off for prop traders' }
+      };
+
+      const promoDetails = promoCodes[promoCode.toUpperCase()];
+      
+      if (!promoDetails) {
+        return res.json({
+          valid: false,
+          message: "Invalid promo code"
+        });
+      }
+
+      const discountAmount = pricing.price * promoDetails.discount;
+      const finalPrice = pricing.price - discountAmount;
+
+      res.json({
+        valid: true,
+        promoCode: promoCode.toUpperCase(),
+        discountPercent: promoDetails.discount * 100,
+        discountAmount,
+        finalPrice,
+        description: promoDetails.description,
+        originalPrice: pricing.price
+      });
+    } catch (error: any) {
+      console.error("Promo validation error:", error);
+      res.status(500).json({ message: "Promo validation failed: " + error.message });
+    }
+  });
+
   // Payment intent creation for Stripe
   app.post('/api/create-payment-intent', async (req, res) => {
     try {
-      const { planId, billingPeriod = 'monthly' } = req.body;
+      const { planId, billingPeriod = 'monthly', promoCode } = req.body;
       
       if (!stripe) {
         return res.status(500).json({ message: "Stripe not configured" });
@@ -116,11 +165,37 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       const plan = SUBSCRIPTION_PLANS[planId];
-      const pricing = getPlanPricing(plan, billingPeriod === 'annual');
+      let pricing = getPlanPricing(plan, billingPeriod === 'annual');
+      let finalAmount = pricing.price;
+      let appliedPromo = null;
+
+      // Apply promo code discount if provided
+      if (promoCode) {
+        const promoCodes: Record<string, { discount: number; description: string }> = {
+          'LAUNCH50': { discount: 0.50, description: '50% off launch special' },
+          'WELCOME25': { discount: 0.25, description: '25% off welcome bonus' },
+          'TRADER15': { discount: 0.15, description: '15% off for traders' },
+          'SAVE10': { discount: 0.10, description: '10% off discount' },
+          'NEWUSER': { discount: 0.20, description: '20% off for new users' },
+          'PROPTRADER': { discount: 0.30, description: '30% off for prop traders' }
+        };
+
+        const promoDetails = promoCodes[promoCode.toUpperCase()];
+        if (promoDetails) {
+          const discountAmount = pricing.price * promoDetails.discount;
+          finalAmount = pricing.price - discountAmount;
+          appliedPromo = {
+            code: promoCode.toUpperCase(),
+            discount: promoDetails.discount,
+            discountAmount,
+            description: promoDetails.description
+          };
+        }
+      }
       
       // Create Stripe payment intent
       const paymentIntent = await stripe.paymentIntents.create({
-        amount: Math.round(pricing.price * 100), // Convert to cents
+        amount: Math.round(finalAmount * 100), // Convert to cents
         currency: 'usd',
         automatic_payment_methods: {
           enabled: true,
@@ -128,16 +203,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
         metadata: {
           planId: planId,
           billingPeriod: billingPeriod,
-          planName: plan.name
+          planName: plan.name,
+          promoCode: promoCode || '',
+          originalAmount: pricing.price.toString(),
+          finalAmount: finalAmount.toString(),
+          discountApplied: appliedPromo ? appliedPromo.discountAmount.toString() : '0'
         }
       });
       
       res.json({ 
         clientSecret: paymentIntent.client_secret,
         planId,
-        amount: pricing.price,
+        amount: finalAmount,
+        originalAmount: pricing.price,
         displayPrice: pricing.displayPrice,
-        period: pricing.period
+        period: pricing.period,
+        appliedPromo
       });
     } catch (error: any) {
       console.error("Payment intent error:", error);
