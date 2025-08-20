@@ -43,7 +43,7 @@ export type UpsertUser = typeof users.$inferInsert;
 
 export const accounts = pgTable("accounts", {
   id: serial("id").primaryKey(),
-  userId: uuid("user_id").references(() => users.id).notNull(),
+  userId: varchar("user_id").references(() => users.id).notNull(),
   name: text("name").notNull(),
   type: text("type").notNull(), // 'challenge', 'funded', 'live'
   firm: text("firm").notNull(),

@@ -42,7 +42,7 @@ Core tables include:
 - **Performance Analytics**: P&L tracking, equity curve, win rates, monthly breakdowns, Sharpe ratio, and profit factor.
 - **Trading Journal**: Daily reflection entries and improvement plans, linked to daily plans.
 - **Reporting System**: Comprehensive trade reports with filtering and export capabilities.
-- **Authentication**: Comprehensive email/password authentication system with bcrypt password hashing, email verification, PostgreSQL session storage, and Stripe-integrated subscription plans. Includes robust sign-up flow with captcha verification and payment processing for trial and paid plans.
+- **Authentication**: Comprehensive email/password authentication system with bcrypt password hashing, email verification, PostgreSQL session storage, and Stripe-integrated subscription plans. Includes enhanced multi-step sign-up flow with captcha verification, plan selection (trial/basic/premium), and secure payment processing. Header includes +Account, +Trade, and Journal action buttons positioned before the notification dropdown for quick access.
 - **Universal CSV Importer**: AI-powered system supporting 37+ brokers and trading platforms with automatic format detection (99%+ accuracy). Includes IBKR, ThinkorSwim, MT4/5, NinjaTrader, Tradovate, Robinhood, TradingView, and 30+ others. Features intelligent auto-detection, symbol normalization, trade pairing, and P&L calculation.
 - **Advanced Discipline Analysis**: Over 20 behavioral metrics, psychological pattern detection, order-to-trade grouping, and risk violation detection.
 - **Target & Risk Projection System**: Account-based and simulation modes for projecting profit targets.

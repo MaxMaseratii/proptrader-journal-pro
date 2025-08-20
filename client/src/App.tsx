@@ -28,6 +28,7 @@ import AdvancedDashboard from "@/pages/advanced-dashboard";
 import TradingCompanion from "@/pages/trading-companion";
 import DailyPlan from "@/pages/daily-plan";
 import Signup from "@/pages/signup";
+import EnhancedSignup from "@/pages/enhanced-signup";
 import Login from "@/pages/auth/Login";
 import SignUp from "@/pages/auth/SignUp";
 import PrivacyPolicy from "@/pages/privacy-policy";
@@ -86,7 +87,7 @@ function Router() {
     return (
       <Switch>
         <Route path="/login" component={Login} />
-        <Route path="/signup" component={SignUp} />
+        <Route path="/signup" component={EnhancedSignup} />
         <Route path="/auth" component={AuthPage} />
         <Route path="/welcome" component={Welcome} />
         <Route path="/privacy-policy" component={PrivacyPolicy} />

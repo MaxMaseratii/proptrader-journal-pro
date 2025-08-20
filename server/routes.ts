@@ -24,6 +24,16 @@ import {
 } from "@shared/schema";
 import { z } from "zod";
 import { setupAuth } from "./customAuth";
+import bcrypt from "bcryptjs";
+import Stripe from "stripe";
+import crypto from "crypto";
+
+if (!process.env.STRIPE_SECRET_KEY) {
+  throw new Error('Missing required Stripe secret: STRIPE_SECRET_KEY');
+}
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
+  apiVersion: "2025-07-30.basil",
+});
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Setup authentication
@@ -36,6 +46,165 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
     next();
   };
+
+  // Authentication Routes
+  app.post('/api/auth/signup', async (req, res) => {
+    try {
+      const { 
+        firstName, 
+        lastName, 
+        email, 
+        password, 
+        subscriptionPlan = 'trial',
+        captchaToken 
+      } = req.body;
+
+      // Validate required fields
+      if (!firstName || !lastName || !email || !password || !captchaToken) {
+        return res.status(400).json({ 
+          message: "Missing required fields" 
+        });
+      }
+
+      // Simple captcha validation (in production, use proper captcha service)
+      if (captchaToken !== "verified") {
+        return res.status(400).json({ 
+          message: "Invalid captcha verification" 
+        });
+      }
+
+      // Check if user already exists
+      const existingUser = await storage.getUserByEmail(email);
+      if (existingUser) {
+        return res.status(400).json({ 
+          message: "User already exists with this email" 
+        });
+      }
+
+      // Hash password
+      const hashedPassword = await bcrypt.hash(password, 10);
+
+      // Generate verification token
+      const verificationToken = crypto.randomBytes(32).toString('hex');
+
+      // Calculate trial end date (3 days from now)
+      const trialEndsAt = new Date();
+      trialEndsAt.setDate(trialEndsAt.getDate() + 3);
+
+      // Create user
+      const newUser = await storage.createUser({
+        firstName,
+        lastName,
+        email,
+        password: hashedPassword,
+        subscriptionPlan: subscriptionPlan as any,
+        emailVerified: false,
+        verificationToken,
+        trialEndsAt,
+        subscriptionStatus: 'active'
+      });
+
+      // Set up authentication session
+      req.login(newUser, (err: any) => {
+        if (err) {
+          console.error('Login error:', err);
+          return res.status(500).json({ message: "Failed to create session" });
+        }
+        
+        // Return user without sensitive data
+        const { password: _, verificationToken: __, ...userResponse } = newUser;
+        res.json({
+          user: userResponse,
+          message: "Account created successfully! Please check your email to verify your account."
+        });
+      });
+
+    } catch (error) {
+      console.error("Signup error:", error);
+      res.status(500).json({ 
+        message: "Failed to create account" 
+      });
+    }
+  });
+
+  app.post('/api/auth/login', async (req, res) => {
+    try {
+      const { email, password } = req.body;
+
+      if (!email || !password) {
+        return res.status(400).json({ message: "Email and password required" });
+      }
+
+      const user = await storage.getUserByEmail(email);
+      if (!user) {
+        return res.status(401).json({ message: "Invalid credentials" });
+      }
+
+      const isValidPassword = await bcrypt.compare(password, user.password || '');
+      if (!isValidPassword) {
+        return res.status(401).json({ message: "Invalid credentials" });
+      }
+
+      req.login(user, (err: any) => {
+        if (err) {
+          console.error('Login error:', err);
+          return res.status(500).json({ message: "Failed to create session" });
+        }
+        
+        const { password: _, verificationToken: __, ...userResponse } = user;
+        res.json({ user: userResponse });
+      });
+
+    } catch (error) {
+      console.error("Login error:", error);
+      res.status(500).json({ message: "Login failed" });
+    }
+  });
+
+  app.post('/api/auth/logout', (req, res) => {
+    req.logout((err: any) => {
+      if (err) {
+        return res.status(500).json({ message: "Logout failed" });
+      }
+      res.json({ message: "Logged out successfully" });
+    });
+  });
+
+  app.get('/api/auth/user', requireAuth, async (req: any, res) => {
+    try {
+      const user = req.user;
+      const { password: _, verificationToken: __, ...userResponse } = user;
+      res.json(userResponse);
+    } catch (error) {
+      console.error("Error fetching user:", error);
+      res.status(500).json({ message: "Failed to fetch user" });
+    }
+  });
+
+  // Stripe payment routes for subscriptions
+  app.post("/api/create-subscription-payment", async (req, res) => {
+    try {
+      const { subscriptionPlan, amount } = req.body;
+      
+      if (amount === 0) {
+        return res.json({ clientSecret: null });
+      }
+
+      const paymentIntent = await stripe.paymentIntents.create({
+        amount: Math.round(amount), // Amount already in cents
+        currency: "usd",
+        metadata: {
+          subscriptionPlan: subscriptionPlan
+        }
+      });
+      
+      res.json({ clientSecret: paymentIntent.client_secret });
+    } catch (error: any) {
+      res.status(500).json({ 
+        message: "Error creating payment intent: " + error.message 
+      });
+    }
+  });
 
   // User route for current user
   app.get('/api/user', requireAuth, async (req: any, res) => {

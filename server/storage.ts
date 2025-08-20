@@ -600,6 +600,7 @@ export class DatabaseStorage implements IStorage {
 
     // Create funded account with new rules but same name
     const fundedAccount = await this.createAccount({
+      userId: challengeAccount.userId,
       name: challengeAccount.name,
       firm: challengeAccount.firm,
       type: 'funded',
@@ -661,6 +662,7 @@ export class DatabaseStorage implements IStorage {
 
     // Create live account with new rules but same name
     const liveAccount = await this.createAccount({
+      userId: fundedAccount.userId,
       name: fundedAccount.name,
       firm: fundedAccount.firm,
       type: 'live',
