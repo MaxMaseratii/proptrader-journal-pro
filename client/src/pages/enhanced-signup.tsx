@@ -17,6 +17,7 @@ import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { loadStripe } from "@stripe/stripe-js";
 import { Elements, CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
+import StripeTestCards from "@/components/StripeTestCards";
 
 // Load Stripe public key
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY!);
@@ -614,6 +615,9 @@ export default function EnhancedSignup() {
                     )}
                   </div>
 
+                  {/* Test Cards Information */}
+                  <StripeTestCards />
+                  
                   <PaymentForm 
                     selectedPlan={selectedPlan} 
                     onSuccess={() => form.handleSubmit(handleSubmit)()}

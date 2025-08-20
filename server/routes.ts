@@ -60,7 +60,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         email,
         password, // In production, hash this password
         planId,
-        isVerified: false,
+        emailVerified: false,
         verificationToken: `verify-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
       });
       
@@ -100,13 +100,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { amount, planId } = req.body;
       
-      // Create Stripe payment intent (mock for now)
-      const paymentIntent = {
-        id: `pi_${Date.now()}`,
-        client_secret: `pi_${Date.now()}_secret_${Math.random().toString(36).substr(2, 9)}`,
+      if (!process.env.STRIPE_SECRET_KEY) {
+        return res.status(500).json({ message: "Stripe not configured" });
+      }
+      
+      const Stripe = require('stripe');
+      const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
+        apiVersion: '2023-10-16',
+      });
+      
+      // Create actual Stripe payment intent
+      const paymentIntent = await stripe.paymentIntents.create({
         amount: Math.round(amount * 100), // Convert to cents
-        currency: 'usd'
-      };
+        currency: 'usd',
+        automatic_payment_methods: {
+          enabled: true,
+        },
+        metadata: {
+          planId: planId
+        }
+      });
       
       res.json({ 
         clientSecret: paymentIntent.client_secret,
@@ -114,7 +127,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
     } catch (error: any) {
       console.error("Payment intent error:", error);
-      res.status(500).json({ message: "Payment processing failed" });
+      res.status(500).json({ message: "Payment processing failed: " + error.message });
     }
   });
 

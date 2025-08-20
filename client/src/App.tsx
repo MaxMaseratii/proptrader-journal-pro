@@ -69,6 +69,7 @@ import Sidebar from "@/components/sidebar";
 import FlowStateTraining from "@/components/FlowStateTraining";
 import NotFound from "@/pages/not-found";
 import Login from "@/pages/login";
+import StripeTest from "@/pages/stripe-test";
 import { useAuth } from "@/hooks/useAuth";
 
 function Router() {
@@ -95,6 +96,7 @@ function Router() {
         <Route path="/login" component={Login} />
         <Route path="/signup" component={EnhancedSignup} />
         <Route path="/signup-simple" component={Signup} />
+        <Route path="/stripe-test" component={StripeTest} />
         <Route path="/welcome" component={Welcome} />
         <Route path="/privacy-policy" component={PrivacyPolicy} />
         <Route path="/terms" component={TermsOfService} />
