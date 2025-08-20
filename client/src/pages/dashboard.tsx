@@ -1325,6 +1325,7 @@ export default function Dashboard() {
 
 
 
+
       {/* Congratulations Banner */}
       {congratulationsBanner.visible && (
         <div className="mx-4 mt-4 mb-2">
@@ -1370,7 +1371,7 @@ export default function Dashboard() {
         </div>
       )}
 
-      <div className="p-6 space-y-6 bg-transparent">
+      <div className="p-6 space-y-6 bg-dark-bg min-h-screen">
         
         {/* Daily Trading Plan & Performance - Consolidated Section */}
         <div className="mb-8">

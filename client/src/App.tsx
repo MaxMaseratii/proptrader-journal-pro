@@ -103,7 +103,7 @@ function Router() {
   }
 
   return (
-    <div className="flex flex-col h-screen bg-transparent text-foreground">
+    <div className="flex flex-col h-screen bg-background text-foreground">
       {/* Unified Header */}
       <header className="bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 border-b border-gray-700 px-6 py-3 flex-shrink-0 shadow-lg">
         <div className="flex justify-between items-center">
@@ -139,7 +139,7 @@ function Router() {
       {/* Content Area */}
       <div className="flex flex-1 min-h-0">
         <Sidebar />
-        <main className="flex-1 overflow-y-auto bg-transparent">
+        <main className="flex-1 overflow-y-auto bg-background">
           <Switch>
             <Route path="/" component={Dashboard} />
             <Route path="/flow-state-training" component={FlowStateTraining} />
