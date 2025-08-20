@@ -1,0 +1,3 @@
+# PropTraderJournal - Ultra Concise AI Prompt
+
+Build PropTraderJournal: React18+TS+Vite frontend, Node+Express+PostgreSQL backend. Crown logo, dark theme, gold accents. Features: session auth, multi-account trading, CSV import (37+ brokers), risk management, journal entries, analytics dashboard. Pages: login/signup, dashboard, accounts, CSV import, journal, performance. Account form: 4-step wizard (basic info, risk rules, preferences, costs). Integration: real-time widgets, global account selection, Stripe subscriptions.
