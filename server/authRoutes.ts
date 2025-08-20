@@ -8,6 +8,13 @@ import { users, type InsertUser } from "@shared/schema";
 import { db } from "./db";
 import { eq } from "drizzle-orm";
 
+// Extend session data interface
+declare module 'express-session' {
+  interface SessionData {
+    userId: string;
+  }
+}
+
 // Initialize Stripe
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: "2023-10-16",
@@ -19,7 +26,7 @@ const PgSession = connectPgSimple(session);
 export function setupAuthSession(app: Express) {
   const sessionStore = new PgSession({
     conString: process.env.DATABASE_URL,
-    createTableIfMissing: true,
+    createTableIfMissing: false, // Table already exists
   });
 
   app.use(session({

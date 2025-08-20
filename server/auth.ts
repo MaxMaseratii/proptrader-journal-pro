@@ -7,7 +7,7 @@ import { db } from './db';
 import { eq } from 'drizzle-orm';
 
 // Email transporter setup
-const transporter = nodemailer.createTransporter({
+const transporter = nodemailer.createTransport({
   // Configure with your email service
   host: process.env.SMTP_HOST || 'smtp.gmail.com',
   port: 587,
