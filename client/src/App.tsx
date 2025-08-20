@@ -186,6 +186,10 @@ function Router() {
             
             <Route path="/profile" component={Profile} />
             <Route path="/billing" component={Billing} />
+            
+            {/* Admin routes */}
+            <Route path="/admin" component={AdminDashboard} />
+            <Route path="/admin-setup" component={AdminSetup} />
 
             <Route path="/account-manager" component={AccountManager} />
             <Route path="/trading-journal-page" component={TradingJournalPage} />
