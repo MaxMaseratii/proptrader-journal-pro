@@ -427,8 +427,7 @@ export const users = pgTable("users", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
-export type UpsertUser = typeof users.$inferInsert;
-export type User = typeof users.$inferSelect;
+// User types defined below with proper schemas
 
 // Projection tables
 export const savedProjections = pgTable("saved_projections", {
