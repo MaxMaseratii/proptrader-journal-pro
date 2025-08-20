@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Crown, Shield, CheckCircle } from "lucide-react";
+import { Crown, Shield, CheckCircle, ShieldCheck, Settings } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { Link } from "wouter";
@@ -133,12 +133,21 @@ export default function AdminSetup() {
             </div>
           )}
 
-          <div className="text-center pt-4 border-t border-gray-600">
-            <Link to="/admin">
-              <Button variant="outline" className="border-gray-600 text-gray-300 hover:bg-gray-700">
-                Go to Admin Dashboard
-              </Button>
-            </Link>
+          <div className="text-center pt-4 border-t border-gray-600 space-y-3">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <Link to="/admin">
+                <Button variant="outline" className="w-full border-gray-600 text-gray-300 hover:bg-gray-700">
+                  <ShieldCheck className="h-4 w-4 mr-2" />
+                  Basic Admin
+                </Button>
+              </Link>
+              <Link to="/admin-enhanced">
+                <Button className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700">
+                  <Settings className="h-4 w-4 mr-2" />
+                  Enhanced Admin
+                </Button>
+              </Link>
+            </div>
           </div>
         </CardContent>
       </Card>

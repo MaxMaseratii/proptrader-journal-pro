@@ -21,6 +21,7 @@ import Profile from "@/pages/profile";
 import Billing from "@/pages/billing";
 import Welcome from "@/pages/welcome";
 import AdminDashboard from "@/pages/admin";
+import EnhancedAdminDashboard from "@/pages/enhanced-admin";
 import AdminSetup from "@/pages/admin-setup";
 import AuthPage from "@/pages/auth-page";
 import CsvImport from "@/pages/csv-import";
@@ -189,6 +190,7 @@ function Router() {
             
             {/* Admin routes */}
             <Route path="/admin" component={AdminDashboard} />
+            <Route path="/admin-enhanced" component={EnhancedAdminDashboard} />
             <Route path="/admin-setup" component={AdminSetup} />
 
             <Route path="/account-manager" component={AccountManager} />

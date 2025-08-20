@@ -263,6 +263,92 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Enhanced admin promo code routes
+  app.get('/api/admin/promo-codes', requireAuth, async (req: any, res) => {
+    try {
+      const user = await storage.getUser(req.user.id);
+      if (!user || user.role !== 'admin') {
+        return res.status(403).json({ message: 'Admin access required' });
+      }
+
+      const promoCodes = await storage.getPromoCodes();
+      res.json(promoCodes);
+    } catch (error) {
+      console.error('Error fetching promo codes:', error);
+      res.status(500).json({ message: 'Failed to fetch promo codes' });
+    }
+  });
+
+  app.post('/api/admin/promo-codes', requireAuth, async (req: any, res) => {
+    try {
+      const user = await storage.getUser(req.user.id);
+      if (!user || user.role !== 'admin') {
+        return res.status(403).json({ message: 'Admin access required' });
+      }
+
+      const { code, discount, description, maxUsage, expiresAt, userEligibility, planEligibility } = req.body;
+
+      if (!code || !discount) {
+        return res.status(400).json({ message: 'Code and discount are required' });
+      }
+
+      // Check if promo code already exists
+      const existingCode = await storage.getPromoCodeByCode(code);
+      if (existingCode) {
+        return res.status(400).json({ message: 'Promo code already exists' });
+      }
+
+      const promoCode = await storage.createPromoCode({
+        code: code.toUpperCase(),
+        discount: discount / 100, // Convert percentage to decimal
+        description,
+        maxUsage,
+        expiresAt: expiresAt ? new Date(expiresAt) : undefined,
+        userEligibility: userEligibility || 'everyone',
+        planEligibility: planEligibility || 'all_plans'
+      });
+
+      res.json(promoCode);
+    } catch (error) {
+      console.error('Error creating promo code:', error);
+      res.status(500).json({ message: 'Failed to create promo code' });
+    }
+  });
+
+  app.put('/api/admin/promo-codes/:id', requireAuth, async (req: any, res) => {
+    try {
+      const user = await storage.getUser(req.user.id);
+      if (!user || user.role !== 'admin') {
+        return res.status(403).json({ message: 'Admin access required' });
+      }
+
+      const id = parseInt(req.params.id);
+      const updates = req.body;
+
+      const updatedPromoCode = await storage.updatePromoCode(id, updates);
+      res.json(updatedPromoCode);
+    } catch (error) {
+      console.error('Error updating promo code:', error);
+      res.status(500).json({ message: 'Failed to update promo code' });
+    }
+  });
+
+  app.delete('/api/admin/promo-codes/:id', requireAuth, async (req: any, res) => {
+    try {
+      const user = await storage.getUser(req.user.id);
+      if (!user || user.role !== 'admin') {
+        return res.status(403).json({ message: 'Admin access required' });
+      }
+
+      const id = parseInt(req.params.id);
+      await storage.deletePromoCode(id);
+      res.json({ message: 'Promo code deleted successfully' });
+    } catch (error) {
+      console.error('Error deleting promo code:', error);
+      res.status(500).json({ message: 'Failed to delete promo code' });
+    }
+  });
+
   app.post('/api/users/update-wage', requireAuth, async (req: any, res) => {
     try {
       const userId = req.user.id;

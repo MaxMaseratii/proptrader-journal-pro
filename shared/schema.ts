@@ -474,6 +474,30 @@ export type InsertSavedProjection = z.infer<typeof insertSavedProjectionSchema>;
 export type ProjectionAdjustmentHistory = typeof projectionAdjustmentHistory.$inferSelect;
 export type InsertProjectionAdjustment = z.infer<typeof insertProjectionAdjustmentSchema>;
 
+// Promo Codes table
+export const promoCodes = pgTable("promo_codes", {
+  id: serial("id").primaryKey(),
+  code: text("code").notNull().unique(),
+  discount: real("discount").notNull(), // Percentage discount (e.g., 50 for 50%)
+  description: text("description"),
+  maxUsage: integer("max_usage"), // null = unlimited
+  currentUsage: integer("current_usage").default(0),
+  isActive: boolean("is_active").default(true),
+  userEligibility: text("user_eligibility").default("everyone"), // 'new_users', 'existing_users', 'everyone'
+  planEligibility: text("plan_eligibility").default("all_plans"), // 'starter', 'professional', 'elite', 'all_plans'
+  expiresAt: timestamp("expires_at"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const insertPromoCodeSchema = createInsertSchema(promoCodes).omit({
+  id: true,
+  currentUsage: true,
+  createdAt: true,
+});
+
+export type PromoCode = typeof promoCodes.$inferSelect;
+export type InsertPromoCode = z.infer<typeof insertPromoCodeSchema>;
+
 // Trading Strategies
 export const tradingStrategies = pgTable("trading_strategies", {
   id: serial("id").primaryKey(),

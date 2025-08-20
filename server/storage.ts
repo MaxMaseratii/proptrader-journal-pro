@@ -9,6 +9,7 @@ import {
   achievements, 
   userStats, 
   savedProjections,
+  promoCodes,
   tradingStrategies,
   dailyPlans,
   strategyRuleTracking,
@@ -51,6 +52,8 @@ import {
   type InsertAchievement,
   type InsertUserStats,
   type InsertSavedProjection,
+  type PromoCode,
+  type InsertPromoCode,
   type InsertTradingStrategy,
   type InsertDailyPlan,
   type InsertStrategyRuleTracking,
@@ -1067,6 +1070,44 @@ export class DatabaseStorage implements IStorage {
       .where(and(eq(riskAlerts.id, id), eq(riskAlerts.userId, userId)))
       .returning();
     return resolvedAlert || undefined;
+  }
+
+  // Promo code management
+  async createPromoCode(promoCode: InsertPromoCode): Promise<PromoCode> {
+    const [newPromoCode] = await db
+      .insert(promoCodes)
+      .values(promoCode)
+      .returning();
+    return newPromoCode;
+  }
+
+  async getPromoCodes(): Promise<PromoCode[]> {
+    return await db.select().from(promoCodes).orderBy(desc(promoCodes.createdAt));
+  }
+
+  async getPromoCodeByCode(code: string): Promise<PromoCode | undefined> {
+    const result = await db.select().from(promoCodes).where(eq(promoCodes.code, code));
+    return result[0];
+  }
+
+  async updatePromoCode(id: number, updates: Partial<PromoCode>): Promise<PromoCode> {
+    const [updatedPromoCode] = await db
+      .update(promoCodes)
+      .set(updates)
+      .where(eq(promoCodes.id, id))
+      .returning();
+    return updatedPromoCode;
+  }
+
+  async deletePromoCode(id: number): Promise<void> {
+    await db.delete(promoCodes).where(eq(promoCodes.id, id));
+  }
+
+  async incrementPromoCodeUsage(id: number): Promise<void> {
+    await db
+      .update(promoCodes)
+      .set({ currentUsage: sql`${promoCodes.currentUsage} + 1` })
+      .where(eq(promoCodes.id, id));
   }
 }
 

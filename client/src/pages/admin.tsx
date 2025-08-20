@@ -19,6 +19,8 @@ interface PromoCode {
   isActive: boolean;
   usageCount: number;
   maxUsage?: number;
+  userEligibility: string;
+  planEligibility: string;
   expiresAt?: string;
   createdAt: string;
 }
@@ -32,7 +34,9 @@ export default function AdminDashboard() {
     discount: 0,
     description: '',
     maxUsage: undefined as number | undefined,
-    expiresAt: undefined as string | undefined
+    expiresAt: undefined as string | undefined,
+    userEligibility: 'everyone',
+    planEligibility: 'all_plans'
   });
 
   // Show loading state while checking authentication
