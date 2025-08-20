@@ -419,7 +419,10 @@ export const users = pgTable("users", {
   profileImageUrl: varchar("profile_image_url"),
   emailVerified: boolean("email_verified").default(false),
   verificationToken: varchar("verification_token"),
-  personalHourlyWage: real("personal_hourly_wage"), // Desired hourly wage for trading profitability calculations
+  resetToken: varchar("reset_token"),
+  resetTokenExpiry: timestamp("reset_token_expiry"),
+  planId: varchar("plan_id").default('starter'), // Enhanced signup plan selection
+  personalHourlyWage: real("personal_hourly_wage").default(25.0), // Desired hourly wage for trading profitability calculations
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
@@ -571,6 +574,16 @@ export const insertStrategyRuleTrackingSchema = createInsertSchema(strategyRuleT
   id: true,
   createdAt: true,
 });
+
+// Enhanced user schema with merged authentication fields
+export const insertUserSchema = createInsertSchema(users).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export type User = typeof users.$inferSelect;
+export type InsertUser = z.infer<typeof insertUserSchema>;
 
 // Notifications System
 export const notifications = pgTable("notifications", {

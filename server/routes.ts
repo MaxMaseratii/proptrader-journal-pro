@@ -37,6 +37,136 @@ export async function registerRoutes(app: Express): Promise<Server> {
     next();
   };
 
+  // Enhanced signup with payment integration
+  app.post('/api/auth/register', async (req, res) => {
+    try {
+      const { firstName, lastName, email, password, planId, captchaToken } = req.body;
+      
+      // Validate captcha (simple validation for demo)
+      if (!captchaToken || !captchaToken.startsWith('captcha-')) {
+        return res.status(400).json({ message: "Invalid captcha" });
+      }
+      
+      // Check if user already exists
+      const existingUser = await storage.getUserByEmail(email);
+      if (existingUser) {
+        return res.status(400).json({ message: "User already exists" });
+      }
+      
+      // Create user with selected plan
+      const user = await storage.createUser({
+        firstName,
+        lastName,
+        email,
+        password, // In production, hash this password
+        planId,
+        isVerified: false,
+        verificationToken: `verify-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
+      });
+      
+      // TODO: Send verification email
+      console.log(`Verification email would be sent to ${email} with token: ${user.verificationToken}`);
+      
+      res.json({ 
+        message: "User created successfully", 
+        userId: user.id,
+        verificationRequired: true 
+      });
+    } catch (error: any) {
+      console.error("Registration error:", error);
+      res.status(500).json({ message: error.message || "Registration failed" });
+    }
+  });
+
+  // Email verification
+  app.post('/api/auth/verify-email', async (req, res) => {
+    try {
+      const { token } = req.body;
+      
+      const user = await storage.verifyUserEmail(token);
+      if (!user) {
+        return res.status(400).json({ message: "Invalid verification token" });
+      }
+      
+      res.json({ message: "Email verified successfully" });
+    } catch (error: any) {
+      console.error("Email verification error:", error);
+      res.status(500).json({ message: "Verification failed" });
+    }
+  });
+
+  // Payment intent creation for Stripe
+  app.post('/api/create-payment-intent', async (req, res) => {
+    try {
+      const { amount, planId } = req.body;
+      
+      // Create Stripe payment intent (mock for now)
+      const paymentIntent = {
+        id: `pi_${Date.now()}`,
+        client_secret: `pi_${Date.now()}_secret_${Math.random().toString(36).substr(2, 9)}`,
+        amount: Math.round(amount * 100), // Convert to cents
+        currency: 'usd'
+      };
+      
+      res.json({ 
+        clientSecret: paymentIntent.client_secret,
+        planId 
+      });
+    } catch (error: any) {
+      console.error("Payment intent error:", error);
+      res.status(500).json({ message: "Payment processing failed" });
+    }
+  });
+
+  // Login endpoint
+  app.post('/api/auth/login', async (req, res) => {
+    try {
+      const { email, password } = req.body;
+      
+      const user = await storage.getUserByEmail(email);
+      if (!user || user.password !== password) {
+        return res.status(401).json({ message: "Invalid credentials" });
+      }
+      
+      if (!user.emailVerified) {
+        return res.status(401).json({ message: "Email not verified" });
+      }
+      
+      // Store user in session
+      (req.session as any).user = { 
+        id: user.id, 
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName 
+      };
+      
+      res.json({ message: "Login successful", user: { id: user.id, email: user.email } });
+    } catch (error: any) {
+      console.error("Login error:", error);
+      res.status(500).json({ message: "Login failed" });
+    }
+  });
+
+  // Get current user
+  app.get('/api/user', (req, res) => {
+    const user = (req.session as any)?.user;
+    if (!user) {
+      return res.status(401).json({ message: "Authentication required" });
+    }
+    res.json(user);
+  });
+
+  // Logout endpoint
+  app.post('/api/auth/logout', (req, res) => {
+    req.session?.destroy((err) => {
+      if (err) {
+        console.error("Logout error:", err);
+        return res.status(500).json({ message: "Logout failed" });
+      }
+      res.json({ message: "Logout successful" });
+    });
+  });
+
   // User route for current user
   app.get('/api/user', requireAuth, async (req: any, res) => {
     try {

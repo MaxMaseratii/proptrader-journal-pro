@@ -1232,6 +1232,11 @@ export default function Dashboard() {
               Journal
             </Button>
           </Link>
+
+          {/* Notification button moved to be right after action buttons */}
+          <div className="border-l border-gray-600 pl-3">
+            <NotificationDropdown />
+          </div>
         </div>,
         document.getElementById('dashboard-action-buttons')
       )}
@@ -1300,8 +1305,6 @@ export default function Dashboard() {
               )}
             </div>
           )}
-          
-          <NotificationDropdown />
           
           {/* Share Button moved to far right */}
           <div className="border-l border-gray-600 pl-3">

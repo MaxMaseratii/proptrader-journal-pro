@@ -28,6 +28,7 @@ import AdvancedDashboard from "@/pages/advanced-dashboard";
 import TradingCompanion from "@/pages/trading-companion";
 import DailyPlan from "@/pages/daily-plan";
 import Signup from "@/pages/signup";
+import EnhancedSignup from "@/pages/enhanced-signup";
 import PrivacyPolicy from "@/pages/privacy-policy";
 import TermsOfService from "@/pages/terms-of-service";
 import Support from "@/pages/support";
@@ -67,6 +68,7 @@ import Pricing from "@/pages/pricing";
 import Sidebar from "@/components/sidebar";
 import FlowStateTraining from "@/components/FlowStateTraining";
 import NotFound from "@/pages/not-found";
+import Login from "@/pages/login";
 import { useAuth } from "@/hooks/useAuth";
 
 function Router() {
@@ -90,7 +92,9 @@ function Router() {
           }}
         </Route>
         <Route path="/auth" component={AuthPage} />
-        <Route path="/signup" component={Signup} />
+        <Route path="/login" component={Login} />
+        <Route path="/signup" component={EnhancedSignup} />
+        <Route path="/signup-simple" component={Signup} />
         <Route path="/welcome" component={Welcome} />
         <Route path="/privacy-policy" component={PrivacyPolicy} />
         <Route path="/terms" component={TermsOfService} />
@@ -200,7 +204,8 @@ function Router() {
             <Route path="/privacy" component={Privacy} />
             <Route path="/terms" component={Terms} />
             <Route path="/support" component={Support} />
-            <Route path="/signup" component={Signup} />
+            <Route path="/signup" component={EnhancedSignup} />
+            <Route path="/signup-simple" component={Signup} />
             <Route component={NotFound} />
           </Switch>
         </main>

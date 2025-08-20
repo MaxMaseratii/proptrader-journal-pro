@@ -47,7 +47,7 @@ import {
   type InsertDailyStats,
   type InsertCsvImport,
   type InsertSpending,
-  type UpsertUser,
+  type InsertUser,
   type InsertAchievement,
   type InsertUserStats,
   type InsertSavedProjection,
@@ -108,10 +108,10 @@ export interface IStorage {
   getUser(id: string): Promise<User | undefined>;
   getUserById(id: string): Promise<User | undefined>;
   getUserByEmail(email: string): Promise<User | undefined>;
-  createUser(user: UpsertUser): Promise<User>;
-  upsertUser(user: UpsertUser): Promise<User>;
+  createUser(user: InsertUser): Promise<User>;
+  upsertUser(user: InsertUser): Promise<User>;
   updateUserWage(userId: string, personalHourlyWage: number): Promise<User | null>;
-  verifyEmail(token: string): Promise<User | undefined>;
+  verifyUserEmail(token: string): Promise<User | undefined>;
 
   // Achievement operations
   getAchievements(userId: string): Promise<Achievement[]>;
@@ -207,7 +207,7 @@ export class DatabaseStorage implements IStorage {
     return user || undefined;
   }
 
-  async upsertUser(userData: UpsertUser): Promise<User> {
+  async upsertUser(userData: InsertUser): Promise<User> {
     const [user] = await db
       .insert(users)
       .values(userData)
@@ -241,7 +241,7 @@ export class DatabaseStorage implements IStorage {
     return user || undefined;
   }
 
-  async createUser(userData: UpsertUser): Promise<User> {
+  async createUser(userData: InsertUser): Promise<User> {
     const userId = crypto.randomUUID();
     const [user] = await db
       .insert(users)
@@ -250,14 +250,20 @@ export class DatabaseStorage implements IStorage {
     return user;
   }
 
-  async verifyEmail(token: string): Promise<User | undefined> {
+  async verifyUserEmail(token: string): Promise<User | undefined> {
     const [user] = await db
       .update(users)
-      .set({ emailVerified: true, verificationToken: null })
+      .set({ 
+        emailVerified: true, 
+        verificationToken: null,
+        updatedAt: new Date()
+      })
       .where(eq(users.verificationToken, token))
       .returning();
     return user || undefined;
   }
+
+
 
   // Account operations
   async getAccounts(): Promise<Account[]> {
