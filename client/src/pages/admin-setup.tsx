@@ -25,7 +25,7 @@ export default function AdminSetup() {
 
     setIsLoading(true);
     try {
-      const response = await apiRequest('POST', '/api/admin/promote-user', {
+      const response = await apiRequest('/api/admin/promote-user', 'POST', {
         email: email.trim()
       });
 
