@@ -28,6 +28,8 @@ import AdvancedDashboard from "@/pages/advanced-dashboard";
 import TradingCompanion from "@/pages/trading-companion";
 import DailyPlan from "@/pages/daily-plan";
 import Signup from "@/pages/signup";
+import Login from "@/pages/auth/Login";
+import SignUp from "@/pages/auth/SignUp";
 import PrivacyPolicy from "@/pages/privacy-policy";
 import TermsOfService from "@/pages/terms-of-service";
 import Support from "@/pages/support";
@@ -83,21 +85,16 @@ function Router() {
   if (!isAuthenticated) {
     return (
       <Switch>
-        <Route path="/standalone-auth.html">
-          {() => {
-            window.location.href = '/standalone-auth.html';
-            return null;
-          }}
-        </Route>
+        <Route path="/login" component={Login} />
+        <Route path="/signup" component={SignUp} />
         <Route path="/auth" component={AuthPage} />
-        <Route path="/signup" component={Signup} />
         <Route path="/welcome" component={Welcome} />
         <Route path="/privacy-policy" component={PrivacyPolicy} />
         <Route path="/terms" component={TermsOfService} />
         <Route path="/support" component={Support} />
         <Route path="/knowledge-base" component={KnowledgeBase} />
-        <Route path="/" component={Welcome} />
-        <Route component={Welcome} />
+        <Route path="/" component={Login} />
+        <Route component={Login} />
       </Switch>
     );
   }

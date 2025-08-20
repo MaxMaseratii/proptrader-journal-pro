@@ -1200,41 +1200,7 @@ export default function Dashboard() {
   
   return (
     <>
-      {/* Inject action buttons into unified header center */}
-      {document.getElementById('dashboard-action-buttons') && createPortal(
-        <div className="flex items-center gap-3">
-          <Link href="/accounts">
-            <Button 
-              size="sm" 
-              className="bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white shadow-md hover:shadow-lg transition-all duration-200"
-            >
-              <Plus className="mr-1 h-3 w-3" />
-              Account
-            </Button>
-          </Link>
-          
-          <Link href="/trades?tab=add">
-            <Button 
-              size="sm" 
-              className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white shadow-md hover:shadow-lg transition-all duration-200"
-            >
-              <Plus className="mr-1 h-3 w-3" />
-              Trade
-            </Button>
-          </Link>
 
-          <Link href="/journal">
-            <Button 
-              size="sm" 
-              className="bg-gradient-to-r from-yellow-600 to-orange-600 hover:from-yellow-700 hover:to-orange-700 text-white shadow-md hover:shadow-lg transition-all duration-200"
-            >
-              <BookOpen className="mr-1 h-3 w-3" />
-              Journal
-            </Button>
-          </Link>
-        </div>,
-        document.getElementById('dashboard-action-buttons')
-      )}
 
       {/* Inject account controls into unified header */}
       {document.getElementById('dashboard-header-controls') && createPortal(
@@ -1301,6 +1267,39 @@ export default function Dashboard() {
             </div>
           )}
           
+          {/* Action buttons right before notification */}
+          <div className="flex items-center gap-2 border-r border-gray-600 pr-3">
+            <Link href="/accounts">
+              <Button 
+                size="sm" 
+                className="bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white shadow-md hover:shadow-lg transition-all duration-200"
+              >
+                <Plus className="mr-1 h-3 w-3" />
+                Account
+              </Button>
+            </Link>
+            
+            <Link href="/trades?tab=add">
+              <Button 
+                size="sm" 
+                className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white shadow-md hover:shadow-lg transition-all duration-200"
+              >
+                <Plus className="mr-1 h-3 w-3" />
+                Trade
+              </Button>
+            </Link>
+
+            <Link href="/journal">
+              <Button 
+                size="sm" 
+                className="bg-gradient-to-r from-yellow-600 to-orange-600 hover:from-yellow-700 hover:to-orange-700 text-white shadow-md hover:shadow-lg transition-all duration-200"
+              >
+                <BookOpen className="mr-1 h-3 w-3" />
+                Journal
+              </Button>
+            </Link>
+          </div>
+
           <NotificationDropdown />
           
           {/* Share Button moved to far right */}
