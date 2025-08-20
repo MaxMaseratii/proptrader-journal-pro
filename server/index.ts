@@ -77,11 +77,6 @@ if (process.env.NODE_ENV === 'production') {
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: false, limit: '50mb' }));
 
-// Setup authentication
-import { setupAuthSession, registerAuthRoutes } from "./authRoutes";
-setupAuthSession(app);
-registerAuthRoutes(app);
-
 app.use((req, res, next) => {
   const start = Date.now();
   const path = req.path;
