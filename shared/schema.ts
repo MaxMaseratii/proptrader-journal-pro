@@ -19,20 +19,22 @@ export const subscriptionPlanEnum = pgEnum("subscription_plan", ["trial", "basic
 
 // User authentication and subscription table
 export const users = pgTable("users", {
-  id: uuid("id").primaryKey().default(sql`gen_random_uuid()`),
-  email: varchar("email", { length: 255 }).unique().notNull(),
-  firstName: varchar("first_name", { length: 100 }),
-  lastName: varchar("last_name", { length: 100 }),
-  passwordHash: varchar("password_hash", { length: 255 }).notNull(),
-  emailVerified: boolean("email_verified").default(false).notNull(),
-  emailVerificationToken: varchar("email_verification_token", { length: 255 }),
-  subscriptionPlan: subscriptionPlanEnum("subscription_plan").default("trial").notNull(),
-  stripeCustomerId: varchar("stripe_customer_id", { length: 255 }),
-  stripeSubscriptionId: varchar("stripe_subscription_id", { length: 255 }),
-  subscriptionStatus: varchar("subscription_status", { length: 50 }).default("active"),
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  email: varchar("email").unique(),
+  firstName: varchar("first_name"),
+  lastName: varchar("last_name"),
+  password: varchar("password"), // Match existing column name
+  profileImageUrl: varchar("profile_image_url"),
+  emailVerified: boolean("email_verified").default(false),
+  verificationToken: varchar("verification_token"),
+  personalHourlyWage: real("personal_hourly_wage"),
+  subscriptionPlan: subscriptionPlanEnum("subscription_plan").default("trial"),
+  stripeCustomerId: varchar("stripe_customer_id"),
+  stripeSubscriptionId: varchar("stripe_subscription_id"),
+  subscriptionStatus: varchar("subscription_status").default("active"),
   trialEndsAt: timestamp("trial_ends_at"),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
 });
 
 export type User = typeof users.$inferSelect;

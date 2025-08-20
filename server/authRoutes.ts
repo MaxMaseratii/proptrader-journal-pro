@@ -17,7 +17,7 @@ declare module 'express-session' {
 
 // Initialize Stripe
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: "2023-10-16",
+  apiVersion: "2025-07-30.basil",
 });
 
 // Session store setup
@@ -26,7 +26,8 @@ const PgSession = connectPgSimple(session);
 export function setupAuthSession(app: Express) {
   const sessionStore = new PgSession({
     conString: process.env.DATABASE_URL,
-    createTableIfMissing: false, // Table already exists
+    createTableIfMissing: true,
+    tableName: 'session', // Use 'session' instead of 'sessions'
   });
 
   app.use(session({
@@ -70,10 +71,10 @@ export function registerAuthRoutes(app: Express) {
       }
 
       // Hash password
-      const passwordHash = await hashPassword(password);
+      const hashedPassword = await hashPassword(password);
       
       // Generate verification token
-      const emailVerificationToken = generateVerificationToken();
+      const verificationToken = generateVerificationToken();
 
       // Set trial end date
       const trialEndsAt = new Date();
@@ -126,8 +127,8 @@ export function registerAuthRoutes(app: Express) {
         email,
         firstName,
         lastName,
-        passwordHash,
-        emailVerificationToken,
+        password: hashedPassword,
+        verificationToken,
         subscriptionPlan,
         stripeCustomerId,
         stripeSubscriptionId,
@@ -135,7 +136,7 @@ export function registerAuthRoutes(app: Express) {
       }).returning();
 
       // Send verification email
-      await sendVerificationEmail(email, emailVerificationToken);
+      await sendVerificationEmail(email, verificationToken);
 
       res.status(201).json({
         message: "Account created successfully. Please check your email to verify your account.",
@@ -174,7 +175,11 @@ export function registerAuthRoutes(app: Express) {
       }
 
       // Verify password
-      const isValidPassword = await verifyPassword(password, user.passwordHash);
+      if (!user.password) {
+        return res.status(401).json({ message: "Invalid email or password" });
+      }
+      
+      const isValidPassword = await verifyPassword(password, user.password);
       if (!isValidPassword) {
         return res.status(401).json({ message: "Invalid email or password" });
       }
@@ -188,7 +193,7 @@ export function registerAuthRoutes(app: Express) {
         }
 
         // Remove sensitive data
-        const { passwordHash, emailVerificationToken, ...userResponse } = user;
+        const { password: _, verificationToken: __, ...userResponse } = user;
         res.json({
           message: "Login successful",
           user: userResponse,
@@ -218,7 +223,7 @@ export function registerAuthRoutes(app: Express) {
 
       // Find user by verification token
       const [user] = await db.select().from(users)
-        .where(eq(users.emailVerificationToken, token as string));
+        .where(eq(users.verificationToken, token as string));
 
       if (!user) {
         return res.status(400).json({ message: "Invalid or expired verification token" });
@@ -232,7 +237,7 @@ export function registerAuthRoutes(app: Express) {
       await db.update(users)
         .set({
           emailVerified: true,
-          emailVerificationToken: null,
+          verificationToken: null,
           updatedAt: new Date(),
         })
         .where(eq(users.id, user.id));
@@ -270,7 +275,7 @@ export function registerAuthRoutes(app: Express) {
       }
 
       // Remove sensitive data
-      const { passwordHash, emailVerificationToken, ...userResponse } = user;
+      const { password: _, verificationToken: __, ...userResponse } = user;
       res.json(userResponse);
 
     } catch (error) {
