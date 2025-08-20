@@ -17,7 +17,7 @@ import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { loadStripe } from "@stripe/stripe-js";
 import { Elements, CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
-import StripeTestCards from "@/components/StripeTestCards";
+
 
 // Load Stripe public key
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY!);
@@ -677,8 +677,18 @@ export default function EnhancedSignup() {
                     )}
                   </div>
 
-                  {/* Test Cards Information */}
-                  <StripeTestCards />
+                  {/* Security Notice */}
+                  <div className="bg-gradient-to-r from-green-900/20 to-blue-900/20 p-4 rounded-lg border border-green-700/30">
+                    <div className="flex items-center gap-3">
+                      <Shield className="h-5 w-5 text-green-400" />
+                      <div>
+                        <p className="text-green-300 font-medium">Secure Payment Processing</p>
+                        <p className="text-green-200/80 text-sm">
+                          Your payment information is processed securely through Stripe's industry-leading encryption.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
                   
                   <PaymentForm 
                     selectedPlan={selectedPlan} 
