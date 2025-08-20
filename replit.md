@@ -51,6 +51,7 @@ Core tables include:
 - **Payout Eligibility System**: Dynamic checks for total days, payout frequency, max net balance, and consistency rules.
 - **Security Grade Implementation**: "Security Grade" display on the welcome page with A+ ratings.
 - **Enhanced Pre-Session Psychology Assessment**: Four professional trading assessment sliders with scoring and wisdom guidance.
+- **Subscription System**: Three-tier pricing (Starter $9.99, Professional $14.99, Elite $24.99) with monthly/annual billing options. Annual plans offer 5% discount with interactive billing period toggles.
 
 ## External Dependencies
 - **@neondatabase/serverless**: PostgreSQL connection for serverless environments.

@@ -43,60 +43,69 @@ const signupSchema = z.object({
 
 type SignupForm = z.infer<typeof signupSchema>;
 
-// Plan options
+// Plan options with updated pricing
 const plans = [
   {
     id: "starter",
     name: "Starter",
-    price: 0,
-    period: "7-day trial",
-    description: "Perfect for beginners",
+    monthlyPrice: 9.99,
+    annualPrice: 113.89,
+    period: "/month",
+    description: "Perfect for new prop traders",
     features: [
-      "Basic trade tracking",
-      "Simple analytics",
-      "CSV import",
-      "7-day free trial",
-      "Email support"
+      "1 Trading Account",
+      "Basic Analytics (7-day history)",
+      "Daily Trading Plans",
+      "Mental Fitness Checks", 
+      "Basic Trading Journal",
+      "30-day data retention",
+      "Email Support"
     ],
     gradient: "from-gray-500 to-gray-600",
     popular: false,
-    trialDays: 7
+    trialDays: 3
   },
   {
     id: "professional",
     name: "Professional",
-    price: 29.99,
+    monthlyPrice: 14.99,
+    annualPrice: 170.89,
     period: "/month",
-    description: "For serious traders",
+    description: "Most popular for active traders",
     features: [
-      "Advanced analytics",
-      "Risk management tools",
-      "Multi-account support",
-      "Advanced reporting",
-      "Priority support",
-      "Custom strategies"
+      "5 Trading Accounts",
+      "Advanced Analytics & Reports",
+      "AI Assistant (Marthy)",
+      "Target Projections System",
+      "Prop Spending Tracking",
+      "Enhanced Trading Journal",
+      "90-day data retention",
+      "Priority Support"
     ],
     gradient: "from-blue-500 to-blue-600",
     popular: true,
-    trialDays: 14
+    trialDays: 3
   },
   {
     id: "elite",
     name: "Elite",
-    price: 49.99,
+    monthlyPrice: 24.99,
+    annualPrice: 284.89,
     period: "/month",
     description: "For professional traders",
     features: [
-      "Everything in Professional",
-      "AI-powered insights",
-      "Advanced backtesting",
-      "White-label options",
-      "1-on-1 coaching session",
-      "Custom integrations"
+      "Unlimited Trading Accounts",
+      "Professional Dashboard",
+      "Monte Carlo Simulations",
+      "Institutional Charts & Analytics",
+      "AI-Powered Mental Check",
+      "Professional Flow State Programs",
+      "Multi-Firm ROI Analysis",
+      "Tax-Ready Payout Reports"
     ],
     gradient: "from-yellow-500 to-orange-500",
     popular: false,
-    trialDays: 14
+    trialDays: 3
   }
 ];
 
@@ -245,6 +254,7 @@ const PaymentForm = ({ selectedPlan, onSuccess }: { selectedPlan: any, onSuccess
 export default function EnhancedSignup() {
   const [currentStep, setCurrentStep] = useState(1);
   const [selectedPlan, setSelectedPlan] = useState(plans[1]); // Default to Professional
+  const [billingPeriod, setBillingPeriod] = useState<'monthly' | 'annual'>('monthly');
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [captchaToken, setCaptchaToken] = useState("");
@@ -344,6 +354,37 @@ export default function EnhancedSignup() {
                     <CardDescription className="text-gray-400">
                       Select the plan that best fits your trading goals
                     </CardDescription>
+                    
+                    {/* Billing Period Toggle */}
+                    <div className="flex justify-center mt-6 mb-6">
+                      <div className="bg-gray-800/60 backdrop-blur-sm p-2 rounded-lg border border-gray-600">
+                        <div className="flex">
+                          <button
+                            onClick={() => setBillingPeriod('monthly')}
+                            className={`px-6 py-2 rounded-md font-semibold transition-all duration-300 ${
+                              billingPeriod === 'monthly'
+                                ? 'bg-gradient-to-r from-yellow-400 to-amber-500 text-black shadow-lg'
+                                : 'text-gray-300 hover:text-white'
+                            }`}
+                          >
+                            Monthly
+                          </button>
+                          <button
+                            onClick={() => setBillingPeriod('annual')}
+                            className={`px-6 py-2 rounded-md font-semibold transition-all duration-300 relative ${
+                              billingPeriod === 'annual'
+                                ? 'bg-gradient-to-r from-yellow-400 to-amber-500 text-black shadow-lg'
+                                : 'text-gray-300 hover:text-white'
+                            }`}
+                          >
+                            Annual
+                            <span className="absolute -top-2 -right-2 bg-green-500 text-white text-xs font-bold px-2 py-1 rounded-full">
+                              Save 5%
+                            </span>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -372,12 +413,24 @@ export default function EnhancedSignup() {
                           <div className="text-center mb-6">
                             <div className="flex items-baseline justify-center">
                               <span className="text-3xl font-bold text-white">
-                                ${plan.price}
+                                ${billingPeriod === 'monthly' ? plan.monthlyPrice.toFixed(2) : (plan.annualPrice / 12).toFixed(2)}
                               </span>
-                              <span className="text-gray-400 ml-1">{plan.period}</span>
+                              <span className="text-gray-400 ml-1">
+                                {billingPeriod === 'monthly' ? '/month' : '/month (billed annually)'}
+                              </span>
                             </div>
+                            {billingPeriod === 'annual' && (
+                              <div className="space-y-1">
+                                <p className="text-green-400 text-sm">
+                                  Save ${((plan.monthlyPrice * 12) - plan.annualPrice).toFixed(2)} per year!
+                                </p>
+                                <p className="text-xs text-gray-400">
+                                  Billed ${plan.annualPrice} annually
+                                </p>
+                              </div>
+                            )}
                             {plan.trialDays > 0 && (
-                              <p className="text-green-400 text-sm mt-1">
+                              <p className="text-green-400 text-sm mt-2">
                                 {plan.trialDays}-day free trial
                               </p>
                             )}

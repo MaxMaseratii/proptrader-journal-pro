@@ -173,11 +173,17 @@ export default function Welcome() {
     }
   ];
 
+  const [billingPeriod, setBillingPeriod] = useState<'monthly' | 'annual'>('monthly');
+
   const pricingPlans = [
     {
       name: "Starter",
-      price: "$9",
-      period: "month",
+      monthlyPrice: "$9.99",
+      annualPrice: "$9.49",
+      monthlyTotal: "$9.99",
+      annualTotal: "$113.89",
+      savings: "$5.99",
+      period: billingPeriod === 'monthly' ? "month" : "month (billed annually)",
       trialDays: 3,
       description: "Perfect for new prop traders",
       features: [
@@ -193,11 +199,13 @@ export default function Welcome() {
     },
     {
       name: "Professional", 
-      price: "$14.99",
-      period: "month",
+      monthlyPrice: "$14.99",
+      annualPrice: "$14.24",
+      monthlyTotal: "$14.99",
+      annualTotal: "$170.89",
+      savings: "$8.99",
+      period: billingPeriod === 'monthly' ? "month" : "month (billed annually)",
       trialDays: 3,
-      originalPrice: "$39",
-      savings: "Save $288/year",
       description: "Most popular for active traders",
       features: [
         "5 Trading Accounts",
@@ -214,11 +222,13 @@ export default function Welcome() {
     },
     {
       name: "Elite",
-      price: "$24.99",
-      period: "month",
+      monthlyPrice: "$24.99",
+      annualPrice: "$23.74",
+      monthlyTotal: "$24.99",
+      annualTotal: "$284.89",
+      savings: "$14.99",
+      period: billingPeriod === 'monthly' ? "month" : "month (billed annually)",
       trialDays: 3,
-      originalPrice: "$99",
-      savings: "Save $900/year",
       description: "For Professional Traders",
       features: [
         "Unlimited Trading Accounts",
@@ -406,6 +416,37 @@ export default function Welcome() {
             <p className="text-xl text-gray-300 max-w-3xl mx-auto">
               💪 All plans include 3-day free trial. Cancel anytime. Built for prop traders by prop traders.
             </p>
+            
+            {/* Billing Period Toggle */}
+            <div className="flex justify-center mt-8 mb-8">
+              <div className="bg-gray-800/60 backdrop-blur-sm p-2 rounded-lg border border-gray-600">
+                <div className="flex">
+                  <button
+                    onClick={() => setBillingPeriod('monthly')}
+                    className={`px-6 py-2 rounded-md font-semibold transition-all duration-300 ${
+                      billingPeriod === 'monthly'
+                        ? 'bg-gradient-to-r from-yellow-400 to-amber-500 text-black shadow-lg'
+                        : 'text-gray-300 hover:text-white'
+                    }`}
+                  >
+                    Monthly
+                  </button>
+                  <button
+                    onClick={() => setBillingPeriod('annual')}
+                    className={`px-6 py-2 rounded-md font-semibold transition-all duration-300 relative ${
+                      billingPeriod === 'annual'
+                        ? 'bg-gradient-to-r from-yellow-400 to-amber-500 text-black shadow-lg'
+                        : 'text-gray-300 hover:text-white'
+                    }`}
+                  >
+                    Annual
+                    <span className="absolute -top-2 -right-2 bg-green-500 text-white text-xs font-bold px-2 py-1 rounded-full">
+                      Save 5%
+                    </span>
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -429,15 +470,19 @@ export default function Welcome() {
                   <CardTitle className="text-2xl text-white">{plan.name}</CardTitle>
                   <CardDescription className="text-gray-400">{plan.description}</CardDescription>
                   <div className="flex items-baseline mt-6">
-                    <span className="text-5xl font-bold text-white">{plan.price}</span>
+                    <span className="text-5xl font-bold text-white">
+                      {billingPeriod === 'monthly' ? plan.monthlyPrice : plan.annualPrice}
+                    </span>
                     <span className="text-gray-400 ml-2">/{plan.period}</span>
-                    {plan.originalPrice && (
-                      <span className="ml-3 text-lg text-gray-500 line-through">{plan.originalPrice}</span>
-                    )}
                   </div>
-                  {plan.savings && (
-                    <div className="mt-2">
-                      <span className="text-sm text-green-500 font-semibold">{plan.savings}</span>
+                  {billingPeriod === 'annual' && (
+                    <div className="mt-2 space-y-1">
+                      <div className="text-sm text-green-500 font-semibold">
+                        Save {plan.savings} per year!
+                      </div>
+                      <div className="text-xs text-gray-400">
+                        Billed {plan.annualTotal} annually
+                      </div>
                     </div>
                   )}
                   {plan.trialDays && (

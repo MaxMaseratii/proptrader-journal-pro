@@ -2,7 +2,9 @@
 export interface SubscriptionPlan {
   id: string;
   name: string;
-  price: number;
+  monthlyPrice: number;
+  annualPrice: number;
+  annualDiscount: number;
   description: string;
   features: {
     accounts: {
@@ -48,7 +50,9 @@ export const SUBSCRIPTION_PLANS: Record<string, SubscriptionPlan> = {
   starter: {
     id: 'starter',
     name: 'Starter Plan',
-    price: 9.00,
+    monthlyPrice: 9.99,
+    annualPrice: 113.89, // (9.99 * 12) * 0.95 = 5% discount
+    annualDiscount: 5,
     description: 'Perfect for new prop traders',
     features: {
       accounts: {
@@ -92,7 +96,9 @@ export const SUBSCRIPTION_PLANS: Record<string, SubscriptionPlan> = {
   professional: {
     id: 'professional',
     name: 'Professional Plan',
-    price: 14.99,
+    monthlyPrice: 14.99,
+    annualPrice: 170.89, // (14.99 * 12) * 0.95 = 5% discount
+    annualDiscount: 5,
     description: 'Most popular for active traders',
     features: {
       accounts: {
@@ -136,7 +142,9 @@ export const SUBSCRIPTION_PLANS: Record<string, SubscriptionPlan> = {
   elite: {
     id: 'elite',
     name: 'Elite Plan',
-    price: 24.99,
+    monthlyPrice: 24.99,
+    annualPrice: 284.89, // (24.99 * 12) * 0.95 = 5% discount  
+    annualDiscount: 5,
     description: 'For Professional Traders',
     features: {
       accounts: {
@@ -178,6 +186,38 @@ export const SUBSCRIPTION_PLANS: Record<string, SubscriptionPlan> = {
     }
   }
 };
+
+// Utility functions for pricing calculations
+export function calculateAnnualSavings(plan: SubscriptionPlan): number {
+  const monthlyTotal = plan.monthlyPrice * 12;
+  return monthlyTotal - plan.annualPrice;
+}
+
+export function formatPrice(price: number): string {
+  return `$${price.toFixed(2)}`;
+}
+
+export function getPlanPricing(plan: SubscriptionPlan, isAnnual: boolean = false) {
+  if (isAnnual) {
+    const monthlyEquivalent = plan.annualPrice / 12;
+    const savings = calculateAnnualSavings(plan);
+    return {
+      price: plan.annualPrice,
+      displayPrice: formatPrice(monthlyEquivalent),
+      period: "/month (billed annually)",
+      savings: formatPrice(savings),
+      totalPrice: formatPrice(plan.annualPrice)
+    };
+  } else {
+    return {
+      price: plan.monthlyPrice,
+      displayPrice: formatPrice(plan.monthlyPrice),
+      period: "/month",
+      savings: null,
+      totalPrice: formatPrice(plan.monthlyPrice)
+    };
+  }
+}
 
 export const getPlanLimits = (planId: string) => {
   return SUBSCRIPTION_PLANS[planId]?.features || SUBSCRIPTION_PLANS.starter.features;
