@@ -21,6 +21,7 @@ import Profile from "@/pages/profile";
 import Billing from "@/pages/billing";
 import Welcome from "@/pages/welcome";
 import AdminDashboard from "@/pages/admin";
+import AdminSetup from "@/pages/admin-setup";
 import AuthPage from "@/pages/auth-page";
 import CsvImport from "@/pages/csv-import";
 import Spending from "@/pages/spending";
@@ -100,6 +101,7 @@ function Router() {
 
         <Route path="/welcome" component={Welcome} />
         <Route path="/admin" component={AdminDashboard} />
+        <Route path="/admin-setup" component={AdminSetup} />
         <Route path="/privacy-policy" component={PrivacyPolicy} />
         <Route path="/terms" component={TermsOfService} />
         <Route path="/support" component={Support} />

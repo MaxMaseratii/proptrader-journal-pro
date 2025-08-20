@@ -4,10 +4,12 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { Plus, Edit, Trash2, Tag, Users, DollarSign, Settings } from "lucide-react";
+import { Plus, Edit, Trash2, Tag, Users, DollarSign, Settings, ShieldAlert, Lock } from "lucide-react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
+import { useAdminAccess } from "@/hooks/useAdminAccess";
+import { Link } from "wouter";
 
 interface PromoCode {
   id: string;
@@ -24,6 +26,7 @@ interface PromoCode {
 export default function AdminDashboard() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const { hasAdminAccess, isLoading, isAuthenticated, user } = useAdminAccess();
   const [newPromoCode, setNewPromoCode] = useState({
     code: '',
     discount: 0,
@@ -31,6 +34,66 @@ export default function AdminDashboard() {
     maxUsage: undefined as number | undefined,
     expiresAt: undefined as string | undefined
   });
+
+  // Show loading state while checking authentication
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900 flex items-center justify-center">
+        <div className="text-center space-y-4">
+          <div className="w-16 h-16 border-4 border-yellow-500 border-t-transparent rounded-full animate-spin mx-auto"></div>
+          <p className="text-gray-400">Verifying access permissions...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show access denied if not authenticated or not admin
+  if (!isAuthenticated || !hasAdminAccess) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900 flex items-center justify-center p-6">
+        <Card className="bg-gray-800 border-red-600 max-w-md w-full">
+          <CardContent className="p-8 text-center space-y-6">
+            <div className="mx-auto w-16 h-16 bg-red-500/20 rounded-full flex items-center justify-center">
+              <ShieldAlert className="h-8 w-8 text-red-500" />
+            </div>
+            
+            <div>
+              <h1 className="text-2xl font-bold text-white mb-2">Access Denied</h1>
+              <p className="text-gray-400 mb-4">
+                You don't have permission to access the admin dashboard.
+              </p>
+              {!isAuthenticated ? (
+                <p className="text-gray-500 text-sm">
+                  Please log in to continue.
+                </p>
+              ) : (
+                <p className="text-gray-500 text-sm">
+                  Administrator privileges are required to access this page.
+                </p>
+              )}
+            </div>
+            
+            <div className="space-y-3">
+              {!isAuthenticated ? (
+                <Link to="/auth">
+                  <Button className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700">
+                    <Lock className="h-4 w-4 mr-2" />
+                    Login to Continue
+                  </Button>
+                </Link>
+              ) : (
+                <Link to="/">
+                  <Button variant="outline" className="w-full border-gray-600 text-gray-300">
+                    Return to Dashboard
+                  </Button>
+                </Link>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   // Mock data for now - in real app this would come from API
   const mockPromoCodes: PromoCode[] = [

@@ -237,6 +237,32 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Admin route to promote user to admin (temporary for development)
+  app.post('/api/admin/promote-user', requireAuth, async (req: any, res) => {
+    try {
+      const { email } = req.body;
+      
+      if (!email) {
+        return res.status(400).json({ message: "Email is required" });
+      }
+
+      // Update user role to admin
+      const updatedUser = await storage.updateUserRole(email, 'admin');
+      
+      if (!updatedUser) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      
+      res.json({ 
+        message: `User ${email} has been promoted to admin`,
+        user: updatedUser 
+      });
+    } catch (error) {
+      console.error("Error promoting user to admin:", error);
+      res.status(500).json({ message: "Failed to promote user" });
+    }
+  });
+
   app.post('/api/users/update-wage', requireAuth, async (req: any, res) => {
     try {
       const userId = req.user.id;

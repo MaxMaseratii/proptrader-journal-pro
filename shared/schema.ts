@@ -423,6 +423,7 @@ export const users = pgTable("users", {
   resetTokenExpiry: timestamp("reset_token_expiry"),
   planId: varchar("plan_id").default('starter'), // Enhanced signup plan selection
   personalHourlyWage: real("personal_hourly_wage").default(25.0), // Desired hourly wage for trading profitability calculations
+  role: varchar("role").default('user'), // 'user', 'admin', 'moderator'
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
