@@ -24,10 +24,17 @@ import {
 } from "@shared/schema";
 import { z } from "zod";
 import { setupAuth } from "./customAuth";
+import { SUBSCRIPTION_PLANS, getPlanPricing } from "@shared/subscriptionPlans";
+import Stripe from "stripe";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Setup authentication
   setupAuth(app);
+
+  // Initialize Stripe
+  const stripe = process.env.STRIPE_SECRET_KEY ? new Stripe(process.env.STRIPE_SECRET_KEY, {
+    apiVersion: '2025-07-30.basil',
+  }) : null;
 
   // Middleware for protected routes
   const requireAuth = (req: any, res: any, next: any) => {
@@ -98,32 +105,39 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Payment intent creation for Stripe
   app.post('/api/create-payment-intent', async (req, res) => {
     try {
-      const { amount, planId } = req.body;
+      const { planId, billingPeriod = 'monthly' } = req.body;
       
-      if (!process.env.STRIPE_SECRET_KEY) {
+      if (!stripe) {
         return res.status(500).json({ message: "Stripe not configured" });
       }
+
+      if (!planId || !SUBSCRIPTION_PLANS[planId]) {
+        return res.status(400).json({ message: "Invalid plan ID" });
+      }
+
+      const plan = SUBSCRIPTION_PLANS[planId];
+      const pricing = getPlanPricing(plan, billingPeriod === 'annual');
       
-      const Stripe = require('stripe');
-      const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
-        apiVersion: '2023-10-16',
-      });
-      
-      // Create actual Stripe payment intent
+      // Create Stripe payment intent
       const paymentIntent = await stripe.paymentIntents.create({
-        amount: Math.round(amount * 100), // Convert to cents
+        amount: Math.round(pricing.price * 100), // Convert to cents
         currency: 'usd',
         automatic_payment_methods: {
           enabled: true,
         },
         metadata: {
-          planId: planId
+          planId: planId,
+          billingPeriod: billingPeriod,
+          planName: plan.name
         }
       });
       
       res.json({ 
         clientSecret: paymentIntent.client_secret,
-        planId 
+        planId,
+        amount: pricing.price,
+        displayPrice: pricing.displayPrice,
+        period: pricing.period
       });
     } catch (error: any) {
       console.error("Payment intent error:", error);

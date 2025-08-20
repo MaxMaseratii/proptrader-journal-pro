@@ -148,11 +148,13 @@ const SimpleCaptcha = ({ onVerify }: { onVerify: (token: string) => void }) => {
 };
 
 // Payment form component
-const PaymentForm = ({ selectedPlan, onSuccess }: { selectedPlan: any, onSuccess: () => void }) => {
+const PaymentForm = ({ selectedPlan, billingPeriod, onSuccess }: { selectedPlan: any, billingPeriod: 'monthly' | 'annual', onSuccess: () => void }) => {
   const stripe = useStripe();
   const elements = useElements();
   const [processing, setProcessing] = useState(false);
   const { toast } = useToast();
+
+  const currentPrice = billingPeriod === 'monthly' ? selectedPlan.monthlyPrice : selectedPlan.annualPrice;
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -162,7 +164,7 @@ const PaymentForm = ({ selectedPlan, onSuccess }: { selectedPlan: any, onSuccess
     setProcessing(true);
 
     // For trial plans, just process without payment
-    if (selectedPlan.price === 0) {
+    if (currentPrice === 0) {
       toast({
         title: "Trial Started",
         description: `Your ${selectedPlan.trialDays}-day trial has begun!`,
@@ -178,8 +180,8 @@ const PaymentForm = ({ selectedPlan, onSuccess }: { selectedPlan: any, onSuccess
     try {
       // Create payment intent
       const response = await apiRequest("/api/create-payment-intent", "POST", {
-        amount: selectedPlan.price,
-        planId: selectedPlan.id
+        planId: selectedPlan.id,
+        billingPeriod: billingPeriod
       });
       const { clientSecret } = await response.json();
 
@@ -244,7 +246,8 @@ const PaymentForm = ({ selectedPlan, onSuccess }: { selectedPlan: any, onSuccess
             Processing...
           </div>
         ) : (
-          selectedPlan.price === 0 ? `Start ${selectedPlan.trialDays}-Day Trial` : `Pay $${selectedPlan.price}/month`
+          currentPrice === 0 ? `Start ${selectedPlan.trialDays}-Day Trial` : 
+          `Pay $${currentPrice.toFixed(2)}${billingPeriod === 'monthly' ? '/month' : '/year'}`
         )}
       </Button>
     </form>
@@ -658,9 +661,15 @@ export default function EnhancedSignup() {
                     <div className="flex justify-between items-center">
                       <span className="text-gray-300">{selectedPlan.name} Plan</span>
                       <span className="text-white font-semibold">
-                        ${selectedPlan.price}{selectedPlan.period}
+                        ${billingPeriod === 'monthly' ? selectedPlan.monthlyPrice.toFixed(2) : (selectedPlan.annualPrice / 12).toFixed(2)}
+                        {billingPeriod === 'monthly' ? '/month' : '/month (billed annually)'}
                       </span>
                     </div>
+                    {billingPeriod === 'annual' && (
+                      <p className="text-green-400 text-sm mt-2">
+                        Save ${((selectedPlan.monthlyPrice * 12) - selectedPlan.annualPrice).toFixed(2)} per year!
+                      </p>
+                    )}
                     {selectedPlan.trialDays > 0 && (
                       <p className="text-green-400 text-sm mt-2">
                         Includes {selectedPlan.trialDays}-day free trial
@@ -673,6 +682,7 @@ export default function EnhancedSignup() {
                   
                   <PaymentForm 
                     selectedPlan={selectedPlan} 
+                    billingPeriod={billingPeriod}
                     onSuccess={() => form.handleSubmit(handleSubmit)()}
                   />
 
