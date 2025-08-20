@@ -148,7 +148,6 @@ export function setupAuth(app: Express) {
       const hashedPassword = await hashPassword(password);
       
       const user = await storage.createUser({
-        id: crypto.randomUUID(),
         firstName,
         lastName,
         email,
@@ -193,7 +192,7 @@ export function setupAuth(app: Express) {
   app.get("/api/auth/verify-email", async (req, res) => {
     try {
       const { token } = req.query;
-      const user = await storage.verifyEmail(token as string);
+      const user = await storage.verifyUserEmail(token as string);
       
       if (!user) {
         return res.status(400).send("Invalid or expired verification token");
@@ -218,10 +217,17 @@ export function setupAuth(app: Express) {
     });
   });
 
-  // Get current user
+  // Get current user (also register this route for /api/user for compatibility)
   app.get("/api/auth/user", (req, res) => {
     if (!req.isAuthenticated()) {
-      return res.status(401).json({ message: "Not authenticated" });
+      return res.status(401).json({ message: "Authentication required" });
+    }
+    res.json(req.user);
+  });
+  
+  app.get("/api/user", (req, res) => {
+    if (!req.isAuthenticated()) {
+      return res.status(401).json({ message: "Authentication required" });
     }
     res.json(req.user);
   });

@@ -131,55 +131,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Login endpoint
-  app.post('/api/auth/login', async (req, res) => {
-    try {
-      const { email, password } = req.body;
-      
-      const user = await storage.getUserByEmail(email);
-      if (!user || user.password !== password) {
-        return res.status(401).json({ message: "Invalid credentials" });
-      }
-      
-      if (!user.emailVerified) {
-        return res.status(401).json({ message: "Email not verified" });
-      }
-      
-      // Store user in session
-      (req.session as any).user = { 
-        id: user.id, 
-        email: user.email,
-        firstName: user.firstName,
-        lastName: user.lastName 
-      };
-      
-      res.json({ message: "Login successful", user: { id: user.id, email: user.email } });
-    } catch (error: any) {
-      console.error("Login error:", error);
-      res.status(500).json({ message: "Login failed" });
-    }
-  });
-
-  // Get current user
-  app.get('/api/user', (req, res) => {
-    const user = (req.session as any)?.user;
-    if (!user) {
-      return res.status(401).json({ message: "Authentication required" });
-    }
-    res.json(user);
-  });
-
-  // Logout endpoint
-  app.post('/api/auth/logout', (req, res) => {
-    req.session?.destroy((err) => {
-      if (err) {
-        console.error("Logout error:", err);
-        return res.status(500).json({ message: "Logout failed" });
-      }
-      res.json({ message: "Logout successful" });
-    });
-  });
-
   // User route for current user
   app.get('/api/user', requireAuth, async (req: any, res) => {
     try {

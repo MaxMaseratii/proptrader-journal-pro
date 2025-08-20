@@ -207,10 +207,11 @@ export class DatabaseStorage implements IStorage {
     return user || undefined;
   }
 
-  async upsertUser(userData: InsertUser): Promise<User> {
+  async upsertUser(userData: InsertUser & { id?: string }): Promise<User> {
+    const userId = userData.id || crypto.randomUUID();
     const [user] = await db
       .insert(users)
-      .values([userData])
+      .values({ ...userData, id: userId })
       .onConflictDoUpdate({
         target: users.id,
         set: {
