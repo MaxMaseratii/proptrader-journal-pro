@@ -399,8 +399,13 @@ export default function CompleteTradingDashboard() {
     ];
 
     return (
-      <div className="fixed inset-0 bg-black/90 flex items-center justify-center z-50 backdrop-blur-sm">
-        <Card className="max-w-2xl w-full mx-4 bg-gradient-to-br from-red-950 via-red-900 to-black border-2 border-red-500/50 shadow-2xl">
+      <div 
+        className="fixed inset-0 bg-black/95 flex items-center justify-center backdrop-blur-sm"
+        style={{ zIndex: 9999 }}
+      >
+        <Card className="max-w-2xl w-full mx-4 bg-gradient-to-br from-red-950 via-red-900 to-black border-2 border-red-500 shadow-2xl"
+              style={{ zIndex: 10000 }}
+        >
           <CardHeader className="bg-gradient-to-r from-red-900/50 to-red-800/50">
             <CardTitle className="text-gradient-rainbow flex items-center gap-2 text-xl">
               <AlertTriangle className="w-6 h-6 text-red-500 animate-pulse" />
@@ -1647,10 +1652,14 @@ export default function CompleteTradingDashboard() {
 
         {/* Emergency Protocol Modal */}
         {emergencyProtocol && (
-          <>
+          <div 
+            className="fixed inset-0 bg-red-900/95 flex items-center justify-center"
+            style={{ zIndex: 99999, position: 'fixed', top: 0, left: 0, right: 0, bottom: 0 }}
+            onClick={(e) => e.stopPropagation()}
+          >
             {console.log('Emergency protocol modal should be rendering now!')}
             {renderEmergencyProtocol()}
-          </>
+          </div>
         )}
       </div>
     );
