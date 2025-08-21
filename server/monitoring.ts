@@ -1,4 +1,5 @@
-import { pool } from './db';
+import { db } from './db';
+import { sql } from 'drizzle-orm';
 import redis from './redis';
 import { csvProcessingQueue, analyticsQueue } from './backgroundJobs';
 
@@ -49,7 +50,7 @@ export class PerformanceMonitor {
   // Database connection monitoring
   async getDbMetrics() {
     try {
-      const result = await pool.query(`
+      const result = await db.execute(sql`
         SELECT 
           count(*) as total_connections,
           count(*) filter (where state = 'active') as active_connections,
@@ -59,12 +60,12 @@ export class PerformanceMonitor {
       `);
       
       return {
-        totalConnections: parseInt(result.rows[0]?.total_connections || '0'),
-        activeConnections: parseInt(result.rows[0]?.active_connections || '0'),
-        idleConnections: parseInt(result.rows[0]?.idle_connections || '0'),
-        poolSize: pool.totalCount,
-        poolAvailable: pool.idleCount,
-        poolWaiting: pool.waitingCount,
+        totalConnections: parseInt(String(result.rows[0]?.total_connections || '0')),
+        activeConnections: parseInt(String(result.rows[0]?.active_connections || '0')),
+        idleConnections: parseInt(String(result.rows[0]?.idle_connections || '0')),
+        poolSize: 0, // Note: pool metrics not available with Drizzle
+        poolAvailable: 0,
+        poolWaiting: 0,
       };
     } catch (error) {
       console.error('Error fetching database metrics:', error);
