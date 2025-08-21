@@ -192,8 +192,8 @@ export default function CompleteTradingDashboard() {
   const filteredStrategies = useMemo(() => {
     return strategies?.filter(strategy => {
       const matchesSearch = strategy.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                           strategy.description.toLowerCase().includes(searchTerm.toLowerCase());
-      const matchesFilter = filterStatus === 'all' || strategy.status === filterStatus;
+                           (strategy.description && strategy.description.toLowerCase().includes(searchTerm.toLowerCase()));
+      const matchesFilter = filterStatus === 'all' || strategy.isActive === (filterStatus === 'active');
       return matchesSearch && matchesFilter;
     }) || [];
   }, [strategies, searchTerm, filterStatus]);
@@ -347,7 +347,7 @@ export default function CompleteTradingDashboard() {
     saveDailyPlanMutation.mutate(planData);
   };
 
-  const getStrategyMetrics = (strategy) => {
+  const getStrategyMetrics = (strategy: any) => {
     // Handle strategies without performance data (newly created strategies)
     const hasPerformance = strategy.performance && typeof strategy.performance === 'object';
     
@@ -357,18 +357,16 @@ export default function CompleteTradingDashboard() {
     
     const profitFactor = hasPerformance && strategy.performance.trades > 0 ? 
       (strategy.performance.totalPnl / (strategy.performance.trades * 100)).toFixed(2) : 
-      ((strategy.expectedWinRate / 100) * strategy.riskRewardRatio).toFixed(2);
+      ((strategy.expectedWinRate || 50) / 100) * (strategy.riskRewardRatio || 2);
 
     return { winRate, profitFactor };
   };
 
-  const getStatusColor = (status) => {
-    switch (status) {
-      case 'active': return 'bg-green-900/30 text-green-500 border-green-400/30';
-      case 'testing': return 'bg-yellow-900/30 text-yellow-400 border-yellow-400/30';
-      case 'paused': return 'bg-gray-900/30 text-gray-400 border-gray-400/30';
-      default: return 'bg-blue-900/30 text-blue-400 border-blue-400/30';
-    }
+  const getStatusColor = (status: boolean | string) => {
+    // Handle boolean isActive field or string status
+    const activeStatus = typeof status === 'boolean' ? status : status === 'active';
+    if (activeStatus) return 'bg-green-900/30 text-green-500 border-green-400/30';
+    return 'bg-gray-900/30 text-gray-400 border-gray-400/30';
   };
 
   // Psychology functions
@@ -465,7 +463,7 @@ export default function CompleteTradingDashboard() {
     const maxScore = 40;
     const percentage = (totalScore / maxScore) * 100;
 
-    const getScoreLabel = (score) => {
+    const getScoreLabel = (score: number) => {
       if (score >= 35) return { label: "Excellent", color: "text-emerald-400" };
       if (score >= 30) return { label: "Good", color: "text-blue-400" };
       if (score >= 25) return { label: "Fair", color: "text-yellow-400" };
