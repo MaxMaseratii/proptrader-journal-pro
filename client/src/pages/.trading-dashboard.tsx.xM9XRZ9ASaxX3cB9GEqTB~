@@ -1651,6 +1651,50 @@ export default function CompleteTradingDashboard() {
         </div>
 
       </div>
+      
+      {/* Emergency Protocol Modal - Outside main container */}
+      {emergencyProtocol && (
+        <div 
+          className="fixed inset-0 bg-black/90 flex items-center justify-center"
+          style={{ zIndex: 99999, position: 'fixed', top: 0, left: 0, right: 0, bottom: 0 }}
+          onClick={(e) => e.stopPropagation()}
+        >
+          {console.log('Emergency protocol modal should be rendering now!')}
+          <div className="max-w-2xl w-full mx-4 bg-red-950 border-2 border-red-500 rounded-lg p-6 text-white">
+            <div className="flex items-center gap-2 mb-4">
+              <AlertTriangle className="w-6 h-6 text-red-500 animate-pulse" />
+              <h2 className="text-2xl font-bold text-white">EMERGENCY PROTOCOL ACTIVATED</h2>
+            </div>
+            <div className="mb-6">
+              <div className="text-center p-8 bg-red-900/50 rounded-lg mb-4">
+                <Pause className="w-12 h-12 text-red-500 mx-auto mb-4" />
+                <h3 className="text-xl font-bold mb-2">STEP 1: PAUSE - Stop All Clicking</h3>
+                <p className="text-red-200 mb-4">Immediately stop any trading actions. Remove hands from mouse/keyboard.</p>
+                <div className="p-4 bg-red-800/50 rounded">
+                  <p className="font-semibold">Take your hands off all trading controls right now.</p>
+                </div>
+              </div>
+            </div>
+            <div className="flex justify-center gap-4">
+              <Button
+                onClick={() => setEmergencyProtocol(false)}
+                className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2"
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={() => {
+                  setEmergencyStep(2);
+                }}
+                className="bg-green-600 hover:bg-green-700 text-white px-6 py-2"
+              >
+                I Have Paused - Next Step
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+      </div>
     );
   };
 
@@ -2488,47 +2532,6 @@ export default function CompleteTradingDashboard() {
         }
       `}</style>
 
-      {/* Emergency Protocol Modal */}
-      {emergencyProtocol && (
-        <div 
-          className="fixed inset-0 bg-black/90 flex items-center justify-center"
-          style={{ zIndex: 99999, position: 'fixed', top: 0, left: 0, right: 0, bottom: 0 }}
-          onClick={(e) => e.stopPropagation()}
-        >
-          <div className="max-w-2xl w-full mx-4 bg-red-950 border-2 border-red-500 rounded-lg p-6 text-white">
-            <div className="flex items-center gap-2 mb-4">
-              <AlertTriangle className="w-6 h-6 text-red-500 animate-pulse" />
-              <h2 className="text-2xl font-bold text-white">EMERGENCY PROTOCOL ACTIVATED</h2>
-            </div>
-            <div className="mb-6">
-              <div className="text-center p-8 bg-red-900/50 rounded-lg mb-4">
-                <Pause className="w-12 h-12 text-red-500 mx-auto mb-4" />
-                <h3 className="text-xl font-bold mb-2">STEP 1: PAUSE - Stop All Clicking</h3>
-                <p className="text-red-200 mb-4">Immediately stop any trading actions. Remove hands from mouse/keyboard.</p>
-                <div className="p-4 bg-red-800/50 rounded">
-                  <p className="font-semibold">Take your hands off all trading controls right now.</p>
-                </div>
-              </div>
-            </div>
-            <div className="flex justify-center gap-4">
-              <Button
-                onClick={() => setEmergencyProtocol(false)}
-                className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2"
-              >
-                Cancel
-              </Button>
-              <Button
-                onClick={() => {
-                  setEmergencyStep(2);
-                }}
-                className="bg-green-600 hover:bg-green-700 text-white px-6 py-2"
-              >
-                I Have Paused - Next Step
-              </Button>
-            </div>
-          </div>
-        </div>
-      )}
 
     </div>
   );
