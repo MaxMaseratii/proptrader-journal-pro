@@ -1208,13 +1208,14 @@ export default function CompleteTradingDashboard() {
             <Button
               onClick={() => {
                 console.log('Emergency protocol button clicked!');
+                console.log('Current emergencyProtocol state before:', emergencyProtocol);
                 setEmergencyProtocol(true);
                 console.log('Emergency protocol state should be true now');
               }}
               className="bg-red-600 hover:bg-red-700 text-white px-8 py-3 text-lg animate-pulse"
             >
               <AlertTriangle className="w-6 h-6 mr-2" />
-              ACTIVATE EMERGENCY PROTOCOL
+              {emergencyProtocol ? 'PROTOCOL ACTIVE' : 'ACTIVATE EMERGENCY PROTOCOL'}
             </Button>
           </div>
 
@@ -1645,7 +1646,12 @@ export default function CompleteTradingDashboard() {
         </div>
 
         {/* Emergency Protocol Modal */}
-        {emergencyProtocol && renderEmergencyProtocol()}
+        {emergencyProtocol && (
+          <>
+            {console.log('Emergency protocol modal should be rendering now!')}
+            {renderEmergencyProtocol()}
+          </>
+        )}
       </div>
     );
   };
