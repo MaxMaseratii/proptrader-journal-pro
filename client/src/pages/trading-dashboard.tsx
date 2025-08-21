@@ -1216,6 +1216,16 @@ export default function CompleteTradingDashboard() {
                 console.log('Current emergencyProtocol state before:', emergencyProtocol);
                 setEmergencyProtocol(true);
                 console.log('Emergency protocol state should be true now');
+                
+                // Extra debugging
+                setTimeout(() => {
+                  console.log('🔍 After state update - emergencyProtocol is:', emergencyProtocol);
+                  const modalCheck = document.querySelector('[style*="z-index: 99999"]');
+                  console.log('🔍 Modal element found in DOM:', !!modalCheck);
+                  if (modalCheck) {
+                    console.log('🔍 Modal element styles:', modalCheck.style.cssText);
+                  }
+                }, 100);
               }}
               className="bg-red-600 hover:bg-red-700 text-white px-8 py-3 text-lg animate-pulse"
             >
@@ -2495,6 +2505,7 @@ export default function CompleteTradingDashboard() {
           style={{ zIndex: 99999, position: 'fixed', top: 0, left: 0, right: 0, bottom: 0 }}
           onClick={(e) => e.stopPropagation()}
         >
+          {console.log('🚨 Emergency modal IS rendering now! State:', emergencyProtocol)}
           <div className="max-w-2xl w-full mx-4 bg-red-950 border-2 border-red-500 rounded-lg p-6 text-white">
             <div className="flex items-center gap-2 mb-4">
               <AlertTriangle className="w-6 h-6 text-red-500 animate-pulse" />
