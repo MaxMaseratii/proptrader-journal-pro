@@ -1206,7 +1206,11 @@ export default function CompleteTradingDashboard() {
             <h3 className="text-white font-semibold mb-4 text-lg">Emergency Protocol</h3>
             <p className="text-red-300 mb-4">Feeling emotional spike or losing control?</p>
             <Button
-              onClick={() => setEmergencyProtocol(true)}
+              onClick={() => {
+                console.log('Emergency protocol button clicked!');
+                setEmergencyProtocol(true);
+                console.log('Emergency protocol state should be true now');
+              }}
               className="bg-red-600 hover:bg-red-700 text-white px-8 py-3 text-lg animate-pulse"
             >
               <AlertTriangle className="w-6 h-6 mr-2" />
