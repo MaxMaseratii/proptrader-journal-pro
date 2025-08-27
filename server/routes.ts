@@ -1,6 +1,5 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
-import path from "path";
 import { storage } from "./storage";
 import { DevCacheService as CacheService } from "./simplifiedRedis";
 import { csvProcessingQueue, analyticsQueue } from "./backgroundJobs";
@@ -31,22 +30,6 @@ import Stripe from "stripe";
 export async function registerRoutes(app: Express): Promise<Server> {
   // Setup authentication
   setupAuth(app);
-
-  // Download route for ZIP file
-  app.get('/download-zip', (req, res) => {
-    const filePath = '/tmp/download.zip';
-    res.download(filePath, 'PropTraderJournal-Complete.zip', (err) => {
-      if (err) {
-        console.error('Download error:', err);
-        res.status(404).send('File not found');
-      }
-    });
-  });
-
-  // Serve download page
-  app.get('/download', (req, res) => {
-    res.sendFile(path.resolve('download.html'));
-  });
 
   // Initialize Stripe
   const stripe = process.env.STRIPE_SECRET_KEY ? new Stripe(process.env.STRIPE_SECRET_KEY, {
