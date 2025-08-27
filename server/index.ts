@@ -6,8 +6,23 @@ import rateLimit from "express-rate-limit";
 import { performanceMonitor } from "./monitoring";
 import { initializeDatabaseOptimizations } from "./databaseOptimizations";
 import "./developmentOptimizations";
+import path from "path"; // Add missing path import
+import session from "express-session";
+import connectPgSimple from "connect-pg-simple";
+
+// Add error handling for missing environment variables
+if (!process.env.DATABASE_URL) {
+  throw new Error("DATABASE_URL environment variable is required");
+}
+
+if (!process.env.SESSION_SECRET) {
+  throw new Error("SESSION_SECRET environment variable is required");
+}
 
 const app = express();
+
+// Set trust proxy for production deployment
+app.set('trust proxy', 1);
 
 // Performance monitoring middleware (always enabled)
 app.use(performanceMonitor.requestMonitor());
@@ -77,6 +92,24 @@ if (process.env.NODE_ENV === 'production') {
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: false, limit: '50mb' }));
 
+// Session configuration
+const PgSession = connectPgSimple(session);
+app.use(session({
+  store: new PgSession({
+    conString: process.env.DATABASE_URL,
+    createTableIfMissing: true,
+    tableName: 'sessions',
+  }),
+  secret: process.env.SESSION_SECRET!,
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    secure: process.env.NODE_ENV === 'production',
+    httpOnly: true,
+    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+  },
+}));
+
 app.use((req, res, next) => {
   const start = Date.now();
   const path = req.path;
@@ -127,7 +160,11 @@ app.use((req, res, next) => {
   if (app.get("env") === "development") {
     await setupVite(app, server);
   } else {
-    serveStatic(app);
+    // Serve static files in production
+    app.use(express.static('dist'));
+    app.get('*', (req, res) => {
+      res.sendFile(path.resolve('dist', 'index.html'));
+    });
   }
 
   // ALWAYS serve the app on port 5000
@@ -139,6 +176,7 @@ app.use((req, res, next) => {
     host: "0.0.0.0",
     reusePort: true,
   }, () => {
-    log(`serving on port ${port}`);
+    log(`Server running on port ${port}`);
+    log(`Environment: ${process.env.NODE_ENV || 'development'}`);
   });
 })();
