@@ -19,11 +19,12 @@ Preferred communication style: Simple, everyday language.
 
 ### Backend
 - **Runtime**: Node.js with Express.js
-- **Language**: TypeScript (ESM modules)
+- **Language**: TypeScript (ESM modules) with proper path resolution for production deployment
 - **Database**: PostgreSQL with Drizzle ORM
 - **Session Management**: connect-pg-simple for PostgreSQL session store
-- **Production Deployment**: Railway.app ready with nixpacks builder, health checks, and proper static file serving
+- **Production Deployment**: Railway.app ready with nixpacks builder, health checks, and proper static file serving using fileURLToPath for ES module compatibility
 - **Build System**: TypeScript compilation with separate tsconfig.node.json for server-side builds
+- **Error Handling**: Environment variable validation and comprehensive path resolution for production builds
 - **Scalability**: Designed for 1M+ users with ultra-scale architecture including database pooling, Redis caching, rate limiting, background processing, performance monitoring, database optimization (15+ indexes), web workers, scalable session store, CDN optimization, load balancer configuration, Prometheus metrics, graceful shutdown, and Docker production setup for Kubernetes deployment.
 
 ### Database Schema
