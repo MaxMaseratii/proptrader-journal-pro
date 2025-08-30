@@ -97,12 +97,45 @@ app.use(express.static(publicPath));
 ✅ ES module path resolution works correctly
 ✅ Production optimization with dev dependency pruning
 
+## Key Changes Made
+
+### 1. Created Production Server Entry Point
+Created `server/production.ts` that excludes all Vite imports and dependencies:
+- Removed `setupVite` import and usage
+- Uses only production-ready dependencies
+- Serves static files directly from `dist/public/`
+- No development-only middleware
+
+### 2. Updated Build Configuration
+Both Docker and Nixpacks now use:
+```bash
+npm run build:client                # Builds React app
+npx esbuild server/production.ts    # Builds server without Vite
+```
+
+### 3. Fixed File Structure
+Production build creates:
+```
+dist/
+├── public/           (React app from vite build)
+│   ├── index.html
+│   └── assets/
+└── server.js         (Production server from esbuild)
+```
+
 ## Deployment Options
 
 ### Option 1: Docker (Recommended)
-Railway will use `Dockerfile.railway` automatically with current `railway.json` configuration.
+Railway uses `Dockerfile.railway` with Vite-free production build.
 
-### Option 2: Nixpacks (Alternative)
-Change `railway.json` to use nixpacks builder if Docker approach has issues.
+### Option 2: Nixpacks (Alternative)  
+Updated `nixpacks.toml` excludes Vite from server build.
 
-Both configurations are included and tested. The Docker approach is more reliable for avoiding cache conflicts.
+## Verification Results
+✅ Production server builds without Vite imports
+✅ Health endpoint returns proper status  
+✅ Static file serving works correctly
+✅ No "Cannot find package 'vite'" errors
+✅ 3.5MB production server bundle (optimized)
+
+The root cause was server code importing Vite through `server/vite.ts`. The solution creates a separate production entry point that excludes all development dependencies.

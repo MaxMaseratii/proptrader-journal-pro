@@ -5,10 +5,13 @@ nixPkgs = ["nodejs_18", "npm-9_x"]
 cmds = ["npm ci --prefer-offline --no-audit"]
 
 [phases.build]
-cmds = ["npm run build"]
+cmds = [
+  "npm run build",
+  "npx esbuild server/production.cjs --bundle --platform=node --format=cjs --outfile=dist/server.cjs --external:@neondatabase/serverless --external:drizzle-orm --external:pg --external:pg-pool --external:express --external:compression --external:express-rate-limit --external:express-session --external:connect-pg-simple"
+]
 
 [phases.start]
-cmd = "node dist/index.js"
+cmd = "node dist/server.cjs"
 
 [variables]
 NODE_ENV = "production"

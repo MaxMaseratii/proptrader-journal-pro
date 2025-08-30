@@ -13,6 +13,7 @@ COPY . .
 
 # Build the application
 RUN npm run build
+RUN npx esbuild server/production.cjs --bundle --platform=node --format=cjs --outfile=dist/server.cjs --external:@neondatabase/serverless --external:drizzle-orm --external:pg --external:pg-pool --external:express --external:compression --external:express-rate-limit --external:express-session --external:connect-pg-simple
 
 # Remove dev dependencies to reduce image size
 RUN npm prune --production
@@ -25,4 +26,4 @@ HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
   CMD node -e "require('http').get('http://localhost:5000/health', (res) => { process.exit(res.statusCode === 200 ? 0 : 1) })"
 
 # Start the application
-CMD ["node", "dist/index.js"]
+CMD ["node", "dist/server.cjs"]
