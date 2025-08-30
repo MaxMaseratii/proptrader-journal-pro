@@ -3,7 +3,7 @@
     "builder": "nixpacks"
   },
   "deploy": {
-    "startCommand": "npm run start",
+    "startCommand": "node dist/index.js",
     "healthcheckPath": "/health"
   }
 }
