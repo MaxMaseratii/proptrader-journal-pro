@@ -6,9 +6,17 @@ import rateLimit from "express-rate-limit";
 import { performanceMonitor } from "./monitoring";
 import { initializeDatabaseOptimizations } from "./databaseOptimizations";
 import "./developmentOptimizations";
-import path from "path"; // Add missing path import
 import session from "express-session";
 import connectPgSimple from "connect-pg-simple";
+import path from "path";
+import { fileURLToPath } from "url";
+
+const app = express();
+const PORT = parseInt(process.env.PORT || "5000", 10);
+
+// Get the current directory in ES modules
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // Add error handling for missing environment variables
 if (!process.env.DATABASE_URL) {
@@ -19,9 +27,6 @@ if (!process.env.SESSION_SECRET) {
   throw new Error("SESSION_SECRET environment variable is required");
 }
 
-const app = express();
-
-// Set trust proxy for production deployment
 app.set('trust proxy', 1);
 
 // Performance monitoring middleware (always enabled)
@@ -160,10 +165,17 @@ app.use((req, res, next) => {
   if (app.get("env") === "development") {
     await setupVite(app, server);
   } else {
-    // Serve static files in production
-    app.use(express.static('dist'));
+    // Serve static files in production with proper path resolution
+    const distPath = path.resolve(__dirname, '..', 'dist');
+    const publicPath = path.resolve(distPath, 'public');
+    
+    // Serve static files from the public directory
+    app.use(express.static(publicPath));
+    
+    // Catch-all handler: send back React's index.html file
     app.get('*', (req, res) => {
-      res.sendFile(path.resolve('dist', 'index.html'));
+      const indexPath = path.resolve(publicPath, 'index.html');
+      res.sendFile(indexPath);
     });
   }
 
@@ -178,5 +190,6 @@ app.use((req, res, next) => {
   }, () => {
     log(`Server running on port ${port}`);
     log(`Environment: ${process.env.NODE_ENV || 'development'}`);
+    log(`Database connected: ${process.env.DATABASE_URL ? 'Yes' : 'No'}`);
   });
 })();
