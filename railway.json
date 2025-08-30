@@ -1,9 +1,10 @@
 {
   "build": {
-    "builder": "nixpacks"
+    "builder": "dockerfile",
+    "dockerfilePath": "Dockerfile.railway"
   },
   "deploy": {
-    "startCommand": "node dist/index.js",
-    "healthcheckPath": "/health"
+    "healthcheckPath": "/health",
+    "restartPolicyType": "always"
   }
 }

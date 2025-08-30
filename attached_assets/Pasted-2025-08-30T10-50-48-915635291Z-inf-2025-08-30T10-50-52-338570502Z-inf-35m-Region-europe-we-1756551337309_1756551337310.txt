@@ -1,0 +1,121 @@
+2025-08-30T10:50:48.915635291Z [inf]  
+2025-08-30T10:50:52.338570502Z [inf]  [35m[Region: europe-west4][0m
+2025-08-30T10:50:52.339642385Z [inf]  [35m==============
+2025-08-30T10:50:52.339677534Z [inf]  Using Nixpacks
+2025-08-30T10:50:52.339684049Z [inf]  ==============
+2025-08-30T10:50:52.339689531Z [inf]  [0m
+2025-08-30T10:50:52.339868412Z [inf]  context: rhfq-AStS
+2025-08-30T10:50:52.523604491Z [inf]  ╔═════════════════════ Nixpacks v1.38.0 ═════════════════════╗
+2025-08-30T10:50:52.523654980Z [inf]  ║ setup      │ nodejs_18, npm-9_x, openssl                   ║
+2025-08-30T10:50:52.523662139Z [inf]  ║────────────────────────────────────────────────────────────║
+2025-08-30T10:50:52.523667495Z [inf]  ║ caddy      │ pkgs: caddy                                   ║
+2025-08-30T10:50:52.523674175Z [inf]  ║            │ cmds: caddy fmt --overwrite /assets/Caddyfile ║
+2025-08-30T10:50:52.523679604Z [inf]  ║────────────────────────────────────────────────────────────║
+2025-08-30T10:50:52.523685063Z [inf]  ║ install    │ npm ci                                        ║
+2025-08-30T10:50:52.523689957Z [inf]  ║────────────────────────────────────────────────────────────║
+2025-08-30T10:50:52.523695245Z [inf]  ║ build      │ npm ci                                        ║
+2025-08-30T10:50:52.523699833Z [inf]  ║            │ npm run build                                 ║
+2025-08-30T10:50:52.523705447Z [inf]  ║────────────────────────────────────────────────────────────║
+2025-08-30T10:50:52.523710983Z [inf]  ║ start      │ node dist/index.js                            ║
+2025-08-30T10:50:52.523715755Z [inf]  ╚════════════════════════════════════════════════════════════╝
+2025-08-30T10:50:52.930098026Z [inf]  [internal] load build definition from Dockerfile
+2025-08-30T10:50:52.930174642Z [inf]  [internal] load build definition from Dockerfile
+2025-08-30T10:50:52.930196982Z [inf]  [internal] load build definition from Dockerfile
+2025-08-30T10:50:52.942062720Z [inf]  [internal] load build definition from Dockerfile
+2025-08-30T10:50:52.945464768Z [inf]  [internal] load metadata for ghcr.io/railwayapp/nixpacks:ubuntu-1745885067
+2025-08-30T10:50:53.331454430Z [inf]  [internal] load metadata for ghcr.io/railwayapp/nixpacks:ubuntu-1745885067
+2025-08-30T10:50:53.331742821Z [inf]  [internal] load .dockerignore
+2025-08-30T10:50:53.331798647Z [inf]  [internal] load .dockerignore
+2025-08-30T10:50:53.331958978Z [inf]  [internal] load .dockerignore
+2025-08-30T10:50:53.346742485Z [inf]  [internal] load .dockerignore
+2025-08-30T10:50:53.354683787Z [inf]  [stage-0  5/16] COPY .nixpacks/nixpkgs-ffeebf0acf3ae8b29f8c7049cd911b9636efd7e7.nix .nixpacks/nixpkgs-ffeebf0acf3ae8b29f8c7049cd911b9636efd7e7.nix
+2025-08-30T10:50:53.354742154Z [inf]  [stage-0  4/16] RUN nix-env -if .nixpacks/nixpkgs-ba913eda2df8eb72147259189d55932012df6301.nix && nix-collect-garbage -d
+2025-08-30T10:50:53.354756531Z [inf]  [stage-0  3/16] COPY .nixpacks/nixpkgs-ba913eda2df8eb72147259189d55932012df6301.nix .nixpacks/nixpkgs-ba913eda2df8eb72147259189d55932012df6301.nix
+2025-08-30T10:50:53.354766942Z [inf]  [internal] load build context
+2025-08-30T10:50:53.354776725Z [inf]  [stage-0  2/16] WORKDIR /app/
+2025-08-30T10:50:53.354789934Z [inf]  [stage-0  1/16] FROM ghcr.io/railwayapp/nixpacks:ubuntu-1745885067@sha256:d45c89d80e13d7ad0fd555b5130f22a866d9dd10e861f589932303ef2314c7de
+2025-08-30T10:50:53.354861624Z [inf]  [stage-0 16/16] COPY . /app
+2025-08-30T10:50:53.354871111Z [inf]  [stage-0 15/16] RUN printf '\nPATH=/app/node_modules/.bin:$PATH' >> /root/.profile
+2025-08-30T10:50:53.354879982Z [inf]  [stage-0 14/16] RUN --mount=type=cache,id=s/295c53ce-5b01-4d06-a095-8e7b9b8f1a79-node_modules/cache,target=/app/node_modules/.cache npm run build
+2025-08-30T10:50:53.354892696Z [inf]  [stage-0 13/16] RUN --mount=type=cache,id=s/295c53ce-5b01-4d06-a095-8e7b9b8f1a79-node_modules/cache,target=/app/node_modules/.cache npm ci
+2025-08-30T10:50:53.354900988Z [inf]  [stage-0 12/16] COPY . /app/.
+2025-08-30T10:50:53.354911565Z [inf]  [stage-0 11/16] RUN --mount=type=cache,id=s/295c53ce-5b01-4d06-a095-8e7b9b8f1a79-/root/npm,target=/root/.npm npm ci
+2025-08-30T10:50:53.354921976Z [inf]  [stage-0 10/16] COPY . /app/.
+2025-08-30T10:50:53.354932887Z [inf]  [stage-0  9/16] RUN  caddy fmt --overwrite /assets/Caddyfile
+2025-08-30T10:50:53.354948913Z [inf]  [stage-0  8/16] COPY . /app/.
+2025-08-30T10:50:53.354957739Z [inf]  [stage-0  7/16] COPY .nixpacks/assets /assets/
+2025-08-30T10:50:53.354967312Z [inf]  [stage-0  6/16] RUN nix-env -if .nixpacks/nixpkgs-ffeebf0acf3ae8b29f8c7049cd911b9636efd7e7.nix && nix-collect-garbage -d
+2025-08-30T10:50:53.354991471Z [inf]  [internal] load build context
+2025-08-30T10:50:53.357159698Z [inf]  [stage-0  1/16] FROM ghcr.io/railwayapp/nixpacks:ubuntu-1745885067@sha256:d45c89d80e13d7ad0fd555b5130f22a866d9dd10e861f589932303ef2314c7de
+2025-08-30T10:50:53.357204252Z [inf]  [internal] load build context
+2025-08-30T10:50:53.369031854Z [inf]  [stage-0  1/16] FROM ghcr.io/railwayapp/nixpacks:ubuntu-1745885067@sha256:d45c89d80e13d7ad0fd555b5130f22a866d9dd10e861f589932303ef2314c7de
+2025-08-30T10:50:53.870713015Z [inf]  [internal] load build context
+2025-08-30T10:50:53.879328613Z [inf]  [stage-0  2/16] WORKDIR /app/
+2025-08-30T10:50:53.879397078Z [inf]  [stage-0  3/16] COPY .nixpacks/nixpkgs-ba913eda2df8eb72147259189d55932012df6301.nix .nixpacks/nixpkgs-ba913eda2df8eb72147259189d55932012df6301.nix
+2025-08-30T10:50:53.879419607Z [inf]  [stage-0  4/16] RUN nix-env -if .nixpacks/nixpkgs-ba913eda2df8eb72147259189d55932012df6301.nix && nix-collect-garbage -d
+2025-08-30T10:50:53.879434289Z [inf]  [stage-0  5/16] COPY .nixpacks/nixpkgs-ffeebf0acf3ae8b29f8c7049cd911b9636efd7e7.nix .nixpacks/nixpkgs-ffeebf0acf3ae8b29f8c7049cd911b9636efd7e7.nix
+2025-08-30T10:50:53.879448021Z [inf]  [stage-0  6/16] RUN nix-env -if .nixpacks/nixpkgs-ffeebf0acf3ae8b29f8c7049cd911b9636efd7e7.nix && nix-collect-garbage -d
+2025-08-30T10:50:53.879468164Z [inf]  [stage-0  7/16] COPY .nixpacks/assets /assets/
+2025-08-30T10:50:53.879510099Z [inf]  [stage-0  8/16] COPY . /app/.
+2025-08-30T10:50:55.125504239Z [inf]  [stage-0  8/16] COPY . /app/.
+2025-08-30T10:50:55.128096186Z [inf]  [stage-0  9/16] RUN  caddy fmt --overwrite /assets/Caddyfile
+2025-08-30T10:50:55.423995194Z [inf]  [stage-0  9/16] RUN  caddy fmt --overwrite /assets/Caddyfile
+2025-08-30T10:50:55.425447585Z [inf]  [stage-0 10/16] COPY . /app/.
+2025-08-30T10:50:55.641901292Z [inf]  [stage-0 10/16] COPY . /app/.
+2025-08-30T10:50:55.643781565Z [inf]  [stage-0 11/16] RUN --mount=type=cache,id=s/295c53ce-5b01-4d06-a095-8e7b9b8f1a79-/root/npm,target=/root/.npm npm ci
+2025-08-30T10:50:55.964950066Z [inf]  npm warn config production Use `--omit=dev` instead.
+
+2025-08-30T10:51:00.510183462Z [inf]  npm warn deprecated @esbuild-kit/esm-loader@2.6.5: Merged into tsx: https://tsx.is
+
+2025-08-30T10:51:00.676031422Z [inf]  npm warn deprecated @esbuild-kit/core-utils@3.3.2: Merged into tsx: https://tsx.is
+
+2025-08-30T10:51:01.073416687Z [inf]  npm warn deprecated node-domexception@1.0.0: Use your platform's native DOMException instead
+
+2025-08-30T10:51:04.68573976Z [inf]  
+added 772 packages, and audited 773 packages in 9s
+
+2025-08-30T10:51:04.685761447Z [inf]  
+
+2025-08-30T10:51:04.685817672Z [inf]  93 packages are looking for funding
+  run `npm fund` for details
+
+2025-08-30T10:51:04.716249235Z [inf]  
+6 vulnerabilities (5 moderate, 1 high)
+
+To address all issues possible (including breaking changes), run:
+  npm audit fix --force
+
+Some issues need review, and may require choosing
+a different dependency.
+
+Run `npm audit` for details.
+
+2025-08-30T10:51:05.998427599Z [inf]  [stage-0 11/16] RUN --mount=type=cache,id=s/295c53ce-5b01-4d06-a095-8e7b9b8f1a79-/root/npm,target=/root/.npm npm ci
+2025-08-30T10:51:06.000126293Z [inf]  [stage-0 12/16] COPY . /app/.
+2025-08-30T10:51:06.392251640Z [inf]  [stage-0 12/16] COPY . /app/.
+2025-08-30T10:51:06.393530432Z [inf]  [stage-0 13/16] RUN --mount=type=cache,id=s/295c53ce-5b01-4d06-a095-8e7b9b8f1a79-node_modules/cache,target=/app/node_modules/.cache npm ci
+2025-08-30T10:51:06.590689336Z [inf]  npm warn config production Use `--omit=dev` instead.
+
+2025-08-30T10:51:07.413022921Z [inf]  npm error code EBUSY
+
+2025-08-30T10:51:07.413041881Z [inf]  npm error syscall rmdir
+
+2025-08-30T10:51:07.413178354Z [inf]  npm error path /app/node_modules/.cache
+
+2025-08-30T10:51:07.413826197Z [inf]  npm error errno -16
+
+2025-08-30T10:51:07.413893788Z [inf]  npm error EBUSY: resource busy or locked, rmdir '/app/node_modules/.cache'
+
+2025-08-30T10:51:07.415658959Z [inf]  npm error A complete log of this run can be found in: /root/.npm/_logs/2025-08-30T10_51_06_563Z-debug-0.log
+
+2025-08-30T10:51:07.456114401Z [err]  [stage-0 13/16] RUN --mount=type=cache,id=s/295c53ce-5b01-4d06-a095-8e7b9b8f1a79-node_modules/cache,target=/app/node_modules/.cache npm ci
+2025-08-30T10:51:07.472258645Z [err]  Dockerfile:33
+2025-08-30T10:51:07.472315999Z [err]  -------------------
+2025-08-30T10:51:07.472321839Z [err]  31 |     # build phase
+2025-08-30T10:51:07.472327212Z [err]  32 |     COPY . /app/.
+2025-08-30T10:51:07.472335465Z [err]  33 | >>> RUN --mount=type=cache,id=s/295c53ce-5b01-4d06-a095-8e7b9b8f1a79-node_modules/cache,target=/app/node_modules/.cache npm ci
+2025-08-30T10:51:07.472340407Z [err]  34 |     RUN --mount=type=cache,id=s/295c53ce-5b01-4d06-a095-8e7b9b8f1a79-node_modules/cache,target=/app/node_modules/.cache npm run build
+2025-08-30T10:51:07.472344809Z [err]  35 |
+2025-08-30T10:51:07.472349802Z [err]  -------------------
+2025-08-30T10:51:07.472354561Z [err]  ERROR: failed to build: failed to solve: process "/bin/bash -ol pipefail -c npm ci" did not complete successfully: exit code: 240
+2025-08-30T10:51:07.479893739Z [err]  Error: Docker build failed
