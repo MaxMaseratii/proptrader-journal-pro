@@ -138,4 +138,22 @@ Updated `nixpacks.toml` excludes Vite from server build.
 ✅ No "Cannot find package 'vite'" errors
 ✅ 3.5MB production server bundle (optimized)
 
-The root cause was server code importing Vite through `server/vite.ts`. The solution creates a separate production entry point that excludes all development dependencies.
+## Root Cause Analysis
+The deployment fails because Railway tries to run `dist/index.js` which contains Vite imports like:
+```
+Error [ERR_MODULE_NOT_FOUND]: Cannot find package 'vite' imported from /app/dist/index.js
+```
+
+This happens because:
+1. The original build script creates `dist/index.js` from `server/index.ts` 
+2. `server/index.ts` imports from `server/vite.ts`
+3. `server/vite.ts` contains Vite dependencies
+4. Vite is a devDependency and gets pruned in production
+
+## Solution Applied
+1. **Created Vite-free production server**: `server/production.cjs`
+2. **Removed problematic file**: Deleted `dist/index.js` 
+3. **Updated Railway config**: Now runs `node dist/server.cjs`
+4. **Added multiple fallbacks**: Procfile, nixpacks.toml, and railway.json all specify correct start command
+
+The production server excludes all development dependencies and Vite imports.
