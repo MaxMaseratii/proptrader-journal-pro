@@ -1341,13 +1341,13 @@ export default function Dashboard() {
               <div className="flex items-center space-x-3">
                 <div className={`p-2 rounded-full ${
                   congratulationsBanner.type === 'funded' 
-                    ? 'bg-green-500/20' 
-                    : 'bg-yellow-500/20'
+                    ? getUniversalValueColor(1, 'profit').bgColor
+                    : getUniversalValueColor(0, 'risk', { warning: 50, danger: 80 }).bgColor
                 }`}>
                   {congratulationsBanner.type === 'funded' ? (
                     <Trophy className={`h-6 w-6 ${getUniversalValueColor(1, 'profit').textColor}`} />
                   ) : (
-                    <Star className="h-6 w-6 text-yellow-400" />
+                    <Star className={`h-6 w-6 ${getUniversalValueColor(0, 'risk', { warning: 50, danger: 80 }).textColor}`} />
                   )}
                 </div>
                 <div>
@@ -1430,9 +1430,9 @@ export default function Dashboard() {
                       <span className="text-gray-300 font-medium">Daily Loss Limit</span>
                     </div>
                     <span className={`px-3 py-1 rounded-full text-xs font-bold ${
-                      Math.abs(selectedDayData?.dayPnL || 0) >= 100 ? 'bg-red-500 text-white animate-pulse' : 
-                      Math.abs(selectedDayData?.dayPnL || 0) >= 80 ? 'bg-orange-500 text-black' : 
-                      'bg-yellow-500 text-black'
+                      Math.abs(selectedDayData?.dayPnL || 0) >= 100 ? `${getUniversalValueColor(-100, 'pnl').bgColor?.replace('bg-', 'bg-').replace('/50', '')} ${getUniversalValueColor(-100, 'pnl').textColor} animate-pulse` : 
+                      Math.abs(selectedDayData?.dayPnL || 0) >= 80 ? `${getUniversalValueColor(-80, 'risk', { warning: 50, danger: 80 }).bgColor?.replace('bg-', 'bg-').replace('/50', '')} ${getUniversalValueColor(-80, 'risk', { warning: 50, danger: 80 }).textColor}` : 
+                      `${getUniversalValueColor(-50, 'risk', { warning: 50, danger: 80 }).bgColor?.replace('bg-', 'bg-').replace('/50', '')} ${getUniversalValueColor(-50, 'risk', { warning: 50, danger: 80 }).textColor}`
                     }`}>
                       {Math.abs(selectedDayData?.dayPnL || 0) >= 100 ? 'LIMIT BREACHED' : 
                        Math.abs(selectedDayData?.dayPnL || 0) >= 80 ? 'HIGH RISK' : 'CAUTION'}
@@ -1445,8 +1445,8 @@ export default function Dashboard() {
                       <div 
                         className={`h-full transition-all duration-1000 ease-out relative ${
                           Math.abs(selectedDayData?.dayPnL || 0) >= 100 ? 'bg-red-400' : 
-                          Math.abs(selectedDayData?.dayPnL || 0) >= 80 ? 'bg-orange-500' : 
-                          'bg-yellow-500'
+                          Math.abs(selectedDayData?.dayPnL || 0) >= 80 ? getUniversalValueColor(-80, 'risk', { warning: 50, danger: 80 }).bgColor?.replace('/50', '') : 
+                          getUniversalValueColor(-50, 'risk', { warning: 50, danger: 80 }).bgColor?.replace('/50', '')
                         }`}
                         style={{ width: `${Math.min((Math.abs(selectedDayData?.dayPnL || 0) / 100) * 100, 100)}%` }}
                       >
@@ -1486,9 +1486,9 @@ export default function Dashboard() {
                   
                   <div className="text-center">
                     <span className={`text-sm font-bold ${
-                      Math.abs(selectedDayData?.dayPnL || 0) >= 100 ? getUniversalValueColor(-1, 'pnl').textColor : 
-                      Math.abs(selectedDayData?.dayPnL || 0) >= 80 ? 'text-orange-400' : 
-                      'text-yellow-400'
+                      Math.abs(selectedDayData?.dayPnL || 0) >= 100 ? getUniversalValueColor(-100, 'pnl').textColor : 
+                      Math.abs(selectedDayData?.dayPnL || 0) >= 80 ? getUniversalValueColor(-80, 'risk', { warning: 50, danger: 80 }).textColor : 
+                      getUniversalValueColor(-50, 'risk', { warning: 50, danger: 80 }).textColor
                     }`}>
                       ${Math.abs(selectedDayData?.dayPnL || 0)} of $100 daily limit used ({Math.min((Math.abs(selectedDayData?.dayPnL || 0) / 100) * 100, 100).toFixed(0)}%)
                     </span>
@@ -1496,9 +1496,9 @@ export default function Dashboard() {
                   
                   {/* Warning message */}
                   <div className={`text-xs text-center p-2 rounded ${
-                    Math.abs(selectedDayData?.dayPnL || 0) >= 100 ? 'bg-red-900/50 text-red-300' : 
-                    Math.abs(selectedDayData?.dayPnL || 0) >= 80 ? 'bg-orange-900/50 text-orange-300' : 
-                    'bg-yellow-900/50 text-yellow-300'
+                    Math.abs(selectedDayData?.dayPnL || 0) >= 100 ? `${getUniversalValueColor(-100, 'pnl').bgColor} ${getUniversalValueColor(-100, 'pnl').textColor}` : 
+                    Math.abs(selectedDayData?.dayPnL || 0) >= 80 ? `${getUniversalValueColor(-80, 'risk', { warning: 50, danger: 80 }).bgColor} ${getUniversalValueColor(-80, 'risk', { warning: 50, danger: 80 }).textColor}` : 
+                    `${getUniversalValueColor(-50, 'risk', { warning: 50, danger: 80 }).bgColor} ${getUniversalValueColor(-50, 'risk', { warning: 50, danger: 80 }).textColor}`
                   }`}>
                     {Math.abs(selectedDayData?.dayPnL || 0) >= 100 ? 
                       '⚠️ Daily loss limit exceeded - Review risk management immediately' :
@@ -1517,8 +1517,8 @@ export default function Dashboard() {
                       <span className="text-gray-300 font-medium">Daily Profit Target</span>
                     </div>
                     <span className={`px-3 py-1 rounded-full text-xs font-bold ${
-                      selectedDayData?.dayPnL >= 100 ? 'bg-green-500 text-black' : 
-                      selectedDayData?.dayPnL >= 50 ? 'bg-blue-500 text-white' : 
+                      selectedDayData?.dayPnL >= 100 ? `${getUniversalValueColor(100, 'profit').bgColor?.replace('/50', '')} text-black` : 
+                      selectedDayData?.dayPnL >= 50 ? `${getUniversalValueColor(50, 'profit').bgColor?.replace('/50', '')} text-white` : 
                       'bg-gray-500 text-white'
                     }`}>
                       {selectedDayData?.dayPnL >= 100 ? 'TARGET ACHIEVED' : 
@@ -1531,8 +1531,8 @@ export default function Dashboard() {
                     <div className="w-full rounded-full h-6 overflow-hidden bg-gray-700">
                       <div 
                         className={`h-full transition-all duration-1000 ease-out relative ${
-                          selectedDayData?.dayPnL >= 100 ? 'bg-green-500' : 
-                          selectedDayData?.dayPnL >= 50 ? 'bg-blue-500' : 
+                          selectedDayData?.dayPnL >= 100 ? getUniversalValueColor(100, 'profit').bgColor?.replace('/50', '') : 
+                          selectedDayData?.dayPnL >= 50 ? getUniversalValueColor(50, 'profit').bgColor?.replace('/50', '') : 
                           'bg-gray-400'
                         }`}
                         style={{ width: `${Math.min(((selectedDayData?.dayPnL || 0) / 100) * 100, 100)}%` }}
@@ -1570,7 +1570,7 @@ export default function Dashboard() {
                     </span>
                   </div>
                   
-                  <div className="text-xs text-center p-2 rounded bg-green-900/30 text-green-300">
+                  <div className={`text-xs text-center p-2 rounded ${getUniversalValueColor(100, 'profit').bgColor} ${getUniversalValueColor(100, 'profit').textColor}`}>
                     🎉 Great progress! Stay disciplined and protect your gains.
                   </div>
                 </div>
@@ -1613,10 +1613,10 @@ export default function Dashboard() {
               <div className="bg-black/30 rounded-lg p-4 border border-gray-700/50 relative">
                 {combinedAnalytics && combinedAnalytics.accounts.length > 0 ? (
                   <>
-                    <div className="absolute top-3 right-3 text-xs text-red-500">
+                    <div className={`absolute top-3 right-3 text-xs ${getUniversalValueColor(-1, 'risk').textColor}`}>
                       Max: ${combinedAnalytics.accounts[0]?.maxDrawdown || 0}
                     </div>
-                    <div className="text-3xl font-bold text-red-500 mb-1">
+                    <div className={`text-3xl font-bold mb-1 ${getUniversalValueColor(-(combinedAnalytics.accounts[0]?.riskPerTrade || 0), 'risk').textColor}`}>
                       ${combinedAnalytics.accounts[0]?.riskPerTrade || 0}
                     </div>
                   </>
@@ -1744,10 +1744,10 @@ export default function Dashboard() {
                 </div>
                 <div className={`text-3xl font-bold mb-1 ${
                   !combinedAnalytics || combinedAnalytics.totalTrades === 0 || !selectedDayData || selectedDayData.totalDayTrades === 0 ? 'text-gray-500' :
-                  (selectedDayData?.disciplineScore || 0) >= 90 ? 'text-green-500' : 
-                  (selectedDayData?.disciplineScore || 0) >= 80 ? 'text-green-500' : 
-                  (selectedDayData?.disciplineScore || 0) >= 70 ? 'text-yellow-400' : 
-                  (selectedDayData?.disciplineScore || 0) >= 60 ? 'text-orange-400' : 'text-red-500'
+                  (selectedDayData?.disciplineScore || 0) >= 90 ? getUniversalValueColor(90, 'profit').textColor : 
+                  (selectedDayData?.disciplineScore || 0) >= 80 ? getUniversalValueColor(80, 'profit').textColor : 
+                  (selectedDayData?.disciplineScore || 0) >= 70 ? getUniversalValueColor(70, 'risk', { warning: 70, danger: 60 }).textColor : 
+                  (selectedDayData?.disciplineScore || 0) >= 60 ? getUniversalValueColor(60, 'risk', { warning: 70, danger: 60 }).textColor : getUniversalValueColor(50, 'pnl').textColor
                 }`}>
                   {!combinedAnalytics || combinedAnalytics.totalTrades === 0 || !selectedDayData || selectedDayData.totalDayTrades === 0 ? '--' : 
                    `${Math.round(selectedDayData?.disciplineScore || 0)}% ${
