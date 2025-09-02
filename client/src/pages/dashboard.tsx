@@ -1444,7 +1444,7 @@ export default function Dashboard() {
                     <div className="w-full rounded-full h-6 overflow-hidden bg-gray-700">
                       <div 
                         className={`h-full transition-all duration-1000 ease-out relative ${
-                          Math.abs(selectedDayData?.dayPnL || 0) >= 100 ? 'bg-red-400' : 
+                          Math.abs(selectedDayData?.dayPnL || 0) >= 100 ? getUniversalValueColor(-100, 'pnl').bgColor?.replace('/50', '') : 
                           Math.abs(selectedDayData?.dayPnL || 0) >= 80 ? getUniversalValueColor(-80, 'risk', { warning: 50, danger: 80 }).bgColor?.replace('/50', '') : 
                           getUniversalValueColor(-50, 'risk', { warning: 50, danger: 80 }).bgColor?.replace('/50', '')
                         }`}
@@ -1462,7 +1462,7 @@ export default function Dashboard() {
                       {/* Milestone markers */}
                       <div className="absolute inset-0 flex items-center">
                         <div className="absolute left-1/2 w-px h-full bg-white/40 transform -translate-x-1/2"></div>
-                        <div className="absolute left-4/5 w-px h-full bg-orange-400/60 transform -translate-x-1/2"></div>
+                        <div className={`absolute left-4/5 w-px h-full ${getUniversalValueColor(-80, 'risk', { warning: 50, danger: 80 }).bgColor?.replace('/50', '/60')} transform -translate-x-1/2`}></div>
                       </div>
                       
                       {/* Value labels inside bar */}
@@ -1629,11 +1629,11 @@ export default function Dashboard() {
               {/* R:R */}
               <div className="bg-black/30 rounded-lg p-4 border border-gray-700/50 relative">
                 {combinedAnalytics && combinedAnalytics.accounts.length > 0 && (
-                  <div className="absolute top-3 right-3 text-xs text-blue-300">
+                  <div className={`absolute top-3 right-3 text-xs ${getUniversalValueColor(0, 'balance').textColor}`}>
                     Target: {combinedAnalytics.accounts[0]?.riskRewardRatio || 0} RR
                   </div>
                 )}
-                <div className="text-3xl font-bold text-blue-400 mb-1">
+                <div className={`text-3xl font-bold mb-1 ${getUniversalValueColor(0, 'balance').textColor}`}>
                   {(() => {
                     const avgReward = selectedDayData?.avgRewardRatio || 0;
                     const avgRisk = selectedDayData?.avgRiskPerTrade || 0;
@@ -1642,7 +1642,7 @@ export default function Dashboard() {
                   })()}
                 </div>
                 <div className="text-sm text-gray-400">Risk:Reward</div>
-                <div className="text-xs text-blue-300 mt-1">
+                <div className={`text-xs mt-1 ${getUniversalValueColor(0, 'balance').textColor}`}>
                   AVG. Ratio 1:{(() => {
                     const avgReward = selectedDayData?.avgRewardRatio || 0;
                     const avgRisk = selectedDayData?.avgRiskPerTrade || 0;
@@ -1655,16 +1655,16 @@ export default function Dashboard() {
               {/* Trades */}
               <div className="bg-black/30 rounded-lg p-4 border border-gray-700/50 relative">
                 {combinedAnalytics && combinedAnalytics.accounts.length > 0 && (
-                  <div className="absolute top-3 right-3 text-xs text-amber-300">
+                  <div className={`absolute top-3 right-3 text-xs ${getUniversalValueColor(0, 'balance').textColor}`}>
                     {selectedDayData?.totalDayTrades || 0}/{combinedAnalytics.accounts[0]?.maxDailyTrades || 0}
                   </div>
                 )}
-                <div className="text-3xl font-bold text-amber-400 mb-1">
+                <div className={`text-3xl font-bold mb-1 ${getUniversalValueColor(selectedDayData?.totalDayTrades || 0, 'balance').textColor}`}>
                   {selectedDayData?.totalDayTrades || 0}
                 </div>
                 <div className="w-full bg-gray-700/50 rounded-full h-1 mb-2">
                   <div 
-                    className="h-1 rounded-full bg-amber-400 transition-all duration-500"
+                    className={`h-1 rounded-full transition-all duration-500 ${getUniversalValueColor(selectedDayData?.totalDayTrades || 0, 'balance').bgColor?.replace('/50', '')}`}
                     style={{ 
                       width: `${Math.min((selectedDayData?.totalDayTrades || 0) / ((combinedAnalytics?.accounts[0]?.maxDailyTrades || 1)) * 100, 100)}%` 
                     }}
@@ -1768,16 +1768,16 @@ export default function Dashboard() {
 
               {/* Risk Utilization */}
               <div className="bg-black/30 rounded-lg p-4 border border-gray-700/50 relative">
-                <div className="absolute top-3 right-3 text-xs text-orange-300">
+                <div className={`absolute top-3 right-3 text-xs ${getUniversalValueColor(0, 'risk', { warning: 50, danger: 80 }).textColor}`}>
                   Used
                 </div>
-                <div className="text-3xl font-bold text-orange-400 mb-1">
+                <div className={`text-3xl font-bold mb-1 ${getUniversalValueColor(0, 'risk', { warning: 50, danger: 80 }).textColor}`}>
                   {combinedAnalytics && combinedAnalytics.accounts.length > 0 
                     ? Math.min((selectedDayData?.totalDayTrades || 0) / (combinedAnalytics.accounts[0]?.maxDailyTrades || 1) * 100, 100).toFixed(0)
                     : '0'}%
                 </div>
                 <div className="text-sm text-gray-400 mb-1">Risk Utilization</div>
-                <div className="text-xs text-orange-300">
+                <div className={`text-xs ${getUniversalValueColor(0, 'risk', { warning: 50, danger: 80 }).textColor}`}>
                   Total: ${combinedAnalytics && combinedAnalytics.accounts.length > 0 
                     ? ((selectedDayData?.totalDayTrades || 0) * (combinedAnalytics.accounts[0]?.riskPerTrade || 0)).toFixed(0)
                     : '0'}
@@ -1786,28 +1786,28 @@ export default function Dashboard() {
 
               {/* Win Rate */}
               <div className="bg-black/30 rounded-lg p-4 border border-gray-700/50 relative">
-                <div className="absolute top-3 right-3 text-xs text-green-300">
+                <div className={`absolute top-3 right-3 text-xs ${getUniversalValueColor(1, 'profit').textColor}`}>
                   WR
                 </div>
                 <div className={`text-3xl font-bold mb-1 ${getPercentageColor(selectedDayData?.winRate || 0).textColor}`}>
                   {Math.round(selectedDayData?.winRate || 0)}%
                 </div>
                 <div className="text-sm text-gray-400 mb-1">Win Rate</div>
-                <div className="text-xs text-green-300">
+                <div className={`text-xs ${getUniversalValueColor(1, 'profit').textColor}`}>
                   {selectedDayData?.totalDayTrades > 0 ? `${Math.round(selectedDayData?.winRate || 0)}% success` : 'No trades'}
                 </div>
               </div>
 
               {/* Profit Factor */}
               <div className="bg-black/30 rounded-lg p-4 border border-gray-700/50 relative">
-                <div className="absolute top-3 right-3 text-xs text-cyan-300">
+                <div className={`absolute top-3 right-3 text-xs ${getUniversalValueColor(0, 'balance').textColor}`}>
                   PF
                 </div>
                 <div className={`text-3xl font-bold mb-1 ${(() => {
                   const grossWin = selectedDayData?.trades?.filter(t => (t.pnl || 0) > 0).reduce((sum, t) => sum + (t.pnl || 0), 0) || 0;
                   const grossLoss = Math.abs(selectedDayData?.trades?.filter(t => (t.pnl || 0) < 0).reduce((sum, t) => sum + (t.pnl || 0), 0) || 0);
                   const profitFactor = grossLoss > 0 ? grossWin / grossLoss : grossWin > 0 ? 999 : 0;
-                  return profitFactor >= 1 ? 'text-green-500' : 'text-red-500';
+                  return profitFactor >= 1 ? getUniversalValueColor(profitFactor, 'profit').textColor : getUniversalValueColor(-profitFactor, 'pnl').textColor;
                 })()}`}>
                   {(() => {
                     const grossWin = selectedDayData?.trades?.filter(t => (t.pnl || 0) > 0).reduce((sum, t) => sum + (t.pnl || 0), 0) || 0;
@@ -1817,7 +1817,7 @@ export default function Dashboard() {
                   })()}
                 </div>
                 <div className="text-sm text-gray-400 mb-1">Profit Factor</div>
-                <div className="text-xs text-cyan-300">
+                <div className={`text-xs ${getUniversalValueColor(0, 'balance').textColor}`}>
                   Gross Win / Gross Loss
                 </div>
               </div>
