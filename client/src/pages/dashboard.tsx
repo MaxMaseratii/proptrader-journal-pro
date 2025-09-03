@@ -274,6 +274,7 @@ export default function Dashboard() {
     start.setDate(today.getDate() - daysToSubtract);
     return start;
   });
+  
 
   // FIXED: Add missing clearDaySelection function
   const clearDaySelection = () => {
@@ -2387,22 +2388,20 @@ export default function Dashboard() {
                                 if (tooltip && tooltipContent) {
                                   let content = '';
                                   if (point.trade) {
-                                    content = `
-                                      <div class="font-semibold text-yellow-400">${point.trade.symbol}</div>
-                                      <div class="text-xs mt-1">
-                                        <div>P&L: <span class="${point.trade.pnl >= 0 ? 'text-green-500' : 'text-red-500'}">${point.trade.pnl >= 0 ? '+' : ''}$${Math.abs(point.trade.pnl).toFixed(2)}</span></div>
-                                        <div>Date: ${new Date(point.date).toLocaleDateString()}</div>
-                                        <div>Trade #${point.tradesCount}</div>
-                                      </div>
-                                    `;
+                                    content = 
+                                      '<div class="font-semibold text-yellow-400">' + point.trade.symbol + '</div>' +
+                                      '<div class="text-xs mt-1">' +
+                                        '<div>P&L: <span class="' + (point.trade.pnl >= 0 ? 'text-green-500' : 'text-red-500') + '">' + (point.trade.pnl >= 0 ? '+' : '') + '$' + Math.abs(point.trade.pnl).toFixed(2) + '</span></div>' +
+                                        '<div>Date: ' + new Date(point.date).toLocaleDateString() + '</div>' +
+                                        '<div>Trade #' + point.tradesCount + '</div>' +
+                                      '</div>';
                                   } else {
-                                    content = `
-                                      <div class="font-semibold text-yellow-400">Starting Point</div>
-                                      <div class="text-xs mt-1">
-                                        <div>Balance: $0.00</div>
-                                        <div>Date: ${point.date}</div>
-                                      </div>
-                                    `;
+                                    content = 
+                                      '<div class="font-semibold text-yellow-400">Starting Point</div>' +
+                                      '<div class="text-xs mt-1">' +
+                                        '<div>Balance: $0.00</div>' +
+                                        '<div>Date: ' + point.date + '</div>' +
+                                      '</div>';
                                   }
                                   
                                   tooltipContent.innerHTML = content;
@@ -2414,8 +2413,8 @@ export default function Dashboard() {
                                   const leftPos = Math.max(10, Math.min(containerRect.width / 2 - 75, containerRect.width - 160));
                                   const topPos = Math.max(10, containerRect.height / 2 - 40);
                                   
-                                  tooltip.style.left = `${leftPos}px`;
-                                  tooltip.style.top = `${topPos}px`;
+                                  tooltip.style.left = leftPos + 'px';
+                                  tooltip.style.top = topPos + 'px';
                                   tooltip.style.display = 'block';
                                   tooltip.style.opacity = '1';
                                 }
@@ -2519,11 +2518,11 @@ export default function Dashboard() {
 
                           {/* Area fill under curve */}
                           <path
-                            d={`M ${padding.left} ${breakevenY} ${equityPoints.map((point, index) => {
+                            d={'M ' + padding.left + ' ' + breakevenY + ' ' + equityPoints.map((point, index) => {
                               const x = padding.left + (index / (equityPoints.length - 1)) * plotWidth;
                               const y = padding.top + plotHeight - ((point.y - chartMin) / chartRange) * plotHeight;
-                              return `L ${x} ${y}`;
-                            }).join(' ')} L ${padding.left + plotWidth} ${breakevenY} Z`}
+                              return 'L ' + x + ' ' + y;
+                            }).join(' ') + ' L ' + (padding.left + plotWidth) + ' ' + breakevenY + ' Z'}
                             fill="url(#equityAreaGradient)"
                             opacity="0.6"
                           />
@@ -2533,7 +2532,7 @@ export default function Dashboard() {
                             d={equityPoints.map((point, index) => {
                               const x = padding.left + (index / (equityPoints.length - 1)) * plotWidth;
                               const y = padding.top + plotHeight - ((point.y - chartMin) / chartRange) * plotHeight;
-                              return `${index === 0 ? 'M' : 'L'} ${x} ${y}`;
+                              return (index === 0 ? 'M' : 'L') + ' ' + x + ' ' + y;
                             }).join(' ')}
                             fill="none"
                             stroke="#22d3ee"
@@ -2593,42 +2592,35 @@ export default function Dashboard() {
                                       // Calculate running balance up to this point
                                       const runningBalance = point.y;
                                       
-                                      tooltip.innerHTML = `
-                                        <div class="bg-black/80 backdrop-blur-xl border border-white/10 rounded-xl p-3 w-[180px] shadow-2xl">
-                                          <!-- Header -->
-                                          <div class="mb-2">
-                                            <div class="text-white font-bold text-sm mb-1">${trade.symbol} #${index}</div>
-                                            <div class="text-xs text-gray-400">${new Date(trade.date || '').toLocaleDateString('en-GB')} ${new Date(trade.fillTime || trade.date || '').toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}</div>
-                                          </div>
-
-                                          <!-- Main value -->
-                                          <div class="text-center mb-3">
-                                            <div class="text-xl font-black ${(trade.pnl || 0) >= 0 ? 'text-green-500' : 'text-red-500'}">${(trade.pnl || 0) >= 0 ? '+' : ''}$${Math.abs(trade.pnl || 0).toFixed(2)}</div>
-                                          </div>
-
-                                          <!-- Compact stats -->
-                                          <div class="space-y-1 text-xs">
-                                            <div class="flex justify-between">
-                                              <span class="text-gray-400">Net:</span>
-                                              <span class="text-white font-semibold">$${runningBalance.toFixed(2)}</span>
-                                            </div>
-                                            <div class="flex justify-between">
-                                              <span class="text-gray-400">Return:</span>
-                                              <span class="${returnPercent >= 0 ? 'text-green-500' : 'text-red-500'} font-semibold">${returnPercent.toFixed(1)}%</span>
-                                            </div>
-                                          </div>
-                                        </div>
-                                      `;
+                                      tooltip.innerHTML = 
+                                        '<div class="bg-black/80 backdrop-blur-xl border border-white/10 rounded-xl p-3 w-[180px] shadow-2xl">' +
+                                          '<div class="mb-2">' +
+                                            '<div class="text-white font-bold text-sm mb-1">' + trade.symbol + ' #' + index + '</div>' +
+                                            '<div class="text-xs text-gray-400">' + new Date(trade.date || '').toLocaleDateString('en-GB') + ' ' + new Date(trade.fillTime || trade.date || '').toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }) + '</div>' +
+                                          '</div>' +
+                                          '<div class="text-center mb-3">' +
+                                            '<div class="text-xl font-black ' + ((trade.pnl || 0) >= 0 ? 'text-green-500' : 'text-red-500') + '">' + ((trade.pnl || 0) >= 0 ? '+' : '') + '$' + Math.abs(trade.pnl || 0).toFixed(2) + '</div>' +
+                                          '</div>' +
+                                          '<div class="space-y-1 text-xs">' +
+                                            '<div class="flex justify-between">' +
+                                              '<span class="text-gray-400">Net:</span>' +
+                                              '<span class="text-white font-semibold">$' + runningBalance.toFixed(2) + '</span>' +
+                                            '</div>' +
+                                            '<div class="flex justify-between">' +
+                                              '<span class="text-gray-400">Return:</span>' +
+                                              '<span class="' + (returnPercent >= 0 ? 'text-green-500' : 'text-red-500') + ' font-semibold">' + returnPercent.toFixed(1) + '%</span>' +
+                                            '</div>' +
+                                          '</div>' +
+                                        '</div>';
                                     } else {
-                                      tooltip.innerHTML = `
-                                        <div class="bg-black/80 backdrop-blur-xl border border-white/10 rounded-xl p-3 w-[180px] shadow-2xl">
-                                          <div class="text-center">
-                                            <div class="text-white font-bold text-sm mb-1">Start #0</div>
-                                            <div class="text-xl font-black text-white">$0.00</div>
-                                            <div class="text-xs text-gray-400 mt-2">Starting Point</div>
-                                          </div>
-                                        </div>
-                                      `;
+                                      tooltip.innerHTML = 
+                                        '<div class="bg-black/80 backdrop-blur-xl border border-white/10 rounded-xl p-3 w-[180px] shadow-2xl">' +
+                                          '<div class="text-center">' +
+                                            '<div class="text-white font-bold text-sm mb-1">Start #0</div>' +
+                                            '<div class="text-xl font-black text-white">$0.00</div>' +
+                                            '<div class="text-xs text-gray-400 mt-2">Starting Point</div>' +
+                                          '</div>' +
+                                        '</div>';
                                     }
                                     
                                     tooltip.style.opacity = '1';
@@ -2703,7 +2695,7 @@ export default function Dashboard() {
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-400">Type:</span>
-                    <span className={`font-semibold capitalize text-yellow-400">
+                    <span className="font-semibold capitalize text-yellow-400"
                       {accounts[0].type}
                     </span>
                   </div>
@@ -3085,9 +3077,9 @@ export default function Dashboard() {
               <div className="text-2xl font-bold mb-1 text-green-400">
                 {(() => {
                   const filteredTrades = getFilteredTrades();
-                  const validRRTrades = filteredTrades.filter(t => t.riskRewardRatio && t.riskRewardRatio > 0);
+                  const validRRTrades = filteredTrades.filter(t => t.pnl !== null && t.pnl > 0 && t.riskAmount && t.riskAmount > 0);
                   if (validRRTrades.length === 0) return '0.00';
-                  const avgRR = validRRTrades.reduce((sum, t) => sum + (t.riskRewardRatio || 0), 0) / validRRTrades.length;
+                  const avgRR = validRRTrades.reduce((sum, t) => sum + Math.abs((t.pnl || 0) / (t.riskAmount || 1)), 0) / validRRTrades.length;
                   return avgRR.toFixed(2);
                 })()}
               </div>
