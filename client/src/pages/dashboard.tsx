@@ -1723,34 +1723,33 @@ export default function Dashboard() {
                 </div>
                 <div className="text-3xl font-bold mb-1 text-yellow-400">
                   {!combinedAnalytics || combinedAnalytics.totalTrades === 0 || !selectedDayData || selectedDayData.totalDayTrades === 0 ? '--' : 
-                   `${Math.round(selectedDayData?.disciplineScore || 0)}% ${
-                    (selectedDayData?.disciplineScore || 0) >= 90 ? 'A' : 
-                    (selectedDayData?.disciplineScore || 0) >= 80 ? 'B' : 
-                    (selectedDayData?.disciplineScore || 0) >= 70 ? 'C' : 
-                    (selectedDayData?.disciplineScore || 0) >= 60 ? 'D' : 'F'
-                   }`}
+                   (() => {
+                     const score = Math.round(selectedDayData?.disciplineScore || 0);
+                     const grade = score >= 90 ? 'A' : score >= 80 ? 'B' : score >= 70 ? 'C' : score >= 60 ? 'D' : 'F';
+                     return score + '% ' + grade;
+                   })()}
                 </div>
                 <div className="text-sm text-gray-400 mb-1">Discipline Score</div>
                 <div className="text-xs text-gray-300">
                   {!combinedAnalytics || combinedAnalytics.totalTrades === 0 || !selectedDayData || selectedDayData.totalDayTrades === 0 ? 
                     'No trades to analyze yet' : 
-                    `Risk: ${Math.round((selectedDayData?.disciplineScore || 0) * 0.85)}% • Consistency: ${Math.round((selectedDayData?.disciplineScore || 0) * 0.90)}%`
+                    'Risk: ' + Math.round((selectedDayData?.disciplineScore || 0) * 0.85) + '% • Consistency: ' + Math.round((selectedDayData?.disciplineScore || 0) * 0.90) + '%'
                   }
                 </div>
               </div>
 
               {/* Risk Utilization */}
               <div className="bg-black/30 rounded-lg p-4 border border-gray-700/50 relative">
-                <div className={`absolute top-3 right-3 text-xs ${getUniversalValueColor(0, 'risk', { warning: 50, danger: 80 }).textColor}`}>
+                <div className={'absolute top-3 right-3 text-xs ' + getUniversalValueColor(0, 'risk', { warning: 50, danger: 80 }).textColor}>
                   Used
                 </div>
-                <div className={`text-3xl font-bold mb-1 ${getUniversalValueColor(0, 'risk', { warning: 50, danger: 80 }).textColor}`}>
+                <div className={'text-3xl font-bold mb-1 ' + getUniversalValueColor(0, 'risk', { warning: 50, danger: 80 }).textColor}>
                   {combinedAnalytics && combinedAnalytics.accounts.length > 0 
                     ? Math.min((selectedDayData?.totalDayTrades || 0) / (combinedAnalytics.accounts[0]?.maxDailyTrades || 1) * 100, 100).toFixed(0)
                     : '0'}%
                 </div>
                 <div className="text-sm text-gray-400 mb-1">Risk Utilization</div>
-                <div className={`text-xs ${getUniversalValueColor(0, 'risk', { warning: 50, danger: 80 }).textColor}`}>
+                <div className={'text-xs ' + getUniversalValueColor(0, 'risk', { warning: 50, danger: 80 }).textColor}>
                   Total: ${combinedAnalytics && combinedAnalytics.accounts.length > 0 
                     ? ((selectedDayData?.totalDayTrades || 0) * (combinedAnalytics.accounts[0]?.riskPerTrade || 0)).toFixed(0)
                     : '0'}
@@ -1767,7 +1766,7 @@ export default function Dashboard() {
                 </div>
                 <div className="text-sm text-gray-400 mb-1">Win Rate</div>
                 <div className="text-xs text-yellow-400">
-                  {selectedDayData?.totalDayTrades > 0 ? `${Math.round(selectedDayData?.winRate || 0)}% success` : 'No trades'}
+                  {selectedDayData?.totalDayTrades > 0 ? Math.round(selectedDayData?.winRate || 0) + '% success' : 'No trades'}
                 </div>
               </div>
 
@@ -1776,12 +1775,12 @@ export default function Dashboard() {
                 <div className="absolute top-3 right-3 text-xs text-yellow-400">
                   PF
                 </div>
-                <div className={`text-3xl font-bold mb-1 ${(() => {
+                <div className={'text-3xl font-bold mb-1 ' + (() => {
                   const grossWin = selectedDayData?.trades?.filter(t => (t.pnl || 0) > 0).reduce((sum, t) => sum + (t.pnl || 0), 0) || 0;
                   const grossLoss = Math.abs(selectedDayData?.trades?.filter(t => (t.pnl || 0) < 0).reduce((sum, t) => sum + (t.pnl || 0), 0) || 0);
                   const profitFactor = grossLoss > 0 ? grossWin / grossLoss : grossWin > 0 ? 999 : 0;
                   return 'text-yellow-400';
-                })()}`}>
+                })()}>
                   {(() => {
                     const grossWin = selectedDayData?.trades?.filter(t => (t.pnl || 0) > 0).reduce((sum, t) => sum + (t.pnl || 0), 0) || 0;
                     const grossLoss = Math.abs(selectedDayData?.trades?.filter(t => (t.pnl || 0) < 0).reduce((sum, t) => sum + (t.pnl || 0), 0) || 0);
@@ -1818,11 +1817,11 @@ export default function Dashboard() {
                   <button
                     key={mode}
                     onClick={() => setCalendarViewMode(mode as 'weekly' | 'monthly' | 'yearly')}
-                    className={`px-4 py-2 text-sm font-medium transition-all duration-200 ${
+                    className={'px-4 py-2 text-sm font-medium transition-all duration-200 ' + (
                       calendarViewMode === mode
                         ? 'bg-amber-600/80 text-amber-100 border-amber-500/40'
                         : 'text-gray-300 hover:text-amber-400 hover:bg-gray-700/30'
-                    }`}
+                    )}
                   >
                     {mode.charAt(0).toUpperCase() + mode.slice(1)}
                   </button>
@@ -1853,7 +1852,7 @@ export default function Dashboard() {
                           const weekStart = new Date(date);
                           const weekEnd = new Date(date);
                           weekEnd.setDate(weekEnd.getDate() + 6);
-                          return `${weekStart.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - ${weekEnd.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}, ${weekStart.getFullYear()}`;
+                          return weekStart.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) + ' - ' + weekEnd.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) + ', ' + weekStart.getFullYear();
                         case 'monthly':
                           return date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
                         case 'yearly':
@@ -1961,7 +1960,7 @@ export default function Dashboard() {
                   </div>
                   <div className="text-xs text-gray-400">Win Rate</div>
                   <div className="text-xs text-emerald-300 mt-1">
-                    {combinedAnalytics?.totalTrades > 0 ? `${Math.round(combinedAnalytics?.winRate || 0)}% success` : 'No trades'}
+                    {combinedAnalytics?.totalTrades > 0 ? Math.round(combinedAnalytics?.winRate || 0) + '% success' : 'No trades'}
                   </div>
                 </div>
 
@@ -2069,12 +2068,12 @@ export default function Dashboard() {
                 <span className="text-sm font-medium text-gray-300">Discipline Score</span>
                 <Shield className="w-4 h-4 text-blue-400" />
               </div>
-              <div className={`text-2xl font-bold mb-1 ${(() => {
+              <div className={'text-2xl font-bold mb-1 ' + (() => {
                 const filteredTrades = getFilteredTrades();
                 if (filteredTrades.length === 0) return 'text-white';
                 const disciplineMetrics = calculateComprehensiveDisciplineMetrics(filteredTrades, accounts || []);
                 return "text-yellow-400";
-              })()}`}>
+              })()}>
                 {(() => {
                   const filteredTrades = accountSelectionMode === 'all' ? trades || [] : 
                     (trades || []).filter(t => selectedAccountIds.includes(t.accountId));
@@ -2085,7 +2084,7 @@ export default function Dashboard() {
                   const score = Math.round(disciplineMetrics.disciplineScore);
                   const grade = score >= 90 ? 'A' : score >= 80 ? 'B' : score >= 70 ? 'C' : score >= 60 ? 'D' : 'F';
                   
-                  return `${score}% ${grade}`;
+                  return score + '% ' + grade;
                 })()}
               </div>
               <div className="text-xs text-gray-400">Trading discipline rating</div>
@@ -2216,7 +2215,7 @@ export default function Dashboard() {
                             ) : null}
                           </div>
                           <Link 
-                            href={`/trades?edit=${trade.id}`}
+                            href={'/trades?edit=' + trade.id}
                             className="inline-flex items-center px-2 py-1 text-xs bg-amber-600/20 text-amber-400 rounded hover:bg-amber-600/30 transition-colors"
                           >
                             Edit
@@ -2368,7 +2367,7 @@ export default function Dashboard() {
                         {/* Main Chart SVG */}
                         <svg 
                           className="w-full h-full relative z-10" 
-                          viewBox={`0 0 ${chartWidth} ${chartHeight}`}
+                          viewBox={'0 0 ' + chartWidth + ' ' + chartHeight}
                           onMouseMove={(e) => {
                             const svg = e.currentTarget;
                             const rect = svg.getBoundingClientRect();
