@@ -1568,7 +1568,7 @@ export default function Dashboard() {
                     </span>
                   </div>
                   
-                  <div className={`text-xs text-center p-2 rounded text-yellow-400">
+                  <div className="text-xs text-center p-2 rounded text-yellow-400">
                     🎉 Great progress! Stay disciplined and protect your gains.
                   </div>
                 </div>
@@ -1751,9 +1751,9 @@ export default function Dashboard() {
                 </div>
                 <div className="text-sm text-gray-400 mb-1">Risk Utilization</div>
                 <div className={'text-xs ' + getUniversalValueColor(0, 'risk', { warning: 50, danger: 80 }).textColor}>
-                  Total: ${combinedAnalytics && combinedAnalytics.accounts.length > 0 
+                  Total: {'$' + (combinedAnalytics && combinedAnalytics.accounts.length > 0 
                     ? ((selectedDayData?.totalDayTrades || 0) * (combinedAnalytics.accounts[0]?.riskPerTrade || 0)).toFixed(0)
-                    : '0'}
+                    : '0')}
                 </div>
               </div>
 
@@ -1932,7 +1932,7 @@ export default function Dashboard() {
                     P&L
                   </div>
                   <div className="text-xl font-bold mb-1 text-yellow-400">
-                    {combinedAnalytics?.totalPnl >= 0 ? '+' : ''}${(combinedAnalytics?.totalPnl || 0).toFixed(0)}
+                    {combinedAnalytics?.totalPnl >= 0 ? '+' : ''}{'$' + (combinedAnalytics?.totalPnl || 0).toFixed(0)}
                   </div>
                   <div className="text-xs text-gray-400">{calendarViewMode.charAt(0).toUpperCase() + calendarViewMode.slice(1)} P&L</div>
                 </div>
@@ -1971,12 +1971,12 @@ export default function Dashboard() {
                     W/L
                   </div>
                   <div className="flex items-center space-x-1 mb-1">
-                    <span className="text-sm font-bold text-yellow-400">W: ${Math.abs(combinedAnalytics?.totalWinnings || 0).toFixed(0)}</span>
-                    <span className="text-sm font-bold text-yellow-400">L: ${Math.abs(combinedAnalytics?.totalLosses || 0).toFixed(0)}</span>
+                    <span className="text-sm font-bold text-yellow-400">W: {'$' + Math.abs(combinedAnalytics?.totalWinnings || 0).toFixed(0)}</span>
+                    <span className="text-sm font-bold text-yellow-400">L: {'$' + Math.abs(combinedAnalytics?.totalLosses || 0).toFixed(0)}</span>
                   </div>
                   <div className="text-xs text-gray-400">Total Wins and Losses</div>
                   <div className="text-xs text-gray-300 mt-1">
-                    Net: <span className="text-yellow-400">${((combinedAnalytics?.totalWinnings || 0) - Math.abs(combinedAnalytics?.totalLosses || 0)).toFixed(0)}</span>
+                    Net: <span className="text-yellow-400">{'$' + ((combinedAnalytics?.totalWinnings || 0) - Math.abs(combinedAnalytics?.totalLosses || 0)).toFixed(0)}</span>
                   </div>
                 </div>
 
@@ -2776,12 +2776,13 @@ export default function Dashboard() {
                   <div className="space-y-4">
                     <div className="flex justify-between items-center">
                       <span className="text-gray-400">Overall Score:</span>
-                      <span className={`text-xl font-bold text-yellow-400`}>
-                        {(() => {
-                          const score = Math.round(disciplineMetrics.disciplineScore);
-                          const grade = score >= 90 ? 'A' : score >= 80 ? 'B' : score >= 70 ? 'C' : score >= 60 ? 'D' : 'F';
-                          return `${score}% ${grade}`;
-                        })()}
+                      <span className="text-xl font-bold text-yellow-400">
+                        {Math.round(disciplineMetrics.disciplineScore)}% {
+                          Math.round(disciplineMetrics.disciplineScore) >= 90 ? 'A' : 
+                          Math.round(disciplineMetrics.disciplineScore) >= 80 ? 'B' : 
+                          Math.round(disciplineMetrics.disciplineScore) >= 70 ? 'C' : 
+                          Math.round(disciplineMetrics.disciplineScore) >= 60 ? 'D' : 'F'
+                        }
                       </span>
                     </div>
                     <div className="flex justify-between items-center">
@@ -2830,22 +2831,22 @@ export default function Dashboard() {
                       <div key={account.id} className="bg-cyan-600/30 rounded-lg p-3">
                         <div className="flex justify-between text-sm mb-2">
                           <span className="truncate">{account.name}</span>
-                          <span className={`font-medium ${
+                          <span className={'font-medium ' + (
                             riskPercentage > 80 ? 'text-red-500' : 
                             riskPercentage > 60 ? 'text-orange-400' : 
                             'text-yellow-400'
-                          }`}>
+                          )}>
                             {riskPercentage.toFixed(1)}%
                           </span>
                         </div>
                         <div className="w-full bg-gray-700 rounded-full h-2">
                           <div 
-                            className={`h-2 rounded-full ${
+                            className={'h-2 rounded-full ' + (
                               riskPercentage > 80 ? 'bg-red-500' : 
                               riskPercentage > 60 ? 'bg-orange-500' : 
                               'bg-yellow-500'
-                            }`}
-                            style={{ width: `${Math.min(100, riskPercentage)}%` }}
+                            )}
+                            style={{ width: Math.min(100, riskPercentage) + '%' }}
                           />
                         </div>
                         <p className="text-xs text-gray-400 mt-1">
