@@ -2191,7 +2191,7 @@ export default function Dashboard() {
                                 href={trade.tradingViewLink}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="inline-flex items-center px-2 py-1 text-xs bg-blue-600/20 text-blue-400 rounded hover:bg-blue-600/30 transition-colors"
+                                className="inline-flex items-center px-2 py-1 text-xs bg-yellow-600/20 text-yellow-400 rounded hover:bg-yellow-600/30 transition-colors"
                               >
                                 <BarChart3 className="w-3 h-3 mr-1" />
                                 TradingView
@@ -2202,7 +2202,7 @@ export default function Dashboard() {
                                 href={trade.tradeImage}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="inline-flex items-center px-2 py-1 text-xs bg-green-600/20 text-green-500 rounded hover:bg-green-600/30 transition-colors"
+                                className="inline-flex items-center px-2 py-1 text-xs bg-yellow-600/20 text-yellow-400 rounded hover:bg-yellow-600/30 transition-colors"
                               >
                                 <FileText className="w-3 h-3 mr-1" />
                                 Chart
@@ -2391,7 +2391,7 @@ export default function Dashboard() {
                                     content = 
                                       '<div class="font-semibold text-yellow-400">' + point.trade.symbol + '</div>' +
                                       '<div class="text-xs mt-1">' +
-                                        '<div>P&L: <span class="' + (point.trade.pnl >= 0 ? 'text-green-500' : 'text-red-500') + '">' + (point.trade.pnl >= 0 ? '+' : '') + '$' + Math.abs(point.trade.pnl).toFixed(2) + '</span></div>' +
+                                        '<div>P&L: <span class="text-yellow-400">' + (point.trade.pnl >= 0 ? '+' : '') + '$' + Math.abs(point.trade.pnl).toFixed(2) + '</span></div>' +
                                         '<div>Date: ' + new Date(point.date).toLocaleDateString() + '</div>' +
                                         '<div>Trade #' + point.tradesCount + '</div>' +
                                       '</div>';
@@ -2599,7 +2599,7 @@ export default function Dashboard() {
                                             '<div class="text-xs text-gray-400">' + new Date(trade.date || '').toLocaleDateString('en-GB') + ' ' + new Date(trade.fillTime || trade.date || '').toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }) + '</div>' +
                                           '</div>' +
                                           '<div class="text-center mb-3">' +
-                                            '<div class="text-xl font-black ' + ((trade.pnl || 0) >= 0 ? 'text-green-500' : 'text-red-500') + '">' + ((trade.pnl || 0) >= 0 ? '+' : '') + '$' + Math.abs(trade.pnl || 0).toFixed(2) + '</div>' +
+                                            '<div class="text-xl font-black text-yellow-400">' + ((trade.pnl || 0) >= 0 ? '+' : '') + '$' + Math.abs(trade.pnl || 0).toFixed(2) + '</div>' +
                                           '</div>' +
                                           '<div class="space-y-1 text-xs">' +
                                             '<div class="flex justify-between">' +
@@ -2608,7 +2608,7 @@ export default function Dashboard() {
                                             '</div>' +
                                             '<div class="flex justify-between">' +
                                               '<span class="text-gray-400">Return:</span>' +
-                                              '<span class="' + (returnPercent >= 0 ? 'text-green-500' : 'text-red-500') + ' font-semibold">' + returnPercent.toFixed(1) + '%</span>' +
+                                              '<span class="text-yellow-400 font-semibold">' + returnPercent.toFixed(1) + '%</span>' +
                                             '</div>' +
                                           '</div>' +
                                         '</div>';
@@ -2668,7 +2668,7 @@ export default function Dashboard() {
               <div className="space-y-3">
                 <div className="flex justify-between">
                   <span className="text-gray-400">Active Accounts:</span>
-                  <span className="text-green-500 font-semibold">{accounts?.filter(a => a.status === 'active').length || 0}</span>
+                  <span className="text-yellow-400 font-semibold">{accounts?.filter(a => a.status === 'active').length || 0}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-400">Challenge Accounts:</span>
@@ -2676,7 +2676,7 @@ export default function Dashboard() {
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-400">Funded Accounts:</span>
-                  <span className="text-green-500 font-semibold">{accounts?.filter(a => a.type === 'funded').length || 0}</span>
+                  <span className="text-yellow-400 font-semibold">{accounts?.filter(a => a.type === 'funded').length || 0}</span>
                 </div>
               </div>
             </div>
@@ -2787,15 +2787,15 @@ export default function Dashboard() {
                     </div>
                     <div className="flex justify-between items-center">
                       <span className="text-gray-400">Risk Management:</span>
-                      <span className="text-orange-400 font-semibold">{Math.round(disciplineMetrics.riskManagementScore)}%</span>
+                      <span className="text-yellow-400 font-semibold">{Math.round(disciplineMetrics.riskManagementScore)}%</span>
                     </div>
                     <div className="flex justify-between items-center">
                       <span className="text-gray-400">Emotional Control:</span>
-                      <span className="text-blue-400 font-semibold">{Math.round(disciplineMetrics.emotionalControlScore)}%</span>
+                      <span className="text-yellow-400 font-semibold">{Math.round(disciplineMetrics.emotionalControlScore)}%</span>
                     </div>
                     <div className="flex justify-between items-center">
                       <span className="text-gray-400">Consistency:</span>
-                      <span className="text-green-500 font-semibold">{Math.round(disciplineMetrics.consistencyScore)}%</span>
+                      <span className="text-yellow-400 font-semibold">{Math.round(disciplineMetrics.consistencyScore)}%</span>
                     </div>
                   </div>
                 );
@@ -2831,11 +2831,7 @@ export default function Dashboard() {
                       <div key={account.id} className="bg-cyan-600/30 rounded-lg p-3">
                         <div className="flex justify-between text-sm mb-2">
                           <span className="truncate">{account.name}</span>
-                          <span className={'font-medium ' + (
-                            riskPercentage > 80 ? 'text-red-500' : 
-                            riskPercentage > 60 ? 'text-orange-400' : 
-                            'text-yellow-400'
-                          )}>
+                          <span className="font-medium text-yellow-400">
                             {riskPercentage.toFixed(1)}%
                           </span>
                         </div>
@@ -2963,7 +2959,7 @@ export default function Dashboard() {
                 <span className="text-sm font-medium text-gray-300">Profit Factor</span>
                 <Target className="w-4 h-4 text-yellow-400" />
               </div>
-              <div className="text-2xl font-bold mb-1 text-green-400">
+              <div className="text-2xl font-bold mb-1 text-yellow-400">
                 {(() => {
                   const filteredTrades = getFilteredTrades();
                   const totalWinnings = filteredTrades.filter(t => (t.pnl || 0) > 0).reduce((sum, t) => sum + (t.pnl || 0), 0);
@@ -2980,7 +2976,7 @@ export default function Dashboard() {
                 <span className="text-sm font-medium text-gray-300">Sharpe Ratio</span>
                 <TrendingUp className="w-4 h-4 text-yellow-400" />
               </div>
-              <div className="text-2xl font-bold mb-1 text-green-400">
+              <div className="text-2xl font-bold mb-1 text-yellow-400">
                 {(() => {
                   const filteredTrades = getFilteredTrades();
                   if (filteredTrades.length === 0) return '0.00';
@@ -3000,7 +2996,7 @@ export default function Dashboard() {
                 <span className="text-sm font-medium text-gray-300">Max Consecutive Wins</span>
                 <TrendingUp className="w-4 h-4 text-yellow-400" />
               </div>
-              <div className="text-2xl font-bold mb-1 text-green-400">
+              <div className="text-2xl font-bold mb-1 text-yellow-400">
                 {(() => {
                   const filteredTrades = getFilteredTrades();
                   let maxWins = 0, currentWins = 0;
@@ -3024,7 +3020,7 @@ export default function Dashboard() {
                 <span className="text-sm font-medium text-gray-300">Max Consecutive Losses</span>
                 <TrendingDown className="w-4 h-4 text-yellow-400" />
               </div>
-              <div className="text-2xl font-bold mb-1 text-red-400">
+              <div className="text-2xl font-bold mb-1 text-yellow-400">
                 {(() => {
                   const filteredTrades = getFilteredTrades();
                   let maxLosses = 0, currentLosses = 0;
@@ -3051,7 +3047,7 @@ export default function Dashboard() {
                 <span className="text-sm font-medium text-gray-300">Largest Win</span>
                 <Trophy className="w-4 h-4 text-yellow-400" />
               </div>
-              <div className="text-2xl font-bold mb-1 text-green-400">
+              <div className="text-2xl font-bold mb-1 text-yellow-400">
                 {formatCurrency(Math.max(...getFilteredTrades().map(t => t.pnl || 0), 0))}
               </div>
               <div className="text-xs text-gray-400">Best single trade</div>
@@ -3063,7 +3059,7 @@ export default function Dashboard() {
                 <span className="text-sm font-medium text-gray-300">Largest Loss</span>
                 <AlertTriangle className="w-4 h-4 text-yellow-400" />
               </div>
-              <div className="text-2xl font-bold mb-1 text-red-400">
+              <div className="text-2xl font-bold mb-1 text-yellow-400">
                 {formatCurrency(Math.min(...getFilteredTrades().map(t => t.pnl || 0), 0))}
               </div>
               <div className="text-xs text-gray-400">Worst single trade</div>
@@ -3075,7 +3071,7 @@ export default function Dashboard() {
                 <span className="text-sm font-medium text-gray-300">Avg R:R Ratio</span>
                 <Scale className="w-4 h-4 text-amber-400" />
               </div>
-              <div className="text-2xl font-bold mb-1 text-green-400">
+              <div className="text-2xl font-bold mb-1 text-yellow-400">
                 {(() => {
                   const filteredTrades = getFilteredTrades();
                   const validRRTrades = filteredTrades.filter(t => t.pnl !== null && t.pnl > 0 && t.riskAmount && t.riskAmount > 0);
