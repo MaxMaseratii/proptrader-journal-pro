@@ -2695,7 +2695,7 @@ export default function Dashboard() {
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-400">Type:</span>
-                    <span className="font-semibold capitalize text-yellow-400"
+                    <span className="font-semibold capitalize text-yellow-400">
                       {accounts[0].type}
                     </span>
                   </div>
