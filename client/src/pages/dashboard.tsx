@@ -671,7 +671,7 @@ export default function Dashboard() {
                 <div className={`text-sm font-bold mb-1 ${
                   'text-yellow-400'
                 }`}>
-                  {monthPnL > 0 ? '+' : ''}${Math.abs(monthPnL).toFixed(0)}
+                  {monthPnL > 0 ? '+' : ''}{formatCurrency(Math.abs(monthPnL))}
                 </div>
                 
                 {/* Bottom metrics */}
@@ -1410,7 +1410,7 @@ export default function Dashboard() {
                 <div className="flex items-center space-x-2">
                   <span className="text-sm text-gray-400">Daily P&L:</span>
                   <span className="text-lg font-bold text-yellow-400">
-                    {selectedDayData?.dayPnL >= 0 ? '+' : ''}${Math.abs(selectedDayData?.dayPnL || 0).toFixed(2)}
+                    {selectedDayData?.dayPnL >= 0 ? '+' : ''}{formatCurrency(Math.abs(selectedDayData?.dayPnL || 0))}
                   </span>
                 </div>
               </div>
@@ -1475,7 +1475,7 @@ export default function Dashboard() {
                         style={{ left: `${Math.min((Math.abs(selectedDayData?.dayPnL || 0) / 100) * 100, 95)}%` }}
                       >
                         <div className="bg-white/90 text-black text-xs font-bold px-2 py-0.5 rounded-full shadow-lg">
-                          ${Math.abs(selectedDayData?.dayPnL || 0).toFixed(0)}
+                          {formatCurrency(Math.abs(selectedDayData?.dayPnL || 0))}
                         </div>
                       </div>
                     </div>
@@ -1487,7 +1487,7 @@ export default function Dashboard() {
                       Math.abs(selectedDayData?.dayPnL || 0) >= 80 ? getUniversalValueColor(-80, 'risk', { warning: 50, danger: 80 }).textColor : 
                       getUniversalValueColor(-50, 'risk', { warning: 50, danger: 80 }).textColor
                     }`}>
-                      ${Math.abs(selectedDayData?.dayPnL || 0)} of $100 daily limit used ({Math.min((Math.abs(selectedDayData?.dayPnL || 0) / 100) * 100, 100).toFixed(0)}%)
+                      {formatCurrency(Math.abs(selectedDayData?.dayPnL || 0))} of $100 daily limit used ({Math.min((Math.abs(selectedDayData?.dayPnL || 0) / 100) * 100, 100).toFixed(0)}%)
                     </span>
                   </div>
                   
@@ -1555,7 +1555,7 @@ export default function Dashboard() {
                         style={{ left: `${Math.min(((selectedDayData?.dayPnL || 0) / 100) * 100, 95)}%` }}
                       >
                         <div className="bg-white/90 text-black text-xs font-bold px-2 py-0.5 rounded-full shadow-lg">
-                          ${(selectedDayData?.dayPnL || 0).toFixed(0)}
+                          {formatCurrency(selectedDayData?.dayPnL || 0)}
                         </div>
                       </div>
                     </div>
@@ -1563,7 +1563,7 @@ export default function Dashboard() {
                   
                   <div className="text-center">
                     <span className="text-sm font-bold text-yellow-400">
-                      ${(selectedDayData?.dayPnL || 0)} of $100 target ({(((selectedDayData?.dayPnL || 0) / 100) * 100).toFixed(0)}%)
+                      {formatCurrency(selectedDayData?.dayPnL || 0)} of $100 target ({(((selectedDayData?.dayPnL || 0) / 100) * 100).toFixed(0)}%)
                     </span>
                   </div>
                   
@@ -1611,10 +1611,10 @@ export default function Dashboard() {
                 {combinedAnalytics && combinedAnalytics.accounts.length > 0 ? (
                   <>
                     <div className="absolute top-3 right-3 text-xs text-yellow-400">
-                      Max: ${combinedAnalytics.accounts[0]?.maxDrawdown || 0}
+                      Max: {formatCurrency(combinedAnalytics.accounts[0]?.maxDrawdown || 0)}
                     </div>
                     <div className="text-3xl font-bold mb-1 text-yellow-400">
-                      ${combinedAnalytics.accounts[0]?.riskPerTrade || 0}
+                      {formatCurrency(combinedAnalytics.accounts[0]?.riskPerTrade || 0)}
                     </div>
                   </>
                 ) : (
@@ -1663,7 +1663,7 @@ export default function Dashboard() {
                   <div 
                     className="h-1 rounded-full transition-all duration-500 bg-yellow-400"
                     style={{ 
-                      width: `${Math.min((selectedDayData?.totalDayTrades || 0) / 10 * 100, 100)}%` 
+                      width: "50%" 
                     }}
                   />
                 </div>
@@ -1689,33 +1689,21 @@ export default function Dashboard() {
                   })()}h
                 </div>
                 <div className="text-sm text-gray-400 mb-1">Hours Worked</div>
-                <div className={`text-xs mb-1 ${(() => {
+                <div className="text-xs mb-1 text-yellow-400">
+                  Hourly wage: {formatCurrency((() => {
                     const today = new Date().toISOString().split('T')[0];
                     const todayTrades = trades?.filter(t => t.date === today) || [];
                     const hoursWorked = todayTrades.length * 0.5;
                     const todayPnL = todayTrades.reduce((sum, t) => sum + (t.pnl || 0), 0);
-                    const hourlyWage = hoursWorked > 0 ? (todayPnL / hoursWorked) : 0;
-                    return "text-yellow-400";
-                  })()}`}>
-                  Hourly wage: ${(() => {
-                    const today = new Date().toISOString().split('T')[0];
-                    const todayTrades = trades?.filter(t => t.date === today) || [];
-                    const hoursWorked = todayTrades.length * 0.5;
-                    const todayPnL = todayTrades.reduce((sum, t) => sum + (t.pnl || 0), 0);
-                    return hoursWorked > 0 ? (todayPnL / hoursWorked).toFixed(2) : '0.00';
-                  })()}
+                    return hoursWorked > 0 ? (todayPnL / hoursWorked) : 0;
+                  })())}
                 </div>
-                <div className={`text-xs ${(() => {
+                <div className="text-xs text-yellow-400">
+                  Total: {formatCurrency((() => {
                     const today = new Date().toISOString().split('T')[0];
                     const todayTrades = trades?.filter(t => t.date === today) || [];
-                    const todayPnL = todayTrades.reduce((sum, t) => sum + (t.pnl || 0), 0);
-                    return "text-yellow-400";
-                  })()}`}>
-                  Total: ${(() => {
-                    const today = new Date().toISOString().split('T')[0];
-                    const todayTrades = trades?.filter(t => t.date === today) || [];
-                    return todayTrades.reduce((sum, t) => sum + (t.pnl || 0), 0).toFixed(2);
-                  })()} (H. Worked x H. Wage)
+                    return todayTrades.reduce((sum, t) => sum + (t.pnl || 0), 0);
+                  })())} (H. Worked x H. Wage)
                 </div>
               </div>
             </div>
@@ -1726,26 +1714,14 @@ export default function Dashboard() {
               {/* Discipline */}
               <div className="bg-black/30 rounded-lg p-4 border border-gray-700/50 relative">
                 <div className="absolute top-3 right-3">
-                  <div className={`px-2 py-1 rounded text-xs font-bold ${
-                    !combinedAnalytics || combinedAnalytics.totalTrades === 0 || !selectedDayData || selectedDayData.totalDayTrades === 0 ? 'bg-gray-600 text-gray-300' :
-                    (selectedDayData?.disciplineScore || 0) >= 90 ? 'bg-green-500 text-black' : 
-                    (selectedDayData?.disciplineScore || 0) >= 80 ? 'bg-blue-500 text-white' : 
-                    (selectedDayData?.disciplineScore || 0) >= 70 ? 'bg-yellow-500 text-black' : 
-                    'bg-red-500 text-white'
-                  }`}>
+                  <div className="px-2 py-1 rounded text-xs font-bold bg-gray-600 text-gray-300">
                     {!combinedAnalytics || combinedAnalytics.totalTrades === 0 || !selectedDayData || selectedDayData.totalDayTrades === 0 ? 'NO DATA' :
                      (selectedDayData?.disciplineScore || 0) >= 90 ? 'ELITE' : 
                      (selectedDayData?.disciplineScore || 0) >= 80 ? 'GOOD' : 
                      (selectedDayData?.disciplineScore || 0) >= 70 ? 'AVG' : 'POOR'}
                   </div>
                 </div>
-                <div className={`text-3xl font-bold mb-1 ${
-                  !combinedAnalytics || combinedAnalytics.totalTrades === 0 || !selectedDayData || selectedDayData.totalDayTrades === 0 ? 'text-gray-500' :
-                  (selectedDayData?.disciplineScore || 0) >= 90 ? "text-yellow-400" : 
-                  (selectedDayData?.disciplineScore || 0) >= 80 ? "text-yellow-400" : 
-                  (selectedDayData?.disciplineScore || 0) >= 70 ? getUniversalValueColor(70, 'risk', { warning: 70, danger: 60 }).textColor : 
-                  (selectedDayData?.disciplineScore || 0) >= 60 ? getUniversalValueColor(60, 'risk', { warning: 70, danger: 60 }).textColor : 'text-yellow-400'
-                }`}>
+                <div className="text-3xl font-bold mb-1 text-yellow-400">
                   {!combinedAnalytics || combinedAnalytics.totalTrades === 0 || !selectedDayData || selectedDayData.totalDayTrades === 0 ? '--' : 
                    `${Math.round(selectedDayData?.disciplineScore || 0)}% ${
                     (selectedDayData?.disciplineScore || 0) >= 90 ? 'A' : 
