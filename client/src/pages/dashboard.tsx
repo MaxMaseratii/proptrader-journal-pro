@@ -455,7 +455,7 @@ export default function Dashboard() {
                   <span className="text-gray-400">{metrics.totalTrades}T</span>
                   <span className={`font-medium ${
                     metrics.totalTrades === 0 ? 'text-gray-500' :
-                    text-yellow-400
+                    'text-yellow-400'
                   }`}>
                     {metrics.totalTrades > 0 ? Math.round(metrics.winRate) : 0}%
                   </span>
@@ -589,7 +589,7 @@ export default function Dashboard() {
                     <span className="text-gray-400">{metrics.totalTrades}T</span>
                     <span className={`font-medium ${
                       metrics.totalTrades === 0 ? 'text-gray-500' :
-                      text-yellow-400
+                      'text-yellow-400'
                     }`}>
                       {metrics.totalTrades > 0 ? Math.round(metrics.winRate) : 0}%
                     </span>
@@ -669,7 +669,7 @@ export default function Dashboard() {
                 
                 {/* P&L */}
                 <div className={`text-sm font-bold mb-1 ${
-                  text-yellow-400
+                  'text-yellow-400'
                 }`}>
                   {monthPnL > 0 ? '+' : ''}${Math.abs(monthPnL).toFixed(0)}
                 </div>
@@ -679,7 +679,7 @@ export default function Dashboard() {
                   <span className="text-gray-400">{monthTrades}T</span>
                   <span className={`font-medium ${
                     monthTrades === 0 ? 'text-gray-500' :
-                    text-yellow-400
+                    'text-yellow-400'
                   }`}>
                     {monthTrades > 0 ? Math.round(monthWinRate) : 0}%
                   </span>
@@ -1567,7 +1567,7 @@ export default function Dashboard() {
                     </span>
                   </div>
                   
-                  <div className={`text-xs text-center p-2 rounded "text-yellow-400">
+                  <div className={`text-xs text-center p-2 rounded text-yellow-400">
                     🎉 Great progress! Stay disciplined and protect your gains.
                   </div>
                 </div>
@@ -1744,7 +1744,7 @@ export default function Dashboard() {
                   (selectedDayData?.disciplineScore || 0) >= 90 ? "text-yellow-400" : 
                   (selectedDayData?.disciplineScore || 0) >= 80 ? "text-yellow-400" : 
                   (selectedDayData?.disciplineScore || 0) >= 70 ? getUniversalValueColor(70, 'risk', { warning: 70, danger: 60 }).textColor : 
-                  (selectedDayData?.disciplineScore || 0) >= 60 ? getUniversalValueColor(60, 'risk', { warning: 70, danger: 60 }).textColor : text-yellow-400
+                  (selectedDayData?.disciplineScore || 0) >= 60 ? getUniversalValueColor(60, 'risk', { warning: 70, danger: 60 }).textColor : 'text-yellow-400'
                 }`}>
                   {!combinedAnalytics || combinedAnalytics.totalTrades === 0 || !selectedDayData || selectedDayData.totalDayTrades === 0 ? '--' : 
                    `${Math.round(selectedDayData?.disciplineScore || 0)}% ${
@@ -2010,7 +2010,7 @@ export default function Dashboard() {
                     AVG
                   </div>
                   <div className="text-xl font-bold mb-1">
-                    <span className="text-yellow-400">"text-yellow-400"</span>
+                    <span className="text-yellow-400">$00.00</span>
                   </div>
                   <div className="text-xs text-gray-400">Avg Win/Loss</div>
                   <div className="text-xs text-blue-300 mt-1">
@@ -2728,7 +2728,7 @@ export default function Dashboard() {
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-400">Type:</span>
-                    <span className={`font-semibold capitalize "text-yellow-400">
+                    <span className={`font-semibold capitalize text-yellow-400">
                       {accounts[0].type}
                     </span>
                   </div>
@@ -2809,7 +2809,7 @@ export default function Dashboard() {
                   <div className="space-y-4">
                     <div className="flex justify-between items-center">
                       <span className="text-gray-400">Overall Score:</span>
-                      <span className={`text-xl font-bold "text-yellow-400">
+                      <span className={`text-xl font-bold text-yellow-400`}>
                         {(() => {
                           const score = Math.round(disciplineMetrics.disciplineScore);
                           const grade = score >= 90 ? 'A' : score >= 80 ? 'B' : score >= 70 ? 'C' : score >= 60 ? 'D' : 'F';
