@@ -2604,7 +2604,7 @@ export default function Dashboard() {
                                           '<div class="space-y-1 text-xs">' +
                                             '<div class="flex justify-between">' +
                                               '<span class="text-gray-400">Net:</span>' +
-                                              '<span class="text-white font-semibold">$' + runningBalance.toFixed(2) + '</span>' +
+                                              '<span class="text-yellow-400 font-semibold">$' + runningBalance.toFixed(2) + '</span>' +
                                             '</div>' +
                                             '<div class="flex justify-between">' +
                                               '<span class="text-gray-400">Return:</span>' +
@@ -2617,7 +2617,7 @@ export default function Dashboard() {
                                         '<div class="bg-black/80 backdrop-blur-xl border border-white/10 rounded-xl p-3 w-[180px] shadow-2xl">' +
                                           '<div class="text-center">' +
                                             '<div class="text-white font-bold text-sm mb-1">Start #0</div>' +
-                                            '<div class="text-xl font-black text-white">$0.00</div>' +
+                                            '<div class="text-xl font-black text-yellow-400">$0.00</div>' +
                                             '<div class="text-xs text-gray-400 mt-2">Starting Point</div>' +
                                           '</div>' +
                                         '</div>';
@@ -2691,7 +2691,7 @@ export default function Dashboard() {
                 <div className="space-y-3">
                   <div className="flex justify-between">
                     <span className="text-gray-400">Name:</span>
-                    <span className="text-white font-semibold">{accounts[0].name}</span>
+                    <span className="text-yellow-400 font-semibold">{accounts[0].name}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-400">Type:</span>
@@ -2701,7 +2701,7 @@ export default function Dashboard() {
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-400">Net:</span>
-                    <span className="text-white font-semibold">{formatCurrency(0)}</span>
+                    <span className="text-yellow-400 font-semibold">{formatCurrency(0)}</span>
                   </div>
                 </div>
               )}
@@ -2716,7 +2716,7 @@ export default function Dashboard() {
               <div className="space-y-3">
                 <div className="flex justify-between">
                   <span className="text-gray-400">Total Capital:</span>
-                  <span className="text-white font-semibold">{formatCurrency(accounts?.reduce((sum, acc) => sum + (acc.startingBalance || 0), 0) || 0)}</span>
+                  <span className="text-yellow-400 font-semibold">{formatCurrency(accounts?.reduce((sum, acc) => sum + (acc.startingBalance || 0), 0) || 0)}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-400">Total P&L:</span>
