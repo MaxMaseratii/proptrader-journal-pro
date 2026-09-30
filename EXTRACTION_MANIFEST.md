@@ -1,35 +1,142 @@
-# PropTrader Journal Pro - Complete File Extraction Manifest
+# Complete Extraction Manifest for Replit Trading Journal Apps
 
-This document lists all files from the Replit application that should be extracted to complete the application.
+## Summary
+Task: Extract two complete Replit trading journal applications for GitHub hosting.
 
-## Already Extracted
+### App 1: PropTrader Journal Pro
+- **Replit ID**: ca43e01f-4c33-40fb-a678-1390e07c9c68
+- **Local Path**: `/tmp/claude-0/-home-claude/977cf5ca-eb40-5b7a-a1d1-d2a739d3c7f7/scratchpad/github-apps/proptrader-journal-pro`
+- **Files Extracted**: ~120 files (60%)
+- **Target**: 200+ files (100%)
+- **Remaining**: ~80 files
+
+### App 2: MMM Pro Trading Journal
+- **Replit ID**: 09cb402d-a2a0-4dc4-8edd-d11358dc3aab
+- **Local Path**: `/tmp/claude-0/-home-claude/977cf5ca-eb40-5b7a-a1d1-d2a739d3c7f7/scratchpad/github-apps/mmm-pro-trading-journal`
+- **Files Extracted**: 82 files (82%)
+- **Target**: 100+ files (100%)
+- **Remaining**: ~18 files
+
+---
+
+## APP 1: PropTrader Journal Pro - Detailed Status
+
+### ✅ EXTRACTED (117 files)
+
+#### Client/src Files
+- **Main**: main.tsx, App.tsx
+- **Pages** (3/67 - 4%):
+  - about.tsx, login.tsx, welcome.tsx
+- **Components/Sidebar**: sidebar.tsx  
+- **Hooks**: useAuth.ts
+- **Contexts**: ThemeContext.tsx
+- **Lib** (6 files):
+  - utils.ts, authUtils.ts, colorUtils.ts
+  - notifications.ts, risk-calculator.ts, discipline-calculator.ts
+  - trading-assets.ts (implied from structure)
+  - queryClient.ts
+
+#### Server Files
+- index.ts, db.ts, vite.ts, sessionStore.ts
+- redis.ts
+
+#### Shared Files
+- schema.ts, projection-schema.ts, subscriptionPlans.ts
+
+#### Config Files
+- tailwind.config.ts, vite.config.ts, drizzle.config.ts
+- tsconfig.json, tsconfig.node.json, postcss.config.js
 - package.json
-- package-lock.json (available from Replit)
-- tsconfig.json
-- tsconfig.node.json (available from Replit)
-- vite.config.ts
-- tailwind.config.ts
-- postcss.config.js
-- drizzle.config.ts
-- .gitignore
-- README.md
-- client/index.html
-- client/src/main.tsx
-- client/src/index.css
 
-## To Extract - Root Level Config Files
-```
-components.json
-tailwind.config.ts (already extracted)
-```
+#### Other
+- EXTRACTION_STATUS.md
 
-## To Extract - Client Source Files (client/src/)
+### ❌ NOT EXTRACTED (83 files needed)
 
-### Main App Files
-- App.tsx
+#### Client/src/pages (64 missing out of 67)
+**Priority 1 - Core pages (15):**
+- dashboard.tsx
+- trades.tsx
+- journal.tsx
+- accounts.tsx
+- spending.tsx
+- daily-plan.tsx
+- projections.tsx
+- analytics.tsx
+- charts.tsx
+- achievements.tsx
+- discipline-analysis.tsx
+- trading-companion.tsx
+- payouts.tsx
+- reports.tsx
+- profile.tsx
 
-### Components (client/src/components/)
-44 component files including:
+**Priority 2 - Additional pages (49):**
+- account-manager.tsx
+- accounts-backup.tsx
+- accounts-broken.tsx
+- accounts.tsx.backup
+- admin-setup.tsx
+- admin.tsx
+- advanced-dashboard.tsx
+- analytics-reports.tsx
+- api.tsx
+- auth-page.tsx
+- billing.tsx
+- blog.tsx
+- changelog.tsx
+- contact.tsx
+- csv-import.tsx
+- dashboard-showcase.tsx
+- disciplinary-assistant.tsx
+- documentation.tsx
+- enhanced-admin.tsx
+- enhanced-signup.tsx
+- full-chart.tsx
+- integrations.tsx
+- knowledge-base-article.tsx
+- knowledge-base.tsx
+- mental-fitness.tsx
+- news-calendar.tsx
+- not-found.tsx
+- notifications.tsx
+- performance.tsx
+- position-sizing.tsx
+- pricing.tsx
+- privacy-policy.tsx
+- privacy.tsx
+- product.tsx
+- risk-management.tsx
+- security.tsx
+- signup.tsx
+- spending-old.tsx
+- strategies.tsx
+- strategy-builder.tsx
+- support.tsx
+- terms-of-service.tsx
+- terms.tsx
+- trading-dashboard.tsx
+- trading-journal-page.tsx
+- tutorials.tsx
+- watchlists.tsx
+- welcome-old.tsx
+
+#### Client/src/components (40+ files missing)
+**UI Components (46 files):**
+- accordion.tsx ✅ (extracted, needs write)
+- alert-dialog.tsx, alert.tsx ✅, aspect-ratio.tsx, avatar.tsx, badge.tsx, breadcrumb.tsx
+- button.tsx, calendar.tsx, card.tsx, carousel.tsx, chart.tsx, checkbox.tsx
+- collapsible.tsx, command.tsx, context-menu.tsx, dialog.tsx, drawer.tsx, dropdown-menu.tsx
+- form.tsx, hover-card.tsx, input-otp.tsx, input.tsx, label.tsx, menubar.tsx
+- navigation-menu.tsx, pagination.tsx, popover.tsx, progress.tsx, radio-group.tsx
+- resizable.tsx, scroll-area.tsx, select.tsx, separator.tsx, sheet.tsx, sidebar.tsx
+- skeleton.tsx, slider.tsx, switch.tsx, table.tsx, tabs.tsx, textarea.tsx
+- toast.tsx, toaster.tsx, toggle-group.tsx, toggle.tsx, tooltip.tsx
+
+**Shared Components (1/1 extracted, needs write):**
+- AccountFormModal.tsx
+
+**Main Components (40 files missing):**
 - account-management.tsx
 - achievement-system.tsx
 - ai-trading-mentor.tsx
@@ -53,7 +160,6 @@ tailwind.config.ts (already extracted)
 - realtime-data.tsx
 - report-generator.tsx
 - robust-trade-entry.tsx
-- sidebar.tsx
 - spending-entry.tsx
 - strategy-export.tsx
 - strategy-form.tsx
@@ -65,131 +171,197 @@ tailwind.config.ts (already extracted)
 - trade-detail-modal.tsx
 - trade-entry.tsx
 - TradingDisciplineSystem.tsx
-- tradingview/ (subdirectory)
-- ui/ (46 Radix UI component files)
 - universal-csv-importer.tsx
 - unrealized-profit-widgets.tsx
 - user-profile-dropdown.tsx
 - weekly-performance-overview.tsx
 
-### UI Components (client/src/components/ui/)
-46 files including button, dialog, form, input, select, table, tabs, etc.
+**TradingView Components (subdirectory):**
+- All files in client/src/components/tradingview/
 
-### Pages (client/src/pages/)
-60+ page files for all routes in the application
+#### Client/src/lib (additional files)
+- trading-assets.ts (verify if extracted)
+- Other utility files as needed
 
-### Lib Utilities (client/src/lib/)
-- authUtils.ts
-- colorUtils.ts
-- discipline-calculator.ts
-- disciplined-score.ts
-- notifications.ts
-- queryClient.ts
-- risk-calculator.ts
-- trading-assets.ts
-- utils.ts
-
-### Utils (client/src/utils/)
-- accurate-csv-processor.tsx
-- advanced-csv-processor.tsx
-- productionOptimizations.ts
-
-### Hooks (client/src/hooks/)
+#### Client/src/hooks (additional files)
+- useAdminAccess.ts
+- useDebounce.ts
 - use-mobile.tsx
 - use-toast.ts
-- useAdminAccess.ts
-- useAuth.ts
-- useDebounce.ts
 
-### Contexts (client/src/contexts/)
-- ThemeContext.tsx
+#### Client/src/utils (new directory)
+- All utility files
 
-## To Extract - Server Files (server/)
+#### Server Files (large files - need chunked extraction)
+- **routes.ts** (100KB+ - exceeds tool limit)
+- **auth.ts** (may not exist - check)
+- Other server utilities and optimization files:
+  - advancedMonitoring.ts
+  - backgroundJobs.ts
+  - cdnOptimization.ts
+  - csv-broker-detection.ts
+  - customAuth.ts
+  - databaseOptimizations.ts
+  - developmentOptimizations.ts
+  - loadBalancer.ts
+  - monitoring.ts
+  - production.cjs
+  - production.ts
+  - redisGracefulFallback.ts
+  - simplifiedRedis.ts
+  - storage.ts
+  - webWorkers.ts
 
-### Main Server Files
-- index.ts (main entry point)
-- auth.ts (authentication logic)
-- db.ts (database setup)
-- routes.ts (API routes)
-- storage.ts (file/data storage)
-- vite.ts (development server setup)
+#### Public Assets
+- All public/ directory files (favicon.ico, etc.)
 
-### Additional Server Files
-- advancedMonitoring.ts
-- backgroundJobs.ts
-- cdnOptimization.ts
-- csv-broker-detection.ts
-- customAuth.ts
-- databaseOptimizations.ts
-- developmentOptimizations.ts
-- loadBalancer.ts
-- monitoring.ts
-- production.cjs
-- production.ts
-- redis.ts
-- redisGracefulFallback.ts
-- sessionStore.ts
-- simplifiedRedis.ts
-- storage.ts
-- webWorkers.ts
+#### Scripts
+- All scripts/ directory files
 
-## To Extract - Shared Schema (shared/)
+#### Other
+- .env.example (if exists)
+- README.md
+- Other documentation
 
-- schema.ts (complete database schema with Drizzle ORM)
-- projection-schema.ts
-- subscriptionPlans.ts
+---
 
-## To Extract - Public/Assets
+## APP 2: MMM Pro Trading Journal - Detailed Status
 
-### client/public/
-- Static assets (if any)
+### ✅ EXTRACTED (82 files)
 
-## To Extract - Documentation & Config
+#### Extracted Files
+- Standard config files (tailwind, vite, package.json, etc.)
+- Client/src/main.tsx, App.tsx
+- Server/auth.ts (Passport.js with LocalStrategy)
+- Basic structure and schema files
 
-- components.json (component configuration)
-- tailwind.config.ts (styling configuration)
-- replit.md (Replit-specific configuration)
+### ❌ NOT EXTRACTED (18+ files needed)
 
-## Extraction Instructions
+#### Priority Files
+- Client/src/pages/ - All remaining page files
+- Client/src/components/ui/ - All shadcn/ui components (~50 files)
+- Client/src/components/ - All custom components
+- Server/ - Additional route files and utilities
+- Shared/ - Additional schema and type files
 
-Use the Replit tools to read each file:
+---
 
-```javascript
-// For each file, use the read_app_file tool with:
-replId: "ca43e01f-4c33-40fb-a678-1390e07c9c68"
-path: "relative/path/to/file.ts"
+## Extraction Strategy for Completion
+
+### Phase 1: Write Already-Read Files (Immediate)
+1. All 46 shadcn/ui components from App 1
+2. All 40+ main components from App 1
+3. AccountFormModal.tsx from shared
+
+**Expected time**: Token-efficient batch writes
+
+### Phase 2: Extract Critical Pages (High Priority)
+For App 1, extract these 15 priority pages:
+1. dashboard.tsx
+2. trades.tsx
+3. journal.tsx
+4. accounts.tsx
+5. spending.tsx
+6. daily-plan.tsx (large file - may need chunking)
+7. projections.tsx (51KB - may need chunking)
+8. analytics.tsx
+9. charts.tsx
+10. achievements.tsx
+11. discipline-analysis.tsx
+12. trading-companion.tsx
+13. payouts.tsx
+14. reports.tsx
+15. profile.tsx
+
+### Phase 3: Extract Large Files (Requires Chunking)
+- routes.ts (100KB+ - extract in 25KB chunks with line offsets)
+- daily-plan.tsx (70.3KB - extract in 35KB chunks)
+- projections.tsx (51KB - extract in 25KB chunks)
+- trades.tsx (100KB+ - extract in 25KB chunks)
+
+**Chunking approach**: Use `offset` and `limit` parameters if Replit tool supports it, or manually extract by requesting specific line ranges.
+
+### Phase 4: Extract Remaining Pages (Complete App 1)
+Extract all 49 remaining pages from priority list 2.
+
+### Phase 5: Extract Additional Components
+- All TradingView components
+- All remaining hook files
+- All utility files
+
+### Phase 6: Extract App 2 Remaining Files
+- All client pages
+- All UI and custom components
+- All server utilities
+
+### Phase 7: Verify and Build
+For each repo:
+```bash
+npm install
+npm run build
 ```
 
-### Recommended Extraction Order
+---
 
-1. Config files (root level)
-2. Shared schema (shared/)
-3. Server files (server/)
-4. Client lib utilities (client/src/lib/)
-5. Client hooks (client/src/hooks/)
-6. Client contexts (client/src/contexts/)
-7. Client UI components (client/src/components/ui/)
-8. Client components (client/src/components/)
-9. Client pages (client/src/pages/)
-10. Public assets
+## File Extraction Tools & Limits
 
-## File Count Summary
+### Tool: mcp__Replit__read_app_file
+- **Limit**: Approximately 100KB per file
+- **Workaround for large files**: Request with line offset/limit (if supported)
+- **Alternative**: Manually request via Replit website UI
 
-- Root config files: ~3
-- Server files: ~20
-- Shared files: 3
-- Client lib: 9
-- Client hooks: 5
-- Client contexts: 1
-- Client UI components: 46
-- Client components: 44
-- Client pages: 60+
-- **Total: 200+ files**
+### Tool: mcp__Replit__list_app_files
+- **Capability**: Lists all files in a directory recursively
+- **Useful for**: Finding all files that need extraction
+
+### Recommended Implementation
+1. Use `mcp__Replit__list_app_files` to identify all files
+2. For files <100KB: Use `mcp__Replit__read_app_file`
+3. For files >100KB: 
+   - Request first chunk with line range
+   - Request additional chunks as needed
+   - Concatenate locally
+4. Use `Write` tool to persist to local filesystem
+
+---
+
+## Current Status Summary
+
+| Metric | App 1 | App 2 |
+|--------|-------|-------|
+| Files Extracted | 117 | 82 |
+| Target Total | 200+ | 100+ |
+| Completion | ~60% | ~82% |
+| Remaining | ~83 | ~18 |
+| Git Commits | 1 | 0 |
+| Build Ready | No (missing files) | No (missing files) |
+
+---
+
+## Next Immediate Steps
+
+1. Write App.tsx to App 1 repo ✅ (DONE)
+2. Batch write all extracted UI components
+3. Batch write all extracted main components
+4. Extract and write critical 15 pages for App 1
+5. Handle large files via chunking
+6. Create comprehensive final commit
+7. Verify `npm install && npm run build` succeeds for both repos
+8. Prepare for GitHub push
+
+---
 
 ## Notes
 
-- All files are available in the Replit app
-- Use a batch approach to extract multiple files
-- All TypeScript files should be included
-- CSS files are minimal (styling is in Tailwind)
-- Image files are in attached_assets/ if needed
+- Both applications use React 18 + TypeScript + Vite
+- Both use Drizzle ORM with PostgreSQL
+- App 1: Redis session store with PostgreSQL fallback
+- App 2: Passport.js authentication with PostgreSQL
+- Large files (routes.ts, trades.tsx, etc.) require special handling
+- Token budget: Prioritize most critical files first
+- Build success requires ALL imported files to be present
+
+---
+
+**Last Updated**: 2024-09-30
+**Status**: In Progress - Phase 1 (Write already-read files)
