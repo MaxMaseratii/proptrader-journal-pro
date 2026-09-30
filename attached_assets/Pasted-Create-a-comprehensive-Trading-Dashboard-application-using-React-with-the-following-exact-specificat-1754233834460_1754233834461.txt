@@ -1,0 +1,94 @@
+Create a comprehensive Trading Dashboard application using React with the following exact specifications:
+Overall Structure:
+Build a tabbed interface with 2 main sections:
+
+"Pre-session Mental Check & Daily Plan" (Psychology workflow)
+"Trading Strategies" (Strategy management)
+
+Technical Requirements:
+
+Use React with hooks (useState, useEffect, useMemo)
+Import all UI components from '@/components/ui/' (card, button, input, label, textarea, badge, slider, tabs, select, dialog)
+Import Lucide React icons
+Use Tailwind CSS classes throughout
+Include gradient backgrounds and professional styling
+Dark theme with slate/blue color scheme
+
+Section 1: Pre-session Mental Check & Daily Plan
+Create a 4-step workflow with progress indicator:
+Step 1: Pre-Session Check
+
+Mental state assessment with 4 sliders (1-5 scale): Emotional Clarity, Physical Energy, Focus Level, Confidence
+Auto-calculate overall readiness score (sum of 4 values)
+Auto-determine Go/No-Go decision based on score (16+ = GO, 12-15 = REDUCED, <12 = NO-GO)
+Identity check with 4 trader personas (clickable cards)
+Psychological scan inputs for biggest fear and strongest desire
+Edge vs outcome selection buttons
+
+Step 2: Daily Plan
+
+Account and strategy selection dropdowns
+Trading parameters: Risk Amount, Target Profit, Max Trades, Planned Trades
+Time inputs: Start Time, End Time
+Trading notes textarea
+
+Step 3: Real-Time Execution
+
+Entry decision tracking (Plan/Emotion/Impulse buttons)
+Emergency Protocol button that opens a 4-step modal overlay
+Progress tracking to next step
+
+Step 4: Post-Trade Analysis
+
+Discipline scorecard with 5 categories, each rated 1-5
+Auto-calculate total discipline score out of 25
+Reflection questions
+
+Section 2: Trading Strategies
+Include complete strategy management:
+Strategy Grid:
+
+Card-based layout showing all strategies
+Each card displays: name, description, status badge, win rate, R:R ratio, edge calculation
+Performance summary if trades > 0
+"View Details" and "Use" buttons
+
+Create Strategy Dialog:
+
+Form with: Strategy Name, Status dropdown, Description, Expected Win Rate, Risk/Reward Ratio, Trading Rules (multi-line), Market Conditions, Target Assets
+
+Strategy Details Modal:
+
+4 metric cards showing key performance indicators
+Strategy overview section
+Trading rules displayed as numbered steps
+Market conditions and target assets in separate cards
+
+Search and Filter:
+
+Search input with magnifying glass icon
+Status filter dropdown (All/Active/Testing/Paused)
+
+Mock Data:
+Include 3 sample strategies with realistic data and 3 sample accounts.
+Design Requirements:
+
+Use gradient backgrounds throughout (slate-900 to slate-950 base)
+Professional card designs with hover effects
+Color-coded status badges
+Rainbow gradient text for main headings
+Consistent spacing and typography
+Responsive grid layouts
+Professional button styling with gradients
+
+Key Interactions:
+
+Tab switching between sections
+Progress indicator showing current step
+Emergency protocol modal overlay
+Strategy creation and detailed viewing
+Cross-section functionality (using strategies in daily plans)
+
+Styling:
+Include custom CSS for rainbow gradient text animation and ensure all components use professional color schemes with blue/purple/green accent colors.
+Make sure every component is fully functional with proper state management and the interface flows smoothly between all sections and steps.

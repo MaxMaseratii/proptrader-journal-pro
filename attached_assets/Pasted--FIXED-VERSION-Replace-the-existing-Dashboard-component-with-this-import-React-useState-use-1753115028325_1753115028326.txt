@@ -1,0 +1,638 @@
+// FIXED VERSION - Replace the existing Dashboard component with this
+
+import React, { useState, useMemo, useEffect } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+// ... (keep all existing imports)
+
+export default function Dashboard() {
+  const queryClient = useQueryClient();
+  
+  // ===== FIXED STATE MANAGEMENT =====
+  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [calendarViewMode, setCalendarViewMode] = useState('weekly');
+  const [currentWeekStart, setCurrentWeekStart] = useState(() => {
+    const today = new Date();
+    const dayOfWeek = today.getDay();
+    const daysToSubtract = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
+    const start = new Date(today);
+    start.setDate(today.getDate() - daysToSubtract);
+    return start;
+  });
+  
+  // ... (keep all other existing state variables)
+  const [selectedAccountIds, setSelectedAccountIds] = useState([]);
+  const [accountSelectionMode, setAccountSelectionMode] = useState('all');
+  
+  // ===== DATA QUERIES =====
+  const { data: accounts, isLoading: accountsLoading } = useQuery({
+    queryKey: ["/api/accounts"],
+  });
+
+  const { data: trades, isLoading: tradesLoading } = useQuery({
+    queryKey: ["/api/trades"],
+  });
+
+  // ===== FIXED: SINGLE SOURCE OF TRUTH FOR DAY DATA =====
+  const selectedDayData = useMemo(() => {
+    if (!trades || !selectedDate) return null;
+    
+    console.log('🎯 Calculating day data for:', selectedDate.toDateString());
+    console.log('📊 Available trades:', trades.length);
+    console.log('🎛️ Selected accounts:', selectedAccountIds);
+    
+    const dayTrades = getTradesForDate(selectedDate, trades, selectedAccountIds);
+    console.log('📈 Day trades found:', dayTrades.length);
+    
+    if (dayTrades.length === 0) {
+      return {
+        date: selectedDate,
+        totalDayTrades: 0,
+        wins: 0,
+        losses: 0,
+        dayPnL: 0,
+        avgRiskPerTrade: 0,
+        avgRewardRatio: 0,
+        maxDailyRisk: 0,
+        disciplineScore: 0,
+        winRate: 0,
+        hoursWorked: 0,
+        hoursPlanned: 8,
+        trades: []
+      };
+    }
+    
+    const totalDayTrades = dayTrades.length;
+    const wins = dayTrades.filter(t => (t.pnl || 0) > 0).length;
+    const losses = dayTrades.filter(t => (t.pnl || 0) <= 0).length;
+    const dayPnL = dayTrades.reduce((sum, t) => sum + (t.pnl || 0), 0);
+    
+    const avgRiskPerTrade = totalDayTrades > 0 ? 
+      dayTrades.reduce((sum, t) => sum + Math.abs(t.pnl || 0), 0) / totalDayTrades : 0;
+    
+    const winningTrades = dayTrades.filter(t => (t.pnl || 0) > 0);
+    const avgRewardRatio = winningTrades.length > 0 ? 
+      winningTrades.reduce((sum, t) => sum + (t.pnl || 0), 0) / winningTrades.length : 0;
+    
+    const result = {
+      date: selectedDate,
+      totalDayTrades,
+      wins,
+      losses,
+      dayPnL,
+      avgRiskPerTrade: Math.round(avgRiskPerTrade),
+      avgRewardRatio: Math.round(avgRewardRatio),
+      maxDailyRisk: avgRiskPerTrade * 5,
+      disciplineScore: Math.min(95, 70 + (wins / totalDayTrades) * 25), // Realistic calculation
+      winRate: totalDayTrades > 0 ? (wins / totalDayTrades) * 100 : 0,
+      hoursWorked: totalDayTrades * 0.5, // Estimate based on trades
+      hoursPlanned: 8,
+      trades: dayTrades
+    };
+    
+    console.log('✅ Final day data:', result);
+    return result;
+  }, [selectedDate, trades, selectedAccountIds]);
+
+  // ===== FIXED: CALENDAR DAY CLICK HANDLER =====
+  const handleDayClick = (clickedDate) => {
+    console.log('🖱️ Day clicked:', clickedDate.toDateString());
+    setSelectedDate(clickedDate);
+    // Note: selectedDayData will automatically update due to useMemo dependency
+  };
+
+  // ===== FIXED: CLEAR SELECTION HANDLER =====
+  const clearDaySelection = () => {
+    console.log('🗑️ Clearing day selection');
+    setSelectedDate(new Date()); // Reset to today
+  };
+
+  // ===== HELPER FUNCTIONS (keep existing) =====
+  const getTradesForDate = (date, trades = [], selectedAccountIds) => {
+    const dateStr = date.toISOString().split('T')[0];
+    
+    return trades.filter(trade => {
+      const matchesDate = trade.date === dateStr;
+      const matchesAccount = selectedAccountIds.length === 0 || selectedAccountIds.includes(trade.accountId);
+      return matchesDate && matchesAccount;
+    });
+  };
+
+  const getDayMetrics = (date, trades = [], selectedAccountIds) => {
+    const dayTrades = getTradesForDate(date, trades, selectedAccountIds);
+    const totalPnL = dayTrades.reduce((sum, trade) => sum + (trade.pnl || 0), 0);
+    const totalTrades = dayTrades.length;
+    const winningTrades = dayTrades.filter(trade => (trade.pnl || 0) > 0).length;
+    const winRate = totalTrades > 0 ? (winningTrades / totalTrades) * 100 : 0;
+    
+    return {
+      totalPnL,
+      totalTrades,
+      winningTrades,
+      losingTrades: totalTrades - winningTrades,
+      winRate,
+      trades: dayTrades
+    };
+  };
+
+  // ===== FIXED: WEEKLY CALENDAR COMPONENT =====
+  const WeeklyCalendarView = ({ currentWeekStart, trades, accounts, selectedAccountIds, selectedDate, onDayClick }) => {
+    const weekDays = [];
+    const today = new Date();
+    
+    // Generate 7 days starting from currentWeekStart
+    for (let i = 0; i < 7; i++) {
+      const date = new Date(currentWeekStart);
+      date.setDate(date.getDate() + i);
+      weekDays.push(date);
+    }
+
+    const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
+    return (
+      <div className="bg-gray-800/40 rounded-lg border border-gray-600/30 p-4">
+        {/* Week Header */}
+        <div className="grid grid-cols-7 gap-2 mb-4">
+          {dayNames.map(dayName => (
+            <div key={dayName} className="text-center text-sm font-semibold text-gray-300 py-2">
+              {dayName}
+            </div>
+          ))}
+        </div>
+        
+        {/* Week Days */}
+        <div className="grid grid-cols-7 gap-2">
+          {weekDays.map(date => {
+            const metrics = getDayMetrics(date, trades, selectedAccountIds);
+            const isToday = date.toDateString() === today.toDateString();
+            const isSelected = selectedDate?.toDateString() === date.toDateString();
+            const isCurrentMonth = date.getMonth() === currentWeekStart.getMonth();
+            
+            return (
+              <div
+                key={date.toISOString()}
+                className={`
+                  relative p-3 rounded-lg border transition-all duration-200 h-24 cursor-pointer
+                  ${isSelected
+                    ? 'border-amber-400 bg-amber-900/20 shadow-lg ring-2 ring-amber-400/50'
+                    : isToday 
+                    ? 'border-teal-400/60 bg-gradient-to-br from-teal-900/30 via-gray-800/40 to-teal-900/30' 
+                    : isCurrentMonth
+                    ? 'border-gray-600/40 bg-gradient-to-br from-gray-800/40 via-gray-700/40 to-gray-800/40'
+                    : 'border-gray-700/30 bg-gradient-to-br from-gray-900/30 via-gray-800/30 to-gray-900/30 opacity-60'
+                  }
+                  hover:border-amber-400/60 hover:scale-105
+                `}
+                onClick={() => {
+                  console.log('📅 Calendar day clicked:', date.toDateString());
+                  onDayClick(date);
+                }}
+              >
+                {/* Today indicator */}
+                {isToday && (
+                  <div className="absolute top-1 right-1 w-2 h-2 rounded-full bg-teal-400 animate-pulse" />
+                )}
+                
+                {/* Selected indicator */}
+                {isSelected && (
+                  <div className="absolute top-1 left-1 w-2 h-2 rounded-full bg-amber-400" />
+                )}
+                
+                {/* Date */}
+                <div className={`text-sm font-semibold mb-1 ${
+                  isSelected ? 'text-amber-400' :
+                  isToday ? 'text-teal-400' : 
+                  isCurrentMonth ? 'text-gray-200' : 'text-gray-500'
+                }`}>
+                  {date.getDate()}
+                </div>
+                
+                {/* P&L */}
+                <div className={`text-xs font-bold mb-1 ${
+                  metrics.totalPnL > 0 ? 'text-green-400' : 
+                  metrics.totalPnL < 0 ? 'text-red-400' : 'text-gray-400'
+                }`}>
+                  {metrics.totalPnL > 0 ? '+' : ''}${Math.abs(metrics.totalPnL).toFixed(0)}
+                </div>
+                
+                {/* Bottom metrics */}
+                <div className="flex justify-between items-center text-xs">
+                  <span className="text-gray-400">{metrics.totalTrades}T</span>
+                  <span className={`font-medium ${
+                    metrics.winRate >= 80 ? 'text-green-400' :
+                    metrics.winRate >= 60 ? 'text-yellow-400' :
+                    metrics.winRate >= 40 ? 'text-orange-400' : 'text-red-400'
+                  }`}>
+                    {metrics.totalTrades > 0 ? Math.round(metrics.winRate) : 0}%
+                  </span>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    );
+  };
+
+  // ===== KEEP ALL OTHER EXISTING COMPONENTS (MonthlyCalendarView, YearlyCalendarView) =====
+  // (Copy the existing MonthlyCalendarView and YearlyCalendarView components exactly, 
+  //  but make sure they call onDayClick properly)
+
+  // ===== FIXED: MAIN RENDER WITH PROPER DAY DATA DISPLAY =====
+  if (accountsLoading || tradesLoading) {
+    return (
+      <div className="flex items-center justify-center h-full">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-gray-400">Loading dashboard...</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <>
+      {/* Keep existing header */}
+      <header className="bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 border-b border-gray-700 px-8 py-6">
+        {/* ... existing header content ... */}
+      </header>
+
+      <div className="p-6 space-y-6">
+        
+        {/* ===== FIXED: ENHANCED TRADING PERFORMANCE SECTION ===== */}
+        <div className="mb-8">
+          <div className="flex items-center justify-between mb-6 border-b border-gray-700 pb-3">
+            <h2 className="text-xl font-bold text-gradient-rainbow flex items-center">
+              <BarChart3 className="mr-3 h-5 w-5 text-prop-gold" />
+              Daily Trading Performance Analysis
+            </h2>
+          </div>
+          
+          {/* ===== SELECTED DAY DATA DISPLAY ===== */}
+          {selectedDayData && (
+            <div className={`
+              relative transition-all duration-200 rounded-lg overflow-hidden w-full mb-6
+              ${selectedDayData.date.toDateString() === new Date().toDateString() 
+                ? 'bg-gradient-to-br from-teal-950/40 via-gray-900/60 to-black/80 border border-teal-400/50' 
+                : 'bg-gradient-to-br from-amber-950/40 via-gray-900/60 to-black/80 border border-amber-400/50'
+              }
+              hover:border-amber-400/60
+            `}>
+              
+              <div className="p-4">
+                
+                {/* Header + PNL Combined */}
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center space-x-2">
+                    <Calendar className="w-4 h-4 text-amber-400" />
+                    <span className="text-lg font-bold text-amber-400">
+                      {selectedDayData.date.toLocaleDateString('en-US', { weekday: 'short' })} {selectedDayData.date.getDate()}
+                    </span>
+                    <span className="text-sm text-gray-500">
+                      {selectedDayData.date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}
+                    </span>
+                    {selectedDayData.date.toDateString() === new Date().toDateString() && (
+                      <div className="w-2 h-2 rounded-full bg-teal-400 animate-pulse" />
+                    )}
+                  </div>
+                  <div className="bg-gray-900/80 rounded-lg px-4 py-3 border border-gray-700/50">
+                    <div className="flex items-center space-x-2">
+                      <span className="text-sm text-gray-400">Daily P&L:</span>
+                      <span className={`text-lg font-bold ${selectedDayData.dayPnL >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                        {selectedDayData.dayPnL >= 0 ? '+' : ''}${selectedDayData.dayPnL.toFixed(2)}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Progress Bar */}
+                <div className="mb-4">
+                  <div className="relative w-3/4 bg-gray-700/50 rounded-full h-6 mx-auto">
+                    <div 
+                      className={`h-6 rounded-full transition-all duration-500 flex items-center justify-center ${selectedDayData.dayPnL >= 0 ? 'bg-green-400' : 'bg-red-400'}`}
+                      style={{ 
+                        width: `${Math.min(Math.abs(selectedDayData.dayPnL) / 100 * 100, 100)}%`, 
+                        minWidth: '120px' 
+                      }}
+                    >
+                      <span className="text-xs font-medium text-black">
+                        {Math.min(Math.abs(selectedDayData.dayPnL) / 100 * 100, 100).toFixed(0)}% of $100 target
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* 2x4 Metrics Grid */}
+                <div className="space-y-3">
+                  
+                  {/* Row 1 */}
+                  <div className="grid grid-cols-4 gap-4">
+                    
+                    {/* Risk Per Trade */}
+                    <div className="bg-black/30 rounded-lg p-4 border border-gray-700/50 relative">
+                      <div className="absolute top-3 right-3 text-xs text-red-400">
+                        Max: ${selectedDayData.maxDailyRisk}
+                      </div>
+                      <div className="text-3xl font-bold text-red-400 mb-1">
+                        ${selectedDayData.avgRiskPerTrade}
+                      </div>
+                      <div className="text-sm text-gray-400">Risk Per Trade</div>
+                    </div>
+
+                    {/* Risk:Reward */}
+                    <div className="bg-black/30 rounded-lg p-4 border border-gray-700/50 relative">
+                      <div className="absolute top-3 right-3 text-xs text-blue-300">
+                        Target: 3.0 RR
+                      </div>
+                      <div className="text-3xl font-bold text-blue-400 mb-1">
+                        {(selectedDayData.avgRewardRatio / selectedDayData.avgRiskPerTrade || 0).toFixed(1)}
+                      </div>
+                      <div className="text-sm text-gray-400">Risk:Reward</div>
+                      <div className="text-xs text-blue-300 mt-1">
+                        AVG. Ratio 1:{(selectedDayData.avgRewardRatio / selectedDayData.avgRiskPerTrade || 0).toFixed(1)}
+                      </div>
+                    </div>
+
+                    {/* Trades Executed */}
+                    <div className="bg-black/30 rounded-lg p-4 border border-gray-700/50 relative">
+                      <div className="absolute top-3 right-3 text-xs text-purple-300">
+                        {selectedDayData.totalDayTrades}/5
+                      </div>
+                      <div className="text-3xl font-bold text-purple-400 mb-1">
+                        {selectedDayData.totalDayTrades}
+                      </div>
+                      <div className="w-full bg-gray-700/50 rounded-full h-1 mb-2">
+                        <div 
+                          className="h-1 rounded-full bg-purple-400 transition-all duration-500"
+                          style={{ width: `${Math.min(selectedDayData.totalDayTrades / 5 * 100, 100)}%` }}
+                        />
+                      </div>
+                      <div className="text-sm text-gray-400 mb-1">Trades Executed</div>
+                      <div className="text-xs text-gray-300">
+                        W:{selectedDayData.wins} L:{selectedDayData.losses}
+                      </div>
+                    </div>
+
+                    {/* Hours Worked */}
+                    <div className="bg-black/30 rounded-lg p-4 border border-gray-700/50 relative">
+                      <div className="absolute top-3 right-3 text-xs text-indigo-300">
+                        <div className="flex items-center space-x-1">
+                          <div className="w-2 h-2 rounded-full bg-indigo-400"></div>
+                          <span>Plan: {selectedDayData.hoursPlanned}h</span>
+                        </div>
+                      </div>
+                      <div className="text-3xl font-bold text-indigo-400 mb-1">
+                        {selectedDayData.hoursWorked.toFixed(1)}h
+                      </div>
+                      <div className="text-sm text-gray-400 mb-1">Hours Worked</div>
+                      <div className="text-xs text-indigo-300 mb-1">
+                        Hourly wage: ${selectedDayData.hoursWorked > 0 ? (selectedDayData.dayPnL / selectedDayData.hoursWorked).toFixed(2) : '0.00'}
+                      </div>
+                      <div className="text-xs text-gray-300">
+                        Total: ${selectedDayData.dayPnL.toFixed(2)}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Row 2 */}
+                  <div className="grid grid-cols-4 gap-4">
+                    
+                    {/* Discipline Score */}
+                    <div className="bg-black/30 rounded-lg p-4 border border-gray-700/50 relative">
+                      <div className="absolute top-3 right-3">
+                        <div className={`px-2 py-1 rounded text-xs font-bold ${
+                          selectedDayData.disciplineScore >= 90 ? 'bg-green-500 text-black' : 
+                          selectedDayData.disciplineScore >= 80 ? 'bg-blue-500 text-white' : 
+                          selectedDayData.disciplineScore >= 70 ? 'bg-yellow-500 text-black' : 
+                          'bg-red-500 text-white'
+                        }`}>
+                          {selectedDayData.disciplineScore >= 90 ? 'ELITE' : 
+                           selectedDayData.disciplineScore >= 80 ? 'GOOD' : 
+                           selectedDayData.disciplineScore >= 70 ? 'AVG' : 'POOR'}
+                        </div>
+                      </div>
+                      <div className={`text-3xl font-bold mb-1 ${
+                        selectedDayData.disciplineScore >= 90 ? 'text-green-400' : 
+                        selectedDayData.disciplineScore >= 80 ? 'text-green-400' : 
+                        selectedDayData.disciplineScore >= 70 ? 'text-yellow-400' : 
+                        selectedDayData.disciplineScore >= 60 ? 'text-orange-400' : 'text-red-400'
+                      }`}>
+                        {Math.round(selectedDayData.disciplineScore)}% {
+                          selectedDayData.disciplineScore >= 90 ? 'A' : 
+                          selectedDayData.disciplineScore >= 80 ? 'B' : 
+                          selectedDayData.disciplineScore >= 70 ? 'C' : 
+                          selectedDayData.disciplineScore >= 60 ? 'D' : 'F'
+                        }
+                      </div>
+                      <div className="text-sm text-gray-400 mb-1">Discipline Score</div>
+                      <div className="text-xs text-gray-300">
+                        Risk: 85% • Consistency: 90%
+                      </div>
+                    </div>
+
+                    {/* Risk Utilization */}
+                    <div className="bg-black/30 rounded-lg p-4 border border-gray-700/50 relative">
+                      <div className="absolute top-3 right-3 text-xs text-orange-300">
+                        Used
+                      </div>
+                      <div className="text-3xl font-bold text-orange-400 mb-1">
+                        {Math.min(selectedDayData.totalDayTrades / 5 * 100, 100).toFixed(0)}%
+                      </div>
+                      <div className="text-sm text-gray-400 mb-1">Risk Utilization</div>
+                      <div className="text-xs text-orange-300">
+                        Total: ${(selectedDayData.totalDayTrades * selectedDayData.avgRiskPerTrade).toFixed(0)}
+                      </div>
+                    </div>
+
+                    {/* Wins and Losses */}
+                    <div className="bg-black/30 rounded-lg p-4 border border-gray-700/50 relative">
+                      <div className="absolute top-3 right-3 text-xs text-green-300">
+                        W/L
+                      </div>
+                      <div className="flex items-center space-x-2 mb-1">
+                        <span className="text-lg font-bold text-green-400">
+                          W: ${(selectedDayData.wins * selectedDayData.avgRewardRatio).toFixed(0)}
+                        </span>
+                        <span className="text-lg font-bold text-red-400">
+                          L: ${(selectedDayData.losses * selectedDayData.avgRiskPerTrade).toFixed(0)}
+                        </span>
+                      </div>
+                      <div className="text-sm text-gray-400 mb-1">Total Wins and Losses</div>
+                      <div className="text-xs text-gray-300">
+                        Avg W/L ${selectedDayData.avgRewardRatio.toFixed(2)} / ${selectedDayData.avgRiskPerTrade.toFixed(2)}
+                      </div>
+                    </div>
+
+                    {/* Win Rate */}
+                    <div className="bg-black/30 rounded-lg p-4 border border-gray-700/50 relative">
+                      <div className="absolute top-3 right-3 text-xs text-emerald-300">
+                        WR
+                      </div>
+                      <div className="text-3xl font-bold text-emerald-400 mb-1">
+                        {selectedDayData.totalDayTrades > 0 ? Math.round(selectedDayData.winRate) : 0}%
+                      </div>
+                      <div className="text-sm text-gray-400 mb-1">Win Rate</div>
+                      <div className="text-xs text-emerald-300">
+                        Profit Factor {selectedDayData.losses > 0 ? 
+                          ((selectedDayData.wins * selectedDayData.avgRewardRatio) / (selectedDayData.losses * selectedDayData.avgRiskPerTrade)).toFixed(2) : 
+                          (selectedDayData.wins > 0 ? '∞' : '0.00')}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Day Selection Indicator */}
+        {selectedDayData && selectedDayData.date.toDateString() !== new Date().toDateString() && (
+          <div className="mb-6 bg-amber-900/20 border border-amber-400/30 rounded-lg p-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center">
+                <div className="w-2 h-2 bg-amber-400 rounded-full animate-pulse mr-3"></div>
+                <span className="text-amber-400 font-semibold">
+                  Viewing data for {selectedDayData.date.toLocaleDateString('en-US', { 
+                    weekday: 'long',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                  })}
+                </span>
+              </div>
+              <button
+                onClick={clearDaySelection}
+                className="px-3 py-1 bg-amber-600/80 hover:bg-amber-600 text-white text-sm rounded-md transition-colors"
+              >
+                Back to Today
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* ===== ENHANCED CALENDAR NAVIGATION SECTION ===== */}
+        <div className="mb-8">
+          <div className="flex items-center justify-between mb-6 border-b border-gray-700 pb-3">
+            <h2 className="text-xl font-bold text-gradient-rainbow flex items-center">
+              <Calendar className="mr-3 h-5 w-5 text-prop-gold" />
+              Trading Calendar & Performance Overview
+            </h2>
+          </div>
+          
+          <div className="bg-gradient-to-br from-gray-900/40 via-gray-800/60 to-black/80 border border-gray-600/30 rounded-lg p-6">
+            
+            {/* Enhanced Navigation Header */}
+            <div className="flex items-center justify-between mb-6">
+              
+              {/* View Mode Selector */}
+              <div className="flex bg-gray-800/40 rounded-lg border border-gray-600/30 overflow-hidden">
+                {['weekly', 'monthly', 'yearly'].map(mode => (
+                  <button
+                    key={mode}
+                    onClick={() => setCalendarViewMode(mode)}
+                    className={`px-4 py-2 text-sm font-medium transition-all duration-200 ${
+                      calendarViewMode === mode
+                        ? 'bg-amber-600/80 text-amber-100 border-amber-500/40'
+                        : 'text-gray-300 hover:text-amber-400 hover:bg-gray-700/30'
+                    }`}
+                  >
+                    {mode.charAt(0).toUpperCase() + mode.slice(1)}
+                  </button>
+                ))}
+              </div>
+
+              {/* Date Range Navigation */}
+              <div className="flex items-center bg-gray-800/40 rounded-lg border border-gray-600/30 shadow-md overflow-hidden">
+                <button
+                  onClick={() => {
+                    const newDate = new Date(currentWeekStart);
+                    if (calendarViewMode === 'weekly') newDate.setDate(newDate.getDate() - 7);
+                    else if (calendarViewMode === 'monthly') newDate.setMonth(newDate.getMonth() - 1);
+                    else if (calendarViewMode === 'yearly') newDate.setFullYear(newDate.getFullYear() - 1);
+                    setCurrentWeekStart(newDate);
+                  }}
+                  className="p-2 hover:bg-gray-700/40 text-gray-400 hover:text-amber-400 transition-all duration-200"
+                >
+                  <ChevronLeft className="w-4 h-4" />
+                </button>
+                
+                <div className="px-6 py-2 border-x border-gray-600/20">
+                  <span className="text-lg font-semibold text-amber-400 min-w-48 text-center block">
+                    {(() => {
+                      const date = currentWeekStart || new Date();
+                      switch (calendarViewMode) {
+                        case 'weekly':
+                          const weekStart = new Date(date);
+                          const weekEnd = new Date(date);
+                          weekEnd.setDate(weekEnd.getDate() + 6);
+                          return `${weekStart.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - ${weekEnd.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}, ${weekStart.getFullYear()}`;
+                        case 'monthly':
+                          return date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+                        case 'yearly':
+                          return date.getFullYear().toString();
+                        default:
+                          return '';
+                      }
+                    })()}
+                  </span>
+                </div>
+                
+                <button
+                  onClick={() => {
+                    const newDate = new Date(currentWeekStart);
+                    if (calendarViewMode === 'weekly') newDate.setDate(newDate.getDate() + 7);
+                    else if (calendarViewMode === 'monthly') newDate.setMonth(newDate.getMonth() + 1);
+                    else if (calendarViewMode === 'yearly') newDate.setFullYear(newDate.getFullYear() + 1);
+                    setCurrentWeekStart(newDate);
+                  }}
+                  className="p-2 hover:bg-gray-700/40 text-gray-400 hover:text-amber-400 transition-all duration-200"
+                >
+                  <ChevronRight className="w-4 h-4" />
+                </button>
+              </div>
+              
+              {/* Go to Today Button */}
+              <button
+                onClick={() => {
+                  setCurrentWeekStart(new Date());
+                  setSelectedDate(new Date());
+                }}
+                className="px-4 py-2 rounded-lg text-sm font-medium bg-teal-600/80 hover:bg-teal-600 text-white transition-all duration-200 border border-teal-500/40 shadow-md"
+              >
+                Go to Today
+              </button>
+            </div>
+
+            {/* Calendar Display */}
+            <div className="mb-6">
+              {calendarViewMode === 'weekly' && (
+                <WeeklyCalendarView 
+                  currentWeekStart={currentWeekStart}
+                  trades={trades}
+                  accounts={accounts}
+                  selectedAccountIds={selectedAccountIds}
+                  selectedDate={selectedDate}
+                  onDayClick={handleDayClick}
+                />
+              )}
+              {/* Add MonthlyCalendarView and YearlyCalendarView with same onDayClick={handleDayClick} */}
+            </div>
+
+            {/* Bottom Summary Stats */}
+            <div className="pt-4 border-t border-gray-700/50">
+              <h4 className="text-sm font-semibold text-amber-400 mb-3 text-center">
+                {calendarViewMode.charAt(0).toUpperCase() + calendarViewMode.slice(1)} Summary
+              </h4>
+              
+              <div className="grid grid-cols-5 gap-3">
+                {/* Summary widgets here - use combinedAnalytics data */}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Keep all other existing sections... */}
+        
+      </div>
+    </>
+  );
+}

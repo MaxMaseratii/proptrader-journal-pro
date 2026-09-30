@@ -1,0 +1,274 @@
+import React, { useState } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Progress } from '@/components/ui/progress';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Textarea } from '@/components/ui/textarea';
+import { 
+  CreditCard, 
+  DollarSign, 
+  TrendingDown, 
+  TrendingUp,
+  PieChart,
+  Calendar,
+  ShoppingCart,
+  Coffee,
+  Car,
+  Home,
+  Monitor,
+  Plus
+} from 'lucide-react';
+
+const Spending = () => {
+  const [newExpense, setNewExpense] = useState({
+    amount: '',
+    category: '',
+    description: '',
+    type: 'trading' // trading or personal
+  });
+
+  const spendingData = {
+    totalMonthlySpending: 0,
+    tradingExpenses: 0,
+    personalExpenses: 0,
+    monthlyBudget: 0,
+    remainingBudget: 0
+  };
+
+  const categories = [
+    { name: 'Trading Tools & Software', amount: 0, budget: 0, icon: Monitor, color: 'text-blue-500' },
+    { name: 'Education & Courses', amount: 0, budget: 0, icon: ShoppingCart, color: 'text-purple-500' },
+    { name: 'Food & Entertainment', amount: 0, budget: 0, icon: Coffee, color: 'text-orange-500' },
+    { name: 'Transportation', amount: 0, budget: 0, icon: Car, color: 'text-green-500' },
+    { name: 'Rent & Utilities', amount: 0, budget: 0, icon: Home, color: 'text-red-500' },
+    { name: 'Other', amount: 0, budget: 0, icon: CreditCard, color: 'text-gray-500' }
+  ];
+
+  const recentExpenses: any[] = [];
+
+  const handleAddExpense = () => {
+    // In a real app, this would add to database
+    console.log('Adding expense:', newExpense);
+    setNewExpense({ amount: '', category: '', description: '', type: 'trading' });
+  };
+
+  const budgetUsagePercentage = (spendingData.totalMonthlySpending / spendingData.monthlyBudget) * 100;
+
+  return (
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div>
+          <h1 className="text-3xl font-bold text-foreground">Spending Tracker</h1>
+          <p className="text-muted-foreground">Track your trading and personal expenses</p>
+        </div>
+        <Button className="bg-gold text-black hover:bg-gold/90">
+          <Plus className="h-4 w-4 mr-2" />
+          Add Expense
+        </Button>
+      </div>
+
+      {/* Spending Overview */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <Card className="bg-gradient-to-br from-card to-muted/20 border-border/50">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Monthly Spending</CardTitle>
+            <CreditCard className="h-4 w-4 text-gold" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-gold">${spendingData.totalMonthlySpending.toLocaleString()}</div>
+            <p className="text-xs text-muted-foreground">of ${spendingData.monthlyBudget.toLocaleString()} budget</p>
+            <Progress value={budgetUsagePercentage} className="mt-2" />
+          </CardContent>
+        </Card>
+
+        <Card className="bg-gradient-to-br from-card to-muted/20 border-border/50">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Trading Expenses</CardTitle>
+            <TrendingUp className="h-4 w-4 text-blue-500" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-blue-500">${spendingData.tradingExpenses.toLocaleString()}</div>
+            <p className="text-xs text-muted-foreground">Business investments</p>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-gradient-to-br from-card to-muted/20 border-border/50">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Personal Expenses</CardTitle>
+            <TrendingDown className="h-4 w-4 text-orange-500" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-orange-500">${spendingData.personalExpenses.toLocaleString()}</div>
+            <p className="text-xs text-muted-foreground">Lifestyle costs</p>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-gradient-to-br from-card to-muted/20 border-border/50">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Remaining Budget</CardTitle>
+            <DollarSign className="h-4 w-4 text-profit" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-profit">${spendingData.remainingBudget.toLocaleString()}</div>
+            <p className="text-xs text-muted-foreground">Available this month</p>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Category Breakdown */}
+      <Card className="bg-gradient-to-br from-card to-muted/20 border-border/50">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <PieChart className="h-5 w-5 text-gold" />
+            Spending by Category
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            {categories.map((category, index) => {
+              const usage = (category.amount / category.budget) * 100;
+              const IconComponent = category.icon;
+              
+              return (
+                <div key={index} className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <IconComponent className={`h-5 w-5 ${category.color}`} />
+                      <span className="font-medium">{category.name}</span>
+                    </div>
+                    <div className="text-right">
+                      <span className="font-semibold">${category.amount}</span>
+                      <span className="text-sm text-muted-foreground"> / ${category.budget}</span>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Progress value={usage} className="flex-1" />
+                    <Badge variant={usage > 90 ? 'destructive' : usage > 75 ? 'secondary' : 'outline'}>
+                      {usage.toFixed(0)}%
+                    </Badge>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Add New Expense */}
+      <Card className="bg-gradient-to-br from-card to-muted/20 border-border/50">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Plus className="h-5 w-5 text-gold" />
+            Add New Expense
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="amount">Amount</Label>
+              <Input
+                id="amount"
+                type="number"
+                placeholder="0.00"
+                value={newExpense.amount}
+                onChange={(e) => setNewExpense({...newExpense, amount: e.target.value})}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="category">Category</Label>
+              <Select value={newExpense.category} onValueChange={(value) => setNewExpense({...newExpense, category: value})}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select category" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="trading-tools">Trading Tools & Software</SelectItem>
+                  <SelectItem value="education">Education & Courses</SelectItem>
+                  <SelectItem value="food">Food & Entertainment</SelectItem>
+                  <SelectItem value="transport">Transportation</SelectItem>
+                  <SelectItem value="housing">Rent & Utilities</SelectItem>
+                  <SelectItem value="other">Other</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="description">Description</Label>
+            <Textarea
+              id="description"
+              placeholder="What did you spend money on?"
+              value={newExpense.description}
+              onChange={(e) => setNewExpense({...newExpense, description: e.target.value})}
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label>Expense Type</Label>
+            <div className="flex gap-4">
+              <Button
+                variant={newExpense.type === 'trading' ? 'default' : 'outline'}
+                onClick={() => setNewExpense({...newExpense, type: 'trading'})}
+                className="flex-1"
+              >
+                Trading Related
+              </Button>
+              <Button
+                variant={newExpense.type === 'personal' ? 'default' : 'outline'}
+                onClick={() => setNewExpense({...newExpense, type: 'personal'})}
+                className="flex-1"
+              >
+                Personal
+              </Button>
+            </div>
+          </div>
+
+          <Button 
+            onClick={handleAddExpense}
+            className="w-full bg-gold text-black hover:bg-gold/90"
+            disabled={!newExpense.amount || !newExpense.category || !newExpense.description}
+          >
+            Add Expense
+          </Button>
+        </CardContent>
+      </Card>
+
+      {/* Recent Expenses */}
+      <Card className="bg-gradient-to-br from-card to-muted/20 border-border/50">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Calendar className="h-5 w-5 text-gold" />
+            Recent Expenses
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-3">
+            {recentExpenses.map((expense, index) => (
+              <div key={index} className="flex items-center justify-between p-3 rounded-lg bg-muted/20">
+                <div className="flex items-center gap-3">
+                  <div className={`w-2 h-2 rounded-full ${expense.type === 'trading' ? 'bg-blue-500' : 'bg-orange-500'}`} />
+                  <div>
+                    <div className="font-medium">{expense.description}</div>
+                    <div className="text-sm text-muted-foreground">{expense.date} • {expense.category}</div>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <div className="font-semibold text-loss">-${expense.amount}</div>
+                  <Badge variant="outline" className={`text-xs ${expense.type === 'trading' ? 'border-blue-500 text-blue-500' : 'border-orange-500 text-orange-500'}`}>
+                    {expense.type}
+                  </Badge>
+                </div>
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+};
+
+export default Spending;

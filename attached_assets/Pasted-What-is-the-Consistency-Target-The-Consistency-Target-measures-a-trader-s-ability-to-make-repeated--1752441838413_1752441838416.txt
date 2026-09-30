@@ -1,0 +1,89 @@
+What is the Consistency Target?
+The Consistency Target measures a trader’s ability to make repeated profits while managing risk. To pass the Trading Combine, your best day (most significant winning day) must be no greater than 50% of your profit target.
+
+If your best day equals or exceeds 50% of your profit target, you’ll need to continue trading until your best day % of total profit is below 50%.
+
+We want to be clear about the potential this gives our traders—we cut the minimum days to earn funding in half—but we don’t expect everyone to pass in 2 days. There is no rush.
+​
+
+Isn't it impossible to do exactly 50%?
+Technically, no it isn't impossible -- but it is unlikely. That's why we’ve built a small buffer into the backend that accounts for market fluctuations. This way, you don’t need to be down to the penny to pass! Keep those exits tight, and you'll be okay.
+
+ 
+
+What is the Recommended Best Day?
+To determine the Recommended Best Day, it's important to keep in mind that your best day must be below 50% of your profit target. We suggest you always set your daily profit target below that amount in your trading plan. This lets you lock in profits daily, prevent overtrading, and show consistency. 
+
+If your best day is 50% or larger than your profit target, you must make additional profits to meet your new increased profit target.
+
+ 
+
+We recommend never exceeding the Best Day Recommendation in the table below to avoid a profit target increase.
+
+ 
+
+Account Size
+
+Profit Target
+
+Best Day Recommendation
+
+50K
+
+$3,000
+
+Less than $1,500
+
+100K
+
+$6,000
+
+Less than $3,000
+
+150K
+
+$9,000
+
+Less than $4,500
+
+ 
+How is the Consistency Target calculated?
+The Consistency Target is calculated by factoring in your best day’s profit and your account’s profit target. As long as your Best Day is below 50% of your profit target, you are meeting the target requirement. 
+
+ 
+
+Losses and/or being in drawdown do not affect the best day recommendation. If you don't want your profit target to increase, you cannot make more than the Best Day Recommendation numbers listed above, even if you have a losing day. In other words, if you are in drawdown, the Consistency Target still applies.
+
+ 
+
+For example, if your current account balance in a 50K Trading Combine is $49,200, you cannot make more than $1500 (for a total of $50,700) without increasing your overall profit target.
+
+ 
+
+Here is how we calculate the Consistency Target and an example using the 50K account size:
+
+Calculation: Best Day Profit ÷ Overall Profit = Best Day % of Total Profit
+
+50K Example: $1,200 Best Day ÷ $2,800 Overall = 43%
+
+This means you can meet the Consistency Target in as little as two days if each day is less than 50% of your total profits and the profit target is met!
+
+You can use this free Excel spreadsheet calculator to help with Consistency Target calculations! Download the Consistency Target Calculator here
+
+ 
+
+Why is the Consistency Target important?
+The Consistency Target is important because it measures long-term, consistent profitability. 
+
+ 
+
+The ticket to consistent profitability is when you can put up a repeatable performance. The Consistency Target measures a trader’s ability to balance making repeated profits and managing risk, so you can turn your passion into a profession, consistently grow your account, and, most importantly, start paying yourself.
+
+ 
+
+Why Does My Dashboard Show I Need to Make Additional Profits?
+If your best-day profit is 50% or more of your total profits, then your Dashboard will show that you need to make additional profits to pass the Trading Combine. You must earn additional profits above the original profit target to show consistency. Your best day will be set in your account’s history and cannot be changed.
+
+Calculation: Best Day Profit ÷ 50% = Total Profit Needed
+
+50K Example: $1,700 Best Day ÷ 0.5 = $3,400 ($3,000 Profit Target plus more than $400 in additional profit for consistency)

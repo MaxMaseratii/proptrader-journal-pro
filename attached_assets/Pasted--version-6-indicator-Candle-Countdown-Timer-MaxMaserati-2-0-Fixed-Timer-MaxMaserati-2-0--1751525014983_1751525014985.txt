@@ -1,0 +1,368 @@
+//@version=6
+indicator("Candle Countdown Timer @MaxMaserati 2.0 - Fixed", "Timer @MaxMaserati 2.0", overlay=true)
+
+// Table Positions
+var string position_top_right = "top_right"
+var string position_top_left = "top_left"
+var string position_top_center = "top_center"
+var string position_bottom_right = "bottom_right"
+var string position_bottom_left = "bottom_left"
+var string position_bottom_center = "bottom_center"
+var string position_middle_right = "middle_right"
+var string position_middle_left = "middle_left"
+var string position_middle_center = "middle_center"
+
+// Timeframe settings
+var string grp1 = "Timeframe Settings"
+
+tf1_enabled = input.bool(defval=true, title="Timeframe 1 ☐", inline="tf1", group=grp1)
+tf1 = input.timeframe(defval="1", title="", inline="tf1", group=grp1)
+
+tf2_enabled = input.bool(defval=true, title="Timeframe 2 ☐", inline="tf2", group=grp1)
+tf2 = input.timeframe(defval="5", title="", inline="tf2", group=grp1)
+
+tf3_enabled = input.bool(defval=true, title="Timeframe 3 ☐", inline="tf3", group=grp1)
+tf3 = input.timeframe(defval="15", title="", inline="tf3", group=grp1)
+
+tf4_enabled = input.bool(defval=true, title="Timeframe 4 ☐", inline="tf4", group=grp1)
+tf4 = input.timeframe(defval="60", title="", inline="tf4", group=grp1)
+
+tf5_enabled = input.bool(defval=true, title="Timeframe 5 ☐", inline="tf5", group=grp1)
+tf5 = input.timeframe(defval="240", title="", inline="tf5", group=grp1)
+
+tf6_enabled = input.bool(defval=false, title="Timeframe 6 ☐", inline="tf6", group=grp1)
+tf6 = input.timeframe(defval="1D", title="", inline="tf6", group=grp1)
+
+highlightTf = input.timeframe(defval="240", title="Timeframe Highlight", group=grp1)
+
+// Exchange settings
+var string grp2 = "Exchange Settings"
+selectedExchange = input.string(defval="Exchange", title="Exchange Time", options=["Exchange", "GMT", "NYSE", "CME", "London", "Tokyo", "Sydney"], group=grp2)
+localTimezoneOffset = input.int(defval=0, title="Local UTC Offset (hours)", minval=-12, maxval=14, group=grp2, tooltip="Enter your local timezone offset from UTC")
+
+// Market session settings
+var string grp2b = "Market Session Settings"
+useMarketSessions = input.bool(defval=true, title="Use Market Session Times", group=grp2b, tooltip="Align timeframes with market sessions instead of calendar day")
+
+// Table settings
+var string grp3 = "Table Settings"
+tableSize = input.string(defval="Small", title="Table Size", options=["Tiny", "Small", "Normal", "HUGE"], group=grp3)
+tablePosition = input.string(defval="Top Right", title="Table Position", options=["Top Right", "Top Left", "Top Center", "Bottom Right", "Bottom Left", "Bottom Center", "Middle Right", "Middle Left", "Middle Center"], group=grp3)
+
+// Visibility settings
+var string grp4 = "Visibility Settings"
+showTimeHeader = input.bool(defval=true, title="Local Time", group=grp4)
+showCurrentTime = input.bool(defval=true, title="Show Times", group=grp4)
+showSeconds = input.bool(defval=true, title="Show Seconds (Countdown)", group=grp4)
+showTimeSeconds = input.bool(defval=false, title="Show Seconds (Current Time)", group=grp4)
+use24HourFormat = input.bool(defval=false, title="24 Hour Format", group=grp4)
+
+// Color settings
+var string grp5 = "Color Settings"
+bgColor = input.color(defval=color.rgb(0, 0, 0, 00), title="Background", group=grp5)
+textColor = input.color(defval=color.white, title="Table Text", group=grp5)
+timeColor = input.color(defval=#12fa8a, title="Time Text", group=grp5)
+headerBgColor = input.color(defval=#0570c84d, title="Header", group=grp5)
+selectedBgColor = input.color(defval=#2196f3cc, title="Highlight", group=grp5)
+borderColor = input.color(defval=#2a2e39, title="Border", group=grp5)
+warningColor = input.color(defval=#ff0000, title="Warning", group=grp5)
+
+// Function to get market session times (in minutes from midnight in market timezone)
+getMarketSession(symbol) =>
+    // Default session times in minutes from midnight (market timezone)
+    var int sessionStart = 0
+    var int sessionEnd = 1440  // 24 hours
+    
+    // Detect market based on symbol
+    if str.contains(symbol, "GER") or str.contains(symbol, "DAX") or str.contains(symbol, "DE")
+        // German market: 08:00 - 22:00 CET
+        sessionStart := 8 * 60  // 480 minutes
+        sessionEnd := 22 * 60   // 1320 minutes
+    else if str.contains(symbol, "US") or str.contains(symbol, "SPX") or str.contains(symbol, "NASDAQ") or str.contains(symbol, "DJI")
+        // US market: 09:30 - 16:00 EST
+        sessionStart := 9 * 60 + 30  // 570 minutes
+        sessionEnd := 16 * 60        // 960 minutes
+    else if str.contains(symbol, "UK") or str.contains(symbol, "FTSE") or str.contains(symbol, "GBP")
+        // UK market: 08:00 - 16:30 GMT
+        sessionStart := 8 * 60       // 480 minutes
+        sessionEnd := 16 * 60 + 30   // 990 minutes
+    else if str.contains(symbol, "JP") or str.contains(symbol, "NIKKEI") or str.contains(symbol, "JPY")
+        // Japanese market: 09:00 - 15:00 JST
+        sessionStart := 9 * 60       // 540 minutes
+        sessionEnd := 15 * 60        // 900 minutes
+    else
+        // 24-hour markets (Forex, Crypto)
+        sessionStart := 0
+        sessionEnd := 1440
+    
+    [sessionStart, sessionEnd]
+
+// Function to format time
+formatTime(hours, minutes, seconds=0, showSec=true, is24Hour=true, isCountdown=false, useCountdownSeconds=true) =>
+    // Ensure non-negative values
+    h = math.max(0, math.floor(hours))
+    m = math.max(0, math.floor(minutes))
+    s = math.max(0, math.floor(seconds))
+    
+    // Determine which seconds setting to use
+    actualShowSec = isCountdown ? (showSec and showSeconds) : (showSec and showTimeSeconds)
+    
+    // For countdown timers, only show hours if there are actual hours
+    if isCountdown and h == 0
+        minStr = m < 10 ? "0" + str.tostring(m) : str.tostring(m)
+        secStr = s < 10 ? "0" + str.tostring(s) : str.tostring(s)
+        
+        if actualShowSec
+            minStr + ":" + secStr
+        else
+            str.tostring(m) + "m"
+    else
+        // Regular time formatting (for current time or countdown with hours)
+        displayHour = h
+        ampm = ""
+        
+        // Convert to 12-hour format if needed (only for current time, not countdown)
+        if not is24Hour and not isCountdown
+            if h == 0
+                displayHour := 12
+                ampm := " AM"
+            else if h < 12
+                displayHour := h
+                ampm := " AM"
+            else if h == 12
+                displayHour := 12
+                ampm := " PM"
+            else
+                displayHour := h - 12
+                ampm := " PM"
+        
+        hourStr = displayHour < 10 ? "0" + str.tostring(displayHour) : str.tostring(displayHour)
+        minStr = m < 10 ? "0" + str.tostring(m) : str.tostring(m)
+        secStr = s < 10 ? "0" + str.tostring(s) : str.tostring(s)
+        
+        timeStr = if actualShowSec
+            hourStr + ":" + minStr + ":" + secStr
+        else
+            hourStr + ":" + minStr
+            
+        timeStr + ampm
+
+// Function to get current time based on replay state
+getCurrentTime() =>
+    // Use time for replay compatibility, timenow for live trading
+    currentTime = barstate.isrealtime ? timenow : time
+    int(currentTime)
+
+// Function to get exchange time
+getExchangeTime(exchange, currentTime) =>
+    switch exchange
+        "GMT" => [hour(currentTime, "GMT"), minute(currentTime, "GMT"), second(currentTime, "GMT")]
+        "NYSE" => [hour(currentTime, "America/New_York"), minute(currentTime, "America/New_York"), second(currentTime, "America/New_York")]
+        "CME" => [hour(currentTime, "America/Chicago"), minute(currentTime, "America/Chicago"), second(currentTime, "America/Chicago")]
+        "London" => [hour(currentTime, "Europe/London"), minute(currentTime, "Europe/London"), second(currentTime, "Europe/London")]
+        "Tokyo" => [hour(currentTime, "Asia/Tokyo"), minute(currentTime, "Asia/Tokyo"), second(currentTime, "Asia/Tokyo")]
+        "Sydney" => [hour(currentTime, "Australia/Sydney"), minute(currentTime, "Australia/Sydney"), second(currentTime, "Australia/Sydney")]
+        "Exchange" => [hour(currentTime), minute(currentTime), second(currentTime)]
+        => [hour(currentTime), minute(currentTime), second(currentTime)]
+
+// Function to get local time
+getLocalTime(currentTime) =>
+    localMs = currentTime + (localTimezoneOffset * 3600000)
+    localHour = math.floor((localMs % 86400000) / 3600000)
+    localMinute = math.floor((localMs % 3600000) / 60000)
+    localSecond = math.floor((localMs % 60000) / 1000)
+    [localHour, localMinute, localSecond]
+
+// Function to convert timeframe to milliseconds
+timeframeToMs(tf) =>
+    tfInSeconds = timeframe.in_seconds(tf)
+    int(tfInSeconds * 1000)
+
+// Function to get time until next close for any timeframe
+getTimeToClose(tf) =>
+    currentTime = getCurrentTime()
+    tfMs = timeframeToMs(tf)
+    tfMinutes = timeframe.in_seconds(tf) / 60
+    
+    // Get market session info
+    [sessionStart, sessionEnd] = getMarketSession(syminfo.ticker)
+    
+    // Calculate the current position within the timeframe period
+    msFromMidnight = currentTime % 86400000 // Milliseconds from start of day
+    minutesFromMidnight = msFromMidnight / 60000
+    
+    // Declare nextClose variable
+    nextClose = 0
+    
+    // For daily and higher timeframes, use different calculation
+    if timeframe.in_seconds(tf) >= 86400
+        // For daily/weekly timeframes
+        if tf == "1D"
+            nextClose := int((math.floor(currentTime / 86400000) + 1) * 86400000)
+        else if tf == "1W"
+            // Calculate next weekly close (usually Sunday)
+            dayOfWeek = dayofweek(currentTime)
+            daysUntilSunday = dayOfWeek == 1 ? 7 : 8 - dayOfWeek
+            nextClose := int(currentTime + (daysUntilSunday * 86400000))
+        else
+            nextClose := int(currentTime + tfMs)
+    else
+        // For intraday timeframes
+        if useMarketSessions and sessionEnd > sessionStart
+            // Use market session-based calculation
+            sessionDuration = sessionEnd - sessionStart
+            
+            // Check if timeframe fits within session
+            if tfMinutes <= sessionDuration
+                // Calculate periods within the session
+                periodsInSession = math.floor(sessionDuration / tfMinutes)
+                
+                if minutesFromMidnight >= sessionStart and minutesFromMidnight < sessionEnd
+                    // We're within the session
+                    minutesFromSessionStart = minutesFromMidnight - sessionStart
+                    currentPeriod = math.floor(minutesFromSessionStart / tfMinutes)
+                    nextPeriodStart = sessionStart + ((currentPeriod + 1) * tfMinutes)
+                    
+                    // Make sure we don't go beyond session end
+                    if nextPeriodStart > sessionEnd
+                        // Next period starts after session ends, so next close is session end
+                        nextClose := int((math.floor(currentTime / 86400000) * 86400000) + (sessionEnd * 60000))
+                    else
+                        nextClose := int((math.floor(currentTime / 86400000) * 86400000) + (nextPeriodStart * 60000))
+                else
+                    // We're outside the session, next close is start of next session period
+                    if minutesFromMidnight < sessionStart
+                        // Before session starts
+                        nextClose := int((math.floor(currentTime / 86400000) * 86400000) + (sessionStart * 60000))
+                    else
+                        // After session ends, next close is start of tomorrow's session
+                        nextClose := int((math.floor(currentTime / 86400000) + 1) * 86400000 + (sessionStart * 60000))
+            else
+                // Timeframe is larger than session, fall back to standard calculation
+                periodsFromMidnight = math.floor(minutesFromMidnight / tfMinutes)
+                nextClose := int((math.floor(currentTime / 86400000) * 86400000) + ((periodsFromMidnight + 1) * tfMinutes * 60000))
+        else
+            // Use standard midnight-based calculation for 24h markets
+            periodsFromMidnight = math.floor(minutesFromMidnight / tfMinutes)
+            nextClose := int((math.floor(currentTime / 86400000) * 86400000) + ((periodsFromMidnight + 1) * tfMinutes * 60000))
+    
+    remainingMs = nextClose - currentTime
+    remainingSeconds = math.max(0, math.floor(remainingMs / 1000))
+    
+    hours = math.floor(remainingSeconds / 3600)
+    minutes = math.floor((remainingSeconds % 3600) / 60)
+    seconds = remainingSeconds % 60
+    
+    // Determine if warning should be shown
+    isWarning = false
+    if timeframe.in_seconds(tf) < 60  // Less than 1 minute
+        isWarning := seconds <= 10
+    else if timeframe.in_seconds(tf) < 3600  // Less than 1 hour
+        isWarning := hours == 0 and minutes == 0 and seconds <= 30
+    else  // 1 hour or more
+        isWarning := hours == 0 and minutes <= 1
+
+    [hours, minutes, seconds, isWarning]
+
+// Function to get table position
+getTablePosition(pos) =>
+    switch pos
+        "Top Right" => position_top_right
+        "Top Left" => position_top_left
+        "Top Center" => position_top_center
+        "Bottom Right" => position_bottom_right
+        "Bottom Left" => position_bottom_left
+        "Bottom Center" => position_bottom_center
+        "Middle Right" => position_middle_right
+        "Middle Left" => position_middle_left
+        "Middle Center" => position_middle_center
+        => position_top_right
+
+// Function to get text size
+getTextSize(size) =>
+    switch size
+        "Tiny" => size.tiny
+        "Small" => size.small
+        "Normal" => size.normal
+        "HUGE" => size.huge
+        => size.normal
+
+// Function to format timeframe display name
+formatTimeframeName(tf) =>
+    switch tf
+        "1" => "M1"
+        "3" => "M3"
+        "5" => "M5"
+        "15" => "M15"
+        "30" => "M30"
+        "60" => "H1"
+        "120" => "H2"
+        "180" => "H3"
+        "240" => "H4"
+        "360" => "H6"
+        "480" => "H8"
+        "720" => "H12"
+        "1D" => "D1"
+        "1W" => "W1"
+        => tf
+
+// Main execution
+if barstate.islast or not barstate.isrealtime
+    currentTime = getCurrentTime()
+    textSize = getTextSize(tableSize)
+    pos = getTablePosition(tablePosition)
+    
+    // Collect enabled timeframes
+    enabledTfs = array.new<string>()
+    enabledStates = array.from(tf1_enabled, tf2_enabled, tf3_enabled, tf4_enabled, tf5_enabled, tf6_enabled)
+    allTfs = array.from(tf1, tf2, tf3, tf4, tf5, tf6)
+    
+    for i = 0 to array.size(enabledStates) - 1
+        if array.get(enabledStates, i)
+            array.push(enabledTfs, array.get(allTfs, i))
+    
+    enabledCount = array.size(enabledTfs)
+    
+    // Calculate table rows needed
+    headerRows = (showTimeHeader ? 1 : 0) + (showCurrentTime ? 1 : 0)
+    totalRows = headerRows + enabledCount
+    
+    // Create table
+    var table timeTable = na
+    if not na(timeTable)
+        table.delete(timeTable)
+    
+    timeTable := table.new(pos, 2, totalRows, bgcolor=bgColor, border_width=1, border_color=borderColor)
+    
+    currentRow = 0
+    
+    // Time display header
+    if showTimeHeader
+        table.cell(timeTable, 0, currentRow, "Local Time", bgcolor=headerBgColor, text_color=textColor, text_size=textSize, text_halign=text.align_center)
+        table.cell(timeTable, 1, currentRow, selectedExchange, bgcolor=headerBgColor, text_color=textColor, text_size=textSize, text_halign=text.align_center)
+        currentRow += 1
+    
+    // Current time row
+    if showCurrentTime
+        [localH, localM, localS] = getLocalTime(currentTime)
+        [exchH, exchM, exchS] = getExchangeTime(selectedExchange, currentTime)
+        
+        table.cell(timeTable, 0, currentRow, formatTime(localH, localM, localS, true, use24HourFormat, false), text_color=timeColor, text_size=textSize, text_halign=text.align_center)
+        table.cell(timeTable, 1, currentRow, formatTime(exchH, exchM, exchS, true, use24HourFormat, false), text_color=timeColor, text_size=textSize, text_halign=text.align_center)
+        currentRow += 1
+    
+    // Timeframe countdown rows
+    for i = 0 to enabledCount - 1
+        tf = array.get(enabledTfs, i)
+        [hours, minutes, seconds, isWarning] = getTimeToClose(tf)
+        
+        tfName = formatTimeframeName(tf)
+        timeToCloseStr = formatTime(hours, minutes, seconds, true, true, true) // isCountdown = true
+        
+        // Determine background color
+        bgColorRow = tf == highlightTf ? selectedBgColor : color.new(color.black, 70)
+        textColorRow = isWarning ? warningColor : textColor
+        
+        table.cell(timeTable, 0, currentRow, tfName, bgcolor=bgColorRow, text_color=textColor, text_size=textSize, text_halign=text.align_center)
+        table.cell(timeTable, 1, currentRow, timeToCloseStr, bgcolor=bgColorRow, text_color=textColorRow, text_size=textSize, text_halign=text.align_center)
+        currentRow += 1

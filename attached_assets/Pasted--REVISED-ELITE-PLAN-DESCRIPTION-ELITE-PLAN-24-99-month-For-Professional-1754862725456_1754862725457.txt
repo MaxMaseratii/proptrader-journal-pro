@@ -1,0 +1,380 @@
+## 💰 **REVISED ELITE PLAN DESCRIPTION**
+
+---
+
+## 👑 **ELITE PLAN - $24.99/month**
+*For Professional Traders*
+
+**Designed for full-time traders and prop firm traders who demand institutional-grade tools and unlimited scalability.**
+
+### **Account Limits:**
+- **Unlimited Trading Accounts**
+- **Unlimited data retention**
+- **Multi-prop firm portfolio management**
+
+### **PERFORMANCE**
+- ✅ **Professional Dashboard** (real-time updates, custom layouts)
+- ✅ **Monte Carlo Simulations** (probability modeling, risk scenarios)
+- ✅ **Institutional Charts & Analytics** (advanced technical analysis)
+- ✅ **Professional Achievement System** (performance benchmarking)
+
+### **PRE-SESSION PLANNING**
+- ✅ **AI-Powered Mental Check** (personalized insights)
+- ✅ **Professional Flow State Programs** (custom training protocols)
+- ✅ **Advanced Psychology Analytics** (behavioral pattern recognition)
+
+### **ACCOUNTS & RECORDS**
+- ✅ **Unlimited Account Management** (enterprise-level organization)
+- ✅ **Professional Trade Analytics** (advanced filtering, batch operations)
+- ✅ **Institutional Journal** (video analysis, custom tags, advanced search)
+- ✅ **AI Trading Coach** (advanced pattern recognition, personalized advice)
+
+### **FINANCIAL MANAGEMENT**
+- ✅ **Multi-Firm ROI Analysis** (cross-platform profit tracking)
+- ✅ **Tax-Ready Payout Reports** (automated compliance documentation)
+- ✅ **Professional Reporting Suite** (custom dashboards, PDF exports, API access)
+
+---
+
+## 🔧 **REVISED ACCESS CONTROL - PRESERVE DATA**
+
+### **New Data Entry Blocking (No Data Deletion)**
+
+---
+
+## 🛡️ **Read vs. Write Access Control**
+
+### **Updated Subscription Checker:**
+```javascript
+// middleware/subscriptionAuth.js
+const checkSubscriptionAccess = (requiredPlan, feature, accessType = 'read') => {
+  return async (req, res, next) => {
+    try {
+      const user = await User.findById(req.user.id);
+      
+      // Always allow READ access to existing data
+      if (accessType === 'read') {
+        req.user.subscriptionPlan = user.subscription_plan;
+        req.user.subscriptionStatus = user.subscription_status;
+        return next();
+      }
+      
+      // Block WRITE/CREATE access if subscription inactive
+      if (user.subscription_status !== 'active') {
+        return res.status(403).json({
+          error: 'Subscription required for new data',
+          message: 'Please renew your subscription to add new trades, accounts, or journal entries.',
+          currentData: 'Your existing data is safe and accessible',
+          redirectTo: '/billing',
+          accessType: 'read_only'
+        });
+      }
+      
+      // Check if subscription end date has passed
+      if (new Date() > new Date(user.subscription_end_date)) {
+        // Auto-expire the subscription but don't delete data
+        await User.findByIdAndUpdate(req.user.id, {
+          subscription_status: 'expired'
+        });
+        
+        return res.status(403).json({
+          error: 'Subscription expired - Read only access',
+          message: 'Your subscription has expired. You can view existing data but cannot add new entries.',
+          currentData: 'All your historical data remains accessible',
+          redirectTo: '/billing',
+          accessType: 'read_only'
+        });
+      }
+      
+      // Check plan access levels for new features
+      const planLevels = {
+        'starter': 1,
+        'professional': 2,
+        'elite': 3
+      };
+      
+      const userLevel = planLevels[user.subscription_plan];
+      const requiredLevel = planLevels[requiredPlan];
+      
+      if (userLevel < requiredLevel) {
+        return res.status(403).json({
+          error: 'Upgrade required for this feature',
+          message: `This feature requires ${requiredPlan} plan or higher.`,
+          currentPlan: user.subscription_plan,
+          requiredPlan: requiredPlan,
+          redirectTo: '/upgrade'
+        });
+      }
+      
+      req.user.subscriptionPlan = user.subscription_plan;
+      req.user.subscriptionStatus = user.subscription_status;
+      next();
+    } catch (error) {
+      res.status(500).json({ error: 'Subscription check failed' });
+    }
+  };
+};
+```
+
+---
+
+## 📊 **Updated Account Limits (Block New, Keep Existing)**
+
+### **Account Creation Blocker:**
+```javascript
+// middleware/accountLimits.js
+const checkAccountLimit = async (req, res, next) => {
+  const user = await User.findById(req.user.id);
+  const accountCount = await UserAccount.countDocuments({ 
+    user_id: req.user.id, 
+    is_active: true 
+  });
+  
+  const limits = {
+    'starter': 1,
+    'professional': 5,
+    'elite': Infinity
+  };
+  
+  const currentLimit = limits[user.subscription_plan];
+  
+  if (accountCount >= currentLimit) {
+    return res.status(403).json({
+      error: 'Account limit reached',
+      message: `Your ${user.subscription_plan} plan allows maximum ${currentLimit} accounts.`,
+      currentCount: accountCount,
+      maxAllowed: currentLimit,
+      existingAccounts: 'Your existing accounts remain fully accessible',
+      upgradeRequired: true,
+      action: 'blocked_new_creation'
+    });
+  }
+  
+  next();
+};
+```
+
+---
+
+## 🔄 **Updated Data Retention (Display Only, No Deletion)**
+
+### **Data Display Filter (No Deletion):**
+```javascript
+// middleware/dataRetention.js
+const enforceDataRetention = (req, res, next) => {
+  const user = req.user;
+  
+  // If subscription is active, show data based on plan
+  if (user.subscriptionStatus === 'active') {
+    const retentionPeriods = {
+      'starter': 30,    // 30 days
+      'professional': 90,   // 90 days  
+      'elite': Infinity     // Unlimited
+    };
+    
+    const userPlan = user.subscriptionPlan;
+    const retentionDays = retentionPeriods[userPlan];
+    
+    if (retentionDays !== Infinity) {
+      const cutoffDate = new Date();
+      cutoffDate.setDate(cutoffDate.getDate() - retentionDays);
+      
+      // Add date filter to query for active subscribers
+      req.dataRetentionFilter = { 
+        created_at: { $gte: cutoffDate } 
+      };
+    }
+  } else {
+    // If subscription expired, show limited recent data (last 7 days) as preview
+    const previewDate = new Date();
+    previewDate.setDate(previewDate.getDate() - 7);
+    
+    req.dataRetentionFilter = { 
+      created_at: { $gte: previewDate } 
+    };
+    
+    req.isPreviewMode = true;
+  }
+  
+  next();
+};
+```
+
+---
+
+## 🔄 **Updated Subscription Management (No Data Deletion)**
+
+### **Subscription Status Manager:**
+```javascript
+// jobs/subscriptionChecker.js
+const cron = require('node-cron');
+
+// Run every day at midnight
+cron.schedule('0 0 * * *', async () => {
+  console.log('Running daily subscription check...');
+  
+  try {
+    // Find expired subscriptions
+    const expiredUsers = await User.find({
+      subscription_status: 'active',
+      subscription_end_date: { $lt: new Date() }
+    });
+    
+    // Update expired subscriptions (NO DATA DELETION)
+    for (const user of expiredUsers) {
+      await User.findByIdAndUpdate(user.id, {
+        subscription_status: 'expired'
+      });
+      
+      // Send expiration email with data preservation notice
+      await sendSubscriptionExpiredEmail(user.email, {
+        dataPreserved: true,
+        message: 'Your data is safe and accessible. Renew to continue adding new entries.'
+      });
+      
+      console.log(`Expired subscription for user: ${user.email} - Data preserved`);
+    }
+    
+    // NO DATA CLEANUP - Data is preserved
+    console.log('Subscription check completed - All user data preserved');
+    
+  } catch (error) {
+    console.error('Subscription check failed:', error);
+  }
+});
+```
+
+---
+
+## 🔌 **Updated API Route Protection**
+
+### **Separated Read/Write Access:**
+```javascript
+// routes/api.js
+const express = require('express');
+const router = express.Router();
+
+// READ ACCESS - Always available
+router.get('/dashboard', 
+  authenticate,
+  checkSubscriptionAccess('starter', 'dashboard', 'read'),
+  enforceDataRetention,
+  getDashboard
+);
+
+router.get('/trades',
+  authenticate,
+  checkSubscriptionAccess('starter', 'trades', 'read'),
+  enforceDataRetention,
+  getTrades
+);
+
+router.get('/accounts',
+  authenticate,
+  checkSubscriptionAccess('starter', 'accounts', 'read'),
+  getAccounts
+);
+
+// WRITE ACCESS - Requires active subscription
+router.post('/trades', 
+  authenticate,
+  checkSubscriptionAccess('starter', 'trades', 'write'),
+  createTrade
+);
+
+router.post('/accounts', 
+  authenticate,
+  checkSubscriptionAccess('professional', 'multiple_accounts', 'write'),
+  checkAccountLimit,
+  createAccount
+);
+
+router.post('/journal', 
+  authenticate,
+  checkSubscriptionAccess('starter', 'journal', 'write'),
+  createJournalEntry
+);
+
+// PREMIUM FEATURES - Requires specific plan + active subscription
+router.get('/monte-carlo/:strategyId',
+  authenticate, 
+  checkSubscriptionAccess('elite', 'monte_carlo', 'read'),
+  getMonteCarloSimulation
+);
+
+router.get('/reports/advanced',
+  authenticate,
+  checkSubscriptionAccess('elite', 'advanced_reports', 'read'),
+  generateAdvancedReport
+);
+```
+
+---
+
+## 🎯 **Frontend User Experience**
+
+### **Subscription Status Indicators:**
+```javascript
+// components/SubscriptionBanner.jsx
+const SubscriptionBanner = ({ user }) => {
+  if (user.subscriptionStatus === 'expired') {
+    return (
+      <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-6">
+        <div className="flex items-center gap-3">
+          <AlertTriangle className="w-5 h-5 text-amber-600" />
+          <div>
+            <h3 className="font-semibold text-amber-800">Read-Only Mode</h3>
+            <p className="text-amber-700 text-sm">
+              Your subscription has expired. All your data is safe and accessible, 
+              but you cannot add new trades, accounts, or journal entries.
+            </p>
+          </div>
+          <Button className="bg-amber-600 hover:bg-amber-700 text-white">
+            Renew Subscription
+          </Button>
+        </div>
+      </div>
+    );
+  }
+  
+  return null;
+};
+
+// Disable forms for expired users
+const TradeForm = ({ user }) => {
+  const isReadOnly = user.subscriptionStatus !== 'active';
+  
+  return (
+    <form>
+      <input 
+        type="text" 
+        disabled={isReadOnly}
+        placeholder={isReadOnly ? "Renew subscription to add trades" : "Enter trade details"}
+      />
+      <Button 
+        type="submit" 
+        disabled={isReadOnly}
+        className={isReadOnly ? "opacity-50 cursor-not-allowed" : ""}
+      >
+        {isReadOnly ? "Subscription Required" : "Add Trade"}
+      </Button>
+    </form>
+  );
+};
+```
+
+---
+
+## 🚨 **Implementation Summary for Replit:**
+
+### **CRITICAL REQUIREMENTS:**
+
+1. **PRESERVE ALL DATA** - Never delete user data when subscription expires
+2. **BLOCK NEW ENTRIES** - Prevent creating new trades, accounts, journal entries when expired
+3. **ALLOW READ ACCESS** - Users can always view their existing data
+4. **CLEAR MESSAGING** - Show "read-only mode" messages clearly
+5. **ACCOUNT LIMITS** - Block new account creation at plan limits, keep existing accounts
+6. **FEATURE ACCESS** - Premium features require active subscription
+7. **GRACEFUL DEGRADATION** - Show limited preview data for expired users
+
+**REPLIT: Implement this data-preservation approach. Users should feel confident their trading history is safe, while being motivated to renew for continued functionality.**

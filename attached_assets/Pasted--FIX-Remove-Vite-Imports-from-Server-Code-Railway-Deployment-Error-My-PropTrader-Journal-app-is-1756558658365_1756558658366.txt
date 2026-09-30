@@ -1,0 +1,116 @@
+# FIX: Remove Vite Imports from Server Code - Railway Deployment Error
+
+My PropTrader Journal app is failing on Railway with this error:
+```
+Error [ERR_MODULE_NOT_FOUND]: Cannot find package 'vite' imported from /app/dist/index.js
+```
+
+## PROBLEM
+The server code is trying to import Vite at runtime, but Vite is a build tool and should never be imported in production server code. This causes the Railway deployment to crash.
+
+## TASKS NEEDED
+
+### 1. FIND AND REMOVE VITE IMPORTS FROM SERVER CODE
+Search ALL server files for any Vite imports and remove them:
+
+**Files to check:**
+- `server/index.ts`
+- `server/routes.ts` 
+- `server/auth.ts`
+- `server/authRoutes.ts`
+- Any other files in the `server/` directory
+
+**Look for and DELETE these patterns:**
+```typescript
+import { defineConfig } from 'vite'
+import vite from 'vite'  
+import { ... } from 'vite'
+const vite = require('vite')
+```
+
+### 2. FIX PACKAGE.JSON SCRIPTS
+Replace the current scripts section in `package.json` with:
+
+```json
+{
+  "scripts": {
+    "dev": "tsx server/index.ts",
+    "build:client": "vite build",
+    "build:server": "esbuild server/index.ts --bundle --platform=node --format=esm --outfile=dist/server.js --external:@neondatabase/serverless --external:drizzle-orm",
+    "build": "npm run build:client && npm run build:server",
+    "start": "node dist/server.js",
+    "db:push": "drizzle-kit push",
+    "db:studio": "drizzle-kit studio"
+  }
+}
+```
+
+### 3. VERIFY DEPENDENCIES
+Ensure Vite is in `devDependencies`, NOT in `dependencies`:
+
+**Move these to devDependencies if they're in dependencies:**
+```json
+{
+  "devDependencies": {
+    "vite": "^5.2.0",
+    "@vitejs/plugin-react": "^4.2.0",
+    "esbuild": "^0.19.0"
+  }
+}
+```
+
+### 4. ADD MISSING DEPENDENCY
+Add esbuild to devDependencies:
+```bash
+npm install --save-dev esbuild
+```
+
+### 5. CHECK SERVER/INDEX.TS
+Make sure `server/index.ts` ONLY imports these types of modules:
+
+**ALLOWED imports:**
+```typescript
+import express from "express";
+import { registerRoutes } from "./routes";
+import compression from "compression";
+import rateLimit from "express-rate-limit";
+import session from "express-session";
+import connectPgSimple from "connect-pg-simple";
+import path from "path";
+import { fileURLToPath } from "url";
+```
+
+**FORBIDDEN imports (remove if found):**
+```typescript
+// DELETE these if they exist:
+import vite from 'vite'
+import { defineConfig } from 'vite'
+```
+
+### 6. VERIFY BUILD OUTPUT STRUCTURE
+After building, the structure should be:
+```
+dist/
+├── public/           (from vite build - client files)
+│   ├── index.html
+│   └── assets/
+└── server.js         (from esbuild - server file)
+```
+
+## EXPECTED RESULT
+After these changes:
+1. Railway deployment should succeed
+2. Server will start without Vite import errors
+3. Both client and server will be properly built and separated
+
+## VERIFICATION STEPS
+1. Run `npm run build` locally to test the build process
+2. Check that `dist/server.js` exists and doesn't contain Vite imports
+3. Check that `dist/public/` contains the client files
+4. Commit and push changes to GitHub
+5. Railway will auto-deploy the fixed version
+
+## CRITICAL NOTE
+Server code should NEVER import Vite. Vite is only for building the frontend. The server should only import runtime dependencies like Express, database libraries, and Node.js built-ins.
+
+Please make these exact changes and let me know if you find any Vite imports in the server code that need to be removed.

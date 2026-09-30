@@ -1,0 +1,166 @@
+Pasted-import-React-useState-useEffect-from-react-import-useQuery-useMutation-useQueryClient--1753024653546_1753024653547.txt
+import React, { useState, useEffect } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useAppData } from '@/hooks/useAppData';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Badge } from '@/components/ui/badge';
+import { Slider } from '@/components/ui/slider';
+import { Switch } from '@/components/ui/switch';
+import { Progress } from '@/components/ui/progress';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { 
+  Target, 
+  DollarSign, 
+  Shield, 
+  TrendingUp, 
+  Plus,
+  Lock,
+  Unlock,
+  Calculator,
+  Settings,
+  AlertTriangle,
+  CheckCircle,
+  Edit,
+  Trash2,
+  Calendar,
+  BarChart3
+} from 'lucide-react';
+
+// Import Account type from global types
+import { Account } from '@/types';
+
+interface ProjectionState {
+  id: number;
+  accountId: string;
+  targetAmount: number;
+  profitTarget: number;
+  copiedAccounts: number;
+  riskPerTrade: number;
+  riskRewardRatio: number;
+  maxDrawdown: number;
+  maxLossPerDay: number;
+  riskCuttingPercent: number;
+  compoundingPercent: number;
+  dailyTracking: DailyTracking[];
+  currentRisk: number;
+  isActive: boolean;
+  createdAt: string;
+}
+
+interface DailyTracking {
+  date: string;
+  targetProfit: number;
+  actualProfit: number;
+  riskUsed: number;
+  tradesCount: number;
+  adjustedRisk: number;
+  notes?: string;
+}
+
+interface Projection {
+  id: number;
+  accountId: number;
+  mode: 'account' | 'simulation';
+  startingCapital: number;
+  riskPerTrade: number;
+  riskRewardRatio: number;
+  profitTarget: number;
+  maxDrawdown: number;
+  riskCuttingPercent: number;
+  compoundingPercent: number;
+  projectionData: any[];
+  isLocked: boolean;
+}
+
+// API functions
+const fetchAccounts = async (): Promise<Account[]> => {
+  await new Promise(resolve => setTimeout(resolve, 500));
+  return [];
+};
+
+const fetchProjections = async (): Promise<Projection[]> => {
+  await new Promise(resolve => setTimeout(resolve, 500));
+  return [];
+};
+
+const createAccount = async (accountData: Partial<Account>) => {
+  await new Promise(resolve => setTimeout(resolve, 1000));
+  return { id: Date.now(), ...accountData };
+};
+
+const createProjection = async (projectionData: any) => {
+  await new Promise(resolve => setTimeout(resolve, 1000));
+  return { id: Date.now(), ...projectionData };
+};
+
+const calculateProjection = async (settings: any) => {
+  await new Promise(resolve => setTimeout(resolve, 800));
+  
+  // Mock calculation results
+  const totalDays = Math.floor(settings.profitTarget / (settings.riskPerTrade * settings.riskRewardRatio * 0.6));
+  const totalPnl = settings.profitTarget * 1.2;
+  
+  return {
+    summary: {
+      totalPnl,
+      totalDays,
+      targetReached: true,
+      winRate: 65,
+      totalTrades: totalDays * 2,
+    },
+    chartData: Array.from({ length: totalDays }, (_, i) => ({
+      day: i + 1,
+      balance: settings.startingCapital + (i * (totalPnl / totalDays)),
+    })),
+  };
+};
+
+const Projections = () => {
+  const [activeTab, setActiveTab] = useState('accounts');
+  const [showAccountForm, setShowAccountForm] = useState(false);
+  const [showProjectionForm, setShowProjectionForm] = useState(false);
+  const [selectedAccount, setSelectedAccount] = useState<Account | null>(null);
+  const [projectionSettings, setProjectionSettings] = useState({
+    mode: 'account' as 'account' | 'simulation',
+    startingCapital: 100000,
+    riskPerTrade: 1000,
+    riskRewardRatio: 2.0,
+    profitTarget: 10000,
+    maxDrawdown: 10000,
+    riskCuttingPercent: 0,
+    compoundingPercent: 0,
+    maxLossPerDay: 2000,
+    accountMultiplier: 1,
+    extraDaysIfLoss: 0,
+    maxDailyTrades: 3,
+  });
+
+  // Load saved projections from localStorage
+  useEffect(() => {
+    const savedProjections = JSON.parse(localStorage.getItem('tradingPlanProjections') || '{}');
+    console.log('Loaded saved projections:', savedProjections);
+  }, []);
+
+  // Handle account selection and auto-populate data
+  const handleAccountSelect = (account: Account) => {
+    setSelectedAccount(account);
+    
+    // Load saved projection data if it exists
+    const savedProjections = JSON.parse(localStorage.getItem('tradingPlanProjections') || '{}');
+    const savedProjection = savedProjections[account.id];
+    
+    if (savedProjection) {
+      // Auto-populate from saved trading plan
+      setProjectionForm({
+        targetGoalAmount: savedProjection.targetAmount,
+        copiedAccounts: savedProjection.copiedAccounts,
+        riskCuttingPercent: savedProjection.riskCuttingPercent,
+        compoundingPercent: savedProjection.compoundingPercent,
+      });
+      
+      setPro...

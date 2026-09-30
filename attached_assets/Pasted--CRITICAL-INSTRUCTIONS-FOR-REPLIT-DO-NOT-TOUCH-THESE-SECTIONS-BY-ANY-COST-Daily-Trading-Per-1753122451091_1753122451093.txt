@@ -1,0 +1,73 @@
+🚨 CRITICAL INSTRUCTIONS FOR REPLIT
+⛔ DO NOT TOUCH THESE SECTIONS BY ANY COST:
+
+🔒 Daily Trading Performance Analysis widget section
+🔒 Trading Calendar & Performance Overview
+
+These sections contain working calendar functionality that must be preserved 100%.
+✅ SAFE IMPLEMENTATION PLAN:
+Step 1: Preserve Existing Sections
+Keep these sections exactly as they are at the TOP of your dashboard:
+jsx// 🚨 DO NOT MODIFY - Keep this section intact
+<div className="mb-8">
+  <h2>Daily Trading Performance Analysis</h2>
+  {/* Your existing selectedDayData logic */}
+  {/* CompactDetailView component */}
+</div>
+
+// 🚨 DO NOT MODIFY - Keep this section intact  
+<div className="mb-8">
+  <h2>Trading Calendar & Performance Overview</h2>
+  {/* WeeklyCalendarView, MonthlyCalendarView, YearlyCalendarView */}
+  {/* handleDayClick, navigation controls */}
+</div>
+Step 2: Add New Reorganized Sections BELOW
+Only implement the reorganized widgets AFTER the calendar sections:
+jsx// ✅ SAFE TO ADD - New reorganized sections
+<section>
+  <h2>Performance Overview</h2>
+  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+    {/* 4 balanced widgets */}
+  </div>
+</section>
+
+<section>
+  <h2>Account Management</h2>
+  <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    {/* 3 balanced widgets */}
+  </div>
+</section>
+
+// Continue with other sections...
+🔒 WHAT NOT TO TOUCH:
+
+selectedDate state
+selectedDayData calculations
+handleDayClick function
+Calendar click handlers
+WeeklyCalendarView, MonthlyCalendarView, YearlyCalendarView
+Any useMemo dependencies
+Calendar navigation controls
+getDayMetrics function
+getTradesForDate function
+
+✅ WHAT YOU CAN SAFELY IMPLEMENT:
+
+Performance Overview widgets (4-4 layout)
+Account Management cards (3 layout)
+Risk Management widgets (2 layout)
+Trading Activity sections (2 layout)
+Investment Tracking widgets (3-3 layout)
+Daily Trading Journal (1 full-width)
+
+🎯 Final Layout Structure:
+
+🔒 Daily Trading Performance Analysis (PRESERVE)
+🔒 Trading Calendar & Performance Overview (PRESERVE)
+✅ Performance Overview (IMPLEMENT - 4+4 widgets)
+✅ Account Management (IMPLEMENT - 3 widgets)
+✅ Risk Management (IMPLEMENT - 2 widgets)
+✅ Trading Activity (IMPLEMENT - 2 widgets)
+✅ Investment Tracking (IMPLEMENT - 3+3 widgets)
+✅ Daily Trading Journal (IMPLEMENT - 1 widget)
+

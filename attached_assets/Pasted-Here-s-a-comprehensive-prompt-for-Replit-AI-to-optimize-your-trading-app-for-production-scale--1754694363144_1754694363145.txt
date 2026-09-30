@@ -1,0 +1,189 @@
+Here's a comprehensive prompt for Replit AI to optimize your trading app for production scale:
+
+---
+
+**REPLIT AI INSTRUCTIONS - PRODUCTION PERFORMANCE OPTIMIZATION**
+
+Our trading journal app needs immediate performance optimization for 1 million daily users. Implement these critical optimizations:
+
+## **🚀 IMMEDIATE PRIORITY FIXES**
+
+### **1. CODE SPLITTING & LAZY LOADING**
+```javascript
+// Implement React.lazy() for all major components
+const Dashboard = React.lazy(() => import('./components/Dashboard'));
+const AccountSettings = React.lazy(() => import('./components/AccountSettings'));
+const BillingPage = React.lazy(() => import('./components/BillingPage'));
+const TradingJournal = React.lazy(() => import('./components/TradingJournal'));
+
+// Add Suspense wrapper with loading states
+<Suspense fallback={<div>Loading...</div>}>
+  <Component />
+</Suspense>
+```
+
+### **2. BUNDLE OPTIMIZATION**
+- **Remove unused dependencies** from package.json
+- **Implement tree shaking** for all imports
+- **Use dynamic imports** for heavy libraries (charts, analytics)
+- **Split vendor bundles** separately from app code
+- **Minimize CSS** and remove unused styles
+
+### **3. DATABASE & API OPTIMIZATION**
+```javascript
+// Add aggressive caching for slow pages
+const AccountSettings = () => {
+  const { data, isLoading } = useQuery(
+    ['account-settings'], 
+    fetchAccountSettings,
+    { 
+      staleTime: 5 * 60 * 1000, // 5 minutes
+      cacheTime: 10 * 60 * 1000, // 10 minutes
+      refetchOnWindowFocus: false
+    }
+  );
+};
+
+// Implement pagination for trades log
+const TradesLog = () => {
+  const [page, setPage] = useState(1);
+  const { data } = useInfiniteQuery(['trades', page], fetchTrades);
+};
+```
+
+## **⚡ CRITICAL PERFORMANCE FIXES**
+
+### **4. ACCOUNT SETTINGS OPTIMIZATION**
+- **Lazy load user avatar/images**
+- **Cache user preferences locally**
+- **Debounce form inputs** (500ms delay)
+- **Split settings into tabs** with separate API calls
+- **Preload critical data only**
+
+### **5. BILLING PAGE OPTIMIZATION**
+- **Cache payment methods** for 10 minutes
+- **Lazy load payment history**
+- **Optimize Stripe integration** with minimal bundle
+- **Implement skeleton loading** for payment forms
+
+### **6. IMAGE & ASSET OPTIMIZATION**
+```javascript
+// Implement WebP format with fallbacks
+<picture>
+  <source srcSet="image.webp" type="image/webp" />
+  <img src="image.jpg" alt="fallback" loading="lazy" />
+</picture>
+
+// Add image compression and CDN
+const optimizedImageUrl = `${CDN_URL}/w_300,h_200,f_auto,q_auto/image.jpg`;
+```
+
+## **🎯 COMPONENT-LEVEL OPTIMIZATIONS**
+
+### **7. REACT PERFORMANCE**
+```javascript
+// Memoize expensive components
+const ExpensiveComponent = React.memo(({ data }) => {
+  const memoizedValue = useMemo(() => 
+    heavyCalculation(data), [data]
+  );
+  return <div>{memoizedValue}</div>;
+});
+
+// Optimize re-renders with useCallback
+const handleSubmit = useCallback((formData) => {
+  // submission logic
+}, [dependency]);
+
+// Virtual scrolling for large lists
+import { FixedSizeList as List } from 'react-window';
+```
+
+### **8. STATE MANAGEMENT OPTIMIZATION**
+- **Implement Redux Toolkit** with RTK Query
+- **Add proper state normalization**
+- **Cache frequently accessed data**
+- **Remove unnecessary re-renders**
+
+## **🔧 INFRASTRUCTURE OPTIMIZATIONS**
+
+### **9. CACHING STRATEGY**
+```javascript
+// Service Worker for offline functionality
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/sw.js');
+}
+
+// Browser caching headers
+Cache-Control: public, max-age=31536000 // 1 year for static assets
+Cache-Control: public, max-age=300     // 5 minutes for API data
+```
+
+### **10. NETWORK OPTIMIZATION**
+- **Enable gzip compression** on all responses
+- **Implement HTTP/2** for multiplexing
+- **Add Content Delivery Network (CDN)**
+- **Optimize API response sizes** (remove unnecessary data)
+- **Batch API calls** where possible
+
+## **📊 MONITORING & PROFILING**
+
+### **11. ADD PERFORMANCE MONITORING**
+```javascript
+// Web Vitals tracking
+import { getCLS, getFID, getFCP, getLCP, getTTFB } from 'web-vitals';
+
+getCLS(console.log);
+getFID(console.log);
+getFCP(console.log);
+getLCP(console.log);
+getTTFB(console.log);
+
+// Bundle analyzer
+npm install --save-dev webpack-bundle-analyzer
+```
+
+### **12. DATABASE QUERY OPTIMIZATION**
+- **Add database indexing** for frequently queried fields
+- **Implement query result caching**
+- **Use connection pooling**
+- **Optimize N+1 query problems**
+
+## **🎨 UI/UX LOADING IMPROVEMENTS**
+
+### **13. LOADING STATES**
+```javascript
+// Skeleton loaders for all slow components
+const AccountSettingsSkeleton = () => (
+  <div className="animate-pulse">
+    <div className="h-4 bg-gray-300 rounded w-3/4 mb-4"></div>
+    <div className="h-4 bg-gray-300 rounded w-1/2"></div>
+  </div>
+);
+
+// Progressive loading
+const [isInitialLoading, setIsInitialLoading] = useState(true);
+const [isBackgroundLoading, setIsBackgroundLoading] = useState(false);
+```
+
+## **⚠️ CRITICAL PRIORITIES**
+
+1. **Fix Account Settings page** - highest priority
+2. **Fix Billing page** - second priority  
+3. **Implement code splitting** - immediate impact
+4. **Add proper caching** - long-term performance
+5. **Database optimization** - scalability
+
+## **📈 EXPECTED RESULTS**
+After optimization, target metrics:
+- **First Contentful Paint (FCP):** < 1.5 seconds
+- **Largest Contentful Paint (LCP):** < 2.5 seconds
+- **Time to Interactive (TTI):** < 3.5 seconds
+- **Account Settings load:** < 2 seconds
+- **Billing page load:** < 2 seconds
+
+**EXECUTE THESE OPTIMIZATIONS IMMEDIATELY** - Our trading app must compete with TradZella's performance standards.
+
+---
+
+This prompt covers everything needed to scale your app to 1M+ users while specifically addressing the slow Account Settings and Billing pages.

@@ -1,0 +1,206 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* PropFirm Color Palette */
+    --prop-gold: #FFD700;
+    --prop-green: #00D4AA;
+    --prop-pink: #FF4757;
+    --prop-blue: #5DADE2;
+    --prop-tiffany: #26de81;
+    
+    --success-green: #28a745;
+    --error-red: #dc3545;
+    --warning-orange: #fd7e14;
+    
+    --dark-bg: #0f1419;
+    --dark-card: #1a1d23;
+    --dark-surface: #21262d;
+    --dark-border: #30363d;
+    
+    --gray-900: #111827;
+    --gray-800: #1f2937;
+    --gray-700: #374151;
+    --gray-600: #4b5563;
+    --gray-400: #9ca3af;
+    --gray-300: #d1d5db;
+
+    --background: 210 40% 98%;
+    --foreground: 222.2 84% 4.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+    --primary: 221 83% 53%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 221 83% 53%;
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    --background: 15 23% 8%;
+    --foreground: 210 40% 98%;
+    --card: 15 23% 11%;
+    --card-foreground: 210 40% 98%;
+    --popover: 15 23% 11%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 217.2 91.2% 59.8%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 224.3 76.3% 48%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-[#0f1419] text-white font-sans;
+    background: linear-gradient(135deg, #0f1419 0%, #1a1d23 100%);
+    min-height: 100vh;
+  }
+
+  pre, code {
+    @apply font-mono;
+  }
+}
+
+@layer components {
+  .widget-container {
+    @apply rounded-xl p-6 transition-all duration-200;
+    background: linear-gradient(135deg, rgba(26, 29, 35, 0.9), rgba(33, 38, 45, 0.9));
+    border: 1px solid #30363d;
+  }
+  
+  .widget-container:hover {
+    border-color: rgba(255, 215, 0, 0.3);
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.1);
+  }
+  
+  .widget-content {
+    @apply flex items-center justify-between h-full;
+  }
+  
+  .widget-left {
+    @apply flex-1;
+  }
+  
+  .widget-label {
+    @apply text-sm font-medium mb-2;
+    color: #9ca3af;
+  }
+  
+  .widget-value {
+    @apply text-2xl font-bold text-white mb-1;
+  }
+  
+  .widget-description {
+    @apply text-xs;
+    color: #9ca3af;
+  }
+  
+  .widget-icon-square {
+    @apply p-3 rounded-xl ml-4;
+    background: linear-gradient(135deg, rgba(255, 215, 0, 0.2), rgba(255, 215, 0, 0.1));
+  }
+  
+  .widget-icon {
+    @apply h-6 w-6;
+    color: #FFD700;
+  }
+  
+  .text-gradient-rainbow {
+    background: linear-gradient(90deg, #FFD700, #00D4AA, #5DADE2, #FF4757);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  
+  .bg-prop-gradient-main {
+    background: linear-gradient(135deg, #0f1419 0%, #1a1d23 100%);
+  }
+  
+  .bg-prop-gradient-gold {
+    background: linear-gradient(135deg, #FFD700, #FFA500);
+  }
+  
+  .bg-prop-gradient-green {
+    background: linear-gradient(135deg, #00D4AA, #26de81);
+  }
+  
+  .bg-prop-gradient-blue {
+    background: linear-gradient(135deg, #5DADE2, #3498db);
+  }
+  
+  .hover-glow {
+    transition: all 0.3s ease;
+  }
+  
+  .hover-glow:hover {
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.2);
+    border-color: rgba(255, 215, 0, 0.4);
+  }
+  
+  .hover-scale {
+    transition: transform 0.2s ease;
+  }
+  
+  .hover-scale:hover {
+    transform: scale(1.02);
+  }
+}
+
+.markdown-editor {
+  @apply font-mono text-base leading-relaxed;
+}
+
+.markdown-preview {
+  @apply prose max-w-none prose-blue dark:prose-invert;
+}
+
+.markdown-preview pre {
+  @apply bg-secondary p-4 rounded-md overflow-x-auto;
+}
+
+.markdown-preview code {
+  @apply text-sm font-mono text-primary;
+}
+
+.markdown-preview h1,
+.markdown-preview h2,
+.markdown-preview h3,
+.markdown-preview h4,
+.markdown-preview h5,
+.markdown-preview h6 {
+  @apply font-sans font-semibold text-foreground;
+}
+
+.markdown-preview ul,
+.markdown-preview ol {
+  @apply my-4 ml-6;
+}

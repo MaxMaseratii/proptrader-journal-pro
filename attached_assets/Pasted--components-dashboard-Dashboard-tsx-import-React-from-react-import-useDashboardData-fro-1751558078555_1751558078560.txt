@@ -1,0 +1,295 @@
+// 📁 /components/dashboard/Dashboard.tsx
+import React from 'react';
+import { useDashboardData } from '@/hooks/useDashboardData';
+import { DashboardHeader } from './DashboardHeader';
+import { PerformanceOverview } from './PerformanceOverview';
+import { AccountPortfolio } from './AccountPortfolio';
+import { InvestmentTracking } from './InvestmentTracking';
+import { DisciplinedAnalysis } from './DisciplinedAnalysis';
+import { ChartsSection } from './ChartsSection';
+import { JournalEntry } from './JournalEntry';
+import { TradeAnalysisCalendar } from './TradeAnalysisCalendar';
+import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
+import { ErrorBoundary } from '@/components/ui/ErrorBoundary';
+
+export default function Dashboard() {
+  const { 
+    accounts, 
+    trades, 
+    analytics, 
+    filters, 
+    actions,
+    isLoading, 
+    error 
+  } = useDashboardData();
+
+  if (isLoading) {
+    return <LoadingSpinner message="Loading dashboard..." />;
+  }
+
+  if (error) {
+    return <ErrorBoundary error={error} />;
+  }
+
+  return (
+    <ErrorBoundary>
+      <div className="min-h-screen bg-dark-background">
+        <DashboardHeader 
+          accounts={accounts}
+          filters={filters}
+          actions={actions}
+        />
+        
+        <div className="p-6 space-y-8">
+          <PerformanceOverview analytics={analytics} />
+          
+          <AccountPortfolio 
+            accounts={accounts}
+            analytics={analytics}
+          />
+          
+          <InvestmentTracking 
+            accounts={accounts}
+            analytics={analytics}
+          />
+          
+          <DisciplinedAnalysis 
+            accounts={accounts}
+            trades={trades}
+            analytics={analytics}
+          />
+          
+          <ChartsSection 
+            accounts={accounts}
+            trades={trades}
+          />
+          
+          <JournalEntry />
+          
+          <TradeAnalysisCalendar 
+            trades={trades}
+            accounts={accounts}
+            viewMode={filters.timePeriod}
+          />
+        </div>
+      </div>
+    </ErrorBoundary>
+  );
+}
+
+// 📁 /components/dashboard/MetricCard.tsx
+import React from 'react';
+import { Card, CardContent } from '@/components/ui/card';
+import { cn } from '@/lib/utils';
+
+interface MetricCardProps {
+  title: string;
+  value: string | number;
+  subtitle?: string;
+  icon: React.ElementType;
+  color?: 'green' | 'red' | 'blue' | 'orange' | 'purple' | 'teal';
+  trend?: 'up' | 'down' | 'neutral';
+  className?: string;
+}
+
+const colorMap = {
+  green: 'border-success-green text-success-green bg-success-green',
+  red: 'border-error-red text-error-red bg-error-red',
+  blue: 'border-primary text-primary bg-primary',
+  orange: 'border-warning-orange text-warning-orange bg-warning-orange',
+  purple: 'border-purple-600 text-purple-400 bg-purple-600',
+  teal: 'border-teal-600 text-teal-400 bg-teal-600'
+};
+
+export const MetricCard: React.FC<MetricCardProps> = ({
+  title,
+  value,
+  subtitle,
+  icon: Icon,
+  color = 'blue',
+  trend = 'neutral',
+  className
+}) => {
+  const colors = colorMap[color];
+  
+  return (
+    <Card className={cn(
+      `bg-dark-card border-${color === 'green' ? 'success-green' : color === 'red' ? 'error-red' : 'primary'} hover-glow smooth-transition`,
+      className
+    )}>
+      <CardContent className="p-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="text-gray-400 text-sm mb-1">{title}</p>
+            <p className={`text-2xl font-bold ${colors.split(' ')[1]}`}>
+              {typeof value === 'number' ? formatCurrency(value) : value}
+            </p>
+            {subtitle && (
+              <p className="text-xs text-gray-400 mt-1">{subtitle}</p>
+            )}
+          </div>
+          <div className={`${colors.split(' ')[2]} bg-opacity-20 p-3 rounded-lg`}>
+            <Icon className={`${colors.split(' ')[1]} h-6 w-6`} />
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+};
+
+// 📁 /hooks/useDashboardData.ts
+import { useState, useMemo } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { Account, Trade } from '@shared/schema';
+import { calculatePortfolioMetrics } from '@/lib/portfolio-calculations';
+import { calculateDisciplineAnalysis } from '@/lib/discipline-calculations';
+
+export const useDashboardData = () => {
+  const [filters, setFilters] = useState({
+    viewMode: 'all' as 'all' | 'single' | 'multiple',
+    selectedAccountIds: [] as number[],
+    timePeriod: 'monthly' as 'daily' | 'weekly' | 'monthly' | 'yearly',
+    viewType: 'overview' as 'overview' | 'detailed' | 'analytics'
+  });
+
+  const { data: accounts, isLoading: accountsLoading } = useQuery<Account[]>({
+    queryKey: ["/api/accounts"],
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
+
+  const { data: trades, isLoading: tradesLoading } = useQuery<Trade[]>({
+    queryKey: ["/api/trades"],
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
+
+  const analytics = useMemo(() => {
+    if (!accounts || !trades) return null;
+    
+    const portfolioMetrics = calculatePortfolioMetrics(accounts, trades, filters);
+    const disciplineAnalysis = calculateDisciplineAnalysis(accounts, trades);
+    
+    return {
+      ...portfolioMetrics,
+      ...disciplineAnalysis
+    };
+  }, [accounts, trades, filters]);
+
+  const actions = {
+    setViewMode: (mode: typeof filters.viewMode) => 
+      setFilters(prev => ({ ...prev, viewMode: mode })),
+    setSelectedAccountIds: (ids: number[]) => 
+      setFilters(prev => ({ ...prev, selectedAccountIds: ids })),
+    setTimePeriod: (period: typeof filters.timePeriod) => 
+      setFilters(prev => ({ ...prev, timePeriod: period })),
+    setViewType: (type: typeof filters.viewType) => 
+      setFilters(prev => ({ ...prev, viewType: type }))
+  };
+
+  return {
+    accounts,
+    trades,
+    analytics,
+    filters,
+    actions,
+    isLoading: accountsLoading || tradesLoading,
+    error: null // Add proper error handling
+  };
+};
+
+// 📁 /lib/portfolio-calculations.ts
+export const calculatePortfolioMetrics = (accounts: Account[], trades: Trade[], filters: any) => {
+  // Extract all portfolio calculation logic here
+  const filteredAccounts = filterAccountsByMode(accounts, filters);
+  const filteredTrades = filterTradesByAccounts(trades, filteredAccounts);
+  
+  return {
+    totalBalance: filteredAccounts.reduce((sum, acc) => sum + acc.currentBalance, 0),
+    totalPnl: filteredTrades.reduce((sum, trade) => sum + trade.pnl, 0),
+    winRate: calculateWinRate(filteredTrades),
+    rFactor: calculateRFactor(filteredTrades),
+    profitFactor: calculateProfitFactor(filteredTrades),
+    // ... other metrics
+  };
+};
+
+// 📁 /components/dashboard/PerformanceOverview.tsx
+import React from 'react';
+import { MetricCard } from './MetricCard';
+import { DollarSign, TrendingUp, TrendingDown, Target, BarChart3 } from 'lucide-react';
+
+interface PerformanceOverviewProps {
+  analytics: {
+    totalBalance: number;
+    dailyPnl: number;
+    averageWin: number;
+    averageLoss: number;
+    winRate: number;
+    rFactor: number;
+    profitFactor: number;
+  };
+}
+
+export const PerformanceOverview: React.FC<PerformanceOverviewProps> = ({ analytics }) => {
+  return (
+    <section>
+      <h2 className="text-xl font-bold text-gradient-rainbow mb-4 flex items-center border-b border-gray-700 pb-2">
+        <TrendingUp className="mr-3 h-5 w-5 text-success-green" />
+        Current Performance Overview
+      </h2>
+      
+      {/* Primary Metrics */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+        <MetricCard
+          title="Net Balance"
+          value={analytics.totalBalance}
+          subtitle="Combined accounts"
+          icon={DollarSign}
+          color="green"
+        />
+        
+        <MetricCard
+          title="Daily P&L"
+          value={analytics.dailyPnl}
+          subtitle="Today's performance"
+          icon={analytics.dailyPnl >= 0 ? TrendingUp : TrendingDown}
+          color={analytics.dailyPnl >= 0 ? 'green' : 'red'}
+        />
+        
+        <MetricCard
+          title="Avg Win/Loss"
+          value={`${formatCurrency(analytics.averageWin)} / ${formatCurrency(Math.abs(analytics.averageLoss))}`}
+          subtitle="Win vs Loss ratio"
+          icon={BarChart3}
+          color="blue"
+        />
+      </div>
+      
+      {/* Secondary Metrics */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <MetricCard
+          title="Win Rate"
+          value={`${analytics.winRate.toFixed(0)}%`}
+          subtitle={`${analytics.winningTrades} wins / ${analytics.losingTrades} losses`}
+          icon={Target}
+          color={analytics.winRate >= 70 ? 'green' : analytics.winRate >= 50 ? 'orange' : 'red'}
+        />
+        
+        <MetricCard
+          title="R Factor"
+          value={analytics.rFactor.toFixed(2)}
+          subtitle="Total Reward / Total Risk ratio"
+          icon={BarChart3}
+          color={analytics.rFactor >= 2 ? 'green' : analytics.rFactor >= 1 ? 'orange' : 'red'}
+        />
+        
+        <MetricCard
+          title="Profit Factor"
+          value={analytics.profitFactor.toFixed(2)}
+          subtitle="Gross Profit / Gross Loss ratio"
+          icon={TrendingUp}
+          color={analytics.profitFactor >= 2 ? 'green' : analytics.profitFactor >= 1 ? 'orange' : 'red'}
+        />
+      </div>
+    </section>
+  );
+};

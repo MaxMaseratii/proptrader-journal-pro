@@ -1,0 +1,578 @@
+import React, { useState, useRef, useEffect } from 'react';
+import { TrendingUp, TrendingDown, DollarSign, Activity, Target, BarChart3, ArrowUpRight, ArrowDownRight } from 'lucide-react';
+
+const PremiumEquityCurve = ({ 
+  trades = [], 
+  accounts = [], 
+  selectedAccountIds = [], 
+  startingBalance = 100000 
+}) => {
+  const [hoveredPoint, setHoveredPoint] = useState(null);
+  const [tooltip, setTooltip] = useState({ visible: false, x: 0, y: 0, data: null });
+  const [pathLength, setPathLength] = useState(0);
+  const [drawProgress, setDrawProgress] = useState(0);
+  const svgRef = useRef(null);
+  const pathRef = useRef(null);
+
+  // Sample data for demonstration
+  const sampleTrades = trades.length > 0 ? trades : [
+    { id: 1, date: '2024-01-15', pnl: 450, symbol: 'EURUSD', side: 'LONG' },
+    { id: 2, date: '2024-01-16', pnl: -180, symbol: 'GBPUSD', side: 'SHORT' },
+    { id: 3, date: '2024-01-17', pnl: 620, symbol: 'USDJPY', side: 'LONG' },
+    { id: 4, date: '2024-01-18', pnl: 280, symbol: 'AUDUSD', side: 'LONG' },
+    { id: 5, date: '2024-01-19', pnl: -95, symbol: 'USDCAD', side: 'SHORT' },
+    { id: 6, date: '2024-01-22', pnl: 380, symbol: 'NZDUSD', side: 'LONG' },
+    { id: 7, date: '2024-01-23', pnl: -220, symbol: 'EURJPY', side: 'SHORT' },
+    { id: 8, date: '2024-01-24', pnl: 720, symbol: 'GBPJPY', side: 'LONG' },
+    { id: 9, date: '2024-01-25', pnl: 150, symbol: 'AUDCAD', side: 'LONG' },
+    { id: 10, date: '2024-01-26', pnl: -120, symbol: 'EURCAD', side: 'SHORT' }
+  ];
+
+  // Calculate equity data
+  const calculateEquityData = () => {
+    const sortedTrades = [...sampleTrades].sort((a, b) => 
+      new Date(a.date).getTime() - new Date(b.date).getTime()
+    );
+    
+    let runningBalance = startingBalance;
+    let peak = startingBalance;
+    let maxDrawdown = 0;
+    
+    const equityPoints = [
+      { 
+        x: 0, 
+        y: startingBalance, 
+        trade: null, 
+        tradesCount: 0, 
+        date: 'Start',
+        cumPnl: 0,
+        drawdownPercent: 0
+      }
+    ];
+    
+    sortedTrades.forEach((trade, index) => {
+      runningBalance += trade.pnl;
+      
+      // Track peak and drawdown
+      if (runningBalance > peak) peak = runningBalance;
+      const currentDrawdown = ((peak - runningBalance) / peak) * 100;
+      maxDrawdown = Math.max(maxDrawdown, currentDrawdown);
+      
+      equityPoints.push({ 
+        x: index + 1, 
+        y: runningBalance, 
+        trade: trade,
+        tradesCount: index + 1,
+        date: trade.date,
+        cumPnl: runningBalance - startingBalance,
+        drawdownPercent: currentDrawdown
+      });
+    });
+
+    return { equityPoints, maxDrawdown, peak };
+  };
+
+  const { equityPoints, maxDrawdown, peak } = calculateEquityData();
+  const currentBalance = equityPoints[equityPoints.length - 1]?.y || startingBalance;
+  const totalPnl = currentBalance - startingBalance;
+  const totalReturn = ((currentBalance - startingBalance) / startingBalance) * 100;
+  const winningTrades = sampleTrades.filter(t => t.pnl > 0).length;
+  const winRate = (winningTrades / sampleTrades.length) * 100;
+
+  // Chart dimensions
+  const chartWidth = 900;
+  const chartHeight = 400;
+  const padding = { top: 40, right: 80, bottom: 60, left: 80 };
+  const plotWidth = chartWidth - padding.left - padding.right;
+  const plotHeight = chartHeight - padding.top - padding.bottom;
+
+  const maxBalance = Math.max(...equityPoints.map(p => p.y));
+  const minBalance = Math.min(...equityPoints.map(p => p.y));
+  const range = Math.max(maxBalance - minBalance, startingBalance * 0.1);
+  const bufferPadding = range * 0.15;
+  const chartMin = minBalance - bufferPadding;
+  const chartMax = maxBalance + bufferPadding;
+  const chartRange = chartMax - chartMin;
+
+  // Calculate breakeven line position
+  const breakevenY = padding.top + plotHeight - ((startingBalance - chartMin) / chartRange) * plotHeight;
+
+  // Animate path drawing
+  useEffect(() => {
+    if (pathRef.current) {
+      const length = pathRef.current.getTotalLength();
+      setPathLength(length);
+      
+      let start = 0;
+      const animate = (timestamp) => {
+        if (!start) start = timestamp;
+        const progress = Math.min((timestamp - start) / 2000, 1);
+        setDrawProgress(progress);
+        
+        if (progress < 1) {
+          requestAnimationFrame(animate);
+        }
+      };
+      requestAnimationFrame(animate);
+    }
+  }, [equityPoints]);
+
+  const createPath = (points) => {
+    return points.map((point, index) => {
+      const x = padding.left + (index / (points.length - 1)) * plotWidth;
+      const y = padding.top + plotHeight - ((point.y - chartMin) / chartRange) * plotHeight;
+      return `${index === 0 ? 'M' : 'L'} ${x} ${y}`;
+    }).join(' ');
+  };
+
+  const formatCurrency = (value) => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
+    }).format(value);
+  };
+
+  const formatDate = (dateStr) => {
+    if (dateStr === 'Start') return 'Start';
+    return new Date(dateStr).toLocaleDateString('en-US', { 
+      month: 'short', 
+      day: 'numeric' 
+    });
+  };
+
+  const handleMouseMove = (event, point, index) => {
+    const rect = svgRef.current.getBoundingClientRect();
+    const x = event.clientX - rect.left;
+    const y = event.clientY - rect.top;
+    
+    setTooltip({
+      visible: true,
+      x: x + 10,
+      y: y - 10,
+      data: point
+    });
+    setHoveredPoint(index);
+  };
+
+  const handleMouseLeave = () => {
+    setTooltip({ visible: false, x: 0, y: 0, data: null });
+    setHoveredPoint(null);
+  };
+
+  return (
+    <div className="bg-black rounded-lg border border-gray-800 overflow-hidden">
+      {/* Header */}
+      <div className="px-6 py-4 border-b border-gray-800">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-3">
+            <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+            <h3 className="text-lg font-semibold text-white">Account Equity Curve</h3>
+          </div>
+          
+          {/* Live Stats */}
+          <div className="flex items-center space-x-6 text-sm">
+            <div className="flex items-center space-x-2">
+              <span className="text-gray-400">Balance:</span>
+              <span className="text-white font-mono">{formatCurrency(currentBalance)}</span>
+            </div>
+            <div className="flex items-center space-x-2">
+              <span className="text-gray-400">P&L:</span>
+              <span className={`font-mono ${totalPnl >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                {totalPnl >= 0 ? '+' : ''}{formatCurrency(totalPnl)}
+              </span>
+            </div>
+            <div className="flex items-center space-x-2">
+              <span className="text-gray-400">Return:</span>
+              <span className={`font-mono ${totalReturn >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                {totalReturn >= 0 ? '+' : ''}{totalReturn.toFixed(2)}%
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Chart */}
+      <div className="p-6 relative">
+        <div className="bg-gray-950 rounded-lg border border-gray-800 p-4 relative overflow-hidden">
+          {/* Grid Background */}
+          <div className="absolute inset-0">
+            <svg className="w-full h-full">
+              <defs>
+                <pattern id="grid" width="40" height="30" patternUnits="userSpaceOnUse">
+                  <path d="M 40 0 L 0 0 0 30" fill="none" stroke="#1f2937" strokeWidth="0.5"/>
+                </pattern>
+              </defs>
+              <rect width="100%" height="100%" fill="url(#grid)" />
+            </svg>
+          </div>
+
+          {/* Main Chart SVG */}
+          <svg 
+            ref={svgRef}
+            className="w-full h-full relative z-10" 
+            viewBox={`0 0 ${chartWidth} ${chartHeight}`}
+            style={{ minHeight: '400px' }}
+          >
+            <defs>
+              {/* Gradients */}
+              <linearGradient id="equityGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" stopColor="#22d3ee" stopOpacity="0.3"/>
+                <stop offset="100%" stopColor="#22d3ee" stopOpacity="0.1"/>
+              </linearGradient>
+              
+              <linearGradient id="profitZone" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" stopColor="#10b981" stopOpacity="0.05"/>
+                <stop offset="100%" stopColor="#10b981" stopOpacity="0.02"/>
+              </linearGradient>
+              
+              <linearGradient id="lossZone" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" stopColor="#ef4444" stopOpacity="0.02"/>
+                <stop offset="100%" stopColor="#ef4444" stopOpacity="0.05"/>
+              </linearGradient>
+
+              {/* Drop shadow filter */}
+              <filter id="dropshadow" x="-50%" y="-50%" width="200%" height="200%">
+                <feDropShadow dx="0" dy="2" stdDeviation="3" floodColor="#000000" floodOpacity="0.3"/>
+              </filter>
+
+              {/* Glow filter */}
+              <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+                <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+                <feMerge> 
+                  <feMergeNode in="coloredBlur"/>
+                  <feMergeNode in="SourceGraphic"/>
+                </feMerge>
+              </filter>
+            </defs>
+
+            {/* Profit/Loss Zones */}
+            <rect
+              x={padding.left}
+              y={padding.top}
+              width={plotWidth}
+              height={Math.max(0, breakevenY - padding.top)}
+              fill="url(#profitZone)"
+            />
+            <rect
+              x={padding.left}
+              y={breakevenY}
+              width={plotWidth}
+              height={Math.max(0, padding.top + plotHeight - breakevenY)}
+              fill="url(#lossZone)"
+            />
+
+            {/* Y-axis grid lines and labels */}
+            {[0, 0.25, 0.5, 0.75, 1].map((ratio, index) => {
+              const y = padding.top + (ratio * plotHeight);
+              const value = chartMax - (ratio * chartRange);
+              return (
+                <g key={index}>
+                  <line
+                    x1={padding.left}
+                    y1={y}
+                    x2={padding.left + plotWidth}
+                    y2={y}
+                    stroke="#374151"
+                    strokeWidth="1"
+                    strokeDasharray="2,2"
+                    opacity="0.5"
+                  />
+                  <text
+                    x={padding.left - 10}
+                    y={y + 4}
+                    textAnchor="end"
+                    className="fill-gray-400 text-xs font-mono"
+                    fontSize="11"
+                  >
+                    {formatCurrency(value)}
+                  </text>
+                </g>
+              );
+            })}
+
+            {/* X-axis grid lines and labels */}
+            {equityPoints.filter((_, index) => index % Math.max(1, Math.floor(equityPoints.length / 8)) === 0).map((point, index, filtered) => {
+              const originalIndex = equityPoints.indexOf(point);
+              const x = padding.left + (originalIndex / (equityPoints.length - 1)) * plotWidth;
+              return (
+                <g key={originalIndex}>
+                  <line
+                    x1={x}
+                    y1={padding.top}
+                    x2={x}
+                    y2={padding.top + plotHeight}
+                    stroke="#374151"
+                    strokeWidth="1"
+                    strokeDasharray="2,2"
+                    opacity="0.3"
+                  />
+                  <text
+                    x={x}
+                    y={padding.top + plotHeight + 20}
+                    textAnchor="middle"
+                    className="fill-gray-400 text-xs font-mono"
+                    fontSize="11"
+                  >
+                    {formatDate(point.date)}
+                  </text>
+                </g>
+              );
+            })}
+
+            {/* Breakeven line */}
+            <line
+              x1={padding.left}
+              y1={breakevenY}
+              x2={padding.left + plotWidth}
+              y2={breakevenY}
+              stroke="#fbbf24"
+              strokeWidth="2"
+              strokeDasharray="6,4"
+              opacity="0.8"
+              filter="url(#glow)"
+            />
+            <text
+              x={padding.left + 10}
+              y={breakevenY - 8}
+              className="fill-yellow-400 text-xs font-semibold"
+              fontSize="12"
+            >
+              Breakeven: {formatCurrency(startingBalance)}
+            </text>
+
+            {/* Area under curve */}
+            <path
+              d={`${createPath(equityPoints)} L ${padding.left + plotWidth} ${padding.top + plotHeight} L ${padding.left} ${padding.top + plotHeight} Z`}
+              fill="url(#equityGradient)"
+            />
+
+            {/* Main equity line */}
+            <path
+              ref={pathRef}
+              d={createPath(equityPoints)}
+              fill="none"
+              stroke="#22d3ee"
+              strokeWidth="3"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeDasharray={pathLength}
+              strokeDashoffset={pathLength * (1 - drawProgress)}
+              filter="url(#dropshadow)"
+              style={{ transition: 'stroke-dashoffset 0.1s ease-out' }}
+            />
+
+            {/* Individual Trade Dots */}
+            {equityPoints.map((point, index) => {
+              if (index === 0 || !point.trade) return null; // Skip starting point and points without trades
+              
+              const x = padding.left + (index / (equityPoints.length - 1)) * plotWidth;
+              const y = padding.top + plotHeight - ((point.y - chartMin) / chartRange) * plotHeight;
+              const isVisible = index <= equityPoints.length * drawProgress;
+              
+              if (!isVisible) return null;
+
+              const trade = point.trade;
+              const isWinningTrade = trade.pnl > 0;
+              const isHovered = hoveredPoint === index;
+              
+              // Calculate dot position offset for visual separation
+              const dotOffset = isWinningTrade ? -12 : 12; // Winning trades above line, losing below
+              const dotY = y + dotOffset;
+              
+              return (
+                <g key={`trade-dot-${index}`}>
+                  {/* Connection line from equity curve to trade dot */}
+                  <line
+                    x1={x}
+                    y1={y}
+                    x2={x}
+                    y2={dotY}
+                    stroke={isWinningTrade ? "#10b981" : "#ef4444"}
+                    strokeWidth="1"
+                    opacity="0.6"
+                    strokeDasharray="2,2"
+                  />
+                  
+                  {/* Outer glow for hovered trade */}
+                  {isHovered && (
+                    <circle
+                      cx={x}
+                      cy={dotY}
+                      r="15"
+                      fill={isWinningTrade ? "#10b981" : "#ef4444"}
+                      opacity="0.2"
+                      className="animate-ping"
+                    />
+                  )}
+                  
+                  {/* Trade dot */}
+                  <circle
+                    cx={x}
+                    cy={dotY}
+                    r={isHovered ? "8" : "6"}
+                    fill={isWinningTrade ? "#10b981" : "#ef4444"}
+                    stroke="#ffffff"
+                    strokeWidth="2"
+                    className="cursor-pointer transition-all duration-200"
+                    filter="url(#dropshadow)"
+                    style={{
+                      filter: isHovered 
+                        ? `drop-shadow(0 0 8px ${isWinningTrade ? '#10b981' : '#ef4444'}) url(#dropshadow)` 
+                        : 'url(#dropshadow)'
+                    }}
+                    onMouseEnter={(e) => handleMouseMove(e, point, index)}
+                    onMouseLeave={handleMouseLeave}
+                  />
+                  
+                  {/* Trade symbol label */}
+                  <text
+                    x={x}
+                    y={dotY + (isWinningTrade ? -12 : 18)}
+                    textAnchor="middle"
+                    className="fill-white text-xs font-medium pointer-events-none"
+                    fontSize="9"
+                    opacity={isHovered ? 1 : 0.7}
+                  >
+                    {trade.symbol}
+                  </text>
+                  
+                  {/* P&L amount on hover */}
+                  {isHovered && (
+                    <text
+                      x={x}
+                      y={dotY + (isWinningTrade ? -25 : 30)}
+                      textAnchor="middle"
+                      className={`text-xs font-bold ${isWinningTrade ? 'fill-green-400' : 'fill-red-400'}`}
+                      fontSize="11"
+                      filter="url(#dropshadow)"
+                    >
+                      {isWinningTrade ? '+' : ''}{formatCurrency(trade.pnl)}
+                    </text>
+                  )}
+                </g>
+              );
+            })}
+
+            {/* Equity Line Dots (smaller, on the line) */}
+            {equityPoints.map((point, index) => {
+              const x = padding.left + (index / (equityPoints.length - 1)) * plotWidth;
+              const y = padding.top + plotHeight - ((point.y - chartMin) / chartRange) * plotHeight;
+              const isProfit = point.y >= startingBalance;
+              const isHovered = hoveredPoint === index;
+              const isVisible = index <= equityPoints.length * drawProgress;
+              
+              if (!isVisible) return null;
+
+              return (
+                <g key={`equity-dot-${index}`}>
+                  {/* Small equity line dot */}
+                  <circle
+                    cx={x}
+                    cy={y}
+                    r="3"
+                    fill="#22d3ee"
+                    stroke="#ffffff"
+                    strokeWidth="1"
+                    className="cursor-pointer transition-all duration-200"
+                    filter="url(#dropshadow)"
+                    onMouseEnter={(e) => handleMouseMove(e, point, index)}
+                    onMouseLeave={handleMouseLeave}
+                  />
+                  
+                  {/* Balance value on hover */}
+                  {isHovered && index === 0 && (
+                    <text
+                      x={x}
+                      y={y - 10}
+                      textAnchor="middle"
+                      className="fill-cyan-400 text-xs font-medium"
+                      fontSize="11"
+                      filter="url(#dropshadow)"
+                    >
+                      Start: {formatCurrency(point.y)}
+                    </text>
+                  )}
+                </g>
+              );
+            })}
+          </svg>
+
+          {/* Floating Tooltip */}
+          {tooltip.visible && tooltip.data && (
+            <div 
+              className="absolute z-50 bg-gray-900 border border-gray-600 rounded-lg p-3 pointer-events-none shadow-2xl min-w-[220px]"
+              style={{ 
+                left: `${Math.min(tooltip.x, chartWidth - 220)}px`, 
+                top: `${Math.max(tooltip.y, 10)}px` 
+              }}
+            >
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs text-gray-400">
+                    {tooltip.data.date === 'Start' ? 'Account Start' : formatDate(tooltip.data.date)}
+                  </span>
+                  {tooltip.data.trade && (
+                    <span className="text-xs font-medium text-cyan-400">
+                      #{tooltip.data.tradesCount}
+                    </span>
+                  )}
+                </div>
+                
+                <div className="space-y-1">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs text-gray-400">Balance:</span>
+                    <span className="text-sm font-bold text-white">
+                      {formatCurrency(tooltip.data.y)}
+                    </span>
+                  </div>
+                  
+                  {tooltip.data.trade && (
+                    <>
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs text-gray-400">Trade P&L:</span>
+                        <span className={`text-sm font-bold ${
+                          tooltip.data.trade.pnl >= 0 ? 'text-green-400' : 'text-red-400'
+                        }`}>
+                          {tooltip.data.trade.pnl >= 0 ? '+' : ''}{formatCurrency(tooltip.data.trade.pnl)}
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs text-gray-400">Symbol:</span>
+                        <span className="text-sm font-medium text-cyan-400">
+                          {tooltip.data.trade.symbol}
+                        </span>
+                      </div>
+                    </>
+                  )}
+                  
+                  <div className="pt-1 border-t border-gray-600/50">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs text-gray-400">Cumulative P&L:</span>
+                      <span className={`text-sm font-bold ${
+                        tooltip.data.cumPnl >= 0 ? 'text-green-400' : 'text-red-400'
+                      }`}>
+                        {tooltip.data.cumPnl >= 0 ? '+' : ''}{formatCurrency(tooltip.data.cumPnl)}
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs text-gray-400">Return:</span>
+                      <span className={`text-xs font-medium ${
+                        tooltip.data.cumPnl >= 0 ? 'text-green-400' : 'text-red-400'
+                      }`}>
+                        {((tooltip.data.cumPnl / startingBalance) * 100).toFixed(2)}%
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default PremiumEquityCurve;

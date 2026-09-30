@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PropTraderJournal - Professional Trading Journal</title>
+    <meta name="description" content="Professional trading journal for prop traders. Advanced analytics, risk management, and performance tracking to accelerate your trading career.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #0a0a0a;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            line-height: 1.6;
+        }
+        .container {
+            display: grid;
+            grid-template-columns: 1fr 420px;
+            gap: 3rem;
+            max-width: 1200px;
+            width: 100%;
+            padding: 2rem;
+            align-items: center;
+        }
+        .hero {
+            padding-right: 2rem;
+        }
+        .hero h1 {
+            font-size: 3.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #fbbf24 0%, #06b6d4 25%, #10b981 50%, #3b82f6 75%, #8b5cf6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1.5rem;
+            line-height: 1.1;
+        }
+        .hero p {
+            font-size: 1.125rem;
+            color: #e5e7eb;
+            margin-bottom: 2.5rem;
+            font-weight: 400;
+        }
+        .features {
+            display: grid;
+            gap: 1.5rem;
+        }
+        .feature {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            padding: 1.5rem;
+            background: linear-gradient(135deg, rgba(31, 41, 55, 0.6), rgba(17, 24, 39, 0.8));
+            border-radius: 0.75rem;
+            border: 1px solid rgba(75, 85, 99, 0.3);
+            backdrop-filter: blur(10px);
+        }
+        .feature-icon {
+            width: 3rem;
+            height: 3rem;
+            border-radius: 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        .feature-icon.chart { background: linear-gradient(135deg, #fbbf24, #f59e0b); color: #000; }
+        .feature-icon.shield { background: linear-gradient(135deg, #10b981, #059669); color: #000; }
+        .feature-icon.journal { background: linear-gradient(135deg, #8b5cf6, #7c3aed); color: #000; }
+        .feature h3 {
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #f9fafb;
+        }
+        .feature p {
+            font-size: 0.875rem;
+            color: #d1d5db;
+            font-weight: 400;
+        }
+        .auth-card {
+            background: linear-gradient(135deg, rgba(31, 41, 55, 0.95), rgba(17, 24, 39, 0.98));
+            border-radius: 1rem;
+            padding: 2.5rem;
+            border: 1px solid rgba(75, 85, 99, 0.3);
+            backdrop-filter: blur(20px);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4);
+        }
+        .auth-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        .auth-header h2 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: #f9fafb;
+        }
+        .auth-header p {
+            color: #9ca3af;
+            font-weight: 400;
+        }
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #f3f4f6;
+            font-size: 0.875rem;
+        }
+        .form-input {
+            width: 100%;
+            padding: 0.875rem 1rem;
+            background: rgba(55, 65, 81, 0.8);
+            border: 1px solid rgba(75, 85, 99, 0.5);
+            border-radius: 0.5rem;
+            color: white;
+            font-size: 1rem;
+            font-family: inherit;
+            transition: all 0.2s ease;
+        }
+        .form-input:focus {
+            outline: none;
+            border-color: #fbbf24;
+            background: rgba(55, 65, 81, 1);
+            box-shadow: 0 0 0 3px rgba(251, 191, 36, 0.1);
+        }
+        .form-input::placeholder {
+            color: #9ca3af;
+        }
+        .btn {
+            width: 100%;
+            padding: 0.875rem;
+            border: none;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 1rem;
+            font-family: inherit;
+            transition: all 0.2s ease;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            color: #000;
+        }
+        .btn-primary:hover:not(:disabled) {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            transform: translateY(-1px);
+            box-shadow: 0 10px 25px -5px rgba(251, 191, 36, 0.4);
+        }
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .toggle {
+            text-align: center;
+            margin-top: 1.5rem;
+        }
+        .toggle a {
+            color: #fbbf24;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        .toggle a:hover {
+            color: #f59e0b;
+            text-decoration: underline;
+        }
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+        .message {
+            margin-top: 1rem;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+        .error {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: #fecaca;
+        }
+        .success {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            color: #a7f3d0;
+        }
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+                padding: 1rem;
+            }
+            .hero {
+                text-align: center;
+                padding-right: 0;
+            }
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+            .auth-card {
+                padding: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="hero">
+            <h1>PropTraderJournal</h1>
+            <p>Professional trading journal built for serious prop traders. Advanced analytics, risk management, and performance tracking to accelerate your trading career.</p>
+            
+            <div class="features">
+                <div class="feature">
+                    <div class="feature-icon chart">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                            <path d="M3 3v18h18"></path>
+                            <path d="m19 9-5 5-4-4-3 3"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <h3>Professional Analytics</h3>
+                        <p>Advanced performance tracking and detailed trade analysis for informed decision making.</p>
+                    </div>
+                </div>
+                
+                <div class="feature">
+                    <div class="feature-icon shield">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <h3>Risk Management</h3>
+                        <p>Sophisticated risk controls and drawdown monitoring to protect your capital.</p>
+                    </div>
+                </div>
+                
+                <div class="feature">
+                    <div class="feature-icon journal">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                            <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"></path>
+                            <polyline points="14,2 14,8 20,8"></polyline>
+                            <line x1="16" y1="13" x2="8" y2="13"></line>
+                            <line x1="16" y1="17" x2="8" y2="17"></line>
+                            <polyline points="10,9 9,9 8,9"></polyline>
+                        </svg>
+                    </div>
+                    <div>
+                        <h3>Trading Journal</h3>
+                        <p>Comprehensive journaling system with performance insights and improvement tracking.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="auth-card">
+            <div class="auth-header">
+                <h2 id="auth-title">Welcome Back</h2>
+                <p id="auth-subtitle">Sign in to your PropTraderJournal account</p>
+            </div>
+
+            <form id="auth-form">
+                <div id="name-fields" style="display: none;">
+                    <div class="grid-2">
+                        <div class="form-group">
+                            <label for="firstName">First Name</label>
+                            <input type="text" id="firstName" class="form-input" placeholder="John">
+                        </div>
+                        <div class="form-group">
+                            <label for="lastName">Last Name</label>
+                            <input type="text" id="lastName" class="form-input" placeholder="Doe">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" class="form-input" placeholder="trader@example.com" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" class="form-input" placeholder="Enter your password" required>
+                </div>
+                
+                <div id="confirm-password-field" style="display: none;" class="form-group">
+                    <label for="confirmPassword">Confirm Password</label>
+                    <input type="password" id="confirmPassword" class="form-input" placeholder="Confirm your password">
+                </div>
+                
+                <button type="submit" class="btn btn-primary" id="submit-btn">Sign In</button>
+                
+                <div id="message"></div>
+            </form>
+
+            <div class="toggle">
+                <span id="toggle-text">Don't have an account?</span>
+                <a href="#" id="toggle-link">Create Account</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let isLogin = true;
+        
+        const elements = {
+            authTitle: document.getElementById('auth-title'),
+            authSubtitle: document.getElementById('auth-subtitle'),
+            nameFields: document.getElementById('name-fields'),
+            confirmPasswordField: document.getElementById('confirm-password-field'),
+            submitBtn: document.getElementById('submit-btn'),
+            toggleText: document.getElementById('toggle-text'),
+            toggleLink: document.getElementById('toggle-link'),
+            authForm: document.getElementById('auth-form'),
+            message: document.getElementById('message')
+        };
+        
+        function updateUI() {
+            if (isLogin) {
+                elements.authTitle.textContent = 'Welcome Back';
+                elements.authSubtitle.textContent = 'Sign in to your PropTraderJournal account';
+                elements.nameFields.style.display = 'none';
+                elements.confirmPasswordField.style.display = 'none';
+                elements.submitBtn.textContent = 'Sign In';
+                elements.toggleText.textContent = "Don't have an account?";
+                elements.toggleLink.textContent = 'Create Account';
+            } else {
+                elements.authTitle.textContent = 'Create Account';
+                elements.authSubtitle.textContent = 'Join thousands of successful prop traders';
+                elements.nameFields.style.display = 'block';
+                elements.confirmPasswordField.style.display = 'block';
+                elements.submitBtn.textContent = 'Create Account';
+                elements.toggleText.textContent = 'Already have an account?';
+                elements.toggleLink.textContent = 'Sign In';
+            }
+            elements.message.innerHTML = '';
+        }
+        
+        function showMessage(text, type = 'error') {
+            elements.message.innerHTML = `<div class="message ${type}">${text}</div>`;
+        }
+        
+        elements.toggleLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            isLogin = !isLogin;
+            updateUI();
+        });
+        
+        elements.authForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = {
+                email: document.getElementById('email').value,
+                password: document.getElementById('password').value
+            };
+            
+            if (!isLogin) {
+                const firstName = document.getElementById('firstName').value;
+                const lastName = document.getElementById('lastName').value;
+                const confirmPassword = document.getElementById('confirmPassword').value;
+                
+                if (!firstName || !lastName) {
+                    showMessage('Please fill in all fields');
+                    return;
+                }
+                
+                if (formData.password !== confirmPassword) {
+                    showMessage('Passwords do not match');
+                    return;
+                }
+                
+                if (formData.password.length < 8) {
+                    showMessage('Password must be at least 8 characters');
+                    return;
+                }
+                
+                formData.firstName = firstName;
+                formData.lastName = lastName;
+            }
+            
+            elements.submitBtn.disabled = true;
+            elements.submitBtn.textContent = isLogin ? 'Signing in...' : 'Creating account...';
+            
+            try {
+                const response = await fetch(isLogin ? '/api/auth/login' : '/api/auth/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(formData)
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showMessage(isLogin ? 'Login successful! Redirecting...' : 'Account created successfully! Redirecting...', 'success');
+                    setTimeout(() => window.location.href = '/', 1000);
+                } else {
+                    showMessage(data.message || 'Authentication failed');
+                }
+            } catch (error) {
+                showMessage('Network error. Please try again.');
+            } finally {
+                elements.submitBtn.disabled = false;
+                elements.submitBtn.textContent = isLogin ? 'Sign In' : 'Create Account';
+            }
+        });
+    </script>
+</body>
+</html>

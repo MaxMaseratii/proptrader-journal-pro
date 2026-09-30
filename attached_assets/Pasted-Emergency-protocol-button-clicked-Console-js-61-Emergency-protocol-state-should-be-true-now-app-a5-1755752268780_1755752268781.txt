@@ -1,0 +1,165 @@
+Emergency protocol button clicked!
+Console.js:61 Emergency protocol state should be true now
+_app-a5f1ca30285b1ec0.js:15  POST https://o1151714.ingest.sentry.io/api/6318792/envelope/?sentry_key=8aa91189a4274b5a8c9b7b01d46ea360&sentry_version=7&sentry_client=sentry.javascript.browser%2F7.112.0 net::ERR_BLOCKED_BY_CLIENT
+(anonymous) @ _app-a5f1ca30285b1ec0.js:15
+(anonymous) @ _app-a5f1ca30285b1ec0.js:13
+add @ _app-a5f1ca30285b1ec0.js:13
+i @ _app-a5f1ca30285b1ec0.js:13
+_sendEnvelope @ _app-a5f1ca30285b1ec0.js:13
+_flushOutcomes @ _app-a5f1ca30285b1ec0.js:13
+(anonymous) @ _app-a5f1ca30285b1ec0.js:13
+_app-a5f1ca30285b1ec0.js:40  POST https://logs.browser-intake-us5-datadoghq.com/api/v2/logs?ddsource=browser&ddtags=sdk_version%3A4.46.0%2Capi%3Abeacon%2Cenv%3Aproduction%2Cservice%3Awebsite%2Cversion%3A48b73c37&dd-api-key=pub31a5047a3a4692afb84a423db984dc57&dd-evp-origin-version=4.46.0&dd-evp-origin=browser&dd-request-id=730f30c2-e529-48bc-a384-f6e54fc54deb net::ERR_BLOCKED_BY_CLIENT
+(anonymous) @ _app-a5f1ca30285b1ec0.js:40
+sendOnExit @ _app-a5f1ca30285b1ec0.js:40
+e.flush @ _app-a5f1ca30285b1ec0.js:15
+(anonymous) @ _app-a5f1ca30285b1ec0.js:15
+(anonymous) @ _app-a5f1ca30285b1ec0.js:15
+e.notify @ _app-a5f1ca30285b1ec0.js:15
+f @ _app-a5f1ca30285b1ec0.js:15
+(anonymous) @ _app-a5f1ca30285b1ec0.js:15
+(anonymous) @ _app-a5f1ca30285b1ec0.js:15
+e.notify @ _app-a5f1ca30285b1ec0.js:15
+r.capture @ _app-a5f1ca30285b1ec0.js:20
+d @ _app-a5f1ca30285b1ec0.js:1
+(anonymous) @ _app-a5f1ca30285b1ec0.js:1
+  POST https://r.stripe.com/b net::ERR_BLOCKED_BY_CLIENT
+value @ shared-caccf892d15a2…698d324cbed544.js:1
+value @ shared-caccf892d15a2…698d324cbed544.js:1
+(anonymous) @ shared-caccf892d15a2…698d324cbed544.js:1
+shared-cab9eeecb62f95c95cab589231c15b8e.js:1  POST https://r.stripe.com/b net::ERR_BLOCKED_BY_CLIENT
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+(anonymous) @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+  POST https://r.stripe.com/b net::ERR_BLOCKED_BY_CLIENT
+value @ shared-cab9eeecb62f9…ab589231c15b8e.js:1
+value @ shared-cab9eeecb62f9…ab589231c15b8e.js:1
+(anonymous) @ shared-cab9eeecb62f9…ab589231c15b8e.js:1
+  POST https://r.stripe.com/b net::ERR_BLOCKED_BY_CLIENT
+(anonymous) @ shared-caccf892d15a2…698d324cbed544.js:1
+e @ shared-caccf892d15a2…698d324cbed544.js:1
+c @ shared-caccf892d15a2…698d324cbed544.js:1
+value @ shared-caccf892d15a2…698d324cbed544.js:1
+value @ shared-caccf892d15a2…698d324cbed544.js:1
+value @ shared-caccf892d15a2…698d324cbed544.js:1
+value @ shared-caccf892d15a2…698d324cbed544.js:1
+value @ shared-caccf892d15a2…698d324cbed544.js:1
+(anonymous) @ shared-caccf892d15a2…698d324cbed544.js:1
+setTimeout
+value @ shared-caccf892d15a2…698d324cbed544.js:1
+value @ shared-caccf892d15a2…698d324cbed544.js:1
+value @ shared-caccf892d15a2…698d324cbed544.js:1
+(anonymous) @ shared-caccf892d15a2…698d324cbed544.js:1
+value @ shared-caccf892d15a2…698d324cbed544.js:1
+log @ shared-caccf892d15a2…698d324cbed544.js:1
+log @ controller-with-prec…c7c8d7f83a58de.js:1
+ke @ controller-with-prec…c7c8d7f83a58de.js:1
+(anonymous) @ controller-with-prec…c7c8d7f83a58de.js:1
+shared-cab9eeecb62f95c95cab589231c15b8e.js:1  POST https://r.stripe.com/b net::ERR_BLOCKED_BY_CLIENT
+(anonymous) @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+e @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+c @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+(anonymous) @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+setTimeout
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+(anonymous) @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+log @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+log @ controller-with-preconnect-fa09bb88558a8f192264e2f26e971212.js:1
+ke @ controller-with-preconnect-fa09bb88558a8f192264e2f26e971212.js:1
+(anonymous) @ controller-with-preconnect-fa09bb88558a8f192264e2f26e971212.js:1
+shared-caccf892d15a2…698d324cbed544.js:1 Uncaught (in promise) FetchError: Error fetching https://r.stripe.com/b: Failed to fetch
+    at shared-caccf892d15a2…cbed544.js:1:220338
+(anonymous) @ shared-caccf892d15a2…698d324cbed544.js:1
+Promise.catch
+(anonymous) @ shared-caccf892d15a2…698d324cbed544.js:1
+e @ shared-caccf892d15a2…698d324cbed544.js:1
+c @ shared-caccf892d15a2…698d324cbed544.js:1
+value @ shared-caccf892d15a2…698d324cbed544.js:1
+value @ shared-caccf892d15a2…698d324cbed544.js:1
+value @ shared-caccf892d15a2…698d324cbed544.js:1
+value @ shared-caccf892d15a2…698d324cbed544.js:1
+value @ shared-caccf892d15a2…698d324cbed544.js:1
+(anonymous) @ shared-caccf892d15a2…698d324cbed544.js:1
+setTimeout
+value @ shared-caccf892d15a2…698d324cbed544.js:1
+value @ shared-caccf892d15a2…698d324cbed544.js:1
+value @ shared-caccf892d15a2…698d324cbed544.js:1
+(anonymous) @ shared-caccf892d15a2…698d324cbed544.js:1
+value @ shared-caccf892d15a2…698d324cbed544.js:1
+log @ shared-caccf892d15a2…698d324cbed544.js:1
+log @ controller-with-prec…c7c8d7f83a58de.js:1
+ke @ controller-with-prec…c7c8d7f83a58de.js:1
+(anonymous) @ controller-with-prec…c7c8d7f83a58de.js:1
+  POST https://r.stripe.com/b net::ERR_BLOCKED_BY_CLIENT
+(anonymous) @ shared-cab9eeecb62f9…ab589231c15b8e.js:1
+e @ shared-cab9eeecb62f9…ab589231c15b8e.js:1
+c @ shared-cab9eeecb62f9…ab589231c15b8e.js:1
+value @ shared-cab9eeecb62f9…ab589231c15b8e.js:1
+value @ shared-cab9eeecb62f9…ab589231c15b8e.js:1
+value @ shared-cab9eeecb62f9…ab589231c15b8e.js:1
+value @ shared-cab9eeecb62f9…ab589231c15b8e.js:1
+value @ shared-cab9eeecb62f9…ab589231c15b8e.js:1
+(anonymous) @ shared-cab9eeecb62f9…ab589231c15b8e.js:1
+setTimeout
+value @ shared-cab9eeecb62f9…ab589231c15b8e.js:1
+value @ shared-cab9eeecb62f9…ab589231c15b8e.js:1
+value @ shared-cab9eeecb62f9…ab589231c15b8e.js:1
+(anonymous) @ shared-cab9eeecb62f9…ab589231c15b8e.js:1
+value @ shared-cab9eeecb62f9…ab589231c15b8e.js:1
+log @ shared-cab9eeecb62f9…ab589231c15b8e.js:1
+log @ controller-with-prec…64e2f26e971212.js:1
+ke @ controller-with-prec…64e2f26e971212.js:1
+(anonymous) @ controller-with-prec…64e2f26e971212.js:1
+shared-cab9eeecb62f95c95cab589231c15b8e.js:1 Uncaught (in promise) FetchError: Error fetching https://r.stripe.com/b: Failed to fetch
+    at shared-cab9eeecb62f95c95cab589231c15b8e.js:1:220340
+(anonymous) @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+Promise.catch
+(anonymous) @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+e @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+c @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+(anonymous) @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+setTimeout
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+(anonymous) @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+log @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+log @ controller-with-preconnect-fa09bb88558a8f192264e2f26e971212.js:1
+ke @ controller-with-preconnect-fa09bb88558a8f192264e2f26e971212.js:1
+(anonymous) @ controller-with-preconnect-fa09bb88558a8f192264e2f26e971212.js:1
+shared-cab9eeecb62f9…ab589231c15b8e.js:1 Uncaught (in promise) FetchError: Error fetching https://r.stripe.com/b: Failed to fetch
+    at shared-cab9eeecb62f9…1c15b8e.js:1:220340
+(anonymous) @ shared-cab9eeecb62f9…ab589231c15b8e.js:1
+Promise.catch
+(anonymous) @ shared-cab9eeecb62f9…ab589231c15b8e.js:1
+e @ shared-cab9eeecb62f9…ab589231c15b8e.js:1
+c @ shared-cab9eeecb62f9…ab589231c15b8e.js:1
+value @ shared-cab9eeecb62f9…ab589231c15b8e.js:1
+value @ shared-cab9eeecb62f9…ab589231c15b8e.js:1
+value @ shared-cab9eeecb62f9…ab589231c15b8e.js:1
+value @ shared-cab9eeecb62f9…ab589231c15b8e.js:1
+value @ shared-cab9eeecb62f9…ab589231c15b8e.js:1
+(anonymous) @ shared-cab9eeecb62f9…ab589231c15b8e.js:1
+setTimeout
+value @ shared-cab9eeecb62f9…ab589231c15b8e.js:1
+value @ shared-cab9eeecb62f9…ab589231c15b8e.js:1
+value @ shared-cab9eeecb62f9…ab589231c15b8e.js:1
+(anonymous) @ shared-cab9eeecb62f9…ab589231c15b8e.js:1
+value @ shared-cab9eeecb62f9…ab589231c15b8e.js:1
+log @ shared-cab9eeecb62f9…ab589231c15b8e.js:1
+log @ controller-with-prec…64e2f26e971212.js:1
+ke @ controller-with-prec…64e2f26e971212.js:1
+(anonymous) @ controller-with-prec…64e2f26e971212.js:1

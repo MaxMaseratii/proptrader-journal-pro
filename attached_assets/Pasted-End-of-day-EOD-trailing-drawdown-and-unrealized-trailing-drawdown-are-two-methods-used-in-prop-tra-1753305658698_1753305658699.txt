@@ -1,0 +1,29 @@
+End-of-day (EOD) trailing drawdown and unrealized trailing drawdown are two methods used in prop trading to manage risk by setting limits on potential losses. The EOD method updates the drawdown limit at the end of the trading day based on realized profits, while the unrealized method adjusts it in real-time throughout the day, including unrealized profits and losses. The consistency rule, often found in prop firm challenges, ensures that a trader's profits are spread out and not heavily reliant on one or two big wins. 
+Here's a more detailed breakdown:
+End-of-Day (EOD) Trailing Drawdown:
+How it works:
+The drawdown limit is adjusted at the end of the trading day based on the account's closing balance (realized profits). 
+Example:
+If your account starts at $10,000 with a $1,000 drawdown limit, and you end the day with a $500 profit, your drawdown limit moves up to $9,500, according to Maven Trading. 
+Flexibility:
+This method offers more flexibility during the trading day, as temporary losses don't immediately impact the drawdown limit. 
+Fixed Drawdown:
+Once you reach a certain profit threshold (buffer zone), the drawdown may stop trailing and become fixed at a certain level. 
+Unrealized Trailing Drawdown:
+How it works:
+The drawdown limit is adjusted in real-time throughout the day, taking into account both realized and unrealized profits and losses.
+Aggressiveness:
+This method is more aggressive than EOD trailing drawdown, as it reacts to intraday fluctuations in account value, according to TopTier Trader.
+Risk Management:
+It provides tighter risk management by constantly monitoring the account's peak value and adjusting the drawdown limit accordingly. 
+Consistency Rule:
+Purpose:
+The consistency rule aims to prevent traders from relying on one or two large trades for their profits. It encourages consistent trading performance over time.
+How it works:
+It typically involves setting a target for the ratio between the highest single day's profit and the overall profit required to pass the evaluation, according to Tradeify.
+Example:
+If the consistency rule is 35%, and your highest single-day profit is $1,000, you would need a total profit of at least $2,857 (1000 / 0.35) to meet the requirement, says Tradeify. 
+Key Differences:
+EOD trailing drawdown is based on realized profits at the end of the day, while unrealized trailing drawdown considers unrealized profits/losses in real-time.
+EOD is generally considered more trader-friendly due to its flexibility, while unrealized trailing drawdown is more aggressive in managing risk. 
+By understanding these concepts, traders can better navigate the rules and risk parameters set by prop firms and optimize their trading strategies accordingly. 

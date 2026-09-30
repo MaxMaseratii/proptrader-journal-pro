@@ -1,0 +1,599 @@
+## 🔧 **STARTER & PROFESSIONAL PLAN IMPLEMENTATION**
+
+### **Complete Code Instructions for Replit AI**
+
+---
+
+## 🌱 **STARTER PLAN ($9/month) - Implementation**
+
+### **Plan Configuration:**
+```javascript
+// config/subscriptionPlans.js
+const SUBSCRIPTION_PLANS = {
+  starter: {
+    id: 'starter',
+    name: 'Starter Plan',
+    price: 9.00,
+    features: {
+      accounts: {
+        maxAccounts: 1,
+        accountTypes: ['challenge', 'live', 'demo']
+      },
+      dataRetention: {
+        days: 30,
+        description: '30-day data history'
+      },
+      performance: {
+        dashboard: 'basic', // 7 days history only
+        challengeTargetPlanner: 'basic',
+        chartsAnalytics: false,
+        achievements: false
+      },
+      preSession: {
+        mentalCheck: true,
+        dailyPlan: true,
+        flowStateTraining: {
+          enabled: true,
+          monthlyLimit: 3
+        },
+        disciplineTracker: 'basic'
+      },
+      accountsRecords: {
+        tradesLog: {
+          enabled: true,
+          limit: 30 // last 30 trades only
+        },
+        tradingJournal: 'basic', // text only
+        tradingCompanion: false
+      },
+      financialManagement: {
+        propFirmSpending: false,
+        payoutRecords: false,
+        reports: false
+      }
+    }
+  }
+};
+```
+
+### **Starter Plan Access Control:**
+```javascript
+// middleware/starterPlanLimits.js
+const enforceStarterLimits = async (req, res, next) => {
+  const user = req.user;
+  
+  if (user.subscriptionPlan !== 'starter') {
+    return next();
+  }
+  
+  const feature = req.params.feature || req.body.feature;
+  
+  switch (feature) {
+    case 'dashboard':
+      // Limit to 7 days history for starter
+      const sevenDaysAgo = new Date();
+      sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+      req.query.startDate = sevenDaysAgo.toISOString();
+      break;
+      
+    case 'tradesLog':
+      // Limit to last 30 trades
+      req.query.limit = 30;
+      req.query.sort = { created_at: -1 };
+      break;
+      
+    case 'flowStateTraining':
+      // Check monthly usage limit
+      const usage = await FeatureUsage.findOne({
+        user_id: user.id,
+        feature_name: 'flow_state_training',
+        month: new Date().getMonth(),
+        year: new Date().getFullYear()
+      });
+      
+      if (usage && usage.count >= 3) {
+        return res.status(403).json({
+          error: 'Monthly limit reached',
+          message: 'Starter plan allows 3 Flow State Training sessions per month',
+          currentUsage: usage.count,
+          limit: 3,
+          upgradeRequired: true
+        });
+      }
+      break;
+      
+    case 'achievements':
+    case 'chartsAnalytics':
+    case 'tradingCompanion':
+    case 'propFirmSpending':
+    case 'payoutRecords':
+    case 'reports':
+      return res.status(403).json({
+        error: 'Feature not available',
+        message: `${feature} is not available in Starter plan`,
+        currentPlan: 'starter',
+        upgradeRequired: true,
+        availableIn: ['professional', 'elite']
+      });
+  }
+  
+  next();
+};
+```
+
+### **Starter Plan API Routes:**
+```javascript
+// routes/starter.js
+const router = express.Router();
+
+// ALLOWED FEATURES
+router.get('/dashboard/basic', 
+  authenticate,
+  checkSubscriptionAccess('starter', 'dashboard', 'read'),
+  enforceStarterLimits,
+  getDashboardBasic
+);
+
+router.get('/trades-log/recent',
+  authenticate,
+  checkSubscriptionAccess('starter', 'tradesLog', 'read'),
+  enforceStarterLimits,
+  getRecentTrades
+);
+
+router.post('/mental-check',
+  authenticate,
+  checkSubscriptionAccess('starter', 'mentalCheck', 'write'),
+  createMentalCheck
+);
+
+router.post('/daily-plan',
+  authenticate,
+  checkSubscriptionAccess('starter', 'dailyPlan', 'write'),
+  createDailyPlan
+);
+
+router.post('/journal/basic',
+  authenticate,
+  checkSubscriptionAccess('starter', 'journal', 'write'),
+  createBasicJournalEntry
+);
+
+// BLOCKED FEATURES - Return upgrade prompts
+router.get('/achievements', blockFeatureWithUpgrade('achievements', 'professional'));
+router.get('/charts-analytics', blockFeatureWithUpgrade('chartsAnalytics', 'professional'));
+router.get('/trading-companion', blockFeatureWithUpgrade('tradingCompanion', 'professional'));
+
+const blockFeatureWithUpgrade = (feature, requiredPlan) => {
+  return (req, res) => {
+    res.status(403).json({
+      error: 'Upgrade required',
+      feature: feature,
+      message: `${feature} is available in ${requiredPlan} plan and above`,
+      currentPlan: 'starter',
+      upgradeUrl: '/upgrade',
+      pricing: {
+        professional: 14.99,
+        elite: 24.99
+      }
+    });
+  };
+};
+```
+
+---
+
+## 🚀 **PROFESSIONAL PLAN ($14.99/month) - Implementation**
+
+### **Plan Configuration:**
+```javascript
+// config/subscriptionPlans.js
+const SUBSCRIPTION_PLANS = {
+  professional: {
+    id: 'professional',
+    name: 'Professional Plan',
+    price: 14.99,
+    features: {
+      accounts: {
+        maxAccounts: 5,
+        accountTypes: ['challenge', 'live', 'demo']
+      },
+      dataRetention: {
+        days: 90,
+        description: '90-day data history'
+      },
+      performance: {
+        dashboard: 'full', // unlimited history
+        challengeTargetPlanner: 'advanced',
+        chartsAnalytics: 'intermediate',
+        achievements: 'basic'
+      },
+      preSession: {
+        mentalCheck: true,
+        dailyPlan: true,
+        flowStateTraining: {
+          enabled: true,
+          monthlyLimit: Infinity // unlimited
+        },
+        disciplineTracker: 'advanced'
+      },
+      accountsRecords: {
+        tradesLog: {
+          enabled: true,
+          limit: Infinity // unlimited
+        },
+        tradingJournal: 'enhanced', // photos, links, tags
+        tradingCompanion: 'basic'
+      },
+      financialManagement: {
+        propFirmSpending: true,
+        payoutRecords: 'basic',
+        reports: 'basic'
+      }
+    }
+  }
+};
+```
+
+### **Professional Plan Access Control:**
+```javascript
+// middleware/professionalPlanLimits.js
+const enforceProfessionalLimits = async (req, res, next) => {
+  const user = req.user;
+  
+  if (user.subscriptionPlan !== 'professional') {
+    return next();
+  }
+  
+  const feature = req.params.feature || req.body.feature;
+  
+  switch (feature) {
+    case 'accounts':
+      // Check 5 account limit
+      const accountCount = await UserAccount.countDocuments({
+        user_id: user.id,
+        is_active: true
+      });
+      
+      if (accountCount >= 5) {
+        return res.status(403).json({
+          error: 'Account limit reached',
+          message: 'Professional plan allows maximum 5 accounts',
+          currentCount: accountCount,
+          limit: 5,
+          upgradeToElite: true
+        });
+      }
+      break;
+      
+    case 'dataRetention':
+      // Limit to 90 days
+      const ninetyDaysAgo = new Date();
+      ninetyDaysAgo.setDate(ninetyDaysAgo.getDate() - 90);
+      req.dataRetentionFilter = { created_at: { $gte: ninetyDaysAgo } };
+      break;
+      
+    case 'chartsAnalytics':
+      // Allow intermediate level only
+      req.analyticsLevel = 'intermediate';
+      break;
+      
+    case 'tradingCompanion':
+      // Basic AI insights only
+      req.aiLevel = 'basic';
+      break;
+      
+    case 'reports':
+      // Basic reports only
+      req.reportLevel = 'basic';
+      break;
+      
+    // ELITE-ONLY FEATURES
+    case 'monteCarlo':
+    case 'advancedReports':
+    case 'unlimitedAccounts':
+    case 'professionalAnalytics':
+      return res.status(403).json({
+        error: 'Elite feature',
+        message: `${feature} is only available in Elite plan`,
+        currentPlan: 'professional',
+        upgradeRequired: true,
+        availableIn: ['elite']
+      });
+  }
+  
+  next();
+};
+```
+
+### **Professional Plan API Routes:**
+```javascript
+// routes/professional.js
+const router = express.Router();
+
+// FULL ACCESS FEATURES
+router.get('/dashboard/full', 
+  authenticate,
+  checkSubscriptionAccess('professional', 'dashboard', 'read'),
+  getFullDashboard
+);
+
+router.get('/accounts/multiple',
+  authenticate,
+  checkSubscriptionAccess('professional', 'accounts', 'read'),
+  getMultipleAccounts
+);
+
+router.post('/accounts/create',
+  authenticate,
+  checkSubscriptionAccess('professional', 'accounts', 'write'),
+  enforceProfessionalLimits,
+  createAccount
+);
+
+router.get('/trades-log/unlimited',
+  authenticate,
+  checkSubscriptionAccess('professional', 'tradesLog', 'read'),
+  enforceProfessionalLimits,
+  getUnlimitedTrades
+);
+
+router.post('/journal/enhanced',
+  authenticate,
+  checkSubscriptionAccess('professional', 'journal', 'write'),
+  createEnhancedJournalEntry
+);
+
+router.get('/flow-state/unlimited',
+  authenticate,
+  checkSubscriptionAccess('professional', 'flowState', 'read'),
+  getFlowStateTraining
+);
+
+router.get('/charts-analytics/intermediate',
+  authenticate,
+  checkSubscriptionAccess('professional', 'analytics', 'read'),
+  enforceProfessionalLimits,
+  getIntermediateAnalytics
+);
+
+router.get('/trading-companion/basic',
+  authenticate,
+  checkSubscriptionAccess('professional', 'companion', 'read'),
+  enforceProfessionalLimits,
+  getBasicAIInsights
+);
+
+router.get('/prop-firm-spending',
+  authenticate,
+  checkSubscriptionAccess('professional', 'spending', 'read'),
+  getPropFirmSpending
+);
+
+router.get('/payout-records/basic',
+  authenticate,
+  checkSubscriptionAccess('professional', 'payouts', 'read'),
+  getBasicPayoutRecords
+);
+
+// ELITE-ONLY FEATURES - Block with upgrade prompt
+router.get('/monte-carlo', blockEliteFeature('monteCarlo'));
+router.get('/reports/advanced', blockEliteFeature('advancedReports'));
+router.get('/analytics/professional', blockEliteFeature('professionalAnalytics'));
+
+const blockEliteFeature = (feature) => {
+  return (req, res) => {
+    res.status(403).json({
+      error: 'Elite plan required',
+      feature: feature,
+      message: `${feature} is available in Elite plan only`,
+      currentPlan: 'professional',
+      upgradeUrl: '/upgrade-to-elite',
+      elitePrice: 24.99
+    });
+  };
+};
+```
+
+---
+
+## 🔄 **Feature Usage Tracking**
+
+### **Usage Counter for Limited Features:**
+```javascript
+// utils/featureUsage.js
+const trackFeatureUsage = async (userId, featureName, limit = null) => {
+  const currentMonth = new Date().getMonth();
+  const currentYear = new Date().getFullYear();
+  
+  let usage = await FeatureUsage.findOne({
+    user_id: userId,
+    feature_name: featureName,
+    month: currentMonth,
+    year: currentYear
+  });
+  
+  if (!usage) {
+    usage = new FeatureUsage({
+      user_id: userId,
+      feature_name: featureName,
+      month: currentMonth,
+      year: currentYear,
+      count: 0
+    });
+  }
+  
+  usage.count += 1;
+  usage.last_used = new Date();
+  await usage.save();
+  
+  if (limit && usage.count > limit) {
+    throw new Error(`Monthly limit of ${limit} exceeded for ${featureName}`);
+  }
+  
+  return usage;
+};
+
+// Reset monthly counters
+const resetMonthlyUsage = async () => {
+  const currentMonth = new Date().getMonth();
+  const currentYear = new Date().getFullYear();
+  
+  await FeatureUsage.updateMany(
+    {
+      month: { $ne: currentMonth },
+      year: { $ne: currentYear }
+    },
+    {
+      count: 0,
+      month: currentMonth,
+      year: currentYear
+    }
+  );
+};
+```
+
+---
+
+## 🎯 **Frontend Plan Indicators**
+
+### **Plan-Specific UI Components:**
+```javascript
+// components/PlanIndicators.jsx
+const PlanIndicator = ({ user, feature }) => {
+  const plan = user.subscriptionPlan;
+  
+  const getFeatureStatus = (feature, plan) => {
+    const access = {
+      starter: {
+        achievements: false,
+        chartsAnalytics: false,
+        tradingCompanion: false,
+        multipleAccounts: false,
+        unlimitedData: false
+      },
+      professional: {
+        achievements: true,
+        chartsAnalytics: 'intermediate',
+        tradingCompanion: 'basic',
+        multipleAccounts: true,
+        unlimitedData: false,
+        monteCarlo: false,
+        advancedReports: false
+      },
+      elite: {
+        achievements: true,
+        chartsAnalytics: 'professional',
+        tradingCompanion: 'advanced',
+        multipleAccounts: true,
+        unlimitedData: true,
+        monteCarlo: true,
+        advancedReports: true
+      }
+    };
+    
+    return access[plan][feature];
+  };
+  
+  const status = getFeatureStatus(feature, plan);
+  
+  if (status === false) {
+    return (
+      <div className="flex items-center gap-2 p-2 bg-amber-50 border border-amber-200 rounded">
+        <Lock className="w-4 h-4 text-amber-600" />
+        <span className="text-amber-700 text-sm">
+          Upgrade to {plan === 'starter' ? 'Professional' : 'Elite'} to unlock
+        </span>
+      </div>
+    );
+  }
+  
+  if (typeof status === 'string') {
+    return (
+      <div className="flex items-center gap-2 p-2 bg-blue-50 border border-blue-200 rounded">
+        <Info className="w-4 h-4 text-blue-600" />
+        <span className="text-blue-700 text-sm">
+          {status.charAt(0).toUpperCase() + status.slice(1)} level available
+        </span>
+      </div>
+    );
+  }
+  
+  return null;
+};
+
+// Account limit indicator
+const AccountLimitIndicator = ({ user, currentCount }) => {
+  const limits = {
+    starter: 1,
+    professional: 5,
+    elite: Infinity
+  };
+  
+  const limit = limits[user.subscriptionPlan];
+  const percentage = limit === Infinity ? 0 : (currentCount / limit) * 100;
+  
+  return (
+    <div className="p-3 bg-gray-50 rounded-lg">
+      <div className="flex justify-between items-center mb-2">
+        <span className="text-sm font-medium">Accounts Used</span>
+        <span className="text-sm text-gray-600">
+          {currentCount} / {limit === Infinity ? '∞' : limit}
+        </span>
+      </div>
+      {limit !== Infinity && (
+        <div className="w-full bg-gray-200 rounded-full h-2">
+          <div 
+            className={`h-2 rounded-full ${percentage >= 100 ? 'bg-red-400' : percentage >= 80 ? 'bg-amber-400' : 'bg-green-400'}`}
+            style={{ width: `${Math.min(percentage, 100)}%` }}
+          ></div>
+        </div>
+      )}
+    </div>
+  );
+};
+```
+
+---
+
+## 🚨 **IMPLEMENTATION COMMAND FOR REPLIT:**
+
+```javascript
+// REPLIT IMPLEMENTATION CHECKLIST:
+
+1. CREATE SUBSCRIPTION PLANS:
+   - Starter: $9, 1 account, 30-day retention, basic features
+   - Professional: $14.99, 5 accounts, 90-day retention, enhanced features
+   - Elite: $24.99, unlimited accounts, unlimited retention, all features
+
+2. IMPLEMENT ACCESS CONTROLS:
+   - Block new data entry for expired subscriptions
+   - Preserve all existing data (never delete)
+   - Enforce account limits per plan
+   - Limit data retention display per plan
+   - Block premium features based on plan level
+
+3. CREATE FEATURE GATES:
+   - Starter: Block achievements, charts, companion, reports
+   - Professional: Block Monte Carlo, advanced reports, unlimited accounts
+   - Elite: Allow all features
+
+4. ADD USAGE TRACKING:
+   - Track Flow State Training usage for Starter (3/month limit)
+   - Track feature usage for analytics
+   - Reset monthly counters automatically
+
+5. FRONTEND INDICATORS:
+   - Show plan status and limits
+   - Display upgrade prompts for blocked features
+   - Account usage indicators
+   - Read-only mode banners for expired subscriptions
+
+6. PRESERVE DATA INTEGRITY:
+   - Never delete user data
+   - Always allow read access to existing data
+   - Clear messaging about data preservation
+   - Graceful degradation of features
+```
+
+**REPLIT: Implement these exact specifications for Starter and Professional plans with the data preservation approach!**

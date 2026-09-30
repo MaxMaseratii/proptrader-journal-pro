@@ -1,0 +1,222 @@
+Emergency protocol button clicked!
+Console.js:61 Current emergencyProtocol state before: true
+Console.js:61 Emergency protocol state should be true now
+_app-c6dc4eab78cae629.js:13  POST https://events.launchdarkly.com/events/bulk/62b35a865152ab14c5942820 net::ERR_BLOCKED_BY_CLIENT
+(anonymous) @ _app-c6dc4eab78cae629.js:13
+(anonymous) @ _app-c6dc4eab78cae629.js:13
+(anonymous) @ _app-c6dc4eab78cae629.js:40
+(anonymous) @ _app-c6dc4eab78cae629.js:40
+(anonymous) @ _app-c6dc4eab78cae629.js:40
+t @ _app-c6dc4eab78cae629.js:40
+(anonymous) @ _app-c6dc4eab78cae629.js:40
+(anonymous) @ _app-c6dc4eab78cae629.js:40
+(anonymous) @ _app-c6dc4eab78cae629.js:40
+e @ _app-c6dc4eab78cae629.js:40
+n @ _app-c6dc4eab78cae629.js:13
+setTimeout
+(anonymous) @ _app-c6dc4eab78cae629.js:13
+e @ _app-c6dc4eab78cae629.js:40
+n @ _app-c6dc4eab78cae629.js:13
+setTimeout
+(anonymous) @ _app-c6dc4eab78cae629.js:13
+e @ _app-c6dc4eab78cae629.js:40
+n @ _app-c6dc4eab78cae629.js:13
+setTimeout
+(anonymous) @ _app-c6dc4eab78cae629.js:13
+e @ _app-c6dc4eab78cae629.js:40
+n @ _app-c6dc4eab78cae629.js:13
+setTimeout
+(anonymous) @ _app-c6dc4eab78cae629.js:13
+e @ _app-c6dc4eab78cae629.js:40
+n @ _app-c6dc4eab78cae629.js:13
+setTimeout
+(anonymous) @ _app-c6dc4eab78cae629.js:13
+e @ _app-c6dc4eab78cae629.js:40
+n @ _app-c6dc4eab78cae629.js:13
+setTimeout
+(anonymous) @ _app-c6dc4eab78cae629.js:13
+e @ _app-c6dc4eab78cae629.js:40
+n @ _app-c6dc4eab78cae629.js:13
+setTimeout
+(anonymous) @ _app-c6dc4eab78cae629.js:13
+e @ _app-c6dc4eab78cae629.js:40
+n @ _app-c6dc4eab78cae629.js:13
+setTimeout
+(anonymous) @ _app-c6dc4eab78cae629.js:13
+e @ _app-c6dc4eab78cae629.js:40
+n @ _app-c6dc4eab78cae629.js:13
+setTimeout
+(anonymous) @ _app-c6dc4eab78cae629.js:13
+e @ _app-c6dc4eab78cae629.js:40
+n @ _app-c6dc4eab78cae629.js:13
+setTimeout
+(anonymous) @ _app-c6dc4eab78cae629.js:13
+e @ _app-c6dc4eab78cae629.js:40
+n @ _app-c6dc4eab78cae629.js:13
+setTimeout
+(anonymous) @ _app-c6dc4eab78cae629.js:13
+e @ _app-c6dc4eab78cae629.js:40
+n @ _app-c6dc4eab78cae629.js:13
+setTimeout
+(anonymous) @ _app-c6dc4eab78cae629.js:13
+e @ _app-c6dc4eab78cae629.js:40
+n @ _app-c6dc4eab78cae629.js:13
+setTimeout
+(anonymous) @ _app-c6dc4eab78cae629.js:13
+e @ _app-c6dc4eab78cae629.js:40
+n @ _app-c6dc4eab78cae629.js:13
+setTimeout
+(anonymous) @ _app-c6dc4eab78cae629.js:13
+e @ _app-c6dc4eab78cae629.js:40
+n @ _app-c6dc4eab78cae629.js:13
+setTimeout
+(anonymous) @ _app-c6dc4eab78cae629.js:13
+e @ _app-c6dc4eab78cae629.js:40
+n @ _app-c6dc4eab78cae629.js:13
+setTimeout
+(anonymous) @ _app-c6dc4eab78cae629.js:13
+e @ _app-c6dc4eab78cae629.js:40
+n @ _app-c6dc4eab78cae629.js:13
+setTimeout
+(anonymous) @ _app-c6dc4eab78cae629.js:13
+e @ _app-c6dc4eab78cae629.js:40
+n @ _app-c6dc4eab78cae629.js:13
+setTimeout
+(anonymous) @ _app-c6dc4eab78cae629.js:13
+e @ _app-c6dc4eab78cae629.js:40
+n @ _app-c6dc4eab78cae629.js:13
+setTimeout
+(anonymous) @ _app-c6dc4eab78cae629.js:13
+e @ _app-c6dc4eab78cae629.js:40
+n @ _app-c6dc4eab78cae629.js:13
+setTimeout
+(anonymous) @ _app-c6dc4eab78cae629.js:13
+e @ _app-c6dc4eab78cae629.js:40
+n @ _app-c6dc4eab78cae629.js:13
+setTimeout
+(anonymous) @ _app-c6dc4eab78cae629.js:13
+e @ _app-c6dc4eab78cae629.js:40
+n @ _app-c6dc4eab78cae629.js:13
+setTimeout
+(anonymous) @ _app-c6dc4eab78cae629.js:13
+e @ _app-c6dc4eab78cae629.js:40
+n @ _app-c6dc4eab78cae629.js:13
+setTimeout
+(anonymous) @ _app-c6dc4eab78cae629.js:13
+e @ _app-c6dc4eab78cae629.js:40
+n @ _app-c6dc4eab78cae629.js:13
+setTimeout
+(anonymous) @ _app-c6dc4eab78cae629.js:13
+e @ _app-c6dc4eab78cae629.js:40
+n @ _app-c6dc4eab78cae629.js:13
+_app-c6dc4eab78cae629.js:13  POST https://events.launchdarkly.com/events/bulk/62b35a865152ab14c5942820 net::ERR_BLOCKED_BY_CLIENT
+(anonymous) @ _app-c6dc4eab78cae629.js:13
+(anonymous) @ _app-c6dc4eab78cae629.js:13
+(anonymous) @ _app-c6dc4eab78cae629.js:40
+(anonymous) @ _app-c6dc4eab78cae629.js:40
+(anonymous) @ _app-c6dc4eab78cae629.js:40
+t @ _app-c6dc4eab78cae629.js:40
+(anonymous) @ _app-c6dc4eab78cae629.js:40
+Promise.catch
+t @ _app-c6dc4eab78cae629.js:40
+(anonymous) @ _app-c6dc4eab78cae629.js:40
+(anonymous) @ _app-c6dc4eab78cae629.js:40
+(anonymous) @ _app-c6dc4eab78cae629.js:40
+e @ _app-c6dc4eab78cae629.js:40
+n @ _app-c6dc4eab78cae629.js:13
+setTimeout
+(anonymous) @ _app-c6dc4eab78cae629.js:13
+e @ _app-c6dc4eab78cae629.js:40
+n @ _app-c6dc4eab78cae629.js:13
+setTimeout
+(anonymous) @ _app-c6dc4eab78cae629.js:13
+e @ _app-c6dc4eab78cae629.js:40
+n @ _app-c6dc4eab78cae629.js:13
+setTimeout
+(anonymous) @ _app-c6dc4eab78cae629.js:13
+e @ _app-c6dc4eab78cae629.js:40
+n @ _app-c6dc4eab78cae629.js:13
+setTimeout
+(anonymous) @ _app-c6dc4eab78cae629.js:13
+e @ _app-c6dc4eab78cae629.js:40
+n @ _app-c6dc4eab78cae629.js:13
+setTimeout
+(anonymous) @ _app-c6dc4eab78cae629.js:13
+e @ _app-c6dc4eab78cae629.js:40
+n @ _app-c6dc4eab78cae629.js:13
+setTimeout
+(anonymous) @ _app-c6dc4eab78cae629.js:13
+e @ _app-c6dc4eab78cae629.js:40
+n @ _app-c6dc4eab78cae629.js:13
+setTimeout
+(anonymous) @ _app-c6dc4eab78cae629.js:13
+e @ _app-c6dc4eab78cae629.js:40
+n @ _app-c6dc4eab78cae629.js:13
+setTimeout
+(anonymous) @ _app-c6dc4eab78cae629.js:13
+e @ _app-c6dc4eab78cae629.js:40
+n @ _app-c6dc4eab78cae629.js:13
+setTimeout
+(anonymous) @ _app-c6dc4eab78cae629.js:13
+e @ _app-c6dc4eab78cae629.js:40
+n @ _app-c6dc4eab78cae629.js:13
+setTimeout
+(anonymous) @ _app-c6dc4eab78cae629.js:13
+e @ _app-c6dc4eab78cae629.js:40
+n @ _app-c6dc4eab78cae629.js:13
+setTimeout
+(anonymous) @ _app-c6dc4eab78cae629.js:13
+e @ _app-c6dc4eab78cae629.js:40
+n @ _app-c6dc4eab78cae629.js:13
+setTimeout
+(anonymous) @ _app-c6dc4eab78cae629.js:13
+e @ _app-c6dc4eab78cae629.js:40
+n @ _app-c6dc4eab78cae629.js:13
+setTimeout
+(anonymous) @ _app-c6dc4eab78cae629.js:13
+e @ _app-c6dc4eab78cae629.js:40
+n @ _app-c6dc4eab78cae629.js:13
+setTimeout
+(anonymous) @ _app-c6dc4eab78cae629.js:13
+e @ _app-c6dc4eab78cae629.js:40
+n @ _app-c6dc4eab78cae629.js:13
+setTimeout
+(anonymous) @ _app-c6dc4eab78cae629.js:13
+e @ _app-c6dc4eab78cae629.js:40
+n @ _app-c6dc4eab78cae629.js:13
+setTimeout
+(anonymous) @ _app-c6dc4eab78cae629.js:13
+e @ _app-c6dc4eab78cae629.js:40
+n @ _app-c6dc4eab78cae629.js:13
+setTimeout
+(anonymous) @ _app-c6dc4eab78cae629.js:13
+e @ _app-c6dc4eab78cae629.js:40
+n @ _app-c6dc4eab78cae629.js:13
+setTimeout
+(anonymous) @ _app-c6dc4eab78cae629.js:13
+e @ _app-c6dc4eab78cae629.js:40
+n @ _app-c6dc4eab78cae629.js:13
+setTimeout
+(anonymous) @ _app-c6dc4eab78cae629.js:13
+e @ _app-c6dc4eab78cae629.js:40
+n @ _app-c6dc4eab78cae629.js:13
+setTimeout
+(anonymous) @ _app-c6dc4eab78cae629.js:13
+e @ _app-c6dc4eab78cae629.js:40
+n @ _app-c6dc4eab78cae629.js:13
+setTimeout
+(anonymous) @ _app-c6dc4eab78cae629.js:13
+e @ _app-c6dc4eab78cae629.js:40
+n @ _app-c6dc4eab78cae629.js:13
+setTimeout
+(anonymous) @ _app-c6dc4eab78cae629.js:13
+e @ _app-c6dc4eab78cae629.js:40
+n @ _app-c6dc4eab78cae629.js:13
+setTimeout
+(anonymous) @ _app-c6dc4eab78cae629.js:13
+e @ _app-c6dc4eab78cae629.js:40
+n @ _app-c6dc4eab78cae629.js:13
+setTimeout
+(anonymous) @ _app-c6dc4eab78cae629.js:13
+e @ _app-c6dc4eab78cae629.js:40
+n @ _app-c6dc4eab78cae629.js:13

@@ -1,0 +1,499 @@
+# COMPLETE PROP SPENDING PAGE REDESIGN - REPLIT AI PROMPT
+
+## 🎯 OBJECTIVE
+Completely redesign the Prop Spending page to match the professional budget management interface with advanced widgets, proper data sources, and modern UI design.
+
+## 📊 CRITICAL DATA SOURCE REQUIREMENTS
+
+### 1. ACCOUNT COSTS DATA SOURCE
+```javascript
+// GET DATA FROM CREATE ACCOUNT PAGE (FINANCIAL SECTION)
+const totalAccountCosts = accounts.reduce((sum, account) => {
+  return sum + (account.accountCost || 0); // NOT startingBalance
+}, 0);
+
+const totalActivationCosts = accounts.reduce((sum, account) => {
+  return sum + (account.activationCost || 0);
+}, 0);
+
+const totalResetCosts = accounts.reduce((sum, account) => {
+  return sum + (account.resetCost || 0);
+}, 0);
+
+// IMPORTANT: startingBalance = account size, NOT cost
+// accountCost = actual money spent to purchase challenge
+// activationCost = fee to activate funded account
+// resetCost = fee to reset failed account
+```
+
+### 2. PROFIT/ROI DATA SOURCE
+```javascript
+// GET PROFIT DATA FROM PAYOUT PAGE
+const totalPayoutsReceived = accounts.reduce((sum, account) => {
+  return sum + (account.totalPayouts || 0); // From payout records
+}, 0);
+
+const actualROI = totalPayoutsReceived - (totalAccountCosts + totalActivationCosts + totalResetCosts);
+// ROI = Money received - Money invested
+```
+
+## 🎨 MANDATORY COLOR CODING SYSTEM
+
+### STRICT COLOR RULES:
+```javascript
+const getValueColor = (value, isExpense = false) => {
+  if (value === 0) return 'text-gray-400';
+  
+  if (isExpense) {
+    // For expenses/costs (always negative impact)
+    return 'text-red-400'; // All expenses are RED
+  } else {
+    // For profits/gains/income
+    if (value > 0) return 'text-green-400'; // Positive = GREEN
+    if (value < 0) return 'text-red-400';   // Negative = RED
+  }
+};
+
+// USAGE EXAMPLES:
+// Expenses: getValueColor(totalSpending, true) → RED
+// Profits: getValueColor(totalPayouts, false) → GREEN if positive
+// ROI: getValueColor(actualROI, false) → GREEN if positive, RED if negative
+```
+
+### COLOR APPLICATION:
+- ✅ **GREEN**: Profits, payouts, positive ROI, remaining budget
+- ❌ **RED**: All expenses, costs, losses, negative ROI, over-budget
+- ⚠️ **YELLOW**: Budget warnings (50-80% used)
+- ⚪ **GRAY**: Zero values, neutral states
+
+## 🏗 PROFESSIONAL BUDGET WIDGET IMPLEMENTATION
+
+### Replace Current Budget Cards With This Design:
+```jsx
+const BudgetWidget = ({ title, icon: Icon, spent, total, iconColor, category }) => {
+  const percentage = (spent / total) * 100;
+  const remaining = total - spent;
+  
+  // Status determination
+  const getStatusInfo = (percentage) => {
+    if (percentage <= 50) return {
+      status: 'On Track', color: 'green', icon: CheckCircle,
+      bgGradient: 'from-green-500/20 to-emerald-600/20',
+      progressGradient: 'from-green-400 to-emerald-500',
+      borderColor: 'border-green-400/30',
+      textColor: 'text-green-400'
+    };
+    if (percentage <= 80) return {
+      status: 'Monitor', color: 'yellow', icon: Target,
+      bgGradient: 'from-yellow-500/20 to-amber-600/20',
+      progressGradient: 'from-yellow-400 to-amber-500',
+      borderColor: 'border-yellow-400/30',
+      textColor: 'text-yellow-400'
+    };
+    if (percentage < 100) return {
+      status: 'Caution', color: 'orange', icon: AlertTriangle,
+      bgGradient: 'from-orange-500/20 to-red-600/20',
+      progressGradient: 'from-orange-400 to-red-500',
+      borderColor: 'border-orange-400/30',
+      textColor: 'text-orange-400'
+    };
+    return {
+      status: 'Over Budget', color: 'red', icon: AlertTriangle,
+      bgGradient: 'from-red-500/20 to-rose-600/20',
+      progressGradient: 'from-red-400 to-rose-500',
+      borderColor: 'border-red-400/30',
+      textColor: 'text-red-400'
+    };
+  };
+
+  const statusInfo = getStatusInfo(percentage);
+  const StatusIcon = statusInfo.icon;
+
+  return (
+    <div className="group relative">
+      {/* Glow effect on hover */}
+      <div className={`absolute -inset-0.5 bg-gradient-to-r ${statusInfo.progressGradient} rounded-2xl blur opacity-0 group-hover:opacity-30 transition-opacity duration-300`}></div>
+      
+      <div className={`relative bg-gradient-to-br from-gray-900 via-slate-800 to-gray-900 border ${statusInfo.borderColor} rounded-2xl p-6 shadow-2xl hover:shadow-3xl transition-all duration-300 group-hover:scale-[1.02] backdrop-blur-sm`}>
+        
+        {/* Header with Icon and Status Badge */}
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center gap-3">
+            <div className={`p-2.5 rounded-xl ${statusInfo.bgGradient} border ${statusInfo.borderColor}`}>
+              <Icon className={`h-5 w-5 ${iconColor}`} />
+            </div>
+            <h3 className="text-white font-semibold text-lg">{title}</h3>
+          </div>
+          
+          {/* Status Badge */}
+          <div className={`px-3 py-1.5 rounded-full text-xs font-medium ${statusInfo.bgGradient} ${statusInfo.textColor} border ${statusInfo.borderColor} flex items-center gap-1.5`}>
+            <StatusIcon className="h-3 w-3" />
+            {statusInfo.status}
+          </div>
+        </div>
+
+        {/* Main Amount Display */}
+        <div className="text-center mb-6">
+          <div className={`text-4xl font-bold mb-2 ${spent > total ? 'text-red-400' : 'text-white'}`}>
+            {formatCurrency(spent)}
+          </div>
+          <p className="text-gray-400 text-sm">
+            of {formatCurrency(total)} {category}
+          </p>
+        </div>
+
+        {/* Animated Progress Bar */}
+        <div className="space-y-3 mb-6">
+          <div className="relative">
+            <div className="w-full bg-gray-700/50 rounded-full h-3 shadow-inner overflow-hidden">
+              <div 
+                className={`h-full bg-gradient-to-r ${statusInfo.progressGradient} rounded-full transition-all duration-700 ease-out shadow-lg relative`}
+                style={{ width: `${Math.min(percentage, 100)}%` }}
+              >
+                {/* Shine effect */}
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-pulse"></div>
+              </div>
+            </div>
+            
+            {/* Over-budget indicator */}
+            {percentage > 100 && (
+              <div className="absolute right-0 top-0 transform translate-x-2 -translate-y-1">
+                <div className="w-4 h-4 bg-red-500 rounded-full flex items-center justify-center">
+                  <AlertTriangle className="h-2.5 w-2.5 text-white" />
+                </div>
+              </div>
+            )}
+          </div>
+          
+          {/* Progress Labels */}
+          <div className="flex justify-between items-center text-sm">
+            <span className={`font-medium ${statusInfo.textColor}`}>
+              {percentage.toFixed(1)}% used
+            </span>
+            <span className={`${remaining >= 0 ? 'text-gray-400' : 'text-red-400'}`}>
+              {remaining >= 0 ? formatCurrency(remaining) : formatCurrency(Math.abs(remaining))} 
+              {remaining >= 0 ? ' remaining' : ' over budget'}
+            </span>
+          </div>
+        </div>
+
+        {/* Bottom Stats */}
+        <div className="grid grid-cols-2 gap-4 pt-4 border-t border-gray-700/50">
+          <div className="text-center">
+            <div className="text-xs text-gray-500 uppercase tracking-wide mb-1">Spent</div>
+            <div className="text-lg font-semibold text-red-400">
+              {formatCurrency(spent)}
+            </div>
+          </div>
+          <div className="text-center">
+            <div className="text-xs text-gray-500 uppercase tracking-wide mb-1">
+              {remaining >= 0 ? 'Available' : 'Overspent'}
+            </div>
+            <div className={`text-lg font-semibold ${remaining >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+              {formatCurrency(Math.abs(remaining))}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+```
+
+## 🚀 WIDGET IMPLEMENTATION
+
+### Replace Budget Overview Section:
+```jsx
+{/* REPLACE EXISTING BUDGET CARDS WITH PROFESSIONAL WIDGETS */}
+{activeBudgetPlan && (
+  <div className="space-y-6">
+    <h2 className="text-2xl font-bold text-white">Budget Overview</h2>
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      <BudgetWidget
+        title="Monthly Budget"
+        icon={CreditCard}
+        spent={totalSpending}
+        total={currentBudget}
+        iconColor="text-yellow-400"
+        category="total budget"
+      />
+      <BudgetWidget
+        title="Trading Budget"
+        icon={TrendingUp}
+        spent={totalPropTradingCosts}
+        total={tradingBudget}
+        iconColor="text-blue-400"
+        category="trading budget"
+      />
+      <BudgetWidget
+        title="Personal Budget"
+        icon={TrendingDown}
+        spent={totalManualSpending}
+        total={personalBudget}
+        iconColor="text-orange-400"
+        category="personal budget"
+      />
+    </div>
+  </div>
+)}
+```
+
+## 💰 INVESTMENT SUMMARY UPDATES
+
+### Update Investment Cards with Correct Data Sources:
+```jsx
+{/* Investment Summary - UPDATE WITH CORRECT COLORS */}
+<div className="grid grid-cols-1 md:grid-cols-5 gap-6">
+  <Card className="bg-gradient-to-br from-gray-900 via-gray-800 to-black border border-yellow-400/20 shadow-lg">
+    <CardHeader>
+      <CardTitle className="text-white">Total Invested</CardTitle>
+      <DollarSign className="h-4 w-4 text-yellow-400" />
+    </CardHeader>
+    <CardContent>
+      <div className="text-2xl font-bold text-red-400">
+        {formatCurrency(totalAccountCosts)}
+      </div>
+      <p className="text-xs text-gray-400">Challenge purchase costs</p>
+    </CardContent>
+  </Card>
+
+  <Card className="bg-gradient-to-br from-gray-900 via-gray-800 to-black border border-yellow-400/20 shadow-lg">
+    <CardHeader>
+      <CardTitle className="text-white">Additional Costs</CardTitle>
+      <TrendingUp className="h-4 w-4 text-orange-400" />
+    </CardHeader>
+    <CardContent>
+      <div className="text-2xl font-bold text-red-400">
+        {formatCurrency(totalActivationCosts + totalResetCosts)}
+      </div>
+      <p className="text-xs text-gray-400">Activations & resets</p>
+    </CardContent>
+  </Card>
+
+  <Card className="bg-gradient-to-br from-gray-900 via-gray-800 to-black border border-yellow-400/20 shadow-lg">
+    <CardHeader>
+      <CardTitle className="text-white">Total Payouts</CardTitle>
+      <DollarSign className="h-4 w-4 text-green-400" />
+    </CardHeader>
+    <CardContent>
+      <div className="text-2xl font-bold text-green-400">
+        {formatCurrency(totalPayoutsReceived)}
+      </div>
+      <p className="text-xs text-gray-400">From payout page</p>
+    </CardContent>
+  </Card>
+
+  <Card className="bg-gradient-to-br from-gray-900 via-gray-800 to-black border border-yellow-400/20 shadow-lg">
+    <CardHeader>
+      <CardTitle className="text-white">Net ROI</CardTitle>
+      <TrendingUp className="h-4 w-4 text-blue-400" />
+    </CardHeader>
+    <CardContent>
+      <div className={`text-2xl font-bold ${actualROI >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+        {formatCurrency(actualROI)}
+      </div>
+      <p className="text-xs text-gray-400">Payouts - total costs</p>
+    </CardContent>
+  </Card>
+
+  <Card className="bg-gradient-to-br from-gray-900 via-gray-800 to-black border border-yellow-400/20 shadow-lg">
+    <CardHeader>
+      <CardTitle className="text-white">ROI Percentage</CardTitle>
+      <Target className="h-4 w-4 text-purple-400" />
+    </CardHeader>
+    <CardContent>
+      <div className={`text-2xl font-bold ${actualROI >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+        {totalAccountCosts > 0 ? ((actualROI / totalAccountCosts) * 100).toFixed(1) : 0}%
+      </div>
+      <p className="text-xs text-gray-400">Return on investment</p>
+    </CardContent>
+  </Card>
+</div>
+```
+
+## 🔧 FUNCTIONAL REQUIREMENTS
+
+### 1. WORKING ADD CATEGORY FUNCTIONALITY
+```jsx
+// IMPLEMENT WORKING ADD CATEGORY
+const [showAddCategory, setShowAddCategory] = useState(false);
+const [newCategory, setNewCategory] = useState({
+  name: '',
+  emoji: '📊',
+  budgetAmount: '',
+  type: 'trading'
+});
+
+const handleAddCategory = async () => {
+  if (!newCategory.name || !newCategory.budgetAmount) return;
+  
+  const categoryData = {
+    name: newCategory.name,
+    type: newCategory.type,
+    emoji: newCategory.emoji,
+    budgetAmount: parseFloat(newCategory.budgetAmount),
+    isActive: true
+  };
+  
+  // API call to create category
+  await apiRequest('/api/budget-categories', 'POST', categoryData);
+  
+  // Refresh categories
+  queryClient.invalidateQueries({ queryKey: ["/api/budget-categories"] });
+  
+  // Reset form
+  setNewCategory({ name: '', emoji: '📊', budgetAmount: '', type: 'trading' });
+  setShowAddCategory(false);
+};
+```
+
+### 2. WORKING EDIT CATEGORY FUNCTIONALITY
+```jsx
+// IMPLEMENT WORKING EDIT CATEGORY
+const [editingCategory, setEditingCategory] = useState(null);
+
+const handleEditCategory = (category) => {
+  setEditingCategory({ ...category });
+};
+
+const handleSaveCategory = async () => {
+  if (!editingCategory) return;
+  
+  // API call to update category
+  await apiRequest(`/api/budget-categories/${editingCategory.id}`, 'PATCH', editingCategory);
+  
+  // Refresh categories
+  queryClient.invalidateQueries({ queryKey: ["/api/budget-categories"] });
+  
+  setEditingCategory(null);
+};
+
+// INLINE EDITING INTERFACE
+{editingCategory?.id === category.id ? (
+  <div className="grid grid-cols-4 gap-3">
+    <select
+      value={editingCategory.emoji}
+      onChange={(e) => setEditingCategory({...editingCategory, emoji: e.target.value})}
+      className="bg-gray-700 border border-yellow-400/20 text-white rounded px-2 py-1"
+    >
+      {emojis.map(emoji => <option key={emoji} value={emoji}>{emoji}</option>)}
+    </select>
+    <input
+      value={editingCategory.name}
+      onChange={(e) => setEditingCategory({...editingCategory, name: e.target.value})}
+      className="col-span-2 bg-gray-700 border border-yellow-400/20 text-white rounded px-2 py-1"
+    />
+    <input
+      type="number"
+      value={editingCategory.budgetAmount}
+      onChange={(e) => setEditingCategory({...editingCategory, budgetAmount: parseFloat(e.target.value)})}
+      className="bg-gray-700 border border-yellow-400/20 text-white rounded px-2 py-1"
+    />
+  </div>
+) : (
+  // Display mode with WORKING edit button
+  <button 
+    onClick={() => handleEditCategory(category)}
+    className="text-blue-400 hover:text-blue-300 p-1"
+  >
+    <Edit3 className="h-4 w-4" />
+  </button>
+)}
+```
+
+### 3. SOLID MODAL BACKGROUNDS
+```jsx
+// FIX ALL MODAL TRANSPARENCY ISSUES
+const Modal = ({ isOpen, onClose, title, children, size = "md" }) => {
+  if (!isOpen) return null;
+  
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center">
+      {/* SOLID BLACK BACKGROUND - NO TRANSPARENCY */}
+      <div className="fixed inset-0 bg-black bg-opacity-75" onClick={onClose}></div>
+      <div className="relative bg-black border border-yellow-400/30 rounded-lg p-6 max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+        {/* Modal content */}
+      </div>
+    </div>
+  );
+};
+```
+
+### 4. WORKING SAVE EXPENSE FUNCTIONALITY
+```jsx
+// IMPLEMENT PROPER SAVE FUNCTIONALITY
+const handleAddExpense = async () => {
+  if (!newExpense.amount || !newExpense.category || !newExpense.description) {
+    toast.error('Please fill all required fields');
+    return;
+  }
+  
+  const expenseData = {
+    accountId: selectedAccountId === "all" ? (accounts[0]?.id || 1) : parseInt(selectedAccountId),
+    amount: parseFloat(newExpense.amount),
+    spendingType: newExpense.type,
+    description: newExpense.description,
+    paymentMethod: 'credit_card',
+    date: new Date().toISOString().split('T')[0],
+    category: newExpense.category,
+    isRecurring: false
+  };
+
+  // API call
+  await apiRequest("/api/spending", "POST", expenseData);
+  
+  // Refresh spending records
+  queryClient.invalidateQueries({ queryKey: ["/api/spending"] });
+  
+  // Reset form and close modal
+  setNewExpense({ amount: '', category: '', description: '', type: 'trading' });
+  setShowAddExpense(false);
+  
+  toast.success('Expense added successfully!');
+};
+```
+
+## 📋 IMPLEMENTATION CHECKLIST
+
+### ✅ CRITICAL TASKS:
+- [ ] **Replace budget cards with professional BudgetWidget components**
+- [ ] **Fix data sources: use accountCost/activationCost/resetCost from account creation**
+- [ ] **Get payout data from payout page for ROI calculations**
+- [ ] **Apply strict color coding: RED for expenses, GREEN for profits**
+- [ ] **Implement working Add Category functionality with emoji selection**
+- [ ] **Make Edit buttons clickable with inline editing**
+- [ ] **Fix modal transparency with solid black backgrounds**
+- [ ] **Add proper save functionality to expense forms**
+- [ ] **Add budget amount fields to all categories**
+- [ ] **Show spending percentages with animated progress bars**
+- [ ] **Apply professional styling with gradients and shadows**
+- [ ] **Implement status badges (On Track/Monitor/Caution/Over Budget)**
+- [ ] **Add hover effects and smooth animations**
+- [ ] **Ensure responsive design for all screen sizes**
+
+### 🎨 DESIGN REQUIREMENTS:
+- **Professional gradient backgrounds** with subtle transparency
+- **Status-based color coding** throughout all components
+- **Animated progress bars** with shine effects
+- **Hover effects** with glow and scaling
+- **Modern card shadows** and border styling
+- **Clean typography** and proper spacing
+- **Responsive grid layouts**
+
+### 📊 DATA INTEGRATION:
+- **Account costs** from create account page Financial section
+- **Payout data** from payout page for ROI calculations
+- **Proper spending categorization** with budget tracking
+- **Real-time percentage calculations** with color coding
+- **Remaining budget displays** with over-budget warnings
+
+## 🚀 FINAL RESULT
+The redesigned page should be a professional trading budget management application with:
+- Beautiful animated widgets with status indicators
+- Working category management with budget tracking
+- Proper data integration from account creation and payout pages
+- Consistent red/green color coding throughout
+- Modern UI design inspired by top budget applications
+- All functionality working correctly with proper save/edit capabilities
+
+**IMPORTANT**: Test all functionality after implementation to ensure buttons work, modals display properly, data saves correctly, and colors match the specifications exactly.

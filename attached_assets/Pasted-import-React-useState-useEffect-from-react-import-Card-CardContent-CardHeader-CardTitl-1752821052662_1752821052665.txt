@@ -1,0 +1,618 @@
+import React, { useState, useEffect } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { Badge } from '@/components/ui/badge';
+import { Progress } from '@/components/ui/progress';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { 
+  Target, 
+  Shield, 
+  Clock, 
+  TrendingUp, 
+  TrendingDown,
+  BarChart3,
+  Calendar,
+  Brain,
+  BookOpen,
+  DollarSign,
+  Award,
+  Timer,
+  Activity,
+  AlertTriangle,
+  CheckCircle,
+  Edit,
+  Save,
+  PlayCircle,
+  PauseCircle,
+  Zap
+} from 'lucide-react';
+
+const DailyTradingDashboard = () => {
+  // State for daily planning
+  const [dailyPlan, setDailyPlan] = useState({
+    riskAmount: 1000,
+    targetProfit: 2000,
+    maxTrades: 5,
+    plannedTrades: 3,
+    riskRewardRatio: 2.0,
+    maxRiskPercentage: 2,
+    plannedHours: 6,
+    hourlyWage: 100,
+  });
+
+  // State for actual daily results
+  const [dailyActual, setDailyActual] = useState({
+    currentPnL: 1250,
+    tradesExecuted: 3,
+    wins: 2,
+    losses: 1,
+    actualRR: 2.1,
+    hoursWorked: 4.5,
+    riskUsed: 1500,
+    biggestWin: 800,
+    biggestLoss: -350,
+  });
+
+  // State for journal and tracking
+  const [journalEntry, setJournalEntry] = useState({
+    accountId: '',
+    emotionalState: 'neutral',
+    marketConditions: '',
+    whatWentRight: '',
+    whatWentWrong: '',
+    lessonsLearned: '',
+    improvementPlan: '',
+    tradeImage: '',
+    tradingViewLink: '',
+    date: new Date().toISOString().split('T')[0],
+  });
+  const [existingEntry, setExistingEntry] = useState(null);
+  const [isEditing, setIsEditing] = useState(false);
+  const [isTrading, setIsTrading] = useState(false);
+  const [tradingStartTime, setTradingStartTime] = useState(null);
+  const [currentSessionTime, setCurrentSessionTime] = useState(0);
+  const [imagePreview, setImagePreview] = useState('');
+
+  // Mock accounts data (would come from API)
+  const accounts = [
+    { id: 1, name: "FTMO Challenge $100K" },
+    { id: 2, name: "TopStep Funded $50K" },
+    { id: 3, name: "MyForexFunds $25K" },
+  ];
+
+  // Emotional states with emojis
+  const emotionalStates = [
+    { value: 'confident', label: '😎 Confident', emoji: '😎' },
+    { value: 'calm', label: '😌 Calm', emoji: '😌' },
+    { value: 'excited', label: '🤩 Excited', emoji: '🤩' },
+    { value: 'neutral', label: '😐 Neutral', emoji: '😐' },
+    { value: 'nervous', label: '😰 Nervous', emoji: '😰' },
+    { value: 'frustrated', label: '😤 Frustrated', emoji: '😤' },
+    { value: 'disappointed', label: '😞 Disappointed', emoji: '😞' },
+    { value: 'angry', label: '😡 Angry', emoji: '😡' },
+  ];
+
+  // Weekly performance data
+  const weeklyPerformance = [
+    { day: 'Mon', pnl: 750, trades: 3, winRate: 66.7, hours: 5.5 },
+    { day: 'Tue', pnl: -300, trades: 2, winRate: 0, hours: 3.0 },
+    { day: 'Wed', pnl: 1200, trades: 4, winRate: 75, hours: 6.0 },
+    { day: 'Thu', pnl: 0, trades: 0, winRate: 0, hours: 0 },
+    { day: 'Fri', pnl: 1250, trades: 3, winRate: 66.7, hours: 4.5 }, // Today
+    { day: 'Sat', pnl: 0, trades: 0, winRate: 0, hours: 0 },
+    { day: 'Sun', pnl: 0, trades: 0, winRate: 0, hours: 0 },
+  ];
+
+  // Strategy rules
+  const strategyRules = [
+    { rule: "Only trade during NY session", status: "active", followed: true },
+    { rule: "Max 2% risk per trade", status: "active", followed: true },
+    { rule: "Minimum 1:2 RR ratio", status: "active", followed: true },
+    { rule: "Stop trading after 3 consecutive losses", status: "active", followed: true },
+    { rule: "No revenge trading", status: "active", followed: true },
+  ];
+
+  // Timer effect for session tracking
+  useEffect(() => {
+    let interval;
+    if (isTrading && tradingStartTime) {
+      interval = setInterval(() => {
+        setCurrentSessionTime(Date.now() - tradingStartTime);
+      }, 1000);
+    }
+    return () => clearInterval(interval);
+  }, [isTrading, tradingStartTime]);
+
+  // Helper functions
+  const formatTime = (milliseconds) => {
+    const hours = Math.floor(milliseconds / 3600000);
+    const minutes = Math.floor((milliseconds % 3600000) / 60000);
+    return `${hours}h ${minutes}m`;
+  };
+
+  const calculateWinRate = () => {
+    const totalTrades = dailyActual.wins + dailyActual.losses;
+    return totalTrades > 0 ? (dailyActual.wins / totalTrades * 100).toFixed(1) : 0;
+  };
+
+  const getProgressColor = (actual, target) => {
+    const percentage = (actual / target) * 100;
+    if (percentage >= 100) return "text-green-400 bg-green-400";
+    if (percentage >= 80) return "text-yellow-400 bg-yellow-400";
+    if (percentage >= 60) return "text-orange-400 bg-orange-400";
+    return "text-red-400 bg-red-400";
+  };
+
+  const startTradingSession = () => {
+    setIsTrading(true);
+    setTradingStartTime(Date.now());
+  };
+
+  const stopTradingSession = () => {
+    setIsTrading(false);
+    setTradingStartTime(null);
+  };
+
+  // Journal functions
+  const handleImageUpload = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const imageUrl = e.target.result;
+        setImagePreview(imageUrl);
+        setJournalEntry({...journalEntry, tradeImage: imageUrl});
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const saveJournalEntry = () => {
+    // In real app, this would save to database
+    console.log('Saving journal entry:', journalEntry);
+    
+    // Simulate saving
+    setExistingEntry({...journalEntry});
+    setIsEditing(false);
+    
+    // Show success message (you could add a toast here)
+    alert('Journal entry saved successfully!');
+  };
+
+  const loadExistingEntry = (date) => {
+    // In real app, this would fetch from database by date
+    // For demo, we'll use the saved entry if it matches today's date
+    if (existingEntry && existingEntry.date === date) {
+      setJournalEntry(existingEntry);
+      setImagePreview(existingEntry.tradeImage);
+      setIsEditing(true);
+    } else {
+      // Reset form for new date
+      setJournalEntry({
+        accountId: '',
+        emotionalState: 'neutral',
+        marketConditions: '',
+        whatWentRight: '',
+        whatWentWrong: '',
+        lessonsLearned: '',
+        improvementPlan: '',
+        tradeImage: '',
+        tradingViewLink: '',
+        date: date,
+      });
+      setImagePreview('');
+      setIsEditing(false);
+    }
+  };
+
+  const getEmotionalStateEmoji = (state) => {
+    const emotional = emotionalStates.find(e => e.value === state);
+    return emotional ? emotional.emoji : '😐';
+  };
+
+  const disciplineScore = 87; // Would be calculated based on rule adherence
+
+  return (
+    <div className="p-6 space-y-6 bg-gradient-to-br from-black via-gray-900 to-black min-h-screen">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold text-white">Daily Trading Command Center</h1>
+          <p className="text-gray-400">{new Date().toLocaleDateString('en-US', { 
+            weekday: 'long', 
+            year: 'numeric', 
+            month: 'long', 
+            day: 'numeric' 
+          })}</p>
+        </div>
+        
+        <div className="flex items-center gap-4">
+          {!isTrading ? (
+            <Button onClick={startTradingSession} className="bg-green-500 hover:bg-green-600 text-white">
+              <PlayCircle className="w-4 h-4 mr-2" />
+              Start Session
+            </Button>
+          ) : (
+            <Button onClick={stopTradingSession} className="bg-red-500 hover:bg-red-600 text-white">
+              <PauseCircle className="w-4 h-4 mr-2" />
+              End Session
+            </Button>
+          )}
+          
+          {isTrading && (
+            <div className="flex items-center gap-2 px-4 py-2 bg-green-900/30 border border-green-500 rounded-lg">
+              <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+              <span className="text-green-400 font-mono">{formatTime(currentSessionTime)}</span>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Daily Plan vs Actual Comparison */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Daily Planning Section */}
+        <Card className="bg-gradient-to-br from-blue-900/20 to-blue-800/20 border-blue-500">
+          <CardHeader>
+            <CardTitle className="text-white flex items-center gap-2">
+              <Target className="w-5 h-5 text-blue-400" />
+              Daily Trading Plan
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label className="text-gray-300">Risk Amount ($)</Label>
+                <Input 
+                  type="number"
+                  value={dailyPlan.riskAmount}
+                  onChange={(e) => setDailyPlan({...dailyPlan, riskAmount: parseInt(e.target.value)})}
+                  className="bg-gray-800 border-gray-600 text-white"
+                />
+              </div>
+              <div>
+                <Label className="text-gray-300">Target Profit ($)</Label>
+                <Input 
+                  type="number"
+                  value={dailyPlan.targetProfit}
+                  onChange={(e) => setDailyPlan({...dailyPlan, targetProfit: parseInt(e.target.value)})}
+                  className="bg-gray-800 border-gray-600 text-white"
+                />
+              </div>
+              <div>
+                <Label className="text-gray-300">Planned Trades</Label>
+                <Input 
+                  type="number"
+                  value={dailyPlan.plannedTrades}
+                  onChange={(e) => setDailyPlan({...dailyPlan, plannedTrades: parseInt(e.target.value)})}
+                  className="bg-gray-800 border-gray-600 text-white"
+                />
+              </div>
+              <div>
+                <Label className="text-gray-300">Max Trades</Label>
+                <Input 
+                  type="number"
+                  value={dailyPlan.maxTrades}
+                  onChange={(e) => setDailyPlan({...dailyPlan, maxTrades: parseInt(e.target.value)})}
+                  className="bg-gray-800 border-gray-600 text-white"
+                />
+              </div>
+              <div>
+                <Label className="text-gray-300">Target RR</Label>
+                <Input 
+                  type="number"
+                  step="0.1"
+                  value={dailyPlan.riskRewardRatio}
+                  onChange={(e) => setDailyPlan({...dailyPlan, riskRewardRatio: parseFloat(e.target.value)})}
+                  className="bg-gray-800 border-gray-600 text-white"
+                />
+              </div>
+              <div>
+                <Label className="text-gray-300">Planned Hours</Label>
+                <Input 
+                  type="number"
+                  step="0.5"
+                  value={dailyPlan.plannedHours}
+                  onChange={(e) => setDailyPlan({...dailyPlan, plannedHours: parseFloat(e.target.value)})}
+                  className="bg-gray-800 border-gray-600 text-white"
+                />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Daily Actual Results */}
+        <Card className="bg-gradient-to-br from-green-900/20 to-green-800/20 border-green-500">
+          <CardHeader>
+            <CardTitle className="text-white flex items-center gap-2">
+              <Activity className="w-5 h-5 text-green-400" />
+              Actual Results
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div className="text-center p-3 bg-gray-800/50 rounded-lg">
+                <div className={`text-2xl font-bold ${dailyActual.currentPnL >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                  {dailyActual.currentPnL >= 0 ? '+' : ''}${dailyActual.currentPnL}
+                </div>
+                <div className="text-sm text-gray-400">Current P&L</div>
+                <div className="text-xs text-gray-500">
+                  Target: ${dailyPlan.targetProfit}
+                </div>
+              </div>
+              <div className="text-center p-3 bg-gray-800/50 rounded-lg">
+                <div className="text-2xl font-bold text-white">{dailyActual.tradesExecuted}</div>
+                <div className="text-sm text-gray-400">Trades Done</div>
+                <div className="text-xs text-gray-500">
+                  Plan: {dailyPlan.plannedTrades} | Max: {dailyPlan.maxTrades}
+                </div>
+              </div>
+              <div className="text-center p-3 bg-gray-800/50 rounded-lg">
+                <div className="text-2xl font-bold text-white">{calculateWinRate()}%</div>
+                <div className="text-sm text-gray-400">Win Rate</div>
+                <div className="text-xs text-gray-500">
+                  {dailyActual.wins}W / {dailyActual.losses}L
+                </div>
+              </div>
+              <div className="text-center p-3 bg-gray-800/50 rounded-lg">
+                <div className="text-2xl font-bold text-white">{dailyActual.actualRR}</div>
+                <div className="text-sm text-gray-400">Actual RR</div>
+                <div className="text-xs text-gray-500">
+                  Target: {dailyPlan.riskRewardRatio}
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Performance Metrics Grid */}
+      <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+        {/* Target Achievement */}
+        <Card className="bg-gradient-to-br from-black/95 via-gray-900/90 to-black/95 border border-gray-700 hover:border-yellow-500 transition-all">
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between mb-2">
+              <Target className="h-4 w-4 text-yellow-500" />
+              <Badge className={dailyActual.currentPnL >= dailyPlan.targetProfit ? "bg-green-500/20 text-green-400" : "bg-orange-500/20 text-orange-400"}>
+                {dailyActual.currentPnL >= dailyPlan.targetProfit ? "HIT" : "PENDING"}
+              </Badge>
+            </div>
+            <div className="text-lg font-bold text-white">
+              {((dailyActual.currentPnL / dailyPlan.targetProfit) * 100).toFixed(0)}%
+            </div>
+            <div className="text-xs text-gray-400">Target Achievement</div>
+            <Progress value={(dailyActual.currentPnL / dailyPlan.targetProfit) * 100} className="h-1 mt-1" />
+          </CardContent>
+        </Card>
+
+        {/* Risk Usage */}
+        <Card className="bg-gradient-to-br from-black/95 via-gray-900/90 to-black/95 border border-gray-700 hover:border-red-500 transition-all">
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between mb-2">
+              <Shield className="h-4 w-4 text-red-500" />
+              <div className={`w-2 h-2 rounded-full ${(dailyActual.riskUsed / dailyPlan.riskAmount) > 0.8 ? 'bg-red-500' : 'bg-green-500'}`} />
+            </div>
+            <div className="text-lg font-bold text-white">
+              {((dailyActual.riskUsed / dailyPlan.riskAmount) * 100).toFixed(0)}%
+            </div>
+            <div className="text-xs text-gray-400">Risk Used</div>
+            <div className="text-xs text-gray-500">${dailyActual.riskUsed}/${dailyPlan.riskAmount}</div>
+          </CardContent>
+        </Card>
+
+        {/* Trade Count */}
+        <Card className="bg-gradient-to-br from-black/95 via-gray-900/90 to-black/95 border border-gray-700 hover:border-purple-500 transition-all">
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between mb-2">
+              <BarChart3 className="h-4 w-4 text-purple-500" />
+              <Badge className="bg-purple-500/20 text-purple-400">
+                {dailyActual.tradesExecuted}/{dailyPlan.maxTrades}
+              </Badge>
+            </div>
+            <div className="text-lg font-bold text-white">{dailyActual.tradesExecuted}</div>
+            <div className="text-xs text-gray-400">Trades Executed</div>
+            <div className="text-xs text-gray-500">Plan: {dailyPlan.plannedTrades}</div>
+          </CardContent>
+        </Card>
+
+        {/* Working Hours */}
+        <Card className="bg-gradient-to-br from-black/95 via-gray-900/90 to-black/95 border border-gray-700 hover:border-blue-500 transition-all">
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between mb-2">
+              <Clock className="h-4 w-4 text-blue-500" />
+              <Timer className="h-3 w-3 text-blue-400" />
+            </div>
+            <div className="text-lg font-bold text-white">{dailyActual.hoursWorked}h</div>
+            <div className="text-xs text-gray-400">Hours Worked</div>
+            <div className="text-xs text-gray-500">Plan: {dailyPlan.plannedHours}h</div>
+          </CardContent>
+        </Card>
+
+        {/* Hourly Rate */}
+        <Card className="bg-gradient-to-br from-black/95 via-gray-900/90 to-black/95 border border-gray-700 hover:border-green-500 transition-all">
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between mb-2">
+              <DollarSign className="h-4 w-4 text-green-500" />
+              <div className="w-2 h-2 rounded-full bg-green-500" />
+            </div>
+            <div className="text-lg font-bold text-white">
+              ${Math.round(dailyActual.currentPnL / dailyActual.hoursWorked)}/h
+            </div>
+            <div className="text-xs text-gray-400">Hourly Rate</div>
+            <div className="text-xs text-gray-500">Target: ${dailyPlan.hourlyWage}/h</div>
+          </CardContent>
+        </Card>
+
+        {/* Discipline Score */}
+        <Card className="bg-gradient-to-br from-black/95 via-gray-900/90 to-black/95 border border-gray-700 hover:border-yellow-500 transition-all">
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between mb-2">
+              <Brain className="h-4 w-4 text-yellow-500" />
+              <Badge className="bg-yellow-500/20 text-yellow-400">
+                ELITE
+              </Badge>
+            </div>
+            <div className="text-lg font-bold text-white">{disciplineScore}</div>
+            <div className="text-xs text-gray-400">Discipline Score</div>
+            <Progress value={disciplineScore} className="h-1 mt-1" />
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Weekly Calendar & Additional Widgets */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Weekly Performance Calendar */}
+        <Card className="lg:col-span-2 bg-gradient-to-br from-black/95 via-gray-900/90 to-black/95 border border-gray-700">
+          <CardHeader>
+            <CardTitle className="text-white flex items-center gap-2">
+              <Calendar className="w-5 h-5 text-blue-500" />
+              Weekly Performance Overview
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-7 gap-2">
+              {weeklyPerformance.map((day, index) => (
+                <div key={day.day} className="text-center">
+                  <div className="text-sm text-gray-400 mb-2">{day.day}</div>
+                  <div className={`p-3 rounded-lg border transition-all duration-200 hover:scale-105 ${
+                    index === 4 ? 'border-yellow-500 bg-yellow-900/30' : // Today
+                    day.pnl > 0 ? 'border-green-500 bg-green-900/30' :
+                    day.pnl < 0 ? 'border-red-500 bg-red-900/30' :
+                    'border-gray-600 bg-gray-800'
+                  }`}>
+                    <div className={`text-sm font-semibold ${
+                      day.pnl > 0 ? 'text-green-400' :
+                      day.pnl < 0 ? 'text-red-400' :
+                      'text-gray-400'
+                    }`}>
+                      {day.pnl !== 0 ? `${day.pnl >= 0 ? '+' : ''}$${day.pnl}` : '--'}
+                    </div>
+                    <div className="text-xs text-gray-500 mt-1">
+                      {day.trades} trades
+                    </div>
+                    {day.trades > 0 && (
+                      <div className="text-xs text-gray-500">
+                        {day.winRate}% WR
+                      </div>
+                    )}
+                    <div className="text-xs text-gray-500">
+                      {day.hours}h
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+            
+            {/* Weekly Summary */}
+            <div className="mt-4 pt-4 border-t border-gray-700">
+              <div className="grid grid-cols-4 gap-4 text-center">
+                <div>
+                  <div className="text-lg font-bold text-green-400">+$2,900</div>
+                  <div className="text-xs text-gray-400">Weekly P&L</div>
+                </div>
+                <div>
+                  <div className="text-lg font-bold text-white">12</div>
+                  <div className="text-xs text-gray-400">Total Trades</div>
+                </div>
+                <div>
+                  <div className="text-lg font-bold text-white">66.7%</div>
+                  <div className="text-xs text-gray-400">Weekly WR</div>
+                </div>
+                <div>
+                  <div className="text-lg font-bold text-white">19h</div>
+                  <div className="text-xs text-gray-400">Total Hours</div>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Strategy Rules & Discipline */}
+        <Card className="bg-gradient-to-br from-black/95 via-gray-900/90 to-black/95 border border-gray-700">
+          <CardHeader>
+            <CardTitle className="text-white flex items-center gap-2">
+              <Award className="w-5 h-5 text-purple-500" />
+              Strategy Rules & Discipline
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="text-center mb-4">
+              <div className="text-3xl font-bold text-purple-500 mb-2">{disciplineScore}/100</div>
+              <Badge className="bg-purple-500/20 text-purple-400 border border-purple-500">
+                Elite Trader
+              </Badge>
+            </div>
+            
+            <div className="space-y-2">
+              {strategyRules.map((rule, index) => (
+                <div key={index} className="flex items-center justify-between p-2 bg-gray-800/50 rounded">
+                  <div className="flex items-center gap-2">
+                    {rule.followed ? (
+                      <CheckCircle className="w-4 h-4 text-green-400" />
+                    ) : (
+                      <AlertTriangle className="w-4 h-4 text-red-400" />
+                    )}
+                    <span className="text-sm text-white">{rule.rule}</span>
+                  </div>
+                  <Badge className={rule.followed ? "bg-green-500/20 text-green-400" : "bg-red-500/20 text-red-400"}>
+                    {rule.followed ? "✓" : "✗"}
+                  </Badge>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Journal Entry Section */}
+      <Card className="bg-gradient-to-br from-black/95 via-gray-900/90 to-black/95 border border-gray-700">
+        <CardHeader>
+          <CardTitle className="text-white flex items-center gap-2">
+            <BookOpen className="w-5 h-5 text-yellow-500" />
+            Daily Journal Entry
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <Tabs defaultValue="entry" className="w-full">
+            <TabsList className="grid w-full grid-cols-3 bg-gray-800">
+              <TabsTrigger value="entry" className="text-white">Journal Entry</TabsTrigger>
+              <TabsTrigger value="lessons" className="text-white">Lessons</TabsTrigger>
+              <TabsTrigger value="plan" className="text-white">Tomorrow's Plan</TabsTrigger>
+            </TabsList>
+            
+            <TabsContent value="entry" className="space-y-4 mt-4">
+              <Textarea
+                placeholder="How did today's trading go? What were your thoughts and emotions during trades?"
+                value={journalEntry}
+                onChange={(e) => setJournalEntry(e.target.value)}
+                className="bg-gray-800 border-gray-600 text-white min-h-32"
+              />
+              <Button className="bg-yellow-500 hover:bg-yellow-600 text-black">
+                <Save className="w-4 h-4 mr-2" />
+                Save Entry
+              </Button>
+            </TabsContent>
+            
+            <TabsContent value="lessons" className="space-y-4 mt-4">
+              <Textarea
+                placeholder="What did you learn today? What would you do differently?"
+                className="bg-gray-800 border-gray-600 text-white min-h-32"
+              />
+            </TabsContent>
+            
+            <TabsContent value="plan" className="space-y-4 mt-4">
+              <Textarea
+                placeholder="What's your plan for tomorrow? Any specific setups to watch?"
+                className="bg-gray-800 border-gray-600 text-white min-h-32"
+              />
+            </TabsContent>
+          </Tabs>
+        </CardContent>
+      </Card>
+    </div>
+  );
+};
+
+export default DailyTradingDashboard;

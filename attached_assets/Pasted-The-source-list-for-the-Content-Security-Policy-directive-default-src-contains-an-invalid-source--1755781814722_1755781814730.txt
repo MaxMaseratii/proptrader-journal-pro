@@ -1,0 +1,1521 @@
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+PROPTRADERJOURNAL:1 The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+PROPTRADERJOURNAL:1 The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+PROPTRADERJOURNAL:1 The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+_app-c6dc4eab78cae629.js:15  POST https://o1151714.ingest.sentry.io/api/6318792/envelope/?sentry_key=8aa91189a4274b5a8c9b7b01d46ea360&sentry_version=7&sentry_client=sentry.javascript.browser%2F7.112.0 net::ERR_BLOCKED_BY_CLIENT
+(anonymous) @ _app-c6dc4eab78cae629.js:15
+(anonymous) @ _app-c6dc4eab78cae629.js:13
+add @ _app-c6dc4eab78cae629.js:13
+i @ _app-c6dc4eab78cae629.js:13
+_sendEnvelope @ _app-c6dc4eab78cae629.js:13
+sendSession @ _app-c6dc4eab78cae629.js:11
+captureSession @ _app-c6dc4eab78cae629.js:11
+E @ _app-c6dc4eab78cae629.js:40
+S @ _app-c6dc4eab78cae629.js:40
+dsn @ _app-c6dc4eab78cae629.js:15
+(anonymous) @ _app-c6dc4eab78cae629.js:15
+(anonymous) @ main-42a40d0856df7022.js:1
+b @ main-42a40d0856df7022.js:1
+(anonymous) @ main-42a40d0856df7022.js:1
+(anonymous) @ main-42a40d0856df7022.js:1
+n @ main-42a40d0856df7022.js:1
+u @ main-42a40d0856df7022.js:1
+Promise.then
+n @ main-42a40d0856df7022.js:1
+u @ main-42a40d0856df7022.js:1
+Promise.then
+n @ main-42a40d0856df7022.js:1
+u @ main-42a40d0856df7022.js:1
+Promise.then
+n @ main-42a40d0856df7022.js:1
+u @ main-42a40d0856df7022.js:1
+(anonymous) @ main-42a40d0856df7022.js:1
+(anonymous) @ main-42a40d0856df7022.js:1
+eb @ main-42a40d0856df7022.js:1
+(anonymous) @ main-42a40d0856df7022.js:1
+Promise.then
+28951 @ main-42a40d0856df7022.js:1
+c @ webpack-8aca008ad15761d4.js:1
+(anonymous) @ main-42a40d0856df7022.js:1
+c.O @ webpack-8aca008ad15761d4.js:1
+(anonymous) @ main-42a40d0856df7022.js:1
+a @ webpack-8aca008ad15761d4.js:1
+(anonymous) @ main-42a40d0856df7022.js:1
+ 
+      /////////////////////
+   ///////////////////////////
+  ////////@@@@@@@//////////////
+  ////////@@@@@@@//////////////
+  ////////@@@@@@@//////////////        Curious and driven?
+  ///////////////@@@@@@@///////        Work with us!
+  ///////////////@@@@@@@///////
+  ///////////////@@@@@@@///////        https://join.replit.com/hack.with.us
+  ////////@@@@@@@//////////////
+  ////////@@@@@@@//////////////
+  ////////@@@@@@#//////////////
+   ///////////////////////////
+      /////////////////////
+      
+[Violation] 'message' handler took <N>ms
+[Violation] 'message' handler took <N>ms
+[Violation] 'message' handler took <N>ms
+[Violation] 'message' handler took <N>ms
+[Violation] 'message' handler took <N>ms
+[Violation] 'message' handler took <N>ms
+[Violation] 'message' handler took <N>ms
+[Violation] 'message' handler took <N>ms
+[Violation] 'message' handler took <N>ms
+[Violation] 'message' handler took <N>ms
+[Violation] 'message' handler took <N>ms
+[Violation] 'message' handler took <N>ms
+[Violation] 'message' handler took <N>ms
+[Violation] 'message' handler took <N>ms
+load-script.ts:58  GET https://cdn.segment.com/next-integrations/actions/tiktok-pixel/920266289e7b08bf066b.js net::ERR_BLOCKED_BY_CLIENT
+(anonymous) @ load-script.ts:58
+i @ load-script.ts:32
+(anonymous) @ index.ts:247
+(anonymous) @ tslib.es6.js:103
+(anonymous) @ tslib.es6.js:108
+(anonymous) @ tslib.es6.js:80
+u @ tslib.es6.js:72
+Vt @ index.ts:227
+(anonymous) @ index.ts:281
+(anonymous) @ tslib.es6.js:103
+(anonymous) @ tslib.es6.js:108
+(anonymous) @ tslib.es6.js:80
+u @ tslib.es6.js:72
+(anonymous) @ index.ts:274
+(anonymous) @ index.ts:274
+(anonymous) @ tslib.es6.js:103
+(anonymous) @ tslib.es6.js:108
+(anonymous) @ tslib.es6.js:80
+u @ tslib.es6.js:72
+Gt @ index.ts:268
+(anonymous) @ index.ts:171
+(anonymous) @ tslib.es6.js:103
+(anonymous) @ tslib.es6.js:108
+s @ tslib.es6.js:73
+Promise.then
+a @ tslib.es6.js:76
+s @ tslib.es6.js:73
+Promise.then
+a @ tslib.es6.js:76
+(anonymous) @ tslib.es6.js:76
+u @ tslib.es6.js:72
+ne @ index.ts:116
+(anonymous) @ index.ts:304
+(anonymous) @ tslib.es6.js:103
+(anonymous) @ tslib.es6.js:108
+s @ tslib.es6.js:73
+Promise.then
+a @ tslib.es6.js:76
+(anonymous) @ tslib.es6.js:76
+u @ tslib.es6.js:72
+re @ index.ts:239
+(anonymous) @ index.ts:338
+Promise.then
+(anonymous) @ index.ts:339
+t @ index.ts:307
+n @ index.ts:337
+(anonymous) @ index.ts:389
+(anonymous) @ index.ts:393
+(anonymous) @ standalone-analytics.ts:53
+(anonymous) @ tslib.es6.js:103
+(anonymous) @ tslib.es6.js:108
+(anonymous) @ tslib.es6.js:80
+u @ tslib.es6.js:72
+se @ standalone-analytics.ts:49
+(anonymous) @ standalone.ts:69
+(anonymous) @ tslib.es6.js:103
+(anonymous) @ tslib.es6.js:108
+(anonymous) @ tslib.es6.js:80
+u @ tslib.es6.js:72
+de @ sdk.min.js:1
+(anonymous) @ sdk.min.js:1
+(anonymous) @ sdk.min.js:1
+(anonymous) @ sdk.min.js:1
+_app-c6dc4eab78cae629.js:13 Failed to create PluginFactory {name: 'TikTok Pixel', creationName: 'TikTok Pixel', libraryName: 'tiktok-pixelDestination', url: 'https://cdn.segment.com/next-integrations/actions/tiktok-pixel/920266289e7b08bf066b.js', settings: {…}}
+(anonymous) @ _app-c6dc4eab78cae629.js:13
+(anonymous) @ index.ts:256
+(anonymous) @ tslib.es6.js:103
+(anonymous) @ tslib.es6.js:108
+u @ tslib.es6.js:74
+Promise.then
+a @ tslib.es6.js:76
+(anonymous) @ tslib.es6.js:76
+u @ tslib.es6.js:72
+Vt @ index.ts:227
+(anonymous) @ index.ts:281
+(anonymous) @ tslib.es6.js:103
+(anonymous) @ tslib.es6.js:108
+(anonymous) @ tslib.es6.js:80
+u @ tslib.es6.js:72
+(anonymous) @ index.ts:274
+(anonymous) @ index.ts:274
+(anonymous) @ tslib.es6.js:103
+(anonymous) @ tslib.es6.js:108
+(anonymous) @ tslib.es6.js:80
+u @ tslib.es6.js:72
+Gt @ index.ts:268
+(anonymous) @ index.ts:171
+(anonymous) @ tslib.es6.js:103
+(anonymous) @ tslib.es6.js:108
+s @ tslib.es6.js:73
+Promise.then
+a @ tslib.es6.js:76
+s @ tslib.es6.js:73
+Promise.then
+a @ tslib.es6.js:76
+(anonymous) @ tslib.es6.js:76
+u @ tslib.es6.js:72
+ne @ index.ts:116
+(anonymous) @ index.ts:304
+(anonymous) @ tslib.es6.js:103
+(anonymous) @ tslib.es6.js:108
+s @ tslib.es6.js:73
+Promise.then
+a @ tslib.es6.js:76
+(anonymous) @ tslib.es6.js:76
+u @ tslib.es6.js:72
+re @ index.ts:239
+(anonymous) @ index.ts:338
+Promise.then
+(anonymous) @ index.ts:339
+t @ index.ts:307
+n @ index.ts:337
+(anonymous) @ index.ts:389
+(anonymous) @ index.ts:393
+(anonymous) @ standalone-analytics.ts:53
+(anonymous) @ tslib.es6.js:103
+(anonymous) @ tslib.es6.js:108
+(anonymous) @ tslib.es6.js:80
+u @ tslib.es6.js:72
+se @ standalone-analytics.ts:49
+(anonymous) @ standalone.ts:69
+(anonymous) @ tslib.es6.js:103
+(anonymous) @ tslib.es6.js:108
+(anonymous) @ tslib.es6.js:80
+u @ tslib.es6.js:72
+de @ sdk.min.js:1
+(anonymous) @ sdk.min.js:1
+(anonymous) @ sdk.min.js:1
+(anonymous) @ sdk.min.js:1
+ Failed to load Remote Plugin 
+(anonymous) @ _app-c6dc4eab78cae629.js:13
+(anonymous) @ sdk.min.js:1
+(anonymous) @ sdk.min.js:1
+(anonymous) @ sdk.min.js:1
+u @ sdk.min.js:1
+Promise.then
+a @ sdk.min.js:1
+(anonymous) @ sdk.min.js:1
+u @ sdk.min.js:1
+(anonymous) @ sdk.min.js:1
+(anonymous) @ sdk.min.js:1
+(anonymous) @ sdk.min.js:1
+(anonymous) @ sdk.min.js:1
+(anonymous) @ sdk.min.js:1
+u @ sdk.min.js:1
+Gt @ sdk.min.js:1
+(anonymous) @ sdk.min.js:1
+(anonymous) @ sdk.min.js:1
+(anonymous) @ sdk.min.js:1
+s @ sdk.min.js:1
+Promise.then
+a @ sdk.min.js:1
+s @ sdk.min.js:1
+Promise.then
+a @ sdk.min.js:1
+(anonymous) @ sdk.min.js:1
+u @ sdk.min.js:1
+ne @ sdk.min.js:1
+(anonymous) @ sdk.min.js:1
+(anonymous) @ sdk.min.js:1
+(anonymous) @ sdk.min.js:1
+s @ sdk.min.js:1
+Promise.then
+a @ sdk.min.js:1
+(anonymous) @ sdk.min.js:1
+u @ sdk.min.js:1
+re @ sdk.min.js:1
+(anonymous) @ sdk.min.js:1
+Promise.then
+(anonymous) @ sdk.min.js:1
+t @ sdk.min.js:1
+n @ sdk.min.js:1
+(anonymous) @ sdk.min.js:1
+(anonymous) @ sdk.min.js:1
+(anonymous) @ sdk.min.js:1
+(anonymous) @ sdk.min.js:1
+(anonymous) @ sdk.min.js:1
+(anonymous) @ sdk.min.js:1
+u @ sdk.min.js:1
+se @ sdk.min.js:1
+(anonymous) @ sdk.min.js:1
+(anonymous) @ sdk.min.js:1
+(anonymous) @ sdk.min.js:1
+(anonymous) @ sdk.min.js:1
+u @ sdk.min.js:1
+de @ sdk.min.js:1
+(anonymous) @ sdk.min.js:1
+(anonymous) @ sdk.min.js:1
+(anonymous) @ sdk.min.js:1
+_app-c6dc4eab78cae629.js:13 [Violation] 'setTimeout' handler took 101ms
+ [LaunchDarkly] LaunchDarkly client initialized
+_app-c6dc4eab78cae629.js:13 [Violation] 'setTimeout' handler took 74ms
+shared-cab9eeecb62f95c95cab589231c15b8e.js:1  POST https://r.stripe.com/b net::ERR_BLOCKED_BY_CLIENT
+(anonymous) @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+e @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+c @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+(anonymous) @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+(anonymous) @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+Promise.then
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+log @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+log @ controller-with-preconnect-fa09bb88558a8f192264e2f26e971212.js:1
+e @ controller-with-preconnect-fa09bb88558a8f192264e2f26e971212.js:1
+62520 @ controller-with-preconnect-fa09bb88558a8f192264e2f26e971212.js:1
+e @ controller-with-preconnect-fa09bb88558a8f192264e2f26e971212.js:1
+(anonymous) @ controller-with-preconnect-fa09bb88558a8f192264e2f26e971212.js:1
+e.O @ controller-with-preconnect-fa09bb88558a8f192264e2f26e971212.js:1
+(anonymous) @ controller-with-preconnect-fa09bb88558a8f192264e2f26e971212.js:1
+(anonymous) @ controller-with-preconnect-fa09bb88558a8f192264e2f26e971212.js:1
+r.stripe.com/b:1  Failed to load resource: net::ERR_BLOCKED_BY_CLIENT
+r.stripe.com/b:1  Failed to load resource: net::ERR_BLOCKED_BY_CLIENT
+r.stripe.com/b:1  Failed to load resource: net::ERR_BLOCKED_BY_CLIENT
+r.stripe.com/b:1  Failed to load resource: net::ERR_BLOCKED_BY_CLIENT
+r.stripe.com/b:1  Failed to load resource: net::ERR_BLOCKED_BY_CLIENT
+r.stripe.com/b:1  Failed to load resource: net::ERR_BLOCKED_BY_CLIENT
+r.stripe.com/b:1  Failed to load resource: net::ERR_BLOCKED_BY_CLIENT
+shared-cab9eeecb62f95c95cab589231c15b8e.js:1 Uncaught (in promise) FetchError: Error fetching https://r.stripe.com/b: Failed to fetch
+    at shared-cab9eeecb62f95c95cab589231c15b8e.js:1:220340
+(anonymous) @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+Promise.catch
+(anonymous) @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+e @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+c @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+(anonymous) @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+(anonymous) @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+Promise.then
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+log @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+log @ controller-with-preconnect-fa09bb88558a8f192264e2f26e971212.js:1
+e @ controller-with-preconnect-fa09bb88558a8f192264e2f26e971212.js:1
+62520 @ controller-with-preconnect-fa09bb88558a8f192264e2f26e971212.js:1
+e @ controller-with-preconnect-fa09bb88558a8f192264e2f26e971212.js:1
+(anonymous) @ controller-with-preconnect-fa09bb88558a8f192264e2f26e971212.js:1
+e.O @ controller-with-preconnect-fa09bb88558a8f192264e2f26e971212.js:1
+(anonymous) @ controller-with-preconnect-fa09bb88558a8f192264e2f26e971212.js:1
+(anonymous) @ controller-with-preconnect-fa09bb88558a8f192264e2f26e971212.js:1
+[Violation] Forced reflow while executing JavaScript took <N>ms
+[Violation] Forced reflow while executing JavaScript took <N>ms
+[Violation] Forced reflow while executing JavaScript took <N>ms
+[Violation] Forced reflow while executing JavaScript took <N>ms
+[Violation] Forced reflow while executing JavaScript took <N>ms
+[Violation] Forced reflow while executing JavaScript took <N>ms
+[Violation] Forced reflow while executing JavaScript took <N>ms
+[Violation] Forced reflow while executing JavaScript took <N>ms
+[Violation] Forced reflow while executing JavaScript took <N>ms
+[Violation] Forced reflow while executing JavaScript took <N>ms
+[Violation] Forced reflow while executing JavaScript took <N>ms
+[Violation] Forced reflow while executing JavaScript took <N>ms
+[Violation] Forced reflow while executing JavaScript took <N>ms
+[Violation] Forced reflow while executing JavaScript took <N>ms
+[Violation] Forced reflow while executing JavaScript took <N>ms
+[Violation] Forced reflow while executing JavaScript took <N>ms
+[Violation] Forced reflow while executing JavaScript took <N>ms
+[Violation] Forced reflow while executing JavaScript took <N>ms
+[Violation] Forced reflow while executing JavaScript took <N>ms
+[Violation] Forced reflow while executing JavaScript took <N>ms
+[Violation] Forced reflow while executing JavaScript took <N>ms
+[Violation] Forced reflow while executing JavaScript took <N>ms
+[Violation] Forced reflow while executing JavaScript took <N>ms
+[Violation] Forced reflow while executing JavaScript took <N>ms
+[Violation] Forced reflow while executing JavaScript took <N>ms
+[Violation] Forced reflow while executing JavaScript took <N>ms
+shared-cab9eeecb62f95c95cab589231c15b8e.js:1  POST https://r.stripe.com/b net::ERR_BLOCKED_BY_CLIENT
+(anonymous) @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+e @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+c @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+(anonymous) @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+setTimeout
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+(anonymous) @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+(anonymous) @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+Promise.then
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ controller-with-preconnect-fa09bb88558a8f192264e2f26e971212.js:1
+e @ controller-with-preconnect-fa09bb88558a8f192264e2f26e971212.js:1
+value @ controller-with-preconnect-fa09bb88558a8f192264e2f26e971212.js:1
+e @ controller-with-preconnect-fa09bb88558a8f192264e2f26e971212.js:1
+62520 @ controller-with-preconnect-fa09bb88558a8f192264e2f26e971212.js:1
+e @ controller-with-preconnect-fa09bb88558a8f192264e2f26e971212.js:1
+(anonymous) @ controller-with-preconnect-fa09bb88558a8f192264e2f26e971212.js:1
+e.O @ controller-with-preconnect-fa09bb88558a8f192264e2f26e971212.js:1
+(anonymous) @ controller-with-preconnect-fa09bb88558a8f192264e2f26e971212.js:1
+(anonymous) @ controller-with-preconnect-fa09bb88558a8f192264e2f26e971212.js:1
+r.stripe.com/b:1  Failed to load resource: net::ERR_BLOCKED_BY_CLIENT
+r.stripe.com/b:1  Failed to load resource: net::ERR_BLOCKED_BY_CLIENT
+r.stripe.com/b:1  Failed to load resource: net::ERR_BLOCKED_BY_CLIENT
+r.stripe.com/b:1  Failed to load resource: net::ERR_BLOCKED_BY_CLIENT
+r.stripe.com/b:1  Failed to load resource: net::ERR_BLOCKED_BY_CLIENT
+r.stripe.com/b:1  Failed to load resource: net::ERR_BLOCKED_BY_CLIENT
+r.stripe.com/b:1  Failed to load resource: net::ERR_BLOCKED_BY_CLIENT
+shared-cab9eeecb62f95c95cab589231c15b8e.js:1  POST https://r.stripe.com/b net::ERR_BLOCKED_BY_CLIENT
+(anonymous) @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+e @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+c @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+(anonymous) @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+setTimeout
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+(anonymous) @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+(anonymous) @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+Promise.then
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+log @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+log @ controller-with-preconnect-fa09bb88558a8f192264e2f26e971212.js:1
+e @ controller-with-preconnect-fa09bb88558a8f192264e2f26e971212.js:1
+62520 @ controller-with-preconnect-fa09bb88558a8f192264e2f26e971212.js:1
+e @ controller-with-preconnect-fa09bb88558a8f192264e2f26e971212.js:1
+(anonymous) @ controller-with-preconnect-fa09bb88558a8f192264e2f26e971212.js:1
+e.O @ controller-with-preconnect-fa09bb88558a8f192264e2f26e971212.js:1
+(anonymous) @ controller-with-preconnect-fa09bb88558a8f192264e2f26e971212.js:1
+(anonymous) @ controller-with-preconnect-fa09bb88558a8f192264e2f26e971212.js:1
+r.stripe.com/b:1  Failed to load resource: net::ERR_BLOCKED_BY_CLIENT
+r.stripe.com/b:1  Failed to load resource: net::ERR_BLOCKED_BY_CLIENT
+r.stripe.com/b:1  Failed to load resource: net::ERR_BLOCKED_BY_CLIENT
+r.stripe.com/b:1  Failed to load resource: net::ERR_BLOCKED_BY_CLIENT
+r.stripe.com/b:1  Failed to load resource: net::ERR_BLOCKED_BY_CLIENT
+r.stripe.com/b:1  Failed to load resource: net::ERR_BLOCKED_BY_CLIENT
+r.stripe.com/b:1  Failed to load resource: net::ERR_BLOCKED_BY_CLIENT
+shared-cab9eeecb62f95c95cab589231c15b8e.js:1 Uncaught (in promise) FetchError: Error fetching https://r.stripe.com/b: Failed to fetch
+    at shared-cab9eeecb62f95c95cab589231c15b8e.js:1:220340
+(anonymous) @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+Promise.catch
+(anonymous) @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+e @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+c @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+(anonymous) @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+setTimeout
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+(anonymous) @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+(anonymous) @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+Promise.then
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ controller-with-preconnect-fa09bb88558a8f192264e2f26e971212.js:1
+e @ controller-with-preconnect-fa09bb88558a8f192264e2f26e971212.js:1
+value @ controller-with-preconnect-fa09bb88558a8f192264e2f26e971212.js:1
+e @ controller-with-preconnect-fa09bb88558a8f192264e2f26e971212.js:1
+62520 @ controller-with-preconnect-fa09bb88558a8f192264e2f26e971212.js:1
+e @ controller-with-preconnect-fa09bb88558a8f192264e2f26e971212.js:1
+(anonymous) @ controller-with-preconnect-fa09bb88558a8f192264e2f26e971212.js:1
+e.O @ controller-with-preconnect-fa09bb88558a8f192264e2f26e971212.js:1
+(anonymous) @ controller-with-preconnect-fa09bb88558a8f192264e2f26e971212.js:1
+(anonymous) @ controller-with-preconnect-fa09bb88558a8f192264e2f26e971212.js:1
+shared-cab9eeecb62f95c95cab589231c15b8e.js:1 Uncaught (in promise) FetchError: Error fetching https://r.stripe.com/b: Failed to fetch
+    at shared-cab9eeecb62f95c95cab589231c15b8e.js:1:220340
+(anonymous) @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+Promise.catch
+(anonymous) @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+e @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+c @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+(anonymous) @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+setTimeout
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+(anonymous) @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+(anonymous) @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+Promise.then
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+log @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+log @ controller-with-preconnect-fa09bb88558a8f192264e2f26e971212.js:1
+e @ controller-with-preconnect-fa09bb88558a8f192264e2f26e971212.js:1
+62520 @ controller-with-preconnect-fa09bb88558a8f192264e2f26e971212.js:1
+e @ controller-with-preconnect-fa09bb88558a8f192264e2f26e971212.js:1
+(anonymous) @ controller-with-preconnect-fa09bb88558a8f192264e2f26e971212.js:1
+e.O @ controller-with-preconnect-fa09bb88558a8f192264e2f26e971212.js:1
+(anonymous) @ controller-with-preconnect-fa09bb88558a8f192264e2f26e971212.js:1
+(anonymous) @ controller-with-preconnect-fa09bb88558a8f192264e2f26e971212.js:1
+ Adding extension: GPT-Replit - ChatGPT in your Repl. {extensionArgs: {…}, local: false, logLevel: 'info'}
+ Adding extension: AI Playground {extensionArgs: {…}, local: false, logLevel: 'info'}
+ stallwart: failed ping 1
+ [Violation] Added non-passive event listener to a scroll-blocking 'wheel' event. Consider marking event handler as 'passive' to make the page more responsive. See https://www.chromestatus.com/feature/5745543795965952
+(anonymous) @ _app-c6dc4eab78cae629.js:13
+(anonymous) @ _app-c6dc4eab78cae629.js:13
+(anonymous) @ 9773-1aff2546c3ef934f.js:1
+oO @ framework-783ea2cc8b65379c.js:1
+uB @ framework-783ea2cc8b65379c.js:1
+(anonymous) @ framework-783ea2cc8b65379c.js:1
+uO @ framework-783ea2cc8b65379c.js:1
+u_ @ framework-783ea2cc8b65379c.js:1
+r6 @ framework-783ea2cc8b65379c.js:1
+(anonymous) @ framework-783ea2cc8b65379c.js:1
+[Violation] 'setInterval' handler took <N>ms
+[Violation] 'setInterval' handler took <N>ms
+[Violation] 'setInterval' handler took <N>ms
+[Violation] 'setInterval' handler took <N>ms
+[Violation] 'setInterval' handler took <N>ms
+[Violation] 'setInterval' handler took <N>ms
+ stallwart: failed ping 2
+ stallwart: failed ping 3
+ Adding extension: Icon Generator {extensionArgs: {…}, local: false, logLevel: 'info'}
+_app-c6dc4eab78cae629.js:13  POST https://events.launchdarkly.com/events/diagnostic/62b35a865152ab14c5942820 net::ERR_BLOCKED_BY_CLIENT
+(anonymous) @ _app-c6dc4eab78cae629.js:13
+(anonymous) @ _app-c6dc4eab78cae629.js:13
+promise @ _app-c6dc4eab78cae629.js:40
+(anonymous) @ _app-c6dc4eab78cae629.js:40
+r.httpRequest @ _app-c6dc4eab78cae629.js:40
+t @ _app-c6dc4eab78cae629.js:40
+a.sendChunk @ _app-c6dc4eab78cae629.js:40
+a.sendEvents @ _app-c6dc4eab78cae629.js:40
+m @ _app-c6dc4eab78cae629.js:40
+b @ _app-c6dc4eab78cae629.js:40
+(anonymous) @ _app-c6dc4eab78cae629.js:40
+(anonymous) @ _app-c6dc4eab78cae629.js:40
+Promise.then
+(anonymous) @ _app-c6dc4eab78cae629.js:40
+DiagnosticsManager.h.start @ _app-c6dc4eab78cae629.js:40
+start @ _app-c6dc4eab78cae629.js:40
+n @ _app-c6dc4eab78cae629.js:13
+shared-cab9eeecb62f95c95cab589231c15b8e.js:1  POST https://r.stripe.com/b net::ERR_BLOCKED_BY_CLIENT
+(anonymous) @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+e @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+c @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+(anonymous) @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+setTimeout
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+(anonymous) @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+log @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+log @ controller-with-preconnect-fa09bb88558a8f192264e2f26e971212.js:1
+value @ controller-with-preconnect-fa09bb88558a8f192264e2f26e971212.js:1
+value @ controller-with-preconnect-fa09bb88558a8f192264e2f26e971212.js:1
+(anonymous) @ controller-with-preconnect-fa09bb88558a8f192264e2f26e971212.js:1
+r.stripe.com/b:1  Failed to load resource: net::ERR_BLOCKED_BY_CLIENT
+r.stripe.com/b:1  Failed to load resource: net::ERR_BLOCKED_BY_CLIENT
+r.stripe.com/b:1  Failed to load resource: net::ERR_BLOCKED_BY_CLIENT
+r.stripe.com/b:1  Failed to load resource: net::ERR_BLOCKED_BY_CLIENT
+r.stripe.com/b:1  Failed to load resource: net::ERR_BLOCKED_BY_CLIENT
+r.stripe.com/b:1  Failed to load resource: net::ERR_BLOCKED_BY_CLIENT
+shared-cab9eeecb62f95c95cab589231c15b8e.js:1 Uncaught (in promise) FetchError: Error fetching https://r.stripe.com/b: Failed to fetch
+    at shared-cab9eeecb62f95c95cab589231c15b8e.js:1:220340
+(anonymous) @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+Promise.catch
+(anonymous) @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+e @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+c @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+(anonymous) @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+setTimeout
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+(anonymous) @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+log @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+log @ controller-with-preconnect-fa09bb88558a8f192264e2f26e971212.js:1
+value @ controller-with-preconnect-fa09bb88558a8f192264e2f26e971212.js:1
+value @ controller-with-preconnect-fa09bb88558a8f192264e2f26e971212.js:1
+(anonymous) @ controller-with-preconnect-fa09bb88558a8f192264e2f26e971212.js:1
+_app-c6dc4eab78cae629.js:13  POST https://events.launchdarkly.com/events/diagnostic/62b35a865152ab14c5942820 net::ERR_BLOCKED_BY_CLIENT
+(anonymous) @ _app-c6dc4eab78cae629.js:13
+(anonymous) @ _app-c6dc4eab78cae629.js:13
+promise @ _app-c6dc4eab78cae629.js:40
+(anonymous) @ _app-c6dc4eab78cae629.js:40
+r.httpRequest @ _app-c6dc4eab78cae629.js:40
+t @ _app-c6dc4eab78cae629.js:40
+(anonymous) @ _app-c6dc4eab78cae629.js:40
+Promise.catch
+t @ _app-c6dc4eab78cae629.js:40
+a.sendChunk @ _app-c6dc4eab78cae629.js:40
+a.sendEvents @ _app-c6dc4eab78cae629.js:40
+m @ _app-c6dc4eab78cae629.js:40
+b @ _app-c6dc4eab78cae629.js:40
+(anonymous) @ _app-c6dc4eab78cae629.js:40
+(anonymous) @ _app-c6dc4eab78cae629.js:40
+Promise.then
+(anonymous) @ _app-c6dc4eab78cae629.js:40
+DiagnosticsManager.h.start @ _app-c6dc4eab78cae629.js:40
+start @ _app-c6dc4eab78cae629.js:40
+n @ _app-c6dc4eab78cae629.js:13
+PROPTRADERJOURNAL:1 Banner not shown: beforeinstallpromptevent.preventDefault() called. The page must call beforeinstallpromptevent.prompt() to show the banner.
+ Adding extension: Docx Viewer {extensionArgs: {…}, local: false, logLevel: 'info'}
+_app-c6dc4eab78cae629.js:13  POST https://events.launchdarkly.com/events/bulk/62b35a865152ab14c5942820 net::ERR_BLOCKED_BY_CLIENT
+(anonymous) @ _app-c6dc4eab78cae629.js:13
+(anonymous) @ _app-c6dc4eab78cae629.js:13
+promise @ _app-c6dc4eab78cae629.js:40
+(anonymous) @ _app-c6dc4eab78cae629.js:40
+r.httpRequest @ _app-c6dc4eab78cae629.js:40
+t @ _app-c6dc4eab78cae629.js:40
+a.sendChunk @ _app-c6dc4eab78cae629.js:40
+a.sendEvents @ _app-c6dc4eab78cae629.js:40
+a.flush @ _app-c6dc4eab78cae629.js:40
+e @ _app-c6dc4eab78cae629.js:40
+n @ _app-c6dc4eab78cae629.js:13
+setTimeout
+(anonymous) @ _app-c6dc4eab78cae629.js:13
+a.start @ _app-c6dc4eab78cae629.js:40
+start @ _app-c6dc4eab78cae629.js:40
+n @ _app-c6dc4eab78cae629.js:13
+_app-c6dc4eab78cae629.js:13  POST https://events.launchdarkly.com/events/bulk/62b35a865152ab14c5942820 net::ERR_BLOCKED_BY_CLIENT
+(anonymous) @ _app-c6dc4eab78cae629.js:13
+(anonymous) @ _app-c6dc4eab78cae629.js:13
+promise @ _app-c6dc4eab78cae629.js:40
+(anonymous) @ _app-c6dc4eab78cae629.js:40
+r.httpRequest @ _app-c6dc4eab78cae629.js:40
+t @ _app-c6dc4eab78cae629.js:40
+(anonymous) @ _app-c6dc4eab78cae629.js:40
+Promise.catch
+t @ _app-c6dc4eab78cae629.js:40
+a.sendChunk @ _app-c6dc4eab78cae629.js:40
+a.sendEvents @ _app-c6dc4eab78cae629.js:40
+a.flush @ _app-c6dc4eab78cae629.js:40
+e @ _app-c6dc4eab78cae629.js:40
+n @ _app-c6dc4eab78cae629.js:13
+setTimeout
+(anonymous) @ _app-c6dc4eab78cae629.js:13
+a.start @ _app-c6dc4eab78cae629.js:40
+start @ _app-c6dc4eab78cae629.js:40
+n @ _app-c6dc4eab78cae629.js:13
+_app-c6dc4eab78cae629.js:13 [Violation] 'animationiteration' handler took 246ms
+framework-783ea2cc8b65379c.js:1 Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+_ @ framework-783ea2cc8b65379c.js:1
+(anonymous) @ framework-783ea2cc8b65379c.js:1
+uD @ framework-783ea2cc8b65379c.js:1
+uI @ framework-783ea2cc8b65379c.js:1
+uM @ framework-783ea2cc8b65379c.js:1
+uS @ framework-783ea2cc8b65379c.js:1
+C @ framework-783ea2cc8b65379c.js:1
+z @ framework-783ea2cc8b65379c.js:1
+ Unrecognized feature: 'ambient-light-sensor'.
+_ @ framework-783ea2cc8b65379c.js:1
+(anonymous) @ framework-783ea2cc8b65379c.js:1
+uD @ framework-783ea2cc8b65379c.js:1
+uI @ framework-783ea2cc8b65379c.js:1
+uM @ framework-783ea2cc8b65379c.js:1
+uS @ framework-783ea2cc8b65379c.js:1
+C @ framework-783ea2cc8b65379c.js:1
+z @ framework-783ea2cc8b65379c.js:1
+ Unrecognized feature: 'battery'.
+_ @ framework-783ea2cc8b65379c.js:1
+(anonymous) @ framework-783ea2cc8b65379c.js:1
+uD @ framework-783ea2cc8b65379c.js:1
+uI @ framework-783ea2cc8b65379c.js:1
+uM @ framework-783ea2cc8b65379c.js:1
+uS @ framework-783ea2cc8b65379c.js:1
+C @ framework-783ea2cc8b65379c.js:1
+z @ framework-783ea2cc8b65379c.js:1
+ Unrecognized feature: 'execution-while-not-rendered'.
+_ @ framework-783ea2cc8b65379c.js:1
+(anonymous) @ framework-783ea2cc8b65379c.js:1
+uD @ framework-783ea2cc8b65379c.js:1
+uI @ framework-783ea2cc8b65379c.js:1
+uM @ framework-783ea2cc8b65379c.js:1
+uS @ framework-783ea2cc8b65379c.js:1
+C @ framework-783ea2cc8b65379c.js:1
+z @ framework-783ea2cc8b65379c.js:1
+ Unrecognized feature: 'execution-while-out-of-viewport'.
+_ @ framework-783ea2cc8b65379c.js:1
+(anonymous) @ framework-783ea2cc8b65379c.js:1
+uD @ framework-783ea2cc8b65379c.js:1
+uI @ framework-783ea2cc8b65379c.js:1
+uM @ framework-783ea2cc8b65379c.js:1
+uS @ framework-783ea2cc8b65379c.js:1
+C @ framework-783ea2cc8b65379c.js:1
+z @ framework-783ea2cc8b65379c.js:1
+ Unrecognized feature: 'layout-animations'.
+_ @ framework-783ea2cc8b65379c.js:1
+(anonymous) @ framework-783ea2cc8b65379c.js:1
+uD @ framework-783ea2cc8b65379c.js:1
+uI @ framework-783ea2cc8b65379c.js:1
+uM @ framework-783ea2cc8b65379c.js:1
+uS @ framework-783ea2cc8b65379c.js:1
+C @ framework-783ea2cc8b65379c.js:1
+z @ framework-783ea2cc8b65379c.js:1
+ Unrecognized feature: 'legacy-image-formats'.
+_ @ framework-783ea2cc8b65379c.js:1
+(anonymous) @ framework-783ea2cc8b65379c.js:1
+uD @ framework-783ea2cc8b65379c.js:1
+uI @ framework-783ea2cc8b65379c.js:1
+uM @ framework-783ea2cc8b65379c.js:1
+uS @ framework-783ea2cc8b65379c.js:1
+C @ framework-783ea2cc8b65379c.js:1
+z @ framework-783ea2cc8b65379c.js:1
+ Unrecognized feature: 'navigation-override'.
+_ @ framework-783ea2cc8b65379c.js:1
+(anonymous) @ framework-783ea2cc8b65379c.js:1
+uD @ framework-783ea2cc8b65379c.js:1
+uI @ framework-783ea2cc8b65379c.js:1
+uM @ framework-783ea2cc8b65379c.js:1
+uS @ framework-783ea2cc8b65379c.js:1
+C @ framework-783ea2cc8b65379c.js:1
+z @ framework-783ea2cc8b65379c.js:1
+ Unrecognized feature: 'oversized-images'.
+_ @ framework-783ea2cc8b65379c.js:1
+(anonymous) @ framework-783ea2cc8b65379c.js:1
+uD @ framework-783ea2cc8b65379c.js:1
+uI @ framework-783ea2cc8b65379c.js:1
+uM @ framework-783ea2cc8b65379c.js:1
+uS @ framework-783ea2cc8b65379c.js:1
+C @ framework-783ea2cc8b65379c.js:1
+z @ framework-783ea2cc8b65379c.js:1
+ Unrecognized feature: 'publickey-credentials'.
+_ @ framework-783ea2cc8b65379c.js:1
+(anonymous) @ framework-783ea2cc8b65379c.js:1
+uD @ framework-783ea2cc8b65379c.js:1
+uI @ framework-783ea2cc8b65379c.js:1
+uM @ framework-783ea2cc8b65379c.js:1
+uS @ framework-783ea2cc8b65379c.js:1
+C @ framework-783ea2cc8b65379c.js:1
+z @ framework-783ea2cc8b65379c.js:1
+ Unrecognized feature: 'speaker-selection'.
+_ @ framework-783ea2cc8b65379c.js:1
+(anonymous) @ framework-783ea2cc8b65379c.js:1
+uD @ framework-783ea2cc8b65379c.js:1
+uI @ framework-783ea2cc8b65379c.js:1
+uM @ framework-783ea2cc8b65379c.js:1
+uS @ framework-783ea2cc8b65379c.js:1
+C @ framework-783ea2cc8b65379c.js:1
+z @ framework-783ea2cc8b65379c.js:1
+ Unrecognized feature: 'unoptimized-images'.
+_ @ framework-783ea2cc8b65379c.js:1
+(anonymous) @ framework-783ea2cc8b65379c.js:1
+uD @ framework-783ea2cc8b65379c.js:1
+uI @ framework-783ea2cc8b65379c.js:1
+uM @ framework-783ea2cc8b65379c.js:1
+uS @ framework-783ea2cc8b65379c.js:1
+C @ framework-783ea2cc8b65379c.js:1
+z @ framework-783ea2cc8b65379c.js:1
+ Unrecognized feature: 'unsized-media'.
+_ @ framework-783ea2cc8b65379c.js:1
+(anonymous) @ framework-783ea2cc8b65379c.js:1
+uD @ framework-783ea2cc8b65379c.js:1
+uI @ framework-783ea2cc8b65379c.js:1
+uM @ framework-783ea2cc8b65379c.js:1
+uS @ framework-783ea2cc8b65379c.js:1
+C @ framework-783ea2cc8b65379c.js:1
+z @ framework-783ea2cc8b65379c.js:1
+ Unrecognized feature: 'pointer-lock'.
+_ @ framework-783ea2cc8b65379c.js:1
+(anonymous) @ framework-783ea2cc8b65379c.js:1
+uD @ framework-783ea2cc8b65379c.js:1
+uI @ framework-783ea2cc8b65379c.js:1
+uM @ framework-783ea2cc8b65379c.js:1
+uS @ framework-783ea2cc8b65379c.js:1
+C @ framework-783ea2cc8b65379c.js:1
+z @ framework-783ea2cc8b65379c.js:1
+ Allow attribute will take precedence over 'allowfullscreen'.
+_ @ framework-783ea2cc8b65379c.js:1
+(anonymous) @ framework-783ea2cc8b65379c.js:1
+uD @ framework-783ea2cc8b65379c.js:1
+uI @ framework-783ea2cc8b65379c.js:1
+uM @ framework-783ea2cc8b65379c.js:1
+uS @ framework-783ea2cc8b65379c.js:1
+C @ framework-783ea2cc8b65379c.js:1
+z @ framework-783ea2cc8b65379c.js:1
+ Allow attribute will take precedence over 'allowpaymentrequest'.
+_ @ framework-783ea2cc8b65379c.js:1
+(anonymous) @ framework-783ea2cc8b65379c.js:1
+uD @ framework-783ea2cc8b65379c.js:1
+uI @ framework-783ea2cc8b65379c.js:1
+uM @ framework-783ea2cc8b65379c.js:1
+uS @ framework-783ea2cc8b65379c.js:1
+C @ framework-783ea2cc8b65379c.js:1
+z @ framework-783ea2cc8b65379c.js:1
+framework-783ea2cc8b65379c.js:1 Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+_ @ framework-783ea2cc8b65379c.js:1
+(anonymous) @ framework-783ea2cc8b65379c.js:1
+uD @ framework-783ea2cc8b65379c.js:1
+uI @ framework-783ea2cc8b65379c.js:1
+uM @ framework-783ea2cc8b65379c.js:1
+uS @ framework-783ea2cc8b65379c.js:1
+C @ framework-783ea2cc8b65379c.js:1
+z @ framework-783ea2cc8b65379c.js:1
+8a61fded-ec41-4416-ba26-64f287afa7ef-00-155b5f6adjehc.spock.replit.dev/__replco/workspace_iframe.html?initialPath=%2F&id=%3Ar98%3A:32 Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+workspace_iframe.html?initialPath=%2F&id=%3Ar98%3A:32 Unrecognized feature: 'ambient-light-sensor'.
+workspace_iframe.html?initialPath=%2F&id=%3Ar98%3A:32 Unrecognized feature: 'battery'.
+workspace_iframe.html?initialPath=%2F&id=%3Ar98%3A:32 Unrecognized feature: 'execution-while-not-rendered'.
+workspace_iframe.html?initialPath=%2F&id=%3Ar98%3A:32 Unrecognized feature: 'execution-while-out-of-viewport'.
+workspace_iframe.html?initialPath=%2F&id=%3Ar98%3A:32 Unrecognized feature: 'layout-animations'.
+workspace_iframe.html?initialPath=%2F&id=%3Ar98%3A:32 Unrecognized feature: 'legacy-image-formats'.
+workspace_iframe.html?initialPath=%2F&id=%3Ar98%3A:32 Unrecognized feature: 'navigation-override'.
+workspace_iframe.html?initialPath=%2F&id=%3Ar98%3A:32 Unrecognized feature: 'oversized-images'.
+workspace_iframe.html?initialPath=%2F&id=%3Ar98%3A:32 Unrecognized feature: 'publickey-credentials'.
+workspace_iframe.html?initialPath=%2F&id=%3Ar98%3A:32 Unrecognized feature: 'speaker-selection'.
+workspace_iframe.html?initialPath=%2F&id=%3Ar98%3A:32 Unrecognized feature: 'unoptimized-images'.
+workspace_iframe.html?initialPath=%2F&id=%3Ar98%3A:32 Unrecognized feature: 'unsized-media'.
+workspace_iframe.html?initialPath=%2F&id=%3Ar98%3A:32 Allow attribute will take precedence over 'allowfullscreen'.
+workspace_iframe.html?initialPath=%2F&id=%3Ar98%3A:32 Allow attribute will take precedence over 'allowpaymentrequest'.
+8a61fded-ec41-4416-ba26-64f287afa7ef-00-155b5f6adjehc.spock.replit.dev/__replco/workspace_iframe.html?initialPath=%2Fadmin-setup&id=%3Ar99%3A:32 Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+ [Violation] Added non-passive event listener to a scroll-blocking 'wheel' event. Consider marking event handler as 'passive' to make the page more responsive. See https://www.chromestatus.com/feature/5745543795965952
+add @ eruda.js:2
+(anonymous) @ eruda.js:2
+t @ eruda.js:2
+(anonymous) @ eruda.js:2
+on @ eruda.js:2
+value @ eruda.js:2
+t @ eruda.js:2
+value @ eruda.js:2
+t @ eruda.js:2
+_initDevTools @ eruda.js:2
+init @ eruda.js:2
+(anonymous) @ injected.js:2
+(anonymous) @ injected.js:307
+ [Violation] Added non-passive event listener to a scroll-blocking 'wheel' event. Consider marking event handler as 'passive' to make the page more responsive. See https://www.chromestatus.com/feature/5745543795965952
+add @ eruda.js:2
+(anonymous) @ eruda.js:2
+t @ eruda.js:2
+(anonymous) @ eruda.js:2
+on @ eruda.js:2
+value @ eruda.js:2
+t @ eruda.js:2
+value @ eruda.js:2
+t @ eruda.js:2
+_initDevTools @ eruda.js:2
+init @ eruda.js:2
+(anonymous) @ injected.js:2
+(anonymous) @ injected.js:307
+PROPTRADERJOURNAL:1 Unchecked runtime.lastError: The message port closed before a response was received.
+PROPTRADERJOURNAL:1 Unchecked runtime.lastError: The message port closed before a response was received.
+ [vite] connecting...
+ [vite] connecting...
+ [vite] connected.
+ [vite] connected.
+VM31 eruda.js:2  GET https://8a61fded-ec41-4416-ba26-64f287afa7ef-00-155b5f6adjehc.spock.replit.dev/api/user 401 (Unauthorized)
+window.fetch @ VM31 eruda.js:2
+apply @ VM37 injected.js:253
+(anonymous) @ VM108 queryClient.ts:31
+fetchFn @ VM100 @tanstack_react-query.js:840
+run @ VM100 @tanstack_react-query.js:494
+start @ VM100 @tanstack_react-query.js:536
+fetch @ VM100 @tanstack_react-query.js:926
+executeFetch_fn @ VM100 @tanstack_react-query.js:2211
+onSubscribe @ VM100 @tanstack_react-query.js:1898
+subscribe @ VM100 @tanstack_react-query.js:24
+(anonymous) @ VM100 @tanstack_react-query.js:3022
+subscribeToStore @ VM85 chunk-RPCDYKBN.js:11984
+commitHookEffectListMount @ VM85 chunk-RPCDYKBN.js:16915
+commitPassiveMountOnFiber @ VM85 chunk-RPCDYKBN.js:18156
+commitPassiveMountEffects_complete @ VM85 chunk-RPCDYKBN.js:18129
+commitPassiveMountEffects_begin @ VM85 chunk-RPCDYKBN.js:18119
+commitPassiveMountEffects @ VM85 chunk-RPCDYKBN.js:18109
+flushPassiveEffectsImpl @ VM85 chunk-RPCDYKBN.js:19490
+flushPassiveEffects @ VM85 chunk-RPCDYKBN.js:19447
+performSyncWorkOnRoot @ VM85 chunk-RPCDYKBN.js:18868
+flushSyncCallbacks @ VM85 chunk-RPCDYKBN.js:9119
+commitRootImpl @ VM85 chunk-RPCDYKBN.js:19432
+commitRoot @ VM85 chunk-RPCDYKBN.js:19277
+finishConcurrentRender @ VM85 chunk-RPCDYKBN.js:18805
+performConcurrentWorkOnRoot @ VM85 chunk-RPCDYKBN.js:18718
+workLoop @ VM85 chunk-RPCDYKBN.js:197
+flushWork @ VM85 chunk-RPCDYKBN.js:176
+performWorkUntilDeadline @ VM85 chunk-RPCDYKBN.js:384
+workspace_iframe.html?initialPath=%2F&id=%3Ar98%3A:142  GET https://replit.com/public/js/beacon.js net::ERR_BLOCKED_BY_CLIENT
+onIframeLoad @ workspace_iframe.html?initialPath=%2F&id=%3Ar98%3A:142
+injected.js:253  GET https://8a61fded-ec41-4416-ba26-64f287afa7ef-00-155b5f6adjehc.spock.replit.dev/api/user 401 (Unauthorized)
+window.fetch @ Network.js:219
+apply @ injected.js:253
+(anonymous) @ queryClient.ts:46
+fetchFn @ @tanstack_react-query.js?v=e6f0e292:840
+run @ @tanstack_react-query.js?v=e6f0e292:494
+start @ @tanstack_react-query.js?v=e6f0e292:536
+fetch @ @tanstack_react-query.js?v=e6f0e292:926
+executeFetch_fn @ @tanstack_react-query.js?v=e6f0e292:2211
+onSubscribe @ @tanstack_react-query.js?v=e6f0e292:1898
+subscribe @ @tanstack_react-query.js?v=e6f0e292:24
+(anonymous) @ @tanstack_react-query.js?v=e6f0e292:3022
+subscribeToStore @ chunk-RPCDYKBN.js?v=e6f0e292:11984
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=e6f0e292:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=e6f0e292:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=e6f0e292:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=e6f0e292:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=e6f0e292:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=e6f0e292:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=e6f0e292:19447
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=e6f0e292:18868
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=e6f0e292:9119
+commitRootImpl @ chunk-RPCDYKBN.js?v=e6f0e292:19432
+commitRoot @ chunk-RPCDYKBN.js?v=e6f0e292:19277
+finishConcurrentRender @ chunk-RPCDYKBN.js?v=e6f0e292:18805
+performConcurrentWorkOnRoot @ chunk-RPCDYKBN.js?v=e6f0e292:18718
+workLoop @ chunk-RPCDYKBN.js?v=e6f0e292:197
+flushWork @ chunk-RPCDYKBN.js?v=e6f0e292:176
+performWorkUntilDeadline @ chunk-RPCDYKBN.js?v=e6f0e292:384
+workspace_iframe.html?initialPath=%2Fadmin-setup&id=%3Ar99%3A:142  GET https://replit.com/public/js/beacon.js net::ERR_BLOCKED_BY_CLIENT
+onIframeLoad @ workspace_iframe.html?initialPath=%2Fadmin-setup&id=%3Ar99%3A:142
+shared-cab9eeecb62f95c95cab589231c15b8e.js:1  POST https://r.stripe.com/b net::ERR_BLOCKED_BY_CLIENT
+(anonymous) @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+e @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+c @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+(anonymous) @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+r.stripe.com/b:1  Failed to load resource: net::ERR_BLOCKED_BY_CLIENT
+r.stripe.com/b:1  Failed to load resource: net::ERR_BLOCKED_BY_CLIENT
+shared-cab9eeecb62f95c95cab589231c15b8e.js:1  POST https://r.stripe.com/b net::ERR_BLOCKED_BY_CLIENT
+(anonymous) @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+e @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+c @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+(anonymous) @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+r.stripe.com/b:1  Failed to load resource: net::ERR_BLOCKED_BY_CLIENT
+r.stripe.com/b:1  Failed to load resource: net::ERR_BLOCKED_BY_CLIENT
+shared-cab9eeecb62f95c95cab589231c15b8e.js:1  POST https://r.stripe.com/b net::ERR_BLOCKED_BY_CLIENT
+(anonymous) @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+e @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+c @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+(anonymous) @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+r.stripe.com/b:1  Failed to load resource: net::ERR_BLOCKED_BY_CLIENT
+r.stripe.com/b:1  Failed to load resource: net::ERR_BLOCKED_BY_CLIENT
+shared-cab9eeecb62f95c95cab589231c15b8e.js:1  POST https://r.stripe.com/b net::ERR_BLOCKED_BY_CLIENT
+(anonymous) @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+e @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+c @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+(anonymous) @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+r.stripe.com/b:1  Failed to load resource: net::ERR_BLOCKED_BY_CLIENT
+r.stripe.com/b:1  Failed to load resource: net::ERR_BLOCKED_BY_CLIENT
+shared-cab9eeecb62f95c95cab589231c15b8e.js:1 Uncaught (in promise) FetchError: Error fetching https://r.stripe.com/b: Failed to fetch
+    at shared-cab9eeecb62f95c95cab589231c15b8e.js:1:220340
+(anonymous) @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+Promise.catch
+(anonymous) @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+e @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+c @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+(anonymous) @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+shared-cab9eeecb62f95c95cab589231c15b8e.js:1 Uncaught (in promise) FetchError: Error fetching https://r.stripe.com/b: Failed to fetch
+    at shared-cab9eeecb62f95c95cab589231c15b8e.js:1:220340
+(anonymous) @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+Promise.catch
+(anonymous) @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+e @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+c @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+(anonymous) @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+shared-cab9eeecb62f95c95cab589231c15b8e.js:1 Uncaught (in promise) FetchError: Error fetching https://r.stripe.com/b: Failed to fetch
+    at shared-cab9eeecb62f95c95cab589231c15b8e.js:1:220340
+(anonymous) @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+Promise.catch
+(anonymous) @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+e @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+c @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+(anonymous) @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+shared-cab9eeecb62f95c95cab589231c15b8e.js:1 Uncaught (in promise) FetchError: Error fetching https://r.stripe.com/b: Failed to fetch
+    at shared-cab9eeecb62f95c95cab589231c15b8e.js:1:220340
+(anonymous) @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+Promise.catch
+(anonymous) @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+e @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+c @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+(anonymous) @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+_app-c6dc4eab78cae629.js:13  POST https://events.launchdarkly.com/events/bulk/62b35a865152ab14c5942820 net::ERR_BLOCKED_BY_CLIENT
+(anonymous) @ _app-c6dc4eab78cae629.js:13
+(anonymous) @ _app-c6dc4eab78cae629.js:13
+promise @ _app-c6dc4eab78cae629.js:40
+(anonymous) @ _app-c6dc4eab78cae629.js:40
+r.httpRequest @ _app-c6dc4eab78cae629.js:40
+t @ _app-c6dc4eab78cae629.js:40
+a.sendChunk @ _app-c6dc4eab78cae629.js:40
+a.sendEvents @ _app-c6dc4eab78cae629.js:40
+a.flush @ _app-c6dc4eab78cae629.js:40
+e @ _app-c6dc4eab78cae629.js:40
+n @ _app-c6dc4eab78cae629.js:13
+setTimeout
+(anonymous) @ _app-c6dc4eab78cae629.js:13
+e @ _app-c6dc4eab78cae629.js:40
+n @ _app-c6dc4eab78cae629.js:13
+setTimeout
+(anonymous) @ _app-c6dc4eab78cae629.js:13
+e @ _app-c6dc4eab78cae629.js:40
+n @ _app-c6dc4eab78cae629.js:13
+setTimeout
+(anonymous) @ _app-c6dc4eab78cae629.js:13
+e @ _app-c6dc4eab78cae629.js:40
+n @ _app-c6dc4eab78cae629.js:13
+setTimeout
+(anonymous) @ _app-c6dc4eab78cae629.js:13
+e @ _app-c6dc4eab78cae629.js:40
+n @ _app-c6dc4eab78cae629.js:13
+setTimeout
+(anonymous) @ _app-c6dc4eab78cae629.js:13
+e @ _app-c6dc4eab78cae629.js:40
+n @ _app-c6dc4eab78cae629.js:13
+setTimeout
+(anonymous) @ _app-c6dc4eab78cae629.js:13
+e @ _app-c6dc4eab78cae629.js:40
+n @ _app-c6dc4eab78cae629.js:13
+setTimeout
+(anonymous) @ _app-c6dc4eab78cae629.js:13
+e @ _app-c6dc4eab78cae629.js:40
+n @ _app-c6dc4eab78cae629.js:13
+setTimeout
+(anonymous) @ _app-c6dc4eab78cae629.js:13
+e @ _app-c6dc4eab78cae629.js:40
+n @ _app-c6dc4eab78cae629.js:13
+setTimeout
+(anonymous) @ _app-c6dc4eab78cae629.js:13
+e @ _app-c6dc4eab78cae629.js:40
+n @ _app-c6dc4eab78cae629.js:13
+setTimeout
+(anonymous) @ _app-c6dc4eab78cae629.js:13
+e @ _app-c6dc4eab78cae629.js:40
+n @ _app-c6dc4eab78cae629.js:13
+setTimeout
+(anonymous) @ _app-c6dc4eab78cae629.js:13
+e @ _app-c6dc4eab78cae629.js:40
+n @ _app-c6dc4eab78cae629.js:13
+setTimeout
+(anonymous) @ _app-c6dc4eab78cae629.js:13
+e @ _app-c6dc4eab78cae629.js:40
+n @ _app-c6dc4eab78cae629.js:13
+setTimeout
+(anonymous) @ _app-c6dc4eab78cae629.js:13
+e @ _app-c6dc4eab78cae629.js:40
+n @ _app-c6dc4eab78cae629.js:13
+setTimeout
+(anonymous) @ _app-c6dc4eab78cae629.js:13
+e @ _app-c6dc4eab78cae629.js:40
+n @ _app-c6dc4eab78cae629.js:13
+setTimeout
+(anonymous) @ _app-c6dc4eab78cae629.js:13
+e @ _app-c6dc4eab78cae629.js:40
+n @ _app-c6dc4eab78cae629.js:13
+setTimeout
+(anonymous) @ _app-c6dc4eab78cae629.js:13
+e @ _app-c6dc4eab78cae629.js:40
+n @ _app-c6dc4eab78cae629.js:13
+setTimeout
+(anonymous) @ _app-c6dc4eab78cae629.js:13
+e @ _app-c6dc4eab78cae629.js:40
+n @ _app-c6dc4eab78cae629.js:13
+setTimeout
+(anonymous) @ _app-c6dc4eab78cae629.js:13
+e @ _app-c6dc4eab78cae629.js:40
+n @ _app-c6dc4eab78cae629.js:13
+setTimeout
+(anonymous) @ _app-c6dc4eab78cae629.js:13
+e @ _app-c6dc4eab78cae629.js:40
+n @ _app-c6dc4eab78cae629.js:13
+setTimeout
+(anonymous) @ _app-c6dc4eab78cae629.js:13
+e @ _app-c6dc4eab78cae629.js:40
+n @ _app-c6dc4eab78cae629.js:13
+setTimeout
+(anonymous) @ _app-c6dc4eab78cae629.js:13
+e @ _app-c6dc4eab78cae629.js:40
+n @ _app-c6dc4eab78cae629.js:13
+setTimeout
+(anonymous) @ _app-c6dc4eab78cae629.js:13
+e @ _app-c6dc4eab78cae629.js:40
+n @ _app-c6dc4eab78cae629.js:13
+setTimeout
+(anonymous) @ _app-c6dc4eab78cae629.js:13
+e @ _app-c6dc4eab78cae629.js:40
+n @ _app-c6dc4eab78cae629.js:13
+setTimeout
+(anonymous) @ _app-c6dc4eab78cae629.js:13
+e @ _app-c6dc4eab78cae629.js:40
+n @ _app-c6dc4eab78cae629.js:13
+setTimeout
+(anonymous) @ _app-c6dc4eab78cae629.js:13
+e @ _app-c6dc4eab78cae629.js:40
+n @ _app-c6dc4eab78cae629.js:13
+setTimeout
+(anonymous) @ _app-c6dc4eab78cae629.js:13
+e @ _app-c6dc4eab78cae629.js:40
+n @ _app-c6dc4eab78cae629.js:13
+setTimeout
+(anonymous) @ _app-c6dc4eab78cae629.js:13
+e @ _app-c6dc4eab78cae629.js:40
+n @ _app-c6dc4eab78cae629.js:13
+setTimeout
+(anonymous) @ _app-c6dc4eab78cae629.js:13
+e @ _app-c6dc4eab78cae629.js:40
+n @ _app-c6dc4eab78cae629.js:13
+setTimeout
+(anonymous) @ _app-c6dc4eab78cae629.js:13
+e @ _app-c6dc4eab78cae629.js:40
+n @ _app-c6dc4eab78cae629.js:13
+setTimeout
+(anonymous) @ _app-c6dc4eab78cae629.js:13
+e @ _app-c6dc4eab78cae629.js:40
+n @ _app-c6dc4eab78cae629.js:13
+setTimeout
+(anonymous) @ _app-c6dc4eab78cae629.js:13
+e @ _app-c6dc4eab78cae629.js:40
+n @ _app-c6dc4eab78cae629.js:13
+setTimeout
+(anonymous) @ _app-c6dc4eab78cae629.js:13
+e @ _app-c6dc4eab78cae629.js:40
+n @ _app-c6dc4eab78cae629.js:13
+_app-c6dc4eab78cae629.js:13  POST https://events.launchdarkly.com/events/bulk/62b35a865152ab14c5942820 net::ERR_BLOCKED_BY_CLIENT
+(anonymous) @ _app-c6dc4eab78cae629.js:13
+(anonymous) @ _app-c6dc4eab78cae629.js:13
+promise @ _app-c6dc4eab78cae629.js:40
+(anonymous) @ _app-c6dc4eab78cae629.js:40
+r.httpRequest @ _app-c6dc4eab78cae629.js:40
+t @ _app-c6dc4eab78cae629.js:40
+(anonymous) @ _app-c6dc4eab78cae629.js:40
+Promise.catch
+t @ _app-c6dc4eab78cae629.js:40
+a.sendChunk @ _app-c6dc4eab78cae629.js:40
+a.sendEvents @ _app-c6dc4eab78cae629.js:40
+a.flush @ _app-c6dc4eab78cae629.js:40
+e @ _app-c6dc4eab78cae629.js:40
+n @ _app-c6dc4eab78cae629.js:13
+setTimeout
+(anonymous) @ _app-c6dc4eab78cae629.js:13
+e @ _app-c6dc4eab78cae629.js:40
+n @ _app-c6dc4eab78cae629.js:13
+setTimeout
+(anonymous) @ _app-c6dc4eab78cae629.js:13
+e @ _app-c6dc4eab78cae629.js:40
+n @ _app-c6dc4eab78cae629.js:13
+setTimeout
+(anonymous) @ _app-c6dc4eab78cae629.js:13
+e @ _app-c6dc4eab78cae629.js:40
+n @ _app-c6dc4eab78cae629.js:13
+setTimeout
+(anonymous) @ _app-c6dc4eab78cae629.js:13
+e @ _app-c6dc4eab78cae629.js:40
+n @ _app-c6dc4eab78cae629.js:13
+setTimeout
+(anonymous) @ _app-c6dc4eab78cae629.js:13
+e @ _app-c6dc4eab78cae629.js:40
+n @ _app-c6dc4eab78cae629.js:13
+setTimeout
+(anonymous) @ _app-c6dc4eab78cae629.js:13
+e @ _app-c6dc4eab78cae629.js:40
+n @ _app-c6dc4eab78cae629.js:13
+setTimeout
+(anonymous) @ _app-c6dc4eab78cae629.js:13
+e @ _app-c6dc4eab78cae629.js:40
+n @ _app-c6dc4eab78cae629.js:13
+setTimeout
+(anonymous) @ _app-c6dc4eab78cae629.js:13
+e @ _app-c6dc4eab78cae629.js:40
+n @ _app-c6dc4eab78cae629.js:13
+setTimeout
+(anonymous) @ _app-c6dc4eab78cae629.js:13
+e @ _app-c6dc4eab78cae629.js:40
+n @ _app-c6dc4eab78cae629.js:13
+setTimeout
+(anonymous) @ _app-c6dc4eab78cae629.js:13
+e @ _app-c6dc4eab78cae629.js:40
+n @ _app-c6dc4eab78cae629.js:13
+setTimeout
+(anonymous) @ _app-c6dc4eab78cae629.js:13
+e @ _app-c6dc4eab78cae629.js:40
+n @ _app-c6dc4eab78cae629.js:13
+setTimeout
+(anonymous) @ _app-c6dc4eab78cae629.js:13
+e @ _app-c6dc4eab78cae629.js:40
+n @ _app-c6dc4eab78cae629.js:13
+setTimeout
+(anonymous) @ _app-c6dc4eab78cae629.js:13
+e @ _app-c6dc4eab78cae629.js:40
+n @ _app-c6dc4eab78cae629.js:13
+setTimeout
+(anonymous) @ _app-c6dc4eab78cae629.js:13
+e @ _app-c6dc4eab78cae629.js:40
+n @ _app-c6dc4eab78cae629.js:13
+setTimeout
+(anonymous) @ _app-c6dc4eab78cae629.js:13
+e @ _app-c6dc4eab78cae629.js:40
+n @ _app-c6dc4eab78cae629.js:13
+setTimeout
+(anonymous) @ _app-c6dc4eab78cae629.js:13
+e @ _app-c6dc4eab78cae629.js:40
+n @ _app-c6dc4eab78cae629.js:13
+setTimeout
+(anonymous) @ _app-c6dc4eab78cae629.js:13
+e @ _app-c6dc4eab78cae629.js:40
+n @ _app-c6dc4eab78cae629.js:13
+setTimeout
+(anonymous) @ _app-c6dc4eab78cae629.js:13
+e @ _app-c6dc4eab78cae629.js:40
+n @ _app-c6dc4eab78cae629.js:13
+setTimeout
+(anonymous) @ _app-c6dc4eab78cae629.js:13
+e @ _app-c6dc4eab78cae629.js:40
+n @ _app-c6dc4eab78cae629.js:13
+setTimeout
+(anonymous) @ _app-c6dc4eab78cae629.js:13
+e @ _app-c6dc4eab78cae629.js:40
+n @ _app-c6dc4eab78cae629.js:13
+setTimeout
+(anonymous) @ _app-c6dc4eab78cae629.js:13
+e @ _app-c6dc4eab78cae629.js:40
+n @ _app-c6dc4eab78cae629.js:13
+setTimeout
+(anonymous) @ _app-c6dc4eab78cae629.js:13
+e @ _app-c6dc4eab78cae629.js:40
+n @ _app-c6dc4eab78cae629.js:13
+setTimeout
+(anonymous) @ _app-c6dc4eab78cae629.js:13
+e @ _app-c6dc4eab78cae629.js:40
+n @ _app-c6dc4eab78cae629.js:13
+setTimeout
+(anonymous) @ _app-c6dc4eab78cae629.js:13
+e @ _app-c6dc4eab78cae629.js:40
+n @ _app-c6dc4eab78cae629.js:13
+setTimeout
+(anonymous) @ _app-c6dc4eab78cae629.js:13
+e @ _app-c6dc4eab78cae629.js:40
+n @ _app-c6dc4eab78cae629.js:13
+setTimeout
+(anonymous) @ _app-c6dc4eab78cae629.js:13
+e @ _app-c6dc4eab78cae629.js:40
+n @ _app-c6dc4eab78cae629.js:13
+setTimeout
+(anonymous) @ _app-c6dc4eab78cae629.js:13
+e @ _app-c6dc4eab78cae629.js:40
+n @ _app-c6dc4eab78cae629.js:13
+setTimeout
+(anonymous) @ _app-c6dc4eab78cae629.js:13
+e @ _app-c6dc4eab78cae629.js:40
+n @ _app-c6dc4eab78cae629.js:13
+setTimeout
+(anonymous) @ _app-c6dc4eab78cae629.js:13
+e @ _app-c6dc4eab78cae629.js:40
+n @ _app-c6dc4eab78cae629.js:13
+setTimeout
+(anonymous) @ _app-c6dc4eab78cae629.js:13
+e @ _app-c6dc4eab78cae629.js:40
+n @ _app-c6dc4eab78cae629.js:13
+setTimeout
+(anonymous) @ _app-c6dc4eab78cae629.js:13
+e @ _app-c6dc4eab78cae629.js:40
+n @ _app-c6dc4eab78cae629.js:13
+8a61fded-ec41-4416-ba26-64f287afa7ef-00-155b5f6adjehc.spock.replit.dev/auth:1 [DOM] Input elements should have autocomplete attributes (suggested: "current-password"): (More info: https://goo.gl/9p2vKq) input.flex.h-10.w-full.rounded-md.border.bg-background.px-3.py-2.text-base.ring-offset-background.file:border-0.file:bg-transparent.file:text-sm.file:font-medium.file:text-foreground.placeholder:text-muted-foreground.focus-visible:outline-none.focus-visible:ring-2.focus-visible:ring-ring.focus-visible:ring-offset-2.disabled:cursor-not-allowed.disabled:opacity-50.md:text-sm.pl-10.pr-10.widget-bg.border-gray-600.widget-text
+VM31 eruda.js:2 Making API request: POST /api/auth/login {email: 'misterbme02@gmail.com', password: 'Prop$R2$1M'}
+VM31 eruda.js:2 API response status: 200
+DevTools.js:316 [Violation] Added non-passive event listener to a scroll-blocking 'wheel' event. Consider marking event handler as 'passive' to make the page more responsive. See https://www.chromestatus.com/feature/5745543795965952
+add @ delegate.js:81
+(anonymous) @ $event.js:17
+t @ each.js:8
+(anonymous) @ $event.js:16
+on @ $.js:42
+value @ index.js:144
+t @ index.js:17
+value @ DevTools.js:316
+t @ DevTools.js:58
+_initDevTools @ eruda.js:244
+init @ eruda.js:51
+(anonymous) @ injected.js:2
+(anonymous) @ injected.js:307
+Console.js:61 [vite] connecting...
+Console.js:61 [vite] connected.
+workspace_iframe.html?initialPath=%2F&id=%3Ar98%3A:142  GET https://replit.com/public/js/beacon.js net::ERR_BLOCKED_BY_CLIENT
+onIframeLoad @ workspace_iframe.html?initialPath=%2F&id=%3Ar98%3A:142
+Console.js:61 📚 Journal entries loaded: 1 [{…}]
+Console.js:61 🎯 Calculating day data for: Thu Aug 21 2025
+Console.js:61 📊 Available trades: 346
+Console.js:61 🎛️ Selected accounts: [29]
+Console.js:61 📈 Day trades found: 0
+Console.js:61 🔍 getFilteredTrades debug: {tradesCount: 346, accountSelectionMode: 'all', selectedAccountIds: Array(1), selectedAccountIdsLength: 1}
+Console.js:61 🔍 Returning all trades: 346
+Console.js:61 🔍 getFilteredTrades debug: {tradesCount: 346, accountSelectionMode: 'all', selectedAccountIds: Array(1), selectedAccountIdsLength: 1}
+Console.js:61 🔍 Returning all trades: 346
+Console.js:61 🔍 getFilteredTrades debug: {tradesCount: 346, accountSelectionMode: 'all', selectedAccountIds: Array(1), selectedAccountIdsLength: 1}
+Console.js:61 🔍 Returning all trades: 346
+Console.js:61 🔍 getFilteredTrades debug: {tradesCount: 346, accountSelectionMode: 'all', selectedAccountIds: Array(1), selectedAccountIdsLength: 1}
+Console.js:61 🔍 Returning all trades: 346
+Console.js:61 🔍 getFilteredTrades debug: {tradesCount: 346, accountSelectionMode: 'all', selectedAccountIds: Array(1), selectedAccountIdsLength: 1}
+Console.js:61 🔍 Returning all trades: 346
+Console.js:61 🔍 getFilteredTrades debug: {tradesCount: 346, accountSelectionMode: 'all', selectedAccountIds: Array(1), selectedAccountIdsLength: 1}
+Console.js:61 🔍 Returning all trades: 346
+Console.js:61 🔍 getFilteredTrades debug: {tradesCount: 346, accountSelectionMode: 'all', selectedAccountIds: Array(1), selectedAccountIdsLength: 1}
+Console.js:61 🔍 Returning all trades: 346
+Console.js:61 🔍 getFilteredTrades debug: {tradesCount: 346, accountSelectionMode: 'all', selectedAccountIds: Array(1), selectedAccountIdsLength: 1}
+Console.js:61 🔍 Returning all trades: 346
+Console.js:61 🔧 Widget badges fix applied at 1755781729606
+Console.js:61 📊 Daily P&L Breakdown: (61) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+Console.js:61 💰 EOD Calculation: {currentBalance: 27896.416667999998, highestEODBalance: 27896.416667999998, trailingDrawdownFloor: 26396.416667999998, remainingBuffer: 1500, profitableDays: 0}
+chunk-RPCDYKBN.js?v=e6f0e292:18625 [Violation] 'setTimeout' handler took 342ms
+[Violation] Forced reflow while executing JavaScript took 211ms
+Console.js:61 🎯 Calculating day data for: Thu Aug 21 2025
+Console.js:61 📊 Available trades: 346
+Console.js:61 🎛️ Selected accounts: [29]
+Console.js:61 📈 Day trades found: 0
+Console.js:61 🔍 getFilteredTrades debug: {tradesCount: 346, accountSelectionMode: 'all', selectedAccountIds: Array(1), selectedAccountIdsLength: 1}
+Console.js:61 🔍 Returning all trades: 346
+Console.js:61 🔍 getFilteredTrades debug: {tradesCount: 346, accountSelectionMode: 'all', selectedAccountIds: Array(1), selectedAccountIdsLength: 1}
+Console.js:61 🔍 Returning all trades: 346
+Console.js:61 🔍 getFilteredTrades debug: {tradesCount: 346, accountSelectionMode: 'all', selectedAccountIds: Array(1), selectedAccountIdsLength: 1}
+Console.js:61 🔍 Returning all trades: 346
+Console.js:61 🔍 getFilteredTrades debug: {tradesCount: 346, accountSelectionMode: 'all', selectedAccountIds: Array(1), selectedAccountIdsLength: 1}
+Console.js:61 🔍 Returning all trades: 346
+Console.js:61 🔍 getFilteredTrades debug: {tradesCount: 346, accountSelectionMode: 'all', selectedAccountIds: Array(1), selectedAccountIdsLength: 1}
+Console.js:61 🔍 Returning all trades: 346
+Console.js:61 🔍 getFilteredTrades debug: {tradesCount: 346, accountSelectionMode: 'all', selectedAccountIds: Array(1), selectedAccountIdsLength: 1}
+Console.js:61 🔍 Returning all trades: 346
+Console.js:61 🔍 getFilteredTrades debug: {tradesCount: 346, accountSelectionMode: 'all', selectedAccountIds: Array(1), selectedAccountIdsLength: 1}
+Console.js:61 🔍 Returning all trades: 346
+Console.js:61 🔍 getFilteredTrades debug: {tradesCount: 346, accountSelectionMode: 'all', selectedAccountIds: Array(1), selectedAccountIdsLength: 1}
+Console.js:61 🔍 Returning all trades: 346
+Console.js:61 📊 Daily P&L Breakdown: (61) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+Console.js:61 💰 EOD Calculation: {currentBalance: 27896.416667999998, highestEODBalance: 27896.416667999998, trailingDrawdownFloor: 26396.416667999998, remainingBuffer: 1500, profitableDays: 0}
+shared-cab9eeecb62f95c95cab589231c15b8e.js:1  POST https://r.stripe.com/b net::ERR_BLOCKED_BY_CLIENT
+(anonymous) @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+e @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+c @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+(anonymous) @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+shared-cab9eeecb62f95c95cab589231c15b8e.js:1 Uncaught (in promise) FetchError: Error fetching https://r.stripe.com/b: Failed to fetch
+    at shared-cab9eeecb62f95c95cab589231c15b8e.js:1:220340
+(anonymous) @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+Promise.catch
+(anonymous) @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+e @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+c @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+(anonymous) @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+shared-cab9eeecb62f95c95cab589231c15b8e.js:1  POST https://r.stripe.com/b net::ERR_BLOCKED_BY_CLIENT
+(anonymous) @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+e @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+c @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+(anonymous) @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+shared-cab9eeecb62f95c95cab589231c15b8e.js:1 Uncaught (in promise) FetchError: Error fetching https://r.stripe.com/b: Failed to fetch
+    at shared-cab9eeecb62f95c95cab589231c15b8e.js:1:220340
+(anonymous) @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+Promise.catch
+(anonymous) @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+e @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+c @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+(anonymous) @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+shared-cab9eeecb62f95c95cab589231c15b8e.js:1  POST https://r.stripe.com/b net::ERR_BLOCKED_BY_CLIENT
+(anonymous) @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+e @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+c @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+(anonymous) @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+setTimeout
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+(anonymous) @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+log @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+log @ controller-with-preconnect-fa09bb88558a8f192264e2f26e971212.js:1
+value @ controller-with-preconnect-fa09bb88558a8f192264e2f26e971212.js:1
+value @ controller-with-preconnect-fa09bb88558a8f192264e2f26e971212.js:1
+(anonymous) @ controller-with-preconnect-fa09bb88558a8f192264e2f26e971212.js:1
+shared-cab9eeecb62f95c95cab589231c15b8e.js:1 Uncaught (in promise) FetchError: Error fetching https://r.stripe.com/b: Failed to fetch
+    at shared-cab9eeecb62f95c95cab589231c15b8e.js:1:220340
+(anonymous) @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+Promise.catch
+(anonymous) @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+e @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+c @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+(anonymous) @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+setTimeout
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+(anonymous) @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+value @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+log @ shared-cab9eeecb62f95c95cab589231c15b8e.js:1
+log @ controller-with-preconnect-fa09bb88558a8f192264e2f26e971212.js:1
+value @ controller-with-preconnect-fa09bb88558a8f192264e2f26e971212.js:1
+value @ controller-with-preconnect-fa09bb88558a8f192264e2f26e971212.js:1
+(anonymous) @ controller-with-preconnect-fa09bb88558a8f192264e2f26e971212.js:1
+Console.js:61 Making API request: POST /api/daily-plans {accountId: 31, strategyId: 14, date: '2025-08-21', riskAmount: 100, targetProfit: 200, …}
+Console.js:61 API response status: 201
+Console.js:61 Emergency protocol button clicked!
+Console.js:61 Current emergencyProtocol state before: false
+Console.js:61 Emergency protocol state should be true now
+Console.js:61 Emergency protocol modal should be rendering now!
+[Violation] 'requestAnimationFrame' handler took <N>ms
+[Violation] 'requestAnimationFrame' handler took <N>ms
+[Violation] 'requestAnimationFrame' handler took <N>ms
+[Violation] 'requestAnimationFrame' handler took <N>ms
+[Violation] 'requestAnimationFrame' handler took <N>ms
+[Violation] 'requestAnimationFrame' handler took <N>ms
+[Violation] 'requestAnimationFrame' handler took <N>ms
+[Violation] 'requestAnimationFrame' handler took <N>ms
+[Violation] 'requestAnimationFrame' handler took <N>ms
+[Violation] 'requestAnimationFrame' handler took <N>ms
+[Violation] 'requestAnimationFrame' handler took <N>ms
+[Violation] 'requestAnimationFrame' handler took <N>ms
+[Violation] 'requestAnimationFrame' handler took <N>ms
+[Violation] 'requestAnimationFrame' handler took <N>ms
+[Violation] 'requestAnimationFrame' handler took <N>ms
+_app-c6dc4eab78cae629.js:13 [Violation] 'requestAnimationFrame' handler took 101ms
+_app-c6dc4eab78cae629.js:13 [Violation] 'requestAnimationFrame' handler took 74ms
+_app-c6dc4eab78cae629.js:13 [Violation] 'requestAnimationFrame' handler took 81ms
+_app-c6dc4eab78cae629.js:13 [Violation] 'requestAnimationFrame' handler took 58ms
+_app-c6dc4eab78cae629.js:13 [Violation] 'requestAnimationFrame' handler took 98ms
+_app-c6dc4eab78cae629.js:13 [Violation] 'requestAnimationFrame' handler took 114ms
+_app-c6dc4eab78cae629.js:13 [Violation] 'requestAnimationFrame' handler took 71ms
+_app-c6dc4eab78cae629.js:13 [Violation] 'requestAnimationFrame' handler took 50ms
+_app-c6dc4eab78cae629.js:13 [Violation] 'requestAnimationFrame' handler took 82ms
+_app-c6dc4eab78cae629.js:13 [Violation] 'requestAnimationFrame' handler took 55ms
+_app-c6dc4eab78cae629.js:13 [Violation] 'requestAnimationFrame' handler took 51ms
+_app-c6dc4eab78cae629.js:13 [Violation] 'requestAnimationFrame' handler took 55ms
+_app-c6dc4eab78cae629.js:13 [Violation] 'requestAnimationFrame' handler took 63ms
+_app-c6dc4eab78cae629.js:13 [Violation] 'requestAnimationFrame' handler took 104ms
+_app-c6dc4eab78cae629.js:13 [Violation] 'requestAnimationFrame' handler took 54ms
+Console.js:61 Emergency protocol button clicked!
+Console.js:61 Current emergencyProtocol state before: true
+Console.js:61 Emergency protocol state should be true now

@@ -1,0 +1,1686 @@
+import { useQuery } from "@tanstack/react-query";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Calendar, CalendarDays, Download, Filter, Search, Plus, Edit3, Save, X, Upload, FileText, AlertCircle, CheckCircle, Info } from "lucide-react";
+import { formatCurrency, formatDate } from "@/lib/utils";
+import type { Trade, Account } from "@shared/schema";
+import { useState, useMemo, useEffect } from "react";
+import { useLocation } from "wouter";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { apiRequest } from "@/lib/queryClient";
+
+// Format price levels (not currency)
+const formatPrice = (price: number): string => {
+  return price.toFixed(2);
+};
+
+// Helper function to format time for CSV
+const formatTimeForCSV = (timestamp: Date | string | null): string => {
+  if (!timestamp) return 'Not recorded';
+  const date = timestamp instanceof Date ? timestamp : new Date(timestamp);
+  return date.toLocaleString('en-US', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: false
+  });
+};
+
+// Helper function to calculate duration for CSV
+const calculateDurationForCSV = (trade: Trade): string => {
+  if (!trade.fillTime) return 'No entry time';
+  
+  const entryTime = new Date(trade.fillTime);
+  let exitTime;
+  
+  if (trade.exitTime) {
+    exitTime = new Date(trade.exitTime);
+  } else if (trade.status === 'closed' && trade.exitPrice) {
+    return 'Exit time not recorded';
+  } else {
+    return trade.status === 'open' ? 'Currently open' : 'No timing data';
+  }
+  
+  const durationMs = exitTime.getTime() - entryTime.getTime();
+  const durationMinutes = Math.max(1, Math.floor(durationMs / (1000 * 60)));
+  
+  if (durationMinutes < 60) {
+    return `${durationMinutes}m`;
+  } else if (durationMinutes < 1440) {
+    const hours = Math.floor(durationMinutes / 60);
+    const mins = durationMinutes % 60;
+    return mins > 0 ? `${hours}h ${mins}m` : `${hours}h`;
+  } else {
+    const days = Math.floor(durationMinutes / 1440);
+    const hours = Math.floor((durationMinutes % 1440) / 60);
+    return hours > 0 ? `${days}d ${hours}h` : `${days}d`;
+  }
+};
+
+// Universal CSV Import Component supporting all formats
+const UniversalCsvImport = ({ accounts }: { accounts: Account[] }) => {
+  const [csvFile, setCsvFile] = useState<File | null>(null);
+  const [csvFormat, setCsvFormat] = useState<string>('unknown');
+  const [isUploading, setIsUploading] = useState(false);
+  const [previewData, setPreviewData] = useState<any[]>([]);
+  const [importStats, setImportStats] = useState<any>(null);
+  const [csvHeaders, setCsvHeaders] = useState<string[]>([]);
+  const queryClient = useQueryClient();
+
+  // Convert contract symbols to standard format
+  const convertContractToSymbol = (contract: string): string => {
+    if (!contract) return 'UNKNOWN';
+    
+    // Handle different contract formats
+    const upperContract = contract.toUpperCase();
+    if (upperContract.startsWith('MES')) return 'ES';   // Micro E-mini S&P 500
+    if (upperContract.startsWith('NQ')) return 'NQ';    // E-mini NASDAQ 100  
+    if (upperContract.startsWith('YM')) return 'YM';    // E-mini Dow Jones
+    if (upperContract.startsWith('RTY')) return 'RTY';  // E-mini Russell 2000
+    if (upperContract.startsWith('GC')) return 'GC';    // Gold Futures
+    if (upperContract.startsWith('CL')) return 'CL';    // Crude Oil Futures
+    if (upperContract.startsWith('6E')) return 'EUR';   // Euro Futures
+    if (upperContract.startsWith('6B')) return 'GBP';   // British Pound Futures
+    
+    // For already clean symbols
+    if (['ES', 'NQ', 'YM', 'RTY', 'GC', 'CL', 'EUR', 'GBP'].includes(upperContract)) {
+      return upperContract;
+    }
+    
+    // Return first 2-3 characters as fallback
+    return contract.substring(0, Math.min(3, contract.length)).toUpperCase();
+  };
+
+  // Enhanced format detection
+  const detectCsvFormat = (headers: string[]): string => {
+    console.log('🔍 Detecting format for headers:', headers);
+    
+    // Position History CSV detection (most specific first)
+    if (headers.includes('Position ID') && 
+        headers.includes('Bought Timestamp') && 
+        headers.includes('Sold Timestamp') &&
+        (headers.includes('Paired Qty') || headers.includes('Buy Price'))) {
+      return 'position-history';
+    }
+    
+    // Performance CSV detection  
+    if ((headers.includes('buyFillId') || headers.includes('Buy Fill ID')) && 
+        (headers.includes('sellFillId') || headers.includes('Sell Fill ID')) && 
+        (headers.includes('boughtTimestamp') || headers.includes('soldTimestamp') || 
+         headers.includes('buyPrice') || headers.includes('sellPrice'))) {
+      return 'performance';
+    }
+    
+    // Orders CSV detection
+    if (headers.includes('Order ID') && 
+        (headers.includes('Fill Time') || headers.includes('Timestamp')) && 
+        (headers.includes('B/S') || headers.includes('Side')) &&
+        (headers.includes('Avg Fill Price') || headers.includes('Price'))) {
+      return 'orders';
+    }
+    
+    // Fills/Trades CSV detection
+    if (headers.includes('Fill ID') && 
+        headers.includes('Order ID') && 
+        headers.includes('Timestamp') &&
+        (headers.includes('B/S') || headers.includes('Side')) &&
+        headers.includes('Price')) {
+      return 'fills';
+    }
+    
+    return 'unknown';
+  };
+
+  // Parse CSV text into structured data
+  const parseCSV = (text: string) => {
+    const lines = text.split('\n').filter(line => line.trim());
+    if (lines.length < 2) return { headers: [], data: [] };
+    
+    // Parse headers (handle quotes and various delimiters)
+    const firstLine = lines[0];
+    const delimiter = firstLine.includes('\t') ? '\t' : ',';
+    const headers = firstLine.split(delimiter).map(h => h.trim().replace(/^"|"$/g, ''));
+    
+    // Parse data rows
+    const data = [];
+    for (let i = 1; i < lines.length; i++) {
+      const values = lines[i].split(delimiter).map(v => v.trim().replace(/^"|"$/g, ''));
+      const row: any = {};
+      headers.forEach((header, index) => {
+        row[header] = values[index] || '';
+      });
+      
+      // Skip empty rows
+      if (Object.values(row).some(v => v !== '')) {
+        data.push(row);
+      }
+    }
+    
+    return { headers, data };
+  };
+
+  // Find account by name or create mapping
+  const findAccountByName = (accountName: string): any => {
+    const account = accounts.find(acc => acc.name === accountName || acc.name.includes(accountName));
+    if (!account) {
+      throw new Error(`Account "${accountName}" not found. Please create this account first.`);
+    }
+    return account;
+  };
+
+  // Map Position History row to trade format
+  const mapPositionHistoryRow = (row: any): any => {
+    console.log('🔍 POSITION HISTORY: Mapping row:', row);
+    
+    const boughtTime = new Date(row['Bought Timestamp']);
+    const soldTime = new Date(row['Sold Timestamp']);
+    const isShort = soldTime < boughtTime;
+    
+    const account = findAccountByName(row['Account']);
+    const buyPrice = parseFloat(row['Buy Price']);
+    const sellPrice = parseFloat(row['Sell Price']);
+    const pnl = parseFloat(row['P/L']);
+    const quantity = parseInt(row['Paired Qty']);
+    
+    const mappedTrade = {
+      accountId: account.id,
+      symbol: convertContractToSymbol(row['Contract']),
+      side: isShort ? 'sell' : 'buy',
+      quantity: quantity,
+      fillTime: isShort ? row['Sold Timestamp'] : row['Bought Timestamp'],
+      exitTime: isShort ? row['Bought Timestamp'] : row['Sold Timestamp'],
+      entryPrice: isShort ? sellPrice : buyPrice,
+      exitPrice: isShort ? buyPrice : sellPrice,
+      pnl: pnl,
+      status: 'closed',
+      date: row['Trade Date'],
+      orderId: `POS-${row['Position ID']}`,
+      notes: `Position History Import - ${isShort ? 'Short' : 'Long'} Trade`
+    };
+
+    console.log('🔍 POSITION HISTORY: Mapped trade:', {
+      fillTime: mappedTrade.fillTime,
+      exitTime: mappedTrade.exitTime,
+      side: mappedTrade.side
+    });
+
+    return mappedTrade;
+  };
+
+  // Map Performance CSV row to trade format
+  const mapPerformanceRow = (row: any): any => {
+    console.log('🔍 PERFORMANCE: Mapping row:', row);
+    
+    const account = findAccountByName(row['Account'] || 'Default');
+    const buyPrice = parseFloat(row['buyPrice'] || row['Buy Price']);
+    const sellPrice = parseFloat(row['sellPrice'] || row['Sell Price']);
+    const pnl = parseFloat(row['pnl'] || row['P/L']);
+    const quantity = parseInt(row['qty'] || row['Quantity'] || 1);
+    
+    const mappedTrade = {
+      accountId: account.id,
+      symbol: convertContractToSymbol(row['symbol'] || row['Contract']),
+      side: 'buy', // Performance CSV typically shows completed round trips
+      quantity: quantity,
+      fillTime: row['boughtTimestamp'] || row['Bought Timestamp'],
+      exitTime: row['soldTimestamp'] || row['Sold Timestamp'],
+      entryPrice: buyPrice,
+      exitPrice: sellPrice,
+      pnl: pnl,
+      status: 'closed',
+      date: row['date'] || row['Date'] || new Date().toISOString().split('T')[0],
+      orderId: `PERF-${row['buyFillId'] || Date.now()}`,
+      notes: 'Performance CSV Import'
+    };
+
+    console.log('🔍 PERFORMANCE: Mapped trade:', {
+      fillTime: mappedTrade.fillTime,
+      exitTime: mappedTrade.exitTime
+    });
+
+    return mappedTrade;
+  };
+
+  // Advanced TradeZella-style Orders CSV mapping with position tracking
+  const mapOrdersRows = (rows: any[]): any[] => {
+    console.log('🔍 ADVANCED ORDERS: Processing', rows.length, 'order rows with position tracking');
+    
+    const trades = [];
+    
+    // Helper function to group orders
+    const groupBy = (array: any[], keyFn: (item: any) => string) => {
+      const groups: { [key: string]: any[] } = {};
+      array.forEach(item => {
+        const key = keyFn(item);
+        if (!groups[key]) groups[key] = [];
+        groups[key].push(item);
+      });
+      return groups;
+    };
+    
+    // Helper function to calculate weighted average
+    const calculateWeightedAverage = (entries: any[], field: string) => {
+      const totalQty = entries.reduce((sum, entry) => sum + entry.qty, 0);
+      const weightedSum = entries.reduce((sum, entry) => sum + (entry[field] * entry.qty), 0);
+      return weightedSum / totalQty;
+    };
+    
+    // Helper function to calculate duration
+    const calculateDuration = (startTime: string, endTime: string): string => {
+      const start = new Date(startTime);
+      const end = new Date(endTime);
+      const durationMs = end.getTime() - start.getTime();
+      const minutes = Math.floor(durationMs / (60 * 1000));
+      
+      if (minutes < 60) return `${minutes}m`;
+      const hours = Math.floor(minutes / 60);
+      const remainingMinutes = minutes % 60;
+      return remainingMinutes > 0 ? `${hours}h ${remainingMinutes}m` : `${hours}h`;
+    };
+    
+    // Group orders by symbol + account + trading day
+    const orderGroups = groupBy(rows, (order) => {
+      const symbol = convertContractToSymbol(order['Contract']);
+      const account = order['Account'];
+      const date = order['Date'] || order['Fill Time']?.split(' ')[0] || '';
+      return `${symbol}-${account}-${date}`;
+    });
+    
+    console.log('🔍 ADVANCED ORDERS: Created', Object.keys(orderGroups).length, 'order groups');
+    
+    // Process each group with position tracking
+    Object.entries(orderGroups).forEach(([groupKey, orderGroup]) => {
+      console.log('🔍 ADVANCED ORDERS: Processing group:', groupKey, 'with', orderGroup.length, 'orders');
+      
+      // Sort orders chronologically
+      orderGroup.sort((a, b) => {
+        const timeA = new Date(a['Fill Time'] || a['Timestamp']).getTime();
+        const timeB = new Date(b['Fill Time'] || b['Timestamp']).getTime();
+        return timeA - timeB;
+      });
+      
+      // Position tracking variables
+      let position = 0; // Current net position
+      let positionEntries: any[] = []; // Orders that built current position
+      let tradeCounter = 1;
+      
+      orderGroup.forEach((order, index) => {
+        const side = order['B/S']?.toLowerCase();
+        const quantity = parseInt(order['Filled Qty'] || order['Quantity'] || 0);
+        const price = parseFloat(order['Avg Fill Price'] || order['Price'] || 0);
+        const fillTime = order['Fill Time'] || order['Timestamp'];
+        
+        if (!quantity || !price || !fillTime) {
+          console.log('🔍 ADVANCED ORDERS: Skipping invalid order:', order);
+          return;
+        }
+        
+        // Calculate position change
+        const orderQty = (side === 'buy' || side === 'b') ? quantity : -quantity;
+        const newPosition = position + orderQty;
+        
+        console.log(`🔍 ADVANCED ORDERS: Order ${index + 1}: ${side.toUpperCase()} ${quantity} @ ${price}`);
+        console.log(`🔍 ADVANCED ORDERS: Position: ${position} → ${newPosition}`);
+        
+        // CASE 1: Opening new position (from flat)
+        if (position === 0 && newPosition !== 0) {
+          console.log('🔍 ADVANCED ORDERS: Opening new position');
+          positionEntries = [{
+            fillTime,
+            price,
+            qty: Math.abs(orderQty),
+            side: newPosition > 0 ? 'buy' : 'sell',
+            order
+          }];
+        }
+        
+        // CASE 2: Adding to existing position (scaling in)
+        else if (position !== 0 && Math.sign(position) === Math.sign(newPosition) && Math.abs(newPosition) > Math.abs(position)) {
+          console.log('🔍 ADVANCED ORDERS: Adding to position (scaling in)');
+          positionEntries.push({
+            fillTime,
+            price,
+            qty: Math.abs(orderQty),
+            side: newPosition > 0 ? 'buy' : 'sell',
+            order
+          });
+        }
+        
+        // CASE 3: Partially closing position
+        else if (position !== 0 && Math.sign(position) === Math.sign(newPosition) && Math.abs(newPosition) < Math.abs(position)) {
+          console.log('🔍 ADVANCED ORDERS: Partially closing position');
+          
+          const closedQuantity = Math.abs(orderQty);
+          const remainingPosition = Math.abs(newPosition);
+          
+          // Calculate weighted entry values for the portion being closed
+          const weightedEntryPrice = calculateWeightedAverage(positionEntries, 'price');
+          const earliestEntryTime = positionEntries[0].fillTime; // Use earliest entry for duration
+          
+          const trade = {
+            accountId: findAccountByName(order['Account']).id,
+            symbol: convertContractToSymbol(order['Contract']),
+            side: position > 0 ? 'buy' : 'sell',
+            quantity: closedQuantity,
+            fillTime: earliestEntryTime,
+            exitTime: fillTime,
+            entryPrice: weightedEntryPrice,
+            exitPrice: price,
+            pnl: 0, // Will calculate below
+            status: 'closed',
+            date: order['Date'] || fillTime.split(' ')[0],
+            orderId: `ADV-${groupKey}-${tradeCounter++}`,
+            notes: `Advanced Orders Import - Partial Close`,
+            duration: calculateDuration(earliestEntryTime, fillTime)
+          };
+          
+          // Calculate P&L
+          const priceDiff = trade.exitPrice - trade.entryPrice;
+          trade.pnl = trade.side === 'buy' ? 
+            priceDiff * trade.quantity : 
+            -priceDiff * trade.quantity;
+          
+          trades.push(trade);
+          console.log('🔍 ADVANCED ORDERS: Created partial close trade:', trade.duration);
+          
+          // Adjust positionEntries to reflect remaining position
+          // Remove quantity proportionally from entries (FIFO basis)
+          let qtyToRemove = closedQuantity;
+          positionEntries = positionEntries.filter(entry => {
+            if (qtyToRemove <= 0) return true;
+            
+            if (entry.qty <= qtyToRemove) {
+              qtyToRemove -= entry.qty;
+              return false; // Remove this entry completely
+            } else {
+              entry.qty -= qtyToRemove;
+              qtyToRemove = 0;
+              return true; // Keep partial entry
+            }
+          });
+        }
+        
+        // CASE 4: Completely closing position
+        else if (position !== 0 && newPosition === 0) {
+          console.log('🔍 ADVANCED ORDERS: Completely closing position');
+          
+          // Calculate weighted entry values
+          const weightedEntryPrice = calculateWeightedAverage(positionEntries, 'price');
+          const earliestEntryTime = positionEntries[0].fillTime;
+          
+          const trade = {
+            accountId: findAccountByName(order['Account']).id,
+            symbol: convertContractToSymbol(order['Contract']),
+            side: position > 0 ? 'buy' : 'sell',
+            quantity: Math.abs(position),
+            fillTime: earliestEntryTime,
+            exitTime: fillTime,
+            entryPrice: weightedEntryPrice,
+            exitPrice: price,
+            pnl: 0, // Will calculate below
+            status: 'closed',
+            date: order['Date'] || fillTime.split(' ')[0],
+            orderId: `ADV-${groupKey}-${tradeCounter++}`,
+            notes: `Advanced Orders Import - Complete Close`,
+            duration: calculateDuration(earliestEntryTime, fillTime)
+          };
+          
+          // Calculate P&L
+          const priceDiff = trade.exitPrice - trade.entryPrice;
+          trade.pnl = trade.side === 'buy' ? 
+            priceDiff * trade.quantity : 
+            -priceDiff * trade.quantity;
+          
+          trades.push(trade);
+          console.log('🔍 ADVANCED ORDERS: Created complete trade:', trade.duration);
+          
+          // Reset position tracking
+          positionEntries = [];
+        }
+        
+        // CASE 5: Position reversal (close current + open opposite)
+        else if (position !== 0 && newPosition !== 0 && Math.sign(position) !== Math.sign(newPosition)) {
+          console.log('🔍 ADVANCED ORDERS: Position reversal detected');
+          
+          // First, close the existing position
+          const weightedEntryPrice = calculateWeightedAverage(positionEntries, 'price');
+          const earliestEntryTime = positionEntries[0].fillTime;
+          
+          const closeTrade = {
+            accountId: findAccountByName(order['Account']).id,
+            symbol: convertContractToSymbol(order['Contract']),
+            side: position > 0 ? 'buy' : 'sell',
+            quantity: Math.abs(position),
+            fillTime: earliestEntryTime,
+            exitTime: fillTime,
+            entryPrice: weightedEntryPrice,
+            exitPrice: price,
+            pnl: 0, // Will calculate below
+            status: 'closed',
+            date: order['Date'] || fillTime.split(' ')[0],
+            orderId: `ADV-${groupKey}-${tradeCounter++}`,
+            notes: `Advanced Orders Import - Reversal Close`,
+            duration: calculateDuration(earliestEntryTime, fillTime)
+          };
+          
+          // Calculate P&L for close trade
+          const priceDiff = closeTrade.exitPrice - closeTrade.entryPrice;
+          closeTrade.pnl = closeTrade.side === 'buy' ? 
+            priceDiff * closeTrade.quantity : 
+            -priceDiff * closeTrade.quantity;
+          
+          trades.push(closeTrade);
+          console.log('🔍 ADVANCED ORDERS: Created reversal close trade:', closeTrade.duration);
+          
+          // Then, start new position in opposite direction
+          const newPositionQty = Math.abs(newPosition);
+          positionEntries = [{
+            fillTime,
+            price,
+            qty: newPositionQty,
+            side: newPosition > 0 ? 'buy' : 'sell',
+            order
+          }];
+          
+          console.log('🔍 ADVANCED ORDERS: Started new position after reversal');
+        }
+        
+        // Update position
+        position = newPosition;
+        console.log(`🔍 ADVANCED ORDERS: Updated position to: ${position}`);
+      });
+      
+      // Handle any remaining open position
+      if (Math.abs(position) > 0) {
+        console.log('🔍 ADVANCED ORDERS: Position remains open:', position);
+        // Could create open trade record here if needed
+      }
+    });
+    
+    console.log('🔍 ADVANCED ORDERS: Created', trades.length, 'trades with durations');
+    
+    // Log sample trade with duration
+    if (trades.length > 0) {
+      console.log('🔍 ADVANCED ORDERS: Sample trade with duration:', {
+        symbol: trades[0].symbol,
+        side: trades[0].side,
+        fillTime: trades[0].fillTime,
+        exitTime: trades[0].exitTime,
+        duration: trades[0].duration,
+        pnl: trades[0].pnl
+      });
+    }
+    
+    return trades;
+  };
+
+  // Map Fills CSV - similar to Orders but with Fill IDs
+  const mapFillsRows = (rows: any[]): any[] => {
+    console.log('🔍 FILLS: Processing', rows.length, 'fill rows');
+    
+    const trades = [];
+    const fillGroups = new Map();
+    
+    // Group fills by Order ID to match entry/exit
+    rows.forEach(row => {
+      const orderId = row['Order ID'];
+      if (!fillGroups.has(orderId)) {
+        fillGroups.set(orderId, []);
+      }
+      fillGroups.get(orderId).push(row);
+    });
+    
+    // Process each order's fills
+    for (const [orderId, fills] of fillGroups) {
+      if (fills.length >= 2) {
+        // Sort by timestamp to determine entry/exit
+        fills.sort((a, b) => new Date(a.Timestamp).getTime() - new Date(b.Timestamp).getTime());
+        
+        const entryFill = fills[0];
+        const exitFill = fills[fills.length - 1];
+        
+        const account = findAccountByName(entryFill['Account']);
+        
+        const trade = {
+          accountId: account.id,
+          symbol: convertContractToSymbol(entryFill['Contract']),
+          side: entryFill['B/S'].toLowerCase() === 'buy' ? 'buy' : 'sell',
+          quantity: parseInt(entryFill['Quantity']),
+          fillTime: entryFill['Timestamp'],
+          exitTime: exitFill['Timestamp'],
+          entryPrice: parseFloat(entryFill['Price']),
+          exitPrice: parseFloat(exitFill['Price']),
+          pnl: 0, // Calculate later
+          status: 'closed',
+          date: entryFill['Date'] || entryFill['Timestamp'].split(' ')[0],
+          orderId: `FILL-${orderId}`,
+          notes: 'Fills CSV Import'
+        };
+        
+        // Calculate P&L
+        const priceDiff = trade.exitPrice - trade.entryPrice;
+        trade.pnl = trade.side === 'buy' ? 
+          priceDiff * trade.quantity : 
+          -priceDiff * trade.quantity;
+        
+        trades.push(trade);
+      }
+    }
+    
+    console.log('🔍 FILLS: Created', trades.length, 'matched trades');
+    return trades;
+  };
+
+  // Main mapping function - routes to appropriate mapper
+  const mapRowsToTrades = (rows: any[], format: string): any[] => {
+    switch (format) {
+      case 'position-history':
+        return rows.map(mapPositionHistoryRow);
+      case 'performance':
+        return rows.map(mapPerformanceRow);
+      case 'orders':
+        return mapOrdersRows(rows);
+      case 'fills':
+        return mapFillsRows(rows);
+      default:
+        throw new Error(`Unsupported format: ${format}`);
+    }
+  };
+
+  // Handle file selection and preview
+  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    setCsvFile(file);
+    setImportStats(null);
+    
+    try {
+      const text = await file.text();
+      const { headers, data } = parseCSV(text);
+      
+      setCsvHeaders(headers);
+      const detectedFormat = detectCsvFormat(headers);
+      setCsvFormat(detectedFormat);
+      
+      // Show preview
+      setPreviewData(data.slice(0, 3));
+      
+      console.log(`🔍 Detected format: ${detectedFormat}`);
+      console.log(`🔍 Found ${data.length} data rows`);
+      console.log(`🔍 Headers:`, headers);
+      
+    } catch (error) {
+      console.error('Error parsing CSV:', error);
+      alert(`Error parsing CSV: ${error.message}`);
+      setCsvFile(null);
+      setPreviewData([]);
+      setCsvFormat('unknown');
+    }
+  };
+
+  // Upload and process CSV
+  const handleUpload = async () => {
+    if (!csvFile || csvFormat === 'unknown') return;
+
+    setIsUploading(true);
+    
+    try {
+      const text = await csvFile.text();
+      const { headers, data } = parseCSV(text);
+      
+      console.log(`🔍 Processing ${data.length} rows with format: ${csvFormat}`);
+      
+      const trades = [];
+      const errors = [];
+      
+      try {
+        const mappedTrades = mapRowsToTrades(data, csvFormat);
+        trades.push(...mappedTrades);
+      } catch (error) {
+        console.error(`🔍 Error mapping trades:`, error);
+        errors.push(`Mapping error: ${error.message}`);
+      }
+      
+      if (errors.length > 0 && trades.length === 0) {
+        throw new Error(errors.join('\n'));
+      }
+      
+      console.log(`🔍 Prepared ${trades.length} trades for import`);
+      console.log(`🔍 Sample trade:`, trades[0]);
+      
+      // Send to API
+      const response = await apiRequest('/api/trades/import', 'POST', {
+        trades,
+        source: `${csvFormat}-csv`
+      });
+      
+      console.log('🔍 API Response:', response);
+      
+      if (response.success) {
+        setImportStats({
+          imported: trades.length,
+          errors: errors.length,
+          longTrades: trades.filter(t => t.side === 'buy').length,
+          shortTrades: trades.filter(t => t.side === 'sell').length,
+          format: csvFormat
+        });
+        
+        alert(`✅ Successfully imported ${trades.length} trades from ${csvFormat.toUpperCase()} CSV!\n\n` +
+              `Long trades: ${trades.filter(t => t.side === 'buy').length}\n` +
+              `Short trades: ${trades.filter(t => t.side === 'sell').length}\n` +
+              `${csvFormat === 'orders' ? 'Advanced position tracking with accurate durations!\n' : ''}` +
+              `${errors.length > 0 ? `Errors: ${errors.length}` : ''}`);
+        
+        queryClient.invalidateQueries({ queryKey: ['/api/trades'] });
+        
+        // Reset form
+        setCsvFile(null);
+        setPreviewData([]);
+        setCsvFormat('unknown');
+        setCsvHeaders([]);
+        
+      } else {
+        throw new Error(response.message || 'Import failed');
+      }
+      
+    } catch (error) {
+      console.error('Import error:', error);
+      alert(`Import failed: ${error.message}`);
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  // Get format info
+  const getFormatInfo = (format: string) => {
+    const formatDetails = {
+      'position-history': {
+        icon: '🏛️',
+        name: 'Position History',
+        description: 'Complete trade pairs with entry/exit timestamps',
+        features: ['✅ Entry & Exit Times', '✅ Long & Short Detection', '✅ Calculated P&L', '✅ Account Info']
+      },
+      'performance': {
+        icon: '📊',
+        name: 'Performance',
+        description: 'Trade performance data with P&L metrics',
+        features: ['✅ Entry & Exit Times', '✅ Pre-calculated P&L', '✅ Fill IDs', '⚠️ May need account mapping']
+      },
+      'orders': {
+        icon: '📋',
+        name: 'Orders',
+        description: 'Individual order records with advanced position tracking',
+        features: ['✅ Position tracking', '✅ Weighted entry prices', '✅ Scaling in/out support', '✅ Partial fills', '✅ Position reversals', '✅ Accurate durations']
+      },
+      'fills': {
+        icon: '🔄',
+        name: 'Fills/Trades',
+        description: 'Individual fill records (will group by Order ID)',
+        features: ['✅ Fill-level detail', '✅ Timestamps', '⚠️ Requires fill matching', '✅ Commission data']
+      },
+      'unknown': {
+        icon: '❓',
+        name: 'Unknown Format',
+        description: 'CSV format not recognized',
+        features: ['❌ Unsupported format']
+      }
+    };
+    
+    return formatDetails[format] || formatDetails['unknown'];
+  };
+
+  const formatInfo = getFormatInfo(csvFormat);
+
+  return (
+    <div className="space-y-6">
+      {/* File Upload Section */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label className="block text-sm font-medium text-gray-300 mb-2">
+            Select CSV File
+          </label>
+          <Input
+            type="file"
+            accept=".csv"
+            onChange={handleFileChange}
+            className="bg-gray-700 border-gray-600 text-white file:bg-blue-600 file:text-white file:border-0 file:rounded file:px-3 file:py-1"
+          />
+        </div>
+        
+        <div>
+          <label className="block text-sm font-medium text-gray-300 mb-2">
+            Detected Format
+          </label>
+          <div className="p-3 bg-gray-700 rounded-md flex items-center">
+            <span className="text-xl mr-2">{formatInfo.icon}</span>
+            <Badge variant={csvFormat !== 'unknown' ? 'default' : 'destructive'}>
+              {formatInfo.name}
+            </Badge>
+          </div>
+        </div>
+      </div>
+
+      {/* Format Information */}
+      {csvFormat !== 'unknown' && csvHeaders.length > 0 && (
+        <div className="bg-green-600/20 border border-green-600 rounded-lg p-4">
+          <div className="flex items-start">
+            <CheckCircle className="h-5 w-5 text-green-400 mr-3 mt-0.5" />
+            <div>
+              <h4 className="text-green-400 font-medium flex items-center">
+                {formatInfo.icon} {formatInfo.name} CSV Detected!
+              </h4>
+              <p className="text-sm text-gray-300 mt-1">{formatInfo.description}</p>
+              <div className="mt-2 space-y-1">
+                {formatInfo.features.map((feature, index) => (
+                  <div key={index} className="text-xs text-gray-300">• {feature}</div>
+                ))}
+              </div>
+              <p className="text-xs text-green-300 mt-2">
+                Ready to import {previewData.length > 0 ? `${previewData.length} sample` : ''} records
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {csvFormat === 'unknown' && csvHeaders.length > 0 && (
+        <div className="bg-yellow-600/20 border border-yellow-600 rounded-lg p-4">
+          <div className="flex items-start">
+            <AlertCircle className="h-5 w-5 text-yellow-400 mr-3 mt-0.5" />
+            <div>
+              <h4 className="text-yellow-400 font-medium">⚠️ CSV Format Not Recognized</h4>
+              <div className="text-sm text-gray-300 mt-2">
+                <p><strong>Detected columns:</strong> {csvHeaders.slice(0, 5).join(', ')}{csvHeaders.length > 5 ? '...' : ''}</p>
+                <div className="mt-3">
+                  <p><strong>Supported formats:</strong></p>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mt-2 text-xs">
+                    <div>
+                      <strong>🏛️ Position History:</strong> Position ID, Bought Timestamp, Sold Timestamp
+                    </div>
+                    <div>
+                      <strong>📊 Performance:</strong> buyFillId, sellFillId, boughtTimestamp
+                    </div>
+                    <div>
+                      <strong>📋 Orders:</strong> Order ID, Fill Time, B/S, Avg Fill Price
+                      <br /><span className="text-xs text-gray-400">→ Advanced position tracking with scaling support</span>
+                    </div>
+                    <div>
+                      <strong>🔄 Fills:</strong> Fill ID, Order ID, Timestamp, Price
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Preview Section */}
+      {previewData.length > 0 && csvFormat !== 'unknown' && (
+        <div className="space-y-3">
+          <h4 className="text-sm font-medium text-gray-300 flex items-center">
+            <FileText className="h-4 w-4 mr-2" />
+            Preview Data - {formatInfo.name} Format
+          </h4>
+          
+          {previewData.map((row, index) => (
+            <div key={index} className="bg-gray-800 border border-gray-700 rounded-lg p-3">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs">
+                {csvFormat === 'position-history' && (
+                  <>
+                    <div>
+                      <span className="text-gray-400">Contract:</span>
+                      <div className="font-mono text-white">{row['Contract']} → {convertContractToSymbol(row['Contract'])}</div>
+                    </div>
+                    <div>
+                      <span className="text-gray-400">Account:</span>
+                      <div className="text-white">{row['Account']}</div>
+                    </div>
+                    <div>
+                      <span className="text-gray-400">Entry Time:</span>
+                      <div className="font-mono text-white text-xs">
+                        {new Date(row['Sold Timestamp']) < new Date(row['Bought Timestamp']) ? 
+                          row['Sold Timestamp'] : row['Bought Timestamp']}
+                      </div>
+                    </div>
+                    <div>
+                      <span className="text-gray-400">P&L:</span>
+                      <div className={`font-medium ${parseFloat(row['P/L']) >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                        ${row['P/L']}
+                      </div>
+                    </div>
+                  </>
+                )}
+                
+                {csvFormat === 'performance' && (
+                  <>
+                    <div>
+                      <span className="text-gray-400">Symbol:</span>
+                      <div className="font-mono text-white">{row['symbol'] || row['Contract']}</div>
+                    </div>
+                    <div>
+                      <span className="text-gray-400">Buy Price:</span>
+                      <div className="text-white">{row['buyPrice'] || row['Buy Price']}</div>
+                    </div>
+                    <div>
+                      <span className="text-gray-400">Sell Price:</span>
+                      <div className="text-white">{row['sellPrice'] || row['Sell Price']}</div>
+                    </div>
+                    <div>
+                      <span className="text-gray-400">P&L:</span>
+                      <div className={`font-medium ${parseFloat(row['pnl'] || row['P/L']) >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                        ${row['pnl'] || row['P/L']}
+                      </div>
+                    </div>
+                  </>
+                )}
+                
+                {csvFormat === 'orders' && (
+                  <>
+                    <div>
+                      <span className="text-gray-400">Order ID:</span>
+                      <div className="font-mono text-white">{row['Order ID']}</div>
+                    </div>
+                    <div>
+                      <span className="text-gray-400">Side:</span>
+                      <div className={`font-medium ${(row['B/S'] === 'Buy' || row['B/S'] === 'B') ? 'text-green-400' : 'text-red-400'}`}>
+                        {row['B/S']}
+                      </div>
+                    </div>
+                    <div>
+                      <span className="text-gray-400">Fill Time:</span>
+                      <div className="text-white text-xs">{row['Fill Time']}</div>
+                    </div>
+                    <div>
+                      <span className="text-gray-400">Quantity × Price:</span>
+                      <div className="text-white">{row['Filled Qty']} × {row['Avg Fill Price']}</div>
+                    </div>
+                  </>
+                )}
+                
+                {csvFormat === 'fills' && (
+                  <>
+                    <div>
+                      <span className="text-gray-400">Fill ID:</span>
+                      <div className="font-mono text-white">{row['Fill ID']}</div>
+                    </div>
+                    <div>
+                      <span className="text-gray-400">Side:</span>
+                      <div className={`font-medium ${row['B/S'] === 'Buy' ? 'text-green-400' : 'text-red-400'}`}>
+                        {row['B/S']}
+                      </div>
+                    </div>
+                    <div>
+                      <span className="text-gray-400">Timestamp:</span>
+                      <div className="text-white text-xs">{row['Timestamp']}</div>
+                    </div>
+                    <div>
+                      <span className="text-gray-400">Price:</span>
+                      <div className="text-white">{row['Price']}</div>
+                    </div>
+                  </>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Import Stats */}
+      {importStats && (
+        <div className="bg-blue-600/20 border border-blue-600 rounded-lg p-4">
+          <h4 className="text-blue-400 font-medium mb-2 flex items-center">
+            📊 Import Statistics - {importStats.format.toUpperCase()} CSV
+          </h4>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+            <div>
+              <div className="text-gray-400">Total Imported</div>
+              <div className="text-xl font-bold text-white">{importStats.imported}</div>
+            </div>
+            <div>
+              <div className="text-gray-400">Long Trades</div>
+              <div className="text-xl font-bold text-green-400">{importStats.longTrades}</div>
+            </div>
+            <div>
+              <div className="text-gray-400">Short Trades</div>
+              <div className="text-xl font-bold text-red-400">{importStats.shortTrades}</div>
+            </div>
+            <div>
+              <div className="text-gray-400">Errors</div>
+              <div className="text-xl font-bold text-yellow-400">{importStats.errors}</div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Import Button */}
+      <Button 
+        onClick={handleUpload}
+        disabled={!csvFile || csvFormat === 'unknown' || isUploading}
+        className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600"
+        size="lg"
+      >
+        {isUploading ? (
+          <>
+            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+            Importing {formatInfo.name}...
+          </>
+        ) : (
+          <>
+            <Upload className="mr-2 h-4 w-4" />
+            Import {formatInfo.name} CSV
+          </>
+        )}
+      </Button>
+
+      {/* Format Help */}
+      <div className="bg-gray-800 border border-gray-700 rounded-lg p-4">
+        <h4 className="text-gray-300 font-medium mb-2 flex items-center">
+          <Info className="h-4 w-4 mr-2" />
+          Supported CSV Formats
+        </h4>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs text-gray-400">
+          <div>
+            <strong className="text-green-400">🏛️ Position History</strong> - Best for complete trades
+            <br />Tradovate Position History export with timestamps
+          </div>
+          <div>
+            <strong className="text-blue-400">📊 Performance</strong> - Pre-calculated metrics
+            <br />Performance reports with P&L data
+          </div>
+          <div>
+            <strong className="text-yellow-400">📋 Orders</strong> - Advanced position tracking
+            <br />TradeZella-style algorithm handles scaling, partials, reversals
+          </div>
+          <div>
+            <strong className="text-purple-400">🔄 Fills</strong> - Fill-level detail
+            <br />Individual fill records grouped by Order ID
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+import TradeEntry from "@/components/trade-entry";
+
+export default function Trades() {
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedAccount, setSelectedAccount] = useState<string>("all");
+  const [selectedStatus, setSelectedStatus] = useState<string>("all");
+  const [sortBy, setSortBy] = useState<string>("date");
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
+  const [activeTab, setActiveTab] = useState<string>("view");
+  const [location] = useLocation();
+  const [editingTradeId, setEditingTradeId] = useState<number | null>(null);
+  const [editingLink, setEditingLink] = useState<string>("");
+
+  // Check if we should open the "Add Trade" tab automatically
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('tab') === 'add') {
+      setActiveTab('add');
+    }
+  }, [location]);
+
+  const { data: trades, isLoading: tradesLoading } = useQuery<Trade[]>({
+    queryKey: ['/api/trades'],
+  });
+
+  // Debug trades data when it loads
+  useEffect(() => {
+    if (trades && trades.length > 0) {
+      console.log('🔍 DEBUGGING: Loaded trades from API:');
+      console.log(`Total trades: ${trades.length}`);
+      
+      const tradesWithExitTime = trades.filter(t => t.exitTime).length;
+      const tradesWithoutExitTime = trades.filter(t => !t.exitTime && t.status === 'closed').length;
+      
+      console.log(`Trades WITH exitTime: ${tradesWithExitTime}`);
+      console.log(`Trades WITHOUT exitTime (but closed): ${tradesWithoutExitTime}`);
+      
+      if (tradesWithoutExitTime > 0) {
+        console.log('🚨 PROBLEM: Some closed trades are missing exitTime!');
+      }
+    }
+  }, [trades]);
+
+  const { data: accounts } = useQuery<Account[]>({
+    queryKey: ['/api/accounts'],
+  });
+
+  const queryClient = useQueryClient();
+
+  // Mutation for updating trade TradingView link
+  const updateTradeMutation = useMutation({
+    mutationFn: async ({ id, tradingViewLink }: { id: number; tradingViewLink: string }) => {
+      return await apiRequest(`/api/trades/${id}`, 'PUT', { tradingViewLink });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/trades'] });
+      setEditingTradeId(null);
+      setEditingLink("");
+    },
+    onError: (error) => {
+      console.error('Error updating trade:', error);
+      alert('Failed to update trade link');
+    }
+  });
+
+  const startEditing = (trade: Trade) => {
+    setEditingTradeId(trade.id);
+    setEditingLink(trade.tradingViewLink || "");
+  };
+
+  const saveTradeLink = () => {
+    if (editingTradeId) {
+      updateTradeMutation.mutate({ 
+        id: editingTradeId, 
+        tradingViewLink: editingLink.trim() 
+      });
+    }
+  };
+
+  const cancelEditing = () => {
+    setEditingTradeId(null);
+    setEditingLink("");
+  };
+
+  // Filter and sort trades
+  const filteredTrades = useMemo(() => {
+    if (!trades) return [];
+    
+    let filtered = trades.filter(trade => {
+      const matchesSearch = 
+        trade.symbol.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        trade.orderId?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (trade.notes?.toLowerCase().includes(searchTerm.toLowerCase()) ?? false);
+      
+      const matchesAccount = selectedAccount === "all" || trade.accountId.toString() === selectedAccount;
+      const matchesStatus = selectedStatus === "all" || trade.status === selectedStatus;
+      
+      return matchesSearch && matchesAccount && matchesStatus;
+    });
+
+    // Sort trades
+    filtered.sort((a, b) => {
+      let aValue, bValue;
+      
+      switch (sortBy) {
+        case "date":
+          aValue = new Date(a.date).getTime();
+          bValue = new Date(b.date).getTime();
+          break;
+        case "pnl":
+          aValue = a.pnl;
+          bValue = b.pnl;
+          break;
+        case "symbol":
+          aValue = a.symbol;
+          bValue = b.symbol;
+          break;
+        default:
+          aValue = a.id;
+          bValue = b.id;
+      }
+      
+      if (aValue < bValue) return sortOrder === "asc" ? -1 : 1;
+      if (aValue > bValue) return sortOrder === "asc" ? 1 : -1;
+      return 0;
+    });
+
+    return filtered;
+  }, [trades, searchTerm, selectedAccount, selectedStatus, sortBy, sortOrder]);
+
+  const getAccountName = (accountId: number) => {
+    return accounts?.find(acc => acc.id === accountId)?.name || `Account ${accountId}`;
+  };
+
+  const exportToCSV = () => {
+    if (!filteredTrades.length) return;
+    
+    const headers = [
+      "Date", "Entry Time", "Exit Time", "Duration", "Account", "Symbol", "Side", 
+      "Quantity", "Entry Price", "Exit Price", "P&L", "Status", "Order ID", 
+      "Initial SL Price", "Initial TP Price", "Final SL Price", "Final TP Price", 
+      "Notes", "TradingView Link"
+    ];
+    
+    const csvContent = [
+      headers.join(","),
+      ...filteredTrades.map(trade => [
+        trade.date,
+        formatTimeForCSV(trade.fillTime),
+        formatTimeForCSV(trade.exitTime),
+        calculateDurationForCSV(trade),
+        `"${getAccountName(trade.accountId)}"`,
+        trade.symbol,
+        trade.side,
+        trade.quantity,
+        trade.entryPrice,
+        trade.exitPrice || "",
+        trade.pnl,
+        trade.status,
+        trade.orderId || "",
+        trade.initialStopLoss || "",
+        trade.initialTakeProfit || "",
+        trade.finalStopLoss || "",
+        trade.finalTakeProfit || "",
+        `"${(trade.notes || "").replace(/"/g, '""')}"`,
+        trade.tradingViewLink || ""
+      ].join(","))
+    ].join("\n");
+    
+    const blob = new Blob([csvContent], { type: "text/csv" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `trades-with-timing_${new Date().toISOString().split('T')[0]}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  if (tradesLoading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="text-lg">Loading trades...</div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-dark-bg text-white p-6">
+      <div className="space-y-6">
+        <header className="border-b border-gray-800 bg-dark-bg pb-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-3xl font-bold text-gradient-rainbow">
+                Trades Log
+              </h1>
+              <p className="text-gray-400 mt-2">Universal CSV import supports Position History, Performance, Orders, and Fills formats</p>
+            </div>
+          </div>
+        </header>
+
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+          <TabsList className="grid w-full grid-cols-2 bg-gray-800">
+            <TabsTrigger value="view" className="text-white data-[state=active]:bg-blue-600">
+              View All Trades
+            </TabsTrigger>
+            <TabsTrigger value="add" className="text-white data-[state=active]:bg-green-600">
+              <Plus className="mr-2 h-4 w-4" />
+              Add Trade
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="add" className="space-y-6">
+            {/* Universal CSV Import Section */}
+            <Card className="bg-dark-card border-dark-border">
+              <CardHeader>
+                <CardTitle className="text-white flex items-center">
+                  <FileText className="mr-2 h-5 w-5" />
+                  Universal CSV Import
+                </CardTitle>
+                <p className="text-gray-400">
+                  Automatically detects and imports from Position History, Performance, Orders, or Fills CSV formats. 
+                  Supports all major trading platforms and brokers.
+                </p>
+              </CardHeader>
+              <CardContent>
+                <UniversalCsvImport accounts={accounts || []} />
+              </CardContent>
+            </Card>
+
+            {/* Manual Entry Section */}
+            <Card className="bg-dark-card border-dark-border">
+              <CardHeader>
+                <CardTitle className="text-white flex items-center">
+                  <Edit3 className="mr-2 h-5 w-5" />
+                  Manual Trade Entry
+                </CardTitle>
+                <p className="text-gray-400">Enter trade details manually for precise record keeping</p>
+              </CardHeader>
+              <CardContent>
+                <TradeEntry accounts={accounts || []} />
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="view" className="space-y-6">
+            {/* Debug Card - Shows exit time analysis */}
+            {trades && trades.length > 0 && (
+              <Card className="bg-purple-600/20 border border-purple-600">
+                <CardHeader>
+                  <CardTitle className="text-purple-400 flex items-center">
+                    🔍 Debug: Exit Time Analysis
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                    <div>
+                      <div className="text-gray-400">Total Trades</div>
+                      <div className="text-xl font-bold text-white">{trades.length}</div>
+                    </div>
+                    <div>
+                      <div className="text-gray-400">With Exit Time</div>
+                      <div className="text-xl font-bold text-green-400">
+                        {trades.filter(t => t.exitTime).length}
+                      </div>
+                    </div>
+                    <div>
+                      <div className="text-gray-400">Missing Exit Time</div>
+                      <div className="text-xl font-bold text-red-400">
+                        {trades.filter(t => !t.exitTime && t.status === 'closed').length}
+                      </div>
+                    </div>
+                    <div>
+                      <div className="text-gray-400">Open Trades</div>
+                      <div className="text-xl font-bold text-blue-400">
+                        {trades.filter(t => t.status === 'open').length}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="mt-2 text-xs text-purple-300 bg-purple-900/50 p-2 rounded">
+                    📋 Check browser console (F12) for detailed debugging logs about exitTime handling
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            <div className="flex items-center justify-between">
+              <h2 className="text-xl font-semibold text-white">All Trades</h2>
+              <div className="flex gap-2">
+                {filteredTrades.some(trade => trade.status === 'closed' && trade.exitPrice && !trade.exitTime) && (
+                  <div className="bg-yellow-600/20 border border-yellow-600 rounded px-3 py-1 text-yellow-400 text-sm">
+                    ⚠️ Some trades missing exit timestamps - Use Position History or Performance CSV for complete timing data
+                  </div>
+                )}
+                <Button 
+                  onClick={async () => {
+                    try {
+                      const response = await fetch('/api/trades/reprocess-sltp', { 
+                        method: 'POST',
+                        headers: {
+                          'Content-Type': 'application/json'
+                        },
+                        credentials: 'include'
+                      });
+                      const result = await response.json();
+                      if (result.success) {
+                        alert(`Updated ${result.updatedCount} trades with improved SL/TP analysis`);
+                        window.location.reload();
+                      } else {
+                        alert(`Error: ${result.message || 'Failed to reprocess trades'}`);
+                      }
+                    } catch (error) {
+                      console.error('Reprocessing error:', error);
+                      alert('Failed to reprocess trades');
+                    }
+                  }}
+                  className="bg-green-600 hover:bg-green-700"
+                >
+                  Update SL/TP Analysis
+                </Button>
+                <Button onClick={exportToCSV} className="bg-blue-600 hover:bg-blue-700">
+                  <Download className="mr-2 h-4 w-4" />
+                  Export CSV with Timing
+                </Button>
+              </div>
+            </div>
+
+        {/* Filters */}
+        <Card className="bg-dark-card border-dark-border">
+          <CardHeader>
+            <CardTitle className="text-white flex items-center">
+              <Filter className="mr-2 h-5 w-5" />
+              Filters & Search
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+              <div className="relative">
+                <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                <Input
+                  placeholder="Search symbol, order ID, notes..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-10 bg-gray-700 border-gray-600 text-white"
+                />
+              </div>
+              
+              <Select value={selectedAccount} onValueChange={setSelectedAccount}>
+                <SelectTrigger className="bg-gray-700 border-gray-600 text-white">
+                  <SelectValue placeholder="All Accounts" />
+                </SelectTrigger>
+                <SelectContent className="bg-gray-700 border-gray-600">
+                  <SelectItem value="all" className="text-white">All Accounts</SelectItem>
+                  {accounts?.map(account => (
+                    <SelectItem key={account.id} value={account.id.toString()} className="text-white">
+                      {account.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              
+              <Select value={selectedStatus} onValueChange={setSelectedStatus}>
+                <SelectTrigger className="bg-gray-700 border-gray-600 text-white">
+                  <SelectValue placeholder="All Status" />
+                </SelectTrigger>
+                <SelectContent className="bg-gray-700 border-gray-600">
+                  <SelectItem value="all" className="text-white">All Status</SelectItem>
+                  <SelectItem value="win" className="text-white">Wins</SelectItem>
+                  <SelectItem value="loss" className="text-white">Losses</SelectItem>
+                  <SelectItem value="breakeven" className="text-white">Breakeven</SelectItem>
+                </SelectContent>
+              </Select>
+              
+              <Select value={sortBy} onValueChange={setSortBy}>
+                <SelectTrigger className="bg-gray-700 border-gray-600 text-white">
+                  <SelectValue placeholder="Sort by" />
+                </SelectTrigger>
+                <SelectContent className="bg-gray-700 border-gray-600">
+                  <SelectItem value="date" className="text-white">Date</SelectItem>
+                  <SelectItem value="pnl" className="text-white">P&L</SelectItem>
+                  <SelectItem value="symbol" className="text-white">Symbol</SelectItem>
+                </SelectContent>
+              </Select>
+              
+              <Select value={sortOrder} onValueChange={(value: "asc" | "desc") => setSortOrder(value)}>
+                <SelectTrigger className="bg-gray-700 border-gray-600 text-white">
+                  <SelectValue placeholder="Order" />
+                </SelectTrigger>
+                <SelectContent className="bg-gray-700 border-gray-600">
+                  <SelectItem value="desc" className="text-white">Newest First</SelectItem>
+                  <SelectItem value="asc" className="text-white">Oldest First</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Summary Stats */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <Card className="bg-dark-card border-dark-border">
+            <CardContent className="p-4">
+              <div className="text-2xl font-bold text-white">{filteredTrades.length}</div>
+              <div className="text-sm text-gray-400">Total Trades</div>
+            </CardContent>
+          </Card>
+          <Card className="bg-dark-card border-dark-border">
+            <CardContent className="p-4">
+              <div className="text-2xl font-bold text-green-400">
+                {formatCurrency(filteredTrades.reduce((sum, trade) => sum + Math.max(0, trade.pnl), 0))}
+              </div>
+              <div className="text-sm text-gray-400">Total Wins</div>
+            </CardContent>
+          </Card>
+          <Card className="bg-dark-card border-dark-border">
+            <CardContent className="p-4">
+              <div className="text-2xl font-bold text-red-400">
+                {formatCurrency(Math.abs(filteredTrades.reduce((sum, trade) => sum + Math.min(0, trade.pnl), 0)))}
+              </div>
+              <div className="text-sm text-gray-400">Total Losses</div>
+            </CardContent>
+          </Card>
+          <Card className="bg-dark-card border-dark-border">
+            <CardContent className="p-4">
+              <div className={`text-2xl font-bold ${
+                filteredTrades.reduce((sum, trade) => sum + trade.pnl, 0) >= 0 ? 'text-green-400' : 'text-red-400'
+              }`}>
+                {formatCurrency(filteredTrades.reduce((sum, trade) => sum + trade.pnl, 0))}
+              </div>
+              <div className="text-sm text-gray-400">Net P&L</div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Trades Table */}
+        <Card className="bg-dark-card border-dark-border">
+          <CardHeader>
+            <CardTitle className="text-white">Trade History</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b border-gray-700">
+                    <th className="text-left py-3 px-4 text-gray-400 font-medium">Date</th>
+                    <th className="text-left py-3 px-4 text-gray-400 font-medium">Time</th>
+                    <th className="text-left py-3 px-4 text-gray-400 font-medium">Duration</th>
+                    <th className="text-left py-3 px-4 text-gray-400 font-medium">Account</th>
+                    <th className="text-left py-3 px-4 text-gray-400 font-medium">Symbol</th>
+                    <th className="text-left py-3 px-4 text-gray-400 font-medium">Side</th>
+                    <th className="text-right py-3 px-4 text-gray-400 font-medium">Quantity</th>
+                    <th className="text-right py-3 px-4 text-gray-400 font-medium">Entry</th>
+                    <th className="text-right py-3 px-4 text-gray-400 font-medium">Exit</th>
+                    <th className="text-right py-3 px-4 text-gray-400 font-medium">P&L</th>
+                    <th className="text-center py-3 px-4 text-gray-400 font-medium">Result</th>
+                    <th className="text-right py-3 px-4 text-gray-400 font-medium">Initial SL Price</th>
+                    <th className="text-right py-3 px-4 text-gray-400 font-medium">Initial TP Price</th>
+                    <th className="text-right py-3 px-4 text-gray-400 font-medium">Final SL Price</th>
+                    <th className="text-right py-3 px-4 text-gray-400 font-medium">Final TP Price</th>
+                    <th className="text-center py-3 px-4 text-gray-400 font-medium">Price Chart</th>
+                    <th className="text-center py-3 px-4 text-gray-400 font-medium">Planned Trade Link</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredTrades.map((trade) => (
+                    <tr key={trade.id} className="border-b border-gray-800 hover:bg-gray-800/50">
+                      <td className="py-3 px-4 text-white">{formatDate(trade.date)}</td>
+                      <td className="py-3 px-4 text-gray-300">
+                        <div className="space-y-1">
+                          <div className="text-green-400 text-xs font-medium">Entry:</div>
+                          <div>
+                            {trade.fillTime ? new Date(trade.fillTime).toLocaleTimeString('en-US', { 
+                              hour: '2-digit', 
+                              minute: '2-digit', 
+                              hour12: false 
+                            }) : '-'}
+                          </div>
+                          <div className="text-red-400 text-xs font-medium">Exit:</div>
+                          <div>
+                            {trade.exitTime ? new Date(trade.exitTime).toLocaleTimeString('en-US', { 
+                              hour: '2-digit', 
+                              minute: '2-digit', 
+                              hour12: false 
+                            }) : (trade.status === 'open' ? (
+                              <span className="text-blue-400">Open</span>
+                            ) : (
+                              <span className="text-yellow-400 text-xs">Not recorded</span>
+                            ))}
+                          </div>
+                        </div>
+                      </td>
+                      <td className="py-3 px-4 text-gray-300">
+                        {(() => {
+                          if (!trade.fillTime) return 'No entry time';
+                          const entryTime = new Date(trade.fillTime);
+                          let exitTime;
+                          
+                          if (trade.exitTime) {
+                            exitTime = new Date(trade.exitTime);
+                          } else if (trade.status === 'closed' && trade.exitPrice) {
+                            return (
+                              <span className="text-yellow-400 text-xs">
+                                Exit time not recorded
+                              </span>
+                            );
+                          } else {
+                            return trade.status === 'open' ? (
+                              <span className="text-blue-400">Currently open</span>
+                            ) : 'No timing data';
+                          }
+                          
+                          const durationMs = exitTime.getTime() - entryTime.getTime();
+                          const durationMinutes = Math.max(1, Math.floor(durationMs / (1000 * 60)));
+                          
+                          if (durationMinutes < 60) {
+                            return `${durationMinutes}m`;
+                          } else if (durationMinutes < 1440) {
+                            const hours = Math.floor(durationMinutes / 60);
+                            const mins = durationMinutes % 60;
+                            return mins > 0 ? `${hours}h ${mins}m` : `${hours}h`;
+                          } else {
+                            const days = Math.floor(durationMinutes / 1440);
+                            const hours = Math.floor((durationMinutes % 1440) / 60);
+                            return hours > 0 ? `${days}d ${hours}h` : `${days}d`;
+                          }
+                        })()}
+                      </td>
+                      <td className="py-3 px-4 text-gray-300">{getAccountName(trade.accountId)}</td>
+                      <td className="py-3 px-4 text-white font-medium">{trade.symbol}</td>
+                      <td className="py-3 px-4">
+                        <Badge 
+                          variant={trade.side === 'buy' ? 'default' : 'secondary'}
+                          className={trade.side === 'buy' ? 'bg-green-600 text-white' : 'bg-red-600 text-white'}
+                        >
+                          {trade.side.toUpperCase()}
+                        </Badge>
+                      </td>
+                      <td className="py-3 px-4 text-right text-white">{trade.quantity}</td>
+                      <td className="py-3 px-4 text-right text-white">{formatPrice(trade.entryPrice)}</td>
+                      <td className="py-3 px-4 text-right text-white">
+                        {trade.exitPrice ? formatPrice(trade.exitPrice) : '-'}
+                      </td>
+                      <td className={`py-3 px-4 text-right font-medium ${
+                        trade.pnl > 0 ? 'text-green-400' : trade.pnl < 0 ? 'text-red-400' : 'text-gray-400'
+                      }`}>
+                        {trade.pnl >= 0 ? '+' : ''}{formatCurrency(trade.pnl)}
+                      </td>
+                      <td className="py-3 px-4 text-center">
+                        <Badge 
+                          variant={trade.pnl > 0 ? 'default' : trade.pnl < 0 ? 'destructive' : 'secondary'}
+                          className={
+                            trade.pnl > 0 ? 'bg-green-600 text-white' :
+                            trade.pnl < 0 ? 'bg-red-600 text-white' :
+                            'bg-gray-600 text-white'
+                          }
+                        >
+                          {trade.pnl > 0 ? 'WIN' : trade.pnl < 0 ? 'LOSS' : 'BREAKEVEN'}
+                        </Badge>
+                      </td>
+                      <td className="py-3 px-4 text-right text-gray-300">
+                        {trade.initialStopLoss ? formatPrice(trade.initialStopLoss) : 'Not placed'}
+                      </td>
+                      <td className="py-3 px-4 text-right text-gray-300">
+                        {trade.initialTakeProfit ? formatPrice(trade.initialTakeProfit) : 'Not placed'}
+                      </td>
+                      <td className="py-3 px-4 text-right text-gray-300">
+                        {trade.finalStopLoss ? formatPrice(trade.finalStopLoss) : 'Not placed'}
+                      </td>
+                      <td className="py-3 px-4 text-right text-gray-300">
+                        {trade.finalTakeProfit ? formatPrice(trade.finalTakeProfit) : 'Not placed'}
+                      </td>
+                      <td className="py-3 px-4 text-center">
+                        <div className="flex flex-col gap-1">
+                          {trade.tradeImage && (
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => trade.tradeImage && window.open(trade.tradeImage, '_blank')}
+                              className="text-purple-400 border-purple-400 hover:bg-purple-400/20"
+                            >
+                              🖼️ Trade Image
+                            </Button>
+                          )}
+                          {trade.tradingViewLink && (
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => trade.tradingViewLink && window.open(trade.tradingViewLink, '_blank')}
+                              className="text-blue-400 border-blue-400 hover:bg-blue-400/20"
+                            >
+                              📈 TradingView
+                            </Button>
+                          )}
+                          {!trade.tradeImage && !trade.tradingViewLink && (
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => window.open(`https://www.tradingview.com/chart/?symbol=${trade.symbol}`, '_blank')}
+                              className="text-blue-400 border-blue-400 hover:bg-blue-400/20"
+                            >
+                              📈 View Chart
+                            </Button>
+                          )}
+                        </div>
+                      </td>
+                      <td className="py-3 px-4 text-center">
+                        {editingTradeId === trade.id ? (
+                          <div className="flex flex-col gap-2">
+                            <Input
+                              value={editingLink}
+                              onChange={(e) => setEditingLink(e.target.value)}
+                              placeholder="Enter TradingView link..."
+                              className="text-xs h-8"
+                            />
+                            <div className="flex gap-1">
+                              <Button
+                                size="sm"
+                                onClick={saveTradeLink}
+                                disabled={updateTradeMutation.isPending}
+                                className="bg-green-600 hover:bg-green-700 h-6 px-2"
+                              >
+                                <Save className="h-3 w-3" />
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={cancelEditing}
+                                className="h-6 px-2"
+                              >
+                                <X className="h-3 w-3" />
+                              </Button>
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="flex flex-col gap-1">
+                            {trade.tradingViewLink && (
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => window.open(trade.tradingViewLink || '', '_blank')}
+                                className="text-blue-400 border-blue-400 hover:bg-blue-400/20 h-6 text-xs"
+                              >
+                                📈 View Plan
+                              </Button>
+                            )}
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => startEditing(trade)}
+                              className="text-yellow-400 border-yellow-400 hover:bg-yellow-400/20 h-6 text-xs"
+                            >
+                              <Edit3 className="h-3 w-3 mr-1" />
+                              {trade.tradingViewLink ? 'Edit' : 'Add'} Link
+                            </Button>
+                          </div>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+              
+              {filteredTrades.length === 0 && (
+                <div className="text-center py-8 text-gray-400">
+                  No trades found matching your filters.
+                </div>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+          </TabsContent>
+        </Tabs>
+      </div>
+    </div>
+  );
+}

@@ -1,0 +1,29 @@
+FROM node:18-alpine
+
+WORKDIR /app
+
+# Copy package files
+COPY package*.json ./
+
+# Install all dependencies (including dev deps for build)
+RUN npm ci --prefer-offline --no-audit
+
+# Copy source code
+COPY . .
+
+# Build the application
+RUN npm run build
+RUN npx esbuild server/production.cjs --bundle --platform=node --format=cjs --outfile=dist/server.cjs --external:@neondatabase/serverless --external:drizzle-orm --external:pg --external:pg-pool --external:express --external:compression --external:express-rate-limit --external:express-session --external:connect-pg-simple
+
+# Remove dev dependencies to reduce image size
+RUN npm prune --production
+
+# Expose port
+EXPOSE 5000
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+  CMD node -e "require('http').get('http://localhost:5000/health', (res) => { process.exit(res.statusCode === 200 ? 0 : 1) })"
+
+# Start the application
+CMD ["node", "dist/server.cjs"]

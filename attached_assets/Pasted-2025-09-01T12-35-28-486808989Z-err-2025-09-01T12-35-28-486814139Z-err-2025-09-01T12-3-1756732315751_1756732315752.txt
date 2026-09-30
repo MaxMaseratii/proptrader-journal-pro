@@ -1,0 +1,1001 @@
+2025-09-01T12:35:28.486808989Z [err]        ^
+2025-09-01T12:35:28.486814139Z [err]  
+2025-09-01T12:35:28.486818532Z [err]  Error: DATABASE_URL must be set. Did you forget to provision a database?
+2025-09-01T12:35:28.486822269Z [err]      at server/db.ts (/app/dist/server.cjs:8964:13)
+2025-09-01T12:35:28.486826069Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:35:28.486830191Z [err]      at server/storage.ts (/app/dist/server.cjs:8991:5)
+2025-09-01T12:35:28.486834380Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:35:28.486838148Z [err]      at server/routes.ts (/app/dist/server.cjs:67977:5)
+2025-09-01T12:35:28.486843688Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:35:28.486848952Z [err]      at Object.<anonymous> (/app/dist/server.cjs:68347:44)
+2025-09-01T12:35:28.486853377Z [err]      at Module._compile (node:internal/modules/cjs/loader:1364:14)
+2025-09-01T12:35:28.486857562Z [err]      at Module._extensions..js (node:internal/modules/cjs/loader:1422:10)
+2025-09-01T12:35:28.486861268Z [err]      at Module.load (node:internal/modules/cjs/loader:1203:32)
+2025-09-01T12:35:28.486864963Z [err]  
+2025-09-01T12:35:28.486868874Z [err]  Node.js v18.20.5
+2025-09-01T12:35:29.700168874Z [err]  /app/dist/server.cjs:8964
+2025-09-01T12:35:29.700174926Z [err]        throw new Error(
+2025-09-01T12:35:29.700180887Z [err]        ^
+2025-09-01T12:35:29.700187289Z [err]  
+2025-09-01T12:35:29.700195251Z [err]  Error: DATABASE_URL must be set. Did you forget to provision a database?
+2025-09-01T12:35:29.700229930Z [err]      at server/db.ts (/app/dist/server.cjs:8964:13)
+2025-09-01T12:35:29.700236489Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:35:29.700243065Z [err]      at server/storage.ts (/app/dist/server.cjs:8991:5)
+2025-09-01T12:35:29.700249048Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:35:29.700255082Z [err]      at server/routes.ts (/app/dist/server.cjs:67977:5)
+2025-09-01T12:35:29.700261121Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:35:29.700266819Z [err]      at Object.<anonymous> (/app/dist/server.cjs:68347:44)
+2025-09-01T12:35:29.700272786Z [err]      at Module._compile (node:internal/modules/cjs/loader:1364:14)
+2025-09-01T12:35:29.700278529Z [err]      at Module._extensions..js (node:internal/modules/cjs/loader:1422:10)
+2025-09-01T12:35:29.700285780Z [err]      at Module.load (node:internal/modules/cjs/loader:1203:32)
+2025-09-01T12:35:29.700292105Z [err]  
+2025-09-01T12:35:29.700298456Z [err]  Node.js v18.20.5
+2025-09-01T12:35:30.998387431Z [err]  /app/dist/server.cjs:8964
+2025-09-01T12:35:30.998399296Z [err]        throw new Error(
+2025-09-01T12:35:30.998404493Z [err]        ^
+2025-09-01T12:35:30.998409074Z [err]  
+2025-09-01T12:35:30.998413900Z [err]  Error: DATABASE_URL must be set. Did you forget to provision a database?
+2025-09-01T12:35:30.998418631Z [err]      at server/db.ts (/app/dist/server.cjs:8964:13)
+2025-09-01T12:35:30.998423723Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:35:30.998428080Z [err]      at server/storage.ts (/app/dist/server.cjs:8991:5)
+2025-09-01T12:35:30.998434057Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:35:30.998438545Z [err]      at server/routes.ts (/app/dist/server.cjs:67977:5)
+2025-09-01T12:35:30.998443137Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:35:30.998447429Z [err]      at Object.<anonymous> (/app/dist/server.cjs:68347:44)
+2025-09-01T12:35:30.998451336Z [err]      at Module._compile (node:internal/modules/cjs/loader:1364:14)
+2025-09-01T12:35:30.998455666Z [err]      at Module._extensions..js (node:internal/modules/cjs/loader:1422:10)
+2025-09-01T12:35:30.998459801Z [err]      at Module.load (node:internal/modules/cjs/loader:1203:32)
+2025-09-01T12:35:30.998463582Z [err]  
+2025-09-01T12:35:30.998468180Z [err]  Node.js v18.20.5
+2025-09-01T12:35:31.976495779Z [err]  /app/dist/server.cjs:8964
+2025-09-01T12:35:31.976502866Z [err]        throw new Error(
+2025-09-01T12:35:31.976507727Z [err]        ^
+2025-09-01T12:35:31.976512327Z [err]  
+2025-09-01T12:35:31.976516732Z [err]  Error: DATABASE_URL must be set. Did you forget to provision a database?
+2025-09-01T12:35:31.976521222Z [err]      at server/db.ts (/app/dist/server.cjs:8964:13)
+2025-09-01T12:35:31.976526012Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:35:31.976530418Z [err]      at server/storage.ts (/app/dist/server.cjs:8991:5)
+2025-09-01T12:35:31.976534660Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:35:31.976538841Z [err]      at server/routes.ts (/app/dist/server.cjs:67977:5)
+2025-09-01T12:35:31.976543157Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:35:31.976548824Z [err]      at Object.<anonymous> (/app/dist/server.cjs:68347:44)
+2025-09-01T12:35:31.976552988Z [err]      at Module._compile (node:internal/modules/cjs/loader:1364:14)
+2025-09-01T12:35:31.976557328Z [err]      at Module._extensions..js (node:internal/modules/cjs/loader:1422:10)
+2025-09-01T12:35:31.976563156Z [err]      at Module.load (node:internal/modules/cjs/loader:1203:32)
+2025-09-01T12:35:31.976569141Z [err]  
+2025-09-01T12:35:31.976575088Z [err]  Node.js v18.20.5
+2025-09-01T12:35:33.102548862Z [err]  /app/dist/server.cjs:8964
+2025-09-01T12:35:33.102555539Z [err]        throw new Error(
+2025-09-01T12:35:33.102560161Z [err]        ^
+2025-09-01T12:35:33.102564788Z [err]  
+2025-09-01T12:35:33.102569447Z [err]  Error: DATABASE_URL must be set. Did you forget to provision a database?
+2025-09-01T12:35:33.102573518Z [err]      at server/db.ts (/app/dist/server.cjs:8964:13)
+2025-09-01T12:35:33.102578841Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:35:33.102584934Z [err]      at server/storage.ts (/app/dist/server.cjs:8991:5)
+2025-09-01T12:35:33.102590833Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:35:33.102597177Z [err]      at server/routes.ts (/app/dist/server.cjs:67977:5)
+2025-09-01T12:35:33.102603953Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:35:33.102609679Z [err]      at Object.<anonymous> (/app/dist/server.cjs:68347:44)
+2025-09-01T12:35:33.102615534Z [err]      at Module._compile (node:internal/modules/cjs/loader:1364:14)
+2025-09-01T12:35:33.102621351Z [err]      at Module._extensions..js (node:internal/modules/cjs/loader:1422:10)
+2025-09-01T12:35:33.102625323Z [err]      at Module.load (node:internal/modules/cjs/loader:1203:32)
+2025-09-01T12:35:33.102629534Z [err]  
+2025-09-01T12:35:33.102633710Z [err]  Node.js v18.20.5
+2025-09-01T12:35:34.067720843Z [err]  /app/dist/server.cjs:8964
+2025-09-01T12:35:34.067725730Z [err]        throw new Error(
+2025-09-01T12:35:34.067729842Z [err]        ^
+2025-09-01T12:35:34.067735182Z [err]  
+2025-09-01T12:35:34.067740012Z [err]  Error: DATABASE_URL must be set. Did you forget to provision a database?
+2025-09-01T12:35:34.067744188Z [err]      at server/db.ts (/app/dist/server.cjs:8964:13)
+2025-09-01T12:35:34.067748611Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:35:34.067754834Z [err]      at server/storage.ts (/app/dist/server.cjs:8991:5)
+2025-09-01T12:35:34.067759192Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:35:34.067763545Z [err]      at server/routes.ts (/app/dist/server.cjs:67977:5)
+2025-09-01T12:35:34.067768321Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:35:34.067773031Z [err]      at Object.<anonymous> (/app/dist/server.cjs:68347:44)
+2025-09-01T12:35:34.067777164Z [err]      at Module._compile (node:internal/modules/cjs/loader:1364:14)
+2025-09-01T12:35:34.067781316Z [err]      at Module._extensions..js (node:internal/modules/cjs/loader:1422:10)
+2025-09-01T12:35:34.067785547Z [err]      at Module.load (node:internal/modules/cjs/loader:1203:32)
+2025-09-01T12:35:34.067789808Z [err]  
+2025-09-01T12:35:34.067795972Z [err]  Node.js v18.20.5
+2025-09-01T12:35:35.169332788Z [err]  /app/dist/server.cjs:8964
+2025-09-01T12:35:35.169338070Z [err]        throw new Error(
+2025-09-01T12:35:35.169344136Z [err]        ^
+2025-09-01T12:35:35.169350185Z [err]  
+2025-09-01T12:35:35.169356719Z [err]  Error: DATABASE_URL must be set. Did you forget to provision a database?
+2025-09-01T12:35:35.169362227Z [err]      at server/db.ts (/app/dist/server.cjs:8964:13)
+2025-09-01T12:35:35.169367996Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:35:35.169373604Z [err]      at server/storage.ts (/app/dist/server.cjs:8991:5)
+2025-09-01T12:35:35.169379400Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:35:35.169383911Z [err]      at server/routes.ts (/app/dist/server.cjs:67977:5)
+2025-09-01T12:35:35.169387819Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:35:35.169392022Z [err]      at Object.<anonymous> (/app/dist/server.cjs:68347:44)
+2025-09-01T12:35:35.169395869Z [err]      at Module._compile (node:internal/modules/cjs/loader:1364:14)
+2025-09-01T12:35:35.169400196Z [err]      at Module._extensions..js (node:internal/modules/cjs/loader:1422:10)
+2025-09-01T12:35:35.169405058Z [err]      at Module.load (node:internal/modules/cjs/loader:1203:32)
+2025-09-01T12:35:35.169409005Z [err]  
+2025-09-01T12:35:35.169413034Z [err]  Node.js v18.20.5
+2025-09-01T12:35:36.492170206Z [err]  /app/dist/server.cjs:8964
+2025-09-01T12:35:36.492175408Z [err]        throw new Error(
+2025-09-01T12:35:36.492185874Z [err]        ^
+2025-09-01T12:35:36.492191438Z [err]  
+2025-09-01T12:35:36.492196983Z [err]  Error: DATABASE_URL must be set. Did you forget to provision a database?
+2025-09-01T12:35:36.492250789Z [err]      at server/db.ts (/app/dist/server.cjs:8964:13)
+2025-09-01T12:35:36.492257081Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:35:36.492263848Z [err]      at server/storage.ts (/app/dist/server.cjs:8991:5)
+2025-09-01T12:35:36.492268217Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:35:36.492272750Z [err]      at server/routes.ts (/app/dist/server.cjs:67977:5)
+2025-09-01T12:35:36.492276983Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:35:36.492281181Z [err]      at Object.<anonymous> (/app/dist/server.cjs:68347:44)
+2025-09-01T12:35:36.492285317Z [err]      at Module._compile (node:internal/modules/cjs/loader:1364:14)
+2025-09-01T12:35:36.492289356Z [err]      at Module._extensions..js (node:internal/modules/cjs/loader:1422:10)
+2025-09-01T12:35:36.492293874Z [err]      at Module.load (node:internal/modules/cjs/loader:1203:32)
+2025-09-01T12:35:36.492298084Z [err]  
+2025-09-01T12:35:36.492302946Z [err]  Node.js v18.20.5
+2025-09-01T12:35:37.579044794Z [err]  /app/dist/server.cjs:8964
+2025-09-01T12:35:37.579049161Z [err]        throw new Error(
+2025-09-01T12:35:37.579053840Z [err]        ^
+2025-09-01T12:35:37.579058002Z [err]  
+2025-09-01T12:35:37.579062189Z [err]  Error: DATABASE_URL must be set. Did you forget to provision a database?
+2025-09-01T12:35:37.579066669Z [err]      at server/db.ts (/app/dist/server.cjs:8964:13)
+2025-09-01T12:35:37.579071083Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:35:37.579075298Z [err]      at server/storage.ts (/app/dist/server.cjs:8991:5)
+2025-09-01T12:35:37.579079553Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:35:37.579083839Z [err]      at server/routes.ts (/app/dist/server.cjs:67977:5)
+2025-09-01T12:35:37.579088938Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:35:37.579093074Z [err]      at Object.<anonymous> (/app/dist/server.cjs:68347:44)
+2025-09-01T12:35:37.579098113Z [err]      at Module._compile (node:internal/modules/cjs/loader:1364:14)
+2025-09-01T12:35:37.579102573Z [err]      at Module._extensions..js (node:internal/modules/cjs/loader:1422:10)
+2025-09-01T12:35:37.579106721Z [err]      at Module.load (node:internal/modules/cjs/loader:1203:32)
+2025-09-01T12:35:37.579110968Z [err]  
+2025-09-01T12:35:37.579115456Z [err]  Node.js v18.20.5
+2025-09-01T12:35:38.625674997Z [err]  /app/dist/server.cjs:8964
+2025-09-01T12:35:38.625681966Z [err]        throw new Error(
+2025-09-01T12:35:38.625686556Z [err]        ^
+2025-09-01T12:35:38.625690708Z [err]  
+2025-09-01T12:35:38.625695398Z [err]  Error: DATABASE_URL must be set. Did you forget to provision a database?
+2025-09-01T12:35:38.625700474Z [err]      at server/db.ts (/app/dist/server.cjs:8964:13)
+2025-09-01T12:35:38.625707729Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:35:38.625711761Z [err]      at server/storage.ts (/app/dist/server.cjs:8991:5)
+2025-09-01T12:35:38.625716146Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:35:38.625720052Z [err]      at server/routes.ts (/app/dist/server.cjs:67977:5)
+2025-09-01T12:35:38.625724153Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:35:38.625728469Z [err]      at Object.<anonymous> (/app/dist/server.cjs:68347:44)
+2025-09-01T12:35:38.625732777Z [err]      at Module._compile (node:internal/modules/cjs/loader:1364:14)
+2025-09-01T12:35:38.625738098Z [err]      at Module._extensions..js (node:internal/modules/cjs/loader:1422:10)
+2025-09-01T12:35:38.625743050Z [err]      at Module.load (node:internal/modules/cjs/loader:1203:32)
+2025-09-01T12:35:38.625747066Z [err]  
+2025-09-01T12:35:38.625751499Z [err]  Node.js v18.20.5
+2025-09-01T12:35:39.698000862Z [err]  /app/dist/server.cjs:8964
+2025-09-01T12:35:39.698004846Z [err]        throw new Error(
+2025-09-01T12:35:39.698008990Z [err]        ^
+2025-09-01T12:35:39.698013198Z [err]  
+2025-09-01T12:35:39.698017086Z [err]  Error: DATABASE_URL must be set. Did you forget to provision a database?
+2025-09-01T12:35:39.698020727Z [err]      at server/db.ts (/app/dist/server.cjs:8964:13)
+2025-09-01T12:35:39.698024502Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:35:39.698030493Z [err]      at server/storage.ts (/app/dist/server.cjs:8991:5)
+2025-09-01T12:35:39.698034462Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:35:39.698038965Z [err]      at server/routes.ts (/app/dist/server.cjs:67977:5)
+2025-09-01T12:35:39.698042576Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:35:39.698046256Z [err]      at Object.<anonymous> (/app/dist/server.cjs:68347:44)
+2025-09-01T12:35:39.698050151Z [err]      at Module._compile (node:internal/modules/cjs/loader:1364:14)
+2025-09-01T12:35:39.698053941Z [err]      at Module._extensions..js (node:internal/modules/cjs/loader:1422:10)
+2025-09-01T12:35:39.698057621Z [err]      at Module.load (node:internal/modules/cjs/loader:1203:32)
+2025-09-01T12:35:39.698061393Z [err]  
+2025-09-01T12:35:39.698068580Z [err]  Node.js v18.20.5
+2025-09-01T12:35:40.745694395Z [err]  /app/dist/server.cjs:8964
+2025-09-01T12:35:40.745705363Z [err]        throw new Error(
+2025-09-01T12:35:40.745713203Z [err]        ^
+2025-09-01T12:35:40.745719606Z [err]  
+2025-09-01T12:35:40.745728457Z [err]  Error: DATABASE_URL must be set. Did you forget to provision a database?
+2025-09-01T12:35:40.745736030Z [err]      at server/db.ts (/app/dist/server.cjs:8964:13)
+2025-09-01T12:35:40.745743814Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:35:40.745751572Z [err]      at server/storage.ts (/app/dist/server.cjs:8991:5)
+2025-09-01T12:35:40.745759024Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:35:40.745766662Z [err]      at server/routes.ts (/app/dist/server.cjs:67977:5)
+2025-09-01T12:35:40.745774204Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:35:40.745782806Z [err]      at Object.<anonymous> (/app/dist/server.cjs:68347:44)
+2025-09-01T12:35:40.745790560Z [err]      at Module._compile (node:internal/modules/cjs/loader:1364:14)
+2025-09-01T12:35:40.745797951Z [err]      at Module._extensions..js (node:internal/modules/cjs/loader:1422:10)
+2025-09-01T12:35:40.745806027Z [err]      at Module.load (node:internal/modules/cjs/loader:1203:32)
+2025-09-01T12:35:40.745813171Z [err]  
+2025-09-01T12:35:40.745820539Z [err]  Node.js v18.20.5
+2025-09-01T12:35:41.770470421Z [err]  /app/dist/server.cjs:8964
+2025-09-01T12:35:41.770481297Z [err]        throw new Error(
+2025-09-01T12:35:41.770487137Z [err]        ^
+2025-09-01T12:35:41.770493709Z [err]  
+2025-09-01T12:35:41.770503350Z [err]  Error: DATABASE_URL must be set. Did you forget to provision a database?
+2025-09-01T12:35:41.770509693Z [err]      at server/db.ts (/app/dist/server.cjs:8964:13)
+2025-09-01T12:35:41.770517114Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:35:41.770521644Z [err]      at server/storage.ts (/app/dist/server.cjs:8991:5)
+2025-09-01T12:35:41.770525394Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:35:41.770529468Z [err]      at server/routes.ts (/app/dist/server.cjs:67977:5)
+2025-09-01T12:35:41.770533359Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:35:41.770537318Z [err]      at Object.<anonymous> (/app/dist/server.cjs:68347:44)
+2025-09-01T12:35:41.770541012Z [err]      at Module._compile (node:internal/modules/cjs/loader:1364:14)
+2025-09-01T12:35:41.770544889Z [err]      at Module._extensions..js (node:internal/modules/cjs/loader:1422:10)
+2025-09-01T12:35:41.770548549Z [err]      at Module.load (node:internal/modules/cjs/loader:1203:32)
+2025-09-01T12:35:41.770552445Z [err]  
+2025-09-01T12:35:41.770557149Z [err]  Node.js v18.20.5
+2025-09-01T12:35:42.818067484Z [err]  /app/dist/server.cjs:8964
+2025-09-01T12:35:42.818071555Z [err]        throw new Error(
+2025-09-01T12:35:42.818076624Z [err]        ^
+2025-09-01T12:35:42.818081179Z [err]  
+2025-09-01T12:35:42.818085146Z [err]  Error: DATABASE_URL must be set. Did you forget to provision a database?
+2025-09-01T12:35:42.818089186Z [err]      at server/db.ts (/app/dist/server.cjs:8964:13)
+2025-09-01T12:35:42.818093035Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:35:42.818096941Z [err]      at server/storage.ts (/app/dist/server.cjs:8991:5)
+2025-09-01T12:35:42.818101719Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:35:42.818105525Z [err]      at server/routes.ts (/app/dist/server.cjs:67977:5)
+2025-09-01T12:35:42.818109167Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:35:42.818112827Z [err]      at Object.<anonymous> (/app/dist/server.cjs:68347:44)
+2025-09-01T12:35:42.818116622Z [err]      at Module._compile (node:internal/modules/cjs/loader:1364:14)
+2025-09-01T12:35:42.818120729Z [err]      at Module._extensions..js (node:internal/modules/cjs/loader:1422:10)
+2025-09-01T12:35:42.818124576Z [err]      at Module.load (node:internal/modules/cjs/loader:1203:32)
+2025-09-01T12:35:42.818129739Z [err]  
+2025-09-01T12:35:42.818133918Z [err]  Node.js v18.20.5
+2025-09-01T12:35:44.111397006Z [err]  /app/dist/server.cjs:8964
+2025-09-01T12:35:44.111403809Z [err]        throw new Error(
+2025-09-01T12:35:44.111408432Z [err]        ^
+2025-09-01T12:35:44.111412928Z [err]  
+2025-09-01T12:35:44.111416983Z [err]  Error: DATABASE_URL must be set. Did you forget to provision a database?
+2025-09-01T12:35:44.111421579Z [err]      at server/db.ts (/app/dist/server.cjs:8964:13)
+2025-09-01T12:35:44.111425794Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:35:44.111430137Z [err]      at server/storage.ts (/app/dist/server.cjs:8991:5)
+2025-09-01T12:35:44.111433796Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:35:44.111437965Z [err]      at server/routes.ts (/app/dist/server.cjs:67977:5)
+2025-09-01T12:35:44.111441678Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:35:44.111445639Z [err]      at Object.<anonymous> (/app/dist/server.cjs:68347:44)
+2025-09-01T12:35:44.111449705Z [err]      at Module._compile (node:internal/modules/cjs/loader:1364:14)
+2025-09-01T12:35:44.111456044Z [err]      at Module._extensions..js (node:internal/modules/cjs/loader:1422:10)
+2025-09-01T12:35:44.111460289Z [err]      at Module.load (node:internal/modules/cjs/loader:1203:32)
+2025-09-01T12:35:44.111464761Z [err]  
+2025-09-01T12:35:44.111468850Z [err]  Node.js v18.20.5
+2025-09-01T12:35:45.208676340Z [err]  /app/dist/server.cjs:8964
+2025-09-01T12:35:45.208680389Z [err]        throw new Error(
+2025-09-01T12:35:45.208684239Z [err]        ^
+2025-09-01T12:35:45.208691086Z [err]  
+2025-09-01T12:35:45.208695848Z [err]  Error: DATABASE_URL must be set. Did you forget to provision a database?
+2025-09-01T12:35:45.208699646Z [err]      at server/db.ts (/app/dist/server.cjs:8964:13)
+2025-09-01T12:35:45.208703604Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:35:45.208708307Z [err]      at server/storage.ts (/app/dist/server.cjs:8991:5)
+2025-09-01T12:35:45.208713267Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:35:45.208717288Z [err]      at server/routes.ts (/app/dist/server.cjs:67977:5)
+2025-09-01T12:35:45.208721456Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:35:45.208725834Z [err]      at Object.<anonymous> (/app/dist/server.cjs:68347:44)
+2025-09-01T12:35:45.208730794Z [err]      at Module._compile (node:internal/modules/cjs/loader:1364:14)
+2025-09-01T12:35:45.208734471Z [err]      at Module._extensions..js (node:internal/modules/cjs/loader:1422:10)
+2025-09-01T12:35:45.208738423Z [err]      at Module.load (node:internal/modules/cjs/loader:1203:32)
+2025-09-01T12:35:45.208742690Z [err]  
+2025-09-01T12:35:45.208746392Z [err]  Node.js v18.20.5
+2025-09-01T12:35:46.399771728Z [err]  /app/dist/server.cjs:8964
+2025-09-01T12:35:46.399782057Z [err]        throw new Error(
+2025-09-01T12:35:46.399788198Z [err]        ^
+2025-09-01T12:35:46.399796191Z [err]  
+2025-09-01T12:35:46.399803386Z [err]  Error: DATABASE_URL must be set. Did you forget to provision a database?
+2025-09-01T12:35:46.399808770Z [err]      at server/db.ts (/app/dist/server.cjs:8964:13)
+2025-09-01T12:35:46.399813688Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:35:46.399819423Z [err]      at server/storage.ts (/app/dist/server.cjs:8991:5)
+2025-09-01T12:35:46.399825407Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:35:46.399831038Z [err]      at server/routes.ts (/app/dist/server.cjs:67977:5)
+2025-09-01T12:35:46.399836445Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:35:46.399847273Z [err]      at Object.<anonymous> (/app/dist/server.cjs:68347:44)
+2025-09-01T12:35:46.399853001Z [err]      at Module._compile (node:internal/modules/cjs/loader:1364:14)
+2025-09-01T12:35:46.399858327Z [err]      at Module._extensions..js (node:internal/modules/cjs/loader:1422:10)
+2025-09-01T12:35:46.399863927Z [err]      at Module.load (node:internal/modules/cjs/loader:1203:32)
+2025-09-01T12:35:46.399870212Z [err]  
+2025-09-01T12:35:46.399876292Z [err]  Node.js v18.20.5
+2025-09-01T12:35:47.510501974Z [err]  /app/dist/server.cjs:8964
+2025-09-01T12:35:47.510509441Z [err]        throw new Error(
+2025-09-01T12:35:47.510514062Z [err]        ^
+2025-09-01T12:35:47.510519108Z [err]  
+2025-09-01T12:35:47.510523508Z [err]  Error: DATABASE_URL must be set. Did you forget to provision a database?
+2025-09-01T12:35:47.510527928Z [err]      at server/db.ts (/app/dist/server.cjs:8964:13)
+2025-09-01T12:35:47.510533866Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:35:47.510539558Z [err]      at server/storage.ts (/app/dist/server.cjs:8991:5)
+2025-09-01T12:35:47.510543906Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:35:47.510548119Z [err]      at server/routes.ts (/app/dist/server.cjs:67977:5)
+2025-09-01T12:35:47.510552266Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:35:47.510556889Z [err]      at Object.<anonymous> (/app/dist/server.cjs:68347:44)
+2025-09-01T12:35:47.510561174Z [err]      at Module._compile (node:internal/modules/cjs/loader:1364:14)
+2025-09-01T12:35:47.510566361Z [err]      at Module._extensions..js (node:internal/modules/cjs/loader:1422:10)
+2025-09-01T12:35:47.510570644Z [err]      at Module.load (node:internal/modules/cjs/loader:1203:32)
+2025-09-01T12:35:47.510574652Z [err]  
+2025-09-01T12:35:47.510578885Z [err]  Node.js v18.20.5
+2025-09-01T12:35:48.644768542Z [err]  /app/dist/server.cjs:8964
+2025-09-01T12:35:48.644778464Z [err]        throw new Error(
+2025-09-01T12:35:48.644783671Z [err]        ^
+2025-09-01T12:35:48.644789869Z [err]  
+2025-09-01T12:35:48.644795195Z [err]  Error: DATABASE_URL must be set. Did you forget to provision a database?
+2025-09-01T12:35:48.644801192Z [err]      at server/db.ts (/app/dist/server.cjs:8964:13)
+2025-09-01T12:35:48.644808379Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:35:48.644813997Z [err]      at server/storage.ts (/app/dist/server.cjs:8991:5)
+2025-09-01T12:35:48.644818908Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:35:48.644825397Z [err]      at server/routes.ts (/app/dist/server.cjs:67977:5)
+2025-09-01T12:35:48.644832302Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:35:48.644837951Z [err]      at Object.<anonymous> (/app/dist/server.cjs:68347:44)
+2025-09-01T12:35:48.644851055Z [err]      at Module._compile (node:internal/modules/cjs/loader:1364:14)
+2025-09-01T12:35:48.644863757Z [err]      at Module._extensions..js (node:internal/modules/cjs/loader:1422:10)
+2025-09-01T12:35:48.644870612Z [err]      at Module.load (node:internal/modules/cjs/loader:1203:32)
+2025-09-01T12:35:48.644877033Z [err]  
+2025-09-01T12:35:48.644882917Z [err]  Node.js v18.20.5
+2025-09-01T12:35:49.679865566Z [err]  /app/dist/server.cjs:8964
+2025-09-01T12:35:49.679870353Z [err]        throw new Error(
+2025-09-01T12:35:49.679875176Z [err]        ^
+2025-09-01T12:35:49.679879111Z [err]  
+2025-09-01T12:35:49.679884170Z [err]  Error: DATABASE_URL must be set. Did you forget to provision a database?
+2025-09-01T12:35:49.679888063Z [err]      at server/db.ts (/app/dist/server.cjs:8964:13)
+2025-09-01T12:35:49.679892057Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:35:49.679895906Z [err]      at server/storage.ts (/app/dist/server.cjs:8991:5)
+2025-09-01T12:35:49.679899775Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:35:49.679904036Z [err]      at server/routes.ts (/app/dist/server.cjs:67977:5)
+2025-09-01T12:35:49.679908227Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:35:49.679912415Z [err]      at Object.<anonymous> (/app/dist/server.cjs:68347:44)
+2025-09-01T12:35:49.679916326Z [err]      at Module._compile (node:internal/modules/cjs/loader:1364:14)
+2025-09-01T12:35:49.679920279Z [err]      at Module._extensions..js (node:internal/modules/cjs/loader:1422:10)
+2025-09-01T12:35:49.679924164Z [err]      at Module.load (node:internal/modules/cjs/loader:1203:32)
+2025-09-01T12:35:49.679928055Z [err]  
+2025-09-01T12:35:49.679932241Z [err]  Node.js v18.20.5
+2025-09-01T12:35:50.739326644Z [err]  /app/dist/server.cjs:8964
+2025-09-01T12:35:50.739333623Z [err]        throw new Error(
+2025-09-01T12:35:50.739338181Z [err]        ^
+2025-09-01T12:35:50.739342283Z [err]  
+2025-09-01T12:35:50.739346947Z [err]  Error: DATABASE_URL must be set. Did you forget to provision a database?
+2025-09-01T12:35:50.739351346Z [err]      at server/db.ts (/app/dist/server.cjs:8964:13)
+2025-09-01T12:35:50.739355214Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:35:50.739360689Z [err]      at server/storage.ts (/app/dist/server.cjs:8991:5)
+2025-09-01T12:35:50.739365264Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:35:50.739369131Z [err]      at server/routes.ts (/app/dist/server.cjs:67977:5)
+2025-09-01T12:35:50.739372694Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:35:50.739376494Z [err]      at Object.<anonymous> (/app/dist/server.cjs:68347:44)
+2025-09-01T12:35:50.739381160Z [err]      at Module._compile (node:internal/modules/cjs/loader:1364:14)
+2025-09-01T12:35:50.739385250Z [err]      at Module._extensions..js (node:internal/modules/cjs/loader:1422:10)
+2025-09-01T12:35:50.739388913Z [err]      at Module.load (node:internal/modules/cjs/loader:1203:32)
+2025-09-01T12:35:50.739392849Z [err]  
+2025-09-01T12:35:50.739396736Z [err]  Node.js v18.20.5
+2025-09-01T12:35:51.766100994Z [err]  /app/dist/server.cjs:8964
+2025-09-01T12:35:51.766107250Z [err]        throw new Error(
+2025-09-01T12:35:51.766112106Z [err]        ^
+2025-09-01T12:35:51.766117359Z [err]  
+2025-09-01T12:35:51.766121228Z [err]  Error: DATABASE_URL must be set. Did you forget to provision a database?
+2025-09-01T12:35:51.766126666Z [err]      at server/db.ts (/app/dist/server.cjs:8964:13)
+2025-09-01T12:35:51.766130927Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:35:51.766135090Z [err]      at server/storage.ts (/app/dist/server.cjs:8991:5)
+2025-09-01T12:35:51.766139206Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:35:51.766143144Z [err]      at server/routes.ts (/app/dist/server.cjs:67977:5)
+2025-09-01T12:35:51.766146951Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:35:51.766150735Z [err]      at Object.<anonymous> (/app/dist/server.cjs:68347:44)
+2025-09-01T12:35:51.766154989Z [err]      at Module._compile (node:internal/modules/cjs/loader:1364:14)
+2025-09-01T12:35:51.766158812Z [err]      at Module._extensions..js (node:internal/modules/cjs/loader:1422:10)
+2025-09-01T12:35:51.766162381Z [err]      at Module.load (node:internal/modules/cjs/loader:1203:32)
+2025-09-01T12:35:51.766166632Z [err]  
+2025-09-01T12:35:51.766170551Z [err]  Node.js v18.20.5
+2025-09-01T12:35:52.781442369Z [err]  /app/dist/server.cjs:8964
+2025-09-01T12:35:52.781449428Z [err]        throw new Error(
+2025-09-01T12:35:52.781454471Z [err]        ^
+2025-09-01T12:35:52.781458854Z [err]  
+2025-09-01T12:35:52.781462661Z [err]  Error: DATABASE_URL must be set. Did you forget to provision a database?
+2025-09-01T12:35:52.781467542Z [err]      at server/db.ts (/app/dist/server.cjs:8964:13)
+2025-09-01T12:35:52.781472955Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:35:52.781478539Z [err]      at server/storage.ts (/app/dist/server.cjs:8991:5)
+2025-09-01T12:35:52.781484014Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:35:52.781489363Z [err]      at server/routes.ts (/app/dist/server.cjs:67977:5)
+2025-09-01T12:35:52.781493345Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:35:52.781497196Z [err]      at Object.<anonymous> (/app/dist/server.cjs:68347:44)
+2025-09-01T12:35:52.781501070Z [err]      at Module._compile (node:internal/modules/cjs/loader:1364:14)
+2025-09-01T12:35:52.781507277Z [err]      at Module._extensions..js (node:internal/modules/cjs/loader:1422:10)
+2025-09-01T12:35:52.781511049Z [err]      at Module.load (node:internal/modules/cjs/loader:1203:32)
+2025-09-01T12:35:52.781514944Z [err]  
+2025-09-01T12:35:52.781518504Z [err]  Node.js v18.20.5
+2025-09-01T12:35:53.797556882Z [err]  /app/dist/server.cjs:8964
+2025-09-01T12:35:53.797562800Z [err]        throw new Error(
+2025-09-01T12:35:53.797568170Z [err]        ^
+2025-09-01T12:35:53.797574822Z [err]  
+2025-09-01T12:35:53.797581687Z [err]  Error: DATABASE_URL must be set. Did you forget to provision a database?
+2025-09-01T12:35:53.797587513Z [err]      at server/db.ts (/app/dist/server.cjs:8964:13)
+2025-09-01T12:35:53.797593060Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:35:53.797598236Z [err]      at server/storage.ts (/app/dist/server.cjs:8991:5)
+2025-09-01T12:35:53.797603605Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:35:53.797609104Z [err]      at server/routes.ts (/app/dist/server.cjs:67977:5)
+2025-09-01T12:35:53.797615066Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:35:53.797620413Z [err]      at Object.<anonymous> (/app/dist/server.cjs:68347:44)
+2025-09-01T12:35:53.797625735Z [err]      at Module._compile (node:internal/modules/cjs/loader:1364:14)
+2025-09-01T12:35:53.797632690Z [err]      at Module._extensions..js (node:internal/modules/cjs/loader:1422:10)
+2025-09-01T12:35:53.797638972Z [err]      at Module.load (node:internal/modules/cjs/loader:1203:32)
+2025-09-01T12:35:53.797644865Z [err]  
+2025-09-01T12:35:53.797651400Z [err]  Node.js v18.20.5
+2025-09-01T12:35:54.986037345Z [err]  /app/dist/server.cjs:8964
+2025-09-01T12:35:54.986042333Z [err]        throw new Error(
+2025-09-01T12:35:54.986047234Z [err]        ^
+2025-09-01T12:35:54.986052648Z [err]  
+2025-09-01T12:35:54.986061575Z [err]  Error: DATABASE_URL must be set. Did you forget to provision a database?
+2025-09-01T12:35:54.986066605Z [err]      at server/db.ts (/app/dist/server.cjs:8964:13)
+2025-09-01T12:35:54.986072615Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:35:54.986077363Z [err]      at server/storage.ts (/app/dist/server.cjs:8991:5)
+2025-09-01T12:35:54.986082598Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:35:54.986089653Z [err]      at server/routes.ts (/app/dist/server.cjs:67977:5)
+2025-09-01T12:35:54.986094295Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:35:54.986099968Z [err]      at Object.<anonymous> (/app/dist/server.cjs:68347:44)
+2025-09-01T12:35:54.986109357Z [err]      at Module._compile (node:internal/modules/cjs/loader:1364:14)
+2025-09-01T12:35:54.986113667Z [err]      at Module._extensions..js (node:internal/modules/cjs/loader:1422:10)
+2025-09-01T12:35:54.986120664Z [err]      at Module.load (node:internal/modules/cjs/loader:1203:32)
+2025-09-01T12:35:54.986124886Z [err]  
+2025-09-01T12:35:54.986129832Z [err]  Node.js v18.20.5
+2025-09-01T12:35:55.974327507Z [err]  /app/dist/server.cjs:8964
+2025-09-01T12:35:55.974332191Z [err]        throw new Error(
+2025-09-01T12:35:55.974336200Z [err]        ^
+2025-09-01T12:35:55.974340089Z [err]  
+2025-09-01T12:35:55.974343934Z [err]  Error: DATABASE_URL must be set. Did you forget to provision a database?
+2025-09-01T12:35:55.974348128Z [err]      at server/db.ts (/app/dist/server.cjs:8964:13)
+2025-09-01T12:35:55.974352235Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:35:55.974356553Z [err]      at server/storage.ts (/app/dist/server.cjs:8991:5)
+2025-09-01T12:35:55.974361916Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:35:55.974367026Z [err]      at server/routes.ts (/app/dist/server.cjs:67977:5)
+2025-09-01T12:35:55.974373137Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:35:55.974377837Z [err]      at Object.<anonymous> (/app/dist/server.cjs:68347:44)
+2025-09-01T12:35:55.974381546Z [err]      at Module._compile (node:internal/modules/cjs/loader:1364:14)
+2025-09-01T12:35:55.974385347Z [err]      at Module._extensions..js (node:internal/modules/cjs/loader:1422:10)
+2025-09-01T12:35:55.974389092Z [err]      at Module.load (node:internal/modules/cjs/loader:1203:32)
+2025-09-01T12:35:55.974393123Z [err]  
+2025-09-01T12:35:55.974397256Z [err]  Node.js v18.20.5
+2025-09-01T12:35:56.996161571Z [err]  /app/dist/server.cjs:8964
+2025-09-01T12:35:56.996165241Z [err]        throw new Error(
+2025-09-01T12:35:56.996169362Z [err]        ^
+2025-09-01T12:35:56.996173324Z [err]  
+2025-09-01T12:35:56.996177122Z [err]  Error: DATABASE_URL must be set. Did you forget to provision a database?
+2025-09-01T12:35:56.996181061Z [err]      at server/db.ts (/app/dist/server.cjs:8964:13)
+2025-09-01T12:35:56.996184913Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:35:56.996189868Z [err]      at server/storage.ts (/app/dist/server.cjs:8991:5)
+2025-09-01T12:35:56.996193928Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:35:56.996197558Z [err]      at server/routes.ts (/app/dist/server.cjs:67977:5)
+2025-09-01T12:35:56.996201437Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:35:56.996205074Z [err]      at Object.<anonymous> (/app/dist/server.cjs:68347:44)
+2025-09-01T12:35:56.996208813Z [err]      at Module._compile (node:internal/modules/cjs/loader:1364:14)
+2025-09-01T12:35:56.996213005Z [err]      at Module._extensions..js (node:internal/modules/cjs/loader:1422:10)
+2025-09-01T12:35:56.996216650Z [err]      at Module.load (node:internal/modules/cjs/loader:1203:32)
+2025-09-01T12:35:56.996220263Z [err]  
+2025-09-01T12:35:56.996224094Z [err]  Node.js v18.20.5
+2025-09-01T12:35:58.016882403Z [err]  /app/dist/server.cjs:8964
+2025-09-01T12:35:58.016886233Z [err]        throw new Error(
+2025-09-01T12:35:58.016890125Z [err]        ^
+2025-09-01T12:35:58.016894223Z [err]  
+2025-09-01T12:35:58.016898790Z [err]  Error: DATABASE_URL must be set. Did you forget to provision a database?
+2025-09-01T12:35:58.016902700Z [err]      at server/db.ts (/app/dist/server.cjs:8964:13)
+2025-09-01T12:35:58.016906346Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:35:58.016910073Z [err]      at server/storage.ts (/app/dist/server.cjs:8991:5)
+2025-09-01T12:35:58.016914065Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:35:58.016918192Z [err]      at server/routes.ts (/app/dist/server.cjs:67977:5)
+2025-09-01T12:35:58.016921991Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:35:58.016925970Z [err]      at Object.<anonymous> (/app/dist/server.cjs:68347:44)
+2025-09-01T12:35:58.016943928Z [err]      at Module._compile (node:internal/modules/cjs/loader:1364:14)
+2025-09-01T12:35:58.016948322Z [err]      at Module._extensions..js (node:internal/modules/cjs/loader:1422:10)
+2025-09-01T12:35:58.016952630Z [err]      at Module.load (node:internal/modules/cjs/loader:1203:32)
+2025-09-01T12:35:58.017684468Z [err]  
+2025-09-01T12:35:58.017691128Z [err]  Node.js v18.20.5
+2025-09-01T12:35:59.049903980Z [err]  /app/dist/server.cjs:8964
+2025-09-01T12:35:59.049910735Z [err]        throw new Error(
+2025-09-01T12:35:59.049915870Z [err]        ^
+2025-09-01T12:35:59.049920263Z [err]  
+2025-09-01T12:35:59.049925083Z [err]  Error: DATABASE_URL must be set. Did you forget to provision a database?
+2025-09-01T12:35:59.049929709Z [err]      at server/db.ts (/app/dist/server.cjs:8964:13)
+2025-09-01T12:35:59.049934065Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:35:59.049938042Z [err]      at server/storage.ts (/app/dist/server.cjs:8991:5)
+2025-09-01T12:35:59.049942059Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:35:59.049946417Z [err]      at server/routes.ts (/app/dist/server.cjs:67977:5)
+2025-09-01T12:35:59.049950698Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:35:59.049955024Z [err]      at Object.<anonymous> (/app/dist/server.cjs:68347:44)
+2025-09-01T12:35:59.049959118Z [err]      at Module._compile (node:internal/modules/cjs/loader:1364:14)
+2025-09-01T12:35:59.049963123Z [err]      at Module._extensions..js (node:internal/modules/cjs/loader:1422:10)
+2025-09-01T12:35:59.049967278Z [err]      at Module.load (node:internal/modules/cjs/loader:1203:32)
+2025-09-01T12:35:59.049971878Z [err]  
+2025-09-01T12:35:59.049976051Z [err]  Node.js v18.20.5
+2025-09-01T12:36:00.089942568Z [err]  /app/dist/server.cjs:8964
+2025-09-01T12:36:00.089948296Z [err]        throw new Error(
+2025-09-01T12:36:00.089954242Z [err]        ^
+2025-09-01T12:36:00.089961627Z [err]  
+2025-09-01T12:36:00.089968421Z [err]  Error: DATABASE_URL must be set. Did you forget to provision a database?
+2025-09-01T12:36:00.089975007Z [err]      at server/db.ts (/app/dist/server.cjs:8964:13)
+2025-09-01T12:36:00.089981015Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:36:00.089986814Z [err]      at server/storage.ts (/app/dist/server.cjs:8991:5)
+2025-09-01T12:36:00.089993524Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:36:00.090000165Z [err]      at server/routes.ts (/app/dist/server.cjs:67977:5)
+2025-09-01T12:36:00.090006363Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:36:00.090014211Z [err]      at Object.<anonymous> (/app/dist/server.cjs:68347:44)
+2025-09-01T12:36:00.090020180Z [err]      at Module._compile (node:internal/modules/cjs/loader:1364:14)
+2025-09-01T12:36:00.090026491Z [err]      at Module._extensions..js (node:internal/modules/cjs/loader:1422:10)
+2025-09-01T12:36:00.090032762Z [err]      at Module.load (node:internal/modules/cjs/loader:1203:32)
+2025-09-01T12:36:00.090039621Z [err]  
+2025-09-01T12:36:00.090046362Z [err]  Node.js v18.20.5
+2025-09-01T12:36:01.199031610Z [err]  /app/dist/server.cjs:8964
+2025-09-01T12:36:01.199045938Z [err]        throw new Error(
+2025-09-01T12:36:01.199052810Z [err]        ^
+2025-09-01T12:36:01.199059752Z [err]  
+2025-09-01T12:36:01.199066766Z [err]  Error: DATABASE_URL must be set. Did you forget to provision a database?
+2025-09-01T12:36:01.199072925Z [err]      at server/db.ts (/app/dist/server.cjs:8964:13)
+2025-09-01T12:36:01.199078955Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:36:01.199085224Z [err]      at server/storage.ts (/app/dist/server.cjs:8991:5)
+2025-09-01T12:36:01.199090993Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:36:01.199096963Z [err]      at server/routes.ts (/app/dist/server.cjs:67977:5)
+2025-09-01T12:36:01.199102900Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:36:01.199108085Z [err]      at Object.<anonymous> (/app/dist/server.cjs:68347:44)
+2025-09-01T12:36:01.199112946Z [err]      at Module._compile (node:internal/modules/cjs/loader:1364:14)
+2025-09-01T12:36:01.199119851Z [err]      at Module._extensions..js (node:internal/modules/cjs/loader:1422:10)
+2025-09-01T12:36:01.199125882Z [err]      at Module.load (node:internal/modules/cjs/loader:1203:32)
+2025-09-01T12:36:01.199131288Z [err]  
+2025-09-01T12:36:01.199137501Z [err]  Node.js v18.20.5
+2025-09-01T12:36:02.233914951Z [err]  /app/dist/server.cjs:8964
+2025-09-01T12:36:02.233926633Z [err]        throw new Error(
+2025-09-01T12:36:02.233933076Z [err]        ^
+2025-09-01T12:36:02.233939845Z [err]  
+2025-09-01T12:36:02.233946619Z [err]  Error: DATABASE_URL must be set. Did you forget to provision a database?
+2025-09-01T12:36:02.233952645Z [err]      at server/db.ts (/app/dist/server.cjs:8964:13)
+2025-09-01T12:36:02.233958400Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:36:02.233963100Z [err]      at server/storage.ts (/app/dist/server.cjs:8991:5)
+2025-09-01T12:36:02.233969165Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:36:02.233974100Z [err]      at server/routes.ts (/app/dist/server.cjs:67977:5)
+2025-09-01T12:36:02.233979728Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:36:02.233986167Z [err]      at Object.<anonymous> (/app/dist/server.cjs:68347:44)
+2025-09-01T12:36:02.233992073Z [err]      at Module._compile (node:internal/modules/cjs/loader:1364:14)
+2025-09-01T12:36:02.233997697Z [err]      at Module._extensions..js (node:internal/modules/cjs/loader:1422:10)
+2025-09-01T12:36:02.234003302Z [err]      at Module.load (node:internal/modules/cjs/loader:1203:32)
+2025-09-01T12:36:02.234010222Z [err]  
+2025-09-01T12:36:02.234016556Z [err]  Node.js v18.20.5
+2025-09-01T12:36:03.216166148Z [err]  /app/dist/server.cjs:8964
+2025-09-01T12:36:03.216176235Z [err]        throw new Error(
+2025-09-01T12:36:03.216182664Z [err]        ^
+2025-09-01T12:36:03.216189436Z [err]  
+2025-09-01T12:36:03.216195324Z [err]  Error: DATABASE_URL must be set. Did you forget to provision a database?
+2025-09-01T12:36:03.216201629Z [err]      at server/db.ts (/app/dist/server.cjs:8964:13)
+2025-09-01T12:36:03.216207221Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:36:03.216213031Z [err]      at server/storage.ts (/app/dist/server.cjs:8991:5)
+2025-09-01T12:36:03.216218715Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:36:03.216224613Z [err]      at server/routes.ts (/app/dist/server.cjs:67977:5)
+2025-09-01T12:36:03.216230280Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:36:03.216235432Z [err]      at Object.<anonymous> (/app/dist/server.cjs:68347:44)
+2025-09-01T12:36:03.216241162Z [err]      at Module._compile (node:internal/modules/cjs/loader:1364:14)
+2025-09-01T12:36:03.216247945Z [err]      at Module._extensions..js (node:internal/modules/cjs/loader:1422:10)
+2025-09-01T12:36:03.216253335Z [err]      at Module.load (node:internal/modules/cjs/loader:1203:32)
+2025-09-01T12:36:03.216258754Z [err]  
+2025-09-01T12:36:03.216266239Z [err]  Node.js v18.20.5
+2025-09-01T12:36:04.189250808Z [err]  /app/dist/server.cjs:8964
+2025-09-01T12:36:04.189257723Z [err]        throw new Error(
+2025-09-01T12:36:04.189262118Z [err]        ^
+2025-09-01T12:36:04.189266159Z [err]  
+2025-09-01T12:36:04.189270485Z [err]  Error: DATABASE_URL must be set. Did you forget to provision a database?
+2025-09-01T12:36:04.189274509Z [err]      at server/db.ts (/app/dist/server.cjs:8964:13)
+2025-09-01T12:36:04.189278405Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:36:04.189282822Z [err]      at server/storage.ts (/app/dist/server.cjs:8991:5)
+2025-09-01T12:36:04.189286820Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:36:04.189291527Z [err]      at server/routes.ts (/app/dist/server.cjs:67977:5)
+2025-09-01T12:36:04.189295418Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:36:04.189299207Z [err]      at Object.<anonymous> (/app/dist/server.cjs:68347:44)
+2025-09-01T12:36:04.189303635Z [err]      at Module._compile (node:internal/modules/cjs/loader:1364:14)
+2025-09-01T12:36:04.189308112Z [err]      at Module._extensions..js (node:internal/modules/cjs/loader:1422:10)
+2025-09-01T12:36:04.189311833Z [err]      at Module.load (node:internal/modules/cjs/loader:1203:32)
+2025-09-01T12:36:04.189317021Z [err]  
+2025-09-01T12:36:04.189321121Z [err]  Node.js v18.20.5
+2025-09-01T12:36:05.283468382Z [err]  /app/dist/server.cjs:8964
+2025-09-01T12:36:05.283534990Z [err]        throw new Error(
+2025-09-01T12:36:05.283543415Z [err]        ^
+2025-09-01T12:36:05.283548147Z [err]  
+2025-09-01T12:36:05.283552484Z [err]  Error: DATABASE_URL must be set. Did you forget to provision a database?
+2025-09-01T12:36:05.283556967Z [err]      at server/db.ts (/app/dist/server.cjs:8964:13)
+2025-09-01T12:36:05.283563251Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:36:05.283567547Z [err]      at server/storage.ts (/app/dist/server.cjs:8991:5)
+2025-09-01T12:36:05.283571841Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:36:05.283575892Z [err]      at server/routes.ts (/app/dist/server.cjs:67977:5)
+2025-09-01T12:36:05.283580029Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:36:05.283584522Z [err]      at Object.<anonymous> (/app/dist/server.cjs:68347:44)
+2025-09-01T12:36:05.283589136Z [err]      at Module._compile (node:internal/modules/cjs/loader:1364:14)
+2025-09-01T12:36:05.283593817Z [err]      at Module._extensions..js (node:internal/modules/cjs/loader:1422:10)
+2025-09-01T12:36:05.283597972Z [err]      at Module.load (node:internal/modules/cjs/loader:1203:32)
+2025-09-01T12:36:05.283603741Z [err]  
+2025-09-01T12:36:05.283609045Z [err]  Node.js v18.20.5
+2025-09-01T12:36:06.753444244Z [err]  /app/dist/server.cjs:8964
+2025-09-01T12:36:06.753448962Z [err]        throw new Error(
+2025-09-01T12:36:06.753452825Z [err]        ^
+2025-09-01T12:36:06.753456689Z [err]  
+2025-09-01T12:36:06.753465086Z [err]  Error: DATABASE_URL must be set. Did you forget to provision a database?
+2025-09-01T12:36:06.753473534Z [err]      at server/db.ts (/app/dist/server.cjs:8964:13)
+2025-09-01T12:36:06.753477807Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:36:06.753481845Z [err]      at server/storage.ts (/app/dist/server.cjs:8991:5)
+2025-09-01T12:36:06.753485774Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:36:06.753490573Z [err]      at server/routes.ts (/app/dist/server.cjs:67977:5)
+2025-09-01T12:36:06.753494532Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:36:06.753498656Z [err]      at Object.<anonymous> (/app/dist/server.cjs:68347:44)
+2025-09-01T12:36:06.753503450Z [err]      at Module._compile (node:internal/modules/cjs/loader:1364:14)
+2025-09-01T12:36:06.753507321Z [err]      at Module._extensions..js (node:internal/modules/cjs/loader:1422:10)
+2025-09-01T12:36:06.753511147Z [err]      at Module.load (node:internal/modules/cjs/loader:1203:32)
+2025-09-01T12:36:06.753515257Z [err]  
+2025-09-01T12:36:06.753519281Z [err]  Node.js v18.20.5
+2025-09-01T12:36:07.794151948Z [err]  /app/dist/server.cjs:8964
+2025-09-01T12:36:07.794159146Z [err]        throw new Error(
+2025-09-01T12:36:07.794163622Z [err]        ^
+2025-09-01T12:36:07.794167592Z [err]  
+2025-09-01T12:36:07.794171808Z [err]  Error: DATABASE_URL must be set. Did you forget to provision a database?
+2025-09-01T12:36:07.794175687Z [err]      at server/db.ts (/app/dist/server.cjs:8964:13)
+2025-09-01T12:36:07.794179489Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:36:07.794183471Z [err]      at server/storage.ts (/app/dist/server.cjs:8991:5)
+2025-09-01T12:36:07.794187277Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:36:07.794192612Z [err]      at server/routes.ts (/app/dist/server.cjs:67977:5)
+2025-09-01T12:36:07.794197306Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:36:07.794201358Z [err]      at Object.<anonymous> (/app/dist/server.cjs:68347:44)
+2025-09-01T12:36:07.794205429Z [err]      at Module._compile (node:internal/modules/cjs/loader:1364:14)
+2025-09-01T12:36:07.794209494Z [err]      at Module._extensions..js (node:internal/modules/cjs/loader:1422:10)
+2025-09-01T12:36:07.794213595Z [err]      at Module.load (node:internal/modules/cjs/loader:1203:32)
+2025-09-01T12:36:07.794217976Z [err]  
+2025-09-01T12:36:07.794222000Z [err]  Node.js v18.20.5
+2025-09-01T12:36:08.849902483Z [err]  /app/dist/server.cjs:8964
+2025-09-01T12:36:08.849906494Z [err]        throw new Error(
+2025-09-01T12:36:08.849910558Z [err]        ^
+2025-09-01T12:36:08.849914517Z [err]  
+2025-09-01T12:36:08.849918724Z [err]  Error: DATABASE_URL must be set. Did you forget to provision a database?
+2025-09-01T12:36:08.849922580Z [err]      at server/db.ts (/app/dist/server.cjs:8964:13)
+2025-09-01T12:36:08.849926535Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:36:08.849930126Z [err]      at server/storage.ts (/app/dist/server.cjs:8991:5)
+2025-09-01T12:36:08.849935271Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:36:08.849939017Z [err]      at server/routes.ts (/app/dist/server.cjs:67977:5)
+2025-09-01T12:36:08.849942635Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:36:08.849949532Z [err]      at Object.<anonymous> (/app/dist/server.cjs:68347:44)
+2025-09-01T12:36:08.849953694Z [err]      at Module._compile (node:internal/modules/cjs/loader:1364:14)
+2025-09-01T12:36:08.849958366Z [err]      at Module._extensions..js (node:internal/modules/cjs/loader:1422:10)
+2025-09-01T12:36:08.849962051Z [err]      at Module.load (node:internal/modules/cjs/loader:1203:32)
+2025-09-01T12:36:08.849965808Z [err]  
+2025-09-01T12:36:08.849969760Z [err]  Node.js v18.20.5
+2025-09-01T12:36:09.806435144Z [err]  /app/dist/server.cjs:8964
+2025-09-01T12:36:09.806442648Z [err]        throw new Error(
+2025-09-01T12:36:09.806448517Z [err]        ^
+2025-09-01T12:36:09.806454048Z [err]  
+2025-09-01T12:36:09.806459771Z [err]  Error: DATABASE_URL must be set. Did you forget to provision a database?
+2025-09-01T12:36:09.806465427Z [err]      at server/db.ts (/app/dist/server.cjs:8964:13)
+2025-09-01T12:36:09.806471378Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:36:09.806477409Z [err]      at server/storage.ts (/app/dist/server.cjs:8991:5)
+2025-09-01T12:36:09.806483249Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:36:09.806487616Z [err]      at server/routes.ts (/app/dist/server.cjs:67977:5)
+2025-09-01T12:36:09.806491896Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:36:09.806495955Z [err]      at Object.<anonymous> (/app/dist/server.cjs:68347:44)
+2025-09-01T12:36:09.806500136Z [err]      at Module._compile (node:internal/modules/cjs/loader:1364:14)
+2025-09-01T12:36:09.806504435Z [err]      at Module._extensions..js (node:internal/modules/cjs/loader:1422:10)
+2025-09-01T12:36:09.806509340Z [err]      at Module.load (node:internal/modules/cjs/loader:1203:32)
+2025-09-01T12:36:09.806513564Z [err]  
+2025-09-01T12:36:09.806517559Z [err]  Node.js v18.20.5
+2025-09-01T12:36:10.793040659Z [err]  /app/dist/server.cjs:8964
+2025-09-01T12:36:10.793044505Z [err]        throw new Error(
+2025-09-01T12:36:10.793048655Z [err]        ^
+2025-09-01T12:36:10.793052429Z [err]  
+2025-09-01T12:36:10.793056683Z [err]  Error: DATABASE_URL must be set. Did you forget to provision a database?
+2025-09-01T12:36:10.793060338Z [err]      at server/db.ts (/app/dist/server.cjs:8964:13)
+2025-09-01T12:36:10.793064559Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:36:10.793069388Z [err]      at server/storage.ts (/app/dist/server.cjs:8991:5)
+2025-09-01T12:36:10.793073322Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:36:10.793077262Z [err]      at server/routes.ts (/app/dist/server.cjs:67977:5)
+2025-09-01T12:36:10.793094532Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:36:10.793099336Z [err]      at Object.<anonymous> (/app/dist/server.cjs:68347:44)
+2025-09-01T12:36:10.793103662Z [err]      at Module._compile (node:internal/modules/cjs/loader:1364:14)
+2025-09-01T12:36:10.793110679Z [err]      at Module._extensions..js (node:internal/modules/cjs/loader:1422:10)
+2025-09-01T12:36:10.793114811Z [err]      at Module.load (node:internal/modules/cjs/loader:1203:32)
+2025-09-01T12:36:10.793119457Z [err]  
+2025-09-01T12:36:10.793123739Z [err]  Node.js v18.20.5
+2025-09-01T12:36:11.824931402Z [err]  /app/dist/server.cjs:8964
+2025-09-01T12:36:11.824941339Z [err]        throw new Error(
+2025-09-01T12:36:11.824947831Z [err]        ^
+2025-09-01T12:36:11.824954509Z [err]  
+2025-09-01T12:36:11.824960110Z [err]  Error: DATABASE_URL must be set. Did you forget to provision a database?
+2025-09-01T12:36:11.824967046Z [err]      at server/db.ts (/app/dist/server.cjs:8964:13)
+2025-09-01T12:36:11.824972811Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:36:11.824978740Z [err]      at server/storage.ts (/app/dist/server.cjs:8991:5)
+2025-09-01T12:36:11.824984189Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:36:11.824989325Z [err]      at server/routes.ts (/app/dist/server.cjs:67977:5)
+2025-09-01T12:36:11.824994881Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:36:11.825000663Z [err]      at Object.<anonymous> (/app/dist/server.cjs:68347:44)
+2025-09-01T12:36:11.825006676Z [err]      at Module._compile (node:internal/modules/cjs/loader:1364:14)
+2025-09-01T12:36:11.825012736Z [err]      at Module._extensions..js (node:internal/modules/cjs/loader:1422:10)
+2025-09-01T12:36:11.825018624Z [err]      at Module.load (node:internal/modules/cjs/loader:1203:32)
+2025-09-01T12:36:11.825025118Z [err]  
+2025-09-01T12:36:11.825030544Z [err]  Node.js v18.20.5
+2025-09-01T12:36:12.883766896Z [err]  /app/dist/server.cjs:8964
+2025-09-01T12:36:12.883771768Z [err]        throw new Error(
+2025-09-01T12:36:12.883776632Z [err]        ^
+2025-09-01T12:36:12.883780949Z [err]  
+2025-09-01T12:36:12.883785642Z [err]  Error: DATABASE_URL must be set. Did you forget to provision a database?
+2025-09-01T12:36:12.883789912Z [err]      at server/db.ts (/app/dist/server.cjs:8964:13)
+2025-09-01T12:36:12.883794173Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:36:12.883798745Z [err]      at server/storage.ts (/app/dist/server.cjs:8991:5)
+2025-09-01T12:36:12.883803007Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:36:12.883807064Z [err]      at server/routes.ts (/app/dist/server.cjs:67977:5)
+2025-09-01T12:36:12.883811220Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:36:12.883815508Z [err]      at Object.<anonymous> (/app/dist/server.cjs:68347:44)
+2025-09-01T12:36:12.883819884Z [err]      at Module._compile (node:internal/modules/cjs/loader:1364:14)
+2025-09-01T12:36:12.883824414Z [err]      at Module._extensions..js (node:internal/modules/cjs/loader:1422:10)
+2025-09-01T12:36:12.883828521Z [err]      at Module.load (node:internal/modules/cjs/loader:1203:32)
+2025-09-01T12:36:12.883832639Z [err]  
+2025-09-01T12:36:12.883837193Z [err]  Node.js v18.20.5
+2025-09-01T12:36:14.076355077Z [err]  /app/dist/server.cjs:8964
+2025-09-01T12:36:14.076359377Z [err]        throw new Error(
+2025-09-01T12:36:14.076363070Z [err]        ^
+2025-09-01T12:36:14.076366883Z [err]  
+2025-09-01T12:36:14.076371173Z [err]  Error: DATABASE_URL must be set. Did you forget to provision a database?
+2025-09-01T12:36:14.076375086Z [err]      at server/db.ts (/app/dist/server.cjs:8964:13)
+2025-09-01T12:36:14.076378858Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:36:14.076382568Z [err]      at server/storage.ts (/app/dist/server.cjs:8991:5)
+2025-09-01T12:36:14.076386111Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:36:14.076391048Z [err]      at server/routes.ts (/app/dist/server.cjs:67977:5)
+2025-09-01T12:36:14.076394995Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:36:14.076398878Z [err]      at Object.<anonymous> (/app/dist/server.cjs:68347:44)
+2025-09-01T12:36:14.076402615Z [err]      at Module._compile (node:internal/modules/cjs/loader:1364:14)
+2025-09-01T12:36:14.076406272Z [err]      at Module._extensions..js (node:internal/modules/cjs/loader:1422:10)
+2025-09-01T12:36:14.076410540Z [err]      at Module.load (node:internal/modules/cjs/loader:1203:32)
+2025-09-01T12:36:14.076414262Z [err]  
+2025-09-01T12:36:14.076418058Z [err]  Node.js v18.20.5
+2025-09-01T12:36:15.303616960Z [err]  /app/dist/server.cjs:8964
+2025-09-01T12:36:15.303621175Z [err]        throw new Error(
+2025-09-01T12:36:15.303625209Z [err]        ^
+2025-09-01T12:36:15.303629703Z [err]  
+2025-09-01T12:36:15.303633875Z [err]  Error: DATABASE_URL must be set. Did you forget to provision a database?
+2025-09-01T12:36:15.303637796Z [err]      at server/db.ts (/app/dist/server.cjs:8964:13)
+2025-09-01T12:36:15.303641777Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:36:15.303646020Z [err]      at server/storage.ts (/app/dist/server.cjs:8991:5)
+2025-09-01T12:36:15.303650582Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:36:15.303655525Z [err]      at server/routes.ts (/app/dist/server.cjs:67977:5)
+2025-09-01T12:36:15.303659667Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:36:15.303663764Z [err]      at Object.<anonymous> (/app/dist/server.cjs:68347:44)
+2025-09-01T12:36:15.303667795Z [err]      at Module._compile (node:internal/modules/cjs/loader:1364:14)
+2025-09-01T12:36:15.303671787Z [err]      at Module._extensions..js (node:internal/modules/cjs/loader:1422:10)
+2025-09-01T12:36:15.303675686Z [err]      at Module.load (node:internal/modules/cjs/loader:1203:32)
+2025-09-01T12:36:15.303680586Z [err]  
+2025-09-01T12:36:15.303684544Z [err]  Node.js v18.20.5
+2025-09-01T12:36:16.261731201Z [err]  /app/dist/server.cjs:8964
+2025-09-01T12:36:16.261738355Z [err]        throw new Error(
+2025-09-01T12:36:16.261744843Z [err]        ^
+2025-09-01T12:36:16.261751080Z [err]  
+2025-09-01T12:36:16.261756161Z [err]  Error: DATABASE_URL must be set. Did you forget to provision a database?
+2025-09-01T12:36:16.261760582Z [err]      at server/db.ts (/app/dist/server.cjs:8964:13)
+2025-09-01T12:36:16.261764523Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:36:16.261768695Z [err]      at server/storage.ts (/app/dist/server.cjs:8991:5)
+2025-09-01T12:36:16.261773240Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:36:16.261777425Z [err]      at server/routes.ts (/app/dist/server.cjs:67977:5)
+2025-09-01T12:36:16.261781490Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:36:16.261785495Z [err]      at Object.<anonymous> (/app/dist/server.cjs:68347:44)
+2025-09-01T12:36:16.261789464Z [err]      at Module._compile (node:internal/modules/cjs/loader:1364:14)
+2025-09-01T12:36:16.261797463Z [err]      at Module._extensions..js (node:internal/modules/cjs/loader:1422:10)
+2025-09-01T12:36:16.261802234Z [err]      at Module.load (node:internal/modules/cjs/loader:1203:32)
+2025-09-01T12:36:16.261806515Z [err]  
+2025-09-01T12:36:16.261810857Z [err]  Node.js v18.20.5
+2025-09-01T12:36:17.289549492Z [err]  /app/dist/server.cjs:8964
+2025-09-01T12:36:17.289560122Z [err]        throw new Error(
+2025-09-01T12:36:17.289566092Z [err]        ^
+2025-09-01T12:36:17.289571370Z [err]  
+2025-09-01T12:36:17.289577464Z [err]  Error: DATABASE_URL must be set. Did you forget to provision a database?
+2025-09-01T12:36:17.289585181Z [err]      at server/db.ts (/app/dist/server.cjs:8964:13)
+2025-09-01T12:36:17.289591162Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:36:17.289596577Z [err]      at server/storage.ts (/app/dist/server.cjs:8991:5)
+2025-09-01T12:36:17.289602751Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:36:17.289608488Z [err]      at server/routes.ts (/app/dist/server.cjs:67977:5)
+2025-09-01T12:36:17.289614201Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:36:17.289619067Z [err]      at Object.<anonymous> (/app/dist/server.cjs:68347:44)
+2025-09-01T12:36:17.289635376Z [err]      at Module._compile (node:internal/modules/cjs/loader:1364:14)
+2025-09-01T12:36:17.289641721Z [err]      at Module._extensions..js (node:internal/modules/cjs/loader:1422:10)
+2025-09-01T12:36:17.289647189Z [err]      at Module.load (node:internal/modules/cjs/loader:1203:32)
+2025-09-01T12:36:17.289652560Z [err]  
+2025-09-01T12:36:17.289658717Z [err]  Node.js v18.20.5
+2025-09-01T12:36:18.361687404Z [err]  /app/dist/server.cjs:8964
+2025-09-01T12:36:18.361691098Z [err]        throw new Error(
+2025-09-01T12:36:18.361694760Z [err]        ^
+2025-09-01T12:36:18.361698660Z [err]  
+2025-09-01T12:36:18.361702841Z [err]  Error: DATABASE_URL must be set. Did you forget to provision a database?
+2025-09-01T12:36:18.361709653Z [err]      at server/db.ts (/app/dist/server.cjs:8964:13)
+2025-09-01T12:36:18.361714166Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:36:18.361717845Z [err]      at server/storage.ts (/app/dist/server.cjs:8991:5)
+2025-09-01T12:36:18.361722277Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:36:18.361726665Z [err]      at server/routes.ts (/app/dist/server.cjs:67977:5)
+2025-09-01T12:36:18.361730927Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:36:18.361734794Z [err]      at Object.<anonymous> (/app/dist/server.cjs:68347:44)
+2025-09-01T12:36:18.361738662Z [err]      at Module._compile (node:internal/modules/cjs/loader:1364:14)
+2025-09-01T12:36:18.361743085Z [err]      at Module._extensions..js (node:internal/modules/cjs/loader:1422:10)
+2025-09-01T12:36:18.361747182Z [err]      at Module.load (node:internal/modules/cjs/loader:1203:32)
+2025-09-01T12:36:18.361751107Z [err]  
+2025-09-01T12:36:18.361754816Z [err]  Node.js v18.20.5
+2025-09-01T12:36:19.649159042Z [err]  /app/dist/server.cjs:8964
+2025-09-01T12:36:19.649167072Z [err]        throw new Error(
+2025-09-01T12:36:19.649171768Z [err]        ^
+2025-09-01T12:36:19.649175810Z [err]  
+2025-09-01T12:36:19.649182300Z [err]  Error: DATABASE_URL must be set. Did you forget to provision a database?
+2025-09-01T12:36:19.649186493Z [err]      at server/db.ts (/app/dist/server.cjs:8964:13)
+2025-09-01T12:36:19.649190994Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:36:19.649195275Z [err]      at server/storage.ts (/app/dist/server.cjs:8991:5)
+2025-09-01T12:36:19.649199384Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:36:19.649203377Z [err]      at server/routes.ts (/app/dist/server.cjs:67977:5)
+2025-09-01T12:36:19.649207551Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:36:19.649213443Z [err]      at Object.<anonymous> (/app/dist/server.cjs:68347:44)
+2025-09-01T12:36:19.649217293Z [err]      at Module._compile (node:internal/modules/cjs/loader:1364:14)
+2025-09-01T12:36:19.649221091Z [err]      at Module._extensions..js (node:internal/modules/cjs/loader:1422:10)
+2025-09-01T12:36:19.649224862Z [err]      at Module.load (node:internal/modules/cjs/loader:1203:32)
+2025-09-01T12:36:19.649228731Z [err]  
+2025-09-01T12:36:19.649232853Z [err]  Node.js v18.20.5
+2025-09-01T12:36:20.723502879Z [err]  /app/dist/server.cjs:8964
+2025-09-01T12:36:20.723511307Z [err]        throw new Error(
+2025-09-01T12:36:20.723515968Z [err]        ^
+2025-09-01T12:36:20.723520178Z [err]  
+2025-09-01T12:36:20.723525709Z [err]  Error: DATABASE_URL must be set. Did you forget to provision a database?
+2025-09-01T12:36:20.723529795Z [err]      at server/db.ts (/app/dist/server.cjs:8964:13)
+2025-09-01T12:36:20.723533896Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:36:20.723537660Z [err]      at server/storage.ts (/app/dist/server.cjs:8991:5)
+2025-09-01T12:36:20.723542230Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:36:20.723546963Z [err]      at server/routes.ts (/app/dist/server.cjs:67977:5)
+2025-09-01T12:36:20.723550947Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:36:20.723554735Z [err]      at Object.<anonymous> (/app/dist/server.cjs:68347:44)
+2025-09-01T12:36:20.723558374Z [err]      at Module._compile (node:internal/modules/cjs/loader:1364:14)
+2025-09-01T12:36:20.723562445Z [err]      at Module._extensions..js (node:internal/modules/cjs/loader:1422:10)
+2025-09-01T12:36:20.723566724Z [err]      at Module.load (node:internal/modules/cjs/loader:1203:32)
+2025-09-01T12:36:20.723570809Z [err]  
+2025-09-01T12:36:20.723576124Z [err]  Node.js v18.20.5
+2025-09-01T12:36:21.811630531Z [err]  /app/dist/server.cjs:8964
+2025-09-01T12:36:21.811635134Z [err]        throw new Error(
+2025-09-01T12:36:21.811639022Z [err]        ^
+2025-09-01T12:36:21.811643300Z [err]  
+2025-09-01T12:36:21.811648484Z [err]  Error: DATABASE_URL must be set. Did you forget to provision a database?
+2025-09-01T12:36:21.811652550Z [err]      at server/db.ts (/app/dist/server.cjs:8964:13)
+2025-09-01T12:36:21.811656795Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:36:21.811661880Z [err]      at server/storage.ts (/app/dist/server.cjs:8991:5)
+2025-09-01T12:36:21.811665726Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:36:21.811669771Z [err]      at server/routes.ts (/app/dist/server.cjs:67977:5)
+2025-09-01T12:36:21.811673531Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:36:21.811678372Z [err]      at Object.<anonymous> (/app/dist/server.cjs:68347:44)
+2025-09-01T12:36:21.811682475Z [err]      at Module._compile (node:internal/modules/cjs/loader:1364:14)
+2025-09-01T12:36:21.811687923Z [err]      at Module._extensions..js (node:internal/modules/cjs/loader:1422:10)
+2025-09-01T12:36:21.811691788Z [err]      at Module.load (node:internal/modules/cjs/loader:1203:32)
+2025-09-01T12:36:21.811695910Z [err]  
+2025-09-01T12:36:21.811699892Z [err]  Node.js v18.20.5
+2025-09-01T12:36:22.915080844Z [err]  /app/dist/server.cjs:8964
+2025-09-01T12:36:22.915090253Z [err]        throw new Error(
+2025-09-01T12:36:22.915095302Z [err]        ^
+2025-09-01T12:36:22.915099337Z [err]  
+2025-09-01T12:36:22.915103194Z [err]  Error: DATABASE_URL must be set. Did you forget to provision a database?
+2025-09-01T12:36:22.915106720Z [err]      at server/db.ts (/app/dist/server.cjs:8964:13)
+2025-09-01T12:36:22.915110380Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:36:22.915114291Z [err]      at server/storage.ts (/app/dist/server.cjs:8991:5)
+2025-09-01T12:36:22.915117869Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:36:22.915126100Z [err]      at server/routes.ts (/app/dist/server.cjs:67977:5)
+2025-09-01T12:36:22.915129800Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:36:22.915133766Z [err]      at Object.<anonymous> (/app/dist/server.cjs:68347:44)
+2025-09-01T12:36:22.915137176Z [err]      at Module._compile (node:internal/modules/cjs/loader:1364:14)
+2025-09-01T12:36:22.915140818Z [err]      at Module._extensions..js (node:internal/modules/cjs/loader:1422:10)
+2025-09-01T12:36:22.915144282Z [err]      at Module.load (node:internal/modules/cjs/loader:1203:32)
+2025-09-01T12:36:22.915149975Z [err]  
+2025-09-01T12:36:22.915153657Z [err]  Node.js v18.20.5
+2025-09-01T12:36:23.980559028Z [err]  /app/dist/server.cjs:8964
+2025-09-01T12:36:23.980565956Z [err]        throw new Error(
+2025-09-01T12:36:23.980571142Z [err]        ^
+2025-09-01T12:36:23.980575978Z [err]  
+2025-09-01T12:36:23.980581656Z [err]  Error: DATABASE_URL must be set. Did you forget to provision a database?
+2025-09-01T12:36:23.980586097Z [err]      at server/db.ts (/app/dist/server.cjs:8964:13)
+2025-09-01T12:36:23.980590459Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:36:23.980595171Z [err]      at server/storage.ts (/app/dist/server.cjs:8991:5)
+2025-09-01T12:36:23.980599929Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:36:23.980604274Z [err]      at server/routes.ts (/app/dist/server.cjs:67977:5)
+2025-09-01T12:36:23.980608478Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:36:23.980612679Z [err]      at Object.<anonymous> (/app/dist/server.cjs:68347:44)
+2025-09-01T12:36:23.980618238Z [err]      at Module._compile (node:internal/modules/cjs/loader:1364:14)
+2025-09-01T12:36:23.980622127Z [err]      at Module._extensions..js (node:internal/modules/cjs/loader:1422:10)
+2025-09-01T12:36:23.980628518Z [err]      at Module.load (node:internal/modules/cjs/loader:1203:32)
+2025-09-01T12:36:23.980633312Z [err]  
+2025-09-01T12:36:23.980637504Z [err]  Node.js v18.20.5
+2025-09-01T12:36:25.087508872Z [err]  /app/dist/server.cjs:8964
+2025-09-01T12:36:25.087512498Z [err]        throw new Error(
+2025-09-01T12:36:25.087516074Z [err]        ^
+2025-09-01T12:36:25.087519843Z [err]  
+2025-09-01T12:36:25.087523413Z [err]  Error: DATABASE_URL must be set. Did you forget to provision a database?
+2025-09-01T12:36:25.087526948Z [err]      at server/db.ts (/app/dist/server.cjs:8964:13)
+2025-09-01T12:36:25.087530876Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:36:25.087534533Z [err]      at server/storage.ts (/app/dist/server.cjs:8991:5)
+2025-09-01T12:36:25.087539254Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:36:25.087542680Z [err]      at server/routes.ts (/app/dist/server.cjs:67977:5)
+2025-09-01T12:36:25.087546378Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:36:25.087549842Z [err]      at Object.<anonymous> (/app/dist/server.cjs:68347:44)
+2025-09-01T12:36:25.087553336Z [err]      at Module._compile (node:internal/modules/cjs/loader:1364:14)
+2025-09-01T12:36:25.087556946Z [err]      at Module._extensions..js (node:internal/modules/cjs/loader:1422:10)
+2025-09-01T12:36:25.087560643Z [err]      at Module.load (node:internal/modules/cjs/loader:1203:32)
+2025-09-01T12:36:25.087564102Z [err]  
+2025-09-01T12:36:25.087567552Z [err]  Node.js v18.20.5
+2025-09-01T12:36:26.013572390Z [err]  /app/dist/server.cjs:8964
+2025-09-01T12:36:26.013579409Z [err]        throw new Error(
+2025-09-01T12:36:26.013583891Z [err]        ^
+2025-09-01T12:36:26.013588515Z [err]  
+2025-09-01T12:36:26.013594618Z [err]  Error: DATABASE_URL must be set. Did you forget to provision a database?
+2025-09-01T12:36:26.013600045Z [err]      at server/db.ts (/app/dist/server.cjs:8964:13)
+2025-09-01T12:36:26.013604520Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:36:26.013610469Z [err]      at server/storage.ts (/app/dist/server.cjs:8991:5)
+2025-09-01T12:36:26.013615048Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:36:26.013619632Z [err]      at server/routes.ts (/app/dist/server.cjs:67977:5)
+2025-09-01T12:36:26.013623394Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:36:26.013627846Z [err]      at Object.<anonymous> (/app/dist/server.cjs:68347:44)
+2025-09-01T12:36:26.013632078Z [err]      at Module._compile (node:internal/modules/cjs/loader:1364:14)
+2025-09-01T12:36:26.013635939Z [err]      at Module._extensions..js (node:internal/modules/cjs/loader:1422:10)
+2025-09-01T12:36:26.013639759Z [err]      at Module.load (node:internal/modules/cjs/loader:1203:32)
+2025-09-01T12:36:26.013643935Z [err]  
+2025-09-01T12:36:26.013647764Z [err]  Node.js v18.20.5
+2025-09-01T12:36:27.048041580Z [err]  /app/dist/server.cjs:8964
+2025-09-01T12:36:27.048045468Z [err]        throw new Error(
+2025-09-01T12:36:27.048049814Z [err]        ^
+2025-09-01T12:36:27.048053637Z [err]  
+2025-09-01T12:36:27.048058189Z [err]  Error: DATABASE_URL must be set. Did you forget to provision a database?
+2025-09-01T12:36:27.048062080Z [err]      at server/db.ts (/app/dist/server.cjs:8964:13)
+2025-09-01T12:36:27.048066611Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:36:27.048070521Z [err]      at server/storage.ts (/app/dist/server.cjs:8991:5)
+2025-09-01T12:36:27.048074064Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:36:27.048078463Z [err]      at server/routes.ts (/app/dist/server.cjs:67977:5)
+2025-09-01T12:36:27.048082757Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:36:27.048086330Z [err]      at Object.<anonymous> (/app/dist/server.cjs:68347:44)
+2025-09-01T12:36:27.048089959Z [err]      at Module._compile (node:internal/modules/cjs/loader:1364:14)
+2025-09-01T12:36:27.048093680Z [err]      at Module._extensions..js (node:internal/modules/cjs/loader:1422:10)
+2025-09-01T12:36:27.048097522Z [err]      at Module.load (node:internal/modules/cjs/loader:1203:32)
+2025-09-01T12:36:27.048101848Z [err]  
+2025-09-01T12:36:27.048105444Z [err]  Node.js v18.20.5
+2025-09-01T12:36:28.119794813Z [err]  /app/dist/server.cjs:8964
+2025-09-01T12:36:28.119800521Z [err]        throw new Error(
+2025-09-01T12:36:28.119806430Z [err]        ^
+2025-09-01T12:36:28.119812297Z [err]  
+2025-09-01T12:36:28.119818159Z [err]  Error: DATABASE_URL must be set. Did you forget to provision a database?
+2025-09-01T12:36:28.119824028Z [err]      at server/db.ts (/app/dist/server.cjs:8964:13)
+2025-09-01T12:36:28.119829758Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:36:28.119835301Z [err]      at server/storage.ts (/app/dist/server.cjs:8991:5)
+2025-09-01T12:36:28.119840925Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:36:28.119846354Z [err]      at server/routes.ts (/app/dist/server.cjs:67977:5)
+2025-09-01T12:36:28.119854070Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:36:28.119859575Z [err]      at Object.<anonymous> (/app/dist/server.cjs:68347:44)
+2025-09-01T12:36:28.119865442Z [err]      at Module._compile (node:internal/modules/cjs/loader:1364:14)
+2025-09-01T12:36:28.119872003Z [err]      at Module._extensions..js (node:internal/modules/cjs/loader:1422:10)
+2025-09-01T12:36:28.119880605Z [err]      at Module.load (node:internal/modules/cjs/loader:1203:32)
+2025-09-01T12:36:28.119887075Z [err]  
+2025-09-01T12:36:28.119892496Z [err]  Node.js v18.20.5
+2025-09-01T12:36:29.160168968Z [err]  /app/dist/server.cjs:8964
+2025-09-01T12:36:29.160176448Z [err]        throw new Error(
+2025-09-01T12:36:29.160183347Z [err]        ^
+2025-09-01T12:36:29.160189997Z [err]  
+2025-09-01T12:36:29.160197986Z [err]  Error: DATABASE_URL must be set. Did you forget to provision a database?
+2025-09-01T12:36:29.160203891Z [err]      at server/db.ts (/app/dist/server.cjs:8964:13)
+2025-09-01T12:36:29.160209542Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:36:29.160215040Z [err]      at server/storage.ts (/app/dist/server.cjs:8991:5)
+2025-09-01T12:36:29.160222117Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:36:29.160228675Z [err]      at server/routes.ts (/app/dist/server.cjs:67977:5)
+2025-09-01T12:36:29.160234939Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:36:29.160240622Z [err]      at Object.<anonymous> (/app/dist/server.cjs:68347:44)
+2025-09-01T12:36:29.160246094Z [err]      at Module._compile (node:internal/modules/cjs/loader:1364:14)
+2025-09-01T12:36:29.160251761Z [err]      at Module._extensions..js (node:internal/modules/cjs/loader:1422:10)
+2025-09-01T12:36:29.160258431Z [err]      at Module.load (node:internal/modules/cjs/loader:1203:32)
+2025-09-01T12:36:29.160266187Z [err]  
+2025-09-01T12:36:29.160273515Z [err]  Node.js v18.20.5
+2025-09-01T12:36:30.271066417Z [err]  /app/dist/server.cjs:8964
+2025-09-01T12:36:30.271074592Z [err]        throw new Error(
+2025-09-01T12:36:30.271079620Z [err]        ^
+2025-09-01T12:36:30.271083971Z [err]  
+2025-09-01T12:36:30.271088235Z [err]  Error: DATABASE_URL must be set. Did you forget to provision a database?
+2025-09-01T12:36:30.271092424Z [err]      at server/db.ts (/app/dist/server.cjs:8964:13)
+2025-09-01T12:36:30.271096240Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:36:30.271100490Z [err]      at server/storage.ts (/app/dist/server.cjs:8991:5)
+2025-09-01T12:36:30.271104792Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:36:30.271114987Z [err]      at server/routes.ts (/app/dist/server.cjs:67977:5)
+2025-09-01T12:36:30.271119544Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:36:30.271123575Z [err]      at Object.<anonymous> (/app/dist/server.cjs:68347:44)
+2025-09-01T12:36:30.271127651Z [err]      at Module._compile (node:internal/modules/cjs/loader:1364:14)
+2025-09-01T12:36:30.271131987Z [err]      at Module._extensions..js (node:internal/modules/cjs/loader:1422:10)
+2025-09-01T12:36:30.271135947Z [err]      at Module.load (node:internal/modules/cjs/loader:1203:32)
+2025-09-01T12:36:30.271139933Z [err]  
+2025-09-01T12:36:30.271144334Z [err]  Node.js v18.20.5
+2025-09-01T12:36:31.384858173Z [err]  /app/dist/server.cjs:8964
+2025-09-01T12:36:31.384869744Z [err]        throw new Error(
+2025-09-01T12:36:31.384877631Z [err]        ^
+2025-09-01T12:36:31.384883838Z [err]  
+2025-09-01T12:36:31.384889666Z [err]  Error: DATABASE_URL must be set. Did you forget to provision a database?
+2025-09-01T12:36:31.384895956Z [err]      at server/db.ts (/app/dist/server.cjs:8964:13)
+2025-09-01T12:36:31.384901927Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:36:31.384907534Z [err]      at server/storage.ts (/app/dist/server.cjs:8991:5)
+2025-09-01T12:36:31.384913012Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:36:31.384919182Z [err]      at server/routes.ts (/app/dist/server.cjs:67977:5)
+2025-09-01T12:36:31.384925358Z [err]      at __init (/app/dist/server.cjs:9:56)
+2025-09-01T12:36:31.384933269Z [err]      at Object.<anonymous> (/app/dist/server.cjs:68347:44)
+2025-09-01T12:36:31.384939519Z [err]      at Module._compile (node:internal/modules/cjs/loader:1364:14)
+2025-09-01T12:36:31.384945287Z [err]      at Module._extensions..js (node:internal/modules/cjs/loader:1422:10)
+2025-09-01T12:36:31.384951168Z [err]      at Module.load (node:internal/modules/cjs/loader:1203:32)
+2025-09-01T12:36:31.384957139Z [err]  
+2025-09-01T12:36:31.384963417Z [err]  Node.js v18.20.5

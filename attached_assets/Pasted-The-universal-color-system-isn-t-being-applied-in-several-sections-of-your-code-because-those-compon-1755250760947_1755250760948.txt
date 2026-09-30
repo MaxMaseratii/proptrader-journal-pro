@@ -1,0 +1,115 @@
+The universal color system isn't being applied in several sections of your code because those components are using hardcoded color classes or different, non-universal color functions instead of consistently calling your getValueColor or getUniversalValueColor function.
+
+The issue is not with the function itself, but with its inconsistent application across the dashboard.
+
+The Core Issue: Inconsistent Implementation
+You've defined a "universal" system with getUniversalValueColor and a wrapper getValueColor, but many of your widgets bypass this system entirely.
+
+Here’s a breakdown of where the implementation deviates in the sections you mentioned:
+
+❌ Performance Overview (Section 3)
+Several widgets in this section use hardcoded colors or a separate getPercentageColor function, ignoring your universal system.
+
+Win Rate: This widget uses getPercentageColor instead of getValueColor.
+
+JavaScript
+
+// Incorrect - Uses a different function
+<div className={`text-2xl font-bold mb-1 ${getPercentageColor(combinedAnalytics?.winRate || 0).textColor}`}>
+Discipline Score, R Factor, Profit Factor: These widgets have hardcoded text colors and do not change dynamically based on their values.
+
+JavaScript
+
+// Incorrect - Hardcoded colors
+<div className="text-2xl font-bold mb-1 text-blue-400">...</div> // Discipline Score
+<div className="text-2xl font-bold mb-1 text-cyan-400">...</div> // R Factor
+<div className="text-2xl font-bold mb-1 text-green-500">...</div> // Profit Factor
+❌ Advanced Statistics (Section 7)
+This section is almost entirely built with hardcoded colors, making it static and non-responsive to the data.
+
+Max Consecutive Wins / Losses: These are always green and red, respectively, regardless of the number.
+
+JavaScript
+
+// Incorrect - Hardcoded colors
+<div className="text-2xl font-bold mb-1 text-green-500">...</div> // Max Wins
+<div className="text-2xl font-bold mb-1 text-red-500">...</div> // Max Losses
+Largest Win / Loss: Similar to the above, these are hardcoded.
+
+JavaScript
+
+// Incorrect - Hardcoded colors
+<div className="text-2xl font-bold mb-1 text-green-500">...</div> // Largest Win
+<div className="text-2xl font-bold mb-1 text-red-500">...</div> // Largest Loss
+Avg R:R Ratio: This is hardcoded to amber.
+
+JavaScript
+
+// Incorrect - Hardcoded color
+<div className="text-2xl font-bold mb-1 text-amber-400">...</div>
+✅ Correctly Implemented Sections
+For comparison, some sections do use your system correctly, which is why they work as you expect.
+
+Investment Tracking (Section 6): All the widgets in this section correctly use getValueColor to display costs as negative (red) and payouts as positive (green).
+
+JavaScript
+
+// Correct ✅
+<div className={`text-2xl font-bold mb-1 ${getValueColor(-(accounts?.reduce(...) || 0))}`}>
+Calendar Day Cells: The daily P&L in the calendar view also correctly uses the universal function.
+
+JavaScript
+
+// Correct ✅
+<div className={`text-xs font-bold mb-1 ${getUniversalValueColor(metrics.totalPnL, 'pnl').textColor}`}>
+How to Fix It
+To make your color system truly universal, you need to replace all hardcoded color classes and divergent color functions with your getValueColor function.
+
+Step 1: Identify Hardcoded Colors
+Search your file for static color classes applied to dynamic data, such as:
+
+text-green-500
+
+text-red-500
+
+text-blue-400
+
+text-amber-400
+
+text-cyan-400
+
+Step 2: Replace with getValueColor
+Replace the static classes with a call to your getValueColor function, passing in the relevant numerical value and, importantly, the correct context.
+
+Example: Fixing the "Profit Factor" widget in "Performance Overview"
+
+JavaScript
+
+// BEFORE (Incorrect ❌)
+<div className="text-2xl font-bold mb-1 text-green-500">
+  {combinedAnalytics?.profitFactor?.toFixed(2) || '0.00'}
+</div>
+
+// AFTER (Correct ✅)
+<div className={`text-2xl font-bold mb-1 ${getValueColor(combinedAnalytics?.profitFactor, 'roi')}`}>
+  {combinedAnalytics?.profitFactor?.toFixed(2) || '0.00'}
+</div>
+In this case, a profit factor greater than 1 is good (green) and less than 1 is bad (red). You might need to adjust the value passed, for example: getValueColor(combinedAnalytics?.profitFactor - 1, 'roi').
+
+Step 3: Unify All Color Functions
+Replace calls to other color functions like getPercentageColor with your universal one to ensure a single source of truth.
+
+Example: Fixing the "Win Rate" widget
+
+JavaScript
+
+// BEFORE (Incorrect ❌)
+<div className={`text-2xl font-bold mb-1 ${getPercentageColor(combinedAnalytics?.winRate || 0).textColor}`}>
+    {formatPercentage(combinedAnalytics?.winRate || 0)}
+</div>
+
+// AFTER (Correct ✅)
+<div className={`text-2xl font-bold mb-1 ${getValueColor(combinedAnalytics?.winRate, 'roi')}`}>
+    {formatPercentage(combinedAnalytics?.winRate || 0)}
+</div>
+(You may need to ensure your getUniversalValueColor function has a context that properly handles percentages, like 'roi' or a new 'percentage' context).

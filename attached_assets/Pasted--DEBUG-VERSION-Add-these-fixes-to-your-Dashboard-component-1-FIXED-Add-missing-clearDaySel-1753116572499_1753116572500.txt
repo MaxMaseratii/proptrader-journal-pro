@@ -1,0 +1,405 @@
+// DEBUG VERSION - Add these fixes to your Dashboard component
+
+// 1. FIXED: Add missing clearDaySelection function
+const clearDaySelection = () => {
+  console.log('🗑️ Clearing day selection');
+  setSelectedDate(new Date()); // Reset to today
+};
+
+// 2. FIXED: Enhanced handleDayClick with better debugging
+const handleDayClick = (clickedDate: Date) => {
+  console.log('🖱️ Day clicked:', clickedDate.toDateString());
+  console.log('🔄 Current selectedDate:', selectedDate.toDateString());
+  console.log('🔄 Setting new selectedDate...');
+  
+  // Force a new Date object to ensure React detects the change
+  const newDate = new Date(clickedDate.getTime());
+  setSelectedDate(newDate);
+  
+  // Debug: Verify state update
+  setTimeout(() => {
+    console.log('✅ State updated. New selectedDate should be:', newDate.toDateString());
+  }, 100);
+};
+
+// 3. FIXED: Enhanced WeeklyCalendarView with better click handling
+const WeeklyCalendarView: React.FC<WeeklyCalendarViewProps> = ({ 
+  currentWeekStart, 
+  trades, 
+  accounts, 
+  selectedAccountIds 
+}) => {
+  const weekDays = [];
+  const today = new Date();
+  
+  // Generate 7 days starting from currentWeekStart
+  for (let i = 0; i < 7; i++) {
+    const date = new Date(currentWeekStart);
+    date.setDate(date.getDate() + i);
+    weekDays.push(date);
+  }
+
+  const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
+  return (
+    <div className="bg-gray-800/40 rounded-lg border border-gray-600/30 p-4">
+      {/* Week Header */}
+      <div className="grid grid-cols-7 gap-2 mb-4">
+        {dayNames.map(dayName => (
+          <div key={dayName} className="text-center text-sm font-semibold text-gray-300 py-2">
+            {dayName}
+          </div>
+        ))}
+      </div>
+      
+      {/* Week Days */}
+      <div className="grid grid-cols-7 gap-2">
+        {weekDays.map(date => {
+          const metrics = getDayMetrics(date, trades, selectedAccountIds);
+          const isToday = date.toDateString() === today.toDateString();
+          const isSelected = selectedDate?.toDateString() === date.toDateString();
+          const isCurrentMonth = date.getMonth() === currentWeekStart.getMonth();
+          
+          return (
+            <div
+              key={date.toISOString()}
+              className={`
+                relative p-3 rounded-lg border transition-all duration-200 h-24 cursor-pointer
+                ${isSelected
+                  ? 'border-amber-400 bg-amber-900/20 shadow-lg ring-2 ring-amber-400/50'
+                  : isToday 
+                  ? 'border-teal-400/60 bg-gradient-to-br from-teal-900/30 via-gray-800/40 to-teal-900/30' 
+                  : isCurrentMonth
+                  ? 'border-gray-600/40 bg-gradient-to-br from-gray-800/40 via-gray-700/40 to-gray-800/40'
+                  : 'border-gray-700/30 bg-gradient-to-br from-gray-900/30 via-gray-800/30 to-gray-900/30 opacity-60'
+                }
+                hover:border-amber-400/60 hover:scale-105
+              `}
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('📅 Calendar day clicked:', date.toDateString());
+                handleDayClick(date);
+              }}
+              style={{ zIndex: 10 }} // Ensure clickable
+            >
+              {/* Today indicator */}
+              {isToday && (
+                <div className="absolute top-1 right-1 w-2 h-2 rounded-full bg-teal-400 animate-pulse" />
+              )}
+              
+              {/* Selected indicator */}
+              {isSelected && (
+                <div className="absolute top-1 left-1 w-2 h-2 rounded-full bg-amber-400" />
+              )}
+              
+              {/* Date */}
+              <div className={`text-sm font-semibold mb-1 ${
+                isSelected ? 'text-amber-400' :
+                isToday ? 'text-teal-400' : 
+                isCurrentMonth ? 'text-gray-200' : 'text-gray-500'
+              }`}>
+                {date.getDate()}
+              </div>
+              
+              {/* P&L */}
+              <div className={`text-xs font-bold mb-1 ${
+                metrics.totalPnL > 0 ? 'text-green-400' : 
+                metrics.totalPnL < 0 ? 'text-red-400' : 'text-gray-400'
+              }`}>
+                {metrics.totalPnL > 0 ? '+' : ''}${Math.abs(metrics.totalPnL).toFixed(0)}
+              </div>
+              
+              {/* Bottom metrics */}
+              <div className="flex justify-between items-center text-xs">
+                <span className="text-gray-400">{metrics.totalTrades}T</span>
+                <span className={`font-medium ${
+                  metrics.winRate >= 80 ? 'text-green-400' :
+                  metrics.winRate >= 60 ? 'text-yellow-400' :
+                  metrics.winRate >= 40 ? 'text-orange-400' : 'text-red-400'
+                }`}>
+                  {metrics.totalTrades > 0 ? Math.round(metrics.winRate) : 0}%
+                </span>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+};
+
+// 4. FIXED: Enhanced MonthlyCalendarView with better click handling
+const MonthlyCalendarView: React.FC<MonthlyCalendarViewProps> = ({ 
+  currentMonth, 
+  trades, 
+  accounts, 
+  selectedAccountIds 
+}) => {
+  const today = new Date();
+  const firstDay = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 1);
+  const lastDay = new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 0);
+  
+  // Get first day of the week for the month (Sunday = 0)
+  const startDate = new Date(firstDay);
+  startDate.setDate(startDate.getDate() - firstDay.getDay());
+  
+  const weeks = [];
+  let currentDate = new Date(startDate);
+  
+  // Generate weeks until we cover the entire month
+  while (currentDate <= lastDay || weeks.length < 6) {
+    const week = [];
+    for (let i = 0; i < 7; i++) {
+      week.push(new Date(currentDate));
+      currentDate.setDate(currentDate.getDate() + 1);
+    }
+    weeks.push(week);
+    
+    // Break if we've covered the month and have at least 4 weeks
+    if (currentDate > lastDay && weeks.length >= 4) break;
+  }
+
+  const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
+  return (
+    <div className="bg-gray-800/40 rounded-lg border border-gray-600/30 p-4">
+      {/* Month Header */}
+      <div className="grid grid-cols-7 gap-2 mb-4">
+        {dayNames.map(dayName => (
+          <div key={dayName} className="text-center text-sm font-semibold text-gray-300 py-2">
+            {dayName}
+          </div>
+        ))}
+      </div>
+      
+      {/* Month Weeks */}
+      {weeks.map((week, weekIndex) => (
+        <div key={weekIndex} className="grid grid-cols-7 gap-2 mb-2 last:mb-0">
+          {week.map(date => {
+            const metrics = getDayMetrics(date, trades, selectedAccountIds);
+            const isToday = date.toDateString() === today.toDateString();
+            const isCurrentMonth = date.getMonth() === currentMonth.getMonth();
+            const isSelected = selectedDate?.toDateString() === date.toDateString();
+            
+            return (
+              <div
+                key={date.toISOString()}
+                className={`
+                  relative p-2 rounded-lg border transition-all duration-200 h-20 cursor-pointer
+                  ${isSelected
+                    ? 'border-amber-400 bg-amber-900/20 shadow-lg ring-2 ring-amber-400/50'
+                    : isToday 
+                    ? 'border-teal-400/60 bg-gradient-to-br from-teal-900/30 via-gray-800/40 to-teal-900/30' 
+                    : isCurrentMonth
+                    ? 'border-gray-600/40 bg-gradient-to-br from-gray-800/40 via-gray-700/40 to-gray-800/40'
+                    : 'border-gray-700/30 bg-gradient-to-br from-gray-900/30 via-gray-800/30 to-gray-900/30 opacity-60'
+                  }
+                  hover:border-amber-400/60 hover:scale-105
+                `}
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  console.log('📅 Monthly calendar day clicked:', date.toDateString());
+                  handleDayClick(date);
+                }}
+                style={{ zIndex: 10 }}
+              >
+                {/* Today indicator */}
+                {isToday && (
+                  <div className="absolute top-1 right-1 w-1.5 h-1.5 rounded-full bg-teal-400 animate-pulse" />
+                )}
+                
+                {/* Selected indicator */}
+                {isSelected && (
+                  <div className="absolute top-1 left-1 w-1.5 h-1.5 rounded-full bg-amber-400" />
+                )}
+                
+                {/* Date */}
+                <div className={`text-xs font-semibold mb-1 ${
+                  isSelected ? 'text-amber-400' :
+                  isToday ? 'text-teal-400' : 
+                  isCurrentMonth ? 'text-gray-200' : 'text-gray-500'
+                }`}>
+                  {date.getDate()}
+                </div>
+                
+                {/* P&L */}
+                <div className={`text-xs font-bold mb-1 ${
+                  metrics.totalPnL > 0 ? 'text-green-400' : 
+                  metrics.totalPnL < 0 ? 'text-red-400' : 'text-gray-400'
+                }`}>
+                  {metrics.totalTrades > 0 ? (
+                    <>
+                      {metrics.totalPnL > 0 ? '+' : ''}${Math.abs(metrics.totalPnL).toFixed(0)}
+                    </>
+                  ) : (
+                    '$0'
+                  )}
+                </div>
+                
+                {/* Bottom metrics */}
+                <div className="flex justify-between items-center text-xs">
+                  <span className="text-gray-400">{metrics.totalTrades}T</span>
+                  <span className={`font-medium ${
+                    metrics.totalTrades === 0 ? 'text-gray-500' :
+                    metrics.winRate >= 80 ? 'text-green-400' :
+                    metrics.winRate >= 60 ? 'text-yellow-400' :
+                    metrics.winRate >= 40 ? 'text-orange-400' : 'text-red-400'
+                  }`}>
+                    {metrics.totalTrades > 0 ? Math.round(metrics.winRate) : 0}%
+                  </span>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      ))}
+    </div>
+  );
+};
+
+// 5. ADD: Debug panel to show current state
+const DebugPanel = () => {
+  if (process.env.NODE_ENV === 'production') return null;
+  
+  return (
+    <div className="fixed top-4 right-4 bg-gray-800 p-3 rounded border border-gray-600 text-xs text-white z-50">
+      <div className="font-bold text-amber-400 mb-2">🔍 Debug Info:</div>
+      <div>Selected Date: {selectedDate?.toDateString()}</div>
+      <div>Calendar View: {calendarViewMode}</div>
+      <div>Selected Day Data: {selectedDayData ? 'Available' : 'None'}</div>
+      <div>Trades: {trades?.length || 0}</div>
+      <div>Accounts: {accounts?.length || 0}</div>
+    </div>
+  );
+};
+
+// 6. FIXED: Enhanced selectedDayData calculation with debugging
+const selectedDayData = useMemo(() => {
+  console.log('🎯 Recalculating selectedDayData...');
+  console.log('📅 Selected date:', selectedDate?.toDateString());
+  console.log('📊 Available trades:', trades?.length || 0);
+  console.log('🎛️ Selected accounts:', selectedAccountIds);
+
+  if (!trades || !selectedDate) {
+    console.log('❌ Missing trades or selectedDate');
+    return null;
+  }
+  
+  const dayTrades = getTradesForDate(selectedDate, trades, selectedAccountIds);
+  console.log('📈 Day trades found:', dayTrades.length);
+  
+  if (dayTrades.length === 0) {
+    console.log('📝 No trades for selected day, returning default data');
+    return {
+      date: selectedDate,
+      totalDayTrades: 0,
+      wins: 0,
+      losses: 0,
+      dayPnL: 0,
+      avgRiskPerTrade: 0,
+      avgRewardRatio: 0,
+      maxDailyRisk: 0,
+      disciplineScore: 0,
+      winRate: 0,
+      hoursWorked: 0,
+      hoursPlanned: 8,
+      trades: []
+    };
+  }
+  
+  const totalDayTrades = dayTrades.length;
+  const wins = dayTrades.filter(t => (t.pnl || 0) > 0).length;
+  const losses = dayTrades.filter(t => (t.pnl || 0) <= 0).length;
+  const dayPnL = dayTrades.reduce((sum, t) => sum + (t.pnl || 0), 0);
+  
+  const result = {
+    date: selectedDate,
+    totalDayTrades,
+    wins,
+    losses,
+    dayPnL,
+    avgRiskPerTrade: 20, // Default value
+    avgRewardRatio: 60, // Default value
+    maxDailyRisk: 100, // Default value
+    disciplineScore: Math.min(95, 70 + (wins / totalDayTrades) * 25),
+    winRate: totalDayTrades > 0 ? (wins / totalDayTrades) * 100 : 0,
+    hoursWorked: totalDayTrades * 0.5,
+    hoursPlanned: 8,
+    trades: dayTrades
+  };
+  
+  console.log('✅ Final selectedDayData:', result);
+  return result;
+}, [selectedDate, trades, selectedAccountIds]);
+
+// 7. ADD: Enhanced day selection indicator
+const DaySelectionIndicator = () => {
+  if (!selectedDayData || selectedDayData.date.toDateString() === new Date().toDateString()) {
+    return null;
+  }
+
+  return (
+    <div className="mb-6 bg-amber-900/20 border border-amber-400/30 rounded-lg p-3">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center">
+          <div className="w-2 h-2 bg-amber-400 rounded-full animate-pulse mr-3"></div>
+          <span className="text-amber-400 font-semibold">
+            Viewing data for {selectedDayData.date.toLocaleDateString('en-US', { 
+              weekday: 'long',
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric'
+            })}
+          </span>
+        </div>
+        <button
+          onClick={clearDaySelection}
+          className="px-3 py-1 bg-amber-600/80 hover:bg-amber-600 text-white text-sm rounded-md transition-colors"
+        >
+          Back to Today
+        </button>
+      </div>
+    </div>
+  );
+};
+
+// 8. FIXED: Add these to your JSX return
+// Add the DebugPanel component at the end of your JSX:
+// <DebugPanel />
+
+// Add the DaySelectionIndicator before your main content:
+// <DaySelectionIndicator />
+
+// 9. TROUBLESHOOTING STEPS:
+
+/*
+STEP 1: Add console.log to verify clicks are firing
+- Open browser DevTools (F12)
+- Click on calendar days
+- Look for "📅 Calendar day clicked:" messages
+
+STEP 2: Check for React errors
+- Look for red error messages in console
+- Check for TypeScript compilation errors
+
+STEP 3: Verify state updates
+- Look for "✅ State updated" messages
+- Check if selectedDayData is recalculating
+
+STEP 4: Test in isolation
+- Create a simple button that calls handleDayClick(new Date())
+- Verify basic state management works
+
+STEP 5: Check CSS interference
+- Inspect calendar day elements
+- Look for pointer-events: none or z-index issues
+- Verify cursor: pointer is active
+
+COMMON FIXES:
+- Clear browser cache
+- Restart Replit dev server
+- Check for conflicting event handlers
+- Verify all imports are working
+*/

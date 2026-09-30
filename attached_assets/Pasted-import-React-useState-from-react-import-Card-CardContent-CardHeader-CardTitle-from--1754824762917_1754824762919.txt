@@ -1,0 +1,455 @@
+import React, { useState } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Label } from '@/components/ui/label';
+import { Progress } from '@/components/ui/progress';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { 
+  Brain,
+  AlertTriangle,
+  Shield,
+  Activity,
+  Award,
+  CheckCircle
+} from 'lucide-react';
+
+// Custom CSS for smooth, bright, joyful professional sliders
+const sliderStyles = `
+  .slider-sunrise::-webkit-slider-thumb {
+    background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+    border: 2px solid #ff7675;
+    box-shadow: 0 0 20px rgba(255, 107, 107, 0.6);
+  }
+  .slider-ocean::-webkit-slider-thumb {
+    background: linear-gradient(135deg, #00b894, #00cec9);
+    border: 2px solid #55efc4;
+    box-shadow: 0 0 20px rgba(0, 206, 201, 0.6);
+  }
+  .slider-sky::-webkit-slider-thumb {
+    background: linear-gradient(135deg, #0984e3, #74b9ff);
+    border: 2px solid #81ecec;
+    box-shadow: 0 0 20px rgba(116, 185, 255, 0.6);
+  }
+  .slider-lavender::-webkit-slider-thumb {
+    background: linear-gradient(135deg, #a29bfe, #6c5ce7);
+    border: 2px solid #fd79a8;
+    box-shadow: 0 0 20px rgba(162, 155, 254, 0.6);
+  }
+  .slider-mint::-webkit-slider-thumb {
+    background: linear-gradient(135deg, #00b894, #55efc4);
+    border: 2px solid #00cec9;
+    box-shadow: 0 0 20px rgba(85, 239, 196, 0.6);
+  }
+  .slider-azure::-webkit-slider-thumb {
+    background: linear-gradient(135deg, #74b9ff, #0984e3);
+    border: 2px solid #81ecec;
+    box-shadow: 0 0 20px rgba(129, 236, 236, 0.6);
+  }
+  .slider-coral::-webkit-slider-thumb {
+    background: linear-gradient(135deg, #fd79a8, #e84393);
+    border: 2px solid #ff7675;
+    box-shadow: 0 0 20px rgba(253, 121, 168, 0.6);
+  }
+  .slider-gold::-webkit-slider-thumb {
+    background: linear-gradient(135deg, #fdcb6e, #e17055);
+    border: 2px solid #f39c12;
+    box-shadow: 0 0 20px rgba(253, 203, 110, 0.6);
+  }
+  
+  input[type="range"]::-webkit-slider-thumb {
+    appearance: none;
+    height: 24px;
+    width: 24px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  input[type="range"]::-webkit-slider-thumb:hover {
+    transform: scale(1.2);
+    box-shadow: 0 0 30px rgba(116, 185, 255, 0.8);
+  }
+  
+  input[type="range"]::-webkit-slider-track {
+    height: 12px;
+    border-radius: 6px;
+    background: linear-gradient(90deg, #ddd6fe, #c7d2fe);
+    border: none;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+  }
+`;
+
+const MentalCheckComponent = () => {
+  const [selectedAccount, setSelectedAccount] = useState("1");
+  const [sliderValues, setSliderValues] = useState({
+    emotional: 4,
+    physical: 5,
+    focus: 4,
+    confidence: 4,
+    market: 4,
+    risk: 5,
+    humility: 4,
+    professional: 4
+  });
+
+  const accounts = [
+    { id: 1, name: "Main Trading Account", type: "Live" },
+    { id: 2, name: "Practice Account", type: "Demo" },
+    { id: 3, name: "Swing Trading Account", type: "Live" }
+  ];
+
+  const totalScore = Object.values(sliderValues).reduce((sum, val) => sum + val, 0);
+  const maxScore = 40;
+  const percentage = (totalScore / maxScore) * 100;
+
+  const getScoreLabel = (score) => {
+    if (score >= 35) return { label: "Excellent", color: "text-emerald-600" };
+    if (score >= 30) return { label: "Good", color: "text-indigo-600" };
+    if (score >= 25) return { label: "Fair", color: "text-orange-600" };
+    return { label: "Needs Improvement", color: "text-pink-600" };
+  };
+
+  const scoreInfo = getScoreLabel(totalScore);
+
+  return (
+    <>
+      <style>{sliderStyles}</style>
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-100 to-purple-50 text-gray-800 p-6">
+        <div className="max-w-5xl mx-auto">
+          {/* Enhanced Pre-Session Mental Fitness Check */}
+          <Card className="bg-gradient-to-br from-white/90 via-blue-50/80 to-indigo-50/90 border border-indigo-200/60 backdrop-blur-lg shadow-xl">
+            <CardHeader className="pb-4">
+              <CardTitle className="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 flex items-center gap-2">
+                <Brain className="w-6 h-6 text-indigo-500" />
+                Pre-Session Mental Check & Loss-Cutting Mindset
+              </CardTitle>
+              
+              <div className="mt-4">
+                <Label className="text-sm text-gray-600 mb-2 block font-medium">Select Trading Account</Label>
+                <Select value={selectedAccount} onValueChange={setSelectedAccount}>
+                  <SelectTrigger className="bg-white/80 border-indigo-200 text-gray-700 shadow-sm hover:shadow-md transition-all">
+                    <SelectValue placeholder="Choose your trading account" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-white/95 border-indigo-200 backdrop-blur-md shadow-lg">
+                    {accounts?.map((account) => (
+                      <SelectItem key={account.id} value={account.id.toString()} className="text-gray-700 hover:bg-indigo-50">
+                        {account.name} ({account.type})
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </CardHeader>
+            
+            <CardContent className="space-y-6">
+              {/* Loss-Cutting Psychology Education */}
+              <div className="bg-gradient-to-r from-rose-50 via-pink-50 to-orange-50 p-6 rounded-2xl border border-rose-200/50 shadow-lg">
+                <div className="flex items-center gap-3 mb-4">
+                  <AlertTriangle className="w-6 h-6 text-rose-500" />
+                  <h4 className="text-gray-800 font-bold text-lg">The Mental Battle: Why We Hold Losing Trades</h4>
+                </div>
+                <div className="space-y-4 text-gray-700">
+                  <p className="leading-relaxed">
+                    <strong className="text-rose-600">Every trader faces this moment:</strong> Your trade is moving against you. Your stop-loss level 
+                    is getting closer. Logic says "exit now," but your emotions scream "just wait a little longer!"
+                  </p>
+                  <p className="leading-relaxed text-sm">
+                    Three powerful forces work against you: <span className="text-orange-600 font-medium">Pride</span> (admitting you're wrong hurts), 
+                    <span className="text-blue-600 font-medium"> Hope</span> (maybe it will reverse), and <span className="text-purple-600 font-medium">Fear</span> (what if you exit and it immediately recovers?). 
+                    These emotions are natural, but they destroy accounts.
+                  </p>
+                  <div className="bg-white/70 p-4 rounded-xl border border-orange-200 shadow-sm">
+                    <p className="text-orange-700 font-medium mb-2">💡 The Reality:</p>
+                    <p className="text-sm text-gray-700">Professional traders cut losses fast because they understand: Small losses are the cost of doing business. 
+                    Big losses are account killers. Every dollar you save by cutting losses early is capital preserved for your next winning trade.</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Simple Loss-Cutting System */}
+              <div className="bg-gradient-to-r from-emerald-50 via-teal-50 to-cyan-50 p-6 rounded-2xl border border-emerald-200/50 shadow-lg">
+                <div className="flex items-center gap-3 mb-4">
+                  <Shield className="w-6 h-6 text-emerald-600" />
+                  <h4 className="text-gray-800 font-bold text-lg">Simple 4-Step Loss Control System</h4>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-3">
+                    <div className="flex items-start gap-3 p-4 bg-white/60 rounded-xl border border-emerald-200/50 shadow-sm hover:shadow-md transition-all">
+                      <div className="w-8 h-8 bg-gradient-to-r from-emerald-500 to-teal-500 text-white rounded-full flex items-center justify-center font-bold text-sm">1</div>
+                      <div>
+                        <p className="text-emerald-700 font-semibold text-sm">Plan Your Exit Before You Enter</p>
+                        <p className="text-gray-600 text-xs mt-1">Decide your maximum loss before clicking buy. Write it down: "I will exit if price hits $_____"</p>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-3 p-4 bg-white/60 rounded-xl border border-sky-200/50 shadow-sm hover:shadow-md transition-all">
+                      <div className="w-8 h-8 bg-gradient-to-r from-sky-500 to-blue-500 text-white rounded-full flex items-center justify-center font-bold text-sm">2</div>
+                      <div>
+                        <p className="text-sky-700 font-semibold text-sm">Set Your Risk Limit</p>
+                        <p className="text-gray-600 text-xs mt-1">Never risk more than 1-2% of your account on any single trade. This keeps you in the game long-term.</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="space-y-3">
+                    <div className="flex items-start gap-3 p-4 bg-white/60 rounded-xl border border-violet-200/50 shadow-sm hover:shadow-md transition-all">
+                      <div className="w-8 h-8 bg-gradient-to-r from-violet-500 to-purple-500 text-white rounded-full flex items-center justify-center font-bold text-sm">3</div>
+                      <div>
+                        <p className="text-violet-700 font-semibold text-sm">Execute Without Emotion</p>
+                        <p className="text-gray-600 text-xs mt-1">When your stop is hit, exit immediately. No second-guessing, no "one more minute." Trust your plan.</p>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-3 p-4 bg-white/60 rounded-xl border border-orange-200/50 shadow-sm hover:shadow-md transition-all">
+                      <div className="w-8 h-8 bg-gradient-to-r from-orange-500 to-pink-500 text-white rounded-full flex items-center justify-center font-bold text-sm">4</div>
+                      <div>
+                        <p className="text-orange-700 font-semibold text-sm">Reset and Look Forward</p>
+                        <p className="text-gray-600 text-xs mt-1">Losses are feedback, not failures. Learn what you can, then focus on finding your next high-probability setup.</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div className="mt-4 bg-white/70 p-4 rounded-xl border border-teal-200/50 shadow-sm">
+                  <p className="text-gray-700 text-sm">
+                    <span className="text-emerald-600 font-semibold">Pro Tip:</span> Practice this system in a demo account until it becomes automatic. 
+                    The traders who master loss control are the ones who survive and thrive in all market conditions.
+                  </p>
+                </div>
+              </div>
+
+              {/* Enhanced Mental State Assessment */}
+              <div className="bg-gradient-to-r from-indigo-50 via-purple-50 to-pink-50 p-6 rounded-2xl border border-indigo-200/50 shadow-lg">
+                <div className="flex items-center gap-3 mb-6">
+                  <Activity className="w-6 h-6 text-indigo-600" />
+                  <h4 className="text-gray-800 font-bold text-lg">Mental State Assessment (Rate 1-5)</h4>
+                </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {/* Left Column */}
+                  <div className="space-y-6">
+                    <div className="space-y-3">
+                      <div className="flex items-center gap-2">
+                        <div className="w-4 h-4 bg-gradient-to-r from-orange-400 to-pink-400 rounded-full shadow-sm"></div>
+                        <Label className="text-gray-800 font-semibold">Emotional Clarity</Label>
+                      </div>
+                      <p className="text-xs text-gray-600 italic">Calm vs. Anxious/Excited • Clarity breeds consistency</p>
+                      <div className="flex items-center gap-4">
+                        <span className="text-xs text-gray-500 min-w-[60px]">Anxious</span>
+                        <input
+                          type="range"
+                          min="1"
+                          max="5"
+                          value={sliderValues.emotional}
+                          onChange={(e) => setSliderValues(prev => ({ ...prev, emotional: parseInt(e.target.value) }))}
+                          className="flex-1 h-3 bg-gradient-to-r from-orange-100 to-pink-100 rounded-lg appearance-none cursor-pointer slider-sunrise"
+                        />
+                        <span className="text-xs text-gray-500 min-w-[40px]">Calm</span>
+                        <span className="text-orange-600 font-bold min-w-[20px] text-lg">{sliderValues.emotional}</span>
+                      </div>
+                    </div>
+
+                    <div className="space-y-3">
+                      <div className="flex items-center gap-2">
+                        <div className="w-4 h-4 bg-gradient-to-r from-emerald-400 to-teal-400 rounded-full shadow-sm"></div>
+                        <Label className="text-gray-800 font-semibold">Focus Level</Label>
+                      </div>
+                      <p className="text-xs text-gray-600 italic">Sharp vs. Scattered • Focus determines outcome</p>
+                      <div className="flex items-center gap-4">
+                        <span className="text-xs text-gray-500 min-w-[60px]">Scattered</span>
+                        <input
+                          type="range"
+                          min="1"
+                          max="5"
+                          value={sliderValues.focus}
+                          onChange={(e) => setSliderValues(prev => ({ ...prev, focus: parseInt(e.target.value) }))}
+                          className="flex-1 h-3 bg-gradient-to-r from-emerald-100 to-teal-100 rounded-lg appearance-none cursor-pointer slider-ocean"
+                        />
+                        <span className="text-xs text-gray-500 min-w-[40px]">Sharp</span>
+                        <span className="text-emerald-600 font-bold min-w-[20px] text-lg">{sliderValues.focus}</span>
+                      </div>
+                    </div>
+
+                    <div className="space-y-3">
+                      <div className="flex items-center gap-2">
+                        <div className="w-4 h-4 bg-gradient-to-r from-blue-400 to-cyan-400 rounded-full shadow-sm"></div>
+                        <Label className="text-gray-800 font-semibold">Market Regime Awareness</Label>
+                      </div>
+                      <p className="text-xs text-gray-600 italic">Do you understand current conditions? • Know the market you're trading</p>
+                      <div className="flex items-center gap-4">
+                        <span className="text-xs text-gray-500 min-w-[60px]">Confused</span>
+                        <input
+                          type="range"
+                          min="1"
+                          max="5"
+                          value={sliderValues.market}
+                          onChange={(e) => setSliderValues(prev => ({ ...prev, market: parseInt(e.target.value) }))}
+                          className="flex-1 h-3 bg-gradient-to-r from-blue-100 to-cyan-100 rounded-lg appearance-none cursor-pointer slider-sky"
+                        />
+                        <span className="text-xs text-gray-500 min-w-[40px]">Clear</span>
+                        <span className="text-blue-600 font-bold min-w-[20px] text-lg">{sliderValues.market}</span>
+                      </div>
+                    </div>
+
+                    <div className="space-y-3">
+                      <div className="flex items-center gap-2">
+                        <div className="w-4 h-4 bg-gradient-to-r from-purple-400 to-pink-400 rounded-full shadow-sm"></div>
+                        <Label className="text-gray-800 font-semibold">Humility Check</Label>
+                      </div>
+                      <p className="text-xs text-gray-600 italic">Ready to be wrong? • Market will humble everyone</p>
+                      <div className="flex items-center gap-4">
+                        <span className="text-xs text-gray-500 min-w-[60px]">Arrogant</span>
+                        <input
+                          type="range"
+                          min="1"
+                          max="5"
+                          value={sliderValues.humility}
+                          onChange={(e) => setSliderValues(prev => ({ ...prev, humility: parseInt(e.target.value) }))}
+                          className="flex-1 h-3 bg-gradient-to-r from-purple-100 to-pink-100 rounded-lg appearance-none cursor-pointer slider-lavender"
+                        />
+                        <span className="text-xs text-gray-500 min-w-[40px]">Humble</span>
+                        <span className="text-purple-600 font-bold min-w-[20px] text-lg">{sliderValues.humility}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Right Column */}
+                  <div className="space-y-6">
+                    <div className="space-y-3">
+                      <div className="flex items-center gap-2">
+                        <div className="w-4 h-4 bg-gradient-to-r from-green-400 to-emerald-400 rounded-full shadow-sm"></div>
+                        <Label className="text-gray-800 font-semibold">Physical Energy</Label>
+                      </div>
+                      <p className="text-xs text-gray-600 italic">Alert vs. Tired/Wired • Energy fuels execution</p>
+                      <div className="flex items-center gap-4">
+                        <span className="text-xs text-gray-500 min-w-[60px]">Tired</span>
+                        <input
+                          type="range"
+                          min="1"
+                          max="5"
+                          value={sliderValues.physical}
+                          onChange={(e) => setSliderValues(prev => ({ ...prev, physical: parseInt(e.target.value) }))}
+                          className="flex-1 h-3 bg-gradient-to-r from-green-100 to-emerald-100 rounded-lg appearance-none cursor-pointer slider-mint"
+                        />
+                        <span className="text-xs text-gray-500 min-w-[40px]">Alert</span>
+                        <span className="text-green-600 font-bold min-w-[20px] text-lg">{sliderValues.physical}</span>
+                      </div>
+                    </div>
+
+                    <div className="space-y-3">
+                      <div className="flex items-center gap-2">
+                        <div className="w-4 h-4 bg-gradient-to-r from-sky-400 to-blue-400 rounded-full shadow-sm"></div>
+                        <Label className="text-gray-800 font-semibold">Confidence</Label>
+                      </div>
+                      <p className="text-xs text-gray-600 italic">Assured vs. Uncertain • Confidence enables action</p>
+                      <div className="flex items-center gap-4">
+                        <span className="text-xs text-gray-500 min-w-[60px]">Uncertain</span>
+                        <input
+                          type="range"
+                          min="1"
+                          max="5"
+                          value={sliderValues.confidence}
+                          onChange={(e) => setSliderValues(prev => ({ ...prev, confidence: parseInt(e.target.value) }))}
+                          className="flex-1 h-3 bg-gradient-to-r from-sky-100 to-blue-100 rounded-lg appearance-none cursor-pointer slider-azure"
+                        />
+                        <span className="text-xs text-gray-500 min-w-[40px]">Assured</span>
+                        <span className="text-sky-600 font-bold min-w-[20px] text-lg">{sliderValues.confidence}</span>
+                      </div>
+                    </div>
+
+                    <div className="space-y-3">
+                      <div className="flex items-center gap-2">
+                        <div className="w-4 h-4 bg-gradient-to-r from-pink-400 to-rose-400 rounded-full shadow-sm"></div>
+                        <Label className="text-gray-800 font-semibold">Risk Respect Level</Label>
+                      </div>
+                      <p className="text-xs text-gray-600 italic">Will you honor your stops? • Risk management is everything</p>
+                      <div className="flex items-center gap-4">
+                        <span className="text-xs text-gray-500 min-w-[60px]">Reckless</span>
+                        <input
+                          type="range"
+                          min="1"
+                          max="5"
+                          value={sliderValues.risk}
+                          onChange={(e) => setSliderValues(prev => ({ ...prev, risk: parseInt(e.target.value) }))}
+                          className="flex-1 h-3 bg-gradient-to-r from-pink-100 to-rose-100 rounded-lg appearance-none cursor-pointer slider-coral"
+                        />
+                        <span className="text-xs text-gray-500 min-w-[40px]">Disciplined</span>
+                        <span className="text-pink-600 font-bold min-w-[20px] text-lg">{sliderValues.risk}</span>
+                      </div>
+                    </div>
+
+                    <div className="space-y-3">
+                      <div className="flex items-center gap-2">
+                        <div className="w-4 h-4 bg-gradient-to-r from-amber-400 to-orange-400 rounded-full shadow-sm"></div>
+                        <Label className="text-gray-800 font-semibold">Professional Trader Mindset</Label>
+                      </div>
+                      <p className="text-xs text-gray-600 italic">Thinking like the masters? • Discipline over discretion</p>
+                      <div className="flex items-center gap-4">
+                        <span className="text-xs text-gray-500 min-w-[60px]">Amateur</span>
+                        <input
+                          type="range"
+                          min="1"
+                          max="5"
+                          value={sliderValues.professional}
+                          onChange={(e) => setSliderValues(prev => ({ ...prev, professional: parseInt(e.target.value) }))}
+                          className="flex-1 h-3 bg-gradient-to-r from-amber-100 to-orange-100 rounded-lg appearance-none cursor-pointer slider-gold"
+                        />
+                        <span className="text-xs text-gray-500 min-w-[40px]">Pro</span>
+                        <span className="text-amber-600 font-bold min-w-[20px] text-lg">{sliderValues.professional}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Enhanced Mental Fitness Score */}
+              <div className="bg-gradient-to-r from-violet-50 to-indigo-50 rounded-2xl p-6 border border-violet-200/50 shadow-lg">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center gap-3">
+                    <Award className="w-6 h-6 text-indigo-600" />
+                    <span className="text-gray-800 font-bold text-lg">Mental Fitness Score</span>
+                  </div>
+                  <div className="text-right">
+                    <div className={`text-3xl font-bold ${scoreInfo.color}`}>{totalScore}/{maxScore}</div>
+                    <div className={`text-sm font-medium ${scoreInfo.color}`}>{scoreInfo.label}</div>
+                  </div>
+                </div>
+                <Progress 
+                  value={percentage} 
+                  className="h-4 mb-4 bg-gradient-to-r from-violet-100 to-indigo-100 shadow-inner" 
+                  style={{
+                    background: 'linear-gradient(90deg, #ddd6fe, #c7d2fe)',
+                  }}
+                />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2">
+                      <CheckCircle className="w-4 h-4 text-emerald-500" />
+                      <span className="text-sm text-emerald-600 font-semibold">
+                        {percentage >= 75 ? "High readiness level" : 
+                         percentage >= 60 ? "Good readiness level" : 
+                         "Needs improvement"}
+                      </span>
+                    </div>
+                    <div className="text-sm text-gray-700 leading-relaxed">
+                      {percentage >= 75 
+                        ? "You're mentally prepared for trading today. Your loss-cutting discipline and risk respect are excellent."
+                        : percentage >= 60 
+                        ? "Good mental state with room for improvement. Focus on your weaker areas before trading."
+                        : "Consider improving your mental state before trading. Practice the loss-cutting drills and work on focus areas."}
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <div className="text-sm text-gray-800 font-semibold">Focus Areas:</div>
+                    <div className="text-sm text-indigo-600 leading-relaxed">
+                      • Maintain emotional clarity throughout session<br/>
+                      • Trust your pre-defined stop losses<br/>
+                      • Stay humble and adaptable to market changes
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    </>
+  );
+};
+
+export default MentalCheckComponent;

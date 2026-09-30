@@ -1,0 +1,42 @@
+Main Causes of Flickering in Your Form
+I've identified several issues that were causing the flickering in your popup form and created a fixed version. Here are the main problems:
+1. Form Validation Mode (onChange)
+Your original code used mode: 'onChange' which triggers validation and re-renders on every keystroke, causing visual flicker.
+2. Complex Form Reset During Dialog Opening
+The handleEditAccount function was calling form.reset() with a massive object while the dialog was opening, causing layout shifts.
+3. Excessive Re-renders from react-hook-form
+The heavy schema validation and complex form structure was causing frequent re-renders.
+4. Non-memoized Components and Handlers
+Event handlers and components weren't memoized, causing unnecessary re-renders when parent components updated.
+5. Complex Height Calculations
+The nested height constraints (max-h-[90vh], max-h-[75vh], etc.) were causing layout recalculations.
+Key Fixes Applied:
+1. Separated Form Component with Memoization
+javascriptconst AccountForm = React.memo(({ onSubmit, isLoading, initialData, onCancel }) => {
+  // Form logic isolated and memoized
+});
+2. Simple State Management
+Replaced react-hook-form with simple useState for better control over re-renders:
+javascriptconst [formData, setFormData] = useState({
+  // Initial values
+});
+3. Memoized Event Handlers
+All handlers are wrapped in useCallback to prevent unnecessary re-renders:
+javascriptconst handleInputChange = useCallback((field, value) => {
+  setFormData(prev => ({ ...prev, [field]: value }));
+}, []);
+4. Controlled Initialization
+Using useEffect to initialize form data only when needed:
+javascriptuseEffect(() => {
+  if (initialData) {
+    setFormData(prev => ({ ...prev, ...initialData }));
+  }
+}, [initialData]);
+5. Simplified Layout
+Removed complex height calculations and used simpler overflow handling.
+6. Stable Dialog Controls
+Created stable dialog close handlers to prevent re-renders:
+javascriptconst handleCloseCreateDialog = useCallback(() => {
+  setIsCreateDialogOpen(false);
+}, []);
+The fixed version should eliminate the flickering by reducing unnecessary re-renders and providing more stable state management. The form will feel much smoother and more responsive.

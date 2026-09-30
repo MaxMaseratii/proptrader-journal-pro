@@ -1,0 +1,322 @@
+# 📋 **COMPLETE DASHBOARD RESTRUCTURING INSTRUCTIONS FOR REPLIT AI**
+
+## 🎯 **SECTION 1: Header & Section Restructuring**
+
+### **REPLACE Current Header Section:**
+```
+Current: "Target & Risk Management Planning"
+```
+
+### **WITH New Unified Section Structure:**
+```html
+<section class="unified-propfirms-section">
+  <!-- Main Headers -->
+  <h1 class="primary-header">PropFirms Trading Accounts</h1>
+  <h2 class="secondary-header">Risk Management & Responsible Day-to-Pass Planning</h2>
+  
+  <!-- Account Cards Row (from current Account Portfolio Overview) -->
+  <div class="account-cards-row">
+    [Live Accounts: $177,540] [Funded: $0] [Challenge: $27,540] [+ Create Account]
+  </div>
+  
+  <!-- Account Selection Status -->
+  <div class="selection-status">
+    "Analyzing 1 selected account(s)" OR "Showing combined stats for X accounts"
+  </div>
+</section>
+```
+
+### **Remove Capital Calculation Mode Section:**
+- **Delete entirely**: The toggle between "Starting Capital" and "Max Drawdown"
+- **Reason**: Always use Max Drawdown for calculations
+- **Keep**: Starting Capital input field (for display purposes only)
+
+### **Header Styling Requirements:**
+```css
+.primary-header {
+  font-size: larger;
+  font-weight: bold;
+  margin-bottom: 4px;
+}
+
+.secondary-header {
+  font-size: smaller;
+  color: secondary-text-color;
+  margin-top: 0;
+}
+```
+
+---
+
+## 🗑️ **SECTION 2: Remove Redundant UI Elements**
+
+### **DELETE These Elements Completely:**
+```html
+<!-- Remove from dashboard entirely -->
+1. Overview/Detailed/Analytics dropdown (top-right of dashboard)
+2. Separate "Account Portfolio Overview" section header
+3. Standalone "Investment Tracking" section
+4. Duplicate "Weekly Performance Calendar" header
+5. Separate "Trading Charts Preview" section
+6. Multiple scattered account information displays
+7. Redundant weekly calendar widgets
+```
+
+### **Why Remove:**
+```
+❌ Overview dropdown: Dashboard IS the overview
+❌ Duplicate portfolio: Already shown in account cards
+❌ Investment tracking: Merge into main dashboard
+❌ Scattered calendars: One unified weekly widget
+❌ Chart preview: Integrate as compact widget if needed
+```
+
+---
+
+## 📊 **SECTION 3: Account Selection Functionality**
+
+### **Dynamic Dashboard Behavior:**
+```javascript
+Account Selection Logic:
+- Single Account Selected → Show that account's specific data only
+- Multiple Accounts Selected → Show combined/averaged statistics  
+- All Accounts Selected → Show portfolio-wide statistics
+- No Selection → Default to all accounts view
+
+// Implementation:
+function updateDashboardData(selectedAccounts) {
+  if (selectedAccounts.length === 1) {
+    // Filter all widgets to show single account data
+    updateAllWidgets(selectedAccounts[0]);
+  } else if (selectedAccounts.length > 1) {
+    // Combine data from multiple accounts
+    updateAllWidgets(combineAccountData(selectedAccounts));
+  } else {
+    // Show all accounts data
+    updateAllWidgets(getAllAccountsData());
+  }
+}
+```
+
+### **Elements Affected by Account Selection:**
+```
+✅ AFFECTED (changes based on selection):
+- Net Balance, Daily P&L, Total P&L
+- Win Rate, R Factor, Profit Factor, Avg Win/Loss
+- Total Trades, Best Trade
+- Plan vs Reality widget
+- Risk Management widget
+- Investment ROI widget
+- Discipline Score
+- All performance charts and metrics
+
+❌ NOT AFFECTED (always shows all):
+- Active Accounts count (always "2 accounts • Payout eligible")
+- Failed Accounts count (global metric)
+- Total Portfolio Value (global metric)
+```
+
+---
+
+## 📊 **SECTION 4: New 4-Row Dashboard Structure**
+
+### **REORGANIZED DASHBOARD LAYOUT:**
+```html
+<section class="performance-dashboard">
+  <h3>Performance Overview</h3>
+  
+  <!-- Row 1: Core Financial (3 widgets) -->
+  <div class="dashboard-row-1">
+    [Net Balance] [Daily P&L] [Total P&L]
+  </div>
+  
+  <!-- Row 2: Performance Ratios (4 widgets) -->
+  <div class="dashboard-row-2">
+    [Win Rate] [R Factor] [Profit Factor] [Avg Win/Loss]
+  </div>
+  
+  <!-- Row 3: Trading Activity & Planning (4 widgets) -->
+  <div class="dashboard-row-3">
+    [Total Trades] [Best Trade] [Weekly Navigation] [Plan vs Reality]
+  </div>
+  
+  <!-- Row 4: Risk & Investment (4 widgets) -->
+  <div class="dashboard-row-4">
+    [Risk Management] [Investment ROI] [Discipline Score] [Active Trading Days]
+  </div>
+</section>
+```
+
+### **Specific Widget Repositioning:**
+```
+MOVE: Total P&L from bottom-left → Row 1, Position 3
+MOVE: Avg Win/Loss from Row 1 → Row 2, Position 4  
+ADD: Plan vs Reality widget → Row 3, Position 4
+ADD: Investment ROI widget → Row 4, Position 2
+CONSOLIDATE: Risk alerts → Row 4, Position 1 (Risk Management)
+CONSOLIDATE: Discipline analysis → Row 4, Position 3
+```
+
+---
+
+## 🎯 **SECTION 5: New Widgets Design**
+
+### **Plan vs Reality Widget (Row 3, Position 4):**
+```html
+┌─────────────────────────────────────────┐
+│ Plan vs Reality                         │
+│                                         │
+│ Target: $750/day ━━━━━━━━━ 📊           │
+│ Actual: $1,012 ━━━━━━━━━━━━ ✅          │
+│                                         │
+│ Day 2 of 14 • +35% ahead               │
+│ Risk Used: 16.7% / 50% limit           │
+└─────────────────────────────────────────┘
+```
+
+### **Enhanced Risk Management Widget (Row 4, Position 1):**
+```html
+┌─────────────────────────────────────────┐
+│ Risk Management                         │
+│                                         │
+│ Daily Risk: $500 / $1,500 (33%)        │
+│ Max Drawdown: $2,445 / $7,500 (33%)    │
+│                                         │
+│ Rule Violations: 0 ⚡                   │
+│ Health Score: 98% 🟢                   │
+└─────────────────────────────────────────┘
+```
+
+### **Investment ROI Widget (Row 4, Position 2):**
+```html
+┌─────────────────────────────────────────┐
+│ Investment ROI                          │
+│                                         │
+│ Invested: $579.00                       │
+│ Current Value: $177,540.00              │
+│                                         │
+│ ROI: +30,566% 📈                       │
+│ Payouts: $0 received                    │
+└─────────────────────────────────────────┘
+```
+
+### **Weekly Navigation Widget (Row 3, Position 3):**
+```html
+┌─────────────────────────────────────────┐
+│ ← W2 April 9th 2024 (#14/52) →        │
+│                                         │
+│ $2,540.00                              │
+│ 14 trades • 71% win rate               │
+└─────────────────────────────────────────┘
+```
+
+---
+
+## 🔧 **SECTION 6: Consolidation Rules**
+
+### **Merge These Scattered Elements:**
+```
+FROM: Multiple sections → TO: Unified dashboard
+
+Investment Tracking Section → Row 4 widgets
+├── Total Spent → Investment ROI widget
+├── Activation Costs → Investment ROI widget  
+├── Profitability → Investment ROI widget
+└── Working Hours → Active Trading Days widget
+
+Disciplined Trading Analysis → Row 4 widgets  
+├── Risk Management → Risk Management widget
+├── Discipline Score → Discipline Score widget
+├── Account grades → Risk Management widget
+└── Rule violations → Risk Management widget
+
+Weekly Performance Calendar → Row 3, Position 3
+├── Remove separate header
+├── Integrate navigation controls
+└── Compact format with week indicator
+```
+
+### **Section Elimination:**
+```html
+<!-- DELETE these entire sections -->
+<section class="trading-charts-preview">❌ DELETE</section>
+<section class="account-portfolio-overview">❌ DELETE</section>  
+<section class="investment-tracking">❌ DELETE</section>
+<section class="weekly-performance-calendar">❌ DELETE</section>
+
+<!-- KEEP only these consolidated sections -->
+<section class="unified-propfirms-section">✅ KEEP</section>
+<section class="performance-dashboard">✅ KEEP</section>
+<section class="daily-trading-journal">✅ KEEP</section>
+<section class="trade-analysis-calendar">✅ KEEP</section>
+```
+
+---
+
+## 📅 **SECTION 7: Weekly Navigation Specifications**
+
+### **Week Indicator Format:**
+```javascript
+Format: "W[week_of_month] [full_month] [day][ordinal] [year] (#[current_week]/52)"
+Example: "W2 April 9th 2024 (#14/52)"
+
+// Navigation functionality:
+- Left arrow (←): Previous week
+- Right arrow (→): Next week  
+- Week indicator: Shows current week context
+- Display: Current week's P&L and basic stats
+- Ordinal suffixes: 1st, 2nd, 3rd, 4th, etc.
+```
+
+---
+
+## 🔧 **SECTION 8: Technical Implementation Summary**
+
+### **Before (Remove):**
+```
+- Single header: "Target & Risk Management Planning"
+- Capital Calculation Mode toggle section
+- Overview/Detailed/Analytics dropdown
+- Separate Investment Tracking section
+- Multiple Account Portfolio displays  
+- Scattered weekly calendars
+- Duplicate risk management displays
+- Total P&L at bottom-left
+```
+
+### **After (Implement):**
+```
+- Unified section: "PropFirms Trading Accounts" + subtitle
+- Account cards integrated into main section
+- Dynamic account selection filtering
+- 4-row dashboard with logical grouping
+- Plan vs Reality planning widget
+- Consolidated risk and investment tracking
+- Single weekly navigation widget
+- Starting Capital (symbolic display only)
+- Max Drawdown (always used for calculations)
+```
+
+### **Final Unified Structure:**
+```
+PropFirms Trading Accounts
+Risk Management & Responsible Day-to-Pass Planning
+├── [Account Cards Row]
+├── [Selection Status]
+└── Performance Overview
+    ├── Row 1: [Net Balance] [Daily P&L] [Total P&L]
+    ├── Row 2: [Win Rate] [R Factor] [Profit Factor] [Avg Win/Loss]
+    ├── Row 3: [Total Trades] [Best Trade] [Weekly Nav] [Plan vs Reality]
+    └── Row 4: [Risk Mgmt] [Investment ROI] [Discipline] [Active Days]
+
+Daily Trading Journal (unchanged)
+Trade Analysis Calendar (unchanged)
+```
+
+---
+
+## 📝 **COMPLETE IMPLEMENTATION INSTRUCTIONS**
+
+**"Implement a comprehensive dashboard restructuring: 1) Create unified 'PropFirms Trading Accounts' section with integrated account cards and remove redundant sections (Investment Tracking, Account Portfolio Overview, Trading Charts Preview). 2) Delete Overview/Detailed/Analytics dropdown completely. 3) Implement dynamic account selection that filters all dashboard widgets except Active Accounts count. 4) Reorganize into 4-row dashboard structure with logical grouping: Financial (Row 1), Performance (Row 2), Activity & Planning (Row 3), Risk & Investment (Row 4). 5) Add Plan vs Reality widget showing target vs actual performance. 6) Consolidate scattered risk management and investment data into unified Row 4 widgets. 7) Replace Capital Calculation Mode toggle with Max Drawdown-only calculations. 8) Integrate weekly navigation with format 'W2 April 9th 2024 (#14/52)'. This eliminates 60% of redundancy while maintaining all functionality in a professional, unified interface."**
+
+🚀 **This creates a streamlined, professional dashboard with logical information hierarchy and eliminates all redundancy!**

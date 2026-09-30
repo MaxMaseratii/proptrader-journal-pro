@@ -1,0 +1,57 @@
+Create a new menu button in the menu section an name it Trading Accounts and at the page have a button name:  “ New Account” which will have:  A Dialog popup modal with 3 tabs:
+- Basic Info Tab
+- Financial Tab
+- Rules & Risk Tab
+
+ALL FORM FIELDS INSIDE:
+Basic Info Tab:
+* Account Name (text input)
+* Prop Firm (text input)
+* Account Type (select: challenge, funded, live, demo)
+* Account Status (select: active, inactive, pending)
+* Starting Balance ($)
+* Profit Target ($)
+* Max Drawdown ($)
+* Minimum Trading Days
+* Time Limit (days)
+* Consistency Rule (%)
+* Drawdown Type (select: trailing, static, balance_based)
+* Max Drawdown Type (select: EOD, real-time, session_close)
+* Has Daily Loss Limit (checkbox)
+Financial Tab:
+* Account Cost ($)
+* Activation Cost ($)
+* Purchase Method (select: credit card, PayPal, bank transfer, crypto)
+* Reset Count
+* Total Resets Cost ($)
+* Profit Split (%)
+* Activation Fee Paid (checkbox)
+* Includes Activation Fee (checkbox)
+Rules & Risk Tab (as per your screenshot):
+* Risk Per Trade ($)
+* Risk Per Trade Divider (with helper text)
+* Daily Loss Limit ($)
+* Risk:Reward Ratio (1:X)
+* Max Trades Per Day
+* Max Risk Per Day ($)
+* Stop Loss (Points/Pips)
+* Primary Asset
+* Secondary Asset
+* Tertiary Asset
+Personal Trading Time section:
+* Time Slot 1 (Primary) - Start Time, End Time, Timezone
+* Time Slot 2 (Secondary) - Start Time, End Time, Timezone
+* Time Slot 3 (Tertiary) - Start Time, End Time, Timezone
+Bottom fields:
+* Daily Working Hours (8.0)
+* Hourly Wages ($25.00)
+* Live Trading Account Available (checkbox)
+* Challenge Payouts Available (checkbox)
+FUNCTIONALITY:
+* Form validation for required fields
+* API submission to create account
+* Error handling and success messages
+* Dark theme styling with gray/black colors
+* Scrollable content area
+* Cancel and Create Account buttons
+The component is a fully functional popup modal that opens when triggered and contains all the comprehensive account setup fields organized in logical tabs. mAKE SURE THE ACCOUNT FORM IS DESIGN AS PER THE REQUEST. DO NOT PROVIDE SOMETHING ELSE

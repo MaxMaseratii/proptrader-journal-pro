@@ -1,0 +1,780 @@
+// Universal CSV Import Component with improved Excel parsing
+const UniversalCsvImport = ({ accounts }: { accounts: Account[] }) => {
+  const [csvFile, setCsvFile] = useState<File | null>(null);
+  const [csvFormat, setCsvFormat] = useState<string>('unknown');
+  const [isUploading, setIsUploading] = useState(false);
+  const [previewData, setPreviewData] = useState<any[]>([]);
+  const [totalRowCount, setTotalRowCount] = useState<number>(0); // Track total rows
+  const [importStats, setImportStats] = useState<any>(null);
+  const [csvHeaders, setCsvHeaders] = useState<string[]>([]);
+  const queryClient = useQueryClient();
+
+  // Convert contract symbols to standard format - CRITICAL FIX for MESU5 detection
+  const convertContractToSymbol = (contract: string): string => {
+    if (!contract) return 'UNKNOWN';
+    
+    // Futures contract mapping - IMPORTANT: MES must come before ES to avoid wrong matching
+    if (contract.startsWith('MES')) return 'MES';   // Micro E-mini S&P 500 - KEEP AS MES NOT ES!
+    if (contract.startsWith('MNQ')) return 'MNQ';   // Micro E-mini NASDAQ 100
+    if (contract.startsWith('ESU') || contract.startsWith('ES')) return 'ESU';   // E-mini S&P 500
+    if (contract.startsWith('NQU') || contract.startsWith('NQ')) return 'NQ';    // E-mini NASDAQ 100
+    if (contract.startsWith('YM')) return 'YM';    // E-mini Dow Jones
+    if (contract.startsWith('RTY')) return 'RTY';  // E-mini Russell 2000
+    if (contract.startsWith('GC')) return 'GC';    // Gold Futures
+    if (contract.startsWith('CL')) return 'CL';    // Crude Oil Futures
+    if (contract.startsWith('6E')) return 'EUR';   // Euro Futures
+    if (contract.startsWith('6B')) return 'GBP';   // British Pound Futures
+    
+    // Return first 2-3 characters as fallback
+    return contract.substring(0, Math.min(3, contract.length));
+  };
+
+  // Enhanced format detection for all CSV types
+  const detectCsvFormat = (headers: string[]): string => {
+    console.log('🔍 Detecting format for headers:', headers);
+    
+    // Standard Trading Platform Export (like your Excel file)
+    if (headers.includes('Account') && 
+        headers.includes('Date/Time') && 
+        headers.includes('Symbol') && 
+        headers.includes('Side') && 
+        headers.includes('Quantity') && 
+        headers.includes('Price') && 
+        (headers.includes('Gross P/L') || headers.includes('Net P/L'))) {
+      return 'standard-export';
+    }
+    
+    // Position History CSV detection (most specific first)
+    if (headers.includes('Position ID') && 
+        headers.includes('Bought Timestamp') && 
+        headers.includes('Sold Timestamp') &&
+        (headers.includes('Paired Qty') || headers.includes('Buy Price'))) {
+      return 'position-history';
+    }
+    
+    // Performance CSV detection  
+    if ((headers.includes('buyFillId') || headers.includes('Buy Fill ID')) && 
+        (headers.includes('sellFillId') || headers.includes('Sell Fill ID')) && 
+        (headers.includes('boughtTimestamp') || headers.includes('soldTimestamp') || 
+         headers.includes('buyPrice') || headers.includes('sellPrice'))) {
+      return 'performance';
+    }
+    
+    // Orders CSV detection
+    if (headers.includes('Order ID') && 
+        (headers.includes('Fill Time') || headers.includes('Timestamp')) && 
+        (headers.includes('B/S') || headers.includes('Side')) &&
+        (headers.includes('Avg Fill Price') || headers.includes('Price'))) {
+      return 'orders';
+    }
+    
+    // Fills/Trades CSV detection
+    if (headers.includes('Fill ID') && 
+        headers.includes('Order ID') && 
+        headers.includes('Timestamp') &&
+        (headers.includes('B/S') || headers.includes('Side')) &&
+        headers.includes('Price')) {
+      return 'fills';
+    }
+    
+    return 'unknown';
+  };
+
+  // Parse CSV text into structured data
+  const parseCSV = (text: string) => {
+    const lines = text.split('\n').filter(line => line.trim());
+    if (lines.length < 2) return { headers: [], data: [] };
+    
+    // Parse headers (handle quotes and various delimiters)
+    const firstLine = lines[0];
+    const delimiter = firstLine.includes('\t') ? '\t' : ',';
+    const headers = firstLine.split(delimiter).map(h => h.trim().replace(/^"|"$/g, ''));
+    
+    // Parse data rows
+    const data = [];
+    for (let i = 1; i < lines.length; i++) {
+      const values = lines[i].split(delimiter).map(v => v.trim().replace(/^"|"$/g, ''));
+      const row: any = {};
+      headers.forEach((header, index) => {
+        row[header] = values[index] || '';
+      });
+      
+      // Skip empty rows - improved logic
+      const hasData = Object.values(row).some(v => 
+        v !== '' && v !== null && v !== undefined && v !== '0' && String(v).trim() !== ''
+      );
+      if (hasData) {
+        data.push(row);
+      }
+    }
+    
+    return { headers, data };
+  };
+
+  // Parse Excel file into structured data - IMPROVED VERSION
+  const parseExcel = async (file: File): Promise<{ headers: string[], data: any[] }> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      
+      reader.onload = (e) => {
+        try {
+          const arrayBuffer = new Uint8Array(e.target?.result as ArrayBuffer);
+          const workbook = XLSX.read(arrayBuffer, { 
+            type: 'array',
+            cellDates: true,
+            cellNF: false,
+            cellText: false
+          });
+          
+          console.log('📊 Excel workbook loaded:', workbook.SheetNames);
+          
+          // Get the first worksheet
+          const worksheetName = workbook.SheetNames[0];
+          const worksheet = workbook.Sheets[worksheetName];
+          
+          console.log('📊 Processing worksheet:', worksheetName);
+          
+          // Convert to JSON with more options
+          const jsonData = XLSX.utils.sheet_to_json(worksheet, { 
+            header: 1,
+            defval: '', // Default value for empty cells
+            blankrows: false, // Skip blank rows
+            raw: false // Convert everything to strings for consistency
+          });
+          
+          console.log('📊 Raw JSON data length:', jsonData.length);
+          console.log('📊 First few rows:', jsonData.slice(0, 5));
+          
+          if (!jsonData || jsonData.length < 2) {
+            console.warn('📊 No data found in Excel file');
+            resolve({ headers: [], data: [] });
+            return;
+          }
+          
+          // Extract headers from first row - handle various data types
+          const firstRow = jsonData[0] as any[];
+          const headers = firstRow.map(h => {
+            if (h === null || h === undefined) return '';
+            return String(h).trim();
+          }).filter(h => h !== ''); // Remove empty headers
+          
+          console.log('📊 Extracted headers:', headers);
+          
+          // Extract data rows with improved processing
+          const parsedData = [];
+          for (let i = 1; i < jsonData.length; i++) {
+            const rowData = jsonData[i] as any[];
+            
+            // Skip if row is completely empty
+            if (!rowData || rowData.length === 0) {
+              console.log(`📊 Skipping empty row ${i}`);
+              continue;
+            }
+            
+            const row: any = {};
+            let hasValidData = false;
+            
+            headers.forEach((header, index) => {
+              const cellValue = rowData[index];
+              
+              // Handle different data types from Excel more carefully
+              if (cellValue !== undefined && cellValue !== null && cellValue !== '') {
+                let processedValue = String(cellValue).trim();
+                row[header] = processedValue;
+                if (processedValue !== '' && processedValue !== '0') {
+                  hasValidData = true;
+                }
+              } else {
+                row[header] = '';
+              }
+            });
+            
+            // Only add rows that have at least some meaningful data
+            if (hasValidData) {
+              parsedData.push(row);
+              console.log(`📊 Added row ${i}:`, Object.keys(row).slice(0, 3).map(k => `${k}: ${row[k]}`).join(', '));
+            } else {
+              console.log(`📊 Skipping row ${i} - no valid data`);
+            }
+          }
+          
+          console.log(`📊 Final parsed data: ${parsedData.length} rows from ${jsonData.length - 1} original rows`);
+          
+          resolve({ headers, data: parsedData });
+        } catch (error) {
+          console.error('📊 Excel parsing error:', error);
+          reject(error);
+        }
+      };
+      
+      reader.onerror = () => reject(new Error('Failed to read Excel file'));
+      reader.readAsArrayBuffer(file);
+    });
+  };
+
+  // Find account by name or use first available account as fallback
+  const findAccountByName = (accountName: string): any => {
+    // First try exact match
+    let account = accounts.find(acc => acc.name === accountName);
+    
+    // Then try partial match
+    if (!account) {
+      account = accounts.find(acc => acc.name.includes(accountName) || accountName.includes(acc.name));
+    }
+    
+    // Finally, if no match and we have accounts, use the first available account
+    if (!account && accounts.length > 0) {
+      console.warn(`Account "${accountName}" not found. Using first available account: ${accounts[0].name}`);
+      account = accounts[0];
+    }
+    
+    if (!account) {
+      throw new Error(`No accounts available. Please create an account first.`);
+    }
+    
+    return account;
+  };
+
+  // Helper function to get contract multiplier for accurate P&L calculation
+  const getContractMultiplier = (symbol: string): number => {
+    const symbolUpper = symbol.toUpperCase();
+    console.log(`🔍 Getting multiplier for symbol: ${symbol} (upper: ${symbolUpper})`);
+    
+    // CRITICAL: MES must be checked BEFORE ES to avoid wrong matching
+    if (symbolUpper.includes('MES')) {
+      console.log(`✅ MES detected: returning multiplier 5`);
+      return 5; // Micro E-mini S&P 500: $5 per point
+    }
+    if (symbolUpper.includes('ESU') || (symbolUpper.includes('ES') && !symbolUpper.includes('MES'))) {
+      console.log(`✅ ES detected: returning multiplier 50`);
+      return 50; // E-mini S&P 500: $50 per point
+    }
+    if (symbolUpper.includes('MNQ')) {
+      console.log(`✅ MNQ detected: returning multiplier 2`);
+      return 2; // Micro E-mini NASDAQ: $2 per point
+    }
+    if (symbolUpper.includes('NQ') && !symbolUpper.includes('MNQ')) {
+      console.log(`✅ NQ detected: returning multiplier 20`);
+      return 20; // E-mini NASDAQ: $20 per point
+    }
+    if (symbolUpper.includes('YM')) {
+      console.log(`✅ YM detected: returning multiplier 5`);
+      return 5; // E-mini Dow: $5 per point
+    }
+    if (symbolUpper.includes('RTY')) {
+      console.log(`✅ RTY detected: returning multiplier 50`);
+      return 50; // E-mini Russell 2000: $50 per point
+    }
+    
+    console.warn(`⚠️ Unknown symbol multiplier for ${symbol}, using 1`);
+    return 1; // Default multiplier for unknown contracts
+  };
+
+  // Map Standard Export row to trade format (Excel/CSV from trading platforms)
+  const mapStandardExportRow = (row: any): any => {
+    console.log('🔍 STANDARD EXPORT: Processing row:', row);
+    
+    // Check if this row has essential data - be more flexible with validation
+    const symbol = row['Symbol'];
+    const side = row['Side'];
+    const quantity = row['Quantity'];
+    const price = row['Price'];
+    
+    if (!symbol || !side || quantity === undefined || quantity === null || price === undefined || price === null) {
+      console.log('🔍 STANDARD EXPORT: Skipping row - missing essential data:', {
+        symbol: symbol,
+        side: side,
+        quantity: quantity,
+        price: price
+      });
+      return null;
+    }
+    
+    // Convert quantity and price to numbers
+    const numQuantity = Math.abs(parseFloat(quantity) || 0);
+    const numPrice = parseFloat(price) || 0;
+    
+    if (numQuantity === 0 || numPrice === 0) {
+      console.log('🔍 STANDARD EXPORT: Skipping row - zero quantity or price:', {
+        numQuantity,
+        numPrice
+      });
+      return null;
+    }
+    
+    const account = findAccountByName(row['Account'] || 'Default');
+    const grossPnL = parseFloat(row['Gross P/L'] || 0);
+    const netPnL = parseFloat(row['Net P/L'] || grossPnL);
+    const sideText = (side || '').toLowerCase();
+    const tradeSide = sideText.includes('sell') ? 'sell' : 'buy';
+    
+    // Parse date/time
+    const dateTime = row['Date/Time'];
+    const fillTime = dateTime ? new Date(dateTime) : new Date();
+    
+    // For standard exports, we typically don't have exit data, so we treat each row as a position
+    const mappedTrade = {
+      accountId: account.id,
+      symbol: convertContractToSymbol(symbol),
+      side: tradeSide,
+      quantity: numQuantity,
+      fillTime: fillTime.toISOString(),
+      exitTime: fillTime.toISOString(), // Same as fill time for individual positions
+      entryPrice: numPrice,
+      exitPrice: numPrice, // Same as entry for individual positions
+      pnl: netPnL,
+      status: 'closed',
+      date: fillTime.toISOString().split('T')[0],
+      orderId: row['Order ID'] || row['Trade ID'] || `STD-${Date.now()}-${Math.random()}`,
+      notes: `Standard Export Import - ${row['Description'] || 'Trade'}`,
+      // Standard exports typically don't have SL/TP data
+      initialStopLoss: null,
+      finalStopLoss: null,
+      initialTakeProfit: null,
+      finalTakeProfit: null,
+      tradeImage: null,
+      tradingViewLink: null
+    };
+
+    console.log('🔍 STANDARD EXPORT: Successfully mapped trade:', {
+      symbol: mappedTrade.symbol,
+      side: mappedTrade.side,
+      quantity: mappedTrade.quantity,
+      price: mappedTrade.entryPrice,
+      pnl: mappedTrade.pnl
+    });
+
+    return mappedTrade;
+  };
+
+  // Main mapping function - routes to appropriate mapper
+  const mapRowsToTrades = (rows: any[], format: string): any[] => {
+    console.log(`🔍 MAPPING: Processing ${rows.length} rows with format: ${format}`);
+    
+    let result: any[] = [];
+    
+    switch (format) {
+      case 'standard-export':
+        result = rows.map(mapStandardExportRow).filter(trade => trade !== null);
+        break;
+      // Add other format cases here...
+      default:
+        console.warn(`🔍 MAPPING: Unsupported format: ${format}, trying standard export mapping`);
+        result = rows.map(mapStandardExportRow).filter(trade => trade !== null);
+    }
+    
+    console.log(`🔍 MAPPING: Generated ${result.length} trades from ${rows.length} rows`);
+    return result;
+  };
+
+  // Handle file selection and preview - FIXED VERSION
+  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    setCsvFile(file);
+    setImportStats(null);
+    
+    try {
+      let headers: string[] = [];
+      let data: any[] = [];
+      
+      // Check file type and parse accordingly
+      const fileExtension = file.name.toLowerCase().split('.').pop();
+      
+      if (fileExtension === 'xlsx' || fileExtension === 'xls') {
+        console.log('📊 Processing Excel file...');
+        const excelData = await parseExcel(file);
+        headers = excelData.headers;
+        data = excelData.data;
+      } else {
+        console.log('📄 Processing CSV file...');
+        const text = await file.text();
+        const csvData = parseCSV(text);
+        headers = csvData.headers;
+        data = csvData.data;
+      }
+      
+      setCsvHeaders(headers);
+      const detectedFormat = detectCsvFormat(headers);
+      setCsvFormat(detectedFormat);
+      
+      // FIXED: Show all data count and preview more records
+      setTotalRowCount(data.length);
+      setPreviewData(data.slice(0, Math.min(10, data.length))); // Show up to 10 records in preview
+      
+      console.log(`🔍 File type: ${fileExtension}`);
+      console.log(`🔍 Detected format: ${detectedFormat}`);
+      console.log(`🔍 Found ${data.length} data rows`);
+      console.log(`🔍 Headers:`, headers);
+      console.log(`🔍 Sample row:`, data[0]);
+      
+    } catch (error) {
+      console.error('Error parsing file:', error);
+      console.error(`Error parsing file: ${(error as Error).message}`);
+      setCsvFile(null);
+      setPreviewData([]);
+      setTotalRowCount(0);
+      setCsvFormat('unknown');
+    }
+  };
+
+  // Upload and process file (CSV or Excel) - FIXED VERSION
+  const handleUpload = async () => {
+    if (!csvFile || csvFormat === 'unknown') return;
+
+    setIsUploading(true);
+    
+    try {
+      let headers: string[] = [];
+      let data: any[] = [];
+      
+      // Check file type and parse accordingly
+      const fileExtension = csvFile.name.toLowerCase().split('.').pop();
+      
+      if (fileExtension === 'xlsx' || fileExtension === 'xls') {
+        console.log('📊 Processing Excel file for upload...');
+        const excelData = await parseExcel(csvFile);
+        headers = excelData.headers;
+        data = excelData.data;
+      } else {
+        console.log('📄 Processing CSV file for upload...');
+        const text = await csvFile.text();
+        const csvData = parseCSV(text);
+        headers = csvData.headers;
+        data = csvData.data;
+      }
+      
+      console.log(`🔍 Processing ${data.length} rows with format: ${csvFormat}`);
+      
+      const trades = [];
+      const errors = [];
+      
+      try {
+        console.log(`🔍 About to map ${data.length} rows with format: ${csvFormat}`);
+        console.log(`🔍 Sample row data:`, data[0]);
+        const mappedTrades = mapRowsToTrades(data, csvFormat);
+        console.log(`🔍 Successfully mapped ${mappedTrades.length} trades from ${data.length} rows`);
+        trades.push(...mappedTrades);
+      } catch (error) {
+        console.error(`🔍 Error mapping trades:`, error);
+        errors.push(`Mapping error: ${(error as Error).message}`);
+      }
+      
+      if (errors.length > 0 && trades.length === 0) {
+        throw new Error(errors.join('\n'));
+      }
+      
+      console.log(`🔍 Prepared ${trades.length} trades for import`);
+      console.log(`🔍 Sample trade:`, trades[0]);
+      
+      // Override trades with selected account ID
+      const tradesWithAccount = trades.map(trade => ({
+        ...trade,
+        accountId: parseInt(selectedImportAccount)
+      }));
+
+      // Send to Universal CSV Import API
+      const rawResponse = await apiRequest('/api/trades/import-csv', 'POST', {
+        trades: tradesWithAccount,
+        accountId: parseInt(selectedImportAccount),
+        source: `${csvFormat}-csv`
+      });
+      
+      const response = await rawResponse.json();
+      
+      console.log('🔍 API Response:', response);
+      
+      if (response && response.success) {
+        const imported = response.recordsImported || trades.length;
+        
+        setImportStats({
+          imported: imported,
+          errors: errors.length,
+          longTrades: trades.filter(t => t.side === 'buy').length,
+          shortTrades: trades.filter(t => t.side === 'sell').length,
+          format: csvFormat
+        });
+        
+        queryClient.invalidateQueries({ queryKey: ['/api/trades'] });
+        
+        // Reset form
+        setCsvFile(null);
+        setPreviewData([]);
+        setTotalRowCount(0);
+        setCsvFormat('unknown');
+        setCsvHeaders([]);
+        
+      } else {
+        console.error('🔍 Import failed - Response:', response);
+        throw new Error(response.message || 'Import failed - check server logs');
+      }
+      
+    } catch (error) {
+      console.error('Import error:', error);
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  // Get format info
+  const getFormatInfo = (format: string) => {
+    const formatDetails = {
+      'standard-export': {
+        icon: '📊',
+        name: 'Standard Export',
+        description: 'Standard trading platform export with account, time, symbol, and P&L data',
+        features: ['✅ Excel & CSV Support', '✅ Account Info', '✅ Date/Time', '✅ Symbol & Side', '✅ Quantity & Price', '✅ P&L Data']
+      },
+      'position-history': {
+        icon: '🏛️',
+        name: 'Position History',
+        description: 'Complete trade pairs with entry/exit timestamps',
+        features: ['✅ Entry & Exit Times', '✅ Long & Short Detection', '✅ Calculated P&L', '✅ Account Info']
+      },
+      'unknown': {
+        icon: '❓',
+        name: 'Unknown Format',
+        description: 'CSV format not recognized',
+        features: ['❌ Unsupported format']
+      }
+    };
+    
+    return formatDetails[format as keyof typeof formatDetails] || formatDetails['unknown'];
+  };
+
+  const formatInfo = getFormatInfo(csvFormat);
+
+  // Account selection state for CSV import
+  const [selectedImportAccount, setSelectedImportAccount] = useState<string>("");
+
+  return (
+    <div className="space-y-6">
+      {/* Account Selection for CSV Import */}
+      <Card className="bg-gradient-to-br from-blue-500/10 to-purple-500/10 border-blue-500/30">
+        <CardHeader>
+          <div className="flex items-center gap-3">
+            <Target className="w-6 h-6 text-blue-400" />
+            <CardTitle className="text-blue-400">Account Selection</CardTitle>
+          </div>
+          <p className="text-gray-400">Choose which trading account to import your trades to</p>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            <div>
+              <Label className="text-gray-300 font-medium">Select Trading Account</Label>
+              <Select 
+                value={selectedImportAccount} 
+                onValueChange={setSelectedImportAccount}
+              >
+                <SelectTrigger className="bg-gray-700 border-gray-600 text-white focus:border-blue-400">
+                  <SelectValue placeholder="Choose your trading account for CSV import" />
+                </SelectTrigger>
+                <SelectContent className="bg-gray-700 border-gray-600">
+                  {accounts?.map((account) => (
+                    <SelectItem key={account.id} value={account.id.toString()} className="text-white hover:bg-gray-600">
+                      <div className="flex items-center justify-between w-full">
+                        <span>{account.name}</span>
+                        <Badge variant="outline" className="ml-2 text-xs">
+                          {account.type}
+                        </Badge>
+                      </div>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              {selectedImportAccount && (
+                <p className="text-sm text-green-400 mt-2">
+                  ✓ Selected: {accounts?.find(acc => acc.id.toString() === selectedImportAccount)?.name}
+                </p>
+              )}
+            </div>
+            
+            {!selectedImportAccount && (
+              <div className="bg-yellow-600/20 border border-yellow-600 rounded-lg p-3">
+                <div className="flex items-center gap-2">
+                  <AlertCircle className="w-4 h-4 text-yellow-400" />
+                  <span className="text-yellow-400 text-sm">Please select an account before uploading files</span>
+                </div>
+              </div>
+            )}
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* File Upload Section */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label className="block text-sm font-medium text-gray-300 mb-2">
+            Select CSV or Excel File
+          </label>
+          <Input
+            type="file"
+            accept=".csv,.xlsx,.xls"
+            onChange={handleFileChange}
+            disabled={!selectedImportAccount}
+            className={`bg-gray-700 border-gray-600 text-white file:bg-blue-600 file:text-white file:border-0 file:rounded file:px-3 file:py-1 ${
+              !selectedImportAccount ? 'opacity-50 cursor-not-allowed' : ''
+            }`}
+          />
+          {!selectedImportAccount && (
+            <p className="text-xs text-yellow-400 mt-1">Select an account first</p>
+          )}
+        </div>
+        
+        <div>
+          <label className="block text-sm font-medium text-gray-300 mb-2">
+            Detected Format
+          </label>
+          <div className="p-3 bg-gray-700 rounded-md flex items-center">
+            {csvFormat === 'standard-export' ? (
+              <><CheckCircle className="h-4 w-4 text-green-400 mr-2" />
+              <Badge className="bg-green-600 text-white">✅ Standard Export</Badge></>
+            ) : csvFormat === 'unknown' ? (
+              <><AlertCircle className="h-4 w-4 text-red-400 mr-2" />
+              <Badge variant="destructive">❌ Unknown Format</Badge></>
+            ) : (
+              <><AlertCircle className="h-4 w-4 text-yellow-400 mr-2" />
+              <Badge variant="secondary">{csvFormat}</Badge></>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* FIXED: Show total count and format information */}
+      {totalRowCount > 0 && (
+        <div className="bg-blue-600/20 border border-blue-600 rounded-lg p-4">
+          <div className="flex items-start">
+            <CheckCircle className="h-5 w-5 text-blue-400 mr-3 mt-0.5" />
+            <div>
+              <h4 className="text-blue-400 font-medium">
+                📊 File Analysis Complete
+              </h4>
+              <p className="text-sm text-gray-300 mt-1">
+                Found <strong className="text-white">{totalRowCount}</strong> total rows in your Excel file
+              </p>
+              <p className="text-xs text-blue-300 mt-1">
+                Showing {Math.min(10, previewData.length)} sample records below
+              </p>
+              {csvFormat !== 'unknown' && (
+                <div className="mt-2">
+                  <p className="text-sm text-green-300">
+                    ✅ Format detected as: <strong>{formatInfo.name}</strong>
+                  </p>
+                  <p className="text-xs text-gray-400">{formatInfo.description}</p>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {csvFormat === 'unknown' && csvHeaders.length > 0 && (
+        <div className="bg-yellow-600/20 border border-yellow-600 rounded-lg p-4">
+          <div className="flex items-start">
+            <AlertCircle className="h-5 w-5 text-yellow-400 mr-3 mt-0.5" />
+            <div>
+              <h4 className="text-yellow-400 font-medium">⚠️ CSV Format Not Recognized</h4>
+              <div className="text-sm text-gray-300 mt-2">
+                <p><strong>Detected columns:</strong> {csvHeaders.slice(0, 5).join(', ')}{csvHeaders.length > 5 ? '...' : ''}</p>
+                <p className="mt-2"><strong>Total rows:</strong> {totalRowCount}</p>
+                <p className="mt-2">The file will be processed using standard export mapping as fallback.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* IMPROVED: Preview Section showing more records */}
+      {previewData.length > 0 && (
+        <div className="space-y-3">
+          <h4 className="text-sm font-medium text-gray-300 flex items-center">
+            <FileText className="h-4 w-4 mr-2" />
+            Preview Data (Showing {previewData.length} of {totalRowCount} total records)
+          </h4>
+          
+          <div className="bg-gray-800 border border-gray-700 rounded-lg p-4 max-h-96 overflow-y-auto">
+            <div className="space-y-3">
+              {previewData.map((row, index) => (
+                <div key={index} className="bg-gray-700 rounded p-3 text-xs">
+                  <div className="font-medium text-blue-400 mb-2">Row {index + 1}:</div>
+                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
+                    {Object.entries(row).slice(0, 12).map(([key, value]) => (
+                      <div key={key}>
+                        <span className="text-gray-400">{key}:</span>
+                        <div className="text-white font-mono text-xs truncate">
+                          {String(value).substring(0, 20)}{String(value).length > 20 ? '...' : ''}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+          
+          {totalRowCount > previewData.length && (
+            <p className="text-sm text-gray-400 text-center">
+              ... and {totalRowCount - previewData.length} more records
+            </p>
+          )}
+        </div>
+      )}
+
+      {/* Import Stats */}
+      {importStats && (
+        <div className="bg-blue-600/20 border border-blue-600 rounded-lg p-4">
+          <h4 className="text-blue-400 font-medium mb-2">📊 Import Statistics</h4>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+            <div>
+              <div className="text-gray-400">Total Imported</div>
+              <div className="text-xl font-bold text-white">{importStats.imported}</div>
+            </div>
+            <div>
+              <div className="text-gray-400">Long Trades</div>
+              <div className="text-xl font-bold text-green-400">{importStats.longTrades}</div>
+            </div>
+            <div>
+              <div className="text-gray-400">Short Trades</div>
+              <div className="text-xl font-bold text-red-400">{importStats.shortTrades}</div>
+            </div>
+            <div>
+              <div className="text-gray-400">Errors</div>
+              <div className="text-xl font-bold text-yellow-400">{importStats.errors}</div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Import Button */}
+      <Button 
+        onClick={handleUpload}
+        disabled={!csvFile || isUploading || !selectedImportAccount || totalRowCount === 0}
+        className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600"
+        size="lg"
+      >
+        {isUploading ? (
+          <>
+            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+            Importing {totalRowCount} records to {accounts?.find(acc => acc.id.toString() === selectedImportAccount)?.name}...
+          </>
+        ) : !selectedImportAccount ? (
+          <>
+            <AlertCircle className="mr-2 h-4 w-4" />
+            Select Account to Import
+          </>
+        ) : totalRowCount === 0 ? (
+          <>
+            <AlertCircle className="mr-2 h-4 w-4" />
+            No Data to Import
+          </>
+        ) : (
+          <>
+            <Upload className="mr-2 h-4 w-4" />
+            Import {totalRowCount} Records to {accounts?.find(acc => acc.id.toString() === selectedImportAccount)?.name}
+          </>
+        )}
+      </Button>
+    </div>
+  );
+};

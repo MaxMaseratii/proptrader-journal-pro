@@ -1,0 +1,203 @@
+// ⚠️⚠️⚠️ CRITICAL IMPLEMENTATION GUIDE FOR REPLIT ⚠️⚠️⚠️
+// 
+// 🚨 DO NOT TOUCH THESE SECTIONS BY ANY COST:
+// 1. **Trading Calendar & Performance Overview**
+// 2. **Daily Trading Performance Analysis widget section**
+//
+// These sections contain complex calendar functionality that works correctly.
+// Only implement the reorganized sections BELOW these existing sections.
+
+export default function DashboardWithPreservedSections() {
+  return (
+    <div className="p-6 space-y-6">
+      
+      {/* ===== 🚨 DO NOT TOUCH - PRESERVE EXACTLY AS IS ===== */}
+      {/* 
+      ⛔ SECTION 1: Daily Trading Performance Analysis 
+      ⛔ Keep this section 100% intact - contains calendar day selection logic
+      */}
+      <div className="mb-8">
+        <div className="flex items-center justify-between mb-6 border-b border-gray-700 pb-3">
+          <h2 className="text-xl font-bold text-gradient-rainbow flex items-center">
+            <BarChart3 className="mr-3 h-5 w-5 text-prop-gold" />
+            Daily Trading Performance Analysis
+          </h2>
+        </div>
+        {/* 🚨 DO NOT MODIFY - Keep existing selectedDayData logic */}
+        {/* Your existing CompactDetailView component goes here */}
+      </div>
+
+      {/* ===== 🚨 DO NOT TOUCH - PRESERVE EXACTLY AS IS ===== */}
+      {/* 
+      ⛔ SECTION 2: Trading Calendar & Performance Overview
+      ⛔ Keep this section 100% intact - contains calendar click handlers
+      */}
+      <div className="mb-8">
+        <div className="flex items-center justify-between mb-6 border-b border-gray-700 pb-3">
+          <h2 className="text-xl font-bold text-gradient-rainbow flex items-center">
+            <Calendar className="mr-3 h-5 w-5 text-prop-gold" />
+            Trading Calendar & Performance Overview
+          </h2>
+        </div>
+        {/* 🚨 DO NOT MODIFY - Keep existing calendar components */}
+        {/* WeeklyCalendarView, MonthlyCalendarView, YearlyCalendarView */}
+        {/* Navigation controls and handleDayClick logic */}
+      </div>
+
+      {/* ===== ✅ SAFE TO IMPLEMENT - NEW REORGANIZED SECTIONS ===== */}
+      
+      {/* SECTION 3: PERFORMANCE OVERVIEW - IMPLEMENT THIS */}
+      <section>
+        <SectionHeader 
+          icon={TrendingUp} 
+          title="Performance Overview" 
+          subtitle="Key trading metrics and portfolio performance"
+        />
+        
+        {/* ROW 1: Main Performance Metrics (4 widgets) */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+          <Widget title="Net Balance" value="$27,700.00" />
+          <Widget title="Total P&L" value="$2,700.00" />
+          <Widget title="Win Rate" value="75%" />
+          <Widget title="Total Trades" value="16" />
+        </div>
+
+        {/* ROW 2: Performance Analysis (4 widgets) */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <Widget title="Discipline Score" value="84% A" />
+          <Widget title="R Factor" value="1.09" />
+          <Widget title="Profit Factor" value="3.27" />
+          <Widget title="Avg Win/Loss" value="$323.96 / $296.88" />
+        </div>
+      </section>
+
+      {/* SECTION 4: ACCOUNT MANAGEMENT - IMPLEMENT THIS */}
+      <section>
+        <SectionHeader 
+          icon={Users} 
+          title="Account Management" 
+          subtitle="Account status, discipline scores, and portfolio overview"
+        />
+        
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <Card title="Account Status" />
+          <Card title="Max Maserati Account" />
+          <Card title="Portfolio Summary" />
+        </div>
+      </section>
+
+      {/* SECTION 5: RISK MANAGEMENT - IMPLEMENT THIS */}
+      <section>
+        <SectionHeader 
+          icon={Shield} 
+          title="Risk Management" 
+          subtitle="Discipline analysis and risk monitoring"
+        />
+        
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <Card title="Discipline Score Breakdown" />
+          <Card title="Risk Alert" />
+        </div>
+      </section>
+
+      {/* SECTION 6: TRADING ACTIVITY - IMPLEMENT THIS */}
+      <section>
+        <SectionHeader 
+          icon={Activity} 
+          title="Trading Activity" 
+          subtitle="Recent trades and performance analytics"
+        />
+        
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <Card title="Latest Trades" />
+          <Card title="Account Equity Curve" />
+        </div>
+      </section>
+
+      {/* SECTION 7: INVESTMENT TRACKING - IMPLEMENT THIS */}
+      <section>
+        <SectionHeader 
+          icon={CreditCard} 
+          title="Investment Tracking" 
+          subtitle="Account costs, spending, payouts and ROI analysis"
+        />
+        
+        {/* ROW 1: Basic Costs (3 widgets) */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+          <Widget title="Total Spent on Accounts" value="$90.00" />
+          <Widget title="Reset Cost" value="$0.00" />
+          <Widget title="Activation Costs" value="$0.00" />
+        </div>
+
+        {/* ROW 2: Financial Summary (3 widgets) */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <Widget title="Total Spent" value="$90.00" />
+          <Widget title="Payouts" value="$0.00" />
+          <Widget title="Profitability" value="-$90.00" />
+        </div>
+      </section>
+
+      {/* SECTION 8: DAILY TRADING JOURNAL - IMPLEMENT THIS */}
+      <section>
+        <SectionHeader 
+          icon={BookOpen} 
+          title="Daily Trading Journal" 
+          subtitle="Reflection and improvement planning"
+        />
+        
+        <div className="w-full">
+          <Card title="Daily Trading Journal" />
+        </div>
+      </section>
+
+    </div>
+  );
+}
+
+// ===== ⚠️ CRITICAL PRESERVATION INSTRUCTIONS ===== 
+
+/*
+🚨 ABSOLUTELY DO NOT MODIFY THESE SECTIONS:
+
+1. **Daily Trading Performance Analysis**
+   - Contains selectedDayData logic
+   - CompactDetailView component
+   - Day click state management
+   - selectedDate state and useMemo calculations
+
+2. **Trading Calendar & Performance Overview** 
+   - WeeklyCalendarView component
+   - MonthlyCalendarView component  
+   - YearlyCalendarView component
+   - handleDayClick function
+   - Calendar navigation controls
+   - Date selection logic
+
+❌ DO NOT TOUCH:
+- selectedDate state
+- selectedDayData calculations
+- handleDayClick function
+- Calendar click handlers
+- Calendar navigation
+- Any useMemo dependencies
+- getDayMetrics function
+- getTradesForDate function
+
+✅ ONLY IMPLEMENT:
+- The new reorganized sections below the calendar
+- Performance Overview widgets
+- Account Management cards
+- Risk Management widgets
+- Trading Activity sections
+- Investment Tracking widgets
+- Daily Trading Journal
+
+🔒 PRESERVATION STRATEGY:
+1. Keep existing calendar sections at the top
+2. Add new reorganized sections below
+3. Use existing data from selectedDayData for new widgets
+4. Do NOT modify any calendar-related state or functions
+5. Only reorganize the widgets that come after the calendar
+
+⚠️ IF YOU MODIFY THE CALENDAR SECTIONS, THE DAY SELECTION WILL BREAK!
+*/

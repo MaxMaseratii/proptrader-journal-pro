@@ -1,0 +1,704 @@
+import React, { useState, useEffect } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { Badge } from '@/components/ui/badge';
+import { Progress } from '@/components/ui/progress';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { 
+  Target, 
+  Shield, 
+  Clock, 
+  TrendingUp, 
+  TrendingDown,
+  BarChart3,
+  Calendar,
+  Brain,
+  BookOpen,
+  DollarSign,
+  Award,
+  Timer,
+  Activity,
+  AlertTriangle,
+  CheckCircle,
+  Edit,
+  Save,
+  PlayCircle,
+  PauseCircle,
+  Zap
+} from 'lucide-react';
+
+const DailyPlan = () => {
+  // State for daily planning
+  const [dailyPlan, setDailyPlan] = useState({
+    riskAmount: 0,
+    targetProfit: 0,
+    maxTrades: 0,
+    plannedTrades: 0,
+    riskRewardRatio: 0,
+    maxRiskPercentage: 0,
+    plannedHours: 0,
+    hourlyWage: 0,
+    tradeTime: '', // New field for trade time
+  });
+
+  // State for plan save status
+  const [isPlanSaved, setIsPlanSaved] = useState(false);
+  
+  // State for strategy rules
+  const [strategies, setStrategies] = useState([
+    { id: 1, name: 'Default Strategy', rules: ['Only trade during NY session', 'Max 2% risk per trade', 'Minimum 1:2 RR ratio'] }
+  ]);
+  const [currentStrategy, setCurrentStrategy] = useState(strategies[0]);
+  const [newStrategyName, setNewStrategyName] = useState('');
+  const [newRule, setNewRule] = useState('');
+
+  // State for actual daily results
+  const [dailyActual, setDailyActual] = useState({
+    currentPnL: 0,
+    tradesExecuted: 0,
+    wins: 0,
+    losses: 0,
+    actualRR: 0,
+    hoursWorked: 0,
+    riskUsed: 0,
+    biggestWin: 0,
+    biggestLoss: 0,
+  });
+
+  // State for journal and tracking - using same localStorage as Journal page
+  const [journalData, setJournalData] = useState({
+    whatWentWrong: '',
+    whatWentRight: '',
+    lessonsLearned: '',
+    improvementPlan: '',
+    emotionalState: 'neutral',
+    marketConditions: ''
+  });
+  const [tomorrowPlan, setTomorrowPlan] = useState('');
+  const [isTrading, setIsTrading] = useState(false);
+  const [tradingStartTime, setTradingStartTime] = useState(null);
+  const [currentSessionTime, setCurrentSessionTime] = useState(0);
+
+  // Weekly performance data
+  const weeklyPerformance = [
+    { day: 'Mon', pnl: 0, trades: 0, winRate: 0, hours: 0 },
+    { day: 'Tue', pnl: 0, trades: 0, winRate: 0, hours: 0 },
+    { day: 'Wed', pnl: 0, trades: 0, winRate: 0, hours: 0 },
+    { day: 'Thu', pnl: 0, trades: 0, winRate: 0, hours: 0 },
+    { day: 'Fri', pnl: 0, trades: 0, winRate: 0, hours: 0 },
+    { day: 'Sat', pnl: 0, trades: 0, winRate: 0, hours: 0 },
+    { day: 'Sun', pnl: 0, trades: 0, winRate: 0, hours: 0 },
+  ];
+
+  // Strategy rules
+  const strategyRules = [
+    { rule: "Only trade during NY session", status: "active", followed: false },
+    { rule: "Max 2% risk per trade", status: "active", followed: false },
+    { rule: "Minimum 1:2 RR ratio", status: "active", followed: false },
+    { rule: "Stop trading after 3 consecutive losses", status: "active", followed: false },
+    { rule: "No revenge trading", status: "active", followed: false },
+  ];
+
+  // Timer effect for session tracking
+  useEffect(() => {
+    let interval;
+    if (isTrading && tradingStartTime) {
+      interval = setInterval(() => {
+        setCurrentSessionTime(Date.now() - tradingStartTime);
+      }, 1000);
+    }
+    return () => clearInterval(interval);
+  }, [isTrading, tradingStartTime]);
+
+  // Load journal data from localStorage (same as Journal page)
+  useEffect(() => {
+    const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD format
+    const saved = localStorage.getItem(`journal-form-${today}`);
+    if (saved) {
+      setJournalData(JSON.parse(saved));
+    }
+  }, []);
+
+  // Save journal data to localStorage (same as Journal page)
+  useEffect(() => {
+    const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD format
+    localStorage.setItem(`journal-form-${today}`, JSON.stringify(journalData));
+  }, [journalData]);
+
+  // Helper functions
+  const formatTime = (milliseconds) => {
+    const hours = Math.floor(milliseconds / 3600000);
+    const minutes = Math.floor((milliseconds % 3600000) / 60000);
+    return `${hours}h ${minutes}m`;
+  };
+
+  const calculateWinRate = () => {
+    const totalTrades = dailyActual.wins + dailyActual.losses;
+    return totalTrades > 0 ? (dailyActual.wins / totalTrades * 100).toFixed(1) : 0;
+  };
+
+  const startTradingSession = () => {
+    setIsTrading(true);
+    setTradingStartTime(Date.now());
+  };
+
+  const stopTradingSession = () => {
+    setIsTrading(false);
+    setTradingStartTime(null);
+  };
+
+  const updateJournalData = (field: string, value: any) => {
+    setJournalData(prev => ({ ...prev, [field]: value }));
+  };
+
+  const disciplineScore = 0; // Would be calculated based on rule adherence
+
+    const getProgressColor = (actual, target) => {
+        const percentage = (actual / target) * 100;
+        if (percentage >= 100) return "text-green-400 bg-green-400";
+        if (percentage >= 80) return "text-yellow-400 bg-yellow-400";
+        if (percentage >= 60) return "text-orange-400 bg-orange-400";
+        return "text-red-400 bg-red-400";
+    };
+
+  return (
+    <div className="p-6 space-y-6 bg-gradient-to-br from-background via-muted/50 to-background min-h-screen">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold text-foreground">Daily Trading Command Center</h1>
+          <p className="text-muted-foreground">{new Date().toLocaleDateString('en-US', { 
+            weekday: 'long', 
+            year: 'numeric', 
+            month: 'long', 
+            day: 'numeric' 
+          })}</p>
+        </div>
+        
+        <div className="flex items-center gap-4">
+          {!isTrading ? (
+            <Button onClick={startTradingSession} className="bg-green-500 hover:bg-green-600 text-white">
+              <PlayCircle className="w-4 h-4 mr-2" />
+              Start Session
+            </Button>
+          ) : (
+            <Button onClick={stopTradingSession} className="bg-red-500 hover:bg-red-600 text-white">
+              <PauseCircle className="w-4 h-4 mr-2" />
+              End Session
+            </Button>
+          )}
+          
+          {isTrading && (
+            <div className="flex items-center gap-2 px-4 py-2 bg-green-500/10 border border-green-500 rounded-lg">
+              <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+              <span className="text-green-500 font-mono">{formatTime(currentSessionTime)}</span>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Daily Plan vs Actual Comparison */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Daily Planning Section */}
+        <Card className="bg-gradient-to-br from-primary/5 to-primary/10 border-primary/20">
+          <CardHeader>
+            <CardTitle className="text-foreground flex items-center gap-2">
+              <Target className="w-5 h-5 text-primary" />
+              Daily Trading Plan
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label className="text-foreground">Risk Amount ($)</Label>
+                <Input 
+                  type="number"
+                  value={dailyPlan.riskAmount}
+                  onChange={(e) => setDailyPlan({...dailyPlan, riskAmount: parseInt(e.target.value)})}
+                  disabled={isPlanSaved}
+                />
+              </div>
+              <div>
+                <Label className="text-foreground">Target Profit ($)</Label>
+                <Input 
+                  type="number"
+                  value={dailyPlan.targetProfit}
+                  onChange={(e) => setDailyPlan({...dailyPlan, targetProfit: parseInt(e.target.value)})}
+                  disabled={isPlanSaved}
+                />
+              </div>
+              <div>
+                <Label className="text-foreground">Planned Trades</Label>
+                <Input 
+                  type="number"
+                  value={dailyPlan.plannedTrades}
+                  onChange={(e) => setDailyPlan({...dailyPlan, plannedTrades: parseInt(e.target.value)})}
+                  disabled={isPlanSaved}
+                />
+              </div>
+              <div>
+                <Label className="text-foreground">Max Trades</Label>
+                <Input 
+                  type="number"
+                  value={dailyPlan.maxTrades}
+                  onChange={(e) => setDailyPlan({...dailyPlan, maxTrades: parseInt(e.target.value)})}
+                  disabled={isPlanSaved}
+                />
+              </div>
+              <div>
+                <Label className="text-foreground">Target RR</Label>
+                <Input 
+                  type="number"
+                  step="0.1"
+                  value={dailyPlan.riskRewardRatio}
+                  onChange={(e) => setDailyPlan({...dailyPlan, riskRewardRatio: parseFloat(e.target.value)})}
+                  disabled={isPlanSaved}
+                />
+              </div>
+              <div>
+                <Label className="text-foreground">Planned Hours</Label>
+                <Input 
+                  type="number"
+                  step="0.5"
+                  value={dailyPlan.plannedHours}
+                  onChange={(e) => setDailyPlan({...dailyPlan, plannedHours: parseFloat(e.target.value)})}
+                  disabled={isPlanSaved}
+                />
+              </div>
+              <div>
+                <Label className="text-foreground">Trade Time</Label>
+                <Input 
+                  type="time"
+                  value={dailyPlan.tradeTime}
+                  onChange={(e) => setDailyPlan({...dailyPlan, tradeTime: e.target.value})}
+                  disabled={isPlanSaved}
+                />
+              </div>
+            </div>
+            <div className="mt-4 flex justify-end">
+              <Button 
+                onClick={() => setIsPlanSaved(true)}
+                disabled={isPlanSaved}
+                className="bg-primary hover:bg-primary/90"
+              >
+                {isPlanSaved ? 'Plan Saved' : 'Save Plan'}
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Daily Actual Results */}
+        <Card className="bg-gradient-to-br from-green-500/5 to-green-500/10 border-green-500/20">
+          <CardHeader>
+            <CardTitle className="text-foreground flex items-center gap-2">
+              <Activity className="w-5 h-5 text-green-500" />
+              Actual Results
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div className="text-center p-3 bg-muted/50 rounded-lg">
+                <div className={`text-2xl font-bold ${dailyActual.currentPnL >= 0 ? 'text-green-500' : 'text-red-500'}`}>
+                  {dailyActual.currentPnL >= 0 ? '+' : ''}${dailyActual.currentPnL}
+                </div>
+                <div className="text-sm text-muted-foreground">Current P&L</div>
+                <div className="text-xs text-muted-foreground">
+                  Target: ${dailyPlan.targetProfit}
+                </div>
+              </div>
+              <div className="text-center p-3 bg-muted/50 rounded-lg">
+                <div className="text-2xl font-bold text-foreground">{dailyActual.tradesExecuted}</div>
+                <div className="text-sm text-muted-foreground">Trades Done</div>
+                <div className="text-xs text-muted-foreground">
+                  Plan: {dailyPlan.plannedTrades} | Max: {dailyPlan.maxTrades}
+                </div>
+              </div>
+              <div className="text-center p-3 bg-muted/50 rounded-lg">
+                <div className="text-2xl font-bold text-foreground">{calculateWinRate()}%</div>
+                <div className="text-sm text-muted-foreground">Win Rate</div>
+                <div className="text-xs text-muted-foreground">
+                  {dailyActual.wins}W / {dailyActual.losses}L
+                </div>
+              </div>
+              <div className="text-center p-3 bg-muted/50 rounded-lg">
+                <div className="text-2xl font-bold text-foreground">{dailyActual.actualRR}</div>
+                <div className="text-sm text-muted-foreground">Actual RR</div>
+                <div className="text-xs text-muted-foreground">
+                  Target: {dailyPlan.riskRewardRatio}
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Performance Metrics Grid */}
+      <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+        {/* Target Achievement */}
+        <Card className="bg-card border hover:border-primary/50 transition-all">
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between mb-2">
+              <Target className="h-4 w-4 text-primary" />
+              <Badge className={dailyActual.currentPnL >= dailyPlan.targetProfit ? "bg-green-500/20 text-green-500" : "bg-orange-500/20 text-orange-500"}>
+                {dailyActual.currentPnL >= dailyPlan.targetProfit ? "HIT" : "PENDING"}
+              </Badge>
+            </div>
+            <div className="text-lg font-bold text-foreground">
+              {((dailyActual.currentPnL / dailyPlan.targetProfit) * 100).toFixed(0)}%
+            </div>
+            <div className="text-xs text-muted-foreground">Target Achievement</div>
+            <Progress value={(dailyActual.currentPnL / dailyPlan.targetProfit) * 100} className="h-1 mt-1" />
+          </CardContent>
+        </Card>
+
+        {/* Risk Usage */}
+        <Card className="bg-gradient-to-br from-black/95 via-gray-900/90 to-black/95 border border-gray-700 hover:border-red-500 transition-all">
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between mb-2">
+              <Shield className="h-4 w-4 text-red-500" />
+              <div className={`w-2 h-2 rounded-full ${(dailyActual.riskUsed / dailyPlan.riskAmount) > 0.8 ? 'bg-red-500' : 'bg-green-500'}`} />
+            </div>
+            <div className="text-lg font-bold text-white">
+              {((dailyActual.riskUsed / dailyPlan.riskAmount) * 100).toFixed(0)}%
+            </div>
+            <div className="text-xs text-gray-400">Risk Used</div>
+            <div className="text-xs text-gray-500">${dailyActual.riskUsed}/${dailyPlan.riskAmount}</div>
+          </CardContent>
+        </Card>
+
+        {/* Trade Count */}
+        <Card className="bg-gradient-to-br from-black/95 via-gray-900/90 to-black/95 border border-gray-700 hover:border-purple-500 transition-all">
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between mb-2">
+              <BarChart3 className="h-4 w-4 text-purple-500" />
+              <Badge className="bg-purple-500/20 text-purple-400">
+                {dailyActual.tradesExecuted}/{dailyPlan.maxTrades}
+              </Badge>
+            </div>
+            <div className="text-lg font-bold text-white">{dailyActual.tradesExecuted}</div>
+            <div className="text-xs text-gray-400">Trades Executed</div>
+            <div className="text-xs text-gray-500">Plan: {dailyPlan.plannedTrades}</div>
+          </CardContent>
+        </Card>
+
+        {/* Working Hours */}
+        <Card className="bg-gradient-to-br from-black/95 via-gray-900/90 to-black/95 border border-gray-700 hover:border-blue-500 transition-all">
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between mb-2">
+              <Clock className="h-4 w-4 text-blue-500" />
+              <Timer className="h-3 w-3 text-blue-400" />
+            </div>
+            <div className="text-lg font-bold text-white">{dailyActual.hoursWorked}h</div>
+            <div className="text-xs text-gray-400">Hours Worked</div>
+            <div className="text-xs text-gray-500">Plan: {dailyPlan.plannedHours}h</div>
+          </CardContent>
+        </Card>
+
+        {/* Hourly Rate */}
+        <Card className="bg-gradient-to-br from-black/95 via-gray-900/90 to-black/95 border border-gray-700 hover:border-green-500 transition-all">
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between mb-2">
+              <DollarSign className="h-4 w-4 text-green-500" />
+              <div className="w-2 h-2 rounded-full bg-green-500" />
+            </div>
+            <div className="text-lg font-bold text-white">
+              ${Math.round(dailyActual.currentPnL / dailyActual.hoursWorked)}/h
+            </div>
+            <div className="text-xs text-gray-400">Hourly Rate</div>
+            <div className="text-xs text-gray-500">Target: ${dailyPlan.hourlyWage}/h</div>
+          </CardContent>
+        </Card>
+
+        {/* Discipline Score */}
+        <Card className="bg-gradient-to-br from-black/95 via-gray-900/90 to-black/95 border border-gray-700 hover:border-yellow-500 transition-all">
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between mb-2">
+              <Brain className="h-4 w-4 text-yellow-500" />
+              <Badge className="bg-yellow-500/20 text-yellow-400">
+                ELITE
+              </Badge>
+            </div>
+            <div className="text-lg font-bold text-white">{disciplineScore}</div>
+            <div className="text-xs text-gray-400">Discipline Score</div>
+            <Progress value={disciplineScore} className="h-1 mt-1" />
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Weekly Calendar & Additional Widgets */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Weekly Performance Calendar */}
+        <Card className="lg:col-span-2 bg-card border">
+          <CardHeader>
+            <CardTitle className="text-foreground flex items-center gap-2">
+              <Calendar className="w-5 h-5 text-primary" />
+              Weekly Performance Overview
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-7 gap-2">
+              {weeklyPerformance.map((day, index) => (
+                <div key={day.day} className="text-center">
+                  <div className="text-sm text-muted-foreground mb-2">{day.day}</div>
+                  <div className={`p-3 rounded-lg border transition-all duration-200 hover:scale-105 ${
+                    index === 4 ? 'border-primary bg-primary/10' : // Today
+                    day.pnl > 0 ? 'border-green-500 bg-green-500/10' :
+                    day.pnl < 0 ? 'border-red-500 bg-red-500/10' :
+                    'border-border bg-muted'
+                  }`}>
+                    <div className={`text-sm font-semibold ${
+                      day.pnl > 0 ? 'text-green-500' :
+                      day.pnl < 0 ? 'text-red-500' :
+                      'text-muted-foreground'
+                    }`}>
+                      {day.pnl !== 0 ? `${day.pnl >= 0 ? '+' : ''}$${day.pnl}` : '--'}
+                    </div>
+                    <div className="text-xs text-muted-foreground mt-1">
+                      {day.trades} trades
+                    </div>
+                    {day.trades > 0 && (
+                      <div className="text-xs text-muted-foreground">
+                        {day.winRate}% WR
+                      </div>
+                    )}
+                    <div className="text-xs text-muted-foreground">
+                      {day.hours}h
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+            
+            {/* Weekly Summary */}
+            <div className="mt-4 pt-4 border-t border-gray-700">
+              <div className="grid grid-cols-4 gap-4 text-center">
+                <div>
+                  <div className="text-lg font-bold text-green-400">+$2,900</div>
+                  <div className="text-xs text-gray-400">Weekly P&L</div>
+                </div>
+                <div>
+                  <div className="text-lg font-bold text-white">12</div>
+                  <div className="text-xs text-gray-400">Total Trades</div>
+                </div>
+                <div>
+                  <div className="text-lg font-bold text-white">66.7%</div>
+                  <div className="text-xs text-gray-400">Weekly WR</div>
+                </div>
+                <div>
+                  <div className="text-lg font-bold text-white">19h</div>
+                  <div className="text-xs text-gray-400">Total Hours</div>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Strategy Rules & Discipline */}
+        <Card className="bg-card border">
+          <CardHeader>
+            <CardTitle className="text-foreground flex items-center gap-2">
+              <Brain className="w-5 h-5 text-primary" />
+              Strategy Rules & Discipline
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              {/* Strategy Selector */}
+              <div className="flex items-center gap-2 mb-4">
+                <select 
+                  className="flex-1 px-3 py-2 bg-background border border-border rounded-md text-foreground"
+                  value={currentStrategy.id}
+                  onChange={(e) => {
+                    const strategy = strategies.find(s => s.id === parseInt(e.target.value));
+                    if (strategy) setCurrentStrategy(strategy);
+                  }}
+                >
+                  {strategies.map(strategy => (
+                    <option key={strategy.id} value={strategy.id}>{strategy.name}</option>
+                  ))}
+                </select>
+                <Button 
+                  size="sm"
+                  onClick={() => {
+                    if (newStrategyName.trim()) {
+                      const newStrategy = {
+                        id: Date.now(),
+                        name: newStrategyName,
+                        rules: ['New rule']
+                      };
+                      setStrategies([...strategies, newStrategy]);
+                      setCurrentStrategy(newStrategy);
+                      setNewStrategyName('');
+                    }
+                  }}
+                >
+                  New Strategy
+                </Button>
+              </div>
+              
+              {/* New Strategy Name Input */}
+              <Input 
+                placeholder="New strategy name"
+                value={newStrategyName}
+                onChange={(e) => setNewStrategyName(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && newStrategyName.trim()) {
+                    const newStrategy = {
+                      id: Date.now(),
+                      name: newStrategyName,
+                      rules: ['New rule']
+                    };
+                    setStrategies([...strategies, newStrategy]);
+                    setCurrentStrategy(newStrategy);
+                    setNewStrategyName('');
+                  }
+                }}
+              />
+              
+              {/* Strategy Rules */}
+              <div className="space-y-3">
+                {currentStrategy.rules.map((rule, index) => (
+                  <div key={index} className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
+                    <div className="flex items-center gap-3">
+                      <CheckCircle className="w-4 h-4 text-green-500" />
+                      <span className="text-sm text-foreground">{rule}</span>
+                    </div>
+                    <Button 
+                      size="sm" 
+                      variant="outline"
+                      onClick={() => {
+                        const updatedRules = currentStrategy.rules.filter((_, i) => i !== index);
+                        const updatedStrategy = { ...currentStrategy, rules: updatedRules };
+                        setCurrentStrategy(updatedStrategy);
+                        setStrategies(strategies.map(s => s.id === currentStrategy.id ? updatedStrategy : s));
+                      }}
+                    >
+                      Remove
+                    </Button>
+                  </div>
+                ))}
+              </div>
+              
+              {/* Add New Rule */}
+              <div className="flex gap-2">
+                <Input 
+                  placeholder="Add new rule"
+                  value={newRule}
+                  onChange={(e) => setNewRule(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && newRule.trim()) {
+                      const updatedRules = [...currentStrategy.rules, newRule];
+                      const updatedStrategy = { ...currentStrategy, rules: updatedRules };
+                      setCurrentStrategy(updatedStrategy);
+                      setStrategies(strategies.map(s => s.id === currentStrategy.id ? updatedStrategy : s));
+                      setNewRule('');
+                    }
+                  }}
+                />
+                <Button 
+                  onClick={() => {
+                    if (newRule.trim()) {
+                      const updatedRules = [...currentStrategy.rules, newRule];
+                      const updatedStrategy = { ...currentStrategy, rules: updatedRules };
+                      setCurrentStrategy(updatedStrategy);
+                      setStrategies(strategies.map(s => s.id === currentStrategy.id ? updatedStrategy : s));
+                      setNewRule('');
+                    }
+                  }}
+                >
+                  Add Rule
+                </Button>
+              </div>
+              
+              {/* Save Strategy */}
+              <Button 
+                className="w-full"
+                onClick={() => {
+                  localStorage.setItem('tradingStrategies', JSON.stringify(strategies));
+                  localStorage.setItem('currentStrategy', JSON.stringify(currentStrategy));
+                }}
+              >
+                Save Strategy
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Journal Entry Section */}
+      <Card className="bg-card border">
+        <CardHeader>
+          <CardTitle className="text-foreground flex items-center gap-2">
+            <BookOpen className="w-5 h-5 text-primary" />
+            Daily Journal Entry
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <Tabs defaultValue="conditions" className="w-full">
+            <TabsList className="grid w-full grid-cols-5">
+              <TabsTrigger value="conditions">Market</TabsTrigger>
+              <TabsTrigger value="right">Went Right</TabsTrigger>
+              <TabsTrigger value="wrong">Went Wrong</TabsTrigger>
+              <TabsTrigger value="lessons">Lessons</TabsTrigger>
+              <TabsTrigger value="improvement">Improvement</TabsTrigger>
+            </TabsList>
+            
+            <TabsContent value="conditions" className="space-y-4 mt-4">
+              <Textarea
+                placeholder="Describe today's market conditions (trending, ranging, volatile, news events, etc.)"
+                value={journalData.marketConditions}
+                onChange={(e) => updateJournalData('marketConditions', e.target.value)}
+                className="min-h-32"
+              />
+            </TabsContent>
+
+            <TabsContent value="right" className="space-y-4 mt-4">
+              <Textarea
+                placeholder="What did you do well today? Good entries, risk management, discipline, etc."
+                value={journalData.whatWentRight}
+                onChange={(e) => updateJournalData('whatWentRight', e.target.value)}
+                className="min-h-32"
+              />
+            </TabsContent>
+            
+            <TabsContent value="wrong" className="space-y-4 mt-4">
+              <Textarea
+                placeholder="What mistakes did you make? Poor entries, breaking rules, emotional trading, etc."
+                value={journalData.whatWentWrong}
+                onChange={(e) => updateJournalData('whatWentWrong', e.target.value)}
+                className="min-h-32"
+              />
+            </TabsContent>
+            
+            <TabsContent value="lessons" className="space-y-4 mt-4">
+              <Textarea
+                placeholder="What key insights did you gain from today's trading?"
+                value={journalData.lessonsLearned}
+                onChange={(e) => updateJournalData('lessonsLearned', e.target.value)}
+                className="min-h-32"
+              />
+            </TabsContent>
+
+            <TabsContent value="improvement" className="space-y-4 mt-4">
+              <Textarea
+                placeholder="What specific actions will you take to improve your trading?"
+                value={journalData.improvementPlan}
+                onChange={(e) => updateJournalData('improvementPlan', e.target.value)}
+                className="min-h-32"
+              />
+            </TabsContent>
+          </Tabs>
+          
+          <div className="mt-6 pt-4 border-t border-border">
+            <div className="text-sm text-muted-foreground mb-2">Note: Changes are automatically synchronized with your Trading Journal page</div>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+};
+
+export default DailyPlan;

@@ -1,0 +1,1098 @@
+import { useState } from "react";
+import { 
+  Dialog, 
+  DialogContent, 
+  DialogDescription, 
+  DialogHeader, 
+  DialogTitle 
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Checkbox } from "@/components/ui/checkbox";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Card, CardContent } from "@/components/ui/card";
+import { Plus } from "lucide-react";
+
+export default function AccountFormModal() {
+  const [isAccountDialogOpen, setIsAccountDialogOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errors, setErrors] = useState({});
+
+  // Form state
+  const [formData, setFormData] = useState({
+    name: "",
+    firm: "",
+    type: "challenge",
+    status: "active",
+    startingBalance: 0,
+    profitTarget: 0,
+    maxDrawdown: 0,
+    hasDailyLossLimit: false,
+    dailyLossLimit: null,
+    dailyLossLimitType: "soft",
+    drawdownType: "trailing",
+    maxDrawdownType: "eod",
+    
+    // Account Rules
+    minimumTradingDays: null,
+    timeLimit: null,
+    daysRequiredToPass: null,
+    consistencyPercentage: null,
+    
+    // Financial tracking fields
+    accountCost: null,
+    purchaseMethod: null,
+    resetCount: 0,
+    totalResetsCost: 0,
+    activationCost: null,
+    activationPaid: false,
+    includesActivationFee: false,
+    
+    // Payout rule fields
+    daysRequiredForPayout: null,
+    winningDayMinimum: null,
+    payoutFrequency: "monthly",
+    minimumPayoutAmount: null,
+    maxNetBalanceForPayout: null,
+    profitSplit: null,
+    maximumPayoutAllowed: null,
+    maximumPayoutPerAccount: null,
+    bufferAmount: null,
+    bufferPercentage: null,
+    accountBufferRequired: false,
+    
+    // Risk management fields
+    tradingCapital: null,
+    riskCalculationPeriod: "weekly",
+    useRiskPercentage: false,
+    riskPercentage: null,
+    customRiskAmount: null,
+    riskRewardRatio: 2.0,
+    primaryAsset: "ES",
+    secondaryAsset: "",
+    tertiaryAsset: "",
+
+    tradingSessionStart: "",
+    tradingSessionEnd: "",
+    timezone: "",
+    dailyWorkingHours: null,
+    hourlyWages: null,
+    copyTradingAllowed: true,
+    newsTradingAllowed: true,
+    useIntradayMargins: true,
+    marginSafetyBuffer: 50.0,
+    stopLossPoints: 10,
+    takeProfitPoints: 20,
+    riskPerTrade: null,
+    riskPerTradeDivider: 1,
+    maxTradesPerDay: 0,
+    maxRiskPerDay: null,
+    maxPositionSize: null,
+    preferredAssets: null,
+    
+    // Personal Trading Time fields
+    personalTradingTimeStart1: "",
+    personalTradingTimeEnd1: "",
+    personalTradingTimeZone1: "",
+    personalTradingTimeStart2: "",
+    personalTradingTimeEnd2: "",
+    personalTradingTimeZone2: "",
+    personalTradingTimeStart3: "",
+    personalTradingTimeEnd3: "",
+    personalTradingTimeZone3: "",
+    
+    // Enhanced and Live Account Settings
+    liveAccountAvailable: false,
+    enhancedPayoutsAvailable: false,
+    transitionTrigger: null,
+    
+    // Live account transition settings
+    liveAccountTransitionEnabled: false,
+    liveAccountTransitionProfitTarget: null,
+    liveAccountTransitionDays: null,
+    liveAccountTransitionDrawdownLimit: null,
+    
+    // Funded Account Payout Settings
+    fundedPayoutEnabled: false,
+    fundedDaysRequiredForPayout: null,
+    fundedWinningDayMinimum: null,
+    fundedPayoutFrequency: null,
+    fundedMinimumPayoutAmount: null,
+    fundedMaxNetBalanceForPayout: null,
+    fundedProfitSplit: null,
+    
+    // Live Account Payout Settings
+    livePayoutEnabled: false,
+    liveDaysRequiredForPayout: null,
+    liveWinningDayMinimum: null,
+    livePayoutFrequency: null,
+    liveMinimumPayoutAmount: null,
+    liveMaxNetBalanceForPayout: null,
+    liveProfitSplit: null,
+  });
+
+  // Update form field
+  const updateField = (field, value) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+    // Clear error for this field when user starts typing
+    if (errors[field]) {
+      setErrors(prev => ({ ...prev, [field]: null }));
+    }
+  };
+
+  // Validate form
+  const validateForm = () => {
+    const newErrors = {};
+    
+    if (!formData.name.trim()) {
+      newErrors.name = "Account name is required";
+    }
+    
+    if (!formData.firm.trim()) {
+      newErrors.firm = "Prop firm is required";
+    }
+    
+    if (formData.startingBalance <= 0) {
+      newErrors.startingBalance = "Starting balance must be greater than 0";
+    }
+    
+    if (formData.profitTarget <= 0) {
+      newErrors.profitTarget = "Profit target must be greater than 0";
+    }
+    
+    if (formData.maxDrawdown <= 0) {
+      newErrors.maxDrawdown = "Max drawdown must be greater than 0";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleSubmit = async () => {
+    if (!validateForm()) {
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      // Replace this with your actual API call
+      console.log("Form data:", formData);
+      
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // Success handling
+      setIsAccountDialogOpen(false);
+      setFormData({
+        name: "",
+        firm: "",
+        type: "challenge",
+        status: "active",
+        startingBalance: 0,
+        profitTarget: 0,
+        maxDrawdown: 0,
+        hasDailyLossLimit: false,
+        dailyLossLimit: null,
+        dailyLossLimitType: "soft",
+        drawdownType: "trailing",
+        maxDrawdownType: "eod",
+        minimumTradingDays: null,
+        timeLimit: null,
+        daysRequiredToPass: null,
+        consistencyPercentage: null,
+        accountCost: null,
+        purchaseMethod: null,
+        resetCount: 0,
+        totalResetsCost: 0,
+        activationCost: null,
+        activationPaid: false,
+        includesActivationFee: false,
+        daysRequiredForPayout: null,
+        winningDayMinimum: null,
+        payoutFrequency: "monthly",
+        minimumPayoutAmount: null,
+        maxNetBalanceForPayout: null,
+        profitSplit: null,
+        maximumPayoutAllowed: null,
+        maximumPayoutPerAccount: null,
+        bufferAmount: null,
+        bufferPercentage: null,
+        accountBufferRequired: false,
+        tradingCapital: null,
+        riskCalculationPeriod: "weekly",
+        useRiskPercentage: false,
+        riskPercentage: null,
+        customRiskAmount: null,
+        riskRewardRatio: 2.0,
+        primaryAsset: "ES",
+        secondaryAsset: "",
+        tertiaryAsset: "",
+        tradingSessionStart: "",
+        tradingSessionEnd: "",
+        timezone: "",
+        dailyWorkingHours: null,
+        hourlyWages: null,
+        copyTradingAllowed: true,
+        newsTradingAllowed: true,
+        useIntradayMargins: true,
+        marginSafetyBuffer: 50.0,
+        stopLossPoints: 10,
+        takeProfitPoints: 20,
+        riskPerTrade: null,
+        riskPerTradeDivider: 1,
+        maxTradesPerDay: 0,
+        maxRiskPerDay: null,
+        maxPositionSize: null,
+        preferredAssets: null,
+        personalTradingTimeStart1: "",
+        personalTradingTimeEnd1: "",
+        personalTradingTimeZone1: "",
+        personalTradingTimeStart2: "",
+        personalTradingTimeEnd2: "",
+        personalTradingTimeZone2: "",
+        personalTradingTimeStart3: "",
+        personalTradingTimeEnd3: "",
+        personalTradingTimeZone3: "",
+        liveAccountAvailable: false,
+        enhancedPayoutsAvailable: false,
+        transitionTrigger: null,
+        liveAccountTransitionEnabled: false,
+        liveAccountTransitionProfitTarget: null,
+        liveAccountTransitionDays: null,
+        liveAccountTransitionDrawdownLimit: null,
+        fundedPayoutEnabled: false,
+        fundedDaysRequiredForPayout: null,
+        fundedWinningDayMinimum: null,
+        fundedPayoutFrequency: null,
+        fundedMinimumPayoutAmount: null,
+        fundedMaxNetBalanceForPayout: null,
+        fundedProfitSplit: null,
+        livePayoutEnabled: false,
+        liveDaysRequiredForPayout: null,
+        liveWinningDayMinimum: null,
+        livePayoutFrequency: null,
+        liveMinimumPayoutAmount: null,
+        liveMaxNetBalanceForPayout: null,
+        liveProfitSplit: null,
+      });
+      setErrors({});
+      alert("Account created successfully!");
+      
+    } catch (error) {
+      console.error("Error creating account:", error);
+      alert("Failed to create account. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  // Generate time options for select
+  const timeOptions = Array.from({ length: 48 }, (_, i) => {
+    const hour = Math.floor(i / 2);
+    const minute = i % 2 === 0 ? "00" : "30";
+    const time = `${hour.toString().padStart(2, '0')}:${minute}`;
+    return { value: time, label: time };
+  });
+
+  return (
+    <div className="p-6">
+      {/* Trigger Button */}
+      <Button 
+        onClick={() => setIsAccountDialogOpen(true)}
+        className="bg-gradient-to-r from-yellow-400 to-yellow-600 text-black font-semibold hover:from-yellow-500 hover:to-yellow-700"
+      >
+        <Plus className="w-4 h-4 mr-2" />
+        Create New Account
+      </Button>
+
+      {/* Account Creation Modal */}
+      <Dialog open={isAccountDialogOpen} onOpenChange={setIsAccountDialogOpen}>
+        <DialogContent className="max-w-4xl max-h-[90vh] bg-gray-900 border-gray-700">
+          <DialogHeader>
+            <DialogTitle className="text-white text-xl">Create New Trading Account</DialogTitle>
+            <DialogDescription className="text-gray-400">
+              Set up a new trading account with proper risk management and financial tracking.
+            </DialogDescription>
+          </DialogHeader>
+          
+          <ScrollArea className="max-h-[80vh] px-6">
+            <div className="space-y-6">
+              <Tabs defaultValue="basic" className="w-full">
+                <TabsList className="grid w-full grid-cols-3 bg-gray-800">
+                  <TabsTrigger value="basic">Basic Info</TabsTrigger>
+                  <TabsTrigger value="financial">Financial</TabsTrigger>
+                  <TabsTrigger value="rules">Rules & Risk</TabsTrigger>
+                </TabsList>
+
+                {/* Basic Info Tab */}
+                <TabsContent value="basic" className="space-y-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label className="text-white">Account Name</Label>
+                      <Input 
+                        value={formData.name}
+                        onChange={(e) => updateField('name', e.target.value)}
+                        className="bg-gray-800 border-gray-600 text-white" 
+                        placeholder="My Trading Account" 
+                      />
+                      {errors.name && <p className="text-red-400 text-sm">{errors.name}</p>}
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="text-white">Prop Firm</Label>
+                      <Input 
+                        value={formData.firm}
+                        onChange={(e) => updateField('firm', e.target.value)}
+                        className="bg-gray-800 border-gray-600 text-white" 
+                        placeholder="FTMO, TopstepTrader, etc." 
+                      />
+                      {errors.firm && <p className="text-red-400 text-sm">{errors.firm}</p>}
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-3 gap-4">
+                    <div className="space-y-2">
+                      <Label className="text-white">Account Type</Label>
+                      <Select onValueChange={(value) => updateField('type', value)} value={formData.type}>
+                        <SelectTrigger className="bg-gray-800 border-gray-600 text-white">
+                          <SelectValue placeholder="Select type" />
+                        </SelectTrigger>
+                        <SelectContent className="bg-gray-800 border-gray-600">
+                          <SelectItem value="challenge">Challenge</SelectItem>
+                          <SelectItem value="funded">Funded</SelectItem>
+                          <SelectItem value="live">Live</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="text-white">Status</Label>
+                      <Select onValueChange={(value) => updateField('status', value)} value={formData.status}>
+                        <SelectTrigger className="bg-gray-800 border-gray-600 text-white">
+                          <SelectValue placeholder="Select status" />
+                        </SelectTrigger>
+                        <SelectContent className="bg-gray-800 border-gray-600">
+                          <SelectItem value="active">Active</SelectItem>
+                          <SelectItem value="passed">Passed</SelectItem>
+                          <SelectItem value="failed">Failed</SelectItem>
+                          <SelectItem value="withdrawn">Withdrawn</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="text-white">Starting Balance</Label>
+                      <Input 
+                        type="number" 
+                        value={formData.startingBalance === 0 ? "" : formData.startingBalance}
+                        onChange={(e) => updateField('startingBalance', e.target.value === "" ? 0 : parseFloat(e.target.value))}
+                        className="bg-gray-800 border-gray-600 text-white" 
+                        placeholder="100000"
+                      />
+                      {errors.startingBalance && <p className="text-red-400 text-sm">{errors.startingBalance}</p>}
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label className="text-white">Profit Target</Label>
+                      <Input 
+                        type="number" 
+                        value={formData.profitTarget === 0 ? "" : formData.profitTarget}
+                        onChange={(e) => updateField('profitTarget', e.target.value === "" ? 0 : parseFloat(e.target.value))}
+                        className="bg-gray-800 border-gray-600 text-white" 
+                        placeholder="10000"
+                      />
+                      {errors.profitTarget && <p className="text-red-400 text-sm">{errors.profitTarget}</p>}
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="text-white">Max Drawdown</Label>
+                      <Input 
+                        type="number" 
+                        value={formData.maxDrawdown === 0 ? "" : formData.maxDrawdown}
+                        onChange={(e) => updateField('maxDrawdown', e.target.value === "" ? 0 : parseFloat(e.target.value))}
+                        className="bg-gray-800 border-gray-600 text-white" 
+                        placeholder="5000"
+                      />
+                      {errors.maxDrawdown && <p className="text-red-400 text-sm">{errors.maxDrawdown}</p>}
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-3 gap-4">
+                    <div className="space-y-2">
+                      <Label className="text-white">Minimum Trading Days</Label>
+                      <Input 
+                        type="number" 
+                        value={formData.minimumTradingDays || ""}
+                        onChange={(e) => updateField('minimumTradingDays', parseFloat(e.target.value) || null)}
+                        className="bg-gray-800 border-gray-600 text-white" 
+                        placeholder="5"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="text-white">Time Limit (days)</Label>
+                      <Input 
+                        type="number" 
+                        value={formData.timeLimit || ""}
+                        onChange={(e) => updateField('timeLimit', parseFloat(e.target.value) || null)}
+                        className="bg-gray-800 border-gray-600 text-white" 
+                        placeholder="30"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="text-white">Consistency Rule (%)</Label>
+                      <Input 
+                        type="number" 
+                        value={formData.consistencyPercentage || ""}
+                        onChange={(e) => updateField('consistencyPercentage', parseFloat(e.target.value) || null)}
+                        className="bg-gray-800 border-gray-600 text-white" 
+                        placeholder="50"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label className="text-white">Drawdown Type</Label>
+                      <Select onValueChange={(value) => updateField('drawdownType', value)} value={formData.drawdownType}>
+                        <SelectTrigger className="bg-gray-800 border-gray-600 text-white">
+                          <SelectValue placeholder="Select drawdown type" />
+                        </SelectTrigger>
+                        <SelectContent className="bg-gray-800 border-gray-600">
+                          <SelectItem value="trailing">Trailing</SelectItem>
+                          <SelectItem value="daily">Daily</SelectItem>
+                          <SelectItem value="unrealized">Unrealized</SelectItem>
+                          <SelectItem value="balance_based">Balance Based</SelectItem>
+                          <SelectItem value="static">Static</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="text-white">Max Drawdown Type</Label>
+                      <Select onValueChange={(value) => updateField('maxDrawdownType', value)} value={formData.maxDrawdownType}>
+                        <SelectTrigger className="bg-gray-800 border-gray-600 text-white">
+                          <SelectValue placeholder="Select max drawdown type" />
+                        </SelectTrigger>
+                        <SelectContent className="bg-gray-800 border-gray-600">
+                          <SelectItem value="eod">End of Day (EOD)</SelectItem>
+                          <SelectItem value="unrealized_profit">Unrealized Profit</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center space-x-2">
+                    <Checkbox
+                      checked={formData.hasDailyLossLimit}
+                      onCheckedChange={(checked) => updateField('hasDailyLossLimit', checked)}
+                      className="border-gray-600 data-[state=checked]:bg-blue-600"
+                    />
+                    <Label className="text-white">Has Daily Loss Limit</Label>
+                  </div>
+                </TabsContent>
+
+                {/* Financial Tab */}
+                <TabsContent value="financial" className="space-y-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label className="text-white">Account Cost</Label>
+                      <Input 
+                        type="number" 
+                        value={formData.accountCost || ""}
+                        onChange={(e) => updateField('accountCost', parseFloat(e.target.value) || null)}
+                        className="bg-gray-800 border-gray-600 text-white" 
+                        placeholder="599"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="text-white">Activation Cost</Label>
+                      <Input 
+                        type="number" 
+                        value={formData.activationCost || ""}
+                        onChange={(e) => updateField('activationCost', parseFloat(e.target.value) || null)}
+                        className="bg-gray-800 border-gray-600 text-white" 
+                        placeholder="200"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label className="text-white">Purchase Method</Label>
+                      <Select onValueChange={(value) => updateField('purchaseMethod', value)} value={formData.purchaseMethod || ""}>
+                        <SelectTrigger className="bg-gray-800 border-gray-600 text-white">
+                          <SelectValue placeholder="Select payment method" />
+                        </SelectTrigger>
+                        <SelectContent className="bg-gray-800 border-gray-600">
+                          <SelectItem value="credit_card">Credit Card</SelectItem>
+                          <SelectItem value="paypal">PayPal</SelectItem>
+                          <SelectItem value="crypto">Cryptocurrency</SelectItem>
+                          <SelectItem value="bank_transfer">Bank Transfer</SelectItem>
+                          <SelectItem value="other">Other</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="text-white">Reset Count</Label>
+                      <Input 
+                        type="number" 
+                        value={formData.resetCount || ""}
+                        onChange={(e) => updateField('resetCount', parseInt(e.target.value) || 0)}
+                        className="bg-gray-800 border-gray-600 text-white" 
+                        placeholder="0"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label className="text-white">Total Resets Cost</Label>
+                      <Input 
+                        type="number" 
+                        value={formData.totalResetsCost || ""}
+                        onChange={(e) => updateField('totalResetsCost', parseFloat(e.target.value) || 0)}
+                        className="bg-gray-800 border-gray-600 text-white" 
+                        placeholder="0"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="text-white">Profit Split (%)</Label>
+                      <Input 
+                        type="number" 
+                        value={formData.profitSplit || ""}
+                        onChange={(e) => updateField('profitSplit', parseFloat(e.target.value) || null)}
+                        className="bg-gray-800 border-gray-600 text-white" 
+                        placeholder="80"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="flex items-center space-x-4">
+                    <div className="flex items-center space-x-2">
+                      <Checkbox
+                        checked={formData.activationPaid}
+                        onCheckedChange={(checked) => updateField('activationPaid', checked)}
+                        className="border-gray-600 data-[state=checked]:bg-blue-600"
+                      />
+                      <Label className="text-white">Activation Fee Paid</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <Checkbox
+                        checked={formData.includesActivationFee}
+                        onCheckedChange={(checked) => updateField('includesActivationFee', checked)}
+                        className="border-gray-600 data-[state=checked]:bg-blue-600"
+                      />
+                      <Label className="text-white">Includes Activation Fee</Label>
+                    </div>
+                  </div>
+                </TabsContent>
+
+                {/* Rules & Risk Tab */}
+                <TabsContent value="rules" className="space-y-4">
+                  {/* Risk Per Trade with Real-time Feedback */}
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label className="text-white">Risk Per Trade ($)</Label>
+                      <Input 
+                        type="number" 
+                        value={formData.riskPerTrade === null ? "" : formData.riskPerTrade}
+                        onChange={(e) => updateField('riskPerTrade', e.target.value === "" ? null : parseFloat(e.target.value))}
+                        className="bg-gray-800 border-gray-600 text-white" 
+                        placeholder="500"
+                      />
+                      {formData.riskPerTrade && formData.maxDrawdown && (
+                        <div className="text-xs mt-1">
+                          <span className={`${
+                            (formData.riskPerTrade / formData.maxDrawdown) * 100 > 10 
+                              ? 'text-red-400' 
+                              : (formData.riskPerTrade / formData.maxDrawdown) * 100 > 5 
+                              ? 'text-yellow-400' 
+                              : 'text-green-400'
+                          }`}>
+                            {((formData.riskPerTrade / formData.maxDrawdown) * 100).toFixed(2)}% of max drawdown
+                          </span>
+                          {(formData.riskPerTrade / formData.maxDrawdown) * 100 > 10 && (
+                            <span className="text-red-400 ml-2">⚠️ High risk per trade</span>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label className="text-white">Risk Per Trade Divider</Label>
+                      <Input 
+                        type="number" 
+                        min="1"
+                        max="10"
+                        value={formData.riskPerTradeDivider === null ? "" : formData.riskPerTradeDivider}
+                        onChange={(e) => updateField('riskPerTradeDivider', e.target.value === "" ? null : parseInt(e.target.value))}
+                        className="bg-gray-800 border-gray-600 text-white" 
+                        placeholder="1"
+                      />
+                      <div className="text-xs mt-1 text-gray-400">
+                        Split your total risk across {formData.riskPerTradeDivider || 1} trade{(formData.riskPerTradeDivider || 1) > 1 ? 's' : ''}
+                      </div>
+                      {formData.riskPerTradeDivider && formData.riskPerTrade && (
+                        <div className="text-xs mt-1">
+                          <span className="text-green-400">
+                            Risk Per Individual Trade: ${(formData.riskPerTrade / formData.riskPerTradeDivider).toFixed(2)}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label className="text-white">Daily Loss Limit ($)</Label>
+                      <Input 
+                        type="number" 
+                        value={formData.dailyLossLimit === null ? "" : formData.dailyLossLimit}
+                        onChange={(e) => updateField('dailyLossLimit', e.target.value === "" ? null : parseFloat(e.target.value))}
+                        className="bg-gray-800 border-gray-600 text-white" 
+                        placeholder="2000"
+                      />
+                      {formData.dailyLossLimit && formData.maxDrawdown && (
+                        <div className="text-xs mt-1">
+                          <span className={`${
+                            (formData.dailyLossLimit / formData.maxDrawdown) * 100 > 50 
+                              ? 'text-red-400' 
+                              : (formData.dailyLossLimit / formData.maxDrawdown) * 100 > 30 
+                              ? 'text-yellow-400' 
+                              : 'text-green-400'
+                          }`}>
+                            {((formData.dailyLossLimit / formData.maxDrawdown) * 100).toFixed(2)}% of max drawdown
+                          </span>
+                          {(formData.dailyLossLimit / formData.maxDrawdown) * 100 > 50 && (
+                            <span className="text-red-400 ml-2">⚠️ Very high daily risk</span>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="text-white">Risk:Reward Ratio (1:X)</Label>
+                      <Input 
+                        type="number" 
+                        step="0.1"
+                        value={formData.riskRewardRatio === null ? "" : formData.riskRewardRatio}
+                        onChange={(e) => updateField('riskRewardRatio', e.target.value === "" ? null : parseFloat(e.target.value))}
+                        className="bg-gray-800 border-gray-600 text-white" 
+                        placeholder="2.0"
+                      />
+                      {formData.riskRewardRatio && formData.riskPerTrade && (
+                        <div className="text-xs mt-1">
+                          <span className="text-green-400">
+                            Target profit: ${(formData.riskPerTrade * formData.riskRewardRatio).toFixed(0)} per trade
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-3 gap-4">
+                    <div className="space-y-2">
+                      <Label className="text-white">Max Trades Per Day</Label>
+                      <Input 
+                        type="number" 
+                        value={formData.maxTradesPerDay === null ? "" : formData.maxTradesPerDay}
+                        onChange={(e) => updateField('maxTradesPerDay', e.target.value === "" ? null : parseInt(e.target.value))}
+                        className="bg-gray-800 border-gray-600 text-white" 
+                        placeholder="5"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="text-white">Max Risk Per Day ($)</Label>
+                      <Input 
+                        type="number" 
+                        value={formData.maxRiskPerDay === null ? "" : formData.maxRiskPerDay}
+                        onChange={(e) => updateField('maxRiskPerDay', e.target.value === "" ? null : parseFloat(e.target.value))}
+                        className="bg-gray-800 border-gray-600 text-white" 
+                        placeholder="3000"
+                      />
+                      {formData.maxRiskPerDay && formData.riskPerTrade && (
+                        <div className="text-xs mt-1">
+                          <span className="text-gray-400">
+                            ≈ {Math.floor(formData.maxRiskPerDay / formData.riskPerTrade)} trades max per day
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="text-white">Stop Loss (Points/Pips)</Label>
+                      <Input 
+                        type="number" 
+                        value={formData.stopLossPoints === null || formData.stopLossPoints === undefined ? "" : formData.stopLossPoints}
+                        onChange={(e) => updateField('stopLossPoints', e.target.value === "" ? null : parseInt(e.target.value))}
+                        className="bg-gray-800 border-gray-600 text-white" 
+                        placeholder="10"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-3 gap-4">
+                    <div className="space-y-2">
+                      <Label className="text-white">Primary Asset</Label>
+                      <Input 
+                        value={formData.primaryAsset || ""}
+                        onChange={(e) => updateField('primaryAsset', e.target.value)}
+                        className="bg-gray-800 border-gray-600 text-white" 
+                        placeholder="e.g. ES, NQ, EURUSD, BTCUSD"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="text-white">Secondary Asset</Label>
+                      <Input 
+                        value={formData.secondaryAsset || ""}
+                        onChange={(e) => updateField('secondaryAsset', e.target.value)}
+                        className="bg-gray-800 border-gray-600 text-white" 
+                        placeholder="e.g. CL, GC, GBPUSD"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="text-white">Tertiary Asset</Label>
+                      <Input 
+                        value={formData.tertiaryAsset || ""}
+                        onChange={(e) => updateField('tertiaryAsset', e.target.value)}
+                        className="bg-gray-800 border-gray-600 text-white" 
+                        placeholder="e.g. RTY, YM, USDJPY"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Personal Trading Time Section */}
+                  <div className="space-y-4">
+                    <h3 className="text-lg font-semibold text-yellow-400 border-b border-yellow-400/20 pb-2">
+                      Personal Trading Time
+                    </h3>
+                    
+                    {/* Time Slot 1 */}
+                    <div className="space-y-2">
+                      <h4 className="text-md font-medium text-blue-400">Time Slot 1 (Primary)</h4>
+                      <div className="grid grid-cols-3 gap-4">
+                        <div className="space-y-2">
+                          <Label className="text-white">Start Time</Label>
+                          <Select onValueChange={(value) => updateField('personalTradingTimeStart1', value)} value={formData.personalTradingTimeStart1 || ""}>
+                            <SelectTrigger className="bg-gray-800 border-gray-600 text-white">
+                              <SelectValue placeholder="--:--" />
+                            </SelectTrigger>
+                            <SelectContent className="bg-gray-800 border-gray-600 max-h-60">
+                              {timeOptions.map(({ value, label }) => (
+                                <SelectItem key={value} value={value}>
+                                  {label}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div className="space-y-2">
+                          <Label className="text-white">End Time</Label>
+                          <Select onValueChange={(value) => updateField('personalTradingTimeEnd1', value)} value={formData.personalTradingTimeEnd1 || ""}>
+                            <SelectTrigger className="bg-gray-800 border-gray-600 text-white">
+                              <SelectValue placeholder="--:--" />
+                            </SelectTrigger>
+                            <SelectContent className="bg-gray-800 border-gray-600 max-h-60">
+                              {timeOptions.map(({ value, label }) => (
+                                <SelectItem key={value} value={value}>
+                                  {label}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div className="space-y-2">
+                          <Label className="text-white">Timezone</Label>
+                          <Select onValueChange={(value) => updateField('personalTradingTimeZone1', value)} value={formData.personalTradingTimeZone1 || ""}>
+                            <SelectTrigger className="bg-gray-800 border-gray-600 text-white">
+                              <SelectValue placeholder="Select timezone" />
+                            </SelectTrigger>
+                            <SelectContent className="bg-gray-800 border-gray-600">
+                              <SelectItem value="EST">EST - Eastern Standard Time</SelectItem>
+                              <SelectItem value="CST">CST - Central Standard Time</SelectItem>
+                              <SelectItem value="MST">MST - Mountain Standard Time</SelectItem>
+                              <SelectItem value="PST">PST - Pacific Standard Time</SelectItem>
+                              <SelectItem value="GMT">GMT - Greenwich Mean Time</SelectItem>
+                              <SelectItem value="CET">CET - Central European Time</SelectItem>
+                              <SelectItem value="JST">JST - Japan Standard Time</SelectItem>
+                              <SelectItem value="AEST">AEST - Australian Eastern Standard Time</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Time Slot 2 */}
+                    <div className="space-y-2">
+                      <h4 className="text-md font-medium text-green-400">Time Slot 2 (Secondary)</h4>
+                      <div className="grid grid-cols-3 gap-4">
+                        <div className="space-y-2">
+                          <Label className="text-white">Start Time</Label>
+                          <Select onValueChange={(value) => updateField('personalTradingTimeStart2', value)} value={formData.personalTradingTimeStart2 || ""}>
+                            <SelectTrigger className="bg-gray-800 border-gray-600 text-white">
+                              <SelectValue placeholder="--:--" />
+                            </SelectTrigger>
+                            <SelectContent className="bg-gray-800 border-gray-600 max-h-60">
+                              {timeOptions.map(({ value, label }) => (
+                                <SelectItem key={value} value={value}>
+                                  {label}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div className="space-y-2">
+                          <Label className="text-white">End Time</Label>
+                          <Select onValueChange={(value) => updateField('personalTradingTimeEnd2', value)} value={formData.personalTradingTimeEnd2 || ""}>
+                            <SelectTrigger className="bg-gray-800 border-gray-600 text-white">
+                              <SelectValue placeholder="--:--" />
+                            </SelectTrigger>
+                            <SelectContent className="bg-gray-800 border-gray-600 max-h-60">
+                              {timeOptions.map(({ value, label }) => (
+                                <SelectItem key={value} value={value}>
+                                  {label}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div className="space-y-2">
+                          <Label className="text-white">Timezone</Label>
+                          <Select onValueChange={(value) => updateField('personalTradingTimeZone2', value)} value={formData.personalTradingTimeZone2 || ""}>
+                            <SelectTrigger className="bg-gray-800 border-gray-600 text-white">
+                              <SelectValue placeholder="Select timezone" />
+                            </SelectTrigger>
+                            <SelectContent className="bg-gray-800 border-gray-600">
+                              <SelectItem value="EST">EST - Eastern Standard Time</SelectItem>
+                              <SelectItem value="CST">CST - Central Standard Time</SelectItem>
+                              <SelectItem value="MST">MST - Mountain Standard Time</SelectItem>
+                              <SelectItem value="PST">PST - Pacific Standard Time</SelectItem>
+                              <SelectItem value="GMT">GMT - Greenwich Mean Time</SelectItem>
+                              <SelectItem value="CET">CET - Central European Time</SelectItem>
+                              <SelectItem value="JST">JST - Japan Standard Time</SelectItem>
+                              <SelectItem value="AEST">AEST - Australian Eastern Standard Time</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Time Slot 3 */}
+                    <div className="space-y-2">
+                      <h4 className="text-md font-medium text-purple-400">Time Slot 3 (Tertiary)</h4>
+                      <div className="grid grid-cols-3 gap-4">
+                        <div className="space-y-2">
+                          <Label className="text-white">Start Time</Label>
+                          <Select onValueChange={(value) => updateField('personalTradingTimeStart3', value)} value={formData.personalTradingTimeStart3 || ""}>
+                            <SelectTrigger className="bg-gray-800 border-gray-600 text-white">
+                              <SelectValue placeholder="--:--" />
+                            </SelectTrigger>
+                            <SelectContent className="bg-gray-800 border-gray-600 max-h-60">
+                              {timeOptions.map(({ value, label }) => (
+                                <SelectItem key={value} value={value}>
+                                  {label}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div className="space-y-2">
+                          <Label className="text-white">End Time</Label>
+                          <Select onValueChange={(value) => updateField('personalTradingTimeEnd3', value)} value={formData.personalTradingTimeEnd3 || ""}>
+                            <SelectTrigger className="bg-gray-800 border-gray-600 text-white">
+                              <SelectValue placeholder="--:--" />
+                            </SelectTrigger>
+                            <SelectContent className="bg-gray-800 border-gray-600 max-h-60">
+                              {timeOptions.map(({ value, label }) => (
+                                <SelectItem key={value} value={value}>
+                                  {label}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div className="space-y-2">
+                          <Label className="text-white">Timezone</Label>
+                          <Select onValueChange={(value) => updateField('personalTradingTimeZone3', value)} value={formData.personalTradingTimeZone3 || ""}>
+                            <SelectTrigger className="bg-gray-800 border-gray-600 text-white">
+                              <SelectValue placeholder="Select timezone" />
+                            </SelectTrigger>
+                            <SelectContent className="bg-gray-800 border-gray-600">
+                              <SelectItem value="EST">EST - Eastern Standard Time</SelectItem>
+                              <SelectItem value="CST">CST - Central Standard Time</SelectItem>
+                              <SelectItem value="MST">MST - Mountain Standard Time</SelectItem>
+                              <SelectItem value="PST">PST - Pacific Standard Time</SelectItem>
+                              <SelectItem value="GMT">GMT - Greenwich Mean Time</SelectItem>
+                              <SelectItem value="CET">CET - Central European Time</SelectItem>
+                              <SelectItem value="JST">JST - Japan Standard Time</SelectItem>
+                              <SelectItem value="AEST">AEST - Australian Eastern Standard Time</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Automatic Time Calculation Display */}
+                    {formData.personalTradingTimeStart1 && formData.personalTradingTimeEnd1 && (
+                      <div className="bg-gray-800/50 rounded-lg p-4 border border-yellow-400/20">
+                        <div className="flex items-center justify-between">
+                          <span className="text-white font-medium">Daily Trading Duration (Slot 1):</span>
+                          <span className="text-yellow-400 font-bold text-lg">
+                            {(() => {
+                              const start = formData.personalTradingTimeStart1;
+                              const end = formData.personalTradingTimeEnd1;
+                              if (!start || !end) return "-- hours -- minutes";
+                              
+                              try {
+                                const [startHour, startMin] = start.split(':').map(Number);
+                                const [endHour, endMin] = end.split(':').map(Number);
+                                
+                                const startMinutes = startHour * 60 + startMin;
+                                const endMinutes = endHour * 60 + endMin;
+                                
+                                let diffMinutes = endMinutes - startMinutes;
+                                if (diffMinutes < 0) diffMinutes += 24 * 60; // Handle overnight sessions
+                                
+                                const hours = Math.floor(diffMinutes / 60);
+                                const minutes = diffMinutes % 60;
+                                
+                                return `${hours} hours ${minutes} minutes`;
+                              } catch {
+                                return "-- hours -- minutes";
+                              }
+                            })()}
+                          </span>
+                        </div>
+                      </div>
+                    )}
+
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label className="text-white">Daily Working Hours</Label>
+                        <Input 
+                          type="number" 
+                          step="0.5"
+                          value={formData.dailyWorkingHours === null ? "" : formData.dailyWorkingHours}
+                          onChange={(e) => updateField('dailyWorkingHours', e.target.value === "" ? null : parseFloat(e.target.value))}
+                          className="bg-gray-800 border-gray-600 text-white" 
+                          placeholder="8.0"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label className="text-white">Hourly Wages ($)</Label>
+                        <Input 
+                          type="number" 
+                          step="0.01"
+                          value={formData.hourlyWages === null ? "" : formData.hourlyWages}
+                          onChange={(e) => updateField('hourlyWages', e.target.value === "" ? null : parseFloat(e.target.value))}
+                          className="bg-gray-800 border-gray-600 text-white" 
+                          placeholder="25.00"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="flex items-center space-x-2">
+                        <Checkbox
+                          checked={formData.useIntradayMargins}
+                          onCheckedChange={(checked) => updateField('useIntradayMargins', checked)}
+                          className="border-gray-600 data-[state=checked]:bg-blue-600"
+                        />
+                        <Label className="text-white">Live Trading Account Available</Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <Checkbox
+                          checked={formData.enhancedPayoutsAvailable}
+                          onCheckedChange={(checked) => updateField('enhancedPayoutsAvailable', checked)}
+                          className="border-gray-600 data-[state=checked]:bg-blue-600"
+                        />
+                        <Label className="text-white">Challenge Payouts Available</Label>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="flex items-center space-x-2">
+                        <Checkbox
+                          checked={formData.copyTradingAllowed}
+                          onCheckedChange={(checked) => updateField('copyTradingAllowed', checked)}
+                          className="border-gray-600 data-[state=checked]:bg-blue-600"
+                        />
+                        <Label className="text-white">Copy Trading Allowed</Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <Checkbox
+                          checked={formData.newsTradingAllowed}
+                          onCheckedChange={(checked) => updateField('newsTradingAllowed', checked)}
+                          className="border-gray-600 data-[state=checked]:bg-blue-600"
+                        />
+                        <Label className="text-white">News Trading Allowed</Label>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Risk Assessment Summary */}
+                  {(formData.startingBalance && formData.riskPerTrade && formData.dailyLossLimit) && (
+                    <Card className="mt-6 bg-gradient-to-r from-blue-900/20 to-purple-900/20 border-blue-500/20">
+                      <CardContent className="p-4">
+                        <h4 className="text-lg font-semibold text-yellow-400 mb-3">Risk Assessment Summary</h4>
+                        <div className="grid grid-cols-2 gap-4">
+                          <div>
+                            <div className="text-sm text-gray-300">Risk per trade</div>
+                            <div className={`text-lg font-medium ${
+                              (formData.riskPerTrade / formData.startingBalance) * 100 > 2 ? 'text-red-400' : 
+                              (formData.riskPerTrade / formData.startingBalance) * 100 > 1 ? 'text-yellow-400' : 'text-green-400'
+                            }`}>
+                              {((formData.riskPerTrade / formData.startingBalance) * 100).toFixed(2)}% of account
+                            </div>
+                          </div>
+                          <div>
+                            <div className="text-sm text-gray-300">Daily risk limit</div>
+                            <div className={`text-lg font-medium ${
+                              (formData.dailyLossLimit / formData.startingBalance) * 100 > 5 ? 'text-red-400' : 
+                              (formData.dailyLossLimit / formData.startingBalance) * 100 > 3 ? 'text-yellow-400' : 'text-green-400'
+                            }`}>
+                              {((formData.dailyLossLimit / formData.startingBalance) * 100).toFixed(2)}% of account
+                            </div>
+                          </div>
+                          <div>
+                            <div className="text-sm text-gray-300">Max trades per day</div>
+                            <div className="text-lg font-medium text-blue-400">
+                              {Math.floor(formData.dailyLossLimit / formData.riskPerTrade)} trades
+                            </div>
+                          </div>
+                          <div>
+                            <div className="text-sm text-gray-300">Win rate needed (breakeven)</div>
+                            <div className="text-lg font-medium text-purple-400">
+                              {formData.riskRewardRatio ? (100 / (formData.riskRewardRatio + 1)).toFixed(1) : 50}%
+                            </div>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  )}
+                </TabsContent>
+              </Tabs>
+
+              {/* Form Actions */}
+              <div className="flex justify-end space-x-3 pt-4 border-t border-gray-700">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setIsAccountDialogOpen(false)}
+                  className="bg-gray-800 border-gray-600 text-white hover:bg-gray-700"
+                >
+                  Cancel
+                </Button>
+                <Button
+                  onClick={handleSubmit}
+                  disabled={isSubmitting}
+                  className="bg-blue-600 hover:bg-blue-700 text-white"
+                >
+                  {isSubmitting ? "Creating..." : "Create Account"}
+                </Button>
+              </div>
+            </div>
+          </ScrollArea>
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+}
